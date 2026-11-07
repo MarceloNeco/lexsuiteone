@@ -67,6 +67,6 @@ sensível possível do banco. Registrado em `PENDENCIAS.md`.
 
 - Comportamento no Windows real (schtasks, Drive para computador, Excel abrindo o `.xlsx`): só testado em Linux e
   com leitor próprio e openpyxl; o ensaio em casa é o teste de verdade.
-- Cabeçalhos HTTP de domínio: não há site publicado ainda (`judicial.solverone.com.br` não existe).
+- Cabeçalhos HTTP de domínio: não há site publicado ainda (`lexsuiteone.solverone.com.br` não existe).
 - `pip-audit`/`trivy`: sem dependências externas no robô; não se aplicam.
 - Conformidade do uso comercial dos contatos: decisão jurídica do escritório, fora desta revisão.
