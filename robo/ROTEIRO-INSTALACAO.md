@@ -44,3 +44,23 @@ Passos:
 - Para publicar uma versão: `python ferramentas\publicar.py empacotar --versao 0.7.1 --chave <sua chave privada>` e
   copiar o zip e o `versao.json` para a subpasta `atualizacao` da pasta compartilhada do cliente. O robô instala na
   próxima abertura ou quando ele clicar em "Verificar atualização".
+
+## Ensaio geral com uma segunda conta Google (simulando o cliente)
+
+Vale fazer antes de quinta, com a sua outra conta (a que vai fazer o papel de cliente):
+
+1. No computador de teste, instale o Google Drive para computador entrando com a conta "cliente". Aparece a pasta
+   "Meu Drive" dessa conta.
+2. Instale o robô numa pasta nova (`INSTALAR-PYTHON.bat`, `ABRIR.bat`), aponte a Configuração para esse "Meu Drive" e
+   rode com 2 TRTs. Confira as duas planilhas na pasta `LexSuiteONE` do Drive da conta cliente.
+3. No Drive da conta cliente, compartilhe a subpasta `LexSuiteONE` com a sua conta principal, como editor.
+4. Entre na sua conta principal: abra a planilha "Radar" (abas Log, Saúde e Sobre, ocultas: botão direito na aba ou
+   "Ver > Planilhas ocultas") e a "Controle". Mude `ativo` para `não` na aba Controle e, no computador de teste,
+   clique em "Atualizar agora": o robô deve recusar e mostrar a mensagem. Volte para `sim`.
+5. Gere uma versão de teste com `ferramentas\publicar.py empacotar --versao 0.7.1 ...`, copie o zip e o `versao.json`
+   para a subpasta `atualizacao` da pasta compartilhada (pela sua conta principal) e, no computador de teste, clique em
+   "Verificar atualização": o robô deve instalar e pedir para abrir de novo.
+6. No fim, `PREPARAR-PARA-CLIENTE.bat` e a pasta está pronta para o pen drive.
+
+Na versão 0.8 a instalação vai pedir também um **código do cliente** (ligado à conta na nuvem); por enquanto a
+identificação é a própria pasta compartilhada.
