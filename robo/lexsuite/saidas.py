@@ -36,10 +36,15 @@ COLUNAS_MONITOR = [
 
 def _celula(v):
     if isinstance(v, list):
-        return " | ".join(str(x) for x in v)
+        return _sem_formula(" | ".join(str(x) for x in v))
     if isinstance(v, float):
         return f"{v:.2f}".replace(".", ",")
-    return "" if v is None else str(v)
+    return "" if v is None else _sem_formula(str(v)) if isinstance(v, str) else str(v)
+
+
+def _sem_formula(t):
+    """Texto vindo do Diário não pode virar fórmula ao abrir o CSV no Excel (injeção de fórmula)."""
+    return ("'" + t) if t[:1] in ("=", "+", "-", "@", "\t", "\r") else t
 
 
 def gravar_csv(caminho, linhas, colunas):

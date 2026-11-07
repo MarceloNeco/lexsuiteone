@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Radar Trabalhista</title>
 <meta name="description" content="Ações trabalhistas novas contra empresas nos tribunais escolhidos, uma por linha, com a ficha da empresa e do processo.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<!-- Nenhum pedido externo: fontes do próprio sistema. -->
 <style>
 /* Uma lista, uma linha por ação, clique abre a ficha. Papel branco, tinta marinho, latão só no que pede atenção. */
 :root {
@@ -131,6 +130,8 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .vazio-lista { padding: 26px 18px; color: var(--tinta-3); }
 .mais { display: flex; justify-content: center; align-items: center; gap: 14px; padding: 14px 0 4px; color: var(--tinta-3); font-size: .84rem; }
 footer { color: var(--tinta-3); font-size: .78rem; padding: 18px 0 32px; display: grid; gap: 3px; }
+footer a { color: var(--latao-texto); font-weight: 600; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
 @media (max-width: 640px) {
   .cab { grid-template-columns: 1fr auto; }
   .trib { grid-column: 1 / -1; }
@@ -210,6 +211,7 @@ footer { color: var(--tinta-3); font-size: .78rem; padding: 18px 0 32px; display
 <footer>
   <span id="rodape1"></span>
   <span id="rodape2"></span>
+  <span id="rodape3" hidden><a id="link-manual" href="/manual" target="_blank" rel="noopener"></a></span>
 </footer>
 </div>
 
@@ -251,7 +253,7 @@ window.LEXSUITE_RADAR = null;
       st_novo: "Novo", st_visto: "Visto", st_contato: "Em contato", st_descartado: "Descartado",
       nota_valor: "O PJe mostra o valor da causa depois do captcha. Digite aqui; fica guardado neste navegador e sai na planilha.",
       gig: "Jurídico próprio provável", e: "e", mais_n: "e mais {n}",
-      rodape1: "Fontes: lista de distribuição do DJEN (CNJ) e cadastro público da Receita Federal. Gerado em {q}.",
+      link_manual: "Manual do escritório", rodape1: "Fontes: lista de distribuição do DJEN (CNJ) e cadastro público da Receita Federal. Gerado em {q}.",
       rodape2: "Pessoas físicas do processo não aparecem. Nada aqui usa inteligência artificial. LexSuiteONE, um produto SolverONE, versão {v}." },
     en: { marca: "Labor Radar", h1: "New lawsuits against companies",
       resumo: "{n} lawsuits {p} in {t}. {v} above {min}; {s} still without a value.", p1: "in the last day", pn: "in the last {d} days", t1: "{a}", tn: "{k} courts ({a})", tk: "{k} courts",
@@ -281,7 +283,7 @@ window.LEXSUITE_RADAR = null;
       st_novo: "New", st_visto: "Seen", st_contato: "In contact", st_descartado: "Discarded",
       nota_valor: "PJe shows the claim value after the captcha. Type it here; it stays in this browser and goes to the spreadsheet.",
       gig: "Likely in-house counsel", e: "and", mais_n: "and {n} more",
-      rodape1: "Sources: DJEN distribution lists (CNJ) and the Federal Revenue public registry. Generated {q}.",
+      link_manual: "Firm manual", rodape1: "Sources: DJEN distribution lists (CNJ) and the Federal Revenue public registry. Generated {q}.",
       rodape2: "Individuals in the case never appear. Nothing here uses artificial intelligence. LexSuiteONE, a SolverONE product, version {v}." }
   };
   var lang = "pt", F = { valor: false, gig: false, exc: false, trib: "" }, ordem = "valor", aberto = {};
@@ -608,13 +610,14 @@ window.LEXSUITE_RADAR = null;
     var so = $("ordem"); so.textContent = ""; [["valor", t("ord_valor")], ["hora", t("ord_hora")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; so.appendChild(op); }); so.value = ordem;
     $("exportar").textContent = t("exportar");
     $("rodape1").textContent = t("rodape1", { q: D.gerado_em ? dataHora(D.gerado_em) : "—" }); $("rodape2").textContent = t("rodape2", { v: D.versao || "?" });
+    $("rodape3").hidden = MODO !== "app"; $("link-manual").textContent = t("link_manual");
     $("b-pt").setAttribute("aria-pressed", String(lang === "pt")); $("b-en").setAttribute("aria-pressed", String(lang === "en"));
     document.documentElement.lang = lang === "pt" ? "pt-BR" : "en"; document.title = t("marca");
   }
   function exportar() {
     var cab = ["Tribunal", "Vara", "Processo", "Classe", "Rito", "No Diário de", "Distribuída em", "Empresa", "Outras empresas", "CNPJ", "CNAE", "Atividade", "Porte", "Capital social", "Simples", "Cidade", "UF", "Telefone", "E-mail", "Sócios", "Jurídico próprio provável", "Valor da causa", "Origem do valor", "Status", "Excluída (motivo)"];
     var linhas = visiveis().map(function (i) { var e = i.empresa || {}, v = valorDe(i); return [i.tribunal, i.vara, i.processo, i.classe, i.rito, i.diario_em || i.distribuida_em, i.ajuizada_em, e.razao_social || (i.empresas || [])[0], (i.empresas || []).slice(1).join(" | "), cnpjFmt(e.cnpj), cnaeFmt(e.cnae), e.atividade, e.porte_legivel || e.porte, e.capital_social, e.simples == null ? "" : (e.simples ? "sim" : "não"), e.municipio, e.uf, [e.telefone, e.telefone2].filter(Boolean).join(" | "), e.email, (e.socios || []).map(function (s) { return s.nome; }).join(" | "), i.gigante ? "sim" : "", v.v == null ? "" : v.v, v.fonte, t("st_" + statusDe(i)), i.excluida || ""]; });
-    var csv = "﻿" + [cab].concat(linhas).map(function (l) { return l.map(function (c) { c = c == null ? "" : String(c); return /[;"\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(";"); }).join("\r\n");
+    var csv = "﻿" + [cab].concat(linhas).map(function (l) { return l.map(function (c) { c = c == null ? "" : String(c); if (/^[=+\-@\t\r]/.test(c)) c = "'" + c; return /[;"\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(";"); }).join("\r\n");
     var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); a.download = "radar-" + (D.dia || "dia") + ".csv"; document.body.appendChild(a); a.click(); a.remove();
   }
   function tudo() { cabecalho(); barraApp(); desenhar(); }

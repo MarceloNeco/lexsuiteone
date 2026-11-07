@@ -11,6 +11,9 @@ robo/ultima_atualizacao.json
 robo/carteira.csv
 robo/processos.csv
 robo/orgaos_*.json
+# Variáveis de ambiente locais
+.env
+.env.*
 # Chave privada de assinatura: só no computador do suporte
 chave_privada.txt
 **/chave_privada.txt

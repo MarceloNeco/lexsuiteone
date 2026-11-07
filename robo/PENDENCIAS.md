@@ -28,6 +28,10 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
 
 ## v0.7.x (ainda do robô local)
 
+- Privacidade: trocar o trecho de 600 caracteres guardado no banco por rótulos (assunto, rito), eliminando o único
+  dado sensível possível; pre-commit com gitleaks e bandit; plano de incidente de uma página (ver SEGURANCA-REVISAO).
+- GitHub: proteção do ramo `main`, Dependabot, 2FA, ações da CI fixadas por SHA.
+
 - Preferências que faltam: porte, CNAE e valor da causa como filtros (dependem do CNPJ pelo nome e do valor digitado).
 - Avisos por Telegram e e-mail só do que passa nas regras (reaproveitar `avisar.py`).
 - Regra de "ação nova" nos TJs e TRFs (hoje marcada "a calibrar"); classe "execução fiscal" para a frente tributária.

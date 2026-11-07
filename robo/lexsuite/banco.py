@@ -67,6 +67,18 @@ class Banco:
                          (dt.datetime.now().isoformat(timespec="seconds"), tipo, json.dumps(resumo, ensure_ascii=False)))
         self.con.commit()
 
+    def limpar_antigos(self, dias=365):
+        """Retenção: apaga ações, publicações e execuções mais velhas que `dias` (LGPD: não acumular texto sem necessidade)."""
+        if not dias or int(dias) <= 0:
+            return 0
+        limite = (dt.date.today() - dt.timedelta(days=int(dias))).isoformat()
+        total = 0
+        for sql in ("DELETE FROM leads WHERE primeira_vez < ?", "DELETE FROM publicacoes WHERE visto_em < ?",
+                    "DELETE FROM execucoes WHERE quando < ?"):
+            total += self.con.execute(sql, (limite,)).rowcount
+        self.con.commit()
+        return total
+
     def execucoes(self, tipo=None, limite=500):
         """As últimas execuções registradas (mais recentes primeiro): [{quando, tipo, ...resumo}]."""
         sql, args = "SELECT quando, tipo, resumo FROM execucoes", ()

@@ -13,7 +13,7 @@ from . import planilha
 NOME_ARQUIVO = "LexSuiteONE.xlsx"
 
 PADRAO = {"valor_minimo": 100000, "minimo_acoes": 1, "janela_dias": 30, "teto_capital_gigante": 50000000,
-          "esconder_gigantes": False, "esconder_excluidas": True}
+          "esconder_gigantes": False, "esconder_excluidas": True, "mostrar_socios": True}
 CHAVES = {
     "Valor mínimo da causa (R$)": "valor_minimo",
     "Mínimo de ações da mesma empresa": "minimo_acoes",
@@ -21,6 +21,7 @@ CHAVES = {
     "Capital social que indica jurídico próprio (R$)": "teto_capital_gigante",
     "Esconder jurídico próprio provável": "esconder_gigantes",
     "Esconder clientes e exclusões": "esconder_excluidas",
+    "Mostrar sócios e administradores": "mostrar_socios",
 }
 LINHAS_PREFERENCIAS = [
     ["Ajuste", "Valor", "Como usar"],
@@ -30,6 +31,7 @@ LINHAS_PREFERENCIAS = [
     ["Capital social que indica jurídico próprio (R$)", 50000000, "Acima disso a empresa é marcada \"jurídico próprio provável\" e vai para o fim da lista."],
     ["Esconder jurídico próprio provável", "não", "sim ou não."],
     ["Esconder clientes e exclusões", "sim", "sim ou não. A aba Exclusões lista quem não deve aparecer."],
+    ["Mostrar sócios e administradores", "sim", "sim ou não. São nomes de pessoas do cadastro público da Receita; se o escritório não precisa, desligue."],
 ]
 LINHAS_EXCLUSOES = [
     ["Nome ou CNPJ", "Motivo"],
@@ -112,7 +114,7 @@ def carregar(pasta_base, doc=None):
     for linha in abas.get("preferencias", [])[1:]:
         if len(linha) >= 2 and str(linha[0]).strip() in CHAVES:
             chave = CHAVES[str(linha[0]).strip()]
-            prefs[chave] = _sim(linha[1]) if chave.startswith("esconder") else _numero(linha[1], PADRAO[chave])
+            prefs[chave] = _sim(linha[1]) if chave.startswith(("esconder", "mostrar")) else _numero(linha[1], PADRAO[chave])
     for linha in abas.get("exclusoes", [])[1:]:
         nome = str(linha[0] if linha else "").strip()
         if nome and not nome.lower().startswith("(exemplo"):
