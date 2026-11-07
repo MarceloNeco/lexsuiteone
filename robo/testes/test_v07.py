@@ -20,15 +20,21 @@ ROBO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Preferencias(unittest.TestCase):
     def test_cria_le_bloqueia_e_aplica(self):
-        base = tempfile.mkdtemp()
-        self.assertTrue(preferencias.criar_se_faltar(base, lambda *_: None))
-        self.assertFalse(preferencias.criar_se_faltar(base, lambda *_: None))  # nunca sobrescreve
+        pasta = tempfile.mkdtemp()
+        cfg = {"compartilhar": {"pasta": pasta, "subpasta": "LexSuiteONE"}, "radar": {"tribunais": ["TRT2"]}}
+        base = compartilhar.pasta_base(cfg)
+        caminho = compartilhar.criar_se_faltar(cfg, "0.7.1", "", lambda *_: None)
+        self.assertTrue(os.path.exists(caminho))
+        tamanho = os.path.getsize(caminho)
+        compartilhar.criar_se_faltar(cfg, "0.7.1", "", lambda *_: None)  # nunca sobrescreve
+        self.assertEqual(os.path.getsize(caminho), tamanho)
         p = preferencias.carregar(base)
         self.assertEqual((p["valor_minimo"], p["minimo_acoes"], p["esconder_excluidas"], p["controle"]["ativo"]), (100000, 1, True, True))
         self.assertEqual(p["exclusoes"], [])  # a linha de exemplo não conta
         self.assertEqual(preferencias.bloqueio(p, "0.7.0"), "")
         # o escritório edita: exclui um cliente, pede mínimo de 2 ações e o suporte desliga com validade vencida
         planilha.escrever_xlsx(preferencias.caminho(base), [
+            {"nome": "Radar", "linhas": [["Hora"]]},
             {"nome": "Preferências", "linhas": [["Ajuste", "Valor", "x"], ["Valor mínimo da causa (R$)", "R$ 150.000,00", ""],
                                                  ["Mínimo de ações da mesma empresa", 2, ""], ["Esconder jurídico próprio provável", "sim", ""]]},
             {"nome": "Exclusões", "linhas": [["Nome ou CNPJ", "Motivo"], ["Transportadora Exemplo LTDA", "cliente atual"], ["11.222.333/0001-81", ""]]},
@@ -156,11 +162,24 @@ class Compartilhada(unittest.TestCase):
         caminho = compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "abcd", "", lambda *_: None)
         doc = planilha.ler_xlsx(caminho)
         nomes = [(a["nome"], a["oculta"]) for a in doc["abas"]]
-        self.assertEqual(nomes, [("Radar", False), ("Log", True), ("Saúde", True), ("Sobre", True)])
+        self.assertEqual(nomes, [("Radar", False), ("Preferências", False), ("Exclusões", False), ("Controle", True), ("Log", True), ("Saúde", True), ("Sobre", True)])
         col = doc["abas"][0]["linhas"][0].index("Excluída (motivo)")
         self.assertEqual(doc["abas"][0]["linhas"][1][col], "Exclusão: cliente")
-        self.assertEqual(doc["abas"][1]["linhas"][1][3], 10)
-        self.assertIn(["Escritório", "Escritório Teste"], doc["abas"][3]["linhas"])
+        self.assertEqual(doc["abas"][4]["linhas"][1][3], 10)
+        self.assertIn(["Escritório", "Escritório Teste"], doc["abas"][6]["linhas"])
+        # o escritório edita Exclusões; a próxima regravação preserva
+        abas = [{"nome": a["nome"], "linhas": a["linhas"], "oculta": a["oculta"]} for a in doc["abas"]]
+        abas[2]["linhas"] = [["Nome ou CNPJ", "Motivo"], ["Cliente Preservado Ltda", "cliente"]]
+        planilha.escrever_xlsx(caminho, abas)
+        compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "abcd", "", lambda *_: None)
+        doc2 = planilha.ler_xlsx(caminho)
+        self.assertEqual(doc2["abas"][2]["linhas"][1][0], "Cliente Preservado Ltda")
+        self.assertEqual(preferencias.carregar(os.path.dirname(caminho))["exclusoes"][0]["nome"], "Cliente Preservado Ltda")
+        # planilha corrompida (em uso): não regrava, não perde nada
+        with open(caminho, "wb") as f:
+            f.write(b"nao e um zip")
+        self.assertEqual(compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "", "", lambda *_: None), "")
+        self.assertEqual(open(caminho, "rb").read(), b"nao e um zip")
 
     def test_saude(self):
         pubs = [{"processo": "1", "texto": "x"}] * 100 + [{"processo": "", "texto": ""}] * 30
@@ -205,7 +224,7 @@ class AppV07(unittest.TestCase):
         self.assertTrue(r["ok"], r)
         self.assertTrue(os.path.exists(os.path.join(compartilhada, "LexSuiteONE", preferencias.NOME_ARQUIVO)))
         status, d = self.pedir("GET", "/dados")
-        self.assertEqual((d["app"]["config"]["escritorio"], d["app"]["config"]["pasta_ok"], bool(d["app"]["config"]["controle"])), ("KR Law", True, True))
+        self.assertEqual((d["app"]["config"]["escritorio"], d["app"]["config"]["pasta_ok"], bool(d["app"]["config"]["planilha"]), d["app"]["config"]["agendavel"]), ("KR Law", True, True, os.name == "nt"))
         self.assertEqual(d["prefs"]["controle"]["ativo"], True)
         status, r = self.pedir("POST", "/atualizar", {})
         self.assertFalse(r["disponivel"]) and self.assertIn("chave", r["motivo"])

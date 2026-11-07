@@ -13,7 +13,7 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from . import VERSAO, assinatura, atualizar, banco as bd, compartilhar, config, preferencias, radar, rede, tribunais
+from . import VERSAO, agendar, assinatura, atualizar, banco as bd, compartilhar, config, preferencias, radar, rede, tribunais
 
 PORTAS = range(8765, 8776)
 
@@ -141,7 +141,8 @@ class Tratador(BaseHTTPRequestHandler):
                            "teto_capital_gigante": r.get("teto_capital_gigante"),
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
-                           "controle": preferencias.caminho(base) if base and os.path.exists(preferencias.caminho(base)) else ""},
+                           "planilha": preferencias.caminho(base) if base and os.path.exists(preferencias.caminho(base)) else "",
+                           "agendavel": agendar.disponivel(), "agendado": agendar.agendado()},
                 "atualizacao": {"chave": bool(chave), "impressao": assinatura.impressao(chave) if chave else "",
                                 "url": cfg["atualizacao"].get("url", ""), "pasta": compartilhar.pasta_atualizacao(cfg)},
                 "versao": VERSAO, "estado": s.estado.como_dict(), "pasta_robo": s.pasta,
@@ -191,11 +192,15 @@ class Tratador(BaseHTTPRequestHandler):
                     if not ok:
                         return self._responder({"ok": False, "motivo": msg})
                     try:
-                        preferencias.criar_se_faltar(compartilhar.pasta_base(cfg), s.estado.aviso)
+                        compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, s.estado.aviso)
                     except Exception as e:
-                        return self._responder({"ok": False, "motivo": f"Não consegui criar a planilha de controle ({e.__class__.__name__})."})
+                        return self._responder({"ok": False, "motivo": f"Não consegui criar a planilha ({e.__class__.__name__})."})
             config.salvar(s.caminho_config, cfg)
-            return self._responder({"ok": True, "radar": r, "escritorio": cfg.get("escritorio", ""), "pasta": cfg["compartilhar"].get("pasta", "")})
+            resposta = {"ok": True, "radar": r, "escritorio": cfg.get("escritorio", ""), "pasta": cfg["compartilhar"].get("pasta", "")}
+            if "agendar" in corpo and agendar.disponivel():
+                ok, msg = agendar.agendar(s.pasta) if corpo["agendar"] else agendar.desagendar()
+                resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg})
+            return self._responder(resposta)
         if caminho == "/testar-pasta":
             ok, msg = compartilhar.testar(str(corpo.get("pasta") or "").strip(), s.config()["compartilhar"].get("subpasta") or "LexSuiteONE")
             return self._responder({"ok": ok, "mensagem": msg})

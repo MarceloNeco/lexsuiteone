@@ -1,4 +1,4 @@
-# Arquitetura do robô LexSuiteONE (v0.7.0)
+# Arquitetura do robô LexSuiteONE (v0.7.1)
 
 Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
 linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional
@@ -10,8 +10,9 @@ e trocável, com a chave do próprio escritório, nunca no caminho principal.
 | `INSTALAR-PYTHON.bat`, `ABRIR.bat`, `RODAR.bat`, `AGENDAR.bat`, `DIAGNOSTICO.bat` | Windows sem instalar nada: baixa o Python portátil oficial para a pasta `python\`; abre a tela; roda uma rodada sem tela (agendador); gera o relatório de diagnóstico | |
 | `lexsuite/app.py` | a tela local: servidor pequeno em 127.0.0.1 (só biblioteca padrão) que serve `radar_modelo.html`, entrega os dados (`/dados`), lista pastas sincronizadas (`/pastas`), salva configuração e tribunais (`/config`, `/testar-pasta`), roda o radar numa thread (`/rodar`, `/estado`) e aplica atualização assinada (`/atualizar`). POST só com o cabeçalho `X-LexSuite` da própria página | rotas, portas |
 | `lexsuite/tribunais.py` | os 59 tribunais do DJEN que o robô lê (24 TRTs, 27 TJs, 6 TRFs, STJ e TST): sigla, estados, região, ramo; consulta pública do PJe nos TRTs; validação da escolha | nomes, regiões |
-| `lexsuite/preferencias.py` | a planilha de controle (`LexSuiteONE - Controle.xlsx`, só gente edita): Preferências, Exclusões e a aba oculta Controle (ativo, validade, versão mínima, mensagem); `bloqueio()` e `aplicar()` (marca excluídas, nunca apaga) | chaves e padrões |
-| `lexsuite/compartilhar.py` | a pasta compartilhada: detecção das pastas do Drive/OneDrive, teste de gravação, `LexSuiteONE - Radar.xlsx` (Radar + abas ocultas Log, Saúde, Sobre) e cópia da página | colunas, nomes dos arquivos |
+| `lexsuite/preferencias.py` | as abas editáveis da planilha única (`LexSuiteONE.xlsx`): Preferências, Exclusões e a aba oculta Controle (ativo, validade, versão mínima, mensagem); `bloqueio()` e `aplicar()` (marca excluídas, nunca apaga) | chaves e padrões |
+| `lexsuite/compartilhar.py` | a pasta compartilhada: detecção das pastas do Drive/OneDrive, teste de gravação e a planilha única `LexSuiteONE.xlsx` (Radar + abas editáveis preservadas + ocultas Log, Saúde, Sobre); se a planilha estiver em uso, não regrava | colunas, nomes dos arquivos |
+| `lexsuite/agendar.py` | "rodar sozinho": cria ou remove as tarefas diárias do Agendador do Windows (schtasks, sem shell) a partir da tela | horários |
 | `lexsuite/planilha.py` | leitor e escritor de `.xlsx` só com a biblioteca padrão (strings inline, abas ocultas, cabeçalho em negrito, limite de 50 MB na leitura) | |
 | `lexsuite/saude.py` | avaliação sem IA de cada rodada (DJEN mudou? regra frouxa? Receita sem resposta?) gravada no banco e na aba Saúde | limiares |
 | `lexsuite/atualizar.py` | atualização assinada: procura em `<compartilhada>/LexSuiteONE/atualizacao` e no endereço fixo, verifica Ed25519 + SHA-256, lista fechada de arquivos, guarda a anterior em `_anterior/` | nomes permitidos |
@@ -87,7 +88,8 @@ nova dispara o aviso no app (notificação do PWA), no e-mail e no Telegram, e a
 ## O fluxo da v0.7 (pasta compartilhada)
 
 1. `ABRIR.bat` abre a tela; na primeira vez a Configuração pede escritório e pasta compartilhada (Drive/OneDrive detectados).
-2. Cada rodada: lê `LexSuiteONE - Controle.xlsx` (bloqueio? exclusões? mínimo de ações?), baixa os cadernos, guarda as
-   ações, avalia a saúde, registra no log, grava `saida/radar/` e `LexSuiteONE - Radar.xlsx` + `.html` na pasta compartilhada.
+2. Cada rodada: lê as abas editáveis de `LexSuiteONE.xlsx` (bloqueio? exclusões? mínimo de ações?), baixa os cadernos,
+   guarda as ações, avalia a saúde, registra no log, grava `saida/radar/` e regrava `LexSuiteONE.xlsx` (preservando as
+   abas editadas) + `.html` na pasta compartilhada. Planilha em uso: deixa como está e tenta na próxima rodada.
 3. O suporte lê Log/Saúde/Sobre pela pasta compartilhada; edita a aba Controle para pausar, avisar ou exigir versão;
    solta pacotes assinados em `atualizacao/`. Nada disso usa internet própria do robô: o Drive carrega.
