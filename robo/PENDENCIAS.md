@@ -2,6 +2,18 @@
 
 Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQUITETURA.md` antes de mexer.
 
+## Decisões do dono em 07/Nov (tarde)
+
+- Endereço do produto: `judicial.solverone.com.br` (decisão final: mais fácil de falar e de lembrar). Marca: **LexSuiteONE**
+  é a suíte jurídica da SolverONE; **JUDICIAL** é este produto, escrito em maiúsculas com o "IA" em latão; as frentes
+  (Radar Trabalhista, Tributário, Cível e empresarial) vivem dentro dele. `lexsuiteone.solverone.com.br` não é usado.
+- Frentes, nesta ordem: trabalhista (existe), tributário, depois cível e empresarial. Leandro: trabalhista e tributário.
+- Cópia HTML estática no Drive: fica, como reserva. O caminho principal é o sistema (tela local hoje; site na 0.8).
+- 0.8 confirmada: o robô envia a lista do dia para a nuvem da SolverONE (Supabase) e o site em judicial.solverone.com.br
+  mostra, com login por link no e-mail e código de cliente. O Drive continua com a planilha editável.
+- Cara profissional em tudo que o cliente vê: nenhum contato pessoal do dono (e-mail, usuário pessoal do GitHub) em site,
+  e-mail, repositório ou planilha. Organização `solverone` no GitHub e contas do Workspace (`contato@`, `integracao@`).
+
 ## Esperando o dono (Marcelo)
 
 - Rodar `DIAGNOSTICO.bat` no computador no Brasil e mandar `diagnostico\radar-diagnostico.txt` (arrastar para o Drive).
@@ -44,7 +56,7 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
 
 ## v0.8 (cliente-servidor e conta na nuvem)
 
-- Conta na nuvem (`lexsuiteone.solverone.com.br`): o robô, se tiver internet, pergunta a cada abertura se a conta do
+- Conta na nuvem (`judicial.solverone.com.br`): o robô, se tiver internet, pergunta a cada abertura se a conta do
   escritório continua ativa e registra um batimento (versão, última rodada, contagens). Gestão no RootifyONE.
   Regra de queda: sem resposta da nuvem, vale a aba Controle da planilha; sem nenhuma das duas por 30 dias, avisa
   e continua (não trava, por ser instalação local). Tabelas `lex_contas` e `lex_batimentos` no Supabase (SQL

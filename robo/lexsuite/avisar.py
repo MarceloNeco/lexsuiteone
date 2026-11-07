@@ -46,7 +46,7 @@ def resumo_html(painel):
         f"<td>{e(l['processo'])}</td><td>{e(l['rito'])}</td></tr>" for l in leads[:15])
     v = painel.get("vara_stats") or {}
     return f"""<div style="font-family:Arial,sans-serif;max-width:640px">
-<h2 style="margin:0">LexSuiteONE · Radar Trabalhista</h2>
+<h2 style="margin:0">LexSuiteONE · JUDICIAL</h2>
 <p>{e(v.get('vara', ''))} ({e(v.get('tribunal', ''))}) — atualizado em {e(painel.get('gerado_em', ''))}</p>
 <p><b>{len(leads)}</b> ações novas contra empresas · <b>{len(altas)}</b> com prioridade alta.</p>
 <table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px">

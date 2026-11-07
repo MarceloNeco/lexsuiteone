@@ -1,4 +1,4 @@
-"""LexSuiteONE · Radar Trabalhista — robô de linha de comando.
+"""LexSuiteONE · JUDICIAL — robô de linha de comando.
 
 Exemplos (no PowerShell do Windows, dentro desta pasta):
   python lexsuite_robo.py varas --tribunal TRT2
@@ -474,7 +474,7 @@ def cmd_diagnostico(a):
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(description=f"LexSuiteONE Radar Trabalhista v{VERSAO}")
+    p = argparse.ArgumentParser(description=f"LexSuiteONE · JUDICIAL v{VERSAO}")
     sub = p.add_subparsers(dest="comando", required=True)
     s = sub.add_parser("varas", help="ranking das varas com mais ações novas (DataJud)")
     s.add_argument("--tribunal", default="TRT2"); s.add_argument("--meses", type=int, default=3)

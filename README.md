@@ -1,4 +1,7 @@
-# LexSuiteONE · Radar Trabalhista
+# LexSuiteONE · JUDICIAL
+
+JUDICIAL é o produto; LexSuiteONE é a suíte jurídica da SolverONE. Endereço: judicial.solverone.com.br.
+Frente atual: Radar Trabalhista. Próximas: Tributário, Cível e empresarial.
 
 Robô que lê o Diário de Justiça Eletrônico Nacional (DJEN, do CNJ) e monta, todo dia, o catálogo de **ações novas
 contra empresas** nos tribunais escolhidos (os 24 TRTs por padrão; TJs, TRFs, STJ e TST disponíveis), com a ficha

@@ -64,7 +64,7 @@ def testar(pasta, subpasta="LexSuiteONE"):
 
 def _sobre(cfg, versao, chave_impressao, ultima):
     return [["Item", "Valor"],
-            ["Produto", "LexSuiteONE · Radar Trabalhista"], ["Versão", versao], ["Escritório", cfg.get("escritorio", "")],
+            ["Produto", "LexSuiteONE · JUDICIAL (Radar Trabalhista)"], ["Versão", versao], ["Escritório", cfg.get("escritorio", "")],
             ["Computador", platform.node()], ["Sistema", f"{platform.system()} {platform.release()}"],
             ["Python", platform.python_version()], ["Pasta do robô", cfg.get("_pasta_robo", "")],
             ["Tribunais", ", ".join((cfg.get("radar") or {}).get("tribunais") or [])],
