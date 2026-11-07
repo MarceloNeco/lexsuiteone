@@ -36,6 +36,13 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 Registro.br (DNSSEC, servidores DNS, registros), GitHub (organização, transferência, Pages, configurações de conta),
 ImprovMX (apelidos), Conta Google do `integracao@`, chaves de assinatura no PC dele, DIAGNOSTICO.bat no PC no Brasil.
 
+## Estado do Cloudflare (07/Nov, noite)
+
+Zona `solverone.com.br` já criada e conferida no Cloudflare, pendente, com todos os registros e o CNAME `judicial`.
+Servidores: `harlee.ns.cloudflare.com` e `lennon.ns.cloudflare.com`. Faltam só os passos do dono no Registro.br
+(DNSSEC off, 2 h, trocar servidores) e, depois, ligar o DNSSEC no Cloudflare e cadastrar o DS. Detalhes em
+`docs/DNS-SOLVERONE.md`.
+
 ## Tarefa imediata desta sessão nova: DNS no Cloudflare e site no ar
 
 Com o conector "Cloudflare" de API completa ligado (`https://mcp.cloudflare.com/mcp`; o "Developer Platform" não serve

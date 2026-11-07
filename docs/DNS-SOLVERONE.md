@@ -51,30 +51,27 @@ O domínio tem **DNSSEC ativo** no Registro.br (há um registro DS na zona `.br`
 servidores DNS para o Cloudflare sem antes desativar o DNSSEC faz o domínio inteiro parar de resolver, site e e-mail,
 porque a assinatura antiga deixa de bater. A ordem certa está no roteiro abaixo.
 
-## Levar o DNS para o Cloudflare (roteiro completo, pelo computador)
+## Cloudflare: zona já preparada (07/Nov/2026, à noite)
 
-0. **Conector certo.** O conector "Cloudflare Developer Platform" (Workers) não mexe em DNS. Para o Claude gerir os
-   registros no futuro, conecte em claude.ai, Conectores, o "Cloudflare" de API completa (`mcp.cloudflare.com/mcp`).
-   Ele só aparece numa conversa nova. Para este roteiro não é necessário: tudo é feito no painel.
-1. **Cloudflare, adicionar o domínio.** Em dash.cloudflare.com, "Add a domain", `solverone.com.br`, plano Free. O
-   Cloudflare varre a zona e mostra os registros que encontrou.
-2. **Conferir registro por registro** contra a tabela acima. Faltou, crie à mão. Costumam faltar os MX e TXT de `send`
-   e `send.mail` e o TXT `_github-pages-challenge-marceloneco`. Aproveite e crie o novo: `judicial`, CNAME,
-   `solverone.github.io` (ou `marceloneco.github.io` se o repositório ainda estiver na conta pessoal).
-3. **Nuvem cinza em tudo que é site**: A, AAAA, CNAME `www`, CNAME `judicial`. Clique na nuvem laranja até ficar cinza
-   ("DNS only"). Com a nuvem laranja o certificado do GitHub Pages falha. MX e TXT já são só DNS.
-4. **Anote os dois servidores de nome** que o Cloudflare mostra ao final (terminam em `ns.cloudflare.com`).
-5. **Registro.br, desativar o DNSSEC.** Em registro.br, o domínio, aba DNSSEC (ou "Configurar DNSSEC"), remover a
-   chave / desativar. **Espere pelo menos 2 horas** antes do passo 6, para a assinatura antiga sumir dos caches.
-6. **Registro.br, trocar os servidores DNS.** No domínio, "Alterar servidores DNS", trocar a opção do DNS do
-   Registro.br pelos dois servidores do Cloudflare, salvar. O Registro.br confere se eles já respondem pelo domínio
-   (respondem, porque a zona foi criada no passo 1).
-7. **Esperar o aviso do Cloudflare** de domínio ativo (minutos a horas; limite de 24 h). Enquanto isso o site e o
-   e-mail continuam funcionando, porque os dois lados têm os mesmos registros.
-8. **Conferir**: site em solverone.com.br, e-mail de teste pelo Resend, domínios do Resend ainda "verificados", GitHub
-   Pages com HTTPS. Avise o Claude, que confere por fora.
-9. **Depois, com calma, religar o DNSSEC**: no Cloudflare, DNS, Settings, "Enable DNSSEC", copiar o registro DS que ele
-   mostra e cadastrar no Registro.br, na aba DNSSEC. Ganha a proteção de volta, agora assinada pelo Cloudflare.
+Pelo conector de API do Cloudflare, a zona `solverone.com.br` foi criada na conta da SolverONE com **os 21 registros da
+tabela acima mais o CNAME `judicial`**, todos com proxy desligado (nuvem cinza). Ela está **pendente**: não tem efeito
+nenhum enquanto os servidores DNS no Registro.br não forem trocados. Conferido registro a registro, inclusive as duas
+chaves DKIM inteiras.
 
-Nada disso é necessário para o JUDICIAL funcionar; o ganho é gerência de DNS mais cômoda, DNSSEC continuado e, no
-futuro, proteção e cache.
+Servidores de nome do Cloudflare para esta zona: **`harlee.ns.cloudflare.com`** e **`lennon.ns.cloudflare.com`**.
+
+### O que falta, e só o dono faz, no Registro.br
+
+1. **Desativar o DNSSEC** no domínio solverone.com.br (aba DNSSEC). Esperar **pelo menos 2 horas**.
+2. **Trocar os servidores DNS** em "Alterar servidores DNS": desmarcar o DNS do Registro.br e preencher
+   `harlee.ns.cloudflare.com` e `lennon.ns.cloudflare.com`. Salvar.
+3. Avisar o Claude: ele confere por fora (servidores, registros, Resend verificado, site) e então **liga o DNSSEC no
+   Cloudflare** e devolve o registro DS para cadastrar na aba DNSSEC do Registro.br.
+
+Se a troca ficar para depois da instalação de quinta, o site precisa do CNAME `judicial` criado no Registro.br
+enquanto isso (ver "O que criar agora"). Se a troca for feita antes, esse passo é dispensável.
+
+### Conector
+
+O conector "Cloudflare" de API completa (`https://mcp.cloudflare.com/mcp`) já está ligado na conta do Claude e foi
+usado nesta sessão. O "Cloudflare Developer Platform" (Workers) não mexe em DNS.
