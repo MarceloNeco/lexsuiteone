@@ -44,4 +44,5 @@ if exist "python\python.exe" (
 )
 :fim
 echo.
+if /i "%~1"=="--silencioso" exit /b 0
 pause

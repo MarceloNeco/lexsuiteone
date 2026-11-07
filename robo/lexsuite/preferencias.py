@@ -1,9 +1,6 @@
-"""Preferências e controle do escritório numa planilha que só gente edita.
-
-Arquivo: <pasta compartilhada>/LexSuiteONE/LexSuiteONE - Controle.xlsx. O robô cria na primeira vez com os
-padrões e depois só lê. Abas: Preferências (ajustes), Exclusões (clientes e empresas que não devem aparecer)
-e Controle (oculta: ativo, validade, versão mínima, mensagem do suporte). Como o robô nunca grava este arquivo,
-não há conflito com a sincronização do Drive.
+"""Preferências e controle do escritório: as abas Preferências, Exclusões e Controle (oculta) da planilha única
+<pasta compartilhada>/LexSuiteONE/LexSuiteONE.xlsx. O escritório edita essas abas; o robô lê antes de cada rodada
+e as preserva quando regrava a planilha (ver compartilhar.gravar_radar).
 """
 
 import datetime as dt
@@ -13,7 +10,7 @@ import re
 from . import classificar as cl
 from . import planilha
 
-NOME_ARQUIVO = "LexSuiteONE - Controle.xlsx"
+NOME_ARQUIVO = "LexSuiteONE.xlsx"
 
 PADRAO = {"valor_minimo": 100000, "minimo_acoes": 1, "janela_dias": 30, "teto_capital_gigante": 50000000,
           "esconder_gigantes": False, "esconder_excluidas": True}
@@ -52,19 +49,16 @@ def caminho(pasta_base):
     return os.path.join(pasta_base, NOME_ARQUIVO) if pasta_base else ""
 
 
-def criar_se_faltar(pasta_base, aviso=print):
-    """Cria a planilha de controle com os padrões. Nunca sobrescreve a que existe."""
-    c = caminho(pasta_base)
-    if not c or os.path.exists(c):
-        return False
-    os.makedirs(pasta_base, exist_ok=True)
-    planilha.escrever_xlsx(c, [
-        {"nome": "Preferências", "linhas": LINHAS_PREFERENCIAS, "larguras": [46, 16, 80]},
-        {"nome": "Exclusões", "linhas": LINHAS_EXCLUSOES, "larguras": [48, 50]},
-        {"nome": "Controle", "linhas": LINHAS_CONTROLE, "oculta": True, "larguras": [18, 36, 70]},
-    ])
-    aviso(f"  Criei a planilha de controle: {c}")
-    return True
+ABAS_EDITAVEIS = ("Preferências", "Exclusões", "Controle")
+
+
+def abas_padrao():
+    """As três abas como nascem na primeira vez (o escritório edita depois)."""
+    return [
+        {"nome": "Preferências", "linhas": [list(l) for l in LINHAS_PREFERENCIAS], "larguras": [46, 16, 80]},
+        {"nome": "Exclusões", "linhas": [list(l) for l in LINHAS_EXCLUSOES], "larguras": [48, 50]},
+        {"nome": "Controle", "linhas": [list(l) for l in LINHAS_CONTROLE], "oculta": True, "larguras": [18, 36, 70]},
+    ]
 
 
 def _sim(v):
@@ -101,17 +95,19 @@ def padrao():
     return p
 
 
-def carregar(pasta_base):
-    """Lê a planilha de controle. Sem pasta ou sem arquivo, devolve o padrão; se não conseguir ler, diz o erro."""
+def carregar(pasta_base, doc=None):
+    """Lê as abas editáveis da planilha. Sem pasta ou sem arquivo, devolve o padrão; se não conseguir ler, diz o erro.
+    `doc` pode ser a planilha já lida (evita ler duas vezes)."""
     prefs = padrao()
     c = caminho(pasta_base)
-    if not c or not os.path.exists(c):
-        return prefs
-    try:
-        doc = planilha.ler_xlsx(c)
-    except Exception as e:  # planilha corrompida ou em uso: o robô segue com o padrão e avisa
-        prefs["erro"] = f"Não consegui ler {NOME_ARQUIVO} ({e.__class__.__name__}). Usando o padrão."
-        return prefs
+    if doc is None:
+        if not c or not os.path.exists(c):
+            return prefs
+        try:
+            doc = planilha.ler_xlsx(c)
+        except Exception as e:  # planilha corrompida ou em uso: o robô segue com o padrão e avisa
+            prefs["erro"] = f"Não consegui ler {NOME_ARQUIVO} ({e.__class__.__name__}). Usando o padrão."
+            return prefs
     abas = {cl.sem_acento(a["nome"]).strip().lower(): a["linhas"] for a in doc["abas"]}
     for linha in abas.get("preferencias", [])[1:]:
         if len(linha) >= 2 and str(linha[0]).strip() in CHAVES:

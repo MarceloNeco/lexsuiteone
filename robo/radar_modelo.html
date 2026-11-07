@@ -68,7 +68,7 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .titem b { font-weight: 600; min-width: 3.4rem; }
 .titem span { color: var(--tinta-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .titem small { color: var(--tinta-3); }
-.titem input, .gcab input { width: 16px; height: 16px; margin: 0; accent-color: var(--latao); }
+.titem input, .gcab input, #c-agendar { width: 16px; height: 16px; margin: 0; accent-color: var(--latao); }
 .painel-rodape { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; border-top: 1px solid var(--linha); padding-top: 12px; }
 .painel-rodape .cont { color: var(--tinta-2); font-size: .86rem; flex: 1 1 auto; }
 .painel .dica { font-size: .8rem; color: var(--tinta-3); }
@@ -170,6 +170,7 @@ footer { color: var(--tinta-3); font-size: .78rem; padding: 18px 0 32px; display
     <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta"></select></label>
     <label class="campo-conf" id="c-outra-wrap" hidden><span id="c-l-outra"></span><input id="c-outra" type="text" spellcheck="false"></label>
     <div class="conf-acoes"><button type="button" class="chip" id="c-testar"></button><span id="c-teste-txt"></span></div>
+    <label class="conf-acoes" id="c-agendar-wrap"><input type="checkbox" id="c-agendar"> <span id="c-l-agendar"></span></label>
     <dl class="conf-info" id="c-info"></dl>
     <div class="painel-rodape">
       <span class="cont" id="c-msg"></span>
@@ -224,15 +225,15 @@ window.LEXSUITE_RADAR = null;
   var T = {
     pt: { marca: "Radar Trabalhista", h1: "Ações novas contra empresas",
       resumo: "{n} ações {p} em {t}. {v} com valor acima de {min}; {s} ainda sem valor.", p1: "no último dia", pn: "nos últimos {d} dias", t1: "{a}", tn: "{k} tribunais ({a})", tk: "{k} tribunais",
-      vazio: "Nenhuma ação com esses filtros.", vazio_app: "Nenhuma ação guardada ainda. Escolha os tribunais e clique em Atualizar agora.", vazio_arq: "Nenhuma ação nova nos tribunais acompanhados.",
+      vazio: "Nenhuma ação com esses filtros.", vazio_app: "Nenhuma ação guardada ainda. Clique em Atualizar agora (os 24 TRTs já estão escolhidos).", vazio_arq: "Nenhuma ação nova nos tribunais acompanhados.",
       b_trib: "Tribunais: {n} de {k}", periodo: "Período", config: "Configuração", excluidas_resumo: " {x} escondidas pelas preferências do escritório.",
       f_exc_mostrar: "Mostrar excluídas ({n})", f_exc_ocultar: "Ocultar excluídas", excluida: "Excluída",
       dica_tj: "Tribunais estaduais publicam diários muito maiores (o TJSP sozinho pode passar de 1 GB por dia) e a regra de \"ação nova\" ainda não foi calibrada neles.",
       c_titulo: "Configuração deste computador", c_escritorio: "Escritório", c_pasta: "Pasta compartilhada", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
       c_nenhuma: "Nenhuma (só neste computador)", c_outra_op: "Outra pasta...", c_salvar: "Salvar", c_atualizar: "Verificar atualização",
-      c_versao: "Versão instalada", c_pasta_robo: "Pasta do robô", c_controle: "Planilha de controle", c_controle_falta: "será criada na primeira rodada", c_sem_pasta: "sem pasta compartilhada",
+      c_versao: "Versão instalada", c_pasta_robo: "Pasta do robô", c_controle: "Planilha", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Rodar sozinho todo dia, às 19:40 e às 07:10 (com o computador ligado)", c_agendar_nao: "Agendamento automático só no Windows; neste sistema use o RODAR.bat.",
       c_chave: "Chave de atualização", c_chave_falta: "ausente: atualização desligada", c_atu_pasta: "Atualizações chegam por", c_salvo: "Salvo.",
-      c_dica: "A pasta compartilhada é a pasta do Google Drive para computador (ou OneDrive) onde o robô grava a planilha \"LexSuiteONE - Radar\" e lê a planilha \"LexSuiteONE - Controle\". Compartilhe a subpasta LexSuiteONE com o suporte uma vez; o resto é automático.",
+      c_dica: "A pasta compartilhada é a pasta do Google Drive para computador (ou OneDrive) onde fica a planilha LexSuiteONE.xlsx: a aba Radar é a lista; Preferências e Exclusões são suas para editar; o suporte usa as abas ocultas. Compartilhe a subpasta LexSuiteONE com o suporte uma vez; o resto é automático.",
       atu_ok: "Atualizado para a versão {v}. Feche a janela LexSuiteONE e abra de novo pelo ABRIR.bat.", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia", pern: "{d} dias", rodar: "Atualizar agora", rodando: "Atualizando...",
       aba_regiao: "Por região", aba_uf: "Por estado", todos: "Selecionar todos", todos_ramo: "Selecionar todos ({r})", limpar: "Limpar", escolhidos: "{n} de {k} tribunais escolhidos", salvar: "Salvar", salvar_rodar: "Salvar e atualizar agora",
       dica: "Cada tribunal publica um diário por dia, de 5 a 150 MB. Dois tribunais levam uns 5 minutos; os 24, de 30 a 60 minutos na primeira vez. O computador precisa estar no Brasil.",
@@ -254,15 +255,15 @@ window.LEXSUITE_RADAR = null;
       rodape2: "Pessoas físicas do processo não aparecem. Nada aqui usa inteligência artificial. LexSuiteONE, um produto SolverONE, versão {v}." },
     en: { marca: "Labor Radar", h1: "New lawsuits against companies",
       resumo: "{n} lawsuits {p} in {t}. {v} above {min}; {s} still without a value.", p1: "in the last day", pn: "in the last {d} days", t1: "{a}", tn: "{k} courts ({a})", tk: "{k} courts",
-      vazio: "No lawsuit matches these filters.", vazio_app: "Nothing stored yet. Choose the courts and click Update now.", vazio_arq: "No new lawsuits in the watched courts.",
+      vazio: "No lawsuit matches these filters.", vazio_app: "Nothing stored yet. Click Update now (the 24 labor courts are already selected).", vazio_arq: "No new lawsuits in the watched courts.",
       b_trib: "Courts: {n} of {k}", periodo: "Period", config: "Settings", excluidas_resumo: " {x} hidden by the firm's preferences.",
       f_exc_mostrar: "Show excluded ({n})", f_exc_ocultar: "Hide excluded", excluida: "Excluded",
       dica_tj: "State courts publish much larger gazettes (TJSP alone can exceed 1 GB a day) and the \"new lawsuit\" rule is not calibrated for them yet.",
       c_titulo: "Settings on this computer", c_escritorio: "Firm", c_pasta: "Shared folder", c_outra: "Folder path", c_testar: "Test folder",
       c_nenhuma: "None (this computer only)", c_outra_op: "Another folder...", c_salvar: "Save", c_atualizar: "Check for updates",
-      c_versao: "Installed version", c_pasta_robo: "Robot folder", c_controle: "Control spreadsheet", c_controle_falta: "created on the first run", c_sem_pasta: "no shared folder",
+      c_versao: "Installed version", c_pasta_robo: "Robot folder", c_controle: "Spreadsheet", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Run by itself every day at 19:40 and 07:10 (computer on)", c_agendar_nao: "Automatic scheduling is Windows-only; elsewhere use RODAR.bat.",
       c_chave: "Update key", c_chave_falta: "missing: updates disabled", c_atu_pasta: "Updates arrive via", c_salvo: "Saved.",
-      c_dica: "The shared folder is the Google Drive for desktop (or OneDrive) folder where the robot writes the \"LexSuiteONE - Radar\" spreadsheet and reads \"LexSuiteONE - Controle\". Share the LexSuiteONE subfolder with support once; the rest is automatic.",
+      c_dica: "The shared folder is the Google Drive for desktop (or OneDrive) folder that holds LexSuiteONE.xlsx: the Radar sheet is the list; Preferences and Exclusions are yours to edit; support uses the hidden sheets. Share the LexSuiteONE subfolder with support once; the rest is automatic.",
       atu_ok: "Updated to version {v}. Close the LexSuiteONE window and open it again with ABRIR.bat.", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last day", pern: "{d} days", rodar: "Update now", rodando: "Updating...",
       aba_regiao: "By region", aba_uf: "By state", todos: "Select all", todos_ramo: "Select all ({r})", limpar: "Clear", escolhidos: "{n} of {k} courts chosen", salvar: "Save", salvar_rodar: "Save and update now",
       dica: "Each court publishes one gazette a day, 5 to 150 MB. Two courts take about 5 minutes; all 24, 30 to 60 minutes the first time. The computer must be in Brazil.",
@@ -414,6 +415,8 @@ window.LEXSUITE_RADAR = null;
     $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
     $("c-escritorio").value = (APP && APP.config.escritorio) || "";
     $("c-msg").textContent = ""; $("c-teste-txt").textContent = "";
+    var ag = APP && APP.config.agendavel; $("c-agendar").disabled = !ag; $("c-agendar").checked = !!(APP && APP.config.agendado) || (ag && !(APP && APP.config.pasta));
+    $("c-l-agendar").textContent = ag ? t("c_agendar") : t("c_agendar_nao");
     fetch("/pastas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
       var sp = $("c-pasta"); sp.textContent = "";
       (d.candidatas || []).forEach(function (c) { var o = el("option", null, c); o.value = c; sp.appendChild(o); });
@@ -432,14 +435,16 @@ window.LEXSUITE_RADAR = null;
     var dl = $("c-info"); dl.textContent = ""; if (!APP) return;
     function par(k, v) { dl.appendChild(el("dt", null, k)); dl.appendChild(el("dd", null, v || "—")); }
     par(t("c_versao"), APP.versao); par(t("c_pasta_robo"), APP.pasta_robo);
-    par(t("c_controle"), APP.config.controle || (APP.config.pasta_base ? t("c_controle_falta") : t("c_sem_pasta")));
+    par(t("c_controle"), APP.config.planilha || (APP.config.pasta_base ? t("c_controle_falta") : t("c_sem_pasta")));
     par(t("c_chave"), APP.atualizacao && APP.atualizacao.chave ? APP.atualizacao.impressao : t("c_chave_falta"));
     par(t("c_atu_pasta"), (APP.atualizacao && (APP.atualizacao.pasta || APP.atualizacao.url)) || t("c_sem_pasta"));
   }
   function salvarConfig() {
-    post("/config", { escritorio: $("c-escritorio").value, pasta: pastaEscolhida() }).then(function (r) {
+    var corpo = { escritorio: $("c-escritorio").value, pasta: pastaEscolhida() };
+    if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
+    post("/config", corpo).then(function (r) {
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
-      $("c-msg").textContent = t("c_salvo"); $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); carregar();
+      $("c-msg").textContent = t("c_salvo") + (r.agendar_msg ? " " + r.agendar_msg : ""); $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); carregar();
     }).catch(function () { $("c-msg").textContent = t("falha"); });
   }
   function verificarAtualizacao() {

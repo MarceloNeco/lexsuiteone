@@ -1,4 +1,4 @@
-# Segurança do robô LexSuiteONE (v0.7.0)
+# Segurança do robô LexSuiteONE (v0.7.1)
 
 Resumo para quem audita. O robô roda no computador do escritório, sem servidor na internet.
 
@@ -7,8 +7,8 @@ Resumo para quem audita. O robô roda no computador do escritório, sem servidor
 - **Tela local.** O servidor escuta só em 127.0.0.1 (nunca na rede). Pedidos que mudam algo (POST) exigem o cabeçalho
   `X-LexSuite` que só a própria página manda, e a origem é conferida: outro site aberto no navegador não consegue
   mandar o robô rodar nem mudar a configuração. Sem cookies, sem sessão, sem login.
-- **Entradas tratadas como não confiáveis.** Planilha de controle: leitor próprio com limite de 50 MB, sem entidades
-  externas; valores inválidos caem no padrão. Pacote de atualização: assinatura Ed25519 (RFC 8032) sobre versão e
+- **Entradas tratadas como não confiáveis.** Planilha: leitor próprio com limite de 50 MB, DTD e entidades recusadas; valores
+  inválidos caem no padrão; planilha ilegível nunca é sobrescrita. Pacote de atualização: assinatura Ed25519 (RFC 8032) sobre versão e
   SHA-256, conferência do SHA-256 do zip, limite de tamanho e de quantidade de arquivos, lista fechada de nomes
   permitidos, recusa de `..`, caminhos absolutos e letras de unidade, e a chave pública nunca é substituída por um
   pacote. `config.json`, banco, Python e saídas não são tocados; a versão anterior fica em `_anterior\`.
@@ -19,6 +19,7 @@ Resumo para quem audita. O robô roda no computador do escritório, sem servidor
   nomes e CPFs. O banco local guarda só as ações e um trecho curto do texto.
 - **O que não é.** O "desligar pelo suporte" é cortesia, não trava: quem controla o computador controla o robô.
   A planilha compartilhada depende da conta Google do escritório e do compartilhamento que ele fizer.
+- **Agendamento.** `schtasks` chamado sem shell, com argumentos fixos; só cria ou remove as duas tarefas do robô.
 - **Revisão.** Testes automáticos (55) cobrem assinatura (vetores da RFC), pacote adulterado, caminho suspeito,
   planilha corrompida e pedidos sem o cabeçalho da página. Revisão de segurança e LGPD trimestral com a skill
   `seguranca-lgpd-gdpr`; Bandit e Gitleaks entram no GitHub Actions quando houver repositório.

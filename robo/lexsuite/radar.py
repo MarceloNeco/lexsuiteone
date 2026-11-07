@@ -144,9 +144,9 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     base_compartilhada = compartilhar.pasta_base(cfg)
     if base_compartilhada:
         try:
-            preferencias.criar_se_faltar(base_compartilhada, aviso)
+            compartilhar.criar_se_faltar(cfg, versao, pasta_base or "", aviso)
         except OSError as e:
-            aviso(f"  Não consegui criar a planilha de controle ({e.__class__.__name__}); sigo com o padrão.")
+            aviso(f"  Não consegui criar a planilha ({e.__class__.__name__}); sigo com o padrão.")
     prefs = preferencias.carregar(base_compartilhada)
     if prefs.get("erro"):
         aviso("  " + prefs["erro"])
