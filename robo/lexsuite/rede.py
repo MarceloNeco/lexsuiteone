@@ -71,11 +71,23 @@ def pedir(url, corpo=None, cabecalhos=None, tentativas=5, intervalo_minimo=0.6, 
     raise RuntimeError("Tentativas esgotadas")
 
 
-def pedir_bytes(url, tempo_limite=600):
-    """Baixa um arquivo (ex.: o ZIP do caderno do DJEN, cujo link vale 5 minutos)."""
+LIMITE_DOWNLOAD = 2 * 1024 * 1024 * 1024  # 2 GB: nenhum caderno chega perto; evita resposta sem fim
+
+
+def pedir_bytes(url, tempo_limite=600, limite=LIMITE_DOWNLOAD):
+    """Baixa um arquivo (ex.: o ZIP do caderno do DJEN, cujo link vale 5 minutos), em pedaços e com teto de tamanho."""
     req = urllib.request.Request(_so_https(url), headers={"User-Agent": AGENTE})
+    partes, total = [], 0
     with urllib.request.urlopen(req, timeout=tempo_limite) as r:  # nosec B310 - esquema conferido em _so_https
-        return r.read()
+        while True:
+            pedaco = r.read(1024 * 1024)
+            if not pedaco:
+                break
+            total += len(pedaco)
+            if total > limite:
+                raise ValueError(f"resposta maior que o limite de {limite // (1024 * 1024)} MB: {url[:60]}")
+            partes.append(pedaco)
+    return b"".join(partes)
 
 
 def pedir_json(url, corpo=None, cabecalhos=None, **kw):

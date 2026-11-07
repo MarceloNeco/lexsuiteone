@@ -125,6 +125,9 @@ def baixar_caderno(sigla, data, diagnostico=None, aviso=print, meta=None):
     bruto = rede.pedir_bytes(meta["url"], tempo_limite=600)
     itens = []
     with zipfile.ZipFile(io.BytesIO(bruto)) as z:
+        # Arquivo baixado é entrada não confiável: limita o tamanho descompactado (zip bomb) e ignora o que não é JSON.
+        if sum(i.file_size for i in z.infolist()) > rede.LIMITE_DOWNLOAD:
+            raise ValueError(f"caderno {sigla} {data} grande demais ao descompactar")
         for nome in z.namelist():
             if nome.lower().endswith(".json"):
                 dados = json.loads(z.read(nome).decode("utf-8"))

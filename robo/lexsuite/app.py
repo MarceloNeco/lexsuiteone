@@ -110,12 +110,20 @@ class Tratador(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(corpo)
 
+    def _host_local(self):
+        """Só 127.0.0.1 ou localhost nesta porta: um site malicioso com DNS rebinding não passa."""
+        host = self.headers.get("Host", "").lower()
+        porta = self.server.server_address[1]
+        return host in {f"127.0.0.1:{porta}", f"localhost:{porta}", "127.0.0.1", "localhost"}
+
     def _da_propria_pagina(self):
         host = self.headers.get("Host", "")
         origem = self.headers.get("Origin") or self.headers.get("Referer") or ""
         return self.headers.get("X-LexSuite") == "1" and (origem == "" or origem.startswith("http://" + host))
 
     def do_GET(self):
+        if not self._host_local():
+            return self._responder({"erro": "pedido recusado"}, status=403)
         u = urlparse(self.path)
         qs = parse_qs(u.query)
         s = self.server
@@ -150,6 +158,12 @@ class Tratador(BaseHTTPRequestHandler):
             return self._responder(pagina)
         if u.path == "/estado":
             return self._responder(s.estado.como_dict())
+        if u.path == "/manual":
+            manual = os.path.join(s.pasta, "MANUAL-DO-ESCRITORIO.html")
+            if not os.path.exists(manual):
+                return self._responder({"erro": "manual não encontrado"}, status=404)
+            with open(manual, "rb") as f:
+                return self._responder(f.read(), "text/html; charset=utf-8")
         if u.path == "/pastas":
             cfg = s.config()
             return self._responder({"candidatas": compartilhar.candidatas(), "atual": cfg["compartilhar"].get("pasta", "")})
@@ -157,7 +171,7 @@ class Tratador(BaseHTTPRequestHandler):
 
     def do_POST(self):
         caminho = urlparse(self.path).path
-        if not self._da_propria_pagina():
+        if not self._host_local() or not self._da_propria_pagina():
             return self._responder({"erro": "pedido recusado"}, status=403)
         try:
             tamanho = int(self.headers.get("Content-Length") or 0)

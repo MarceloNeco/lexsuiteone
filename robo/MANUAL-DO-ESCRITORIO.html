@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LexSuiteONE · Manual do escritório</title>
+<style>
+:root { color-scheme: light; --papel: #f5f6f8; --folha: #fff; --tinta: #121a2b; --tinta-2: #4a5468; --tinta-3: #7a8396; --linha: #e1e5ec; --latao: #a87a2e; --latao-texto: #8a6222; --latao-wash: #f7f0e1; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 16px/1.6 "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
+.miolo { max-width: 820px; margin: 0 auto; padding: 32px 16px 56px; }
+.marca { font-weight: 600; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-2); }
+.marca b { color: var(--latao-texto); }
+h1 { font-size: 2rem; font-weight: 600; margin: 8px 0 4px; line-height: 1.15; }
+.sub { color: var(--tinta-2); margin: 0 0 24px; }
+h2 { font-size: 1.2rem; font-weight: 600; margin: 36px 0 10px; padding-top: 18px; border-top: 1px solid var(--linha); }
+h3 { font-size: 1rem; font-weight: 600; margin: 18px 0 6px; }
+p, li { color: var(--tinta); }
+ul, ol { padding-left: 1.3em; }
+li { margin: 4px 0; }
+.caixa { background: var(--folha); border: 1px solid var(--linha); border-radius: 10px; padding: 14px 18px; margin: 12px 0; }
+.dica { border-left: 3px solid var(--latao); background: var(--latao-wash); color: var(--latao-texto); padding: 8px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: .95rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+th { color: var(--tinta-3); font-weight: 600; font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; }
+code { background: var(--latao-wash); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+.sumario { background: var(--folha); border: 1px solid var(--linha); border-radius: 10px; padding: 12px 18px; }
+.sumario a { color: var(--latao-texto); text-decoration: none; }
+.sumario a:hover { text-decoration: underline; }
+footer { margin-top: 36px; color: var(--tinta-3); font-size: .85rem; }
+@media print { body { background: #fff; } .miolo { padding: 0; } .caixa, .sumario { border-color: #bbb; } }
+</style>
+</head>
+<body>
+<div class="miolo">
+<div class="marca">LexSuite<b>ONE</b> · Radar Trabalhista</div>
+<h1>Manual do escritório</h1>
+<p class="sub">Versão 0.7.1. Para quem usa o robô no dia a dia. Nada aqui exige conhecimento técnico.</p>
+
+<div class="sumario">
+<b>Nesta página</b>
+<ol>
+<li><a href="#oque">O que o robô faz, e o que não faz</a></li>
+<li><a href="#abrir">Abrir e usar a tela</a></li>
+<li><a href="#planilha">A planilha no Google Drive</a></li>
+<li><a href="#sozinho">O robô rodando sozinho</a></li>
+<li><a href="#problemas">Quando algo não funciona</a></li>
+<li><a href="#seguranca">Segurança e privacidade</a></li>
+<li><a href="#perguntas">Perguntas frequentes</a></li>
+</ol>
+</div>
+
+<h2 id="oque">1. O que o robô faz, e o que não faz</h2>
+<p>Todo dia, o Diário de Justiça Eletrônico Nacional (DJEN, do Conselho Nacional de Justiça) publica o que aconteceu nos tribunais. O robô lê esse Diário para os tribunais que o escritório escolheu, separa as <b>ações trabalhistas novas movidas contra empresas</b> e monta uma lista: uma linha por ação, com a empresa, a vara, o rito e, quando o Diário traz o CNPJ, a ficha da empresa a partir do cadastro público da Receita Federal (atividade, porte, capital social, cidade, telefone e e-mail cadastrados, sócios e administradores).</p>
+<div class="caixa">
+<b>O que ele não faz:</b>
+<ul>
+<li>Não usa inteligência artificial e não "interpreta" processos: só aplica regras escritas e explicáveis.</li>
+<li>Não entra em nenhum sistema com senha, não usa certificado digital e não resolve captcha. Por isso o <b>valor da causa</b> e a <b>data de distribuição</b>, que ficam atrás do captcha da consulta pública do PJe, são preenchidos por uma pessoa.</li>
+<li>Não mostra pessoas físicas (reclamantes, testemunhas). Elas são descartadas na leitura.</li>
+<li>Não envia mensagem a ninguém e não publica nada na internet.</li>
+</ul>
+</div>
+
+<h2 id="abrir">2. Abrir e usar a tela</h2>
+<ol>
+<li>Dois cliques em <code>ABRIR.bat</code>, na pasta do robô. Abre uma janela preta chamada "LexSuiteONE" e, em seguida, a tela no navegador. <b>A janela preta precisa ficar aberta</b> enquanto a tela é usada; pode ficar minimizada. Para encerrar, feche a janela.</li>
+<li>Na tela, <b>Atualizar agora</b> faz uma rodada: baixa o Diário do dia dos tribunais escolhidos e acrescenta o que é novo. Os 24 Tribunais Regionais do Trabalho já vêm escolhidos; em <b>Tribunais</b> dá para mudar por região, por estado ou por ramo. A primeira rodada com os 24 leva de 30 a 60 minutos; as seguintes, menos, porque só o que é novo entra.</li>
+<li><b>Período</b> mostra o último dia, 3, 7, 15 ou 30 dias do que o robô já guardou.</li>
+</ol>
+<h3>A lista e a ficha</h3>
+<ul>
+<li>Cada linha: tribunal, empresa, setor, porte, cidade, vara e o valor da causa (ou "valor a conferir").</li>
+<li>Clique na linha e a ficha abre, com cada dado numa linha própria. O que falta aparece como <b>"não informado no cadastro"</b> (a Receita não tem) ou <b>"não capturado"</b> (está no PJe, atrás do captcha).</li>
+<li>Na ficha: <b>Abrir consulta no PJe</b> (abre a consulta pública do tribunal; a pessoa cola o número, resolve o captcha e vê o valor da causa), <b>Copiar número</b>, o campo <b>Valor da causa</b> (digite e Salvar; fica guardado neste navegador e sai na planilha exportada) e o <b>Status</b> (novo, visto, em contato, descartado).</li>
+<li>Filtros: <b>Acima de R$ 100 mil</b> (ou o valor definido em Preferências), <b>Sem jurídico próprio provável</b> (esconde empresas com capital social muito alto ou grandes grupos, que costumam ter advogado interno), <b>Mostrar excluídas</b> (as que a aba Exclusões escondeu) e um tribunal ou todos. Ordem por valor ou por chegada.</li>
+<li><b>Exportar planilha</b> gera um arquivo <code>.csv</code> com o que está na tela, inclusive os valores digitados.</li>
+</ul>
+
+<h2 id="planilha">3. A planilha no Google Drive</h2>
+<p>Na pasta do Google Drive escolhida na configuração existe a subpasta <code>LexSuiteONE</code> com um único arquivo, <code>LexSuiteONE.xlsx</code>, e uma cópia da tela (<code>LexSuiteONE - Radar.html</code>), que abre em qualquer computador ou celular com acesso ao Drive.</p>
+<table>
+<tr><th>Aba</th><th>Quem escreve</th><th>Para quê</th></tr>
+<tr><td><b>Radar</b></td><td>o robô, a cada rodada</td><td>a lista do dia, com as mesmas colunas da tela</td></tr>
+<tr><td><b>Preferências</b></td><td>o escritório</td><td>os ajustes da lista (tabela abaixo)</td></tr>
+<tr><td><b>Exclusões</b></td><td>o escritório</td><td>clientes e empresas que não devem aparecer: uma por linha, nome ou CNPJ e o motivo</td></tr>
+<tr><td>abas ocultas</td><td>o suporte</td><td>registro de cada rodada, avisos de saúde do robô e dados da instalação; não precisam ser abertas</td></tr>
+</table>
+<h3>Os ajustes da aba Preferências</h3>
+<table>
+<tr><th>Ajuste</th><th>O que faz</th></tr>
+<tr><td>Valor mínimo da causa (R$)</td><td>o filtro "Acima de" da tela. Ações abaixo continuam na lista.</td></tr>
+<tr><td>Mínimo de ações da mesma empresa</td><td>por exemplo, 3: só destaca empresa com 3 ou mais ações novas na janela de dias. 1 mostra todas.</td></tr>
+<tr><td>Janela do mínimo de ações (dias)</td><td>quantos dias para trás contar as ações da mesma empresa.</td></tr>
+<tr><td>Capital social que indica jurídico próprio (R$)</td><td>acima disso a empresa é marcada "jurídico próprio provável" e vai para o fim da lista.</td></tr>
+<tr><td>Esconder jurídico próprio provável</td><td>sim ou não.</td></tr>
+<tr><td>Esconder clientes e exclusões</td><td>sim ou não. A aba Exclusões lista quem não deve aparecer.</td></tr>
+<tr><td>Mostrar sócios e administradores</td><td>sim ou não. São nomes de pessoas do cadastro público da Receita; se o escritório não precisa deles, desligue.</td></tr>
+</table>
+<div class="dica">Para editar, abra o arquivo no Google Planilhas e altere direto; o Drive leva a mudança para o computador do robô, que lê a planilha antes de cada rodada. Se a planilha estiver aberta e travada no momento de uma rodada, o robô deixa como está e grava na próxima. Nada se perde.</div>
+
+<h2 id="sozinho">4. O robô rodando sozinho</h2>
+<p>Com a opção "rodar sozinho" marcada na configuração, o robô roda todo dia às <b>19:40</b> (o Diário é liberado a partir das 19h) e às <b>07:10</b>, desde que o computador esteja ligado. Não precisa abrir a tela: a planilha no Drive é atualizada e a tela mostra tudo na próxima vez que for aberta. Para saber se rodou, veja "Última atualização" no alto da tela.</p>
+
+<h2 id="problemas">5. Quando algo não funciona</h2>
+<table>
+<tr><th>Mensagem ou sintoma</th><th>O que significa</th><th>O que fazer</th></tr>
+<tr><td>"O Diário só responde a computadores no Brasil"</td><td>o computador está acessando a internet por um endereço de fora do país (VPN, rede da empresa)</td><td>desligue a VPN ou use a rede normal e tente de novo</td></tr>
+<tr><td>"O robô está desligado pelo suporte" ou "A validade terminou"</td><td>o suporte pausou o robô pela planilha</td><td>fale com o suporte (contato no fim desta página)</td></tr>
+<tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela LexSuiteONE e abra de novo</td></tr>
+<tr><td>"Planilha em uso ou ilegível"</td><td>alguém estava com a planilha aberta e travada, ou o Drive ainda sincronizava</td><td>nada; o robô grava na próxima rodada</td></tr>
+<tr><td>"Não consegui falar com o robô"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>dois cliques em <code>ABRIR.bat</code></td></tr>
+<tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda, ou algo mudou na fonte</td><td>tente mais tarde; se persistir, avise o suporte (a aba oculta Saúde já registrou o que o robô percebeu)</td></tr>
+<tr><td>"Falta o Python"</td><td>a pasta <code>python</code> não está na pasta do robô</td><td>dois cliques em <code>INSTALAR-PYTHON.bat</code> e depois em <code>ABRIR.bat</code></td></tr>
+</table>
+
+<h2 id="seguranca">6. Segurança e privacidade</h2>
+<div class="caixa">
+<ul>
+<li><b>Tudo roda no computador do escritório.</b> Não existe servidor da SolverONE recebendo os dados. A tela só responde ao navegador deste computador (endereço 127.0.0.1) e recusa pedidos vindos de qualquer site.</li>
+<li><b>O que sai do computador:</b> pedidos de leitura ao Diário (DJEN, do CNJ) e ao cadastro público da Receita (via BrasilAPI e Minha Receita), sempre por conexão segura (HTTPS); e a planilha, que vai para a conta do Google Drive <b>do próprio escritório</b>, compartilhada com o suporte por decisão do escritório.</li>
+<li><b>Nenhuma senha.</b> O robô não pede, não guarda e não usa senha, certificado digital ou chave de nenhum sistema. Captcha nunca é contornado.</li>
+<li><b>Pessoas físicas não aparecem.</b> Reclamantes e testemunhas são descartados na leitura. Os contatos de empresa (telefone, e-mail) e os nomes de sócios e administradores vêm do cadastro público da Receita Federal; a decisão de usar esses contatos é do escritório e do seu compliance, dentro da LGPD. O ajuste "Mostrar sócios e administradores" pode ser desligado.</li>
+<li><b>Guarda por tempo limitado.</b> O robô mantém no computador só as ações e um trecho curto de cada publicação, e apaga automaticamente o que tem mais de 365 dias.</li>
+<li><b>Atualizações assinadas.</b> Uma versão nova só é instalada se a assinatura digital do suporte conferir; um arquivo trocado por terceiros é recusado. O computador do escritório nunca recebe comando remoto: o suporte só pode pausar, avisar ou publicar versão, pela planilha.</li>
+<li><b>Limite honesto.</b> O "desligar pelo suporte" é uma cortesia de serviço, não uma trava: quem controla o computador controla o robô.</li>
+</ul>
+</div>
+<p>Dúvidas sobre dados pessoais ou pedidos de titulares devem ser tratados pelo encarregado de dados do próprio escritório, que é o controlador dos dados. O suporte da SolverONE atua como prestador de serviço e não acessa o computador do escritório.</p>
+
+<h2 id="perguntas">7. Perguntas frequentes</h2>
+<p><b>Preciso deixar o computador ligado?</b> Só nos horários das rodadas automáticas. Se estiver desligado, a próxima rodada compensa: o Diário dos dias anteriores continua disponível.</p>
+<p><b>Posso usar no celular?</b> A tela é do computador. No celular, abra o arquivo <code>LexSuiteONE - Radar.html</code> na pasta do Drive: é a mesma lista, só para consulta.</p>
+<p><b>Dois tribunais ou todos?</b> Comece pelos que o escritório atende. Tribunais estaduais (TJs) publicam diários muito maiores e a regra de "ação nova" ainda não foi calibrada neles.</p>
+<p><b>Como cadastro um cliente para não aparecer?</b> Aba Exclusões da planilha: nome (como está no Diário) ou CNPJ, e o motivo. Vale a partir da próxima rodada.</p>
+<p><b>O valor da causa não aparece. Por quê?</b> O Diário não traz. Está na consulta pública do PJe, atrás de um captcha que uma pessoa resolve em segundos. Use "Abrir consulta no PJe", veja o valor e digite na ficha.</p>
+
+<footer>LexSuiteONE, um produto SolverONE. Suporte: integracao@solverone.com.br. Manual da versão 0.7.1.</footer>
+</div>
+</body>
+</html>

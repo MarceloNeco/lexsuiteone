@@ -230,3 +230,44 @@ class AppV07(unittest.TestCase):
         self.assertFalse(r["disponivel"]) and self.assertIn("chave", r["motivo"])
         status, r = self.pedir("POST", "/config", {"pasta": "/nao/existe"})
         self.assertFalse(r["ok"])
+
+
+class SegurancaV071(unittest.TestCase):
+    def test_csv_nao_vira_formula(self):
+        from lexsuite import saidas
+        pasta = tempfile.mkdtemp()
+        caminho = os.path.join(pasta, "x.csv")
+        saidas.gravar_csv(caminho, [{"a": "=HYPERLINK(\"http://x\")", "b": ["+1", "ok"], "c": -5.5}], [("A", "a"), ("B", "b"), ("C", "c")])
+        texto = open(caminho, encoding="utf-8-sig").read()
+        self.assertIn("'=HYPERLINK", texto)
+        self.assertIn("'+1 | ok", texto)
+        self.assertIn("-5,50", texto)  # número negativo continua número
+
+    def test_retencao(self):
+        banco = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        banco.guardar_lead({"processo": "1", "empresas": ["X"]}, "2020-01-01")
+        banco.guardar_lead({"processo": "2", "empresas": ["Y"]}, dt.date.today().isoformat())
+        self.assertEqual(banco.limpar_antigos(365), 1)
+        self.assertEqual([l["processo"] for l in banco.todos_leads()], ["2"])
+        self.assertEqual(banco.limpar_antigos(0), 0)
+
+    def test_mostrar_socios_desligado(self):
+        banco = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        banco.guardar_lead({"processo": "1", "tribunal": "TRT2", "empresas": ["X LTDA"], "visto_em": "2026-11-07T19:00:00",
+                            "empresa_receita": {"cnpj": "11222333000181", "socios": [{"nome": "PESSOA", "qualificacao": "Sócio"}]}}, dt.date.today().isoformat())
+        prefs = preferencias.padrao(); prefs["mostrar_socios"] = False
+        pagina = radar.montar_radar({"radar": {"tribunais": ["TRT2"]}}, banco, prefs=prefs)
+        self.assertEqual(pagina["itens"][0]["empresa"]["socios"], [])
+        prefs["mostrar_socios"] = True
+        self.assertEqual(len(radar.montar_radar({"radar": {"tribunais": ["TRT2"]}}, banco, prefs=prefs)["itens"][0]["empresa"]["socios"]), 1)
+
+
+class HostLocal(AppV07):
+    def test_host_estranho_recusado(self):
+        import http.client
+        c = http.client.HTTPConnection("127.0.0.1", self.porta, timeout=10)
+        c.request("GET", "/dados", headers={"Host": "site-malicioso.com:" + str(self.porta)})
+        r = c.getresponse(); r.read(); c.close()
+        self.assertEqual(r.status, 403)
+        status, d = self.pedir("GET", "/dados")
+        self.assertEqual(status, 200)

@@ -106,7 +106,10 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     for lead in banco.todos_leads(desde=desde):
         if lead.get("fonte", "DJEN") != "DJEN" or (lead.get("tribunal") or "").upper() not in escolhidos:
             continue
-        itens.append(item_de_lead(lead, r))
+        item = item_de_lead(lead, r)
+        if not prefs.get("mostrar_socios", True):
+            item["empresa"]["socios"] = []  # minimização: nomes de pessoas só se o escritório pedir
+        itens.append(item)
     # Quantas ações cada empresa teve na janela do "mínimo de ações" (conta processos distintos).
     contagem = None
     if int(prefs.get("minimo_acoes") or 1) > 1:
@@ -193,6 +196,9 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         raise
     registro["duracao"] = round(time.perf_counter() - inicio)
     banco.registrar("radar", registro)
+    apagados = banco.limpar_antigos(int(r.get("guardar_dias") or 365))
+    if apagados:
+        aviso(f"  Retenção: {apagados} registro(s) com mais de {int(r.get('guardar_dias') or 365)} dias apagados.")
     situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} ações novas contra empresas; {com_cnpj} com CNPJ no Diário.",
                 "en": f"{len(pubs)} notices read; {len(novos)} new lawsuits against companies; {com_cnpj} with a tax ID in the gazette.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}
