@@ -271,3 +271,28 @@ class HostLocal(AppV07):
         self.assertEqual(r.status, 403)
         status, d = self.pedir("GET", "/dados")
         self.assertEqual(status, 200)
+
+
+class Wizard(AppV07):
+    def test_nome_papel_e_manual_personalizado(self):
+        status, d = self.pedir("GET", "/dados")
+        self.assertEqual((d["app"]["usuario"]["nome"], len(d["app"]["papeis"])), ("", 4))
+        shutil.copy(os.path.join(ROBO, "MANUAL-DO-ESCRITORIO.html"), self.pasta)
+        status, r = self.pedir("POST", "/config", {"nome": " Leandro ", "papel": "Advogado ou advogada", "escritorio": "KR Law", "pasta": ""})
+        self.assertTrue(r["ok"], r)
+        status, d = self.pedir("GET", "/dados")
+        self.assertEqual((d["app"]["usuario"]["nome"], d["app"]["usuario"]["papel"]), ("Leandro", "Advogado ou advogada"))
+        import http.client
+        c = http.client.HTTPConnection("127.0.0.1", self.porta, timeout=10)
+        c.request("GET", "/manual"); r = c.getresponse(); html = r.read().decode("utf-8"); c.close()
+        self.assertEqual(r.status, 200)
+        self.assertIn("Olá, Leandro. Este manual é do KR Law.", html)
+        self.assertIn("Para você, advogado ou advogada", html)
+        self.assertNotIn("<!--OLA-->", html)
+        # papel inválido não entra; nome com HTML é escapado no manual
+        status, r = self.pedir("POST", "/config", {"nome": "<b>x</b>", "papel": "Chefe"})
+        status, d = self.pedir("GET", "/dados")
+        self.assertEqual(d["app"]["usuario"]["papel"], "")
+        c = http.client.HTTPConnection("127.0.0.1", self.porta, timeout=10)
+        c.request("GET", "/manual"); html = c.getresponse().read().decode("utf-8"); c.close()
+        self.assertIn("Olá, &lt;b&gt;x&lt;/b&gt;.", html)

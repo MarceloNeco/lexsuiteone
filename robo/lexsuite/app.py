@@ -16,6 +16,27 @@ from urllib.parse import parse_qs, urlparse
 from . import VERSAO, agendar, assinatura, atualizar, banco as bd, compartilhar, config, preferencias, radar, rede, tribunais
 
 PORTAS = range(8765, 8776)
+PAPEIS = ("Sócio ou sócia", "Advogado ou advogada", "Estagiário ou estagiária", "Equipe administrativa")
+
+# O manual fala com a pessoa pelo papel dela (texto curto; o manual inteiro continua valendo para todos).
+PARA_VOCE = {
+    "Sócio ou sócia": ["A lista é um catálogo de oportunidades, não uma recomendação: a regra separa ações novas contra empresas e deixa a triagem com você.",
+                       "Para saber se o robô está rodando, basta a linha \"Última atualização\" no alto da tela ou a aba oculta Log da planilha.",
+                       "O uso dos contatos das empresas e dos nomes de sócios é decisão sua e do compliance; o ajuste \"Mostrar sócios e administradores\" desliga esses nomes.",
+                       "Nada aqui usa inteligência artificial nem tem custo por uso: o robô lê fontes públicas e roda no seu computador."],
+    "Advogado ou advogada": ["Clique na linha e a ficha abre: vara, rito, data do Diário, empresa, atividade, porte, capital social e contatos do cadastro público.",
+                             "O valor da causa fica atrás do captcha do PJe: \"Abrir consulta no PJe\", cole o número, veja o valor e digite na ficha. Ele sai na planilha exportada.",
+                             "Use o status (visto, em contato, descartado) para não repassar a mesma empresa duas vezes; o filtro \"Acima de\" segue o valor mínimo da aba Preferências.",
+                             "Rito ordinário indica causa acima de 40 salários mínimos; sumaríssimo, até 40. É o primeiro corte de valor que o Diário permite."],
+    "Estagiário ou estagiária": ["A rotina sugerida: de manhã, abrir a tela, conferir \"Última atualização\" e passar pela lista marcando o status de cada linha.",
+                                 "Para as linhas com \"valor a conferir\", abrir a consulta no PJe, resolver o captcha e digitar o valor da causa na ficha.",
+                                 "Cadastrar na aba Exclusões da planilha as empresas que a equipe pedir para não aparecer (nome como está no Diário, ou CNPJ, e o motivo).",
+                                 "Não é preciso mexer nas abas ocultas da planilha: elas são do suporte."],
+    "Equipe administrativa": ["A planilha LexSuiteONE.xlsx no Google Drive é sua: a aba Preferências ajusta a lista e a aba Exclusões guarda clientes e empresas que não devem aparecer.",
+                              "O robô roda sozinho às 19:40 e às 07:10 com o computador ligado; se o computador ficou desligado, a próxima rodada compensa.",
+                              "Se a planilha estiver aberta e travada na hora de uma rodada, o robô grava na próxima. Nada se perde.",
+                              "Avise o suporte quando a tela mostrar \"robô desligado\", \"precisa atualizar\" ou quando a lista vier vazia dois dias úteis seguidos."],
+}
 
 
 class Estado:
@@ -143,6 +164,7 @@ class Tratador(BaseHTTPRequestHandler):
             base = compartilhar.pasta_base(cfg)
             chave = atualizar.chave_publica(s.pasta)
             pagina["app"] = {
+                "usuario": {"nome": cfg["usuario"].get("nome", ""), "papel": cfg["usuario"].get("papel", "")}, "papeis": list(PAPEIS),
                 "tribunais": tribunais.TRIBUNAIS, "ramos": tribunais.RAMOS, "regioes": tribunais.REGIOES, "ufs": tribunais.UFS,
                 "config": {"tribunais": tribunais.validar(r.get("tribunais")), "escritorio": cfg.get("escritorio", ""),
                            "valor_minimo": r.get("valor_minimo"), "dias_na_pagina": r.get("dias_na_pagina"),
@@ -162,8 +184,9 @@ class Tratador(BaseHTTPRequestHandler):
             manual = os.path.join(s.pasta, "MANUAL-DO-ESCRITORIO.html")
             if not os.path.exists(manual):
                 return self._responder({"erro": "manual não encontrado"}, status=404)
-            with open(manual, "rb") as f:
-                return self._responder(f.read(), "text/html; charset=utf-8")
+            with open(manual, encoding="utf-8") as f:
+                html = f.read()
+            return self._responder(personalizar_manual(html, s.config()).encode("utf-8"), "text/html; charset=utf-8")
         if u.path == "/pastas":
             cfg = s.config()
             return self._responder({"candidatas": compartilhar.candidatas(), "atual": cfg["compartilhar"].get("pasta", "")})
@@ -196,6 +219,10 @@ class Tratador(BaseHTTPRequestHandler):
                         pass
             if "escritorio" in corpo:
                 cfg["escritorio"] = str(corpo["escritorio"] or "").strip()[:80]
+            if "nome" in corpo:
+                cfg["usuario"]["nome"] = str(corpo["nome"] or "").strip()[:60]
+            if "papel" in corpo:
+                cfg["usuario"]["papel"] = corpo["papel"] if corpo["papel"] in PAPEIS else ""
             if "pasta" in corpo:
                 pasta = str(corpo["pasta"] or "").strip()
                 if pasta and not os.path.isdir(pasta):
@@ -235,6 +262,21 @@ class Tratador(BaseHTTPRequestHandler):
             comecou = s.rodar(dias)
             return self._responder({"ok": comecou, "motivo": "" if comecou else "já está rodando"})
         return self._responder({"erro": "não existe"}, status=404)
+
+
+def personalizar_manual(html, cfg):
+    """Troca os marcadores do manual pela saudação e pelo bloco do papel da pessoa (texto escapado)."""
+    import html as h
+    u = cfg.get("usuario") or {}
+    nome, papel, escritorio = u.get("nome", ""), u.get("papel", ""), cfg.get("escritorio", "")
+    ola = ""
+    if nome:
+        ola = f"<p class=\"ola\">Olá, {h.escape(nome)}." + (f" Este manual é do {h.escape(escritorio)}." if escritorio else "") + "</p>"
+    bloco = ""
+    if papel in PARA_VOCE:
+        itens = "".join(f"<li>{h.escape(t)}</li>" for t in PARA_VOCE[papel])
+        bloco = f"<div class=\"caixa\"><b>Para você, {h.escape(papel.lower())}</b><ul>{itens}</ul></div>"
+    return html.replace("<!--OLA-->", ola, 1).replace("<!--PARA_VOCE-->", bloco, 1)
 
 
 def criar(pasta, porta=None):

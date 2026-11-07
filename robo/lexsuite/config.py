@@ -6,6 +6,8 @@ import shutil
 
 PADRAO = {
     "escritorio": "", "alvos": [], "carteira": "carteira.csv",
+    # Quem usa a tela neste computador (para a saudação e o manual personalizado); nada sai do computador.
+    "usuario": {"nome": "", "papel": ""},
     "radar": {"tribunais": [f"TRT{n}" for n in range(1, 25)], "dias_para_tras": 1, "dias_na_pagina": 1,
               "valor_minimo": 100000, "teto_capital_gigante": 50000000, "receita": True, "porta": 8765, "guardar_dias": 365},
     # Pasta compartilhada (Google Drive para computador, OneDrive...): o robô grava ali a planilha e lê o controle.
@@ -32,7 +34,7 @@ def carregar(caminho, aviso=print):
         cfg = json.load(f)
     for chave, valor in PADRAO.items():
         cfg.setdefault(chave, valor)
-    for bloco in ("radar", "compartilhar", "atualizacao"):
+    for bloco in ("radar", "compartilhar", "atualizacao", "usuario"):
         if not isinstance(cfg.get(bloco), dict):
             cfg[bloco] = {}
         for chave, valor in PADRAO[bloco].items():
