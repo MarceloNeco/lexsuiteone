@@ -14,7 +14,10 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 - Repositório `MarceloNeco/lexsuiteone` (público, MIT, CI com testes, Bandit, Gitleaks, Dependabot, ações fixadas por SHA).
   Branch `main` tem 12 commits antigos com o e-mail pessoal do dono como autor; a branch `limpo` tem o **mesmo conteúdo**
   com autoria anônima. Plano: criar a organização `solverone`, criar `solverone/lexsuiteone` a partir de `limpo` e apagar
-  o repositório antigo. Se ao ler isto o repositório já estiver na organização, este item está feito.
+  o repositório antigo. **Decisão de 07/Nov à noite: o piloto do Leandro sai do repositório pessoal mesmo; a mudança
+  para a organização fica para depois de quinta (12/Nov).** Enquanto isso, o CNAME `judicial` aponta para
+  `marceloneco.github.io`; depois da mudança, trocar para `solverone.github.io`. Os links antigos do GitHub
+  continuam funcionando por redirecionamento após a transferência.
 - Documentos de referência também na pasta do Drive do dono (cópia de consulta; o GitHub é a fonte).
 
 ## Decisões do dono que valem
