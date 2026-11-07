@@ -45,14 +45,36 @@ O recebimento é pelo ImprovMX (encaminhamento), não pelo Google Workspace. Iss
   pelo encaminhamento). Essa conta passa a ser a identidade do suporte no Drive, sem expor nenhum Gmail pessoal.
 - `nao-responda@` não precisa existir: só envia, pelo Resend.
 
-## Se um dia o DNS for para o Cloudflare (não antes da instalação de quinta)
+## DNSSEC: o detalhe que derruba tudo se for ignorado
 
-1. No Cloudflare, "Add a site", `solverone.com.br`, plano Free. Ele varre e importa a maioria dos registros; confira
-   **um a um** contra a tabela acima e complete o que faltar (os TXT longos de DKIM costumam vir; os MX de `send.` às vezes não).
-2. Nos registros do site (A, AAAA, CNAME `www` e o futuro `judicial`), deixe a nuvem **cinza** (DNS only). GitHub Pages
-   cuida do HTTPS; com a nuvem laranja o certificado do GitHub falha.
-3. Só então, no Registro.br, troque os servidores DNS para os dois que o Cloudflare indicar. Propagação: até 24 h; o e-mail
-   continua funcionando se a tabela foi copiada inteira.
-4. No dia seguinte, confira no Resend se os dois domínios seguem "verificados" e mande um e-mail de teste.
+O domínio tem **DNSSEC ativo** no Registro.br (há um registro DS na zona `.br`, chave 49771, algoritmo 13). Trocar os
+servidores DNS para o Cloudflare sem antes desativar o DNSSEC faz o domínio inteiro parar de resolver, site e e-mail,
+porque a assinatura antiga deixa de bater. A ordem certa está no roteiro abaixo.
 
-Nada disso é necessário para o JUDICIAL funcionar; o ganho é gerência de DNS mais cômoda e, no futuro, proteção e cache.
+## Levar o DNS para o Cloudflare (roteiro completo, pelo computador)
+
+0. **Conector certo.** O conector "Cloudflare Developer Platform" (Workers) não mexe em DNS. Para o Claude gerir os
+   registros no futuro, conecte em claude.ai, Conectores, o "Cloudflare" de API completa (`mcp.cloudflare.com/mcp`).
+   Ele só aparece numa conversa nova. Para este roteiro não é necessário: tudo é feito no painel.
+1. **Cloudflare, adicionar o domínio.** Em dash.cloudflare.com, "Add a domain", `solverone.com.br`, plano Free. O
+   Cloudflare varre a zona e mostra os registros que encontrou.
+2. **Conferir registro por registro** contra a tabela acima. Faltou, crie à mão. Costumam faltar os MX e TXT de `send`
+   e `send.mail` e o TXT `_github-pages-challenge-marceloneco`. Aproveite e crie o novo: `judicial`, CNAME,
+   `solverone.github.io` (ou `marceloneco.github.io` se o repositório ainda estiver na conta pessoal).
+3. **Nuvem cinza em tudo que é site**: A, AAAA, CNAME `www`, CNAME `judicial`. Clique na nuvem laranja até ficar cinza
+   ("DNS only"). Com a nuvem laranja o certificado do GitHub Pages falha. MX e TXT já são só DNS.
+4. **Anote os dois servidores de nome** que o Cloudflare mostra ao final (terminam em `ns.cloudflare.com`).
+5. **Registro.br, desativar o DNSSEC.** Em registro.br, o domínio, aba DNSSEC (ou "Configurar DNSSEC"), remover a
+   chave / desativar. **Espere pelo menos 2 horas** antes do passo 6, para a assinatura antiga sumir dos caches.
+6. **Registro.br, trocar os servidores DNS.** No domínio, "Alterar servidores DNS", trocar a opção do DNS do
+   Registro.br pelos dois servidores do Cloudflare, salvar. O Registro.br confere se eles já respondem pelo domínio
+   (respondem, porque a zona foi criada no passo 1).
+7. **Esperar o aviso do Cloudflare** de domínio ativo (minutos a horas; limite de 24 h). Enquanto isso o site e o
+   e-mail continuam funcionando, porque os dois lados têm os mesmos registros.
+8. **Conferir**: site em solverone.com.br, e-mail de teste pelo Resend, domínios do Resend ainda "verificados", GitHub
+   Pages com HTTPS. Avise o Claude, que confere por fora.
+9. **Depois, com calma, religar o DNSSEC**: no Cloudflare, DNS, Settings, "Enable DNSSEC", copiar o registro DS que ele
+   mostra e cadastrar no Registro.br, na aba DNSSEC. Ganha a proteção de volta, agora assinada pelo Cloudflare.
+
+Nada disso é necessário para o JUDICIAL funcionar; o ganho é gerência de DNS mais cômoda, DNSSEC continuado e, no
+futuro, proteção e cache.
