@@ -1,0 +1,99 @@
+{
+  "escritorio": "",
+  "alvos": [
+    {
+      "tribunal": "TRT2",
+      "vara": "Vara do Trabalho de Cajamar",
+      "orgao_id": ""
+    },
+    {
+      "tribunal": "TRT15",
+      "vara": "3ª Vara do Trabalho de Jundiaí",
+      "orgao_id": ""
+    }
+  ],
+  "radar": {
+    "tribunais": [
+      "TRT1",
+      "TRT2",
+      "TRT3",
+      "TRT4",
+      "TRT5",
+      "TRT6",
+      "TRT7",
+      "TRT8",
+      "TRT9",
+      "TRT10",
+      "TRT11",
+      "TRT12",
+      "TRT13",
+      "TRT14",
+      "TRT15",
+      "TRT16",
+      "TRT17",
+      "TRT18",
+      "TRT19",
+      "TRT20",
+      "TRT21",
+      "TRT22",
+      "TRT23",
+      "TRT24"
+    ],
+    "dias_para_tras": 1,
+    "dias_na_pagina": 1,
+    "valor_minimo": 100000,
+    "teto_capital_gigante": 50000000,
+    "receita": true,
+    "porta": 8765
+  },
+  "modo": "todas",
+  "carteira": "carteira.csv",
+  "djen_modo": "caderno",
+  "dias_djen": 3,
+  "meses_estatistica": 12,
+  "atualizar_estatistica_a_cada_dias": 7,
+  "enriquecer_cnpj": true,
+  "email": {
+    "ativo": false,
+    "de": "seu-email@gmail.com",
+    "para": [
+      "socio@escritorio.com.br"
+    ],
+    "servidor": "smtp.gmail.com",
+    "porta": 587
+  },
+  "monitor": {
+    "oabs": [
+      {
+        "numero": "000000",
+        "uf": "SP",
+        "nome": "Nome da advogada ou do advogado"
+      }
+    ],
+    "processos": "processos.csv",
+    "partes_da_carteira": true,
+    "partes": [],
+    "tribunais": [
+      "TRT2"
+    ],
+    "dias_para_tras": 3,
+    "radar": true,
+    "dias_na_pagina": 7,
+    "max_consultas_por_rodada": 30,
+    "feriados_extras": [],
+    "trecho_no_aviso": true,
+    "telegram": {
+      "ativo": false,
+      "chat_id": ""
+    }
+  },
+  "compartilhar": {
+    "pasta": "",
+    "subpasta": "LexSuiteONE",
+    "planilha": true
+  },
+  "atualizacao": {
+    "url": "https://github.com/marceloneco/lexsuiteone/releases/latest/download",
+    "verificar_ao_abrir": true
+  }
+}

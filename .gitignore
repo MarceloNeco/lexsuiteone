@@ -1,0 +1,23 @@
+# Dados de cada instalação: nunca entram no repositório
+robo/config.json
+robo/*.db
+robo/saida/
+robo/diagnostico/
+robo/python/
+robo/python-embed.zip
+robo/_anterior/
+robo/publicar/
+robo/ultima_atualizacao.json
+robo/carteira.csv
+robo/processos.csv
+robo/orgaos_*.json
+# Chave privada de assinatura: só no computador do suporte
+chave_privada.txt
+**/chave_privada.txt
+# Python
+__pycache__/
+*.pyc
+.venv/
+# Sistema
+.DS_Store
+Thumbs.db

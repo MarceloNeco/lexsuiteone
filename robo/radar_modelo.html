@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Radar Trabalhista</title>
+<meta name="description" content="Ações trabalhistas novas contra empresas nos tribunais escolhidos, uma por linha, com a ficha da empresa e do processo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Uma lista, uma linha por ação, clique abre a ficha. Papel branco, tinta marinho, latão só no que pede atenção. */
+:root {
+  color-scheme: light;
+  --papel: #f5f6f8; --folha: #ffffff; --tinta: #121a2b; --tinta-2: #4a5468; --tinta-3: #7a8396; --linha: #e1e5ec; --linha-2: #c9d0db;
+  --marinho: #0f1d33; --latao: #a87a2e; --latao-texto: #8a6222; --latao-wash: #f7f0e1; --erro: #a33a2e;
+  --f: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; }
+}
+:root[data-theme="dark"] { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 15px/1.5 var(--f); -webkit-font-smoothing: antialiased; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.miolo { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+:focus-visible { outline: 2px solid var(--latao); outline-offset: 2px; }
+
+header { padding-block: 26px 14px; display: grid; gap: 4px; }
+.topo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.topo .marca { font-weight: 600; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-2); }
+.topo .marca b { color: var(--latao-texto); font-weight: 600; }
+.pilula { display: inline-flex; border: 1px solid var(--linha-2); border-radius: 999px; overflow: hidden; }
+.pilula button { border: 0; background: transparent; padding: 5px 10px; min-height: 30px; font-size: .74rem; font-weight: 600; color: var(--tinta-3); }
+.pilula button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
+h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; line-height: 1.15; letter-spacing: -.01em; }
+.resumo { color: var(--tinta-2); margin: 0; }
+.resumo b { color: var(--tinta); font-weight: 600; }
+
+/* Barra da tela local: tribunais, período, atualizar. Só aparece quando a página vem do robô. */
+.app { display: grid; gap: 10px; margin-bottom: 16px; }
+.barra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.seletor, .campo select, .chip, .primario { border: 1px solid var(--linha-2); background: var(--folha); color: var(--tinta); border-radius: 999px; padding: 7px 14px; min-height: 36px; font-size: .86rem; font-weight: 500; }
+.seletor { display: inline-flex; align-items: center; gap: 8px; }
+.seletor i { font-style: normal; color: var(--tinta-3); font-size: .7rem; }
+.campo { display: inline-flex; align-items: center; gap: 8px; font-size: .86rem; color: var(--tinta-2); }
+.primario { background: var(--tinta); color: var(--papel); border-color: var(--tinta); font-weight: 600; }
+.primario:disabled { opacity: .55; cursor: default; }
+.espaco { flex: 1 1 auto; }
+.estado { font-size: .86rem; color: var(--tinta-2); display: grid; gap: 2px; }
+.estado .ok { color: var(--tinta-2); }
+.estado .andando { color: var(--latao-texto); font-weight: 600; }
+.estado .log { color: var(--tinta-3); font-size: .8rem; }
+.estado .erro { color: var(--erro); }
+.painel { background: var(--folha); border: 1px solid var(--linha); border-radius: 10px; padding: 14px 16px; display: grid; gap: 12px; }
+.painel-topo { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
+.abas { display: inline-flex; border: 1px solid var(--linha-2); border-radius: 999px; overflow: hidden; }
+.abas button { border: 0; background: transparent; padding: 6px 12px; font-size: .82rem; font-weight: 600; color: var(--tinta-3); }
+.abas button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
+.painel-acoes { display: flex; gap: 14px; }
+.gtrib { border-top: 1px solid var(--linha); padding: 10px 0 4px; }
+.gtrib:first-child { border-top: 0; padding-top: 0; }
+.gcab { display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; padding: 4px 0; }
+.gcab small { font-weight: 400; color: var(--tinta-3); }
+.gitens { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 18px; padding-left: 4px; }
+.titem { display: grid; grid-template-columns: auto auto 1fr auto; gap: 8px; align-items: center; padding: 5px 0; cursor: pointer; font-size: .9rem; }
+.titem b { font-weight: 600; min-width: 3.4rem; }
+.titem span { color: var(--tinta-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.titem small { color: var(--tinta-3); }
+.titem input, .gcab input { width: 16px; height: 16px; margin: 0; accent-color: var(--latao); }
+.painel-rodape { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; border-top: 1px solid var(--linha); padding-top: 12px; }
+.painel-rodape .cont { color: var(--tinta-2); font-size: .86rem; flex: 1 1 auto; }
+.painel .dica { font-size: .8rem; color: var(--tinta-3); }
+.ramos { display: flex; flex-wrap: wrap; gap: 6px; }
+.ramos .chip { padding: 5px 12px; min-height: 32px; font-size: .82rem; }
+.dica-ramo { font-size: .8rem; color: var(--latao-texto); background: var(--latao-wash); border-radius: 8px; padding: 6px 10px; }
+.banner { font-size: .88rem; color: var(--latao-texto); background: var(--latao-wash); border-radius: 8px; padding: 8px 12px; }
+.banner.erro { color: var(--erro); background: transparent; border: 1px solid var(--erro); }
+.painel h3 { margin: 0; font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3); }
+.campo-conf { display: grid; grid-template-columns: minmax(9rem, 12rem) 1fr; gap: 6px 14px; align-items: center; font-size: .9rem; }
+.campo-conf > span { color: var(--tinta-3); }
+.campo-conf input, .campo-conf select { border: 1px solid var(--linha-2); background: var(--papel); border-radius: 8px; padding: 7px 10px; min-height: 36px; font-size: .9rem; min-width: 0; width: 100%; }
+.conf-acoes { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: .86rem; color: var(--tinta-2); }
+.conf-info { margin: 0; display: grid; grid-template-columns: minmax(9rem, 12rem) 1fr; gap: 4px 14px; font-size: .86rem; }
+.conf-info dt { color: var(--tinta-3); }
+.conf-info dd { margin: 0; overflow-wrap: anywhere; }
+.tag-exc { color: var(--latao-texto); font-weight: 600; }
+@media (max-width: 640px) { .campo-conf, .conf-info { grid-template-columns: 1fr; } }
+
+.controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-bottom: 12px; }
+.chip[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
+.controles select { border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 6px 12px; min-height: 36px; font-size: .84rem; }
+.btn-txt { background: none; border: 0; color: var(--latao-texto); font-weight: 600; font-size: .84rem; padding: 6px 4px; }
+.btn-txt:hover { text-decoration: underline; }
+
+.lista { background: var(--folha); border: 1px solid var(--linha); border-radius: 10px; overflow: hidden; }
+.grupo { font-size: .76rem; font-weight: 600; letter-spacing: .04em; color: var(--tinta-3); padding: 12px 18px 4px; border-top: 1px solid var(--linha); }
+.grupo:first-child { border-top: 0; }
+.item { border-top: 1px solid var(--linha); }
+.item:first-child { border-top: 0; }
+.cab { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 3.6rem 1fr auto; gap: 2px 14px; align-items: center; width: 100%; padding: 12px 18px; }
+.cab:hover { background: var(--papel); }
+.trib { font-size: .74rem; font-weight: 600; color: var(--tinta-3); letter-spacing: .03em; }
+.nome { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.nome .mais { font-weight: 400; color: var(--tinta-2); }
+.valor { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.valor.vazio { color: var(--tinta-3); font-weight: 500; }
+.valor small { display: block; font-size: .72rem; font-weight: 500; color: var(--tinta-3); }
+.sub { grid-column: 2 / 4; color: var(--tinta-2); font-size: .86rem; display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.sub .tag { color: var(--latao-texto); font-weight: 600; }
+.sub .cinza { color: var(--tinta-3); }
+
+.ficha { padding: 2px 18px 18px calc(3.6rem + 18px + 14px); display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; }
+.ficha h3 { margin: 0 0 8px; font-size: .76rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3); }
+.ficha dl { margin: 0; display: grid; grid-template-columns: minmax(9rem, max-content) 1fr; gap: 0 14px; font-size: .9rem; }
+.ficha dt { color: var(--tinta-3); padding: 5px 0; border-top: 1px solid var(--linha); }
+.ficha dd { margin: 0; min-width: 0; overflow-wrap: anywhere; padding: 5px 0; border-top: 1px solid var(--linha); }
+.ficha dt:first-of-type, .ficha dd:first-of-type { border-top: 0; }
+.ficha dd.num { font-variant-numeric: tabular-nums; overflow-wrap: normal; }
+.ficha dd.falta { color: var(--tinta-3); font-style: italic; }
+.ficha dd ul { margin: 0; padding-left: 1.1em; }
+.ficha .aviso { grid-column: 1 / -1; font-size: .82rem; color: var(--latao-texto); background: var(--latao-wash); border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
+.ficha .campo-valor { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ficha .campo-valor input { width: 9rem; border: 1px solid var(--linha-2); background: var(--papel); border-radius: 8px; padding: 5px 10px; min-height: 32px; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.ficha .campo-valor select { border: 1px solid var(--linha-2); background: var(--papel); border-radius: 8px; padding: 5px 10px; min-height: 32px; font-size: .86rem; }
+.acoes { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; padding-top: 8px; border-top: 1px solid var(--linha); }
+.acoes a, .acoes .btn-txt { color: var(--latao-texto); font-weight: 600; font-size: .86rem; text-decoration: none; padding: 4px 0; }
+.acoes a:hover { text-decoration: underline; }
+.nota { grid-column: 1 / -1; font-size: .8rem; color: var(--tinta-3); }
+.vazio-lista { padding: 26px 18px; color: var(--tinta-3); }
+.mais { display: flex; justify-content: center; align-items: center; gap: 14px; padding: 14px 0 4px; color: var(--tinta-3); font-size: .84rem; }
+footer { color: var(--tinta-3); font-size: .78rem; padding: 18px 0 32px; display: grid; gap: 3px; }
+@media (max-width: 640px) {
+  .cab { grid-template-columns: 1fr auto; }
+  .trib { grid-column: 1 / -1; }
+  .sub { grid-column: 1 / -1; }
+  .ficha { grid-template-columns: 1fr; padding-left: 18px; }
+  .ficha dl { grid-template-columns: 1fr; gap: 0; }
+  .ficha dt { border-top: 1px solid var(--linha); padding-bottom: 0; }
+  .ficha dd { border-top: 0; padding-top: 2px; }
+  .gitens { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="miolo">
+<header>
+  <div class="topo">
+    <span class="marca" id="marca"></span>
+    <div class="pilula" role="group" aria-label="Idioma / Language"><button type="button" id="b-pt" data-lang="pt">PT</button><button type="button" id="b-en" data-lang="en">EN</button></div>
+  </div>
+  <h1 id="h1"></h1>
+  <p class="resumo" id="resumo"></p>
+</header>
+
+<section class="app" id="app" hidden>
+  <div class="barra">
+    <button type="button" class="seletor" id="b-trib" aria-expanded="false"><span id="b-trib-txt"></span><i>▼</i></button>
+    <label class="campo"><span id="l-periodo"></span><select id="periodo"></select></label>
+    <button type="button" class="seletor" id="b-config" aria-expanded="false"><span id="b-config-txt"></span><i>▼</i></button>
+    <span class="espaco"></span>
+    <button type="button" class="primario" id="b-rodar"></button>
+  </div>
+  <div class="banner" id="banner" hidden></div>
+  <div class="estado" id="estado"></div>
+  <div class="painel" id="config" hidden>
+    <h3 id="c-titulo"></h3>
+    <label class="campo-conf"><span id="c-l-escritorio"></span><input id="c-escritorio" type="text" maxlength="80" autocomplete="organization"></label>
+    <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta"></select></label>
+    <label class="campo-conf" id="c-outra-wrap" hidden><span id="c-l-outra"></span><input id="c-outra" type="text" spellcheck="false"></label>
+    <div class="conf-acoes"><button type="button" class="chip" id="c-testar"></button><span id="c-teste-txt"></span></div>
+    <dl class="conf-info" id="c-info"></dl>
+    <div class="painel-rodape">
+      <span class="cont" id="c-msg"></span>
+      <button type="button" class="chip" id="c-atualizar"></button>
+      <button type="button" class="primario" id="c-salvar"></button>
+    </div>
+    <div class="dica" id="c-dica"></div>
+  </div>
+  <div class="painel" id="painel" hidden>
+    <div class="painel-topo">
+      <div class="abas" role="group"><button type="button" data-aba="regiao" aria-pressed="true"></button><button type="button" data-aba="uf" aria-pressed="false"></button></div>
+      <div class="painel-acoes"><button type="button" class="btn-txt" id="b-todos"></button><button type="button" class="btn-txt" id="b-limpar"></button></div>
+    </div>
+    <div id="painel-lista"></div>
+    <div class="painel-rodape">
+      <span class="cont" id="painel-cont"></span>
+      <button type="button" class="chip" id="b-salvar"></button>
+      <button type="button" class="primario" id="b-salvar-rodar"></button>
+    </div>
+    <div class="dica" id="painel-dica"></div>
+  </div>
+</section>
+
+<div class="controles" id="controles">
+  <button type="button" class="chip" id="f-valor" aria-pressed="false"></button>
+  <button type="button" class="chip" id="f-gig" aria-pressed="false"></button>
+  <button type="button" class="chip" id="f-exc" aria-pressed="false" hidden></button>
+  <select id="f-trib" aria-label="Tribunal"></select>
+  <span class="espaco"></span>
+  <select id="ordem" aria-label="Ordenar"></select>
+  <button type="button" class="btn-txt" id="exportar"></button>
+</div>
+
+<div class="lista" id="lista"></div>
+<div class="mais" id="mais" hidden><span id="mais-txt"></span><button type="button" class="chip" id="b-mais"></button></div>
+
+<footer>
+  <span id="rodape1"></span>
+  <span id="rodape2"></span>
+</footer>
+</div>
+
+<script>
+window.LEXSUITE_RADAR = null;
+</script>
+<script>
+(function () {
+  "use strict";
+  var MODO = window.LEXSUITE_RADAR ? "arquivo" : "app";
+  var D = window.LEXSUITE_RADAR || { itens: [], tribunais: [] };
+  var APP = null, sel = {}, aba = "regiao", ramo = "Trabalhista", vigia = null, limite = 150, periodo = 1, configVista = false;
+  var T = {
+    pt: { marca: "Radar Trabalhista", h1: "Ações novas contra empresas",
+      resumo: "{n} ações {p} em {t}. {v} com valor acima de {min}; {s} ainda sem valor.", p1: "no último dia", pn: "nos últimos {d} dias", t1: "{a}", tn: "{k} tribunais ({a})", tk: "{k} tribunais",
+      vazio: "Nenhuma ação com esses filtros.", vazio_app: "Nenhuma ação guardada ainda. Escolha os tribunais e clique em Atualizar agora.", vazio_arq: "Nenhuma ação nova nos tribunais acompanhados.",
+      b_trib: "Tribunais: {n} de {k}", periodo: "Período", config: "Configuração", excluidas_resumo: " {x} escondidas pelas preferências do escritório.",
+      f_exc_mostrar: "Mostrar excluídas ({n})", f_exc_ocultar: "Ocultar excluídas", excluida: "Excluída",
+      dica_tj: "Tribunais estaduais publicam diários muito maiores (o TJSP sozinho pode passar de 1 GB por dia) e a regra de \"ação nova\" ainda não foi calibrada neles.",
+      c_titulo: "Configuração deste computador", c_escritorio: "Escritório", c_pasta: "Pasta compartilhada", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
+      c_nenhuma: "Nenhuma (só neste computador)", c_outra_op: "Outra pasta...", c_salvar: "Salvar", c_atualizar: "Verificar atualização",
+      c_versao: "Versão instalada", c_pasta_robo: "Pasta do robô", c_controle: "Planilha de controle", c_controle_falta: "será criada na primeira rodada", c_sem_pasta: "sem pasta compartilhada",
+      c_chave: "Chave de atualização", c_chave_falta: "ausente: atualização desligada", c_atu_pasta: "Atualizações chegam por", c_salvo: "Salvo.",
+      c_dica: "A pasta compartilhada é a pasta do Google Drive para computador (ou OneDrive) onde o robô grava a planilha \"LexSuiteONE - Radar\" e lê a planilha \"LexSuiteONE - Controle\". Compartilhe a subpasta LexSuiteONE com o suporte uma vez; o resto é automático.",
+      atu_ok: "Atualizado para a versão {v}. Feche a janela LexSuiteONE e abra de novo pelo ABRIR.bat.", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia", pern: "{d} dias", rodar: "Atualizar agora", rodando: "Atualizando...",
+      aba_regiao: "Por região", aba_uf: "Por estado", todos: "Selecionar todos", todos_ramo: "Selecionar todos ({r})", limpar: "Limpar", escolhidos: "{n} de {k} tribunais escolhidos", salvar: "Salvar", salvar_rodar: "Salvar e atualizar agora",
+      dica: "Cada tribunal publica um diário por dia, de 5 a 150 MB. Dois tribunais levam uns 5 minutos; os 24, de 30 a 60 minutos na primeira vez. O computador precisa estar no Brasil.",
+      ultima: "Última atualização em {q}: {s}", nunca: "Ainda não rodou neste computador.", erro: "Parou com erro: {e}", carregando: "Carregando...", falha: "Não consegui falar com o robô. A janela preta do ABRIR.bat ainda está aberta?",
+      f_valor: "Acima de {min}", f_gig: "Sem jurídico próprio provável", trib_todos: "Todos os tribunais", ord_valor: "Maior valor primeiro", ord_hora: "Ordem de chegada", exportar: "Exportar planilha",
+      mostrando: "Mostrando {a} de {b}", mais: "Mostrar mais {n}", grupo_hora: "{h}, {t}",
+      conferir: "valor a conferir", conferir_sub: "no PJe, atrás do captcha", manual: "digitado",
+      empresa: "Empresa", processo: "Processo",
+      razao: "Razão social", fantasia: "Nome fantasia", cnpj: "CNPJ", cnae: "CNAE principal", atividade: "Atividade econômica", secundarias: "Atividades secundárias", porte: "Porte", capital: "Capital social", simples: "Simples Nacional", inicio: "Início das atividades", cidade: "Cidade", tel: "Telefone", email: "E-mail", socios: "Sócios e administradores",
+      numero: "Número", tribunal: "Tribunal", vara: "Vara", classe: "Classe", rito: "Rito", diario: "No Diário de", dist: "Distribuída em", valor_rotulo: "Valor da causa", outras: "Outras empresas no polo passivo", status: "Status",
+      faixa_ord: "ordinário (causa acima de 40 salários mínimos)", faixa_sum: "sumaríssimo (causa até 40 salários mínimos)",
+      nao_inf: "não informado no cadastro", nao_cap: "não capturado", nao_cap_pje: "não capturado: está no PJe, atrás do captcha", nenhuma: "nenhuma", sim: "sim", nao: "não",
+      sem_cnpj: "O Diário não trouxe o CNPJ desta empresa. Os dados do cadastro saem da consulta no PJe (botão abaixo).",
+      abrir_pje: "Abrir consulta no PJe", abrir_djen: "Abrir no Diário", copiar: "Copiar número", copiado: "Copiado", salvar_valor: "Salvar",
+      st_novo: "Novo", st_visto: "Visto", st_contato: "Em contato", st_descartado: "Descartado",
+      nota_valor: "O PJe mostra o valor da causa depois do captcha. Digite aqui; fica guardado neste navegador e sai na planilha.",
+      gig: "Jurídico próprio provável", e: "e", mais_n: "e mais {n}",
+      rodape1: "Fontes: lista de distribuição do DJEN (CNJ) e cadastro público da Receita Federal. Gerado em {q}.",
+      rodape2: "Pessoas físicas do processo não aparecem. Nada aqui usa inteligência artificial. LexSuiteONE, um produto SolverONE, versão {v}." },
+    en: { marca: "Labor Radar", h1: "New lawsuits against companies",
+      resumo: "{n} lawsuits {p} in {t}. {v} above {min}; {s} still without a value.", p1: "in the last day", pn: "in the last {d} days", t1: "{a}", tn: "{k} courts ({a})", tk: "{k} courts",
+      vazio: "No lawsuit matches these filters.", vazio_app: "Nothing stored yet. Choose the courts and click Update now.", vazio_arq: "No new lawsuits in the watched courts.",
+      b_trib: "Courts: {n} of {k}", periodo: "Period", config: "Settings", excluidas_resumo: " {x} hidden by the firm's preferences.",
+      f_exc_mostrar: "Show excluded ({n})", f_exc_ocultar: "Hide excluded", excluida: "Excluded",
+      dica_tj: "State courts publish much larger gazettes (TJSP alone can exceed 1 GB a day) and the \"new lawsuit\" rule is not calibrated for them yet.",
+      c_titulo: "Settings on this computer", c_escritorio: "Firm", c_pasta: "Shared folder", c_outra: "Folder path", c_testar: "Test folder",
+      c_nenhuma: "None (this computer only)", c_outra_op: "Another folder...", c_salvar: "Save", c_atualizar: "Check for updates",
+      c_versao: "Installed version", c_pasta_robo: "Robot folder", c_controle: "Control spreadsheet", c_controle_falta: "created on the first run", c_sem_pasta: "no shared folder",
+      c_chave: "Update key", c_chave_falta: "missing: updates disabled", c_atu_pasta: "Updates arrive via", c_salvo: "Saved.",
+      c_dica: "The shared folder is the Google Drive for desktop (or OneDrive) folder where the robot writes the \"LexSuiteONE - Radar\" spreadsheet and reads \"LexSuiteONE - Controle\". Share the LexSuiteONE subfolder with support once; the rest is automatic.",
+      atu_ok: "Updated to version {v}. Close the LexSuiteONE window and open it again with ABRIR.bat.", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last day", pern: "{d} days", rodar: "Update now", rodando: "Updating...",
+      aba_regiao: "By region", aba_uf: "By state", todos: "Select all", todos_ramo: "Select all ({r})", limpar: "Clear", escolhidos: "{n} of {k} courts chosen", salvar: "Save", salvar_rodar: "Save and update now",
+      dica: "Each court publishes one gazette a day, 5 to 150 MB. Two courts take about 5 minutes; all 24, 30 to 60 minutes the first time. The computer must be in Brazil.",
+      ultima: "Last update at {q}: {s}", nunca: "Never run on this computer yet.", erro: "Stopped with an error: {e}", carregando: "Loading...", falha: "Could not reach the robot. Is the ABRIR.bat window still open?",
+      f_valor: "Above {min}", f_gig: "Without likely in-house counsel", trib_todos: "All courts", ord_valor: "Highest value first", ord_hora: "Arrival order", exportar: "Export spreadsheet",
+      mostrando: "Showing {a} of {b}", mais: "Show {n} more", grupo_hora: "{h}, {t}",
+      conferir: "value to check", conferir_sub: "in PJe, behind the captcha", manual: "typed",
+      empresa: "Company", processo: "Case",
+      razao: "Legal name", fantasia: "Trade name", cnpj: "Tax ID (CNPJ)", cnae: "Main activity code", atividade: "Economic activity", secundarias: "Secondary activities", porte: "Size", capital: "Share capital", simples: "Simples Nacional (tax regime)", inicio: "Started on", cidade: "City", tel: "Phone", email: "E-mail", socios: "Partners and officers",
+      numero: "Number", tribunal: "Court", vara: "Court unit", classe: "Class", rito: "Procedure", diario: "In the gazette of", dist: "Filed on", valor_rotulo: "Claim value", outras: "Other companies sued", status: "Status",
+      faixa_ord: "ordinary (claim above 40 minimum wages)", faixa_sum: "summary (claim up to 40 minimum wages)",
+      nao_inf: "not informed in the registry", nao_cap: "not captured", nao_cap_pje: "not captured: in PJe, behind the captcha", nenhuma: "none", sim: "yes", nao: "no",
+      sem_cnpj: "The gazette did not bring this company's tax ID. Registry data comes from the PJe lookup (button below).",
+      abrir_pje: "Open PJe lookup", abrir_djen: "Open in the gazette", copiar: "Copy number", copiado: "Copied", salvar_valor: "Save",
+      st_novo: "New", st_visto: "Seen", st_contato: "In contact", st_descartado: "Discarded",
+      nota_valor: "PJe shows the claim value after the captcha. Type it here; it stays in this browser and goes to the spreadsheet.",
+      gig: "Likely in-house counsel", e: "and", mais_n: "and {n} more",
+      rodape1: "Sources: DJEN distribution lists (CNJ) and the Federal Revenue public registry. Generated {q}.",
+      rodape2: "Individuals in the case never appear. Nothing here uses artificial intelligence. LexSuiteONE, a SolverONE product, version {v}." }
+  };
+  var lang = "pt", F = { valor: false, gig: false, exc: false, trib: "" }, ordem = "valor", aberto = {};
+  try { lang = localStorage.getItem("lexsuite:idioma") || "pt"; } catch (e) {}
+  function t(k, v) { var s = (T[lang][k] != null ? T[lang][k] : T.pt[k]) || k; if (v) Object.keys(v).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); return s; }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function $(id) { return document.getElementById(id); }
+  function loc() { return lang === "pt" ? "pt-BR" : "en-US"; }
+  function num(n) { return Number(n).toLocaleString(loc()); }
+  function reais(n) { if (n == null || n === "") return ""; return "R$ " + Number(n).toLocaleString(loc(), { maximumFractionDigits: 0 }); }
+  function reaisCurto(n) { n = Number(n); if (n >= 1e9) return "R$ " + (n / 1e9).toLocaleString(loc(), { maximumFractionDigits: 1 }) + (lang === "pt" ? " bi" : " bn"); if (n >= 1e6) return "R$ " + (n / 1e6).toLocaleString(loc(), { maximumFractionDigits: 1 }) + (lang === "pt" ? " mi" : " M"); if (n >= 1e3) return "R$ " + Math.round(n / 1e3) + (lang === "pt" ? " mil" : "k"); return reais(n); }
+  function dataCurta(iso) { if (!iso) return ""; var p = String(iso).slice(0, 10).split("-"); if (p.length < 3) return String(iso); return lang === "pt" ? p[2] + "/" + p[1] + "/" + p[0] : p[1] + "/" + p[2] + "/" + p[0]; }
+  function dataHora(iso) { if (!iso) return ""; return dataCurta(iso) + " " + String(iso).slice(11, 16); }
+  function cnpjFmt(c) { c = String(c || "").replace(/\D/g, ""); return c.length === 14 ? c.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5") : (c || ""); }
+  function cnaeFmt(c) { c = String(c || "").replace(/\D/g, ""); return c.length === 7 ? c.replace(/(\d{4})(\d)(\d{2})/, "$1-$2/$3") : c; }
+  function titulo(s) { return String(s || "").toLowerCase().replace(/(^|\s|\.|-|\/)([a-zà-ú])/g, function (m, a, b) { return a + b.toUpperCase(); }).replace(/\bS\.a\./g, "S.A.").replace(/\bLtda\b/g, "Ltda").replace(/\b(De|Da|Do|Das|Dos|E)\b/g, function (m) { return m.toLowerCase(); }); }
+  function guardado(chave) { try { return localStorage.getItem("lexsuite:radar:" + chave); } catch (e) { return null; } }
+  function guardar(chave, v) { try { if (v == null || v === "") localStorage.removeItem("lexsuite:radar:" + chave); else localStorage.setItem("lexsuite:radar:" + chave, String(v)); } catch (e) {} }
+  function valorDe(i) { var m = guardado("valor:" + i.id); if (m) return { v: Number(m), fonte: "manual" }; if (i.valor_causa) return { v: Number(i.valor_causa), fonte: i.valor_fonte || "djen" }; return { v: null, fonte: "" }; }
+  function statusDe(i) { return guardado("status:" + i.id) || "novo"; }
+  function minimo() { return Number(D.valor_minimo || 100000); }
+
+  /* ---------- tela local: dados, tribunais, rodar ---------- */
+  function cabecalhosApp() { return { "X-LexSuite": "1" }; }
+  function carregar() {
+    $("estado").textContent = t("carregando");
+    return fetch("/dados?dias=" + periodo, { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
+      D = d; APP = d.app || null; sel = {};
+      if (APP) { (APP.config.tribunais || []).forEach(function (s) { sel[s] = true; }); periodo = Number(APP.config.dias_na_pagina || periodo) || 1; }
+      F.gig = !!(D.prefs && D.prefs.esconder_gigantes);
+      limite = 150; tudo();
+      if (APP && !APP.config.pasta && !configVista) { configVista = true; abrirConfig(true); }
+      if (APP && APP.estado && APP.estado.rodando) vigiar();
+    }).catch(function () { $("estado").textContent = t("falha"); });
+  }
+  function post(caminho, corpo) {
+    return fetch(caminho, { method: "POST", headers: { "Content-Type": "application/json", "X-LexSuite": "1" }, body: JSON.stringify(corpo || {}) }).then(function (r) { return r.json(); });
+  }
+  function mostrarEstado(e) {
+    var box = $("estado"); box.textContent = "";
+    if (!e) return;
+    if (e.rodando) {
+      var ultima = e.mensagens && e.mensagens.length ? e.mensagens[e.mensagens.length - 1].texto : "";
+      box.appendChild(el("span", "andando", t("rodando") + (ultima ? " " + ultima : "")));
+      (e.mensagens || []).slice(-4, -1).forEach(function (m) { box.appendChild(el("span", "log", m.hora + "  " + m.texto)); });
+      return;
+    }
+    if (e.erro) box.appendChild(el("span", "erro", t("erro", { e: e.erro })));
+    if (e.situacao) box.appendChild(el("span", "ok", t("ultima", { q: dataHora(e.situacao.quando || e.fim), s: e.situacao[lang] || e.situacao.pt })));
+    else if (!e.erro) box.appendChild(el("span", "ok", t("nunca")));
+  }
+  function vigiar() {
+    if (vigia) return;
+    $("b-rodar").disabled = true; $("b-salvar-rodar").disabled = true;
+    function passo() {
+      fetch("/estado", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (e) {
+        mostrarEstado(e);
+        if (e.rodando) { vigia = setTimeout(passo, 2000); return; }
+        vigia = null; $("b-rodar").disabled = false; $("b-salvar-rodar").disabled = false;
+        carregar();
+      }).catch(function () { vigia = setTimeout(passo, 4000); });
+    }
+    vigia = setTimeout(passo, 1500);
+  }
+  function rodar() {
+    if (!Object.keys(sel).length) { $("painel").hidden = false; return; }
+    post("/rodar", { dias: null }).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo }); }).catch(function () { $("estado").textContent = t("falha"); });
+  }
+  function salvarTribunais(depoisRodar) {
+    post("/config", { tribunais: Object.keys(sel), dias_na_pagina: periodo }).then(function () {
+      $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
+      if (depoisRodar) { post("/rodar", {}).then(function (r) { if (r.ok) vigiar(); }); }
+      carregar();
+    }).catch(function () { $("estado").textContent = t("falha"); });
+  }
+  function painel() {
+    if (!APP) return;
+    var alvo = $("painel-lista"); alvo.textContent = "";
+    var todos = APP.tribunais || [], total = todos.length;
+    function caixa(marcado, parcial) { var c = el("input"); c.type = "checkbox"; c.checked = marcado; c.indeterminate = !marcado && parcial; return c; }
+    function itemTrib(x) {
+      var l = el("label", "titem"), ci = caixa(!!sel[x.sigla], false);
+      ci.addEventListener("change", function () { if (ci.checked) sel[x.sigla] = true; else delete sel[x.sigla]; painel(); });
+      l.appendChild(ci); l.appendChild(el("b", null, x.sigla)); l.appendChild(el("span", null, x.nome)); l.appendChild(el("small", null, x.ufs.length ? x.ufs.join(", ") : "BR"));
+      return l;
+    }
+    if (aba === "regiao") {
+      var chips = el("div", "ramos");
+      (APP.ramos || []).forEach(function (rm) {
+        var n = todos.filter(function (x) { return x.ramo === rm; }), m = n.filter(function (x) { return sel[x.sigla]; }).length;
+        var c = el("button", "chip", rm + " " + (m ? m + "/" : "") + n.length); c.type = "button"; c.setAttribute("aria-pressed", String(ramo === rm));
+        c.addEventListener("click", function () { ramo = rm; painel(); }); chips.appendChild(c);
+      });
+      alvo.appendChild(chips);
+      if (ramo === "Estadual") alvo.appendChild(el("div", "dica-ramo", t("dica_tj")));
+      var doRamo = todos.filter(function (x) { return x.ramo === ramo; });
+      (APP.regioes || []).forEach(function (reg) {
+        var lista = doRamo.filter(function (x) { return x.regiao === reg; });
+        if (!lista.length) return;
+        var marcados = lista.filter(function (x) { return sel[x.sigla]; }).length;
+        var g = el("div", "gtrib"), cab = el("label", "gcab"), c = caixa(marcados === lista.length, marcados > 0);
+        c.addEventListener("change", function () { lista.forEach(function (x) { if (c.checked) sel[x.sigla] = true; else delete sel[x.sigla]; }); painel(); });
+        cab.appendChild(c); cab.appendChild(el("span", null, reg)); cab.appendChild(el("small", null, marcados + " / " + lista.length)); g.appendChild(cab);
+        var itens = el("div", "gitens"); lista.forEach(function (x) { itens.appendChild(itemTrib(x)); }); g.appendChild(itens); alvo.appendChild(g);
+      });
+    } else {
+      var ufs = Object.keys(APP.ufs || {}).sort(function (a, b) { return APP.ufs[a].localeCompare(APP.ufs[b], "pt"); });
+      var itensUf = el("div", "gitens");
+      ufs.forEach(function (uf) {
+        var lista = todos.filter(function (x) { return x.ufs.indexOf(uf) >= 0; }), marcados = lista.filter(function (x) { return sel[x.sigla]; }).length;
+        var l = el("label", "titem"), ci = caixa(marcados === lista.length, marcados > 0);
+        ci.addEventListener("change", function () { lista.forEach(function (x) { if (ci.checked) sel[x.sigla] = true; else delete sel[x.sigla]; }); painel(); });
+        l.appendChild(ci); l.appendChild(el("b", null, uf)); l.appendChild(el("span", null, APP.ufs[uf])); l.appendChild(el("small", null, lista.map(function (x) { return x.sigla; }).join(", "))); itensUf.appendChild(l);
+      });
+      alvo.appendChild(itensUf);
+      var nac = todos.filter(function (x) { return !x.ufs.length; });
+      if (nac.length) { var g2 = el("div", "gtrib"); g2.appendChild(el("div", "gcab", "Nacional")); var it2 = el("div", "gitens"); nac.forEach(function (x) { it2.appendChild(itemTrib(x)); }); g2.appendChild(it2); alvo.appendChild(g2); }
+    }
+    var n = Object.keys(sel).length;
+    $("painel-cont").textContent = t("escolhidos", { n: n, k: total });
+    $("b-trib-txt").textContent = t("b_trib", { n: n, k: total });
+    $("b-todos").textContent = aba === "regiao" ? t("todos_ramo", { r: ramo }) : t("todos");
+    $("b-salvar-rodar").disabled = !n || !!vigia; $("b-salvar").disabled = !n;
+  }
+
+  /* ---------- configuração deste computador ---------- */
+  function abrirConfig(forcar) {
+    var p = $("config"), abrir = forcar || p.hidden;
+    p.hidden = !abrir; $("b-config").setAttribute("aria-expanded", String(abrir));
+    if (!abrir) return;
+    $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
+    $("c-escritorio").value = (APP && APP.config.escritorio) || "";
+    $("c-msg").textContent = ""; $("c-teste-txt").textContent = "";
+    fetch("/pastas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
+      var sp = $("c-pasta"); sp.textContent = "";
+      (d.candidatas || []).forEach(function (c) { var o = el("option", null, c); o.value = c; sp.appendChild(o); });
+      var oo = el("option", null, t("c_outra_op")); oo.value = "__outra"; sp.appendChild(oo);
+      var on = el("option", null, t("c_nenhuma")); on.value = ""; sp.appendChild(on);
+      var atual = d.atual || "";
+      if (atual && (d.candidatas || []).indexOf(atual) < 0) { sp.value = "__outra"; $("c-outra").value = atual; }
+      else if (atual) sp.value = atual;
+      else sp.value = (d.candidatas || []).length ? d.candidatas[0] : "";
+      $("c-outra-wrap").hidden = sp.value !== "__outra";
+    }).catch(function () {});
+    infoConfig();
+  }
+  function pastaEscolhida() { var v = $("c-pasta").value; return v === "__outra" ? $("c-outra").value.trim() : v; }
+  function infoConfig() {
+    var dl = $("c-info"); dl.textContent = ""; if (!APP) return;
+    function par(k, v) { dl.appendChild(el("dt", null, k)); dl.appendChild(el("dd", null, v || "—")); }
+    par(t("c_versao"), APP.versao); par(t("c_pasta_robo"), APP.pasta_robo);
+    par(t("c_controle"), APP.config.controle || (APP.config.pasta_base ? t("c_controle_falta") : t("c_sem_pasta")));
+    par(t("c_chave"), APP.atualizacao && APP.atualizacao.chave ? APP.atualizacao.impressao : t("c_chave_falta"));
+    par(t("c_atu_pasta"), (APP.atualizacao && (APP.atualizacao.pasta || APP.atualizacao.url)) || t("c_sem_pasta"));
+  }
+  function salvarConfig() {
+    post("/config", { escritorio: $("c-escritorio").value, pasta: pastaEscolhida() }).then(function (r) {
+      if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
+      $("c-msg").textContent = t("c_salvo"); $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); carregar();
+    }).catch(function () { $("c-msg").textContent = t("falha"); });
+  }
+  function verificarAtualizacao() {
+    $("c-msg").textContent = t("carregando");
+    post("/atualizar", { instalar: true }).then(function (r) {
+      if (r.arquivos) $("c-msg").textContent = t("atu_ok", { v: r.versao });
+      else if (r.ok) $("c-msg").textContent = t("atu_nada", { m: r.motivo || "" });
+      else $("c-msg").textContent = t("atu_erro", { m: r.motivo || "" });
+    }).catch(function () { $("c-msg").textContent = t("falha"); });
+  }
+  function bannerControle() {
+    var b = $("banner"), p = (D.prefs || {}), c = p.controle || {}, txt = "";
+    if (c.mensagem) txt = c.mensagem;
+    if (p.erro) txt = (txt ? txt + " " : "") + p.erro;
+    b.hidden = !txt; b.textContent = txt; b.className = "banner" + (p.erro ? " erro" : "");
+  }
+
+  function barraApp() {
+    $("app").hidden = MODO !== "app";
+    if (MODO !== "app") return;
+    $("l-periodo").textContent = t("periodo");
+    var sp = $("periodo"); sp.textContent = "";
+    [1, 3, 7, 15, 30].forEach(function (d) { var o = el("option", null, d === 1 ? t("per1") : t("pern", { d: d })); o.value = d; sp.appendChild(o); }); sp.value = String(periodo);
+    $("b-rodar").textContent = t("rodar");
+    document.querySelectorAll(".abas button").forEach(function (b) { b.textContent = t("aba_" + b.getAttribute("data-aba")); b.setAttribute("aria-pressed", String(aba === b.getAttribute("data-aba"))); });
+    $("b-limpar").textContent = t("limpar"); $("b-salvar").textContent = t("salvar"); $("b-salvar-rodar").textContent = t("salvar_rodar"); $("painel-dica").textContent = t("dica");
+    $("b-config-txt").textContent = t("config"); $("c-titulo").textContent = t("c_titulo"); $("c-l-escritorio").textContent = t("c_escritorio"); $("c-l-pasta").textContent = t("c_pasta"); $("c-l-outra").textContent = t("c_outra");
+    $("c-testar").textContent = t("c_testar"); $("c-salvar").textContent = t("c_salvar"); $("c-atualizar").textContent = t("c_atualizar"); $("c-dica").textContent = t("c_dica");
+    painel(); infoConfig(); bannerControle();
+    if (APP && !vigia) mostrarEstado(APP.estado);
+  }
+
+  /* ---------- a lista ---------- */
+  function visiveis() {
+    var min = minimo();
+    var esconder = !D.prefs || D.prefs.esconder_excluidas !== false;
+    var lista = (D.itens || []).filter(function (i) {
+      if (i.excluida && esconder && !F.exc) return false;
+      if (F.trib && i.tribunal !== F.trib) return false;
+      if (F.gig && i.gigante) return false;
+      if (F.valor && !(valorDe(i).v >= min)) return false;
+      return true;
+    });
+    if (ordem === "valor") lista.sort(function (a, b) { var va = valorDe(a).v, vb = valorDe(b).v; if (a.gigante !== b.gigante) return a.gigante ? 1 : -1; if ((va == null) !== (vb == null)) return va == null ? 1 : -1; return (vb || 0) - (va || 0) || (b.visto_em || "").localeCompare(a.visto_em || ""); });
+    else lista.sort(function (a, b) { return (b.visto_em || "").localeCompare(a.visto_em || "") || (valorDe(b).v || 0) - (valorDe(a).v || 0); });
+    return lista;
+  }
+  function par(dl, rot, val, falta, cls) {
+    dl.appendChild(el("dt", null, rot));
+    var dd;
+    if (val instanceof Node) { dd = el("dd", cls); dd.appendChild(val); }
+    else if (val == null || val === "" || (Array.isArray(val) && !val.length)) dd = el("dd", "falta", falta || t("nao_inf"));
+    else if (Array.isArray(val)) { dd = el("dd", cls); var ul = el("ul"); val.forEach(function (x) { ul.appendChild(el("li", null, x)); }); dd.appendChild(ul); }
+    else dd = el("dd", cls, val);
+    dl.appendChild(dd);
+    return dd;
+  }
+  function linha(i) {
+    var e = i.empresa || {}, temCnpj = !!e.cnpj, box = el("article", "item"), cab = el("button", "cab"); cab.type = "button"; cab.setAttribute("aria-expanded", String(!!aberto[i.id]));
+    cab.appendChild(el("span", "trib", i.tribunal || ""));
+    var nome = el("span", "nome", titulo(e.razao_social || (i.empresas || [])[0] || "")); if ((i.empresas || []).length > 1) nome.appendChild(el("span", "mais", " " + t("e") + " " + titulo(i.empresas[1]) + ((i.empresas.length > 2) ? " " + t("mais_n", { n: i.empresas.length - 2 }) : ""))); cab.appendChild(nome);
+    var vd = valorDe(i), val = el("span", "valor" + (vd.v == null ? " vazio" : ""));
+    if (vd.v == null) { val.appendChild(document.createTextNode(t("conferir"))); val.appendChild(el("small", null, t("conferir_sub"))); }
+    else { val.appendChild(document.createTextNode(reais(vd.v))); if (vd.fonte === "manual") val.appendChild(el("small", null, t("manual"))); }
+    cab.appendChild(val);
+    var sub = el("span", "sub");
+    var pistas = temCnpj ? [i.setor, e.porte_legivel ? e.porte_legivel.split(" (")[0] : "", [titulo(e.municipio), e.uf].filter(Boolean).join("/")].filter(Boolean) : [i.setor].filter(Boolean);
+    if (pistas.length) sub.appendChild(el("span", null, pistas.join(" · ")));
+    sub.appendChild(el("span", "cinza", i.vara || ""));
+    if (i.gigante) sub.appendChild(el("span", "tag", t("gig")));
+    if (i.excluida) sub.appendChild(el("span", "tag-exc", t("excluida") + ": " + i.excluida));
+    var st = statusDe(i); if (st !== "novo") sub.appendChild(el("span", "cinza", t("st_" + st)));
+    cab.appendChild(sub);
+    cab.addEventListener("click", function () { aberto[i.id] = !aberto[i.id]; ficha.hidden = !aberto[i.id]; cab.setAttribute("aria-expanded", String(!!aberto[i.id])); });
+    box.appendChild(cab);
+    var ficha = el("div", "ficha"); ficha.hidden = !aberto[i.id];
+    if (!temCnpj) ficha.appendChild(el("div", "aviso", t("sem_cnpj")));
+    var faltaEmp = temCnpj ? t("nao_inf") : t("nao_cap");
+    // Empresa: uma linha por dado, sempre presente
+    var c1 = el("div"); c1.appendChild(el("h3", null, t("empresa")));
+    var dl = el("dl");
+    par(dl, t("razao"), titulo(e.razao_social || (i.empresas || [])[0] || ""), faltaEmp);
+    par(dl, t("fantasia"), temCnpj ? titulo(e.nome_fantasia) : "", faltaEmp);
+    par(dl, t("cnpj"), cnpjFmt(e.cnpj), faltaEmp, "num");
+    par(dl, t("cnae"), temCnpj ? cnaeFmt(e.cnae) : "", faltaEmp, "num");
+    par(dl, t("atividade"), temCnpj ? e.atividade : "", faltaEmp);
+    par(dl, t("secundarias"), temCnpj ? (e.cnaes_secundarios || []).slice(0, 6) : [], temCnpj ? t("nenhuma") : faltaEmp);
+    par(dl, t("porte"), temCnpj ? (e.porte_legivel || e.porte) : "", faltaEmp);
+    par(dl, t("capital"), temCnpj && e.capital_social ? reais(e.capital_social) : "", faltaEmp, "num");
+    par(dl, t("simples"), temCnpj && e.simples != null ? (e.simples ? t("sim") : t("nao")) : "", faltaEmp);
+    par(dl, t("inicio"), temCnpj ? dataCurta(e.inicio_atividade) : "", faltaEmp);
+    par(dl, t("cidade"), temCnpj ? [titulo(e.municipio), e.uf].filter(Boolean).join("/") : "", faltaEmp);
+    par(dl, t("tel"), temCnpj ? [e.telefone, e.telefone2].filter(Boolean) : [], faltaEmp);
+    par(dl, t("email"), temCnpj ? (e.email || "").toLowerCase() : "", faltaEmp);
+    par(dl, t("socios"), temCnpj ? (e.socios || []).map(function (s) { return titulo(s.nome) + (s.qualificacao ? " · " + s.qualificacao.toLowerCase() : ""); }) : [], faltaEmp);
+    c1.appendChild(dl); ficha.appendChild(c1);
+    // Processo
+    var c2 = el("div"); c2.appendChild(el("h3", null, t("processo")));
+    var dl2 = el("dl");
+    par(dl2, t("numero"), i.processo, t("nao_cap"), "num");
+    par(dl2, t("tribunal"), i.tribunal, t("nao_cap"));
+    par(dl2, t("vara"), i.vara, t("nao_cap"));
+    par(dl2, t("classe"), i.classe, t("nao_cap"));
+    par(dl2, t("rito"), i.rito === "Ordinário" ? t("faixa_ord") : i.rito === "Sumaríssimo" ? t("faixa_sum") : (i.rito && i.rito !== "Outros" ? i.rito : ""), t("nao_cap"));
+    par(dl2, t("diario"), dataCurta(i.diario_em || i.distribuida_em), t("nao_cap"));
+    par(dl2, t("dist"), i.ajuizada_em ? (i.ajuizada_em.indexOf("após") === 0 ? i.ajuizada_em : dataCurta(i.ajuizada_em)) : "", t("nao_cap_pje"));
+    var cv = el("span", "campo-valor"); var inp = el("input"); inp.type = "text"; inp.inputMode = "decimal"; inp.placeholder = "R$"; var m = guardado("valor:" + i.id); if (m) inp.value = Number(m).toLocaleString("pt-BR"); else if (i.valor_causa) inp.value = Number(i.valor_causa).toLocaleString("pt-BR"); cv.appendChild(inp);
+    var bs = el("button", "btn-txt", t("salvar_valor")); bs.type = "button";
+    bs.addEventListener("click", function () { var n = Number(String(inp.value).replace(/[R$\s.]/g, "").replace(",", ".")); guardar("valor:" + i.id, isFinite(n) && n > 0 ? n : ""); desenhar(); });
+    inp.addEventListener("keydown", function (ev) { if (ev.key === "Enter") bs.click(); });
+    cv.appendChild(bs); if (vd.v == null) cv.appendChild(el("small", "falta", " " + t("nao_cap_pje")));
+    par(dl2, t("valor_rotulo"), cv);
+    par(dl2, t("outras"), (i.empresas || []).slice(1).map(titulo), t("nenhuma"));
+    var cs = el("span", "campo-valor"); var sl = el("select");
+    ["novo", "visto", "contato", "descartado"].forEach(function (k) { var o = el("option", null, t("st_" + k)); o.value = k; sl.appendChild(o); }); sl.value = statusDe(i);
+    sl.addEventListener("change", function () { guardar("status:" + i.id, sl.value === "novo" ? "" : sl.value); desenhar(); }); cs.appendChild(sl);
+    par(dl2, t("status"), cs);
+    c2.appendChild(dl2); ficha.appendChild(c2);
+    // Ações
+    var ac = el("div", "acoes");
+    if (i.link_pje) { var a1 = el("a", null, t("abrir_pje")); a1.href = i.link_pje; a1.target = "_blank"; a1.rel = "noopener noreferrer"; ac.appendChild(a1); }
+    if (i.link_djen && /^https?:/.test(i.link_djen)) { var a2 = el("a", null, t("abrir_djen")); a2.href = i.link_djen; a2.target = "_blank"; a2.rel = "noopener noreferrer"; ac.appendChild(a2); }
+    var bc = el("button", "btn-txt", t("copiar")); bc.type = "button";
+    bc.addEventListener("click", function () { var ok = function () { bc.textContent = t("copiado"); setTimeout(function () { bc.textContent = t("copiar"); }, 1500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(i.processo).then(ok, function () { window.prompt(t("copiar"), i.processo); }); else window.prompt(t("copiar"), i.processo); });
+    ac.appendChild(bc);
+    ficha.appendChild(ac);
+    ficha.appendChild(el("div", "nota", t("nota_valor")));
+    box.appendChild(ficha);
+    return box;
+  }
+  function desenhar() {
+    var alvo = $("lista"); alvo.textContent = "";
+    var itens = visiveis(), total = itens.length;
+    if (!total) { alvo.appendChild(el("div", "vazio-lista", (D.itens || []).length ? t("vazio") : (MODO === "app" ? t("vazio_app") : t("vazio_arq")))); $("mais").hidden = true; return; }
+    var grupo = null;
+    itens.slice(0, limite).forEach(function (i) {
+      if (ordem === "hora") { var g = (i.visto_em || "").slice(0, 16) + "|" + i.tribunal; if (g !== grupo) { grupo = g; alvo.appendChild(el("div", "grupo", t("grupo_hora", { h: dataHora(i.visto_em) || "—", t: i.tribunal }))); } }
+      alvo.appendChild(linha(i));
+    });
+    var resto = total - Math.min(limite, total);
+    $("mais").hidden = resto <= 0;
+    $("mais-txt").textContent = t("mostrando", { a: num(Math.min(limite, total)), b: num(total) });
+    $("b-mais").textContent = t("mais", { n: num(Math.min(150, resto)) });
+  }
+  function cabecalho() {
+    var itens = D.itens || [], min = minimo(), comValor = itens.filter(function (i) { return valorDe(i).v >= min; }).length, semValor = itens.filter(function (i) { return valorDe(i).v == null; }).length;
+    var tribs = D.tribunais || [], tx = tribs.length <= 3 ? t("t1", { a: tribs.join(", ") }) : tribs.length <= 6 ? t("tn", { k: tribs.length, a: tribs.join(", ") }) : t("tk", { k: tribs.length });
+    $("marca").textContent = (D.escritorio ? D.escritorio + "  ·  " : "") + t("marca");
+    $("h1").textContent = t("h1");
+    var r = $("resumo"); r.textContent = ""; var b = el("b", null, num(itens.length)); r.appendChild(b);
+    var dias = Number(D.dias || periodo || 1);
+    r.appendChild(document.createTextNode(" " + t("resumo", { n: "", p: dias === 1 ? t("p1") : t("pn", { d: dias }), t: tx, v: num(comValor), min: reaisCurto(min), s: num(semValor) }).replace(/^\s*/, "")));
+    if (D.excluidas) r.appendChild(document.createTextNode(t("excluidas_resumo", { x: num(D.excluidas) })));
+    $("f-valor").textContent = t("f_valor", { min: reaisCurto(min) }); $("f-gig").textContent = t("f_gig"); $("f-gig").setAttribute("aria-pressed", String(F.gig));
+    var fe = $("f-exc"); fe.hidden = !(D.excluidas && (!D.prefs || D.prefs.esconder_excluidas !== false)); fe.textContent = F.exc ? t("f_exc_ocultar") : t("f_exc_mostrar", { n: num(D.excluidas || 0) }); fe.setAttribute("aria-pressed", String(F.exc));
+    var ft = $("f-trib"); ft.textContent = ""; var cont = {}; itens.forEach(function (i) { cont[i.tribunal] = (cont[i.tribunal] || 0) + 1; });
+    var o0 = el("option", null, t("trib_todos") + " (" + num(itens.length) + ")"); o0.value = ""; ft.appendChild(o0);
+    Object.keys(cont).sort(function (a, b) { return Number(a.replace(/\D/g, "")) - Number(b.replace(/\D/g, "")); }).forEach(function (s) { var o = el("option", null, s + " (" + num(cont[s]) + ")"); o.value = s; ft.appendChild(o); });
+    ft.value = cont[F.trib] ? F.trib : ""; if (!cont[F.trib]) F.trib = "";
+    var so = $("ordem"); so.textContent = ""; [["valor", t("ord_valor")], ["hora", t("ord_hora")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; so.appendChild(op); }); so.value = ordem;
+    $("exportar").textContent = t("exportar");
+    $("rodape1").textContent = t("rodape1", { q: D.gerado_em ? dataHora(D.gerado_em) : "—" }); $("rodape2").textContent = t("rodape2", { v: D.versao || "?" });
+    $("b-pt").setAttribute("aria-pressed", String(lang === "pt")); $("b-en").setAttribute("aria-pressed", String(lang === "en"));
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en"; document.title = t("marca");
+  }
+  function exportar() {
+    var cab = ["Tribunal", "Vara", "Processo", "Classe", "Rito", "No Diário de", "Distribuída em", "Empresa", "Outras empresas", "CNPJ", "CNAE", "Atividade", "Porte", "Capital social", "Simples", "Cidade", "UF", "Telefone", "E-mail", "Sócios", "Jurídico próprio provável", "Valor da causa", "Origem do valor", "Status", "Excluída (motivo)"];
+    var linhas = visiveis().map(function (i) { var e = i.empresa || {}, v = valorDe(i); return [i.tribunal, i.vara, i.processo, i.classe, i.rito, i.diario_em || i.distribuida_em, i.ajuizada_em, e.razao_social || (i.empresas || [])[0], (i.empresas || []).slice(1).join(" | "), cnpjFmt(e.cnpj), cnaeFmt(e.cnae), e.atividade, e.porte_legivel || e.porte, e.capital_social, e.simples == null ? "" : (e.simples ? "sim" : "não"), e.municipio, e.uf, [e.telefone, e.telefone2].filter(Boolean).join(" | "), e.email, (e.socios || []).map(function (s) { return s.nome; }).join(" | "), i.gigante ? "sim" : "", v.v == null ? "" : v.v, v.fonte, t("st_" + statusDe(i)), i.excluida || ""]; });
+    var csv = "﻿" + [cab].concat(linhas).map(function (l) { return l.map(function (c) { c = c == null ? "" : String(c); return /[;"\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(";"); }).join("\r\n");
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); a.download = "radar-" + (D.dia || "dia") + ".csv"; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function tudo() { cabecalho(); barraApp(); desenhar(); }
+
+  $("f-valor").addEventListener("click", function () { F.valor = !F.valor; this.setAttribute("aria-pressed", String(F.valor)); limite = 150; desenhar(); });
+  $("f-gig").addEventListener("click", function () { F.gig = !F.gig; this.setAttribute("aria-pressed", String(F.gig)); limite = 150; desenhar(); });
+  $("f-exc").addEventListener("click", function () { F.exc = !F.exc; limite = 150; cabecalho(); desenhar(); });
+  $("f-trib").addEventListener("change", function (e) { F.trib = e.target.value; limite = 150; desenhar(); });
+  $("ordem").addEventListener("change", function (e) { ordem = e.target.value; limite = 150; desenhar(); });
+  $("b-mais").addEventListener("click", function () { limite += 150; desenhar(); });
+  $("exportar").addEventListener("click", exportar);
+  document.querySelectorAll(".pilula button").forEach(function (b) { b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("lexsuite:idioma", lang); } catch (e) {} tudo(); }); });
+  $("b-trib").addEventListener("click", function () { var p = $("painel"); p.hidden = !p.hidden; this.setAttribute("aria-expanded", String(!p.hidden)); if (!p.hidden) { $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); painel(); } });
+  document.querySelectorAll(".abas button").forEach(function (b) { b.addEventListener("click", function () { aba = b.getAttribute("data-aba"); barraApp(); }); });
+  $("b-todos").addEventListener("click", function () { (APP.tribunais || []).forEach(function (x) { if (aba !== "regiao" || x.ramo === ramo) sel[x.sigla] = true; }); painel(); });
+  $("b-config").addEventListener("click", function () { abrirConfig(false); });
+  $("c-pasta").addEventListener("change", function () { $("c-outra-wrap").hidden = this.value !== "__outra"; $("c-teste-txt").textContent = ""; });
+  $("c-testar").addEventListener("click", function () { var p = pastaEscolhida(); if (!p) { $("c-teste-txt").textContent = t("c_nenhuma"); return; } post("/testar-pasta", { pasta: p }).then(function (r) { $("c-teste-txt").textContent = r.mensagem || ""; }).catch(function () { $("c-teste-txt").textContent = t("falha"); }); });
+  $("c-salvar").addEventListener("click", salvarConfig);
+  $("c-atualizar").addEventListener("click", verificarAtualizacao);
+  $("b-limpar").addEventListener("click", function () { sel = {}; painel(); });
+  $("b-salvar").addEventListener("click", function () { salvarTribunais(false); });
+  $("b-salvar-rodar").addEventListener("click", function () { salvarTribunais(true); });
+  $("b-rodar").addEventListener("click", rodar);
+  $("periodo").addEventListener("change", function (e) { periodo = Number(e.target.value) || 1; post("/config", { dias_na_pagina: periodo }).then(carregar, carregar); });
+
+  if (MODO === "app") carregar(); else tudo();
+})();
+</script>
+</body>
+</html>

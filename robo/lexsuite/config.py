@@ -1,0 +1,49 @@
+"""config.json: leitura com padrão, criação automática na primeira vez e gravação."""
+
+import json
+import os
+import shutil
+
+PADRAO = {
+    "escritorio": "", "alvos": [], "carteira": "carteira.csv",
+    "radar": {"tribunais": [f"TRT{n}" for n in range(1, 25)], "dias_para_tras": 1, "dias_na_pagina": 1,
+              "valor_minimo": 100000, "teto_capital_gigante": 50000000, "receita": True, "porta": 8765},
+    # Pasta compartilhada (Google Drive para computador, OneDrive...): o robô grava ali a planilha e lê o controle.
+    "compartilhar": {"pasta": "", "subpasta": "LexSuiteONE", "planilha": True},
+    # Atualização assinada: pela subpasta "atualizacao" da pasta compartilhada e, se houver, por um endereço fixo.
+    "atualizacao": {"url": "https://github.com/marceloneco/lexsuiteone/releases/latest/download", "verificar_ao_abrir": True},
+    "monitor": {"oabs": [], "processos": "processos.csv", "partes_da_carteira": True, "tribunais": ["TRT2", "TRT15"],
+                "dias_para_tras": 3, "radar": True, "dias_na_pagina": 7},
+    "email": {"ativo": False},
+}
+
+
+def carregar(caminho, aviso=print):
+    """Lê o config.json. Se não existir, cria a partir do config.exemplo.json (ou do padrão) e segue."""
+    if not os.path.exists(caminho):
+        exemplo = os.path.join(os.path.dirname(caminho), "config.exemplo.json")
+        if os.path.exists(exemplo):
+            shutil.copyfile(exemplo, caminho)
+            aviso(f"  Criei o {os.path.basename(caminho)} a partir do config.exemplo.json. Edite depois, se quiser.")
+        else:
+            salvar(caminho, json.loads(json.dumps(PADRAO)))
+            aviso(f"  Criei o {os.path.basename(caminho)} com o padrão (os 24 TRTs). Edite depois, se quiser.")
+    with open(caminho, encoding="utf-8") as f:
+        cfg = json.load(f)
+    for chave, valor in PADRAO.items():
+        cfg.setdefault(chave, valor)
+    for bloco in ("radar", "compartilhar", "atualizacao"):
+        if not isinstance(cfg.get(bloco), dict):
+            cfg[bloco] = {}
+        for chave, valor in PADRAO[bloco].items():
+            cfg[bloco].setdefault(chave, valor)
+    return cfg
+
+
+def salvar(caminho, cfg):
+    """Grava bonito, em UTF-8, sem perder chaves que a tela não conhece."""
+    temporario = caminho + ".tmp"
+    with open(temporario, "w", encoding="utf-8") as f:
+        json.dump(cfg, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    os.replace(temporario, caminho)
