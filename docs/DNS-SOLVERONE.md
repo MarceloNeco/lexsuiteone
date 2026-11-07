@@ -45,11 +45,24 @@ O recebimento é pelo ImprovMX (encaminhamento), não pelo Google Workspace. Iss
   pelo encaminhamento). Essa conta passa a ser a identidade do suporte no Drive, sem expor nenhum Gmail pessoal.
 - `nao-responda@` não precisa existir: só envia, pelo Resend.
 
-## DNSSEC: o detalhe que derruba tudo se for ignorado
+## DNSSEC: como está e como trocar sem derrubar
 
-O domínio tem **DNSSEC ativo** no Registro.br (há um registro DS na zona `.br`, chave 49771, algoritmo 13). Trocar os
-servidores DNS para o Cloudflare sem antes desativar o DNSSEC faz o domínio inteiro parar de resolver, site e e-mail,
-porque a assinatura antiga deixa de bater. A ordem certa está no roteiro abaixo.
+O domínio **está assinado** (há um DS na zona `.br`, chave 49771, algoritmo 13), mas não por uma configuração manual:
+quando o domínio usa "os servidores DNS do Registro.br", o próprio Registro.br assina a zona automaticamente. Por isso
+o painel não mostra uma aba DNSSEC para desligar; o DS automático é removido junto com a troca de servidores.
+
+O caminho seguro, então, é **trocar os servidores e cadastrar o DS do Cloudflare no mesmo formulário** ("Alterar
+servidores DNS", botão "+ DNSSEC"). O DNSSEC do Cloudflare já foi ligado pelo conector (07/Nov, 20h42) e o DS é:
+
+| Campo | Valor |
+|---|---|
+| Keytag | `2371` |
+| Algoritmo | `13` (ECDSA P-256 com SHA-256) |
+| Tipo de digest | `2` (SHA-256) |
+| Digest | `7550D5D0FE766CBDF581A08D089C206ECF2141DB04AAD8BF3742DD5A302E5AD5` |
+
+Janela esperada: até 1 hora depois da troca, alguns resolvedores que ainda guardam o DS antigo podem falhar ao
+validar o domínio (site não abre para alguns, e-mail atrasa mas não se perde). Fazer fora do horário comercial.
 
 ## Cloudflare: zona já preparada (07/Nov/2026, à noite)
 
@@ -62,11 +75,11 @@ Servidores de nome do Cloudflare para esta zona: **`harlee.ns.cloudflare.com`** 
 
 ### O que falta, e só o dono faz, no Registro.br
 
-1. **Desativar o DNSSEC** no domínio solverone.com.br (aba DNSSEC). Esperar **pelo menos 2 horas**.
-2. **Trocar os servidores DNS** em "Alterar servidores DNS": desmarcar o DNS do Registro.br e preencher
-   `harlee.ns.cloudflare.com` e `lennon.ns.cloudflare.com`. Salvar.
-3. Avisar o Claude: ele confere por fora (servidores, registros, Resend verificado, site) e então **liga o DNSSEC no
-   Cloudflare** e devolve o registro DS para cadastrar na aba DNSSEC do Registro.br.
+1. Em "Alterar servidores DNS": desmarcar o DNS do Registro.br, preencher `harlee.ns.cloudflare.com` e
+   `lennon.ns.cloudflare.com`, clicar em "+ DNSSEC" e preencher o DS da tabela acima (keytag 2371, algoritmo 13,
+   digest tipo 2, digest 7550D5D0...). Salvar. O Registro.br confere se os servidores respondem e se o DS bate com a
+   chave publicada pelo Cloudflare.
+2. Avisar o Claude: ele confere por fora (servidores, registros, DNSSEC válido, Resend verificado, site com HTTPS).
 
 Se a troca ficar para depois da instalação de quinta, o site precisa do CNAME `judicial` criado no Registro.br
 enquanto isso (ver "O que criar agora"). Se a troca for feita antes, esse passo é dispensável.
