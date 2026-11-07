@@ -278,7 +278,7 @@ window.LEXSUITE_RADAR = null;
       w2_t: "Onde guardar a planilha", w2_x: "Escolha a pasta do Google Drive (ou do OneDrive) deste computador. O robô cria ali a subpasta LexSuiteONE com a planilha LexSuiteONE.xlsx, que você pode abrir no Google Planilhas e compartilhar com o suporte.",
       w3_t: "Tribunais e rotina", w3_x: "Os 24 Tribunais Regionais do Trabalho já estão escolhidos; depois dá para mudar em Tribunais (por região, estado ou ramo).", w3_trib: "Tribunais escolhidos: {n}.",
       w4_t: "Pronto, {n}", w4_x: "Está tudo salvo. A primeira rodada baixa o diário do dia de cada tribunal e leva de 30 a 60 minutos com os 24 TRTs; o andamento aparece na tela. O manual do escritório fica no rodapé.",
-      w_nome_falta: "Diga pelo menos o seu nome.", w_pasta_falta: "Escolha uma pasta ou marque \"Nenhuma\".", c_pasta: "Pasta compartilhada", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
+      w_rotina: "Rodar sozinho", w_nome_falta: "Diga pelo menos o seu nome.", w_pasta_falta: "Escolha uma pasta ou marque \"Nenhuma\".", c_pasta: "Pasta compartilhada", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
       c_nenhuma: "Nenhuma (só neste computador)", c_outra_op: "Outra pasta...", c_salvar: "Salvar", c_atualizar: "Verificar atualização",
       c_versao: "Versão instalada", c_pasta_robo: "Pasta do robô", c_controle: "Planilha", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Rodar sozinho todo dia, às 19:40 e às 07:10 (com o computador ligado)", c_agendar_nao: "Agendamento automático só no Windows; neste sistema use o RODAR.bat.",
       c_chave: "Chave de atualização", c_chave_falta: "ausente: atualização desligada", c_atu_pasta: "Atualizações chegam por", c_salvo: "Salvo.",
@@ -315,7 +315,7 @@ window.LEXSUITE_RADAR = null;
       w2_t: "Where to keep the spreadsheet", w2_x: "Choose this computer's Google Drive (or OneDrive) folder. The robot creates the LexSuiteONE subfolder there with LexSuiteONE.xlsx, which you can open in Google Sheets and share with support.",
       w3_t: "Courts and routine", w3_x: "The 24 labor courts are already selected; you can change them later under Courts (by region, state or branch).", w3_trib: "Courts selected: {n}.",
       w4_t: "All set, {n}", w4_x: "Everything is saved. The first run downloads each court's gazette and takes 30 to 60 minutes with all 24; progress shows on screen. The firm manual is in the footer.",
-      w_nome_falta: "Please tell us at least your name.", w_pasta_falta: "Choose a folder or pick \"None\".", c_pasta: "Shared folder", c_outra: "Folder path", c_testar: "Test folder",
+      w_rotina: "Runs by itself", w_nome_falta: "Please tell us at least your name.", w_pasta_falta: "Choose a folder or pick \"None\".", c_pasta: "Shared folder", c_outra: "Folder path", c_testar: "Test folder",
       c_nenhuma: "None (this computer only)", c_outra_op: "Another folder...", c_salvar: "Save", c_atualizar: "Check for updates",
       c_versao: "Installed version", c_pasta_robo: "Robot folder", c_controle: "Spreadsheet", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Run by itself every day at 19:40 and 07:10 (computer on)", c_agendar_nao: "Automatic scheduling is Windows-only; elsewhere use RODAR.bat.",
       c_chave: "Update key", c_chave_falta: "missing: updates disabled", c_atu_pasta: "Updates arrive via", c_salvo: "Saved.",
@@ -545,7 +545,7 @@ window.LEXSUITE_RADAR = null;
     $("w-trib-txt").textContent = t("w3_trib", { n: (APP && APP.config.tribunais || []).length });
     if (wPasso === 4) {
       var dl = $("w-resumo"); dl.textContent = "";
-      [[t("c_nome"), nome], [t("c_papel"), $("w-papel").value], [t("c_escritorio"), $("w-escritorio").value], [t("c_pasta"), wPasta() || t("c_nenhuma")], [t("periodo"), $("w-agendar").checked ? "19:40 / 07:10" : "—"]].forEach(function (par) { dl.appendChild(el("dt", null, par[0])); dl.appendChild(el("dd", null, par[1] || "—")); });
+      [[t("c_nome"), nome], [t("c_papel"), $("w-papel").value], [t("c_escritorio"), $("w-escritorio").value], [t("c_pasta"), wPasta() || t("c_nenhuma")], [t("w_rotina"), $("w-agendar").checked ? "19:40 / 07:10" : "—"]].forEach(function (par) { dl.appendChild(el("dt", null, par[0])); dl.appendChild(el("dd", null, par[1] || "—")); });
     }
     $("w-voltar").hidden = wPasso === 1; $("w-voltar").textContent = t("w_voltar");
     $("w-avancar").textContent = wPasso < 4 ? t("w_avancar") : t("w_concluir");
