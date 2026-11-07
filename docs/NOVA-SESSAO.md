@@ -27,14 +27,14 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 - Cópia HTML estática no Drive fica como reserva; o caminho principal é o sistema (tela local hoje; site na 0.8).
 - 0.8: o robô manda a lista do dia para a nuvem da SolverONE (Supabase) e o site mostra, com login por link no e-mail e
   código de cliente `LEX-XXXX-XXXX`. Desenho detalhado em `robo/PENDENCIAS.md`.
-- Nada de contato pessoal do dono em nada que o cliente vê. Caixas: `contato@` (dúvidas) e `suporte@` (Drive), ambas
-  apelidos no ImprovMX; `suporte@` vira também uma Conta Google. `nao-responda@` só envia.
+- Nada de contato pessoal do dono em nada que o cliente vê. Caixas: `contato@` (dúvidas) e `integracao@` (Drive), ambas
+  apelidos no ImprovMX; `integracao@` vira também uma Conta Google. `nao-responda@` só envia.
 - Instalação no cliente (KR Law) na quinta-feira 12/Nov, na casa do Leandro, pelo dono. O pacote de quinta é o 0.7.2.
 
 ## O que só o dono faz (sem conector)
 
 Registro.br (DNSSEC, servidores DNS, registros), GitHub (organização, transferência, Pages, configurações de conta),
-ImprovMX (apelidos), Conta Google do `suporte@`, chaves de assinatura no PC dele, DIAGNOSTICO.bat no PC no Brasil.
+ImprovMX (apelidos), Conta Google do `integracao@`, chaves de assinatura no PC dele, DIAGNOSTICO.bat no PC no Brasil.
 
 ## Estado do Cloudflare (07/Nov, noite)
 

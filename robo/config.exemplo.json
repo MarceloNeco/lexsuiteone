@@ -94,7 +94,7 @@
     "planilha": true
   },
   "atualizacao": {
-    "url": "https://github.com/marceloneco/lexsuiteone/releases/latest/download",
+    "url": "https://judicial.solverone.com.br/atualizacao",
     "verificar_ao_abrir": true
   }
 }

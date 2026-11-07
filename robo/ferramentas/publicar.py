@@ -3,8 +3,8 @@
   python ferramentas/publicar.py gerar-chaves
       Cria chave_privada.txt (GUARDE fora do Drive e do repositório) e chave_publica.txt (vai na pasta do robô).
   python ferramentas/publicar.py empacotar --versao 0.7.1 --chave C:\\caminho\\chave_privada.txt [--robo pasta] [--notas "texto"]
-      Gera publicar/<versao>/LEXSUITE-ONE-ROBO-<versao>.zip e versao.json. Copie os dois para a subpasta
-      "atualizacao" da pasta compartilhada do cliente (ou para o endereço fixo na internet).
+      Gera publicar/<versao>/LEXSUITE-ONE-ROBO-<versao>.zip e versao.json. Copie os dois para docs/atualizacao/ do
+      repositório (vira https://judicial.solverone.com.br/atualizacao/) e/ou para a subpasta "atualizacao" do Drive do cliente.
 """
 
 import argparse

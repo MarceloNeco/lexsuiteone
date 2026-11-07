@@ -69,7 +69,7 @@ def _sobre(cfg, versao, chave_impressao, ultima):
             ["Python", platform.python_version()], ["Pasta do robô", cfg.get("_pasta_robo", "")],
             ["Tribunais", ", ".join((cfg.get("radar") or {}).get("tribunais") or [])],
             ["Última rodada", ultima], ["Chave de atualização (impressão)", chave_impressao or "sem chave: atualização desligada"],
-            ["Suporte", "suporte@solverone.com.br"]]
+            ["Suporte", "integracao@solverone.com.br"]]
 
 
 def _abas_editaveis(caminho, aviso=print):

@@ -11,8 +11,17 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
 - Cópia HTML estática no Drive: fica, como reserva. O caminho principal é o sistema (tela local hoje; site na 0.8).
 - 0.8 confirmada: o robô envia a lista do dia para a nuvem da SolverONE (Supabase) e o site em judicial.solverone.com.br
   mostra, com login por link no e-mail e código de cliente. O Drive continua com a planilha editável.
+- Zero impacto na KR Law quando o repositório mudar de dono: tudo que o cliente vê aponta para
+  `judicial.solverone.com.br` (site, download, manual, atualização assinada), nunca para a conta do GitHub. Na
+  transferência para a organização: mover o repositório, religar o Pages com o mesmo domínio, trocar o alvo do CNAME
+  `judicial` para `solverone.github.io` (no Cloudflare, pelo conector), atualizar links do README. O GitHub redireciona
+  os endereços antigos. A chave pública de assinatura não muda.
+- E-mail (depois de quinta): levar o recebimento do ImprovMX para o Cloudflare Email Routing (grátis, DNS já lá), com um
+  Email Worker que responde automaticamente em `integracao@` ("endereço usado por sistemas; escreva para
+  contato@solverone.com.br") e encaminha `contato@`; mais tarde, triagem em `contato@` (problema, contato comum, comercial).
 - Cara profissional em tudo que o cliente vê: nenhum contato pessoal do dono (e-mail, usuário pessoal do GitHub) em site,
-  e-mail, repositório ou planilha. Organização `solverone` no GitHub e apelidos no ImprovMX (`contato@` para dúvidas, `suporte@` para o Drive, que vira também Conta Google).
+  e-mail, repositório ou planilha. Organização `solverone` no GitHub e apelidos no ImprovMX: `contato@` para pessoas (dúvidas; no futuro, triagem), `integracao@` só para sistemas (Drive;
+  vira Conta Google; não é monitorado e deve responder automaticamente que não é caixa de atendimento).
 
 ## Esperando o dono (Marcelo)
 
@@ -22,7 +31,7 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
 - Rodar `teste-djen-supabase.sql` no SQL Editor do projeto solverone-app e mandar o resultado (decide se o coletor
   central pode viver no Supabase ou precisa de um servidor pequeno em São Paulo).
 - Decidir o repositório público no GitHub (núcleo aberto, MIT ou Apache 2.0). Nada é criado sem esse sim.
-- Criar a Conta Google `suporte@solverone.com.br` (sem Gmail; o apelido já existe no ImprovMX), para o cliente compartilhar o Drive.
+- Criar a Conta Google `integracao@solverone.com.br` (sem Gmail; o apelido já existe no ImprovMX), para o cliente compartilhar o Drive.
 
 ## v0.6.1 (correções)
 

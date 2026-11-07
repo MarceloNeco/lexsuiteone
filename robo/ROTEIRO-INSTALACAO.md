@@ -28,7 +28,7 @@ Passos:
 2. `ABRIR.bat` → se a pasta `python` não veio junto, ele instala sozinho; a tela abre. Em **Configuração**: nome do
    escritório; pasta compartilhada = "Meu Drive" dele; "Testar pasta"; deixar "rodar sozinho" marcado → "Salvar".
 4. No Explorador, dentro de "Meu Drive", botão direito na subpasta **LexSuiteONE** → Compartilhar → o seu e-mail de
-   serviço (suporte@solverone.com.br, ou o seu Gmail até a conta existir) como **Editor**.
+   serviço (integracao@solverone.com.br, ou o seu Gmail até a conta existir) como **Editor**.
 5. "Atualizar agora" (os 24 TRTs já estão escolhidos; em Tribunais dá para reduzir a 2 ou 3 para a primeira rodada
    ser rápida). Enquanto roda, mostrar a ficha, os filtros, a exportação e a planilha no Drive.
 6. Se o agendamento automático falhar (a Configuração avisa), `AGENDAR.bat` com botão direito → Executar como administrador.

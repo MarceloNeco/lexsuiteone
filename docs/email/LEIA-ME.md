@@ -7,7 +7,7 @@ puro, obrigatória para não cair em spam). Campos a preencher:
 |---|---|---|
 | `{{nome}}` | primeiro nome de quem recebe | (obrigatório) |
 | `{{contato}}` | e-mail para dúvidas; o cliente escreve para ele, nunca responde ao e-mail | `contato@solverone.com.br` |
-| `{{drive}}` | conta Google do suporte, com quem o cliente compartilha a subpasta LexSuiteONE do Drive | `suporte@solverone.com.br` |
+| `{{drive}}` | endereço de sistemas da SolverONE, com quem o cliente compartilha a subpasta LexSuiteONE do Drive (não é caixa de atendimento) | `integracao@solverone.com.br` |
 | `{{codigo}}` | código de cliente `LEX-XXXX-XXXX`, opcional; entra em uso com a versão 0.8 | (sem código, o bloco sai) |
 
 `python preencher.py --nome Leandro` gera os dois arquivos preenchidos em `saida/`. Com `--codigo LEX-...`, inclui o
@@ -19,9 +19,8 @@ bloco do código; sem ele, o bloco é removido. Nada é enviado por esse script.
   verificado (SPF, DKIM e DMARC no Registro.br); nenhum registro de DNS precisa ser mexido. O endereço
   `nao-responda@` não precisa existir como caixa: ele só envia, e o e-mail avisa que não recebe respostas.
 - Assunto: `Bem-vindo ao LexSuiteONE: seu pacote de instalação`.
-- O link de download é fixo e aponta para o pacote publicado neste repositório:
-  `https://github.com/MarceloNeco/lexsuiteone/raw/main/releases/LexSuiteONE-robo.zip`. Quando o endereço
-  `judicial.solverone.com.br` existir, o link passa a ser dele; é uma linha nos dois modelos.
+- O link de download é `https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip`, servido pelo site do produto
+  (pasta `docs/downloads/` do repositório). Não depende da conta do GitHub: mudar o repositório de dono não muda o link.
 - Sem anexo, sem rastreador de abertura, sem pedir nada além de baixar o pacote.
 
 ## Regras

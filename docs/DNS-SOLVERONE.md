@@ -38,10 +38,10 @@ quando o GitHub liberar (até uma hora). O arquivo `docs/CNAME` já está no rep
 
 O recebimento é pelo ImprovMX (encaminhamento), não pelo Google Workspace. Isso muda como criar as caixas:
 
-- `contato@solverone.com.br` e `suporte@solverone.com.br`: **apelidos no ImprovMX** (já existem), encaminhando para a
+- `contato@solverone.com.br` e `integracao@solverone.com.br`: **apelidos no ImprovMX** (já existem), encaminhando para a
   caixa que você lê. O cliente só vê `@solverone.com.br`.
-- `suporte@` precisa também ser uma **Conta Google**, porque é com ela que o cliente compartilha a pasta do Drive. Crie em
-  `accounts.google.com/SignUpWithoutGmail` usando `suporte@solverone.com.br` como e-mail (o código de confirmação chega
+- `integracao@` precisa também ser uma **Conta Google**, porque é com ela que o cliente compartilha a pasta do Drive. Crie em
+  `accounts.google.com/SignUpWithoutGmail` usando `integracao@solverone.com.br` como e-mail (o código de confirmação chega
   pelo encaminhamento). Essa conta passa a ser a identidade do suporte no Drive, sem expor nenhum Gmail pessoal.
 - `nao-responda@` não precisa existir: só envia, pelo Resend.
 
