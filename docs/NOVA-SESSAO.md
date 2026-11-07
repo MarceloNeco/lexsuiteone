@@ -45,22 +45,31 @@ trocar os servidores e cadastrar esse DS no mesmo formulário; o Registro.br ass
 desligamento manual. Detalhes em
 `docs/DNS-SOLVERONE.md`.
 
-## Tarefa imediata desta sessão nova: DNS no Cloudflare e site no ar
+## O que falta, na ordem (estado em 07/Nov à noite)
 
-Com o conector "Cloudflare" de API completa ligado (`https://mcp.cloudflare.com/mcp`; o "Developer Platform" não serve
-para DNS), a sessão pode fazer pelo conector: criar a zona `solverone.com.br` no Cloudflare, criar todos os registros da
-tabela de `docs/DNS-SOLVERONE.md` mais o CNAME `judicial`, deixar os registros de site com proxy desligado (nuvem cinza),
-ler os dois servidores de nome, e no fim ligar o DNSSEC e ler o registro DS. O dono faz, na ordem: desativar o DNSSEC no
-Registro.br, esperar 2 horas, trocar os servidores DNS, e depois cadastrar o DS novo. A sessão confere tudo por fora
-(NS, registros, Resend verificado, site com HTTPS) antes de dizer que terminou.
+Infraestrutura, sem testar o robô (o dono vai testar depois, com calma):
 
-## Depois disso, em ordem
+1. **HTTPS do site**: no GitHub Pages do repositório, "Check again" e "Enforce HTTPS" (o dono, pela extensão).
+2. **E-mail de recebimento no Cloudflare** (quando o dono disser "pode o e-mail"): Email Routing com os apelidos atuais
+   (`contato`, `admin`, `privacidade`, `suporte`, `ceo` encaminhando para a caixa do dono) e `integracao@` indo para um
+   Email Worker que só responde "Este endereço é usado por sistemas da SolverONE e não é lido por pessoas. Esta mensagem
+   não será respondida." Só trocar o MX depois de o destino estar confirmado e o Worker testado. ImprovMX fica como reserva.
+3. **Chaves de assinatura**: o dono roda `ferramentas\GERAR-CHAVES.bat` (kit em `releases/LexSuiteONE-suporte.zip`) e
+   cola a chave pública; o Claude coloca `chave_publica.txt` no pacote e publica. Opcional para a instalação: sem chave,
+   o robô funciona, só não se atualiza sozinho.
+4. **E-mail de boas-vindas ao Leandro**, pelo Resend, quando o dono passar o endereço corporativo dele.
+5. Depois da instalação: organização `solverone` no GitHub (roteiro em `robo/PENDENCIAS.md`), triagem em `contato@`,
+   calibração da regra com o diagnóstico, desenho da 0.8.
 
-1. Envio do e-mail de boas-vindas ao Leandro (quando o dono passar o e-mail corporativo), pelo Resend, usando
-   `docs/email/preencher.py`.
-2. Calibrar a regra de "ação nova" com o `radar-diagnostico.txt` que o dono vai gerar no PC dele.
-3. Desenhar a 0.8 por escrito (conta na nuvem, lista no site, código de cliente, SQL para o dono revisar) antes de codar.
-4. Frente tributária: classes do CNJ (execução fiscal, embargos, mandado de segurança), TRFs e varas de Fazenda Pública.
+Testes que o dono fará depois, no PC dele: ensaio da instalação com a segunda conta Google, `DIAGNOSTICO.bat`, rodada
+real nos 24 TRTs.
+
+## Sessões
+
+- Sessão de operação (Sonnet): DNS, e-mails, Drive, documentos, ajustes pequenos.
+- Sessão de produto (Fable, com `lexsuiteone`, `rootify-one`, `solverone-app` e `solverone-dados`): desenho e código da 0.8
+  (conta na nuvem, lista no site, código de cliente, SQL para o dono revisar), frente tributária, integração com o RootifyONE.
+  Não mexe no pacote da instalação sem o dono aprovar.
 
 ## Prompt sugerido para abrir a sessão nova
 
