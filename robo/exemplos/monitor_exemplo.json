@@ -1,0 +1,216 @@
+{
+ "_leia": "Publicações FICTÍCIAS no formato do DJEN, só para demonstrar o monitor. Nenhum dado real.",
+ "monitor": {
+  "oabs": [
+   {
+    "numero": "123456",
+    "uf": "SP",
+    "nome": "Advogada Exemplo"
+   }
+  ],
+  "partes_da_carteira": true,
+  "tribunais": [
+   "TRT2"
+  ],
+  "dias_para_tras": 3
+ },
+ "items": [
+  {
+   "id": 900001,
+   "dias_uteis_atras": 0,
+   "siglaTribunal": "TRT2",
+   "tipoComunicacao": "Intimação",
+   "tipoDocumento": "Sentença",
+   "nomeOrgao": "Vara do Trabalho de Cajamar",
+   "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "numeroprocessocommascara": "1000123-45.2026.5.02.0221",
+   "link": "https://comunica.pje.jus.br/",
+   "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ATOrd 1000123-45.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA UM RECLAMADO: TRANSPORTADORA EXEMPLO LTDA</p><p>SENTENÇA. Vistos etc. Ante o exposto, JULGO PARCIALMENTE PROCEDENTES os pedidos para condenar a reclamada ao pagamento de horas extras e reflexos. Custas pela reclamada. Intimem-se as partes. Prazo de 8 (oito) dias para recurso.</p>",
+   "destinatarios": [
+    {
+     "nome": "PESSOA FICTICIA UM",
+     "polo": "A"
+    },
+    {
+     "nome": "TRANSPORTADORA EXEMPLO LTDA",
+     "polo": "P"
+    }
+   ],
+   "destinatarioadvogados": [
+    {
+     "advogado": {
+      "nome": "ADVOGADA EXEMPLO",
+      "numero_oab": "123456",
+      "uf_oab": "SP"
+     }
+    }
+   ]
+  },
+  {
+   "id": 900002,
+   "dias_uteis_atras": 0,
+   "siglaTribunal": "TRT2",
+   "tipoComunicacao": "Intimação",
+   "tipoDocumento": "Decisão",
+   "nomeOrgao": "Vara do Trabalho de Cajamar",
+   "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+   "numeroprocessocommascara": "1000789-10.2026.5.02.0221",
+   "link": "https://comunica.pje.jus.br/",
+   "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ATSum 1000789-10.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA DOIS RECLAMADO: TRANSPORTADORA EXEMPLO LTDA</p><p>DECISÃO. Defiro o bloqueio de valores via SISBAJUD até o limite da execução. Efetivado o bloqueio, intime-se a executada para, querendo, opor embargos no prazo de 5 (cinco) dias.</p>",
+   "destinatarios": [
+    {
+     "nome": "TRANSPORTADORA EXEMPLO LTDA",
+     "polo": "P"
+    }
+   ],
+   "destinatarioadvogados": [
+    {
+     "advogado": {
+      "nome": "ADVOGADA EXEMPLO",
+      "numero_oab": "123456",
+      "uf_oab": "SP"
+     }
+    }
+   ]
+  },
+  {
+   "id": 900003,
+   "dias_uteis_atras": 0,
+   "siglaTribunal": "TRT2",
+   "tipoComunicacao": "Intimação",
+   "tipoDocumento": "Despacho",
+   "nomeOrgao": "Vara do Trabalho de Cajamar",
+   "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "numeroprocessocommascara": "1000456-78.2025.5.02.0221",
+   "link": "https://comunica.pje.jus.br/",
+   "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ATOrd 1000456-78.2025.5.02.0221 RECLAMANTE: PESSOA FICTICIA TRES RECLAMADO: TRANSPORTADORA EXEMPLO LTDA</p><p>DESPACHO. Fica redesignada a audiência de instrução para 10/12/2026 às 10h00, por videoconferência (Juízo 100% Digital). Intimem-se as partes e testemunhas.</p>",
+   "destinatarios": [
+    {
+     "nome": "PESSOA FICTICIA UM",
+     "polo": "A"
+    },
+    {
+     "nome": "TRANSPORTADORA EXEMPLO LTDA",
+     "polo": "P"
+    }
+   ],
+   "destinatarioadvogados": [
+    {
+     "advogado": {
+      "nome": "ADVOGADA EXEMPLO",
+      "numero_oab": "123456",
+      "uf_oab": "SP"
+     }
+    }
+   ]
+  },
+  {
+   "id": 900004,
+   "dias_uteis_atras": 0,
+   "siglaTribunal": "TRT2",
+   "tipoComunicacao": "Lista de distribuição",
+   "tipoDocumento": "Notificação",
+   "nomeOrgao": "Vara do Trabalho de Cajamar",
+   "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "numeroprocessocommascara": "1001902-33.2026.5.02.0221",
+   "link": "https://comunica.pje.jus.br/",
+   "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1001902-33.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA QUATRO RECLAMADO: ARMAZENS EXEMPLO S.A.</p>",
+   "destinatarios": [
+    {
+     "nome": "ARMAZENS EXEMPLO S.A.",
+     "polo": "P"
+    }
+   ],
+   "destinatarioadvogados": []
+  },
+  {
+   "id": 900005,
+   "dias_uteis_atras": 1,
+   "siglaTribunal": "TRT2",
+   "tipoComunicacao": "Intimação",
+   "tipoDocumento": "Despacho",
+   "nomeOrgao": "Vara do Trabalho de Cajamar",
+   "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "numeroprocessocommascara": "1000456-78.2025.5.02.0221",
+   "link": "https://comunica.pje.jus.br/",
+   "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ATOrd 1000456-78.2025.5.02.0221</p><p>DESPACHO. Manifeste-se a reclamada sobre o laudo pericial, no prazo de 8 (oito) dias.</p>",
+   "destinatarios": [
+    {
+     "nome": "PESSOA FICTICIA UM",
+     "polo": "A"
+    },
+    {
+     "nome": "TRANSPORTADORA EXEMPLO LTDA",
+     "polo": "P"
+    }
+   ],
+   "destinatarioadvogados": [
+    {
+     "advogado": {
+      "nome": "ADVOGADA EXEMPLO",
+      "numero_oab": "123456",
+      "uf_oab": "SP"
+     }
+    }
+   ]
+  },
+  {
+   "id": 900006,
+   "dias_uteis_atras": 1,
+   "siglaTribunal": "TRT2",
+   "tipoComunicacao": "Intimação",
+   "tipoDocumento": "Intimação",
+   "nomeOrgao": "5ª Turma - Gabinete Exemplo",
+   "nomeClasse": "RECURSO ORDINÁRIO TRABALHISTA",
+   "numeroprocessocommascara": "1000555-66.2025.5.02.0005",
+   "link": "https://comunica.pje.jus.br/",
+   "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ROT 1000555-66.2025.5.02.0005 RECORRENTE: TRANSPORTADORA EXEMPLO LTDA RECORRIDO: PESSOA FICTICIA CINCO</p><p>Fica V. Sa. intimado de que o processo foi incluído em pauta de julgamento da sessão telepresencial.</p>",
+   "destinatarios": [
+    {
+     "nome": "TRANSPORTADORA EXEMPLO LTDA",
+     "polo": "A"
+    }
+   ],
+   "destinatarioadvogados": [
+    {
+     "advogado": {
+      "nome": "ADVOGADA EXEMPLO",
+      "numero_oab": "123456",
+      "uf_oab": "SP"
+     }
+    }
+   ]
+  },
+  {
+   "id": 900007,
+   "dias_uteis_atras": 2,
+   "siglaTribunal": "TRT2",
+   "tipoComunicacao": "Intimação",
+   "tipoDocumento": "Despacho",
+   "nomeOrgao": "Vara do Trabalho de Cajamar",
+   "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "numeroprocessocommascara": "1000123-45.2026.5.02.0221",
+   "link": "https://comunica.pje.jus.br/",
+   "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ATOrd 1000123-45.2026.5.02.0221</p><p>DESPACHO. Junte a reclamada os cartões de ponto do período contratual, no prazo de 10 (dez) dias, sob as penas da lei.</p>",
+   "destinatarios": [
+    {
+     "nome": "PESSOA FICTICIA UM",
+     "polo": "A"
+    },
+    {
+     "nome": "TRANSPORTADORA EXEMPLO LTDA",
+     "polo": "P"
+    }
+   ],
+   "destinatarioadvogados": [
+    {
+     "advogado": {
+      "nome": "ADVOGADA EXEMPLO",
+      "numero_oab": "123456",
+      "uf_oab": "SP"
+     }
+    }
+   ]
+  }
+ ]
+}

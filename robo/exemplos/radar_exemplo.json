@@ -1,0 +1,1363 @@
+{
+ "_leia": "Dia FICTÍCIO do Radar SP, só para demonstrar a página. Nenhum dado real. Gerado por exemplos/gerar_radar_exemplo.py.",
+ "dia": "2026-10-22",
+ "gerado_em": "2026-10-22 20:40",
+ "exemplo": true,
+ "escritorio": "KR Law",
+ "tribunais": [
+  "TRT2",
+  "TRT15"
+ ],
+ "valor_minimo": 100000,
+ "situacao": {
+  "pt": "Lista de distribuição do DJEN lida às 19:12, 19:41 e 20:35. Receita consultada para todas as empresas.",
+  "en": "DJEN distribution lists read at 19:12, 19:41 and 20:35. Federal registry checked for every company."
+ },
+ "itens": [
+  {
+   "id": "1003192-05.2026.5.15.0022",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT15",
+   "vara": "1ª Vara do Trabalho de Piracicaba",
+   "processo": "1003192-05.2026.5.15.0022",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "EMBALAGENS PAPEL FORTE LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11150461000167",
+    "razao_social": "EMBALAGENS PAPEL FORTE LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 7200000,
+    "cnae": "1731400",
+    "atividade": "Fabricação de embalagens de papel",
+    "cnaes_secundarios": [],
+    "municipio": "Piracicaba",
+    "uf": "SP",
+    "telefone": "19 5555-2338",
+    "telefone2": "",
+    "email": "contato@embalagens.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Alfa",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Alfa",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2013-08-15"
+   },
+   "setor": "Indústria",
+   "gigante": false,
+   "valor_causa": 480000,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003706-25.2026.5.15.0032",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT15",
+   "vara": "2ª Vara do Trabalho de Campinas",
+   "processo": "1003706-25.2026.5.15.0032",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "METALURGICA CAMPINAS INDUSTRIAL S.A."
+   ],
+   "empresa": {
+    "cnpj": "11055433000160",
+    "razao_social": "METALURGICA CAMPINAS INDUSTRIAL S.A.",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 27000000,
+    "cnae": "2512800",
+    "atividade": "Fabricação de esquadrias de metal",
+    "cnaes_secundarios": [],
+    "municipio": "Campinas",
+    "uf": "SP",
+    "telefone": "19 5555-2387",
+    "telefone2": "",
+    "email": "contato@metalurgica.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Zeta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Teta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2001-04-15"
+   },
+   "setor": "Indústria",
+   "gigante": false,
+   "valor_causa": 480000,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003512-48.2026.5.02.0012",
+   "hora": "20:35",
+   "visto_em": "2026-10-22T20:35:00",
+   "tribunal": "TRT2",
+   "vara": "12ª Vara do Trabalho de São Paulo",
+   "processo": "1003512-48.2026.5.02.0012",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "VAREJO NACIONAL EXEMPLO S.A."
+   ],
+   "empresa": {
+    "cnpj": "11166299000175",
+    "razao_social": "VAREJO NACIONAL EXEMPLO S.A.",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 2800000000,
+    "cnae": "4713004",
+    "atividade": "Lojas de departamentos ou magazines, exceto lojas francas (Duty free)",
+    "cnaes_secundarios": [],
+    "municipio": "São Paulo",
+    "uf": "SP",
+    "telefone": "11 5555-3573",
+    "telefone2": "",
+    "email": "contato@varejo.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Gama",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Delta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2014-01-15"
+   },
+   "setor": "Varejo e e-commerce",
+   "gigante": true,
+   "valor_causa": 418000,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003119-63.2026.5.15.0109",
+   "hora": "20:35",
+   "visto_em": "2026-10-22T20:35:00",
+   "tribunal": "TRT15",
+   "vara": "4ª Vara do Trabalho de Sorocaba",
+   "processo": "1003119-63.2026.5.15.0109",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "ALIMENTOS BOA MESA LTDA",
+    "RH PRISMA TERCEIRIZACAO LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11063352000102",
+    "razao_social": "ALIMENTOS BOA MESA LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 6400000,
+    "cnae": "1091101",
+    "atividade": "Fabricação de produtos de panificação industrial",
+    "cnaes_secundarios": [],
+    "municipio": "Sorocaba",
+    "uf": "SP",
+    "telefone": "19 5555-6099",
+    "telefone2": "",
+    "email": "contato@alimentos.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Delta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2000-06-15"
+   },
+   "setor": "Indústria",
+   "gigante": false,
+   "valor_causa": 275900,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003875-87.2026.5.02.0221",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT2",
+   "vara": "Vara do Trabalho de Cajamar",
+   "processo": "1003875-87.2026.5.02.0221",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "LOGISTICA SERRA AZUL LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11000000000108",
+    "razao_social": "LOGISTICA SERRA AZUL LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 8500000,
+    "cnae": "5211701",
+    "atividade": "Armazéns gerais - emissão de warrant",
+    "cnaes_secundarios": [],
+    "municipio": "Cajamar",
+    "uf": "SP",
+    "telefone": "11 5555-6478",
+    "telefone2": "",
+    "email": "contato@logistica.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Eta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Zeta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "1998-03-15"
+   },
+   "setor": "Logística e transporte",
+   "gigante": false,
+   "valor_causa": 248000,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003384-35.2026.5.15.0022",
+   "hora": "20:35",
+   "visto_em": "2026-10-22T20:35:00",
+   "tribunal": "TRT15",
+   "vara": "1ª Vara do Trabalho de Piracicaba",
+   "processo": "1003384-35.2026.5.15.0022",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "COOPERATIVA AGRICOLA DO VALE"
+   ],
+   "empresa": {
+    "cnpj": "11197975000178",
+    "razao_social": "COOPERATIVA AGRICOLA DO VALE",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 15000000,
+    "cnae": "0113000",
+    "atividade": "Cultivo de cana-de-açúcar",
+    "cnaes_secundarios": [],
+    "municipio": "Piracicaba",
+    "uf": "SP",
+    "telefone": "19 5555-9525",
+    "telefone2": "",
+    "email": "contato@cooperativa.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Zeta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Eta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2015-02-15"
+   },
+   "setor": "Indústria",
+   "gigante": false,
+   "valor_causa": 248000,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003315-93.2026.5.02.0012",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT2",
+   "vara": "12ª Vara do Trabalho de São Paulo",
+   "processo": "1003315-93.2026.5.02.0012",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "ACADEMIA CORPO EM FORMA LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11142542000115",
+    "razao_social": "ACADEMIA CORPO EM FORMA LTDA",
+    "nome_fantasia": "",
+    "porte": "ME",
+    "porte_legivel": "Microempresa (até R$ 360 mil/ano)",
+    "capital_social": 60000,
+    "cnae": "9313100",
+    "atividade": "Atividades de condicionamento físico",
+    "cnaes_secundarios": [],
+    "municipio": "São Paulo",
+    "uf": "SP",
+    "telefone": "11 5555-1041",
+    "telefone2": "",
+    "email": "contato@academia.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Zeta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Teta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "2014-06-15"
+   },
+   "setor": "Serviços e outros",
+   "gigante": false,
+   "valor_causa": 176300,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003489-56.2026.5.02.0383",
+   "hora": "19:12",
+   "visto_em": "2026-10-22T19:12:00",
+   "tribunal": "TRT2",
+   "vara": "3ª Vara do Trabalho de Osasco",
+   "processo": "1003489-56.2026.5.02.0383",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "SUPERMERCADOS HORIZONTE S.A."
+   ],
+   "empresa": {
+    "cnpj": "11023757000117",
+    "razao_social": "SUPERMERCADOS HORIZONTE S.A.",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 45000000,
+    "cnae": "4711302",
+    "atividade": "Comércio varejista de mercadorias em geral, com predominância de produtos alimentícios - supermercados",
+    "cnaes_secundarios": [],
+    "municipio": "Osasco",
+    "uf": "SP",
+    "telefone": "11 5555-4484",
+    "telefone2": "",
+    "email": "contato@supermercados.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Alfa",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Teta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "1998-02-15"
+   },
+   "setor": "Varejo e e-commerce",
+   "gigante": false,
+   "valor_causa": 143750,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003593-68.2026.5.02.0441",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT2",
+   "vara": "1ª Vara do Trabalho de Santos",
+   "processo": "1003593-68.2026.5.02.0441",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "HOSPITAL SANTA CLARA LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11031676000169",
+    "razao_social": "HOSPITAL SANTA CLARA LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 12000000,
+    "cnae": "8610101",
+    "atividade": "Atividades de atendimento hospitalar, exceto pronto-socorro e unidades para atendimento a urgências",
+    "cnaes_secundarios": [],
+    "municipio": "Santos",
+    "uf": "SP",
+    "telefone": "11 5555-5489",
+    "telefone2": "",
+    "email": "contato@hospital.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Eta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2009-04-15"
+   },
+   "setor": "Saúde e farmácia",
+   "gigante": false,
+   "valor_causa": 143750,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003069-74.2026.5.15.0032",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT15",
+   "vara": "2ª Vara do Trabalho de Campinas",
+   "processo": "1003069-74.2026.5.15.0032",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "CONCESSIONARIA VIA PAULISTA VEICULOS LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11102947000120",
+    "razao_social": "CONCESSIONARIA VIA PAULISTA VEICULOS LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 9800000,
+    "cnae": "4511101",
+    "atividade": "Comércio a varejo de automóveis, camionetas e utilitários novos",
+    "cnaes_secundarios": [],
+    "municipio": "Campinas",
+    "uf": "SP",
+    "telefone": "19 5555-3821",
+    "telefone2": "",
+    "email": "contato@concessionaria.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Delta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Gama",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2014-01-15"
+   },
+   "setor": "Varejo e e-commerce",
+   "gigante": false,
+   "valor_causa": 68000,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003742-54.2026.5.02.0315",
+   "hora": "19:12",
+   "visto_em": "2026-10-22T19:12:00",
+   "tribunal": "TRT2",
+   "vara": "5ª Vara do Trabalho de Guarulhos",
+   "processo": "1003742-54.2026.5.02.0315",
+   "classe": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+   "rito": "Sumaríssimo",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "TRANSPORTES ROTA NORTE LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11007919000123",
+    "razao_social": "TRANSPORTES ROTA NORTE LTDA",
+    "nome_fantasia": "",
+    "porte": "EPP",
+    "porte_legivel": "Pequena (até R$ 4,8 milhões/ano)",
+    "capital_social": 1200000,
+    "cnae": "4930202",
+    "atividade": "Transporte rodoviário de carga, exceto produtos perigosos e mudanças, intermunicipal, interestadual e internacional",
+    "cnaes_secundarios": [],
+    "municipio": "Guarulhos",
+    "uf": "SP",
+    "telefone": "11 5555-5261",
+    "telefone2": "",
+    "email": "contato@transportes.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Delta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Épsilon",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "2004-03-15"
+   },
+   "setor": "Logística e transporte",
+   "gigante": false,
+   "valor_causa": 52300,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003292-87.2026.5.15.0109",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT15",
+   "vara": "4ª Vara do Trabalho de Sorocaba",
+   "processo": "1003292-87.2026.5.15.0109",
+   "classe": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+   "rito": "Sumaríssimo",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "TEXTIL ALGODAO DOCE INDUSTRIA LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11213813000186",
+    "razao_social": "TEXTIL ALGODAO DOCE INDUSTRIA LTDA",
+    "nome_fantasia": "",
+    "porte": "EPP",
+    "porte_legivel": "Pequena (até R$ 4,8 milhões/ano)",
+    "capital_social": 1800000,
+    "cnae": "1311100",
+    "atividade": "Preparação e fiação de fibras de algodão",
+    "cnaes_secundarios": [],
+    "municipio": "Sorocaba",
+    "uf": "SP",
+    "telefone": "19 5555-1046",
+    "telefone2": "",
+    "email": "contato@textil.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Zeta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Eta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "1999-05-15"
+   },
+   "setor": "Indústria",
+   "gigante": false,
+   "valor_causa": 52300,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003234-84.2026.5.15.0109",
+   "hora": "20:35",
+   "visto_em": "2026-10-22T20:35:00",
+   "tribunal": "TRT15",
+   "vara": "4ª Vara do Trabalho de Sorocaba",
+   "processo": "1003234-84.2026.5.15.0109",
+   "classe": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+   "rito": "Sumaríssimo",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "AUTO PECAS ROTA 300 LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11095028000176",
+    "razao_social": "AUTO PECAS ROTA 300 LTDA",
+    "nome_fantasia": "",
+    "porte": "ME",
+    "porte_legivel": "Microempresa (até R$ 360 mil/ano)",
+    "capital_social": 150000,
+    "cnae": "4530703",
+    "atividade": "Comércio a varejo de peças e acessórios novos para veículos automotores",
+    "cnaes_secundarios": [],
+    "municipio": "Sorocaba",
+    "uf": "SP",
+    "telefone": "19 5555-1146",
+    "telefone2": "",
+    "email": "contato@auto.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Épsilon",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "1996-06-15"
+   },
+   "setor": "Varejo e e-commerce",
+   "gigante": false,
+   "valor_causa": 52300,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003729-91.2026.5.02.0012",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT2",
+   "vara": "12ª Vara do Trabalho de São Paulo",
+   "processo": "1003729-91.2026.5.02.0012",
+   "classe": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+   "rito": "Sumaríssimo",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "GUARDIAO SEGURANCA E VIGILANCIA LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11039595000105",
+    "razao_social": "GUARDIAO SEGURANCA E VIGILANCIA LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 3100000,
+    "cnae": "8011101",
+    "atividade": "Atividades de vigilância e segurança privada",
+    "cnaes_secundarios": [],
+    "municipio": "São Paulo",
+    "uf": "SP",
+    "telefone": "11 5555-8369",
+    "telefone2": "",
+    "email": "contato@guardiao.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Eta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Zeta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2003-03-15"
+   },
+   "setor": "Segurança, limpeza e facilities",
+   "gigante": false,
+   "valor_causa": 21000,
+   "valor_fonte": "djen",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003097-65.2026.5.02.0012",
+   "hora": "19:12",
+   "visto_em": "2026-10-22T19:12:00",
+   "tribunal": "TRT2",
+   "vara": "12ª Vara do Trabalho de São Paulo",
+   "processo": "1003097-65.2026.5.02.0012",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "TELECOM CONECTA BRASIL S.A."
+   ],
+   "empresa": {
+    "cnpj": "11158380000103",
+    "razao_social": "TELECOM CONECTA BRASIL S.A.",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 310000000,
+    "cnae": "6110801",
+    "atividade": "Serviços de telefonia fixa comutada - STFC",
+    "cnaes_secundarios": [],
+    "municipio": "São Paulo",
+    "uf": "SP",
+    "telefone": "11 5555-1776",
+    "telefone2": "",
+    "email": "contato@telecom.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "1997-08-15"
+   },
+   "setor": "Serviços e outros",
+   "gigante": true,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003152-28.2026.5.02.0202",
+   "hora": "19:12",
+   "visto_em": "2026-10-22T19:12:00",
+   "tribunal": "TRT2",
+   "vara": "2ª Vara do Trabalho de Barueri",
+   "processo": "1003152-28.2026.5.02.0202",
+   "classe": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+   "rito": "Sumaríssimo",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "RH PRISMA TERCEIRIZACAO LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11015838000175",
+    "razao_social": "RH PRISMA TERCEIRIZACAO LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 2300000,
+    "cnae": "7820500",
+    "atividade": "Locação de mão de obra temporária",
+    "cnaes_secundarios": [],
+    "municipio": "Barueri",
+    "uf": "SP",
+    "telefone": "11 5555-3328",
+    "telefone2": "",
+    "email": "contato@rh.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Épsilon",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "1998-08-15"
+   },
+   "setor": "RH e terceirização",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003256-20.2026.5.02.0202",
+   "hora": "19:12",
+   "visto_em": "2026-10-22T19:12:00",
+   "tribunal": "TRT2",
+   "vara": "2ª Vara do Trabalho de Barueri",
+   "processo": "1003256-20.2026.5.02.0202",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "CALL CENTER ATENDE BEM LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11079190000109",
+    "razao_social": "CALL CENTER ATENDE BEM LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 5000000,
+    "cnae": "8220200",
+    "atividade": "Atividades de teleatendimento",
+    "cnaes_secundarios": [],
+    "municipio": "Barueri",
+    "uf": "SP",
+    "telefone": "11 5555-9986",
+    "telefone2": "",
+    "email": "contato@call.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Épsilon",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Teta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2021-01-15"
+   },
+   "setor": "Serviços e outros",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003339-75.2026.5.02.0383",
+   "hora": "19:12",
+   "visto_em": "2026-10-22T19:12:00",
+   "tribunal": "TRT2",
+   "vara": "3ª Vara do Trabalho de Osasco",
+   "processo": "1003339-75.2026.5.02.0383",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "CLINICA ODONTO SORRISO LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11110866000171",
+    "razao_social": "CLINICA ODONTO SORRISO LTDA",
+    "nome_fantasia": "",
+    "porte": "ME",
+    "porte_legivel": "Microempresa (até R$ 360 mil/ano)",
+    "capital_social": 80000,
+    "cnae": "8630504",
+    "atividade": "Atividade odontológica",
+    "cnaes_secundarios": [],
+    "municipio": "Osasco",
+    "uf": "SP",
+    "telefone": "11 5555-3109",
+    "telefone2": "",
+    "email": "contato@clinica.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Eta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "2005-02-15"
+   },
+   "setor": "Saúde e farmácia",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003786-64.2026.5.02.0221",
+   "hora": "19:12",
+   "visto_em": "2026-10-22T19:12:00",
+   "tribunal": "TRT2",
+   "vara": "Vara do Trabalho de Cajamar",
+   "processo": "1003786-64.2026.5.02.0221",
+   "classe": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+   "rito": "Sumaríssimo",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "ESCOLA NOVO SABER LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11182137000120",
+    "razao_social": "ESCOLA NOVO SABER LTDA",
+    "nome_fantasia": "",
+    "porte": "EPP",
+    "porte_legivel": "Pequena (até R$ 4,8 milhões/ano)",
+    "capital_social": 400000,
+    "cnae": "8513900",
+    "atividade": "Ensino fundamental",
+    "cnaes_secundarios": [],
+    "municipio": "Cajamar",
+    "uf": "SP",
+    "telefone": "11 5555-4968",
+    "telefone2": "",
+    "email": "contato@escola.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Teta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "2020-04-15"
+   },
+   "setor": "Serviços e outros",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003830-05.2026.5.02.0441",
+   "hora": "19:12",
+   "visto_em": "2026-10-22T19:12:00",
+   "tribunal": "TRT2",
+   "vara": "1ª Vara do Trabalho de Santos",
+   "processo": "1003830-05.2026.5.02.0441",
+   "classe": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+   "rito": "Sumaríssimo",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "HOTEL JARDIM DAS PALMEIRAS LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11126704000121",
+    "razao_social": "HOTEL JARDIM DAS PALMEIRAS LTDA",
+    "nome_fantasia": "",
+    "porte": "EPP",
+    "porte_legivel": "Pequena (até R$ 4,8 milhões/ano)",
+    "capital_social": 700000,
+    "cnae": "5510801",
+    "atividade": "Hotéis",
+    "cnaes_secundarios": [],
+    "municipio": "Santos",
+    "uf": "SP",
+    "telefone": "11 5555-7597",
+    "telefone2": "",
+    "email": "contato@hotel.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Eta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Teta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "2018-08-15"
+   },
+   "setor": "Serviços e outros",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003032-39.2026.5.15.0067",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT15",
+   "vara": "2ª Vara do Trabalho de Ribeirão Preto",
+   "processo": "1003032-39.2026.5.15.0067",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "ENGENHARIA PONTE FIRME LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11118785000118",
+    "razao_social": "ENGENHARIA PONTE FIRME LTDA",
+    "nome_fantasia": "",
+    "porte": "EPP",
+    "porte_legivel": "Pequena (até R$ 4,8 milhões/ano)",
+    "capital_social": 1500000,
+    "cnae": "4211101",
+    "atividade": "Construção de rodovias e ferrovias",
+    "cnaes_secundarios": [],
+    "municipio": "Ribeirão Preto",
+    "uf": "SP",
+    "telefone": "19 5555-6897",
+    "telefone2": "",
+    "email": "contato@engenharia.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Teta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "2009-06-15"
+   },
+   "setor": "Construção e imóveis",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003159-81.2026.5.15.0097",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT15",
+   "vara": "3ª Vara do Trabalho de Jundiaí",
+   "processo": "1003159-81.2026.5.15.0097",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "PLASTICOS JUNDIAI INDUSTRIA LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11071271000154",
+    "razao_social": "PLASTICOS JUNDIAI INDUSTRIA LTDA",
+    "nome_fantasia": "",
+    "porte": "EPP",
+    "porte_legivel": "Pequena (até R$ 4,8 milhões/ano)",
+    "capital_social": 2000000,
+    "cnae": "2222600",
+    "atividade": "Fabricação de embalagens de material plástico",
+    "cnaes_secundarios": [],
+    "municipio": "Jundiaí",
+    "uf": "SP",
+    "telefone": "19 5555-1677",
+    "telefone2": "",
+    "email": "contato@plasticos.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Épsilon",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "2009-01-15"
+   },
+   "setor": "Indústria",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003563-66.2026.5.15.0022",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT15",
+   "vara": "1ª Vara do Trabalho de Piracicaba",
+   "processo": "1003563-66.2026.5.15.0022",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "FRIGORIFICO BOM PASTO S.A."
+   ],
+   "empresa": {
+    "cnpj": "11087109000124",
+    "razao_social": "FRIGORIFICO BOM PASTO S.A.",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 38000000,
+    "cnae": "1011201",
+    "atividade": "Frigorífico - abate de bovinos",
+    "cnaes_secundarios": [],
+    "municipio": "Piracicaba",
+    "uf": "SP",
+    "telefone": "19 5555-3402",
+    "telefone2": "",
+    "email": "contato@frigorifico.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Gama",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Zeta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2011-03-15"
+   },
+   "setor": "Indústria",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003638-13.2026.5.02.0202",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT2",
+   "vara": "2ª Vara do Trabalho de Barueri",
+   "processo": "1003638-13.2026.5.02.0202",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "LIMPEZA TOTAL FACILITIES LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11190056000172",
+    "razao_social": "LIMPEZA TOTAL FACILITIES LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 2600000,
+    "cnae": "8121400",
+    "atividade": "Limpeza em prédios e em domicílios",
+    "cnaes_secundarios": [],
+    "municipio": "Barueri",
+    "uf": "SP",
+    "telefone": "11 5555-1061",
+    "telefone2": "",
+    "email": "contato@limpeza.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Gama",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Alfa",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "2014-08-15"
+   },
+   "setor": "Segurança, limpeza e facilities",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003670-80.2026.5.15.0032",
+   "hora": "19:41",
+   "visto_em": "2026-10-22T19:41:00",
+   "tribunal": "TRT15",
+   "vara": "2ª Vara do Trabalho de Campinas",
+   "processo": "1003670-80.2026.5.15.0032",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "FARMACIA VIDA NOVA LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11205894000172",
+    "razao_social": "FARMACIA VIDA NOVA LTDA",
+    "nome_fantasia": "",
+    "porte": "ME",
+    "porte_legivel": "Microempresa (até R$ 360 mil/ano)",
+    "capital_social": 90000,
+    "cnae": "4771701",
+    "atividade": "Comércio varejista de produtos farmacêuticos, sem manipulação de fórmulas",
+    "cnaes_secundarios": [],
+    "municipio": "Campinas",
+    "uf": "SP",
+    "telefone": "19 5555-8242",
+    "telefone2": "",
+    "email": "contato@farmacia.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Épsilon",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Eta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "2007-09-15"
+   },
+   "setor": "Saúde e farmácia",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003367-53.2026.5.02.0315",
+   "hora": "20:35",
+   "visto_em": "2026-10-22T20:35:00",
+   "tribunal": "TRT2",
+   "vara": "5ª Vara do Trabalho de Guarulhos",
+   "processo": "1003367-53.2026.5.02.0315",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "DISTRIBUIDORA DE BEBIDAS GELADA LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11134623000173",
+    "razao_social": "DISTRIBUIDORA DE BEBIDAS GELADA LTDA",
+    "nome_fantasia": "",
+    "porte": "DEMAIS",
+    "porte_legivel": "Média ou grande (acima de R$ 4,8 milhões/ano)",
+    "capital_social": 4900000,
+    "cnae": "4635499",
+    "atividade": "Comércio atacadista de bebidas não especificadas anteriormente",
+    "cnaes_secundarios": [],
+    "municipio": "Guarulhos",
+    "uf": "SP",
+    "telefone": "11 5555-1075",
+    "telefone2": "",
+    "email": "contato@distribuidora.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Teta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": false,
+    "inicio_atividade": "1998-03-15"
+   },
+   "setor": "Logística e transporte",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt2.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003442-97.2026.5.15.0067",
+   "hora": "20:35",
+   "visto_em": "2026-10-22T20:35:00",
+   "tribunal": "TRT15",
+   "vara": "2ª Vara do Trabalho de Ribeirão Preto",
+   "processo": "1003442-97.2026.5.15.0067",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "GRAFICA IMPRESSAO RAPIDA LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11174218000189",
+    "razao_social": "GRAFICA IMPRESSAO RAPIDA LTDA",
+    "nome_fantasia": "",
+    "porte": "ME",
+    "porte_legivel": "Microempresa (até R$ 360 mil/ano)",
+    "capital_social": 120000,
+    "cnae": "1813099",
+    "atividade": "Impressão de material para outros usos",
+    "cnaes_secundarios": [],
+    "municipio": "Ribeirão Preto",
+    "uf": "SP",
+    "telefone": "19 5555-7681",
+    "telefone2": "",
+    "email": "contato@grafica.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Zeta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Teta",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "1995-05-15"
+   },
+   "setor": "Serviços e outros",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  },
+  {
+   "id": "1003922-82.2026.5.15.0097",
+   "hora": "20:35",
+   "visto_em": "2026-10-22T20:35:00",
+   "tribunal": "TRT15",
+   "vara": "3ª Vara do Trabalho de Jundiaí",
+   "processo": "1003922-82.2026.5.15.0097",
+   "classe": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+   "rito": "Ordinário",
+   "distribuida_em": "2026-10-22",
+   "empresas": [
+    "CONSTRUTORA VALE VERDE LTDA"
+   ],
+   "empresa": {
+    "cnpj": "11047514000119",
+    "razao_social": "CONSTRUTORA VALE VERDE LTDA",
+    "nome_fantasia": "",
+    "porte": "EPP",
+    "porte_legivel": "Pequena (até R$ 4,8 milhões/ano)",
+    "capital_social": 900000,
+    "cnae": "4120400",
+    "atividade": "Construção de edifícios",
+    "cnaes_secundarios": [],
+    "municipio": "Jundiaí",
+    "uf": "SP",
+    "telefone": "19 5555-9672",
+    "telefone2": "",
+    "email": "contato@construtora.exemplo.com.br",
+    "socios": [
+     {
+      "nome": "Pessoa Fictícia Beta",
+      "qualificacao": "Administrador"
+     },
+     {
+      "nome": "Pessoa Fictícia Gama",
+      "qualificacao": "Sócio"
+     }
+    ],
+    "simples": true,
+    "inicio_atividade": "2017-05-15"
+   },
+   "setor": "Construção e imóveis",
+   "gigante": false,
+   "valor_causa": null,
+   "valor_fonte": "",
+   "link_djen": "https://comunica.pje.jus.br/",
+   "link_pje": "https://pje.trt15.jus.br/consultaprocessual/"
+  }
+ ]
+}

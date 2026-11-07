@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LexSuiteONE · Radar Trabalhista</title>
+<meta name="description" content="Radar Trabalhista LexSuiteONE: raio-x da vara e ações contra empresas, com dados públicos do Judiciário.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: faixa marinho com marca e abas; abaixo, um painel por aba na largura toda.
+   Paleta: papel frio, tinta marinho e latão como único acento (aba ativa, números de destaque). */
+:root {
+  color-scheme: light;
+  --papel: #f3f4f7;
+  --folha: #ffffff;
+  --tinta: #111a2b;
+  --tinta-2: #46506a;
+  --tinta-3: #6a7389;
+  --linha: #dfe3eb;
+  --linha-forte: #c9cfdb;
+  --marinho: #0f1d33;
+  --marinho-2: #1a2c4a;
+  --marinho-texto: #e9ecf3;
+  --marinho-suave: #a9b3c7;
+  --latao: #a87a2e;
+  --latao-texto: #8a6222;
+  --latao-claro: #f5eedf;
+  --s1: #2b62ad;            /* rito ordinário (validado) */
+  --s2: #b07a26;            /* rito sumaríssimo (validado) */
+  --barra: #2b62ad;
+  --trilho: #e8ebf1;
+  --alta: #b42f2f; --media: #9a6a12; --baixa: #6a7389;
+  --sombra: 0 1px 2px rgba(15, 29, 51, .06), 0 8px 24px rgba(15, 29, 51, .06);
+  --f-display: "Cormorant Garamond", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --f-texto: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --f-dado: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --raio: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --papel: #0e1320; --folha: #151c2b; --tinta: #eef1f6; --tinta-2: #c3c9d6; --tinta-3: #98a1b3;
+    --linha: #273149; --linha-forte: #34405c; --marinho: #0a101c; --marinho-2: #141d30; --marinho-texto: #eef1f6;
+    --marinho-suave: #9aa5bb; --latao: #c9a063; --latao-texto: #d6b27a; --latao-claro: #2a2416;
+    --s1: #5b8fd6; --s2: #b8812f; --barra: #5b8fd6; --trilho: #222b40;
+    --alta: #e07070; --media: #d3a24a; --baixa: #98a1b3; --sombra: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --papel: #0e1320; --folha: #151c2b; --tinta: #eef1f6; --tinta-2: #c3c9d6; --tinta-3: #98a1b3;
+  --linha: #273149; --linha-forte: #34405c; --marinho: #0a101c; --marinho-2: #141d30; --marinho-texto: #eef1f6;
+  --marinho-suave: #9aa5bb; --latao: #c9a063; --latao-texto: #d6b27a; --latao-claro: #2a2416;
+  --s1: #5b8fd6; --s2: #b8812f; --barra: #5b8fd6; --trilho: #222b40;
+  --alta: #e07070; --media: #d3a24a; --baixa: #98a1b3; --sombra: none;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-padding-top: 80px; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 0.94rem/1.55 var(--f-texto); -webkit-font-smoothing: antialiased; }
+.miolo { max-width: 1280px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+
+/* Cabeçalho */
+header.faixa { background: var(--marinho); color: var(--marinho-texto); }
+.topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-block: 18px 6px; }
+.marca { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.marca .nome { font: 600 0.8rem/1 var(--f-texto); letter-spacing: 0.16em; text-transform: uppercase; color: #fff; }
+.marca .nome i { font-style: normal; color: var(--latao); }
+.marca .modulo { font-size: 0.8rem; color: var(--marinho-suave); letter-spacing: 0.04em; }
+.acoes-topo { display: flex; gap: 8px; align-items: center; }
+.pilula { display: inline-flex; border: 1px solid #33425f; border-radius: 999px; overflow: hidden; }
+.pilula button, .botao-topo { font: 600 0.76rem var(--f-texto); letter-spacing: .04em; padding: 8px 12px; min-height: 36px; min-width: 40px; border: 0; background: transparent; color: var(--marinho-suave); cursor: pointer; }
+.pilula button[aria-pressed="true"] { background: var(--marinho-texto); color: var(--marinho); }
+.botao-topo { border: 1px solid #33425f; border-radius: 999px; }
+.botao-topo:hover, .pilula button:hover { color: #fff; }
+.titulo { padding-block: 14px 18px; display: grid; gap: 6px; }
+.titulo .eyebrow { font: 500 0.74rem var(--f-dado); letter-spacing: .08em; color: var(--latao); text-transform: uppercase; }
+h1 { font: 700 clamp(2rem, 4.6vw, 3.1rem)/1.04 var(--f-display); margin: 0; letter-spacing: -0.005em; text-wrap: balance; }
+.titulo p { margin: 0; color: var(--marinho-suave); max-width: 80ch; }
+nav.abas { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-top: 1px solid #22314d; }
+nav.abas::-webkit-scrollbar { display: none; }
+nav.abas button { font: 500 0.88rem var(--f-texto); color: var(--marinho-suave); background: none; border: 0; padding: 14px 14px 13px; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
+nav.abas button[aria-selected="true"] { color: #fff; border-bottom-color: var(--latao); }
+nav.abas button:hover { color: #fff; }
+nav.abas .conta { font: 500 0.72rem var(--f-dado); color: var(--marinho-suave); margin-left: 6px; }
+
+main .miolo { padding-block: 26px 48px; }
+section.painel { display: grid; gap: 22px; }
+.cartao { background: var(--folha); border: 1px solid var(--linha); border-radius: var(--raio); padding: 20px; box-shadow: var(--sombra); min-width: 0; display: grid; gap: 14px; align-content: start; }
+.cartao > * { min-width: 0; }
+h2 { font: 700 1.55rem/1.15 var(--f-display); margin: 0; text-wrap: balance; }
+h3 { font: 600 0.78rem var(--f-texto); letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-2); margin: 0; }
+.nota { font-size: 0.82rem; color: var(--tinta-3); margin: 0; }
+.grade-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 22px; }
+.grade-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 22px; }
+
+/* Números-chave */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 14px; }
+.kpi { background: var(--folha); border: 1px solid var(--linha); border-radius: var(--raio); padding: 18px; display: grid; gap: 6px; box-shadow: var(--sombra); }
+.kpi .rot { font-size: 0.74rem; letter-spacing: .07em; text-transform: uppercase; color: var(--tinta-2); }
+.kpi .val { font: 700 2.4rem/1 var(--f-display); font-variant-numeric: tabular-nums lining-nums; }
+.kpi .val small { font: 500 0.95rem var(--f-texto); color: var(--tinta-2); margin-left: 4px; }
+.kpi .det { font-size: 0.8rem; color: var(--tinta-3); }
+.kpi.destaque { border-color: color-mix(in srgb, var(--latao) 45%, var(--linha)); background: linear-gradient(180deg, var(--latao-claro), var(--folha) 70%); }
+.kpi.destaque .val { color: var(--latao-texto); }
+.frase { font: 600 clamp(1.3rem, 2.4vw, 1.75rem)/1.3 var(--f-display); margin: 0; max-width: 62ch; text-wrap: balance; }
+.frase em { font-style: normal; color: var(--latao-texto); }
+
+/* Gráficos */
+.legenda { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.8rem; color: var(--tinta-2); }
+.legenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+.grafico { position: relative; }
+.grafico svg { width: 100%; height: auto; display: block; overflow: visible; }
+.grafico text { fill: var(--tinta-3); font: 400 11px var(--f-texto); }
+.grafico .rotulo { fill: var(--tinta-2); font: 500 10.5px var(--f-dado); }
+.grafico .grade-l { stroke: var(--linha); stroke-width: 1; }
+.grafico rect.alvo { fill: transparent; cursor: pointer; }
+.grafico rect.alvo:focus { outline: none; stroke: var(--tinta); stroke-width: 1.5; }
+.dica { position: absolute; pointer-events: none; background: var(--tinta); color: var(--folha); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem; line-height: 1.45; white-space: nowrap; transform: translate(-50%, -100%); z-index: 3; }
+.barras { display: grid; gap: 10px; }
+.barra-l { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 12px; align-items: center; }
+.barra-l.clicavel { cursor: pointer; border-radius: 8px; padding: 4px 6px; margin: -4px -6px; }
+.barra-l.clicavel:hover { background: var(--papel); }
+.barra-l .nome { font-size: 0.88rem; overflow-wrap: anywhere; }
+.barra-l .num { font: 500 0.8rem var(--f-dado); color: var(--tinta-2); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.barra-l .trilho { grid-column: 1 / -1; height: 8px; background: var(--trilho); border-radius: 4px; overflow: hidden; }
+.barra-l .enche { display: block; height: 100%; background: var(--barra); border-radius: 0 4px 4px 0; transform-origin: left; }
+.barra-l .enche.latao { background: var(--s2); }
+.empilhada { display: flex; height: 14px; border-radius: 7px; overflow: hidden; gap: 2px; background: var(--folha); }
+.empilhada span { display: block; height: 100%; }
+
+/* Ciclo do processo */
+.ciclo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; position: relative; }
+.etapa { padding: 14px 16px 6px; border-top: 2px solid var(--linha-forte); position: relative; display: grid; gap: 4px; }
+.etapa::before { content: ""; position: absolute; top: -7px; left: 16px; width: 12px; height: 12px; border-radius: 50%; background: var(--folha); border: 2px solid var(--latao); }
+.etapa .quando { font: 500 0.74rem var(--f-dado); color: var(--latao-texto); letter-spacing: .04em; }
+.etapa strong { font: 700 1.2rem/1.2 var(--f-display); }
+.etapa span { font-size: 0.8rem; color: var(--tinta-3); }
+
+/* Filtros e tabelas */
+.filtros { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.filtros label { display: grid; gap: 4px; font-size: 0.74rem; color: var(--tinta-2); letter-spacing: .02em; }
+.filtros input, .filtros select { font: 400 0.88rem var(--f-texto); padding: 8px 10px; min-height: 40px; border: 1px solid var(--linha-forte); border-radius: 8px; background: var(--folha); color: var(--tinta); }
+.filtros input[type="search"] { min-width: min(280px, 100%); }
+.filtros .espaco { flex: 1; }
+.resumo-filtro { font-size: 0.84rem; color: var(--tinta-2); }
+.resumo-filtro b { color: var(--tinta); font-variant-numeric: tabular-nums; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-f { font: 500 0.78rem var(--f-texto); border: 1px solid var(--linha-forte); background: var(--folha); color: var(--tinta-2); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+.chip-f::after { content: " ✕"; color: var(--tinta-3); }
+.rolagem { overflow: auto; max-height: 70vh; border: 1px solid var(--linha); border-radius: 10px; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 0.86rem; }
+th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+th { position: sticky; top: 0; z-index: 1; background: var(--folha); font-weight: 600; color: var(--tinta-2); font-size: 0.72rem; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+th button { all: unset; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+th button:focus-visible { outline: 2px solid var(--latao); outline-offset: 2px; border-radius: 4px; }
+th .seta { font-size: 0.7rem; color: var(--tinta-3); width: 0.8em; }
+th[aria-sort="ascending"] .seta::after { content: "▲"; color: var(--latao); }
+th[aria-sort="descending"] .seta::after { content: "▼"; color: var(--latao); }
+th[aria-sort="none"] .seta::after { content: "↕"; opacity: .5; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: color-mix(in srgb, var(--s1) 5%, transparent); }
+tbody tr:focus-visible { outline: 2px solid var(--latao); outline-offset: -2px; }
+td.proc { font: 400 0.78rem var(--f-dado); white-space: nowrap; }
+td.proc .seg { color: var(--latao-texto); font-weight: 500; }
+.empresa { font-weight: 600; }
+.empresa + .empresa { margin-top: 2px; }
+.sub { font-size: 0.76rem; color: var(--tinta-3); margin-top: 2px; }
+.tag { display: inline-block; font: 500 0.7rem var(--f-texto); letter-spacing: .03em; padding: 2px 8px; border-radius: 999px; background: var(--trilho); color: var(--tinta-2); white-space: nowrap; }
+.tag.ord { background: color-mix(in srgb, var(--s1) 14%, transparent); color: var(--s1); }
+.tag.sum { background: color-mix(in srgb, var(--s2) 16%, transparent); color: var(--latao-texto); }
+.tag.terc { background: transparent; border: 1px solid var(--linha-forte); }
+.tag.cli { background: var(--latao-claro); color: var(--latao-texto); border: 1px solid color-mix(in srgb, var(--latao) 40%, transparent); }
+.prio { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.8rem; white-space: nowrap; }
+.prio i { font-style: normal; color: var(--c); }
+.mini { display: inline-block; width: 64px; height: 6px; background: var(--trilho); border-radius: 3px; overflow: hidden; vertical-align: middle; margin-left: 6px; }
+.mini span { display: block; height: 100%; background: var(--latao); }
+.mais { justify-self: start; }
+.botao { font: 600 0.84rem var(--f-texto); padding: 9px 14px; min-height: 40px; border-radius: 8px; border: 1px solid var(--linha-forte); background: var(--folha); color: var(--tinta); cursor: pointer; }
+.botao:hover { border-color: var(--tinta-3); }
+.botao.primario { background: var(--marinho); color: #fff; border-color: var(--marinho); }
+.vazio { border: 1px dashed var(--linha-forte); border-radius: 10px; padding: 18px; color: var(--tinta-2); }
+
+/* Ficha (janela) */
+dialog.ficha { border: 0; padding: 0; border-radius: 14px; width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 48px); background: var(--folha); color: var(--tinta); box-shadow: 0 24px 60px rgba(0,0,0,.3); overscroll-behavior: contain; }
+dialog.ficha::backdrop { background: rgba(10, 16, 28, .55); }
+.ficha .cab { display: flex; justify-content: space-between; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--linha); background: var(--papel); position: sticky; top: 0; }
+.ficha .cab h2 { font: 500 1.05rem var(--f-dado); margin-top: 4px; }
+.ficha .corpo { padding: 18px 20px 22px; display: grid; gap: 14px; }
+.ficha dl { display: grid; grid-template-columns: minmax(120px, 34%) 1fr; gap: 8px 14px; margin: 0; font-size: 0.88rem; }
+.ficha dt { color: var(--tinta-3); }
+.ficha dd { margin: 0; overflow-wrap: anywhere; }
+.fechar { font-size: 1.2rem; line-height: 1; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--linha-forte); background: var(--folha); color: var(--tinta); cursor: pointer; flex: none; }
+
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--latao); outline-offset: 2px; }
+a { color: var(--s1); }
+footer .miolo { padding-block: 0 40px; color: var(--tinta-3); font-size: 0.78rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+.metodo { display: grid; gap: 12px; max-width: 86ch; }
+.metodo p { margin: 0; }
+.metodo ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .anima .enche { animation: crescer .7s cubic-bezier(.2,.7,.2,1) both; }
+  .anima .kpi, .anima .cartao { animation: surgir .45s ease-out both; }
+  @keyframes crescer { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes surgir { from { opacity: .001; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .grafico rect.barra-mes { transition: opacity .2s; }
+}
+@media (max-width: 600px) {
+  .kpi { padding: 14px; } .kpi .val { font-size: 1.8rem; } .kpi .det { font-size: .76rem; }
+  .ciclo { grid-template-columns: 1fr; }
+  th, td { padding: 9px 9px; }
+  .cartao { padding: 16px; }
+}
+@media print {
+  header.faixa { background: none; color: #000; } nav.abas, .acoes-topo, .filtros, .botao { display: none !important; }
+  section.painel[hidden] { display: grid !important; } .rolagem { max-height: none; overflow: visible; }
+  .cartao, .kpi { box-shadow: none; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header class="faixa">
+  <div class="miolo">
+    <div class="topo">
+      <div class="marca"><span class="nome">LexSuite<i>ONE</i></span><span class="modulo" data-t="modulo">Radar Trabalhista</span></div>
+      <div class="acoes-topo">
+        <button type="button" class="botao-topo" id="tema" aria-label="Tema claro ou escuro" title="Tema claro ou escuro"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="display:block"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.8a6.2 6.2 0 0 1 0 12.4z" fill="currentColor"/></svg></button>
+        <div class="pilula" role="group" aria-label="Idioma / Language">
+          <button type="button" id="b-pt" data-lang="pt">PT</button>
+          <button type="button" id="b-en" data-lang="en">EN</button>
+        </div>
+      </div>
+    </div>
+    <div class="titulo">
+      <span class="eyebrow" id="eyebrow"></span>
+      <h1 id="h1">—</h1>
+      <p id="subtitulo"></p>
+    </div>
+    <nav class="abas" role="tablist" aria-label="Seções">
+      <button role="tab" id="t-visao" aria-controls="p-visao" data-aba="visao"><span data-t="aba_visao">Visão geral</span></button>
+      <button role="tab" id="t-acoes" aria-controls="p-acoes" data-aba="acoes"><span data-t="aba_acoes">Ações</span><span class="conta" id="conta-acoes"></span></button>
+      <button role="tab" id="t-empresas" aria-controls="p-empresas" data-aba="empresas"><span data-t="aba_empresas">Empresas e setores</span></button>
+      <button role="tab" id="t-raiox" aria-controls="p-raiox" data-aba="raiox"><span data-t="aba_raiox">Raio-x da vara</span></button>
+      <button role="tab" id="t-metodo" aria-controls="p-metodo" data-aba="metodo"><span data-t="aba_metodo">Método e fontes</span></button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="miolo">
+    <!-- VISÃO GERAL -->
+    <section class="painel" id="p-visao" role="tabpanel" aria-labelledby="t-visao">
+      <p class="frase" id="frase"></p>
+      <div class="kpis" id="kpis"></div>
+      <div class="grade-2">
+        <div class="cartao">
+          <h3 data-t="mes_titulo">Ações novas por mês</h3>
+          <div class="legenda"><span style="--c: var(--s1)" data-t="ordinario">Ordinário</span><span style="--c: var(--s2)" data-t="sumarissimo">Sumaríssimo</span></div>
+          <div class="grafico" id="g-mes"></div>
+          <p class="nota" data-t="mes_nota">Ordinário: causa acima de 40 salários mínimos. Sumaríssimo: até 40.</p>
+        </div>
+        <div class="cartao">
+          <h3 data-t="ciclo_titulo">O caminho de uma ação nesta vara</h3>
+          <div class="ciclo" id="ciclo"></div>
+          <h3 data-t="desfecho_curto">Como terminam</h3>
+          <div class="empilhada" id="g-desfecho-curto" role="img"></div>
+          <div class="legenda" id="leg-desfecho"></div>
+        </div>
+      </div>
+      <div class="grade-2">
+        <div class="cartao">
+          <h3 data-t="top_empresas">Empresas com mais ações na lista</h3>
+          <div class="barras" id="g-top-empresas"></div>
+          <button type="button" class="botao mais" data-ir="empresas" data-t="ver_ranking">Ver o ranking completo</button>
+        </div>
+        <div class="cartao">
+          <h3 data-t="top_setores">Setores</h3>
+          <div class="barras" id="g-top-setores"></div>
+          <p class="nota" data-t="setor_nota">Setor estimado pelo nome da empresa. Toque num setor para ver as ações.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AÇÕES -->
+    <section class="painel" id="p-acoes" role="tabpanel" aria-labelledby="t-acoes" hidden>
+      <div class="cartao">
+        <div>
+          <h2 data-t="acoes_titulo">Ações contra empresas</h2>
+          <p class="nota" id="acoes-fonte"></p>
+        </div>
+        <div class="filtros">
+          <label for="f-busca"><span data-t="f_busca">Empresa ou processo</span><input id="f-busca" type="search" autocomplete="off"></label>
+          <label for="f-setor"><span data-t="f_setor">Setor</span><select id="f-setor"></select></label>
+          <label for="f-rito"><span data-t="f_rito">Faixa de valor</span><select id="f-rito"></select></label>
+          <label for="f-terc"><span data-t="f_terc">Terceirização</span><select id="f-terc"></select></label>
+          <label for="f-prio"><span data-t="f_prio">Prioridade</span><select id="f-prio"></select></label>
+          <span class="espaco"></span>
+          <button type="button" class="botao" id="exportar" data-t="exportar">Baixar CSV</button>
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="resumo-filtro" id="resumo"></div>
+        <div class="rolagem" id="tabela-acoes"></div>
+        <button type="button" class="botao mais" id="mais-acoes" data-t="mostrar_mais">Mostrar mais</button>
+      </div>
+    </section>
+
+    <!-- EMPRESAS E SETORES -->
+    <section class="painel" id="p-empresas" role="tabpanel" aria-labelledby="t-empresas" hidden>
+      <div class="cartao">
+        <div>
+          <h2 data-t="ranking_titulo">Ranking de empresas</h2>
+          <p class="nota" data-t="ranking_nota">Clique no título de uma coluna para ordenar. Clique numa empresa para ver as ações dela.</p>
+        </div>
+        <div class="filtros"><label for="f-emp"><span data-t="f_busca_emp">Procurar empresa</span><input id="f-emp" type="search" autocomplete="off"></label></div>
+        <div class="rolagem" id="tabela-empresas"></div>
+      </div>
+      <div class="grade-2">
+        <div class="cartao">
+          <h3 data-t="setores_titulo">Ações por setor</h3>
+          <div class="barras" id="g-setores"></div>
+        </div>
+        <div class="cartao">
+          <h3 data-t="terc_titulo">Terceirização</h3>
+          <p class="frase" id="terc-frase" style="font-size:1.25rem"></p>
+          <h3 data-t="parceiros_titulo">Pares que mais aparecem juntos</h3>
+          <div class="barras" id="g-pares"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RAIO-X -->
+    <section class="painel" id="p-raiox" role="tabpanel" aria-labelledby="t-raiox" hidden>
+      <div class="kpis" id="kpis-raiox"></div>
+      <div class="grade-2">
+        <div class="cartao">
+          <h3 data-t="ass_titulo">O que mais se pede</h3>
+          <p class="nota" data-t="ass_nota">% dos processos que trazem o assunto. Um processo costuma ter vários.</p>
+          <div class="barras" id="g-ass"></div>
+        </div>
+        <div class="cartao">
+          <h3 data-t="des_titulo">Como os processos terminam</h3>
+          <p class="nota" id="des-nota"></p>
+          <div class="barras" id="g-des"></div>
+        </div>
+      </div>
+      <div class="cartao">
+        <h3 data-t="mes_tabela">Volume mensal</h3>
+        <div class="rolagem" id="t-mes" style="max-height:none"></div>
+      </div>
+    </section>
+
+    <!-- MÉTODO -->
+    <section class="painel" id="p-metodo" role="tabpanel" aria-labelledby="t-metodo" hidden>
+      <div class="cartao metodo" id="metodo"></div>
+    </section>
+  </div>
+</main>
+
+<footer><div class="miolo"><span id="rodape-esq"></span><span id="rodape-dir"></span></div></footer>
+
+<dialog class="ficha" id="ficha" aria-labelledby="ficha-titulo">
+  <div class="cab"><div><h3 data-t="ficha_titulo">Ficha da ação</h3><h2 id="ficha-titulo"></h2></div><button type="button" class="fechar" id="ficha-fechar" aria-label="Fechar">✕</button></div>
+  <div class="corpo" id="ficha-corpo"></div>
+</dialog>
+
+<script>
+window.LEXSUITE_DADOS = null;
+</script>
+<script>
+(function () {
+  "use strict";
+  var D = window.LEXSUITE_DADOS || {};
+  var V = D.vara_stats || null;
+  var LEADS = D.leads || [];
+
+  /* ---------- textos PT / EN ---------- */
+  var T = {
+    pt: {
+      modulo: "Radar Trabalhista", aba_visao: "Visão geral", aba_acoes: "Ações", aba_empresas: "Empresas e setores", aba_raiox: "Raio-x da vara", aba_metodo: "Método e fontes",
+      ordinario: "Ordinário", sumarissimo: "Sumaríssimo", mes_titulo: "Ações novas por mês", mes_nota: "Ordinário: causa acima de 40 salários mínimos. Sumaríssimo: até 40.",
+      ciclo_titulo: "O caminho de uma ação nesta vara", desfecho_curto: "Como terminam", top_empresas: "Empresas com mais ações na lista", ver_ranking: "Ver o ranking completo",
+      top_setores: "Setores", setor_nota: "Setor estimado pelo nome da empresa. Toque num setor para ver as ações.",
+      acoes_titulo: "Ações contra empresas", f_busca: "Empresa ou processo", f_setor: "Setor", f_rito: "Faixa de valor", f_terc: "Terceirização", f_prio: "Prioridade",
+      exportar: "Baixar CSV", mostrar_mais: "Mostrar mais", todos: "Todos", todas: "Todas", sim: "Sim", nao: "Não",
+      faixa_ord: "Acima de 40 salários mínimos", faixa_sum: "Até 40 salários mínimos", faixa_outros: "Outros",
+      ranking_titulo: "Ranking de empresas", ranking_nota: "Clique no título de uma coluna para ordenar. Clique numa empresa para ver as ações dela.", f_busca_emp: "Procurar empresa",
+      setores_titulo: "Ações por setor", terc_titulo: "Terceirização", parceiros_titulo: "Pares que mais aparecem juntos",
+      ass_titulo: "O que mais se pede", ass_nota: "% dos processos que trazem o assunto. Um processo costuma ter vários.", des_titulo: "Como os processos terminam", mes_tabela: "Volume mensal",
+      ficha_titulo: "Ficha da ação",
+      eyebrow: "{trib} · dados públicos do Judiciário · atualizado em {quando}",
+      sub: "Raio-x de {total} processos distribuídos de {ini} a {fim} e {n} ações contra empresas com audiência marcada.",
+      sub_sem: "Rode o robô LexSuiteONE para gerar este painel.",
+      frase: "A vara recebe <em>{dia} ações por dia útil</em>. Um em cada três processos termina em acordo, e quando há julgamento o reclamante ganha algo em <em>{proc}%</em> dos casos.",
+      k_mes: "Ações novas por mês", k_mes_det: "{dia} por dia útil · {total} em 12 meses",
+      k_ord: "Causas acima de 40 salários mínimos", k_ord_det: "rito ordinário; as demais, até 40 (rito sumaríssimo)",
+      k_acordo: "Terminam em acordo", k_acordo_det: "dos processos já encerrados",
+      k_proc: "Procedência no julgamento", k_proc_det: "total ou parcial, quando há sentença",
+      k_aud: "Espera pela 1ª audiência", k_aud_det: "mediana das ações com audiência marcada", meses: "meses", dias: "dias",
+      k_terc: "Com terceirização", k_terc_det: "ações com mais de uma empresa ré ou empresa de RH",
+      k_dm: "Pedem dano moral", k_dig: "No Juízo 100% Digital", k_grat: "Com justiça gratuita", k_sub: "Responsabilidade subsidiária",
+      e_ajuiz: "Ajuizamento", e_ajuiz_d: "a ação entra na vara", e_aud: "1ª audiência", e_aud_d: "mediana das ações da lista", e_acordo: "Acordo", e_acordo_d: "mediana entre os acordos", e_sent: "Sentença", e_sent_d: "mediana entre as julgadas",
+      col_prio: "Prioridade", col_emp: "Empresa(s) ré(s)", col_setor: "Setor", col_faixa: "Faixa de valor", col_ajuiz: "Ajuizada em", col_aud: "Audiência", col_proc: "Processo",
+      col_empresa: "Empresa", col_acoes: "Ações", col_ord: "% acima de 40 salários mínimos", col_terc: "Com terceirização", col_prox: "Próxima audiência",
+      resumo: "<b>{n}</b> de {total} ações · <b>{emp}</b> empresas", nenhum: "Nenhuma ação com esses filtros.",
+      apos: "após {d}", copiar: "Copiar número", copiado: "Copiado",
+      d_empresas: "Empresas no polo passivo", d_setor: "Setor estimado", d_faixa: "Faixa de valor", d_rito: "Rito", d_ajuiz: "Ajuizada em", d_aud: "Audiência", d_tipo: "Tipo", d_digital: "Juízo 100% Digital",
+      d_nota: "Prioridade", d_motivos: "Por quê", d_fonte: "Fonte", d_outras: "Outras ações da mesma empresa nesta lista", d_carteira: "Cliente da carteira",
+      fonte_pauta: "Fonte desta lista: pauta pública de audiências do PJe ({trib}). Mostra as ações com audiência Una ou Inicial marcada; a coluna Ajuizada em diz quando cada uma entrou.",
+      fonte_djen: "Fonte desta lista: Diário de Justiça Eletrônico Nacional (DJEN), publicações do dia.",
+      terc_frase: "<em>{pct}%</em> das ações da lista têm terceirização: duas ou mais empresas rés, normalmente a prestadora de serviço e a tomadora.",
+      sem_acoes: "A lista de ações ainda não foi gerada. Rode o robô com os comandos pauta ou djen.",
+      rodape: "LexSuiteONE · uma solução SolverONE", gerado: "Gerado em {q} · robô v{v}", des_nota: "Primeiro desfecho de {n} processos já encerrados. Ao lado, a mediana de dias até ele.",
+      mes: "Mês", total: "Total", outros: "Outros"
+    },
+    en: {
+      modulo: "Labor Radar", aba_visao: "Overview", aba_acoes: "Lawsuits", aba_empresas: "Companies & sectors", aba_raiox: "Court profile", aba_metodo: "Method & sources",
+      ordinario: "Ordinary", sumarissimo: "Summary", mes_titulo: "New lawsuits per month", mes_nota: "Ordinary: claims above 40 minimum wages. Summary: up to 40.",
+      ciclo_titulo: "The path of a lawsuit in this court", desfecho_curto: "How they end", top_empresas: "Companies with the most lawsuits in the list", ver_ranking: "See the full ranking",
+      top_setores: "Sectors", setor_nota: "Sector estimated from the company name. Tap a sector to see its lawsuits.",
+      acoes_titulo: "Lawsuits against companies", f_busca: "Company or case", f_setor: "Sector", f_rito: "Value band", f_terc: "Outsourcing", f_prio: "Priority",
+      exportar: "Download CSV", mostrar_mais: "Show more", todos: "All", todas: "All", sim: "Yes", nao: "No",
+      faixa_ord: "Above 40 minimum wages", faixa_sum: "Up to 40 minimum wages", faixa_outros: "Other",
+      ranking_titulo: "Company ranking", ranking_nota: "Click a column title to sort. Click a company to see its lawsuits.", f_busca_emp: "Search company",
+      setores_titulo: "Lawsuits by sector", terc_titulo: "Outsourcing", parceiros_titulo: "Pairs that most often appear together",
+      ass_titulo: "Most frequent claims", ass_nota: "% of cases that include the subject. A case usually has several.", des_titulo: "How cases end", mes_tabela: "Monthly volume",
+      ficha_titulo: "Lawsuit record",
+      eyebrow: "{trib} · public court data · updated on {quando}",
+      sub: "Profile of {total} cases filed from {ini} to {fim} and {n} lawsuits against companies with a scheduled hearing.",
+      sub_sem: "Run the LexSuiteONE robot to build this dashboard.",
+      frase: "This court receives <em>{dia} lawsuits per business day</em>. One in three cases ends in a settlement, and when there is a ruling the claimant wins something in <em>{proc}%</em> of cases.",
+      k_mes: "New lawsuits per month", k_mes_det: "{dia} per business day · {total} in 12 months",
+      k_ord: "Claims above 40 minimum wages", k_ord_det: "ordinary procedure; the rest, up to 40 (summary procedure)",
+      k_acordo: "End in settlement", k_acordo_det: "of the cases already closed",
+      k_proc: "Upheld at judgment", k_proc_det: "fully or partly, when there is a ruling",
+      k_aud: "Wait for the 1st hearing", k_aud_det: "median of cases with a scheduled hearing", meses: "months", dias: "days",
+      k_terc: "With outsourcing", k_terc_det: "lawsuits with more than one defendant company or a staffing firm",
+      k_dm: "Claim moral damages", k_dig: "In the 100% Digital Court", k_grat: "With free legal aid", k_sub: "Subsidiary liability",
+      e_ajuiz: "Filing", e_ajuiz_d: "the case enters the court", e_aud: "1st hearing", e_aud_d: "median of the listed cases", e_acordo: "Settlement", e_acordo_d: "median among settlements", e_sent: "Ruling", e_sent_d: "median among judged cases",
+      col_prio: "Priority", col_emp: "Defendant company(ies)", col_setor: "Sector", col_faixa: "Value band", col_ajuiz: "Filed on", col_aud: "Hearing", col_proc: "Case",
+      col_empresa: "Company", col_acoes: "Lawsuits", col_ord: "% above 40 minimum wages", col_terc: "With outsourcing", col_prox: "Next hearing",
+      resumo: "<b>{n}</b> of {total} lawsuits · <b>{emp}</b> companies", nenhum: "No lawsuit matches these filters.",
+      apos: "after {d}", copiar: "Copy number", copiado: "Copied",
+      d_empresas: "Defendant companies", d_setor: "Estimated sector", d_faixa: "Value band", d_rito: "Procedure", d_ajuiz: "Filed on", d_aud: "Hearing", d_tipo: "Type", d_digital: "100% Digital Court",
+      d_nota: "Priority", d_motivos: "Why", d_fonte: "Source", d_outras: "Other lawsuits of the same company in this list", d_carteira: "Portfolio client",
+      fonte_pauta: "Source of this list: public PJe hearing schedule ({trib}). It shows lawsuits with a first hearing scheduled; the Filed on column says when each one started.",
+      fonte_djen: "Source of this list: National Electronic Court Gazette (DJEN), daily notices.",
+      terc_frase: "<em>{pct}%</em> of the listed lawsuits involve outsourcing: two or more defendant companies, usually the service provider and the client company.",
+      sem_acoes: "The lawsuit list has not been generated yet. Run the robot with the pauta or djen commands.",
+      rodape: "LexSuiteONE · a SolverONE solution", gerado: "Generated on {q} · robot v{v}", des_nota: "First outcome of {n} cases already closed. Median days to it on the right.",
+      mes: "Month", total: "Total", outros: "Other"
+    }
+  };
+  var DADO_EN = {
+    "Acordo homologado": "Settlement approved", "Procedente em parte": "Partly upheld", "Improcedente": "Dismissed on the merits",
+    "Arquivado: reclamante faltou": "Filed away: claimant absent", "Enviado a outro juízo": "Sent to another court", "Desistência": "Withdrawn",
+    "Extinto sem julgar o mérito": "Dismissed without merits", "Procedente": "Fully upheld", "Inicial indeferida": "Complaint rejected",
+    "Ordinário": "Ordinary", "Sumaríssimo": "Summary", "Outros": "Other", "Alta": "High", "Média": "Medium", "Baixa": "Low",
+    "Logística e transporte": "Logistics & transport", "RH e terceirização": "Staffing & outsourcing", "Varejo e e-commerce": "Retail & e-commerce",
+    "Indústria": "Manufacturing", "Saúde e farmácia": "Health & pharma", "Segurança, limpeza e facilities": "Security, cleaning & facilities",
+    "Construção e imóveis": "Construction & real estate", "Serviços e outros": "Services & other",
+    "Una": "Single hearing", "Una (rito sumaríssimo)": "Single hearing (summary)", "Inicial": "Initial hearing"
+  };
+  var MOTIVOS_EN = [
+    [/^ré é empresa$/, "defendant is a company"],
+    [/^(\d+) empresas no polo passivo \(possível terceirização\)$/, "$1 defendant companies (possible outsourcing)"],
+    [/^rito ordinário \(causa acima de (\d+) salários mínimos\)$/, "ordinary procedure (claim above $1 minimum wages)"],
+    [/^valor da causa (.*)$/, "claim value $1"], [/^assuntos de maior impacto$/, "high-impact subjects"],
+    [/^empresa de médio\/grande porte$/, "medium/large company"], [/^empresa de pequeno porte$/, "small company"],
+    [/^(\d+) ações contra a mesma empresa em 30 dias$/, "$1 lawsuits against the same company in 30 days"],
+    [/^cliente atual da carteira$/, "current portfolio client"]
+  ];
+  var MESES = { pt: ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"], en: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] };
+
+  var lang = "pt";
+  try { lang = localStorage.getItem("lexsuite:idioma") || "pt"; } catch (e) {}
+  if (!T[lang]) lang = "pt";
+
+  function t(k, v) { var s = (T[lang] && T[lang][k]) || T.pt[k] || k; if (v) Object.keys(v).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); return s; }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function dado(s) { return lang === "en" && DADO_EN[s] ? DADO_EN[s] : s; }
+  function motivo(m) { if (lang !== "en") return m; for (var i = 0; i < MOTIVOS_EN.length; i++) if (MOTIVOS_EN[i][0].test(m)) return m.replace(MOTIVOS_EN[i][0], MOTIVOS_EN[i][1]); return m; }
+  function num(n, c) { return new Intl.NumberFormat(lang === "pt" ? "pt-BR" : "en-US", { maximumFractionDigits: c || 0, minimumFractionDigits: c || 0 }).format(n); }
+  function data(iso) {
+    if (!iso) return "—"; var p = String(iso).slice(0, 10).split("-"); if (p.length < 3) return iso;
+    var m = MESES[lang][+p[1] - 1]; return lang === "pt" ? p[2] + "/" + m + "/" + p[0] : m + "/" + p[2] + "/" + p[0];
+  }
+  function mesCurto(ym) { var p = ym.split("-"); return MESES[lang][+p[1] - 1] + "/" + p[0].slice(2); }
+  function semAcento(s) { return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+  function mediana(a) { if (!a.length) return null; var b = a.slice().sort(function (x, y) { return x - y; }), m = Math.floor(b.length / 2); return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
+  function dias(a, b) { return Math.round((new Date(b + "T12:00:00") - new Date(a + "T12:00:00")) / 864e5); }
+
+  /* ---------- categorização (regras escritas, sem IA) ---------- */
+  var SETORES = [
+    ["RH e terceirização", /RECURSOS HUMANOS|\bRH\b|TEMPORARI|TERCEIRIZ|MAO DE OBRA|SERVICOS EMPRESARIAIS|PEOPLE SERVICOS|STAFF|ADECCO|RANDSTAD|GI GROUP|MANPOWER|GRUPO SOLUCOES|SOLUCOES EM RH/],
+    ["Logística e transporte", /LOGISTIC|TRANSPORT|CARGAS|ARMAZEN|ENVIOS|EXPRESS|SUPPLY CHAIN|\b3PL\b|DEPOSITO|\bLOG\b|MASTER LOG|TRUCK/],
+    ["Varejo e e-commerce", /MERCADO ?LIVRE|MERCADOLIVRE|AMAZON|LOJAS|VAREJ|FAST SHOP|LEROY|ATACAD|SUPERMERC|SENDAS|\bMART\b|CONVENIENCIA|COMERCIAL DE MOVEIS|ECOMMERCE|E-COMMERCE/],
+    ["Saúde e farmácia", /FARMAC|DROGARIA|MEDICAMENTO|MEDICOS|HOSPITAL|CLINICA|SAUDE/],
+    ["Segurança, limpeza e facilities", /SEGURANCA|VIGILANCIA|LIMPEZA|CONSERVACAO|FACILITIES|LAUNDRY|PATRIMONIAL|SODEXO/],
+    ["Construção e imóveis", /CONSTRU|ENGENHARIA|EMPREENDIMENTOS|IMOBILIAR|INCORPORA|CONDOMINIO|PROLOGIS|GOODMAN|\bGLP\b|MONTAGENS|STEEL/],
+    ["Indústria", /INDUSTRI|FABRICA|METAIS|EMBALAGE|CIMENTO|MAQUINAS|GRAFICA|COSMETICO|ALIMENTOS|ALIMENTICIOS|PREFORMADOS|ACRIL/]
+  ];
+  var OUTRO = "Serviços e outros";
+  function setorDe(nome) { var n = semAcento(nome).toUpperCase(); for (var i = 0; i < SETORES.length; i++) if (SETORES[i][1].test(n)) return SETORES[i][0]; return OUTRO; }
+  function chave(nome) { return semAcento(nome).toUpperCase().replace(/\b(LTDA|S\.?\/?A\.?|EIRELI|EPP|ME|CIA|LIMITADA|SOCIEDADE LIMITADA)\b\.?/g, " ").replace(/[^A-Z0-9]+/g, " ").trim(); }
+  function bonito(nome) {
+    // "MERCADO LIVRE BRASIL LTDA" -> "Mercado Livre Brasil Ltda" (siglas curtas ficam em maiúsculas)
+    return String(nome).toLowerCase().replace(/(^|[\s\/(.-])([a-zà-ÿ0-9])/g, function (m, a, b) { return a + b.toUpperCase(); })
+      .replace(/\b(Ltda|S\/a|S\.a\.?|Sa|Eireli|Epp|Me|Rh|Ups|Scs|Dhl|Hb|Id|Wca|Jm|Plp|Gjv|Cts|Mw|3pl|5sdn|4t|Ccp|Glp|Vex)\b/g, function (s) {
+        var mapa = { "Ltda": "Ltda", "S/a": "S/A", "Sa": "S.A.", "S.a": "S.A.", "S.a.": "S.A." }; return mapa[s] || s.toUpperCase(); })
+      .replace(/ (De|Do|Da|Dos|Das|E|Em|Para|Com)(?= )/g, function (m, p) { return " " + p.toLowerCase(); })
+      .replace(/\b(Ii|Iii|Iv|Vi|Vii)\b/g, function (r) { return r.toUpperCase(); });
+  }
+
+  var hoje = new Date().toISOString().slice(0, 10);
+  var ACOES = LEADS.map(function (l, i) {
+    var empresas = (l.empresas || []).slice();
+    var setores = empresas.map(setorDe);
+    var naoRh = setores.filter(function (s) { return s !== "RH e terceirização"; });
+    var setor = naoRh[0] || setores[0] || OUTRO;
+    var aj = l.ajuizada_em || "", apos = /^após /.test(aj), ajData = apos ? aj.slice(5) : aj;
+    var aud = l.audiencia || {};
+    return {
+      i: i, l: l, empresas: empresas, setor: setor, setores: setores,
+      terc: empresas.length > 1 || setores.indexOf("RH e terceirização") >= 0,
+      faixa: l.rito === "Ordinário" ? "ord" : l.rito === "Sumaríssimo" ? "sum" : "outros",
+      ajuiz: ajData, ajuizApos: apos, aud: aud.data || "", audTipo: aud.tipo || "", digital: !!aud.juizo_digital,
+      quando: l.data_publicacao || aud.data || "", nota: l.nota || 0, prio: l.faixa || "Baixa", cliente: l.cliente || "",
+      processo: l.processo || "", busca: semAcento(empresas.join(" ") + " " + (l.processo || "") + " " + (l.razao_social || "")).toLowerCase()
+    };
+  });
+
+  /* ---------- agregados ---------- */
+  function agruparEmpresas(lista) {
+    var m = {};
+    lista.forEach(function (a) {
+      a.empresas.forEach(function (e) {
+        var k = chave(e);
+        if (!m[k]) m[k] = { k: k, nome: e, setor: setorDe(e), acoes: [], ord: 0, terc: 0, prox: "" };
+        var g = m[k]; g.acoes.push(a); if (a.faixa === "ord") g.ord++; if (a.terc) g.terc++;
+        if (a.aud && a.aud >= hoje && (!g.prox || a.aud < g.prox)) g.prox = a.aud;
+      });
+    });
+    return Object.keys(m).map(function (k) { var g = m[k]; g.n = g.acoes.length; g.pctOrd = Math.round(100 * g.ord / g.n); return g; });
+  }
+  var EMPRESAS = agruparEmpresas(ACOES);
+  function contarSetores(lista) {
+    var c = {}; lista.forEach(function (a) { c[a.setor] = (c[a.setor] || 0) + 1; });
+    return Object.keys(c).map(function (k) { return { setor: k, n: c[k] }; }).sort(function (a, b) { return b.n - a.n; });
+  }
+  function pares(lista) {
+    var c = {};
+    lista.forEach(function (a) {
+      if (a.empresas.length < 2) return;
+      for (var i = 0; i < a.empresas.length; i++) for (var j = i + 1; j < a.empresas.length; j++) {
+        var x = [bonito(a.empresas[i]), bonito(a.empresas[j])].sort().join(" + "); c[x] = (c[x] || 0) + 1;
+      }
+    });
+    return Object.keys(c).map(function (k) { return { par: k, n: c[k] }; }).sort(function (a, b) { return b.n - a.n; });
+  }
+  var diasAud = ACOES.filter(function (a) { return a.aud && a.ajuiz && !a.ajuizApos; }).map(function (a) { return dias(a.ajuiz, a.aud); }).filter(function (d) { return d >= 0; });
+  var MED_AUD = mediana(diasAud);
+
+  /* ---------- cabeçalho, KPIs ---------- */
+  function cabecalho() {
+    var trib = V ? V.tribunal : (LEADS[0] && LEADS[0].tribunal) || "";
+    document.getElementById("eyebrow").textContent = t("eyebrow", { trib: trib, quando: D.gerado_em ? data(D.gerado_em) : "—" });
+    document.getElementById("h1").textContent = V ? V.vara : (LEADS[0] && LEADS[0].vara) || "LexSuiteONE";
+    document.getElementById("subtitulo").textContent = V ? t("sub", { total: num(V.total), ini: data(V.periodo.inicio), fim: data(V.periodo.fim), n: num(ACOES.length) }) : t("sub_sem");
+    document.getElementById("conta-acoes").textContent = ACOES.length ? num(ACOES.length) : "";
+    var f = document.getElementById("frase");
+    f.innerHTML = V ? t("frase", { dia: num(V.media_dia_util, 1), proc: num(V.pct_procedencia_julgados, 0) }) : "";
+  }
+  function kpiHTML(rot, val, sufixo, det, destaque) {
+    return '<div class="kpi' + (destaque ? " destaque" : "") + '"><span class="rot">' + esc(rot) + '</span><span class="val" data-alvo="' + esc(val) + '">' + esc(val) + (sufixo ? "<small>" + esc(sufixo) + "</small>" : "") + '</span><span class="det">' + esc(det) + "</span></div>";
+  }
+  function kpis() {
+    var el = document.getElementById("kpis"); if (!V) { el.innerHTML = ""; return; }
+    var terc = ACOES.length ? Math.round(100 * ACOES.filter(function (a) { return a.terc; }).length / ACOES.length) : null;
+    el.innerHTML = [
+      kpiHTML(t("k_mes"), num(V.media_mes), "", t("k_mes_det", { dia: num(V.media_dia_util, 1), total: num(V.total) }), true),
+      kpiHTML(t("k_ord"), num(V.pct_ordinario), "%", t("k_ord_det")),
+      kpiHTML(t("k_acordo"), num(V.pct_acordo), "%", t("k_acordo_det")),
+      kpiHTML(t("k_proc"), num(V.pct_procedencia_julgados), "%", t("k_proc_det")),
+      MED_AUD != null ? kpiHTML(t("k_aud"), num(MED_AUD / 30.4, 1), t("meses"), t("k_aud_det") + " (" + num(MED_AUD) + " " + t("dias") + ")") : "",
+      terc != null ? kpiHTML(t("k_terc"), num(terc), "%", t("k_terc_det")) : ""
+    ].join("");
+    var r = document.getElementById("kpis-raiox");
+    r.innerHTML = [
+      kpiHTML(t("k_dm"), num(V.pct_dano_moral), "%", ""), kpiHTML(t("k_sub"), num(V.pct_responsabilidade_subsidiaria, 1), "%", ""),
+      kpiHTML(t("k_dig"), num(V.pct_juizo_100_digital), "%", ""), kpiHTML(t("k_grat"), num(V.pct_gratuidade), "%", "")
+    ].join("");
+    contar(el); contar(r);
+  }
+  // Os números "sobem" até o valor final (só na primeira vez e só sem pedido de menos movimento).
+  var jaContou = {};
+  function contar(raiz) {
+    if (jaContou[raiz.id] || matchMedia("(prefers-reduced-motion: reduce)").matches) return; jaContou[raiz.id] = 1;
+    raiz.querySelectorAll(".val").forEach(function (v) {
+      var alvo = v.getAttribute("data-alvo"), n = parseFloat(String(alvo).replace(/\./g, "").replace(",", "."));
+      if (isNaN(n)) return; var casas = (String(alvo).split(/[,.]/)[1] || "").length, ini = performance.now(), dur = 900;
+      var pequeno = v.querySelector("small"), suf = pequeno ? pequeno.outerHTML : "";
+      (function passo(ag) { var p = Math.min(1, (ag - ini) / dur), e = 1 - Math.pow(1 - p, 3);
+        v.innerHTML = esc(num(n * e, alvo.indexOf(",") >= 0 || (lang === "en" && alvo.indexOf(".") >= 0 && casas === 1) ? casas : 0)) + suf;
+        if (p < 1) requestAnimationFrame(passo); else v.innerHTML = esc(alvo) + suf; })(ini);
+    });
+  }
+
+  /* ---------- gráficos ---------- */
+  function escala(max) { var p = Math.pow(10, Math.floor(Math.log10(max || 1))); [1, 2, 2.5, 5, 10].some(function (m) { if (max / (p * m) <= 5) { p = p * m; return true; } return false; }); return { passo: p, topo: Math.ceil(max / p) * p }; }
+  function topoRedondo(x, y, w, h, r) { r = Math.min(r, w / 2, h); return "M" + x + "," + (y + h) + " V" + (y + r) + " Q" + x + "," + y + " " + (x + r) + "," + y + " H" + (x + w - r) + " Q" + (x + w) + "," + y + " " + (x + w) + "," + (y + r) + " V" + (y + h) + " Z"; }
+  function graficoMes() {
+    var box = document.getElementById("g-mes"); if (!V) { box.innerHTML = ""; return; }
+    var d = V.por_mes, L = 640, A = 240, me = 40, md = 6, mt = 14, mb = 28;
+    var max = Math.max.apply(null, d.map(function (x) { return x["Ordinário"] + x["Sumaríssimo"]; })), e = escala(max);
+    var w = (L - me - md) / d.length, bw = Math.min(30, w * .6);
+    function y(v) { return mt + (A - mt - mb) * (1 - v / e.topo); }
+    var s = '<svg viewBox="0 0 ' + L + " " + A + '" role="img" aria-label="' + esc(t("mes_titulo")) + '">';
+    for (var v = 0; v <= e.topo; v += e.passo) s += '<line class="grade-l" x1="' + me + '" x2="' + (L - md) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (me - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + num(v) + "</text>";
+    d.forEach(function (x, i) {
+      var cx = me + i * w + (w - bw) / 2, o = x["Ordinário"], su = x["Sumaríssimo"], yo = y(o), yt = y(o + su), b = y(0);
+      s += '<rect class="barra-mes" x="' + cx + '" y="' + yo + '" width="' + bw + '" height="' + Math.max(0, b - yo) + '" fill="var(--s1)"/>';
+      s += '<path class="barra-mes" d="' + topoRedondo(cx, yt, bw, Math.max(0, yo - yt - 2), 4) + '" fill="var(--s2)"/>';
+      if (i === d.length - 1) s += '<text class="rotulo" x="' + (cx + bw / 2) + '" y="' + (yt - 6) + '" text-anchor="middle">' + num(o + su) + "</text>";
+      s += '<text x="' + (cx + bw / 2) + '" y="' + (A - 9) + '" text-anchor="middle">' + mesCurto(x.mes) + "</text>";
+      s += '<rect class="alvo" tabindex="0" data-i="' + i + '" x="' + (me + i * w) + '" y="' + mt + '" width="' + w + '" height="' + (A - mt - mb) + '"><title>' + esc(mesCurto(x.mes) + ": " + num(o + su)) + "</title></rect>";
+    });
+    box.innerHTML = s + '</svg><div class="dica" hidden></div>';
+    var dica = box.querySelector(".dica");
+    function mostra(ev) {
+      var i = +ev.target.getAttribute("data-i"), x = d[i]; if (isNaN(i)) return;
+      dica.innerHTML = "<strong>" + esc(mesCurto(x.mes)) + "</strong><br>" + esc(t("ordinario")) + ": " + num(x["Ordinário"]) + "<br>" + esc(t("sumarissimo")) + ": " + num(x["Sumaríssimo"]);
+      var r = box.getBoundingClientRect(), a = ev.target.getBoundingClientRect();
+      dica.style.left = Math.min(Math.max(a.left - r.left + a.width / 2, 70), r.width - 70) + "px";
+      dica.style.top = (y(x["Ordinário"] + x["Sumaríssimo"]) * r.width / L - 6) + "px"; dica.hidden = false;
+    }
+    box.querySelectorAll("rect.alvo").forEach(function (r) { r.addEventListener("mouseenter", mostra); r.addEventListener("focus", mostra); r.addEventListener("mouseleave", function () { dica.hidden = true; }); r.addEventListener("blur", function () { dica.hidden = true; }); });
+    document.getElementById("t-mes").innerHTML = "<table><thead><tr><th>" + esc(t("mes")) + '</th><th class="num">' + esc(t("ordinario")) + '</th><th class="num">' + esc(t("sumarissimo")) + '</th><th class="num">' + esc(t("outros")) + '</th><th class="num">' + esc(t("total")) + "</th></tr></thead><tbody>" +
+      d.map(function (x) { return "<tr><td>" + esc(mesCurto(x.mes)) + '</td><td class="num">' + num(x["Ordinário"]) + '</td><td class="num">' + num(x["Sumaríssimo"]) + '</td><td class="num">' + num(x["Outros"] || 0) + '</td><td class="num">' + num(x["Ordinário"] + x["Sumaríssimo"] + (x["Outros"] || 0)) + "</td></tr>"; }).join("") + "</tbody></table>";
+  }
+  function barras(id, itens, rot, val, txt, opc) {
+    opc = opc || {}; var el = document.getElementById(id); if (!el) return;
+    var max = Math.max.apply(null, itens.map(val).concat([1]));
+    el.innerHTML = itens.map(function (it, i) {
+      return '<div class="barra-l' + (opc.clique ? " clicavel" : "") + '"' + (opc.clique ? ' role="button" tabindex="0" data-i="' + i + '"' : "") + '><span class="nome">' + esc(rot(it)) + '</span><span class="num">' + esc(txt(it)) + '</span><span class="trilho" aria-hidden="true"><span class="enche' + (opc.latao ? " latao" : "") + '" style="width:' + (100 * val(it) / max).toFixed(1) + '%"></span></span></div>';
+    }).join("");
+    if (opc.clique) el.querySelectorAll(".clicavel").forEach(function (b) {
+      var ir = function () { opc.clique(itens[+b.getAttribute("data-i")]); };
+      b.addEventListener("click", ir); b.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ir(); } });
+    });
+  }
+  function ciclo() {
+    var el = document.getElementById("ciclo"); if (!V) { el.innerHTML = ""; return; }
+    var acordo = (V.desfechos.filter(function (d) { return d.desfecho === "Acordo homologado"; })[0] || {}).mediana_dias;
+    var sentencas = V.desfechos.filter(function (d) { return /Procedente|Improcedente/.test(d.desfecho) && d.mediana_dias != null; });
+    var sent = sentencas.length ? Math.round(sentencas.reduce(function (s, d) { return s + d.mediana_dias * d.qtd; }, 0) / sentencas.reduce(function (s, d) { return s + d.qtd; }, 0)) : null;
+    // Só etapas medidas no mesmo grupo (processos encerrados); a espera atual pela 1ª audiência fica no cartão próprio.
+    var et = [[t("e_ajuiz"), "D0", t("e_ajuiz_d")]];
+    if (acordo != null) et.push([t("e_acordo"), "D+" + num(acordo), t("e_acordo_d")]);
+    if (sent != null) et.push([t("e_sent"), "D+" + num(sent), t("e_sent_d")]);
+    et.sort(function (a, b) { return (+a[1].replace(/\D/g, "") || 0) - (+b[1].replace(/\D/g, "") || 0); });
+    el.innerHTML = et.map(function (e) { return '<div class="etapa"><span class="quando">' + esc(e[1]) + "</span><strong>" + esc(e[0]) + "</strong><span>" + esc(e[2]) + "</span></div>"; }).join("");
+    var cores = ["var(--s1)", "color-mix(in srgb, var(--s1) 55%, var(--folha))", "var(--s2)", "color-mix(in srgb, var(--s2) 55%, var(--folha))", "var(--linha-forte)"];
+    var grupos = [["Acordo homologado"], ["Procedente", "Procedente em parte"], ["Improcedente"], ["Arquivado: reclamante faltou", "Desistência"], null];
+    var rot = lang === "pt" ? ["Acordo", "Procedente (total ou parcial)", "Improcedente", "Arquivado ou desistência", "Outros"] : ["Settlement", "Upheld (fully or partly)", "Dismissed", "Filed away or withdrawn", "Other"];
+    var tot = V.desfechos.reduce(function (s, d) { return s + d.qtd; }, 0), usados = {};
+    var partes = grupos.map(function (g) { var q = 0; V.desfechos.forEach(function (d) { if (g ? g.indexOf(d.desfecho) >= 0 : !usados[d.desfecho]) q += d.qtd; }); if (g) g.forEach(function (n) { usados[n] = 1; }); return q; });
+    document.getElementById("g-desfecho-curto").innerHTML = partes.map(function (q, i) { return q ? '<span style="width:' + (100 * q / tot).toFixed(2) + "%;background:" + cores[i] + '" title="' + esc(rot[i] + ": " + num(100 * q / tot, 0) + "%") + '"></span>' : ""; }).join("");
+    document.getElementById("g-desfecho-curto").setAttribute("aria-label", partes.map(function (q, i) { return rot[i] + " " + num(100 * q / tot, 0) + "%"; }).join(", "));
+    document.getElementById("leg-desfecho").innerHTML = partes.map(function (q, i) { return q ? '<span style="--c:' + cores[i] + '">' + esc(rot[i]) + " " + num(100 * q / tot, 0) + "%</span>" : ""; }).join("");
+  }
+  function visao() {
+    var top = EMPRESAS.slice().sort(function (a, b) { return b.n - a.n || a.nome.localeCompare(b.nome); }).slice(0, 7);
+    barras("g-top-empresas", top, function (g) { return bonito(g.nome); }, function (g) { return g.n; }, function (g) { return num(g.n); }, { clique: function (g) { filtrarPorEmpresa(g); } });
+    var st = contarSetores(ACOES);
+    barras("g-top-setores", st, function (s) { return dado(s.setor); }, function (s) { return s.n; }, function (s) { return num(s.n) + " · " + num(100 * s.n / ACOES.length) + "%"; }, { latao: true, clique: function (s) { irPara("acoes"); F.setor = s.setor; aplicarFiltrosUI(); tabela(); } });
+    if (!ACOES.length) { document.getElementById("g-top-empresas").innerHTML = '<p class="vazio">' + esc(t("sem_acoes")) + "</p>"; document.getElementById("g-top-setores").innerHTML = ""; }
+  }
+
+  /* ---------- tabela de ações ---------- */
+  var F = { busca: "", setor: "", faixa: "", terc: "", prio: "", empresa: null };
+  var ORD = { col: "nota", dir: "desc" }, VISIVEIS = 40;
+  var COLS = [
+    { k: "nota", rot: "col_prio", v: function (a) { return a.nota; }, td: function (a) { var c = { "Alta": "var(--alta)", "Média": "var(--media)", "Baixa": "var(--baixa)" }[a.prio] || "var(--baixa)"; return '<span class="prio" style="--c:' + c + '"><i aria-hidden="true">' + ({ "Alta": "▲", "Média": "●", "Baixa": "▽" }[a.prio] || "·") + "</i>" + esc(dado(a.prio)) + '</span><span class="mini" aria-hidden="true"><span style="width:' + a.nota + '%"></span></span>'; } },
+    { k: "empresa", rot: "col_emp", v: function (a) { return chave(a.empresas[0] || ""); }, td: function (a) { return a.empresas.map(function (e) { return '<div class="empresa">' + esc(bonito(e)) + "</div>"; }).join("") + (a.cliente ? '<span class="tag cli">' + esc(t("d_carteira")) + "</span>" : "") + (a.terc ? ' <span class="tag terc">' + esc(t("f_terc")) + "</span>" : ""); } },
+    { k: "setor", rot: "col_setor", v: function (a) { return a.setor; }, td: function (a) { return esc(dado(a.setor)); } },
+    { k: "faixa", rot: "col_faixa", v: function (a) { return a.faixa === "ord" ? 2 : a.faixa === "sum" ? 1 : 0; }, td: function (a) { return '<span class="tag ' + a.faixa + '">' + esc(t("faixa_" + a.faixa)) + "</span>"; } },
+    { k: "ajuiz", rot: "col_ajuiz", v: function (a) { return a.ajuiz || ""; }, td: function (a) { return a.ajuiz ? esc(a.ajuizApos ? t("apos", { d: data(a.ajuiz) }) : data(a.ajuiz)) : "—"; } },
+    { k: "aud", rot: "col_aud", v: function (a) { return a.aud || a.quando || ""; }, td: function (a) { return a.aud ? esc(data(a.aud)) + '<div class="sub">' + esc(dado(a.audTipo)) + "</div>" : esc(data(a.quando)); } },
+    { k: "processo", rot: "col_proc", v: function (a) { return a.processo; }, td: function (a) { return processoHTML(a.processo); }, cls: "proc" }
+  ];
+  function processoHTML(n) { var m = /^(\d{7}-\d{2}\.\d{4})\.(\d)\.(\d{2})\.(\d{4})(.*)$/.exec(n || ""); if (!m) return esc(n); return esc(m[1]) + '.<span class="seg">' + m[2] + "." + m[3] + "." + m[4] + "</span>" + esc(m[5]); }
+  function filtradas() {
+    var b = semAcento(F.busca).toLowerCase().trim();
+    return ACOES.filter(function (a) {
+      return (!b || a.busca.indexOf(b) >= 0) && (!F.setor || a.setor === F.setor) && (!F.faixa || a.faixa === F.faixa) &&
+        (!F.terc || (F.terc === "sim") === a.terc) && (!F.prio || a.prio === F.prio) && (!F.empresa || a.empresas.some(function (e) { return chave(e) === F.empresa.k; }));
+    }).sort(function (x, y) {
+      var c = COLS.filter(function (c) { return c.k === ORD.col; })[0], a = c.v(x), b2 = c.v(y), r = a < b2 ? -1 : a > b2 ? 1 : 0;
+      return (ORD.dir === "asc" ? r : -r) || (y.nota - x.nota) || (x.aud < y.aud ? -1 : 1);
+    });
+  }
+  function opcoes(id, itens, todos) { var s = document.getElementById(id), atual = s.value; s.innerHTML = '<option value="">' + esc(todos) + "</option>" + itens.map(function (o) { return '<option value="' + esc(o[0]) + '">' + esc(o[1]) + "</option>"; }).join(""); s.value = atual; }
+  function montarFiltros() {
+    opcoes("f-setor", contarSetores(ACOES).map(function (s) { return [s.setor, dado(s.setor) + " (" + s.n + ")"]; }), t("todos"));
+    opcoes("f-rito", [["ord", t("faixa_ord")], ["sum", t("faixa_sum")]], t("todas"));
+    opcoes("f-terc", [["sim", t("sim")], ["nao", t("nao")]], t("todas"));
+    opcoes("f-prio", [["Alta", dado("Alta")], ["Média", dado("Média")], ["Baixa", dado("Baixa")]], t("todas"));
+    aplicarFiltrosUI();
+  }
+  function aplicarFiltrosUI() { document.getElementById("f-busca").value = F.busca; document.getElementById("f-setor").value = F.setor; document.getElementById("f-rito").value = F.faixa; document.getElementById("f-terc").value = F.terc; document.getElementById("f-prio").value = F.prio; }
+  function tabela() {
+    var el = document.getElementById("tabela-acoes"), mais = document.getElementById("mais-acoes");
+    var fonte = (D.djen && typeof D.djen === "object" && D.djen.pt && /DJEN/.test(D.djen.pt) && !/pauta/i.test(D.djen.pt)) ? t("fonte_djen") : t("fonte_pauta", { trib: V ? V.tribunal : "" });
+    document.getElementById("acoes-fonte").textContent = ACOES.length ? fonte : "";
+    if (!ACOES.length) { el.innerHTML = '<p class="vazio">' + esc(t("sem_acoes")) + "</p>"; mais.hidden = true; document.getElementById("resumo").textContent = ""; return; }
+    var lista = filtradas();
+    var emps = {}; lista.forEach(function (a) { a.empresas.forEach(function (e) { emps[chave(e)] = 1; }); });
+    document.getElementById("resumo").innerHTML = t("resumo", { n: num(lista.length), total: num(ACOES.length), emp: num(Object.keys(emps).length) });
+    var chips = []; if (F.empresa) chips.push(["empresa", bonito(F.empresa.nome)]);
+    if (F.setor) chips.push(["setor", dado(F.setor)]); if (F.faixa) chips.push(["faixa", t("faixa_" + F.faixa)]); if (F.terc) chips.push(["terc", t("f_terc") + ": " + t(F.terc)]); if (F.prio) chips.push(["prio", dado(F.prio)]);
+    document.getElementById("chips").innerHTML = chips.map(function (c) { return '<button type="button" class="chip-f" data-limpa="' + c[0] + '">' + esc(c[1]) + "</button>"; }).join("");
+    if (!lista.length) { el.innerHTML = '<p class="vazio">' + esc(t("nenhum")) + "</p>"; mais.hidden = true; return; }
+    var cab = COLS.map(function (c) { var s = ORD.col === c.k ? (ORD.dir === "asc" ? "ascending" : "descending") : "none"; return '<th aria-sort="' + s + '"><button type="button" data-ord="' + c.k + '">' + esc(t(c.rot)) + '<span class="seta" aria-hidden="true"></span></button></th>'; }).join("");
+    el.innerHTML = "<table><thead><tr>" + cab + "</tr></thead><tbody>" + lista.slice(0, VISIVEIS).map(function (a) {
+      return '<tr tabindex="0" data-i="' + a.i + '">' + COLS.map(function (c) { return '<td' + (c.cls ? ' class="' + c.cls + '"' : "") + ">" + c.td(a) + "</td>"; }).join("") + "</tr>";
+    }).join("") + "</tbody></table>";
+    mais.hidden = lista.length <= VISIVEIS;
+  }
+  function filtrarPorEmpresa(g) { F = { busca: "", setor: "", faixa: "", terc: "", prio: "", empresa: g }; aplicarFiltrosUI(); irPara("acoes"); tabela(); }
+
+  /* ---------- ranking de empresas ---------- */
+  var ORD_E = { col: "n", dir: "desc" };
+  var COLS_E = [
+    { k: "nome", rot: "col_empresa", v: function (g) { return g.k; }, td: function (g) { return '<div class="empresa">' + esc(bonito(g.nome)) + "</div>"; } },
+    { k: "setor", rot: "col_setor", v: function (g) { return g.setor; }, td: function (g) { return esc(dado(g.setor)); } },
+    { k: "n", rot: "col_acoes", v: function (g) { return g.n; }, td: function (g) { return num(g.n) + '<span class="mini" aria-hidden="true"><span style="width:' + Math.min(100, 100 * g.n / MAXN) + '%"></span></span>'; }, cls: "num" },
+    { k: "pctOrd", rot: "col_ord", v: function (g) { return g.pctOrd; }, td: function (g) { return num(g.pctOrd) + "%"; }, cls: "num" },
+    { k: "terc", rot: "col_terc", v: function (g) { return g.terc; }, td: function (g) { return num(g.terc); }, cls: "num" },
+    { k: "prox", rot: "col_prox", v: function (g) { return g.prox || "9999"; }, td: function (g) { return g.prox ? esc(data(g.prox)) : "—"; } }
+  ];
+  var MAXN = Math.max.apply(null, EMPRESAS.map(function (g) { return g.n; }).concat([1]));
+  function rankingEmpresas() {
+    var el = document.getElementById("tabela-empresas"); if (!EMPRESAS.length) { el.innerHTML = '<p class="vazio">' + esc(t("sem_acoes")) + "</p>"; return; }
+    var b = semAcento(document.getElementById("f-emp").value).toLowerCase().trim();
+    var c = COLS_E.filter(function (x) { return x.k === ORD_E.col; })[0];
+    var lista = EMPRESAS.filter(function (g) { return !b || semAcento(g.nome).toLowerCase().indexOf(b) >= 0; }).sort(function (x, y) { var a = c.v(x), z = c.v(y), r = a < z ? -1 : a > z ? 1 : 0; return (ORD_E.dir === "asc" ? r : -r) || y.n - x.n || x.k.localeCompare(y.k); });
+    var cab = COLS_E.map(function (x) { var s = ORD_E.col === x.k ? (ORD_E.dir === "asc" ? "ascending" : "descending") : "none"; return '<th' + (x.cls ? ' class="' + x.cls + '"' : "") + ' aria-sort="' + s + '"><button type="button" data-orde="' + x.k + '">' + esc(t(x.rot)) + '<span class="seta" aria-hidden="true"></span></button></th>'; }).join("");
+    el.innerHTML = "<table><thead><tr>" + cab + "</tr></thead><tbody>" + lista.map(function (g) { return '<tr tabindex="0" data-k="' + esc(g.k) + '">' + COLS_E.map(function (x) { return "<td" + (x.cls ? ' class="' + x.cls + '"' : "") + ">" + x.td(g) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table>";
+  }
+  function setoresEPares() {
+    barras("g-setores", contarSetores(ACOES), function (s) { return dado(s.setor); }, function (s) { return s.n; }, function (s) { return num(s.n) + " · " + num(100 * s.n / Math.max(1, ACOES.length)) + "%"; }, { latao: true, clique: function (s) { irPara("acoes"); F.setor = s.setor; aplicarFiltrosUI(); tabela(); } });
+    var pct = ACOES.length ? Math.round(100 * ACOES.filter(function (a) { return a.empresas.length > 1; }).length / ACOES.length) : 0;
+    document.getElementById("terc-frase").innerHTML = t("terc_frase", { pct: num(pct) });
+    barras("g-pares", pares(ACOES).slice(0, 6), function (p) { return p.par; }, function (p) { return p.n; }, function (p) { return num(p.n); });
+  }
+
+  /* ---------- raio-x ---------- */
+  function raiox() {
+    if (!V) return;
+    barras("g-ass", V.assuntos_top.slice(0, 10), function (a) { return a.assunto; }, function (a) { return a.pct; }, function (a) { return num(a.pct, 1) + "%"; });
+    var fech = V.desfechos.reduce(function (s, d) { return s + d.qtd; }, 0);
+    document.getElementById("des-nota").textContent = t("des_nota", { n: num(fech) });
+    barras("g-des", V.desfechos, function (d) { return dado(d.desfecho); }, function (d) { return d.pct; }, function (d) { return num(d.pct, 1) + "% · " + (d.mediana_dias == null ? "—" : num(d.mediana_dias) + " " + t("dias")); });
+  }
+
+  /* ---------- método ---------- */
+  function metodo() {
+    var trib = V ? V.tribunal : "";
+    var pt = [
+      "<h2>Método e fontes</h2>",
+      "<p>Este painel usa somente dados públicos do Poder Judiciário, coletados e organizados pelo robô LexSuiteONE com regras escritas, sem inteligência artificial.</p>",
+      "<h3>Fontes</h3><ul>",
+      "<li><b>DataJud — Conselho Nacional de Justiça (CNJ)</b>: volume, assuntos, ritos e desfechos da vara. Fonte: CNJ/DataJud. A base chega com algumas semanas de atraso; o último ajuizamento considerado é de " + esc(V ? data(V.ultimo_ajuizamento_na_base) : "—") + ".</li>",
+      "<li><b>Pauta pública de audiências do PJe (" + esc(trib) + ")</b>: ações com audiência marcada e as empresas no polo passivo.</li>",
+      "<li><b>DJEN — Diário de Justiça Eletrônico Nacional (CNJ)</b>: na operação diária, traz cada ação no dia em que é distribuída.</li></ul>",
+      "<h3>Categorias</h3><ul>",
+      "<li><b>Faixa de valor</b>: pelo rito processual. Rito ordinário = causa acima de 40 salários mínimos; sumaríssimo = até 40 (CLT, art. 852-A).</li>",
+      "<li><b>Setor</b>: estimado pelo nome da empresa (palavras-chave). Pode ser refinado com a atividade (CNAE) da Receita Federal.</li>",
+      "<li><b>Terceirização</b>: ação com duas ou mais empresas rés ou com empresa de RH/trabalho temporário.</li>",
+      "<li><b>Prioridade</b>: nota de 0 a 100 com os motivos à vista (rito, número de rés, recorrência da empresa, porte quando conhecido). Os pesos são ajustáveis.</li></ul>",
+      "<h3>Cuidados na leitura</h3><ul>",
+      "<li>Desfechos e tempos consideram só processos já encerrados; casos longos ainda em andamento ficam de fora.</li>",
+      "<li>Dados de pessoas físicas não são exibidos.</li></ul>"
+    ].join("");
+    var en = [
+      "<h2>Method and sources</h2>",
+      "<p>This dashboard uses only public court data, collected and organized by the LexSuiteONE robot with written rules and no artificial intelligence.</p>",
+      "<h3>Sources</h3><ul>",
+      "<li><b>DataJud — National Council of Justice (CNJ)</b>: volume, subjects, procedures and outcomes. Source: CNJ/DataJud. The database lags a few weeks; the latest filing considered is from " + esc(V ? data(V.ultimo_ajuizamento_na_base) : "—") + ".</li>",
+      "<li><b>Public PJe hearing schedule (" + esc(trib) + ")</b>: lawsuits with a scheduled hearing and the defendant companies.</li>",
+      "<li><b>DJEN — National Electronic Court Gazette (CNJ)</b>: in daily operation, brings each lawsuit on the day it is filed.</li></ul>",
+      "<h3>Categories</h3><ul>",
+      "<li><b>Value band</b>: from the procedure. Ordinary = claim above 40 minimum wages; summary = up to 40 (Labor Code, art. 852-A).</li>",
+      "<li><b>Sector</b>: estimated from the company name (keywords). Can be refined with the company's activity code from the Federal Revenue.</li>",
+      "<li><b>Outsourcing</b>: lawsuit with two or more defendant companies or a staffing firm.</li>",
+      "<li><b>Priority</b>: 0–100 score with visible reasons (procedure, number of defendants, company recurrence, size when known). Weights are adjustable.</li></ul>",
+      "<h3>Reading notes</h3><ul>",
+      "<li>Outcomes and times consider only closed cases; long cases still running are left out.</li>",
+      "<li>Data of individuals is not displayed.</li></ul>"
+    ].join("");
+    document.getElementById("metodo").innerHTML = lang === "pt" ? pt : en;
+  }
+
+  /* ---------- ficha da ação (janela) ---------- */
+  var ficha = document.getElementById("ficha"), origem = null;
+  function abrirFicha(a) {
+    origem = document.activeElement;
+    document.getElementById("ficha-titulo").innerHTML = processoHTML(a.processo);
+    var outras = ACOES.filter(function (b) { return b !== a && b.empresas.some(function (e) { return a.empresas.some(function (f) { return chave(f) === chave(e); }); }); });
+    var linhas = [
+      [t("d_empresas"), a.empresas.map(function (e) { return '<div class="empresa">' + esc(bonito(e)) + '</div><div class="sub">' + esc(dado(setorDe(e))) + "</div>"; }).join("")],
+      [t("d_faixa"), '<span class="tag ' + a.faixa + '">' + esc(t("faixa_" + a.faixa)) + "</span> · " + esc(dado(a.l.rito || ""))],
+      [t("d_ajuiz"), a.ajuiz ? esc(a.ajuizApos ? t("apos", { d: data(a.ajuiz) }) : data(a.ajuiz)) : "—"],
+      [t("d_aud"), a.aud ? esc(data(a.aud)) + " · " + esc(dado(a.audTipo)) + (a.digital ? " · " + esc(t("d_digital")) : "") : "—"],
+      [t("d_nota"), esc(dado(a.prio)) + " · " + a.nota + "/100"],
+      [t("d_motivos"), esc((a.l.motivos || []).map(motivo).join(" · "))],
+      a.cliente ? [t("d_carteira"), esc(a.cliente)] : null,
+      [t("d_fonte"), esc(a.l.fonte || "—")]
+    ].filter(Boolean);
+    document.getElementById("ficha-corpo").innerHTML = "<dl>" + linhas.map(function (r) { return "<dt>" + esc(r[0]) + "</dt><dd>" + r[1] + "</dd>"; }).join("") + "</dl>" +
+      '<div><button type="button" class="botao" id="copiar-proc">' + esc(t("copiar")) + "</button></div>" +
+      (outras.length ? "<h3>" + esc(t("d_outras")) + " (" + outras.length + ")</h3>" + '<div class="barras">' + outras.slice(0, 8).map(function (b) { return '<div class="sub" style="font-size:.84rem">' + processoHTML(b.processo) + " · " + esc(data(b.aud || b.quando)) + " · " + esc(t("faixa_" + b.faixa)) + "</div>"; }).join("") + "</div>" : "");
+    document.getElementById("copiar-proc").addEventListener("click", function (ev) {
+      var bt = ev.currentTarget; var ok = function () { bt.textContent = t("copiado"); setTimeout(function () { bt.textContent = t("copiar"); }, 1800); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(a.processo).then(ok, function () {}); });
+    if (typeof ficha.showModal === "function") ficha.showModal(); else ficha.setAttribute("open", "");
+  }
+  function fecharFicha() { if (ficha.open) { if (typeof ficha.close === "function") ficha.close(); else ficha.removeAttribute("open"); } }
+  ficha.addEventListener("close", function () { if (origem && origem.focus) origem.focus(); });
+  ficha.addEventListener("click", function (e) { if (e.target === ficha) fecharFicha(); });
+  document.getElementById("ficha-fechar").addEventListener("click", fecharFicha);
+
+  /* ---------- exportar ---------- */
+  function exportar() {
+    var lista = filtradas(), sep = ";";
+    var cab = [t("col_prio"), "Nota", t("col_emp"), t("col_setor"), t("col_faixa"), t("d_rito"), t("col_ajuiz"), t("col_aud"), t("d_tipo"), t("col_proc"), t("d_motivos")];
+    var linhas = lista.map(function (a) { return [dado(a.prio), a.nota, a.empresas.join(" | "), dado(a.setor), t("faixa_" + a.faixa), dado(a.l.rito || ""), a.ajuiz ? (a.ajuizApos ? "após " + a.ajuiz : a.ajuiz) : "", a.aud || a.quando, dado(a.audTipo), a.processo, (a.l.motivos || []).map(motivo).join(" · ")]; });
+    var csv = "﻿" + [cab].concat(linhas).map(function (r) { return r.map(function (c) { c = String(c == null ? "" : c); return /[";\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(sep); }).join("\r\n");
+    var url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    var a = document.createElement("a"); a.href = url; a.download = "lexsuiteone-acoes.csv"; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 500);
+  }
+
+  /* ---------- abas ---------- */
+  var ABAS = ["visao", "acoes", "empresas", "raiox", "metodo"];
+  function irPara(aba, semRolar) {
+    if (ABAS.indexOf(aba) < 0) aba = "visao";
+    ABAS.forEach(function (x) {
+      var b = document.getElementById("t-" + x), p = document.getElementById("p-" + x), on = x === aba;
+      b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; p.hidden = !on;
+      if (on) { p.classList.remove("anima"); void p.offsetWidth; p.classList.add("anima"); }
+    });
+    try { history.replaceState(null, "", "#" + aba); } catch (e) {}
+    if (!semRolar) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /* ---------- tudo ---------- */
+  function textos() {
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
+    document.getElementById("b-pt").setAttribute("aria-pressed", String(lang === "pt"));
+    document.getElementById("b-en").setAttribute("aria-pressed", String(lang === "en"));
+    document.getElementById("rodape-esq").textContent = t("rodape");
+    document.getElementById("rodape-dir").textContent = t("gerado", { q: D.gerado_em ? data(D.gerado_em) + " " + String(D.gerado_em).slice(11, 16) : "—", v: D.versao || "?" });
+  }
+  function tudo() { textos(); cabecalho(); kpis(); graficoMes(); ciclo(); visao(); montarFiltros(); tabela(); rankingEmpresas(); setoresEPares(); raiox(); metodo(); }
+
+  document.querySelectorAll(".pilula button").forEach(function (b) { b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("lexsuite:idioma", lang); } catch (e) {} jaContou = {}; tudo(); }); });
+  document.getElementById("tema").addEventListener("click", function () {
+    var r = document.documentElement, escuro = r.getAttribute("data-theme") ? r.getAttribute("data-theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    r.setAttribute("data-theme", escuro ? "light" : "dark"); try { localStorage.setItem("lexsuite:tema", r.getAttribute("data-theme")); } catch (e) {}
+  });
+  try { var tm = localStorage.getItem("lexsuite:tema"); if (tm) document.documentElement.setAttribute("data-theme", tm); } catch (e) {}
+  document.querySelectorAll("nav.abas [role=tab]").forEach(function (b, i, todos) {
+    b.addEventListener("click", function () { irPara(b.getAttribute("data-aba")); });
+    b.addEventListener("keydown", function (e) { var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (d) { var n = todos[(i + d + todos.length) % todos.length]; n.focus(); irPara(n.getAttribute("data-aba"), true); } });
+  });
+  document.querySelectorAll("[data-ir]").forEach(function (b) { b.addEventListener("click", function () { irPara(b.getAttribute("data-ir")); }); });
+  document.getElementById("f-busca").addEventListener("input", function (e) { F.busca = e.target.value; VISIVEIS = 40; tabela(); });
+  [["f-setor", "setor"], ["f-rito", "faixa"], ["f-terc", "terc"], ["f-prio", "prio"]].forEach(function (p) { document.getElementById(p[0]).addEventListener("change", function (e) { F[p[1]] = e.target.value; VISIVEIS = 40; tabela(); }); });
+  document.getElementById("chips").addEventListener("click", function (e) { var k = e.target.getAttribute && e.target.getAttribute("data-limpa"); if (!k) return; F[k] = k === "empresa" ? null : ""; aplicarFiltrosUI(); tabela(); });
+  document.getElementById("tabela-acoes").addEventListener("click", function (e) {
+    var o = e.target.closest("[data-ord]"); if (o) { var k = o.getAttribute("data-ord"); ORD = { col: k, dir: ORD.col === k && ORD.dir === "desc" ? "asc" : "desc" }; tabela(); return; }
+    var tr = e.target.closest("tr[data-i]"); if (tr) abrirFicha(ACOES[+tr.getAttribute("data-i")]);
+  });
+  document.getElementById("tabela-acoes").addEventListener("keydown", function (e) { var tr = e.target.closest && e.target.closest("tr[data-i]"); if (tr && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); abrirFicha(ACOES[+tr.getAttribute("data-i")]); } });
+  document.getElementById("mais-acoes").addEventListener("click", function () { VISIVEIS += 60; tabela(); });
+  document.getElementById("exportar").addEventListener("click", exportar);
+  document.getElementById("f-emp").addEventListener("input", rankingEmpresas);
+  document.getElementById("tabela-empresas").addEventListener("click", function (e) {
+    var o = e.target.closest("[data-orde]"); if (o) { var k = o.getAttribute("data-orde"); ORD_E = { col: k, dir: ORD_E.col === k && ORD_E.dir === "desc" ? "asc" : "desc" }; rankingEmpresas(); return; }
+    var tr = e.target.closest("tr[data-k]"); if (tr) { var g = EMPRESAS.filter(function (x) { return x.k === tr.getAttribute("data-k"); })[0]; if (g) filtrarPorEmpresa(g); }
+  });
+  document.getElementById("tabela-empresas").addEventListener("keydown", function (e) { var tr = e.target.closest && e.target.closest("tr[data-k]"); if (tr && e.key === "Enter") tr.click(); });
+
+  tudo();
+  irPara((location.hash || "#visao").slice(1), true);
+})();
+</script>
+</body>
+</html>

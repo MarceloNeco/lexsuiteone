@@ -1,0 +1,1407 @@
+{
+ "_leia": "Dia FICTÍCIO de publicações em 3 tribunais, só para demonstrar a página do dia. Nenhum dado real. Gerado por exemplos/gerar_dia_exemplo.py.",
+ "config": {
+  "escritorio": "KR Law",
+  "alvos": [
+   {
+    "tribunal": "TRT2",
+    "vara": "Vara do Trabalho de Cajamar",
+    "orgao_id": "9001"
+   },
+   {
+    "tribunal": "TRT2",
+    "vara": "2ª Vara do Trabalho de Barueri",
+    "orgao_id": "9002"
+   },
+   {
+    "tribunal": "TRT15",
+    "vara": "3ª Vara do Trabalho de Jundiaí",
+    "orgao_id": "9003"
+   },
+   {
+    "tribunal": "TRT3",
+    "vara": "2ª Vara do Trabalho de Contagem",
+    "orgao_id": "9004"
+   }
+  ],
+  "monitor": {
+   "oabs": [
+    {
+     "numero": "123456",
+     "uf": "SP",
+     "nome": "Advogada Exemplo"
+    }
+   ],
+   "partes_da_carteira": true,
+   "tribunais": [
+    "TRT2",
+    "TRT15",
+    "TRT3"
+   ],
+   "dias_para_tras": 3,
+   "radar": true,
+   "dias_na_pagina": 7
+  },
+  "enriquecer_cnpj": false
+ },
+ "carteira": [
+  "LOGISTICA SERRA AZUL LTDA",
+  "SUPERMERCADOS HORIZONTE S.A."
+ ],
+ "processos": [
+  [
+   "1000123-45.2026.5.02.0221",
+   "LOGISTICA SERRA AZUL LTDA",
+   "Dra. Exemplo"
+  ],
+  [
+   "1000456-78.2025.5.02.0221",
+   "LOGISTICA SERRA AZUL LTDA",
+   "Dr. Exemplo"
+  ],
+  [
+   "1000789-10.2026.5.15.0097",
+   "LOGISTICA SERRA AZUL LTDA",
+   "Dra. Exemplo"
+  ],
+  [
+   "1000555-66.2025.5.03.0030",
+   "SUPERMERCADOS HORIZONTE S.A.",
+   "Dr. Exemplo"
+  ]
+ ],
+ "rodadas": [
+  {
+   "dias_uteis_atras": 1,
+   "hora": "19:15",
+   "modo": "api",
+   "items": [
+    {
+     "id": 100,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002019-88.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002019-88.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA SETE RECLAMADO: LOGISTICA SERRA AZUL LTDA</p><p>Assuntos: intervalo intrajornada, FGTS, horas extras. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA SETE",
+       "polo": "A"
+      },
+      {
+       "nome": "LOGISTICA SERRA AZUL LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 101,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002030-20.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002030-20.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA UM RECLAMADO: RH PRISMA TERCEIRIZACAO LTDA RECLAMADO: SUPERMERCADOS HORIZONTE S.A.</p><p>Assuntos: FGTS, adicional de insalubridade, rescisão indireta. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA UM",
+       "polo": "A"
+      },
+      {
+       "nome": "RH PRISMA TERCEIRIZACAO LTDA",
+       "polo": "P"
+      },
+      {
+       "nome": "SUPERMERCADOS HORIZONTE S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 102,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002063-10.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002063-10.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA QUATRO RECLAMADO: ATACADO VALE LTDA</p><p>Assuntos: intervalo intrajornada. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA QUATRO",
+       "polo": "A"
+      },
+      {
+       "nome": "ATACADO VALE LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 103,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002100-37.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002100-37.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA CINCO RECLAMADO: CALL CENTER ATENDE BEM LTDA</p><p>Assuntos: rescisão indireta, adicional noturno, intervalo intrajornada. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA CINCO",
+       "polo": "A"
+      },
+      {
+       "nome": "CALL CENTER ATENDE BEM LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 104,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002128-05.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002128-05.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA SETE RECLAMADO: ACADEMIA CORPO EM FORMA LTDA</p><p>Assuntos: adicional noturno. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA SETE",
+       "polo": "A"
+      },
+      {
+       "nome": "ACADEMIA CORPO EM FORMA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 105,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002131-57.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002131-57.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA UM RECLAMADO: TELECOM CONECTA BRASIL S.A.</p><p>Assuntos: multa do art. 477 da CLT. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA UM",
+       "polo": "A"
+      },
+      {
+       "nome": "TELECOM CONECTA BRASIL S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 106,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002167-02.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002167-02.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA OITO RECLAMADO: LOJAS MARILIA COMERCIO LTDA</p><p>Assuntos: dano moral, adicional noturno. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA OITO",
+       "polo": "A"
+      },
+      {
+       "nome": "LOJAS MARILIA COMERCIO LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 107,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002199-07.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002199-07.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA NOVE RECLAMADO: GUARDIAO SEGURANCA E VIGILANCIA LTDA RECLAMADO: HOSPITAL SANTA CLARA LTDA</p><p>Assuntos: rescisão indireta, FGTS. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA NOVE",
+       "polo": "A"
+      },
+      {
+       "nome": "GUARDIAO SEGURANCA E VIGILANCIA LTDA",
+       "polo": "P"
+      },
+      {
+       "nome": "HOSPITAL SANTA CLARA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 108,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002204-29.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002204-29.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA CINCO RECLAMADO: INCORPORADORA ALTO DA SERRA S.A.</p><p>Assuntos: intervalo intrajornada, adicional de insalubridade. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA CINCO",
+       "polo": "A"
+      },
+      {
+       "nome": "INCORPORADORA ALTO DA SERRA S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 109,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002239-86.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002239-86.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA CINCO RECLAMADO: TEXTIL ALGODAO DOCE INDUSTRIA LTDA</p><p>Assuntos: verbas rescisórias, rescisão indireta. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA CINCO",
+       "polo": "A"
+      },
+      {
+       "nome": "TEXTIL ALGODAO DOCE INDUSTRIA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 110,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002272-76.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002272-76.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA DOIS RECLAMADO: DISTRIBUIDORA DE BEBIDAS GELADA LTDA</p><p>Assuntos: adicional noturno, intervalo intrajornada, equiparação salarial. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA DOIS",
+       "polo": "A"
+      },
+      {
+       "nome": "DISTRIBUIDORA DE BEBIDAS GELADA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 111,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002301-29.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002301-29.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA TRES RECLAMADO: AUTO PECAS ROTA 300 LTDA</p><p>Assuntos: horas extras, adicional de insalubridade. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA TRES",
+       "polo": "A"
+      },
+      {
+       "nome": "AUTO PECAS ROTA 300 LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 200,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002321-77.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002321-77.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA SEIS RECLAMADO: ARMAZENS JAGUARI S.A.</p><p>Assuntos: horas extras. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA SEIS",
+       "polo": "A"
+      },
+      {
+       "nome": "ARMAZENS JAGUARI S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 201,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002361-59.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002361-59.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA DEZ RECLAMADO: LIMPEZA TOTAL FACILITIES LTDA RECLAMADO: INCORPORADORA ALTO DA SERRA S.A.</p><p>Assuntos: verbas rescisórias, FGTS. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA DEZ",
+       "polo": "A"
+      },
+      {
+       "nome": "LIMPEZA TOTAL FACILITIES LTDA",
+       "polo": "P"
+      },
+      {
+       "nome": "INCORPORADORA ALTO DA SERRA S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 202,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002401-41.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002401-41.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA TRES RECLAMADO: GRAFICA IMPRESSAO RAPIDA LTDA</p><p>Assuntos: FGTS, adicional noturno, adicional de insalubridade. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA TRES",
+       "polo": "A"
+      },
+      {
+       "nome": "GRAFICA IMPRESSAO RAPIDA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 203,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002414-40.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002414-40.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA TRES RECLAMADO: ESCOLA NOVO SABER LTDA</p><p>Assuntos: adicional noturno, FGTS, rescisão indireta. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA TRES",
+       "polo": "A"
+      },
+      {
+       "nome": "ESCOLA NOVO SABER LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 204,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002426-54.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002426-54.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA NOVE RECLAMADO: VERTICE MAO DE OBRA TEMPORARIA LTDA RECLAMADO: METALURGICA CONTAGEM INDUSTRIAL S.A.</p><p>Assuntos: rescisão indireta. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA NOVE",
+       "polo": "A"
+      },
+      {
+       "nome": "VERTICE MAO DE OBRA TEMPORARIA LTDA",
+       "polo": "P"
+      },
+      {
+       "nome": "METALURGICA CONTAGEM INDUSTRIAL S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 205,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002435-16.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002435-16.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA SETE RECLAMADO: SERVICOS DE PORTARIA ATENTO LTDA</p><p>Assuntos: horas extras. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA SETE",
+       "polo": "A"
+      },
+      {
+       "nome": "SERVICOS DE PORTARIA ATENTO LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 206,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002460-29.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002460-29.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA UM RECLAMADO: ESCOLA DE IDIOMAS FALA MAIS LTDA</p><p>Assuntos: FGTS. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA UM",
+       "polo": "A"
+      },
+      {
+       "nome": "ESCOLA DE IDIOMAS FALA MAIS LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 207,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002482-87.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002482-87.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA OITO RECLAMADO: TRANSPORTES ROTA NORTE LTDA</p><p>Assuntos: adicional de insalubridade, intervalo intrajornada. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA OITO",
+       "polo": "A"
+      },
+      {
+       "nome": "TRANSPORTES ROTA NORTE LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 301,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Intimação",
+     "tipoDocumento": "Sentença",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1000123-45.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ATOrd 1000123-45.2026.5.02.0221 RECLAMADO: LOGISTICA SERRA AZUL LTDA</p><p>SENTENÇA. Vistos etc. Ante o exposto, JULGO PARCIALMENTE PROCEDENTES os pedidos para condenar a reclamada ao pagamento de horas extras e reflexos. Prazo de 8 (oito) dias para recurso.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA OITO",
+       "polo": "A"
+      },
+      {
+       "nome": "LOGISTICA SERRA AZUL LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": [
+      {
+       "advogado": {
+        "nome": "ADVOGADA EXEMPLO",
+        "numero_oab": "123456",
+        "uf_oab": "SP"
+       }
+      }
+     ]
+    },
+    {
+     "id": 302,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Intimação",
+     "tipoDocumento": "Despacho",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1000456-78.2025.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ATOrd 1000456-78.2025.5.02.0221 RECLAMADO: LOGISTICA SERRA AZUL LTDA</p><p>DESPACHO. Fica redesignada a audiência de instrução para 10/12/2026 às 10h00, por videoconferência (Juízo 100% Digital). Intimem-se as partes e testemunhas.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA DEZ",
+       "polo": "A"
+      },
+      {
+       "nome": "LOGISTICA SERRA AZUL LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": [
+      {
+       "advogado": {
+        "nome": "ADVOGADA EXEMPLO",
+        "numero_oab": "123456",
+        "uf_oab": "SP"
+       }
+      }
+     ]
+    },
+    {
+     "id": 303,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Intimação",
+     "tipoDocumento": "Decisão",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1000321-09.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ATOrd 1000321-09.2026.5.02.0202 RECLAMADO: SUPERMERCADOS HORIZONTE S.A.</p><p>DECISÃO. Defiro o bloqueio de valores via SISBAJUD até o limite da execução. Efetivado o bloqueio, intime-se a executada para, querendo, opor embargos no prazo de 5 (cinco) dias.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA DEZ",
+       "polo": "A"
+      },
+      {
+       "nome": "SUPERMERCADOS HORIZONTE S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": [
+      {
+       "advogado": {
+        "nome": "ADVOGADA EXEMPLO",
+        "numero_oab": "123456",
+        "uf_oab": "SP"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "dias_uteis_atras": 1,
+   "hora": "19:45",
+   "modo": "api",
+   "items": [
+    {
+     "id": 400,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002489-43.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATSum 1002489-43.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA NOVE RECLAMADO: LOGISTICA SERRA AZUL LTDA</p><p>Assuntos: horas extras, dano moral. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA NOVE",
+       "polo": "A"
+      },
+      {
+       "nome": "LOGISTICA SERRA AZUL LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 401,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002503-27.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATSum 1002503-27.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA UM RECLAMADO: PLASTICOS JUNDIAI INDUSTRIA LTDA</p><p>Assuntos: FGTS, horas extras, intervalo intrajornada. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA UM",
+       "polo": "A"
+      },
+      {
+       "nome": "PLASTICOS JUNDIAI INDUSTRIA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 402,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002518-93.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATSum 1002518-93.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA OITO RECLAMADO: PLASTICOS JUNDIAI INDUSTRIA LTDA</p><p>Assuntos: horas extras, verbas rescisórias, dano moral. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA OITO",
+       "polo": "A"
+      },
+      {
+       "nome": "PLASTICOS JUNDIAI INDUSTRIA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 403,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002554-38.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATSum 1002554-38.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA TRES RECLAMADO: TRANSPORTES ROTA NORTE LTDA</p><p>Assuntos: verbas rescisórias. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA TRES",
+       "polo": "A"
+      },
+      {
+       "nome": "TRANSPORTES ROTA NORTE LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 404,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002584-73.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATOrd 1002584-73.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA NOVE RECLAMADO: CONDOMINIO PARQUE DAS ARVORES</p><p>Assuntos: adicional de insalubridade, rescisão indireta. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA NOVE",
+       "polo": "A"
+      },
+      {
+       "nome": "CONDOMINIO PARQUE DAS ARVORES",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 405,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002609-86.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATOrd 1002609-86.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA TRES RECLAMADO: ENTREGAS VIA RAPIDA LTDA</p><p>Assuntos: intervalo intrajornada, multa do art. 477 da CLT. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA TRES",
+       "polo": "A"
+      },
+      {
+       "nome": "ENTREGAS VIA RAPIDA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 406,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002638-39.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATSum 1002638-39.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA CINCO RECLAMADO: RH PRISMA TERCEIRIZACAO LTDA</p><p>Assuntos: verbas rescisórias, equiparação salarial. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA CINCO",
+       "polo": "A"
+      },
+      {
+       "nome": "RH PRISMA TERCEIRIZACAO LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 407,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002669-59.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATOrd 1002669-59.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA DOIS RECLAMADO: HOSPITAL SANTA CLARA LTDA</p><p>Assuntos: FGTS, adicional noturno, adicional de insalubridade. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA DOIS",
+       "polo": "A"
+      },
+      {
+       "nome": "HOSPITAL SANTA CLARA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 408,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002686-95.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATSum 1002686-95.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA UM RECLAMADO: FRIGORIFICO BOM PASTO S.A.</p><p>Assuntos: intervalo intrajornada. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA UM",
+       "polo": "A"
+      },
+      {
+       "nome": "FRIGORIFICO BOM PASTO S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 409,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002715-48.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATSum 1002715-48.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA NOVE RECLAMADO: CLINICA ODONTO SORRISO LTDA</p><p>Assuntos: verbas rescisórias, horas extras, equiparação salarial. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA NOVE",
+       "polo": "A"
+      },
+      {
+       "nome": "CLINICA ODONTO SORRISO LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 500,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002754-85.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>Processo distribuído. ATOrd 1002754-85.2026.5.03.0030 RECLAMANTE: PESSOA FICTICIA QUATRO RECLAMADO: VERTICE MAO DE OBRA TEMPORARIA LTDA RECLAMADO: METALURGICA CONTAGEM INDUSTRIAL S.A.</p><p>Assuntos: adicional noturno, multa do art. 477 da CLT, verbas rescisórias. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA QUATRO",
+       "polo": "A"
+      },
+      {
+       "nome": "VERTICE MAO DE OBRA TEMPORARIA LTDA",
+       "polo": "P"
+      },
+      {
+       "nome": "METALURGICA CONTAGEM INDUSTRIAL S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 501,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002773-91.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>Processo distribuído. ATOrd 1002773-91.2026.5.03.0030 RECLAMANTE: PESSOA FICTICIA DOIS RECLAMADO: FARMACIA VIDA NOVA LTDA</p><p>Assuntos: verbas rescisórias, adicional de insalubridade. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA DOIS",
+       "polo": "A"
+      },
+      {
+       "nome": "FARMACIA VIDA NOVA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 502,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002798-07.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>Processo distribuído. ATSum 1002798-07.2026.5.03.0030 RECLAMANTE: PESSOA FICTICIA TRES RECLAMADO: METALURGICA CONTAGEM INDUSTRIAL S.A.</p><p>Assuntos: adicional de insalubridade, FGTS, equiparação salarial. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA TRES",
+       "polo": "A"
+      },
+      {
+       "nome": "METALURGICA CONTAGEM INDUSTRIAL S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 503,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002805-96.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>Processo distribuído. ATOrd 1002805-96.2026.5.03.0030 RECLAMANTE: PESSOA FICTICIA CINCO RECLAMADO: DROGARIA PEROLA LTDA</p><p>Assuntos: verbas rescisórias, adicional noturno. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA CINCO",
+       "polo": "A"
+      },
+      {
+       "nome": "DROGARIA PEROLA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 504,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002808-51.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>Processo distribuído. ATOrd 1002808-51.2026.5.03.0030 RECLAMANTE: PESSOA FICTICIA SETE RECLAMADO: EMBALAGENS PAPEL FORTE LTDA</p><p>Assuntos: rescisão indireta, horas extras. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA SETE",
+       "polo": "A"
+      },
+      {
+       "nome": "EMBALAGENS PAPEL FORTE LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 505,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002826-72.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>Processo distribuído. ATOrd 1002826-72.2026.5.03.0030 RECLAMANTE: PESSOA FICTICIA UM RECLAMADO: PLASTICOS JUNDIAI INDUSTRIA LTDA</p><p>Assuntos: adicional de insalubridade, multa do art. 477 da CLT. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA UM",
+       "polo": "A"
+      },
+      {
+       "nome": "PLASTICOS JUNDIAI INDUSTRIA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 506,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002865-69.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>Processo distribuído. ATSum 1002865-69.2026.5.03.0030 RECLAMANTE: PESSOA FICTICIA SEIS RECLAMADO: VERTICE MAO DE OBRA TEMPORARIA LTDA</p><p>Assuntos: intervalo intrajornada, horas extras. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA SEIS",
+       "polo": "A"
+      },
+      {
+       "nome": "VERTICE MAO DE OBRA TEMPORARIA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 601,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Intimação",
+     "tipoDocumento": "Despacho",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1000789-10.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>ATOrd 1000789-10.2026.5.15.0097 RECLAMADO: LOGISTICA SERRA AZUL LTDA</p><p>DESPACHO. Manifeste-se a reclamada sobre o laudo pericial, no prazo de 8 (oito) dias.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA SETE",
+       "polo": "A"
+      },
+      {
+       "nome": "LOGISTICA SERRA AZUL LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": [
+      {
+       "advogado": {
+        "nome": "ADVOGADA EXEMPLO",
+        "numero_oab": "123456",
+        "uf_oab": "SP"
+       }
+      }
+     ]
+    },
+    {
+     "id": 602,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Intimação",
+     "tipoDocumento": "Intimação",
+     "nomeOrgao": "5ª Turma - Gabinete Exemplo",
+     "idOrgao": "9900",
+     "nomeClasse": "RECURSO ORDINÁRIO TRABALHISTA",
+     "numeroprocessocommascara": "1000555-66.2025.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>ROT 1000555-66.2025.5.03.0030 RECORRENTE: SUPERMERCADOS HORIZONTE S.A. RECORRIDO: PESSOA FICTICIA DEZ</p><p>Fica V. Sa. intimado de que o processo foi incluído em pauta de julgamento da sessão telepresencial.</p>",
+     "destinatarios": [
+      {
+       "nome": "SUPERMERCADOS HORIZONTE S.A.",
+       "polo": "A"
+      }
+     ],
+     "destinatarioadvogados": [
+      {
+       "advogado": {
+        "nome": "ADVOGADA EXEMPLO",
+        "numero_oab": "123456",
+        "uf_oab": "SP"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "dias_uteis_atras": 1,
+   "hora": "20:45",
+   "modo": "api",
+   "items": [
+    {
+     "id": 700,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002875-52.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002875-52.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA SEIS RECLAMADO: COOPERATIVA DE TRABALHO HORIZONTE</p><p>Assuntos: adicional noturno, rescisão indireta, multa do art. 477 da CLT. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA SEIS",
+       "polo": "A"
+      },
+      {
+       "nome": "COOPERATIVA DE TRABALHO HORIZONTE",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 701,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002900-65.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATSum 1002900-65.2026.5.02.0221 RECLAMANTE: PESSOA FICTICIA UM RECLAMADO: LIMPEZA TOTAL FACILITIES LTDA</p><p>Assuntos: rescisão indireta, horas extras, adicional noturno. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA UM",
+       "polo": "A"
+      },
+      {
+       "nome": "LIMPEZA TOTAL FACILITIES LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 750,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002910-73.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>Processo distribuído. ATOrd 1002910-73.2026.5.03.0030 RECLAMANTE: PESSOA FICTICIA CINCO RECLAMADO: ALIMENTOS BOA MESA LTDA</p><p>Assuntos: equiparação salarial, horas extras. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA CINCO",
+       "polo": "A"
+      },
+      {
+       "nome": "ALIMENTOS BOA MESA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 751,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002934-04.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>Processo distribuído. ATOrd 1002934-04.2026.5.03.0030 RECLAMANTE: PESSOA FICTICIA QUATRO RECLAMADO: HOTEL JARDIM DAS PALMEIRAS LTDA</p><p>Assuntos: horas extras, adicional de insalubridade, verbas rescisórias. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA QUATRO",
+       "polo": "A"
+      },
+      {
+       "nome": "HOTEL JARDIM DAS PALMEIRAS LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 801,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Intimação",
+     "tipoDocumento": "Despacho",
+     "nomeOrgao": "Vara do Trabalho de Cajamar",
+     "idOrgao": "9001",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1000123-45.2026.5.02.0221",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>ATOrd 1000123-45.2026.5.02.0221 RECLAMADO: LOGISTICA SERRA AZUL LTDA</p><p>DESPACHO. Homologo o acordo celebrado entre as partes para que produza seus efeitos. Cumprido o acordo, arquivem-se.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA DEZ",
+       "polo": "A"
+      },
+      {
+       "nome": "LOGISTICA SERRA AZUL LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": [
+      {
+       "advogado": {
+        "nome": "ADVOGADA EXEMPLO",
+        "numero_oab": "123456",
+        "uf_oab": "SP"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "dias_uteis_atras": 0,
+   "hora": "07:00",
+   "modo": "caderno",
+   "items": [
+    {
+     "id": 900,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002956-58.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002956-58.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA UM RECLAMADO: GUARDIAO SEGURANCA E VIGILANCIA LTDA RECLAMADO: HOSPITAL SANTA CLARA LTDA</p><p>Assuntos: multa do art. 477 da CLT, verbas rescisórias. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA UM",
+       "polo": "A"
+      },
+      {
+       "nome": "GUARDIAO SEGURANCA E VIGILANCIA LTDA",
+       "polo": "P"
+      },
+      {
+       "nome": "HOSPITAL SANTA CLARA LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 901,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT2",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "2ª Vara do Trabalho de Barueri",
+     "idOrgao": "9002",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1002983-41.2026.5.02.0202",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 2ª REGIÃO</p><p>Processo distribuído. ATOrd 1002983-41.2026.5.02.0202 RECLAMANTE: PESSOA FICTICIA SETE RECLAMADO: LIMPEZA TOTAL FACILITIES LTDA RECLAMADO: INCORPORADORA ALTO DA SERRA S.A.</p><p>Assuntos: rescisão indireta. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA SETE",
+       "polo": "A"
+      },
+      {
+       "nome": "LIMPEZA TOTAL FACILITIES LTDA",
+       "polo": "P"
+      },
+      {
+       "nome": "INCORPORADORA ALTO DA SERRA S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 950,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT15",
+     "tipoComunicacao": "Lista de distribuição",
+     "tipoDocumento": "Notificação",
+     "nomeOrgao": "3ª Vara do Trabalho de Jundiaí",
+     "idOrgao": "9003",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO SUMARÍSSIMO",
+     "numeroprocessocommascara": "1002997-86.2026.5.15.0097",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 15ª REGIÃO</p><p>Processo distribuído. ATSum 1002997-86.2026.5.15.0097 RECLAMANTE: PESSOA FICTICIA NOVE RECLAMADO: COMERCIAL BONS VENTOS LTDA</p><p>Assuntos: FGTS. Fica designada audiência inicial, a ser intimada oportunamente.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA NOVE",
+       "polo": "A"
+      },
+      {
+       "nome": "COMERCIAL BONS VENTOS LTDA",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": []
+    },
+    {
+     "id": 1001,
+     "dias_uteis_atras": 1,
+     "siglaTribunal": "TRT3",
+     "tipoComunicacao": "Intimação",
+     "tipoDocumento": "Despacho",
+     "nomeOrgao": "2ª Vara do Trabalho de Contagem",
+     "idOrgao": "9004",
+     "nomeClasse": "AÇÃO TRABALHISTA - RITO ORDINÁRIO",
+     "numeroprocessocommascara": "1000900-12.2026.5.03.0030",
+     "link": "https://comunica.pje.jus.br/",
+     "texto": "<p>PODER JUDICIÁRIO JUSTIÇA DO TRABALHO TRIBUNAL REGIONAL DO TRABALHO DA 3ª REGIÃO</p><p>ATOrd 1000900-12.2026.5.03.0030 RECLAMADO: SUPERMERCADOS HORIZONTE S.A.</p><p>DESPACHO. Junte a reclamada os cartões de ponto do período contratual, no prazo de 10 (dez) dias, sob as penas da lei.</p>",
+     "destinatarios": [
+      {
+       "nome": "PESSOA FICTICIA NOVE",
+       "polo": "A"
+      },
+      {
+       "nome": "SUPERMERCADOS HORIZONTE S.A.",
+       "polo": "P"
+      }
+     ],
+     "destinatarioadvogados": [
+      {
+       "advogado": {
+        "nome": "ADVOGADA EXEMPLO",
+        "numero_oab": "123456",
+        "uf_oab": "SP"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

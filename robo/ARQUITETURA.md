@@ -1,0 +1,93 @@
+# Arquitetura do robô LexSuiteONE (v0.7.0)
+
+Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
+linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional
+e trocável, com a chave do próprio escritório, nunca no caminho principal.
+
+| Arquivo | O que faz | Onde mudar o quê |
+|---|---|---|
+| `lexsuite_robo.py` | linha de comando: `app` (a tela, o principal), `radar` (uma rodada sem tela), `monitor`, `orgaos`, `diagnostico`, `varas`, `vara`, `pauta`, `djen`, `tudo`. O `monitor` faz uma rodada (nossos processos + radar das varas), registra a rodada e gera a página do dia | novos comandos e o fluxo de cada um |
+| `INSTALAR-PYTHON.bat`, `ABRIR.bat`, `RODAR.bat`, `AGENDAR.bat`, `DIAGNOSTICO.bat` | Windows sem instalar nada: baixa o Python portátil oficial para a pasta `python\`; abre a tela; roda uma rodada sem tela (agendador); gera o relatório de diagnóstico | |
+| `lexsuite/app.py` | a tela local: servidor pequeno em 127.0.0.1 (só biblioteca padrão) que serve `radar_modelo.html`, entrega os dados (`/dados`), lista pastas sincronizadas (`/pastas`), salva configuração e tribunais (`/config`, `/testar-pasta`), roda o radar numa thread (`/rodar`, `/estado`) e aplica atualização assinada (`/atualizar`). POST só com o cabeçalho `X-LexSuite` da própria página | rotas, portas |
+| `lexsuite/tribunais.py` | os 59 tribunais do DJEN que o robô lê (24 TRTs, 27 TJs, 6 TRFs, STJ e TST): sigla, estados, região, ramo; consulta pública do PJe nos TRTs; validação da escolha | nomes, regiões |
+| `lexsuite/preferencias.py` | a planilha de controle (`LexSuiteONE - Controle.xlsx`, só gente edita): Preferências, Exclusões e a aba oculta Controle (ativo, validade, versão mínima, mensagem); `bloqueio()` e `aplicar()` (marca excluídas, nunca apaga) | chaves e padrões |
+| `lexsuite/compartilhar.py` | a pasta compartilhada: detecção das pastas do Drive/OneDrive, teste de gravação, `LexSuiteONE - Radar.xlsx` (Radar + abas ocultas Log, Saúde, Sobre) e cópia da página | colunas, nomes dos arquivos |
+| `lexsuite/planilha.py` | leitor e escritor de `.xlsx` só com a biblioteca padrão (strings inline, abas ocultas, cabeçalho em negrito, limite de 50 MB na leitura) | |
+| `lexsuite/saude.py` | avaliação sem IA de cada rodada (DJEN mudou? regra frouxa? Receita sem resposta?) gravada no banco e na aba Saúde | limiares |
+| `lexsuite/atualizar.py` | atualização assinada: procura em `<compartilhada>/LexSuiteONE/atualizacao` e no endereço fixo, verifica Ed25519 + SHA-256, lista fechada de arquivos, guarda a anterior em `_anterior/` | nomes permitidos |
+| `lexsuite/assinatura.py` | Ed25519 (RFC 8032) em Python puro, com vetores de teste da RFC | |
+| `ferramentas/publicar.py` | ferramenta do suporte (fora do pacote do cliente): gera chaves e empacota uma versão assinada | |
+| `lexsuite/config.py` | `config.json`: padrão, criação automática na primeira vez, gravação | chaves novas |
+| `lexsuite/rede.py` | todo pedido à internet: intervalo mínimo, novas tentativas, aviso de bloqueio fora do Brasil | velocidade (não diminuir os intervalos) |
+| `lexsuite/datajud.py` | DataJud: chave pública lida da página do CNJ, busca paginada, estatística da vara, códigos TPU de desfecho | métricas da vara |
+| `lexsuite/djen.py` | DJEN: caderno diário (padrão), busca paginada e busca filtrada (OAB, processo, parte); transforma publicações em leads | nomes de campos do DJEN |
+| `lexsuite/monitor.py` | monitor: o que acompanhar, conferência (OAB, processo, cliente, CNPJ), tipo do ato e urgência, não avisar duas vezes; radar das varas (`varas_alvo`, `coletar_radar`, `acoes_novas`); nota (`pontuar`); sinais e setor; montagem dos dados da página (`montar_pagina`) | regras de tipo de ato (`_REGRAS_ATO`), sinais |
+| `lexsuite/radar.py` | o radar: `executar` (uma rodada: cadernos, ações novas, Receita, banco, saída), `montar_radar` (dados da página por período), `item_de_lead` (a ficha), regra "jurídico próprio provável" (capital social acima do teto ou grande grupo), planilha | teto do gigante, lista de grandes grupos, colunas |
+| `lexsuite/diagnostico.py` | relatório `diagnostico\radar-diagnostico.txt` do que o radar guardou: contagens por tipo, classe, pista de "ação nova" e vara, empresas mais citadas e amostras com reclamante, advogado e CPF mascarados. Serve para calibrar a regra com dados reais sem mandar o banco | pistas (`PISTAS`), regra estrita em teste (`ESTRITA`) |
+| `lexsuite/prazos.py` | publicação (D+1 útil), início do prazo (D+2 útil), vencimento estimado; feriados nacionais e forenses, recesso e suspensão de 20/12 a 20/01 | feriados |
+| `lexsuite/pauta.py` | pauta pública de audiências do PJe (segunda fonte, roda de qualquer lugar) | tipos de audiência aceitos |
+| `lexsuite/classificar.py` | regras: empresa × pessoa física, CNPJ, valor da causa, nota 0–100 com motivos, carteira de clientes | pesos da nota |
+| `lexsuite/cnpj.py` | cadastro público da empresa pela Receita (BrasilAPI / Minha Receita), com cache: porte, capital, CNAE principal e secundários, cidade, telefone, e-mail, sócios e administradores | campos da empresa |
+| `lexsuite/banco.py` | SQLite `lexsuite.db`: leads (ações), publicacoes (nossos processos), rodadas, cadernos, cache de CNPJ, execucoes | tabelas (na fase SaaS viram tabelas do Supabase) |
+| `lexsuite/saidas.py` | CSV (; + BOM, abre no Excel), painel HTML e dados.json | colunas da planilha |
+| `lexsuite/avisar.py` | e-mail SMTP (senha só pela variável `LEXSUITE_SMTP_SENHA`) e Telegram (token só pela variável `LEXSUITE_TELEGRAM_TOKEN`; nunca aparece em mensagem de erro) | texto dos avisos |
+| `painel_modelo.html` | o painel (PT/EN, claro/escuro, celular). O robô troca `window.LEXSUITE_DADOS = null;` pelos dados | visual do painel |
+| `radar_modelo.html` | a tela: uma linha por ação, clique abre a ficha estruturada (cada dado numa linha, "não informado" / "não capturado"), valor da causa digitável (fica no navegador), status, exportar planilha. Servida pelo `app.py` (busca `/dados`; barra de tribunais por região/estado, período, Atualizar agora) ou gravada com os dados embutidos em `saida/radar/radar.html` (o robô troca `window.LEXSUITE_RADAR = null;`) | visual e textos |
+| `monitor_modelo.html` | a página "O dia nos tribunais" (tema do escritório, PT/EN, claro/escuro, celular): exige ação, fita do dia por rodada e tribunal, empresas/tribunais/setores, lista com agrupamentos; modo "Ao vivo" (o navegador consulta o DJEN). O robô troca `window.LEXSUITE_MONITOR = null;` pelos dados | visual e textos da página |
+| `exemplos/` | `radar_exemplo.json` (gerado por `gerar_radar_exemplo.py`): um dia **fictício** do Radar SP; `dia_exemplo.json`: um dia **fictício** em 3 tribunais e 4 rodadas (gerado por `gerar_dia_exemplo.py`) para `monitor --exemplo` e `--teste-aviso` | a amostra |
+| `testes/` | 55 testes: regras, tela, planilha, assinatura (vetores da RFC 8032), atualização e preferências (`TESTAR.bat`) | acrescentar um teste a cada regra nova |
+
+## O que não se toca
+
+- Pessoa física nunca sai do robô: `djen.leads` e `pauta.leads_da_pauta` descartam antes de guardar;
+  `saidas.lead_para_saida` é a lista do que pode sair.
+- Nada de contornar captcha, trocar de IP para fugir de limite ou abrir várias cópias ao mesmo tempo.
+- Nenhuma chave ou senha em arquivo. A chave do DataJud é pública e lida da página do CNJ a cada rodada.
+- Monitor: o texto das publicações dos processos do escritório fica só no `lexsuite.db` local e nos avisos
+  para o próprio escritório. Uma publicação só é marcada como vista depois que algum aviso ligado saiu
+  (se o Telegram e o e-mail falharem, ela volta na rodada seguinte).
+- `config.json`, `carteira.csv`, `processos.csv`, `lexsuite*.db`, `saida/` e `diagnostico/` nunca vão para
+  o GitHub (estão no `.gitignore`).
+
+## Como o Radar acha as coisas (e o que fica com gente)
+
+1. Caderno do DJEN de cada tribunal do config (1 download por tribunal por dia, lido na memória e descartado).
+2. Fica só o que é ação nova contra pessoa jurídica (lista de distribuição ou notificação inicial); reclamante (pessoa
+   física) é descartado antes de gravar.
+3. Rito: ordinário = acima de 40 salários mínimos; é o primeiro corte de valor que o Diário permite.
+4. CNPJ no texto do Diário → Receita (porte, capital social, CNAE, cidade, telefone, e-mail, sócios). Sem CNPJ no texto,
+   a ficha fica "a conferir" e o CNPJ sai do mesmo clique do valor da causa.
+5. Valor da causa: o Diário não traz; está na consulta pública do PJe atrás de um captcha. A página tem "Abrir consulta
+   no PJe" e o campo para a pessoa digitar (fica no navegador e sai na planilha). O robô não burla captcha.
+6. "Jurídico próprio provável": capital social acima do teto do config ou nome de grande grupo. Vai para o fim, não some.
+
+## Como o monitor acha as coisas (e quanto pesa)
+
+- **Nossos processos**: uma consulta à API do DJEN por OAB, por número de processo e por nome de cliente,
+  só do período (`dias_para_tras`). Resposta em texto (JSON), poucos KB. Vale para todos os tribunais.
+- **Radar das varas** (`alvos` do config): uma consulta por vara, pelo `orgao_id` (idOrgao). O id é descoberto
+  uma vez com `orgaos --tribunal TRTn` (baixa o caderno daquele dia, guarda só o mapa nome → id em
+  `orgaos_TRTn.json`). Depois disso nada de caderno: só texto do período.
+- **Caderno do dia** (`--caderno`): opcional, ~150 MB por TRT; lido na memória e descartado; só o que casa
+  é guardado. Serve de rede de segurança ou quando a busca filtrada estiver bloqueada (403).
+- **Identidade de uma publicação**: hash do processo + data + texto; a mesma publicação vinda por caminhos
+  diferentes nunca avisa duas vezes.
+- **Rodadas**: cada execução do `monitor` vira uma linha em `rodadas` (hora, modo, quantas conferidas, quantas
+  novas, por tribunal). É isso que a página desenha na fita do dia.
+
+## Caminho para a plataforma (fase SaaS)
+
+O formato dos leads (`dados.json`) é o mesmo que vira tabela no banco da plataforma. Migrar é trocar
+`banco.py` (SQLite → Supabase) e rodar o coletor do DJEN num servidor no Brasil.
+
+Monitor na plataforma: o coletor roda num servidor em São Paulo a cada 15–30 min à noite e grava em
+`lex_publicacoes` (uma linha por publicação, por escritório). A partir daí o "webhook" é nosso: cada linha
+nova dispara o aviso no app (notificação do PWA), no e-mail e no Telegram, e aparece na caixa do app.
+
+## O fluxo da v0.7 (pasta compartilhada)
+
+1. `ABRIR.bat` abre a tela; na primeira vez a Configuração pede escritório e pasta compartilhada (Drive/OneDrive detectados).
+2. Cada rodada: lê `LexSuiteONE - Controle.xlsx` (bloqueio? exclusões? mínimo de ações?), baixa os cadernos, guarda as
+   ações, avalia a saúde, registra no log, grava `saida/radar/` e `LexSuiteONE - Radar.xlsx` + `.html` na pasta compartilhada.
+3. O suporte lê Log/Saúde/Sobre pela pasta compartilhada; edita a aba Controle para pausar, avisar ou exigir versão;
+   solta pacotes assinados em `atualizacao/`. Nada disso usa internet própria do robô: o Drive carrega.
