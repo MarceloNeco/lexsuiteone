@@ -11,9 +11,11 @@ inteligência artificial e sem senha de ninguém. A planilha vai para a sua past
 2. Dois cliques em **`ABRIR.bat`**. Na primeira vez ele baixa o Python portátil oficial para dentro da pasta (11 MB,
    sem instalador, sem senha de administrador) e abre a tela no navegador. Uma janela "LexSuiteONE" fica aberta
    enquanto a tela é usada.
-3. A tela abre em **Configuração**: nome do escritório, **pasta compartilhada** (a tela lista as pastas do Google
+3. Na primeira vez a tela abre um **passo a passo de boas-vindas**: seu nome e seu papel no escritório (a tela e o
+   manual passam a falar com você), o nome do escritório, a **pasta compartilhada** (a tela lista as pastas do Google
    Drive para computador e do OneDrive que achou; "Testar pasta" confirma) e a opção **rodar sozinho todo dia**
-   (19:40 e 07:10, já marcada). **Salvar** cria a planilha `LexSuiteONE.xlsx` no Drive e agenda as rodadas.
+   (19:40 e 07:10, já marcada). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE.xlsx` no Drive,
+   agenda as rodadas e dispara a primeira. Tudo isso pode ser mudado depois em **Configuração**.
 4. **Atualizar agora**: os 24 TRTs já vêm escolhidos (em **Tribunais** dá para mudar: por região, por estado, por
    ramo ou "Selecionar todos"). A primeira rodada baixa o diário do dia de cada tribunal (de 5 a 150 MB cada): os 24
    TRTs levam de 30 a 60 minutos; depois, só o que é novo. O computador precisa estar **no Brasil**.
@@ -48,8 +50,8 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
   **Período:** último dia, 3, 7, 15 ou 30 dias. **Exportar planilha** gera um `.csv` com o que está na tela.
 - **Valor da causa:** o Diário não traz; está na consulta pública do PJe atrás de um captcha. Botão "Abrir consulta no
   PJe", "Copiar número", e o campo para digitar o valor (fica no navegador e sai na planilha exportada).
-- **Configuração:** escritório, pasta compartilhada, rodar sozinho, versão instalada, chave de atualização e o botão
-  "Verificar atualização".
+- **Configuração:** seu nome e papel, escritório, pasta compartilhada, rodar sozinho, versão instalada, chave de
+  atualização e o botão "Verificar atualização". **Manual do escritório** no rodapé, personalizado para o seu papel.
 
 ## Rodar sozinho
 
