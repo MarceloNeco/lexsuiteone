@@ -1,4 +1,4 @@
-# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.2)
+# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.3)
 
 Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
 linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional
@@ -108,7 +108,7 @@ produto, escrito em maiúsculas com o "IA" em latão (`JUDIC<b>IA</b>L` na tela 
 | Download | hoje `github.com/MarceloNeco/lexsuiteone/raw/main/releases/LexSuiteONE-robo.zip`; com o site no ar, `judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip` (o mesmo arquivo, em `docs/downloads/`) |
 | Remetente dos e-mails | `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend; não recebe respostas |
 | Dúvidas do cliente | `contato@solverone.com.br` |
-| Compartilhamento do Drive | `integracao@solverone.com.br` (conta Google do suporte) |
+| Compartilhamento do Drive | `suporte@solverone.com.br` (conta Google do suporte) |
 
 A zona DNS de `solverone.com.br` está hospedada no Registro.br (servidores `*.sec.dns.br`), com o site no GitHub Pages;
 é lá que o CNAME `judicial` é criado. Nenhum contato pessoal do dono aparece no que o cliente vê.
