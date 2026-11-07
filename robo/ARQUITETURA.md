@@ -104,12 +104,13 @@ produto, escrito em maiúsculas com o "IA" em latão (`JUDIC<b>IA</b>L` na tela 
 |---|---|
 | Suíte (repositório, remetente, nome do pacote) | LexSuiteONE |
 | Produto (tela, manual, site) | JUDICIAL, frente Radar Trabalhista |
-| Site e serviço | `judicial.solverone.com.br` (GitHub Pages servindo a pasta `docs/` do repositório; CNAME criado no Registro.br) |
+| Site e serviço | `judicial.solverone.com.br` (GitHub Pages servindo a pasta `docs/` do repositório; CNAME na zona do Cloudflare) |
 | Download | `judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip` (arquivo em `docs/downloads/`; a cópia em `releases/` é histórico) |
 | Atualização assinada | `judicial.solverone.com.br/atualizacao/versao.json` e o `.zip` ao lado (pasta `docs/atualizacao/`), além da subpasta `atualizacao` do Drive do cliente |
 | Remetente dos e-mails | `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend; não recebe respostas |
 | Dúvidas do cliente | `contato@solverone.com.br` |
 | Compartilhamento do Drive | `integracao@solverone.com.br`: endereço de sistemas, não é caixa de atendimento; vira Conta Google para o Drive |
 
-A zona DNS de `solverone.com.br` está hospedada no Registro.br (servidores `*.sec.dns.br`), com o site no GitHub Pages;
-é lá que o CNAME `judicial` é criado. Nenhum contato pessoal do dono aparece no que o cliente vê.
+A zona DNS de `solverone.com.br` está no Cloudflare desde 07/Nov/2026 (servidores `harlee` e `lennon.ns.cloudflare.com`),
+com DNSSEC ativo; o Claude altera registros pelo conector de API. O site segue no GitHub Pages, com proxy desligado.
+Nenhum contato pessoal do dono aparece no que o cliente vê.

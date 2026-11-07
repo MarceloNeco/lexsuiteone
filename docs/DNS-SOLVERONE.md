@@ -1,7 +1,11 @@
-# DNS de solverone.com.br: o que existe e o que criar
+# DNS de solverone.com.br: o que existe e como mudar
 
-Levantamento feito em 07/Nov/2026 por consulta pública (DNS). A zona está hospedada no **Registro.br**
-(servidores `e.sec.dns.br` e `f.sec.dns.br`). É lá que qualquer registro novo é criado hoje.
+**Desde 07/Nov/2026, 23h19 UTC, a zona está no Cloudflare** (servidores `harlee.ns.cloudflare.com` e
+`lennon.ns.cloudflare.com`), com DNSSEC ativo (DS 2371 publicado pelo Registro.br). Registros novos são criados no
+Cloudflare, pelo conector de API do Claude ou no painel. O Registro.br só guarda o domínio e os servidores de nome.
+
+Histórico: até essa data a zona era hospedada no Registro.br (`e.sec.dns.br` e `f.sec.dns.br`). A tabela abaixo é o
+conteúdo que foi migrado, idêntico nos dois lados, mais o CNAME `judicial`.
 
 ## Registros que existem hoje e para que servem
 

@@ -38,7 +38,8 @@ ImprovMX (apelidos), Conta Google do `integracao@`, chaves de assinatura no PC d
 
 ## Estado do Cloudflare (07/Nov, noite)
 
-Zona `solverone.com.br` já criada e conferida no Cloudflare, pendente, com todos os registros e o CNAME `judicial`.
+Zona `solverone.com.br` **ativa** no Cloudflare desde 07/Nov 23h19 UTC, com todos os registros e o CNAME `judicial`;
+site judicial.solverone.com.br respondendo (HTTPS depende do "Enforce HTTPS" no GitHub Pages).
 Servidores: `harlee.ns.cloudflare.com` e `lennon.ns.cloudflare.com`. DNSSEC do Cloudflare já ligado (DS keytag 2371). Falta só o dono, no Registro.br,
 trocar os servidores e cadastrar esse DS no mesmo formulário; o Registro.br assinava a zona automaticamente e não tem
 desligamento manual. Detalhes em
