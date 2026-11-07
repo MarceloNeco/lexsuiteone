@@ -12,7 +12,7 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
 - 0.8 confirmada: o robô envia a lista do dia para a nuvem da SolverONE (Supabase) e o site em judicial.solverone.com.br
   mostra, com login por link no e-mail e código de cliente. O Drive continua com a planilha editável.
 - Cara profissional em tudo que o cliente vê: nenhum contato pessoal do dono (e-mail, usuário pessoal do GitHub) em site,
-  e-mail, repositório ou planilha. Organização `solverone` no GitHub e contas do Workspace (`contato@`, `integracao@`).
+  e-mail, repositório ou planilha. Organização `solverone` no GitHub e apelidos no ImprovMX (`contato@` para dúvidas, `suporte@` para o Drive, que vira também Conta Google).
 
 ## Esperando o dono (Marcelo)
 
@@ -22,7 +22,7 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
 - Rodar `teste-djen-supabase.sql` no SQL Editor do projeto solverone-app e mandar o resultado (decide se o coletor
   central pode viver no Supabase ou precisa de um servidor pequeno em São Paulo).
 - Decidir o repositório público no GitHub (núcleo aberto, MIT ou Apache 2.0). Nada é criado sem esse sim.
-- Criar a conta Google `integracao@solverone.com.br` (e o apelido `lexsuite@`), para a trilha cliente-servidor.
+- Criar a Conta Google `suporte@solverone.com.br` (sem Gmail; o apelido já existe no ImprovMX), para o cliente compartilhar o Drive.
 
 ## v0.6.1 (correções)
 

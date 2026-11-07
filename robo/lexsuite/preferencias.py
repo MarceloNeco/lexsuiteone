@@ -43,7 +43,7 @@ LINHAS_CONTROLE = [
     ["validade", "", "aaaa-mm-dd. Depois dessa data o robô para e avisa."],
     ["versao_minima", "", "Se a versão instalada for menor, o robô pede atualização antes de rodar."],
     ["mensagem", "", "Texto mostrado na tela do escritório (avisos do suporte)."],
-    ["suporte", "integracao@solverone.com.br", "Contato do suporte."],
+    ["suporte", "suporte@solverone.com.br", "Contato do suporte."],
 ]
 
 
@@ -93,7 +93,7 @@ def versao_tupla(v):
 def padrao():
     p = dict(PADRAO)
     p.update({"exclusoes": [], "controle": {"ativo": True, "validade": "", "versao_minima": "", "mensagem": "",
-                                            "suporte": "integracao@solverone.com.br"}, "origem": "padrão", "erro": ""})
+                                            "suporte": "suporte@solverone.com.br"}, "origem": "padrão", "erro": ""})
     return p
 
 
