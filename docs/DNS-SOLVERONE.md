@@ -18,8 +18,14 @@ Levantamento feito em 07/Nov/2026 por consulta pública (DNS). A zona está hosp
 | `send.solverone.com.br` | MX | `10 feedback-smtp.sa-east-1.amazonses.com` | retorno (bounce) do envio pelo Resend |
 | `send.solverone.com.br` | TXT | `v=spf1 include:amazonses.com ~all` | SPF do envio pelo Resend |
 | `resend._domainkey.mail.solverone.com.br` | TXT | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDcZY/HoPbVPCPxVwJcSQAagQhpe4Gg4Uw8bMTHRFVOH4cq+d/SoRz39XO641LVXRyYVF2APYIGEYIR93PwkmQ6Uj9fNmYoGYPddkKe42zCubZgOtrbr6V2gYwsSn0cq1sCqY4lzPZ7A2o2Y1FHCkXXGd7a5+giWWmnB56A3BZmcwIDAQAB` | DKIM do segundo domínio verificado no Resend (`mail.`) |
-| `send.mail.solverone.com.br` | MX | `10 feedback.forge.rmta.net` | retorno do envio pelo `mail.` |
-| `send.mail.solverone.com.br` | TXT | `v=spf1 ip4:52.3.252.119 ip4:44.222.39.36 ip4:199.249.231.0/24 ~all` | SPF do envio pelo `mail.` |
+| `send.mail.solverone.com.br` | CNAME | `send.forge.rmta.net` | retorno e SPF do envio pelo `mail.` (o alvo é que tem o MX e o TXT) |
+| `rsend.solverone.com.br` | CNAME | `send.forge.rmta.net` | registro auxiliar do Resend para o domínio `mail.` |
+| `rsend.mail.solverone.com.br` | CNAME | `rsend-sae1.forge.rmta.net` | registro auxiliar do Resend para o domínio `mail.` |
+| `moneytrio.solverone.com.br` | CNAME | `marceloneco.github.io` | site do MoneyTRIO (BudgetONE, InvestifyONE, TaxONE) no GitHub Pages |
+
+Fonte definitiva desta tabela: o e-mail "Domínio solverone.com.br alterado" que o Registro.br mandou em 07/Nov/2026 às
+18:13, com o conteúdo completo da zona. A consulta pública inicial não enxergava `moneytrio`, `rsend` e `rsend.mail`, e
+mostrava `send.mail` como MX/TXT quando na verdade é um CNAME. A zona do Cloudflare foi corrigida nesse mesmo dia.
 
 Não existe hoje: `judicial.solverone.com.br`, `lexsuiteone.solverone.com.br`, registros do Google Workspace.
 
@@ -66,7 +72,7 @@ validar o domínio (site não abre para alguns, e-mail atrasa mas não se perde)
 
 ## Cloudflare: zona já preparada (07/Nov/2026, à noite)
 
-Pelo conector de API do Cloudflare, a zona `solverone.com.br` foi criada na conta da SolverONE com **os 21 registros da
+Pelo conector de API do Cloudflare, a zona `solverone.com.br` foi criada na conta da SolverONE com **os 24 registros da
 tabela acima mais o CNAME `judicial`**, todos com proxy desligado (nuvem cinza). Ela está **pendente**: não tem efeito
 nenhum enquanto os servidores DNS no Registro.br não forem trocados. Conferido registro a registro, inclusive as duas
 chaves DKIM inteiras.
