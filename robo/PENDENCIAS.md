@@ -38,7 +38,14 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
   Depende de um endereço público de download (Drive "qualquer pessoa com o link" ou GitHub).
 - Tela: mostrar a hora da próxima rodada agendada; botão "Abrir pasta de saída".
 
-## v0.8 (cliente-servidor)
+## v0.8 (cliente-servidor e conta na nuvem)
+
+- Conta na nuvem (`judicial.solverone.com.br`): o robô, se tiver internet, pergunta a cada abertura se a conta do
+  escritório continua ativa e registra um batimento (versão, última rodada, contagens). Gestão no RootifyONE.
+  Regra de queda: sem resposta da nuvem, vale a aba Controle da planilha; sem nenhuma das duas por 30 dias, avisa
+  e continua (não trava, por ser instalação local). Tabelas `lex_contas` e `lex_batimentos` no Supabase (SQL
+  entregue para revisão e execução pelo dono, regra C10); chave publicável no `config.json`, nunca secreta.
+- Endereço fixo de atualização já aponta para as Releases do GitHub (`marceloneco/lexsuiteone`).
 
 - Log de cada rodada numa aba oculta de uma planilha Google do cliente (via Apps Script publicado na conta da SolverONE;
   o robô só faz POST com biblioteca padrão; chave por cliente no `config.json`, nunca no código).
