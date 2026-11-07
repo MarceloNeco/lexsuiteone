@@ -13,7 +13,7 @@ PADRAO = {
     # Pasta compartilhada (Google Drive para computador, OneDrive...): o robô grava ali a planilha e lê o controle.
     "compartilhar": {"pasta": "", "subpasta": "LexSuiteONE", "planilha": True},
     # Atualização assinada: pela subpasta "atualizacao" da pasta compartilhada e, se houver, por um endereço fixo.
-    "atualizacao": {"url": "https://github.com/marceloneco/lexsuiteone/releases/latest/download", "verificar_ao_abrir": True},
+    "atualizacao": {"url": "https://judicial.solverone.com.br/atualizacao", "verificar_ao_abrir": True},
     "monitor": {"oabs": [], "processos": "processos.csv", "partes_da_carteira": True, "tribunais": ["TRT2", "TRT15"],
                 "dias_para_tras": 3, "radar": True, "dias_na_pagina": 7},
     "email": {"ativo": False},

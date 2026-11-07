@@ -3,7 +3,7 @@ Olá, {{nome}}. Seu LexSuiteONE está pronto.
 Todo dia, o Diário de Justiça Eletrônico Nacional publica as ações trabalhistas novas. O LexSuiteONE lê o Diário dos tribunais que você escolher, separa as ações novas movidas contra empresas e entrega a lista, com a ficha de cada empresa, na sua tela e numa planilha no seu Google Drive. Sem inteligência artificial, sem senha de ninguém, rodando no seu próprio computador.
 
 Baixar o LexSuiteONE (arquivo .zip, 120 KB, Windows 10 ou 11):
-https://github.com/MarceloNeco/lexsuiteone/raw/main/releases/LexSuiteONE-robo.zip
+https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip
 
 [CODIGO-INICIO]
 Seu código de cliente: {{codigo}}

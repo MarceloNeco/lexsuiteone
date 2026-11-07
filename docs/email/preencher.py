@@ -1,7 +1,7 @@
 """Preenche o e-mail de boas-vindas do LexSuiteONE.
 
 Uso (na pasta docs/email):
-    python preencher.py --nome Leandro --contato contato@solverone.com.br --drive suporte@solverone.com.br
+    python preencher.py --nome Leandro --contato contato@solverone.com.br --drive integracao@solverone.com.br
     python preencher.py --nome Leandro --codigo LEX-7K4M-2PQ9 ...   (inclui o bloco do código)
 
 Gera `saida/boas-vindas-<nome>.html` e `.txt`, prontos para enviar. Sem código, o bloco do código é removido.
@@ -33,7 +33,7 @@ def main():
     p = argparse.ArgumentParser(description="Preenche o e-mail de boas-vindas.")
     p.add_argument("--nome", required=True, help="primeiro nome de quem recebe")
     p.add_argument("--contato", default="contato@solverone.com.br", help="e-mail para dúvidas")
-    p.add_argument("--drive", default="suporte@solverone.com.br", help="conta Google com quem compartilhar a pasta")
+    p.add_argument("--drive", default="integracao@solverone.com.br", help="conta Google com quem compartilhar a pasta")
     p.add_argument("--codigo", default="", help="código de cliente (LEX-XXXX-XXXX); sem ele o bloco sai")
     a = p.parse_args()
     campos = {"nome": a.nome.strip(), "contato": a.contato.strip(), "drive": a.drive.strip()}
