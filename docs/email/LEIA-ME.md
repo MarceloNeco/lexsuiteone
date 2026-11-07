@@ -1,26 +1,32 @@
 # E-mail de boas-vindas do LexSuiteONE
 
-Modelo em duas versões, `email-boas-vindas.html` (o que a pessoa vê) e `email-boas-vindas.txt`
-(a versão em texto puro, obrigatória para não cair em spam). Os dois têm dois campos para preencher
-antes de enviar:
+Modelo em duas versões, `email-boas-vindas.html` (o que a pessoa vê) e `email-boas-vindas.txt` (versão em texto
+puro, obrigatória para não cair em spam). Campos a preencher:
 
-| Campo | O que entra |
-|---|---|
-| `{{nome}}` | o primeiro nome de quem vai receber (ex.: Leandro) |
-| `{{suporte}}` | o e-mail de suporte que a pessoa deve usar e com quem compartilhar a pasta do Drive (ex.: integracao@solverone.com.br) |
+| Campo | O que entra | Padrão |
+|---|---|---|
+| `{{nome}}` | primeiro nome de quem recebe | (obrigatório) |
+| `{{contato}}` | e-mail para dúvidas; o cliente escreve para ele, nunca responde ao e-mail | `contato@solverone.com.br` |
+| `{{drive}}` | conta Google do suporte, com quem o cliente compartilha a subpasta LexSuiteONE do Drive | `integracao@solverone.com.br` |
+| `{{codigo}}` | código de cliente `LEX-XXXX-XXXX`, opcional; entra em uso com a versão 0.8 | (sem código, o bloco sai) |
+
+`python preencher.py --nome Leandro` gera os dois arquivos preenchidos em `saida/`. Com `--codigo LEX-...`, inclui o
+bloco do código; sem ele, o bloco é removido. Nada é enviado por esse script.
 
 ## Como é enviado
 
-- Remetente: `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend (domínio `solverone.com.br` já verificado,
-  com SPF, DKIM e DMARC; nenhum registro de DNS precisa ser mexido).
+- Remetente: `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend. O domínio `solverone.com.br` já está
+  verificado (SPF, DKIM e DMARC no Registro.br); nenhum registro de DNS precisa ser mexido. O endereço
+  `nao-responda@` não precisa existir como caixa: ele só envia, e o e-mail avisa que não recebe respostas.
 - Assunto: `Bem-vindo ao LexSuiteONE: seu pacote de instalação`.
 - O link de download é fixo e aponta para o pacote publicado neste repositório:
-  `https://github.com/MarceloNeco/lexsuiteone/raw/main/releases/LexSuiteONE-robo.zip`.
-  Quem atualiza o pacote em `releases/` não precisa mudar o e-mail.
-- O e-mail não tem anexo, não tem rastreador de abertura e não pede nada além de baixar o pacote.
+  `https://github.com/MarceloNeco/lexsuiteone/raw/main/releases/LexSuiteONE-robo.zip`. Quando o endereço
+  `lexsuiteone.solverone.com.br` existir, o link passa a ser dele; é uma linha nos dois modelos.
+- Sem anexo, sem rastreador de abertura, sem pedir nada além de baixar o pacote.
 
 ## Regras
 
-- A caixa `{{suporte}}` precisa existir antes do envio ao cliente (a pessoa vai responder para ela).
+- As caixas `{{contato}}` e `{{drive}}` precisam existir antes do envio ao cliente. A do Drive tem de ser uma
+  conta Google (Workspace), senão o compartilhamento não chega.
 - Um e-mail por pessoa, enviado depois que ela pediu o pacote. Não é lista nem campanha.
-- Nada de senha, chave ou código de cliente no corpo do e-mail.
+- Nada de senha ou chave no corpo do e-mail. O código de cliente não é segredo: identifica a conta, não dá acesso.
