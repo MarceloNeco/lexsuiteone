@@ -26,7 +26,8 @@ bloco do código; sem ele, o bloco é removido. Nada é enviado por esse script.
 
 ## Regras
 
-- As caixas `{{contato}}` e `{{drive}}` precisam existir antes do envio ao cliente. A do Drive tem de ser uma
-  conta Google (Workspace), senão o compartilhamento não chega.
+- As caixas `{{contato}}` e `{{drive}}` precisam existir antes do envio ao cliente. O domínio recebe e-mail pelo
+  ImprovMX (encaminhamento), então as duas são apelidos lá; `{{drive}}` precisa também ser uma Conta Google criada com esse
+  e-mail, senão o compartilhamento do Drive não chega. Passo a passo em `docs/DNS-SOLVERONE.md`.
 - Um e-mail por pessoa, enviado depois que ela pediu o pacote. Não é lista nem campanha.
 - Nada de senha ou chave no corpo do e-mail. O código de cliente não é segredo: identifica a conta, não dá acesso.
