@@ -1,4 +1,4 @@
-# LexSuiteONE · Radar Trabalhista — robô v0.7.1
+# LexSuiteONE · JUDICIAL — robô v0.7.2 (frente Radar Trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem

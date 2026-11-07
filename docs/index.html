@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JUDICIAL · LexSuiteONE</title>
+<meta name="description" content="As ações novas contra empresas, todo dia, uma por linha. Lido do Diário de Justiça Eletrônico Nacional, no computador do escritório.">
+<meta property="og:title" content="JUDICIAL · LexSuiteONE">
+<meta property="og:description" content="As ações novas contra empresas, todo dia, uma por linha.">
+<!-- Nenhum pedido externo: sem fontes de fora, sem rastreador, sem script de terceiros. -->
+<style>
+:root { color-scheme: light; --papel:#ffffff; --papel-2:#f4f6f9; --tinta:#0f1d33; --tinta-2:#4a5468; --tinta-3:#7a8396;
+  --latao:#c9a063; --latao-texto:#8a6222; --latao-fundo:#f6efe0; --fio:#dbe1ea; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin:0; background:var(--papel); color:var(--tinta); font: 400 1.0625rem/1.6 "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif; }
+a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--latao); outline-offset: 3px; }
+.miolo { max-width: 72rem; margin: 0 auto; padding: 0 16px; }
+.topo { display:flex; justify-content:space-between; align-items:center; gap:16px; padding: 18px 0; border-bottom: 1px solid var(--fio); }
+.marca { font-weight: 600; font-size: .82rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-2); white-space: nowrap; }
+.marca b { color: var(--latao-texto); font-weight: 600; }
+.idioma { display:flex; gap:4px; }
+.idioma button { font: inherit; font-size: .85rem; padding: 4px 10px; border: 1px solid var(--fio); background: var(--papel); color: var(--tinta-2); border-radius: 999px; cursor: pointer; }
+.idioma button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
+.capa { padding: 56px 0 40px; display:grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px 56px; align-items: start; }
+.palavra { font-weight: 700; font-size: clamp(3.2rem, 9vw, 6.5rem); line-height: .95; letter-spacing: .02em; margin: 0 0 20px; color: var(--tinta); }
+.palavra b { color: var(--latao); font-weight: 700; }
+.palavra small { display:block; font-size: .95rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-3); margin-bottom: 14px; }
+h1 { font-size: clamp(1.5rem, 2.6vw, 2rem); line-height: 1.25; font-weight: 600; margin: 0 0 14px; max-width: 24ch; }
+.capa p { margin: 0 0 22px; color: var(--tinta-2); max-width: 58ch; }
+.botao { display:inline-block; background: var(--tinta); color: var(--papel); text-decoration: none; font-weight: 600; padding: 14px 26px; border-radius: 999px; }
+.botao:hover { background: #1b2d4d; }
+.requisito { display:block; margin-top: 10px; font-size: .9rem; color: var(--tinta-3); }
+.amostra { border: 1px solid var(--fio); border-radius: 10px; overflow: hidden; background: var(--papel); }
+.amostra header { padding: 10px 14px; font-size: .85rem; color: var(--tinta-2); background: var(--papel-2); border-bottom: 1px solid var(--fio); }
+.amostra table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.amostra th, .amostra td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--fio); vertical-align: top; }
+.amostra th { font-weight: 600; color: var(--tinta-3); font-size: .78rem; }
+.amostra tr:last-child td { border-bottom: 0; }
+.amostra td b { font-weight: 600; }
+.amostra .trib { color: var(--latao-texto); font-weight: 600; white-space: nowrap; }
+.amostra footer { padding: 10px 14px; font-size: .82rem; color: var(--tinta-3); border-top: 1px solid var(--fio); }
+section { padding: 36px 0; border-top: 1px solid var(--fio); }
+h2 { font-size: 1.35rem; font-weight: 600; margin: 0 0 18px; }
+.passos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; counter-reset: passo; }
+.passos li { counter-increment: passo; color: var(--tinta-2); }
+.passos li::before { content: counter(passo); display: block; font-weight: 700; color: var(--latao-texto); font-size: 1.4rem; margin-bottom: 6px; }
+.passos li b { color: var(--tinta); font-weight: 600; display: block; margin-bottom: 4px; }
+.frentes { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.frente { border-left: 3px solid var(--latao); padding: 2px 0 2px 16px; }
+.frente b { display:block; font-weight: 600; }
+.frente span { display:block; color: var(--tinta-2); font-size: .95rem; }
+.frente i { display:inline-block; font-style: normal; font-size: .78rem; color: var(--latao-texto); background: var(--latao-fundo); padding: 1px 8px; border-radius: 4px; margin-top: 6px; }
+.seguranca { columns: 2; column-gap: 40px; margin: 0; padding: 0 0 0 1.1em; color: var(--tinta-2); }
+.seguranca li { break-inside: avoid; margin-bottom: 8px; }
+.instalar ol { margin: 0; padding-left: 1.3em; color: var(--tinta-2); max-width: 64ch; }
+.instalar li { margin-bottom: 8px; }
+code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+.rodape { border-top: 1px solid var(--fio); padding: 26px 0 40px; color: var(--tinta-3); font-size: .9rem; display:flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+@media (max-width: 860px) { .capa { grid-template-columns: 1fr; padding-top: 36px; } .passos, .frentes { grid-template-columns: 1fr; } .seguranca { columns: 1; } }
+@media (max-width: 560px) { .amostra th:nth-child(2), .amostra td:nth-child(2) { display: none; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="miolo">
+<div class="topo">
+  <div class="marca">LexSuite<b>ONE</b> · JUDIC<b>IA</b>L</div>
+  <div class="idioma" role="group" aria-label="Idioma">
+    <button type="button" id="b-pt" aria-pressed="true">PT</button>
+    <button type="button" id="b-en" aria-pressed="false">EN</button>
+  </div>
+</div>
+
+<main>
+<div class="capa">
+  <div>
+    <p class="palavra"><small data-t="suite">Suíte jurídica LexSuiteONE</small>JUDIC<b>IA</b>L</p>
+    <h1 data-t="h1">As ações novas contra empresas, todo dia, uma por linha.</h1>
+    <p data-t="lede">O JUDICIAL lê o Diário de Justiça Eletrônico Nacional dos tribunais que o escritório escolher, separa as ações novas movidas contra empresas e entrega a lista com a ficha de cada empresa. Roda no computador do escritório. A lista é feita por regras escritas e explicáveis, não por inteligência artificial, e sem senha de ninguém.</p>
+    <a class="botao" href="downloads/LexSuiteONE-robo.zip" data-t="baixar">Baixar o JUDICIAL</a>
+    <span class="requisito" data-t="req">Windows 10 ou 11. Arquivo .zip de 120 KB. Manual e instalação em quatro passos abaixo.</span>
+  </div>
+  <div class="amostra" aria-label="Exemplo da lista">
+    <header data-t="am_cab">Exemplo da lista de um dia, com nomes fictícios</header>
+    <table>
+      <thead><tr><th data-t="am_trib">Tribunal</th><th data-t="am_vara">Vara</th><th data-t="am_emp">Empresa</th><th data-t="am_set">Setor e porte</th></tr></thead>
+      <tbody>
+        <tr><td class="trib">TRT-2</td><td data-t="am_v1">5ª Vara do Trabalho de Guarulhos</td><td><b>Exemplo Transportes Ltda</b></td><td data-t="am_s1">Transporte rodoviário de carga, pequena, Guarulhos/SP</td></tr>
+        <tr><td class="trib">TRT-15</td><td data-t="am_v2">2ª Vara do Trabalho de Campinas</td><td><b>Exemplo Alimentos S.A.</b></td><td data-t="am_s2">Fabricação de alimentos, média, Campinas/SP</td></tr>
+        <tr><td class="trib">TRT-3</td><td data-t="am_v3">1ª Vara do Trabalho de Contagem</td><td><b>Exemplo Comércio Ltda</b></td><td data-t="am_s3">Comércio varejista, micro, Contagem/MG</td></tr>
+      </tbody>
+    </table>
+    <footer data-t="am_pe">A lista real traz também rito, data do Diário, CNPJ, telefone e e-mail do cadastro público, e um clique abre a ficha completa.</footer>
+  </div>
+</div>
+
+<section>
+  <h2 data-t="como">Como funciona</h2>
+  <ol class="passos">
+    <li><b data-t="p1t">O Diário publica, o robô lê</b><span data-t="p1">Toda noite o DJEN libera o diário de cada tribunal. O robô baixa o caderno dos tribunais escolhidos, os 24 TRTs por padrão, e separa só as ações novas contra pessoas jurídicas.</span></li>
+    <li><b data-t="p2t">A empresa ganha uma ficha</b><span data-t="p2">Quando o CNPJ está no Diário, o robô busca o cadastro público da Receita: porte, setor, capital, cidade, telefone, e-mail e sócios. Pessoas físicas do processo nunca aparecem.</span></li>
+    <li><b data-t="p3t">A lista chega onde o escritório trabalha</b><span data-t="p3">Na tela do robô, com filtros e exportação, e numa planilha no Google Drive do escritório. Preferências e exclusões, como a lista de quem já é cliente, ficam na mesma planilha.</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2 data-t="fr">Frentes de atuação</h2>
+  <div class="frentes">
+    <div class="frente"><b data-t="f1">Trabalhista</b><span data-t="f1d">Ações trabalhistas novas nos 24 Tribunais Regionais do Trabalho. Rito ordinário e sumaríssimo.</span><i data-t="f1s">disponível</i></div>
+    <div class="frente"><b data-t="f2">Tributário</b><span data-t="f2d">Execuções fiscais e mandados de segurança nos TRFs e nas varas de Fazenda Pública dos TJs.</span><i data-t="f2s">em preparação</i></div>
+    <div class="frente"><b data-t="f3">Cível e empresarial</b><span data-t="f3d">Procedimento comum, monitória, execução de título, recuperação judicial e falência nas varas cíveis e empresariais.</span><i data-t="f3s">em preparação</i></div>
+  </div>
+</section>
+
+<section>
+  <h2 data-t="seg">Segurança e privacidade</h2>
+  <ul class="seguranca">
+    <li data-t="s1">Não pede nem guarda senha, certificado ou login de ninguém.</li>
+    <li data-t="s2">Não contorna captcha nem consulta sistemas fechados. Só fontes públicas: DJEN e cadastro da Receita.</li>
+    <li data-t="s3">Pessoas físicas do processo não aparecem na lista, na planilha nem nas exportações.</li>
+    <li data-t="s4">Os dados ficam no computador e no Google Drive do escritório. Nada é enviado à SolverONE sem o escritório saber.</li>
+    <li data-t="s5">Atualizações só instalam com assinatura digital conferida. Código aberto, licença MIT.</li>
+    <li data-t="s6">O suporte acompanha o robô pela pasta compartilhada do Drive, nunca pelo computador.</li>
+  </ul>
+</section>
+
+<section class="instalar">
+  <h2 data-t="inst">Instalar em quatro passos</h2>
+  <ol>
+    <li data-t="i1">Baixe o arquivo acima e descompacte numa pasta fácil, por exemplo <code>C:\LexSuiteONE</code>.</li>
+    <li data-t="i2">Dois cliques em <code>ABRIR.bat</code>. Na primeira vez ele prepara o que precisa, um download de 11 MB do site oficial do Python, e abre a tela no navegador.</li>
+    <li data-t="i3">A tela faz três perguntas, seu nome, seu papel e o escritório, pede a pasta do Google Drive e começa a primeira rodada.</li>
+    <li data-t="i4">No Google Drive, compartilhe a subpasta LexSuiteONE com o suporte como editor. É o único passo manual.</li>
+  </ol>
+  <p><a href="manual.html" data-t="manual">Manual do escritório</a></p>
+</section>
+</main>
+
+<div class="rodape">
+  <span data-t="rod1">JUDICIAL é um produto da suíte LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>.</span>
+  <span data-t="rod2">Dúvidas: <a href="mailto:contato@solverone.com.br">contato@solverone.com.br</a></span>
+</div>
+</div>
+
+<script>
+(function () {
+  var T = { en: {
+    suite: "LexSuiteONE legal suite",
+    h1: "New lawsuits against companies, every day, one per line.",
+    lede: "JUDICIAL reads Brazil's National Electronic Court Gazette for the courts your firm chooses, picks out the new lawsuits filed against companies and delivers the list with each company's profile. It runs on the firm's own computer. The list is built by written, explainable rules, not by artificial intelligence, and it needs nobody's password.",
+    baixar: "Download JUDICIAL", req: "Windows 10 or 11. A 120 KB .zip file. Manual and four-step install below.",
+    am_cab: "Sample of one day's list, with fictitious names", am_trib: "Court", am_vara: "Court unit", am_emp: "Company", am_set: "Sector and size",
+    am_v1: "5th Labor Court of Guarulhos", am_v2: "2nd Labor Court of Campinas", am_v3: "1st Labor Court of Contagem",
+    am_s1: "Road freight, small, Guarulhos/SP", am_s2: "Food manufacturing, medium, Campinas/SP", am_s3: "Retail, micro, Contagem/MG",
+    am_pe: "The real list also shows procedure type, gazette date, tax ID, phone and e-mail from the public registry; one click opens the full profile.",
+    como: "How it works",
+    p1t: "The gazette publishes, the robot reads", p1: "Every night the gazette releases each court's edition. The robot downloads the editions of the chosen courts, the 24 regional labor courts by default, and keeps only new lawsuits against legal entities.",
+    p2t: "Each company gets a profile", p2: "When the tax ID is in the gazette, the robot fetches the public federal registry: size, sector, capital, city, phone, e-mail and partners. Natural persons in the case never appear.",
+    p3t: "The list lands where the firm works", p3: "On the robot's screen, with filters and export, and in a spreadsheet in the firm's Google Drive. Preferences and exclusions, such as the list of existing clients, live in the same spreadsheet.",
+    fr: "Practice areas",
+    f1: "Labor", f1d: "New labor lawsuits in the 24 regional labor courts. Ordinary and summary procedures.", f1s: "available",
+    f2: "Tax", f2d: "Tax enforcement actions and writs of mandamus in the federal courts and the state treasury courts.", f2s: "in preparation",
+    f3: "Civil and corporate", f3d: "Ordinary civil actions, collection, enforcement of instruments, reorganization and bankruptcy in civil and corporate courts.", f3s: "in preparation",
+    seg: "Security and privacy",
+    s1: "It never asks for or stores anyone's password, certificate or login.",
+    s2: "It does not bypass captchas or query closed systems. Public sources only: the gazette and the federal registry.",
+    s3: "Natural persons in the case do not appear in the list, the spreadsheet or the exports.",
+    s4: "Data stays on the firm's computer and Google Drive. Nothing is sent to SolverONE without the firm knowing.",
+    s5: "Updates install only after the digital signature is verified. Open source, MIT license.",
+    s6: "Support follows the robot through the shared Drive folder, never through the computer.",
+    inst: "Install in four steps",
+    i1: "Download the file above and unzip it into an easy folder, for example C:\\LexSuiteONE.",
+    i2: "Double-click ABRIR.bat. The first time it prepares what it needs, an 11 MB download from the official Python site, and opens the screen in your browser.",
+    i3: "The screen asks three questions, your name, your role and the firm, asks for the Google Drive folder and starts the first run.",
+    i4: "In Google Drive, share the LexSuiteONE subfolder with support as an editor. It is the only manual step.",
+    manual: "Firm manual", rod1: "JUDICIAL is a product of the LexSuiteONE suite by SolverONE.", rod2: "Questions: contato@solverone.com.br" } };
+  var PT = {};
+  document.querySelectorAll("[data-t]").forEach(function (n) { PT[n.getAttribute("data-t")] = n.innerHTML; });
+  function aplicar(lang) {
+    document.querySelectorAll("[data-t]").forEach(function (n) {
+      var k = n.getAttribute("data-t");
+      if (lang === "pt") { n.innerHTML = PT[k]; return; }
+      var v = T.en[k]; if (v == null) return;
+      if (k === "rod1") { n.innerHTML = 'JUDICIAL is a product of the LexSuiteONE suite by <a href="https://solverone.com.br">SolverONE</a>.'; return; }
+      if (k === "rod2") { n.innerHTML = 'Questions: <a href="mailto:contato@solverone.com.br">contato@solverone.com.br</a>'; return; }
+      if (k === "i1") { n.innerHTML = 'Download the file above and unzip it into an easy folder, for example <code>C:\\LexSuiteONE</code>.'; return; }
+      if (k === "i2") { n.innerHTML = 'Double-click <code>ABRIR.bat</code>. The first time it prepares what it needs, an 11 MB download from the official Python site, and opens the screen in your browser.'; return; }
+      n.textContent = v;
+    });
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en";
+    document.getElementById("b-pt").setAttribute("aria-pressed", String(lang === "pt"));
+    document.getElementById("b-en").setAttribute("aria-pressed", String(lang === "en"));
+    try { localStorage.setItem("judicial-idioma", lang); } catch (e) {}
+  }
+  document.getElementById("b-pt").addEventListener("click", function () { aplicar("pt"); });
+  document.getElementById("b-en").addEventListener("click", function () { aplicar("en"); });
+  var salvo = null; try { salvo = localStorage.getItem("judicial-idioma"); } catch (e) {}
+  if (salvo === "en") aplicar("en");
+})();
+</script>
+</body>
+</html>

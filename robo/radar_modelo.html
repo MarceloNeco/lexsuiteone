@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Radar Trabalhista</title>
+<title>JUDICIAL · LexSuiteONE</title>
 <meta name="description" content="Ações trabalhistas novas contra empresas nos tribunais escolhidos, uma por linha, com a ficha da empresa e do processo.">
 <!-- Nenhum pedido externo: fontes do próprio sistema. -->
 <style>
@@ -702,7 +702,8 @@ window.LEXSUITE_RADAR = null;
   function cabecalho() {
     var itens = D.itens || [], min = minimo(), comValor = itens.filter(function (i) { return valorDe(i).v >= min; }).length, semValor = itens.filter(function (i) { return valorDe(i).v == null; }).length;
     var tribs = D.tribunais || [], tx = tribs.length <= 3 ? t("t1", { a: tribs.join(", ") }) : tribs.length <= 6 ? t("tn", { k: tribs.length, a: tribs.join(", ") }) : t("tk", { k: tribs.length });
-    $("marca").textContent = (D.escritorio ? D.escritorio + "  ·  " : "") + t("marca");
+    var m = $("marca"); m.textContent = ""; if (D.escritorio) { m.appendChild(document.createTextNode(D.escritorio + "  ·  ")); }
+    m.appendChild(document.createTextNode("LexSuite")); m.appendChild(el("b", null, "ONE")); m.appendChild(document.createTextNode(" · JUDIC")); m.appendChild(el("b", null, "IA")); m.appendChild(document.createTextNode("L"));
     $("h1").textContent = t("h1");
     var r = $("resumo"); r.textContent = ""; var b = el("b", null, num(itens.length)); r.appendChild(b);
     var dias = Number(D.dias || periodo || 1);
@@ -720,7 +721,7 @@ window.LEXSUITE_RADAR = null;
     $("rodape1").textContent = t("rodape1", { q: D.gerado_em ? dataHora(D.gerado_em) : "—" }); $("rodape2").textContent = t("rodape2", { v: D.versao || "?" });
     $("rodape3").hidden = MODO !== "app"; $("link-manual").textContent = t("link_manual");
     $("b-pt").setAttribute("aria-pressed", String(lang === "pt")); $("b-en").setAttribute("aria-pressed", String(lang === "en"));
-    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en"; document.title = t("marca");
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en"; document.title = "JUDICIAL · " + t("marca");
   }
   function exportar() {
     var cab = ["Tribunal", "Vara", "Processo", "Classe", "Rito", "No Diário de", "Distribuída em", "Empresa", "Outras empresas", "CNPJ", "CNAE", "Atividade", "Porte", "Capital social", "Simples", "Cidade", "UF", "Telefone", "E-mail", "Sócios", "Jurídico próprio provável", "Valor da causa", "Origem do valor", "Status", "Excluída (motivo)"];

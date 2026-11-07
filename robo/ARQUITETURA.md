@@ -1,4 +1,4 @@
-# Arquitetura do robô LexSuiteONE (v0.7.1)
+# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.2)
 
 Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
 linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional
@@ -96,15 +96,19 @@ nova dispara o aviso no app (notificação do PWA), no e-mail e no Telegram, e a
 
 ## Nomes e endereços: um só nome em tudo
 
+SolverONE é a empresa. **LexSuiteONE** é a suíte jurídica (o repositório e o remetente dos e-mails). **JUDICIAL** é este
+produto, escrito em maiúsculas com o "IA" em latão (`JUDIC<b>IA</b>L` na tela e no manual); dentro dele ficam as frentes
+(Radar Trabalhista hoje; Tributário e Cível e empresarial a seguir). Outros produtos da suíte seguirão o mesmo padrão.
+
 | Onde | Nome |
 |---|---|
-| Produto, tela, manual, e-mail | LexSuiteONE · Radar Trabalhista |
-| Repositório | github.com/MarceloNeco/lexsuiteone |
-| Pacote de download (hoje) | github.com/MarceloNeco/lexsuiteone/raw/main/releases/LexSuiteONE-robo.zip |
-| Site e serviço (a criar) | `lexsuiteone.solverone.com.br`, CNAME para `marceloneco.github.io`; quando existir, passa a hospedar o download, o manual e a verificação de conta da 0.8 |
+| Suíte (repositório, remetente, nome do pacote) | LexSuiteONE |
+| Produto (tela, manual, site) | JUDICIAL, frente Radar Trabalhista |
+| Site e serviço | `judicial.solverone.com.br` (GitHub Pages servindo a pasta `docs/` do repositório; CNAME criado no Registro.br) |
+| Download | hoje `github.com/MarceloNeco/lexsuiteone/raw/main/releases/LexSuiteONE-robo.zip`; com o site no ar, `judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip` (o mesmo arquivo, em `docs/downloads/`) |
 | Remetente dos e-mails | `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend; não recebe respostas |
 | Dúvidas do cliente | `contato@solverone.com.br` |
 | Compartilhamento do Drive | `integracao@solverone.com.br` (conta Google do suporte) |
 
-O nome `judicial.solverone.com.br`, cogitado antes, não é usado em lugar nenhum. A zona DNS de `solverone.com.br` está
-hospedada no Registro.br (servidores `*.sec.dns.br`), com o site no GitHub Pages; é lá que o CNAME é criado.
+A zona DNS de `solverone.com.br` está hospedada no Registro.br (servidores `*.sec.dns.br`), com o site no GitHub Pages;
+é lá que o CNAME `judicial` é criado. Nenhum contato pessoal do dono aparece no que o cliente vê.

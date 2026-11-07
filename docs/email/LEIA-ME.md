@@ -21,7 +21,7 @@ bloco do código; sem ele, o bloco é removido. Nada é enviado por esse script.
 - Assunto: `Bem-vindo ao LexSuiteONE: seu pacote de instalação`.
 - O link de download é fixo e aponta para o pacote publicado neste repositório:
   `https://github.com/MarceloNeco/lexsuiteone/raw/main/releases/LexSuiteONE-robo.zip`. Quando o endereço
-  `lexsuiteone.solverone.com.br` existir, o link passa a ser dele; é uma linha nos dois modelos.
+  `judicial.solverone.com.br` existir, o link passa a ser dele; é uma linha nos dois modelos.
 - Sem anexo, sem rastreador de abertura, sem pedir nada além de baixar o pacote.
 
 ## Regras
