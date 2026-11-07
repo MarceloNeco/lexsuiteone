@@ -93,3 +93,18 @@ nova dispara o aviso no app (notificação do PWA), no e-mail e no Telegram, e a
    abas editadas) + `.html` na pasta compartilhada. Planilha em uso: deixa como está e tenta na próxima rodada.
 3. O suporte lê Log/Saúde/Sobre pela pasta compartilhada; edita a aba Controle para pausar, avisar ou exigir versão;
    solta pacotes assinados em `atualizacao/`. Nada disso usa internet própria do robô: o Drive carrega.
+
+## Nomes e endereços: um só nome em tudo
+
+| Onde | Nome |
+|---|---|
+| Produto, tela, manual, e-mail | LexSuiteONE · Radar Trabalhista |
+| Repositório | github.com/MarceloNeco/lexsuiteone |
+| Pacote de download (hoje) | github.com/MarceloNeco/lexsuiteone/raw/main/releases/LexSuiteONE-robo.zip |
+| Site e serviço (a criar) | `lexsuiteone.solverone.com.br`, CNAME para `marceloneco.github.io`; quando existir, passa a hospedar o download, o manual e a verificação de conta da 0.8 |
+| Remetente dos e-mails | `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend; não recebe respostas |
+| Dúvidas do cliente | `contato@solverone.com.br` |
+| Compartilhamento do Drive | `integracao@solverone.com.br` (conta Google do suporte) |
+
+O nome `judicial.solverone.com.br`, cogitado antes, não é usado em lugar nenhum. A zona DNS de `solverone.com.br` está
+hospedada no Registro.br (servidores `*.sec.dns.br`), com o site no GitHub Pages; é lá que o CNAME é criado.
