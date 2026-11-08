@@ -32,17 +32,15 @@ a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-of
 .nome strong { font-weight: 800; letter-spacing: .01em; }
 .nome strong b { color: var(--latao); font-weight: 800; }
 
-/* Capa escura, com o radar ao fundo. */
-.capa { position: relative; overflow: hidden; background: var(--noite); color: #eef1f6;
-  background-image: var(--fundo-img, none); background-size: cover; background-position: center; }
-.capa::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,32,56,.96) 0%, rgba(16,32,56,.86) 45%, rgba(16,32,56,.55) 100%); pointer-events: none; }
-.radar { position: absolute; width: 860px; height: 860px; right: -170px; top: -150px; pointer-events: none; }
-.radar .varredura { transform-origin: 430px 430px; animation: varrer 3.4s cubic-bezier(.3,.6,.3,1) .3s 1 both; }
-.radar .ponto { animation: acender .6s ease-out both; }
-.radar .ponto:nth-child(1) { animation-delay: 1.5s; } .radar .ponto:nth-child(2) { animation-delay: 2.3s; }
-@keyframes varrer { from { transform: rotate(-150deg); opacity: 0; } 12% { opacity: 1; } 80% { opacity: 1; } to { transform: rotate(210deg); opacity: 0; } }
-@keyframes acender { from { opacity: 0; transform: scale(2.4); } to { opacity: 1; transform: scale(1); } }
-.radar .ponto { transform-box: fill-box; transform-origin: center; }
+/* Capa escura: a imagem (docs/img/capa.webp) traz o radar e a rede de pontos. O centro do radar na imagem é
+   (1468, 548) de 2000×1116; a imagem é posicionada para esse centro cair no canto superior direito do topo.
+   Por cima, azul-marinho sólido à esquerda (atrás do texto) que some para a direita. */
+.capa { position: relative; overflow: hidden; isolation: isolate; background: var(--noite); color: #eef1f6; }
+.capa-fundo { position: absolute; z-index: -2; width: 2000px; height: 1116px; right: -380px; top: -378px;
+  background: url("img/capa.webp") no-repeat 0 0 / 100% 100%; pointer-events: none;
+  -webkit-mask-image: linear-gradient(#000 55%, transparent 100%); mask-image: linear-gradient(#000 55%, transparent 100%); }
+.capa::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, var(--noite) 0%, var(--noite) 32%, rgba(16,32,56,.82) 44%, rgba(16,32,56,0) 72%); }
 .capa .miolo { position: relative; }
 .topo { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 0; }
 .topo .marca { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-size: 1.05rem; }
@@ -107,11 +105,18 @@ h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 26
 code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
 .rodape { border-top: 1px solid var(--fio); margin-top: 8px; padding-top: 26px; padding-bottom: 40px; color: var(--tinta-3); font-size: .92rem; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
+/* Marca d'água do corpo claro (opcional): radar e rede de pontos em SVG embutido, parada, 5% de opacidade,
+   atrás de duas seções. Liga com a classe com-marca-dagua no body. */
+.com-marca-dagua section.dagua { position: relative; isolation: isolate; }
+.com-marca-dagua section.dagua::before { content: ""; position: absolute; z-index: -1; pointer-events: none; opacity: .05;
+  width: 430px; height: 430px; right: -40px; top: 50%; transform: translateY(-50%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600' fill='none' stroke='%23102038' stroke-width='1.5'%3E%3Ccircle cx='300' cy='300' r='60'/%3E%3Ccircle cx='300' cy='300' r='120'/%3E%3Ccircle cx='300' cy='300' r='180'/%3E%3Ccircle cx='300' cy='300' r='240'/%3E%3Ccircle cx='300' cy='300' r='290'/%3E%3Cpath d='M70 120L250 170'/%3E%3Cpath d='M250 170L205 60'/%3E%3Cpath d='M250 170L470 90'/%3E%3Cpath d='M470 90L560 250'/%3E%3Cpath d='M560 250L420 380'/%3E%3Cpath d='M420 380L520 470'/%3E%3Cpath d='M420 380L330 560'/%3E%3Cpath d='M330 560L110 430'/%3E%3Cpath d='M110 430L40 300'/%3E%3Cpath d='M40 300L70 120'/%3E%3Cpath d='M250 170L420 380'/%3E%3Cpath d='M205 60L470 90'/%3E%3Cg fill='%23102038' stroke='none'%3E%3Ccircle cx='70' cy='120' r='5'/%3E%3Ccircle cx='205' cy='60' r='5'/%3E%3Ccircle cx='470' cy='90' r='5'/%3E%3Ccircle cx='560' cy='250' r='5'/%3E%3Ccircle cx='520' cy='470' r='5'/%3E%3Ccircle cx='330' cy='560' r='5'/%3E%3Ccircle cx='110' cy='430' r='5'/%3E%3Ccircle cx='40' cy='300' r='5'/%3E%3Ccircle cx='250' cy='170' r='5'/%3E%3Ccircle cx='420' cy='380' r='5'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain; }
+@media (max-width: 860px) { .com-marca-dagua section.dagua::before { width: 360px; height: 360px; right: -120px; } }
 @media (max-width: 960px) { .passos.quatro { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 860px) {
   .capa-grade { grid-template-columns: 1fr; padding: 28px 0 40px; }
-  .radar { width: 620px; height: 620px; right: -260px; top: -120px; opacity: .7; }
-  .radar .varredura { transform-origin: 310px 310px; }
+  .capa-fundo { width: 1100px; height: 614px; right: -253px; top: -211px; background-image: url("img/capa-celular.webp"); }
+  .capa::before { background: linear-gradient(90deg, rgba(16,32,56,.93) 0%, rgba(16,32,56,.72) 62%, rgba(16,32,56,.35) 100%); }
   .passos.tres, .frentes, .seguranca, .onde { grid-template-columns: 1fr; }
   section { padding: 40px 0; }
 }
@@ -121,24 +126,11 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   .amostra th, .amostra td { padding: 10px 12px; }
   .topo nav a.manual-topo { display: none; }
 }
-@media (prefers-reduced-motion: reduce) { .radar .varredura { display: none; } .radar .ponto { animation: none; } }
 </style>
 </head>
 <body>
 <header class="capa">
-  <svg class="radar" viewBox="0 0 860 860" aria-hidden="true" focusable="false">
-    <defs>
-      <radialGradient id="brilho" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#d4ab6a" stop-opacity=".16"/><stop offset="1" stop-color="#d4ab6a" stop-opacity="0"/></radialGradient>
-      <linearGradient id="feixe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d4ab6a" stop-opacity="0"/><stop offset="1" stop-color="#d4ab6a" stop-opacity=".34"/></linearGradient>
-    </defs>
-    <circle cx="430" cy="430" r="420" fill="url(#brilho)"/>
-    <g fill="none" stroke="#d4ab6a" stroke-opacity=".22" stroke-width="1.2">
-      <circle cx="430" cy="430" r="90"/><circle cx="430" cy="430" r="180"/><circle cx="430" cy="430" r="270"/><circle cx="430" cy="430" r="360"/>
-      <path d="M430 10V850M10 430H850" stroke-opacity=".12"/>
-    </g>
-    <g class="varredura"><path d="M430 430L430 70A360 360 0 0 1 742 250Z" fill="url(#feixe)"/></g>
-    <g fill="#d4ab6a"><circle class="ponto" cx="626" cy="350" r="5"/><circle class="ponto" cx="604" cy="566" r="4.5"/></g>
-  </svg>
+  <div class="capa-fundo" aria-hidden="true"></div>
   <div class="miolo">
     <div class="topo">
       <a class="marca" href="./" aria-label="{{marca.nome}}, início"><img src="favicon.svg" alt=""><span class="nome">{{marca.logo}}</span></a>
@@ -175,7 +167,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 </header>
 
 <main class="miolo">
-<section>
+<section class="dagua">
   <h2 data-t="como">Como funciona</h2>
   <ol class="passos tres">
     <li><b data-t="p1t">O Diário sai, o {{marca.curto}} lê</b><span data-t="p1">Os tribunais enviam as publicações até o fim da tarde e o Diário as libera à noite. O {{marca.curto}} lê às 19h40 e de novo às 7h10: de manhã, a lista está pronta.</span></li>
@@ -201,7 +193,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   </div>
 </section>
 
-<section>
+<section class="dagua">
   <h2 data-t="seg">Segurança e privacidade</h2>
   <ul class="seguranca">
     <li data-t="s1">Não pede nem guarda senha, certificado ou login de ninguém.</li>
