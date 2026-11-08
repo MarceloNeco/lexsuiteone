@@ -26,6 +26,44 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
   `contato@` é o genérico da SolverONE; no futuro, triagem por programa), `integracao@` só para sistemas (Drive;
   vira Conta Google; não é monitorado e deve responder automaticamente que não é caixa de atendimento).
 
+## Requisito novo (08/Nov): ficha de canais da empresa para o compliance
+
+Apontado pelo Leandro como o diferencial do produto: para cada ação nova, **levantar e confirmar os canais de contato da
+empresa processada**, para o time de compliance do escritório analisar e decidir se e como agir. **Nada é enviado a
+ninguém** pelo JUDICIAL. Ainda não implementado; o desenho sai depois da visita de 12/Nov (prompts em `docs/VISITA-KR-LAW.md`)
+e passa pela regra zero antes de virar código.
+
+- Pode: dados da empresa (telefone geral, e-mail comercial, site, LinkedIn e Instagram da empresa, endereço, nomes e
+  cargos públicos de sócios e administradores), sempre com fonte. Celular e e-mail de uma pessoa só se a própria
+  empresa os publica como contato comercial. Nunca: dados do reclamante e de outras pessoas físicas.
+- Formato: uma ficha por empresa, uma linha por canal, com **fonte, data da consulta e grau de confiança** (alta: canal
+  oficial da empresa confirmado por mais uma fonte; média: uma fonte oficial; baixa: só terceiros ou divergente).
+
+O que o robô já traz hoje (conferido no código da 0.7.5, `lexsuite/cnpj.py` e `lexsuite/radar.py`):
+
+- Do cadastro público da Receita (BrasilAPI, com Minha Receita de reserva; cache de 30 dias): telefone 1 e telefone 2,
+  e-mail, cidade/UF e até 8 sócios e administradores com nome e qualificação. Aparece na ficha da tela; na planilha
+  Radar do Drive e no `radar.csv` vão telefone, e-mail e nomes dos sócios. O ajuste "Mostrar sócios e administradores"
+  desliga os nomes.
+- Só quando o Diário traz o CNPJ, o que acontece em cerca de 1% dos casos. Sem CNPJ, a ficha fica vazia.
+
+O que falta para a ficha de canais:
+
+1. Achar o CNPJ pelo nome da empresa (já pendente na v0.6.1): é o que destrava todo o resto.
+2. Endereço completo da sede: o robô guarda só cidade/UF, embora a mesma consulta à Receita devolva logradouro,
+   número, bairro e CEP.
+3. Telefone 2 e a qualificação dos sócios não vão para a planilha nem para o CSV (só para a tela).
+4. Fonte, data da consulta e grau de confiança por dado: a data existe no cache (`consultado_em`), mas não aparece.
+5. Sinalizar "provável contato do contador" quando o e-mail da Receita for de outro domínio (comum no cadastro).
+6. Contatos da ré na petição inicial e na citação do PJe: dependem do relatório do Prompt 1 (onde aparecem, se dá para
+   extrair de forma repetível) e do login do advogado.
+7. Site, LinkedIn, Instagram e ficha no Google: o robô não procura hoje. Decidir se fica como levantamento guiado pela
+   pessoa (como o Prompt 2) ou se entra em versão futura, sempre sem raspagem em massa e sem contornar login.
+8. Entrega no Astrea como contato pessoa jurídica (depende do relatório do Prompt 3).
+9. **Pergunta ao dono:** empresário individual e MEI entram hoje como empresa (`classificar.py` reconhece "ME" e "MEI"),
+   mas o telefone e o e-mail do cadastro deles costumam ser da própria pessoa. Tratar como pessoa física (fora da
+   lista) ou mostrar sem os contatos?
+
 ## Esperando o dono (Marcelo)
 
 - Rodar `DIAGNOSTICO.bat` no computador no Brasil e mandar `diagnostico\radar-diagnostico.txt` (arrastar para o Drive).
