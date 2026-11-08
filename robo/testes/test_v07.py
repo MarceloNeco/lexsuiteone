@@ -214,7 +214,7 @@ class AppV07(unittest.TestCase):
 
     def test_configuracao_pasta_e_atualizacao(self):
         status, d = self.pedir("GET", "/dados")
-        self.assertEqual((len(d["app"]["tribunais"]), d["app"]["ramos"][0], d["app"]["config"]["pasta"], d["app"]["atualizacao"]["chave"]), (59, "Trabalhista", "", False))
+        self.assertEqual((len(d["app"]["tribunais"]), d["app"]["ramos"][0], d["app"]["config"]["pasta"], d["app"]["atualizacao"]["chave"]), (24, "Trabalhista", "", False))
         status, d = self.pedir("GET", "/pastas")
         self.assertIn("candidatas", d)
         status, r = self.pedir("POST", "/testar-pasta", {"pasta": "/nao/existe"})

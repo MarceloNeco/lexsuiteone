@@ -14,7 +14,7 @@ import time
 
 from . import classificar as cl
 from . import cnpj as receita
-from . import compartilhar, djen, monitor, preferencias, saidas, saude, tribunais
+from . import compartilhar, config, conta, djen, monitor, preferencias, saidas, saude, tribunais
 
 
 class RoboDesligado(Exception):
@@ -134,7 +134,8 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     }
 
 
-def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False, pasta_diag=None, agora=None, versao=""):
+def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False, pasta_diag=None, agora=None, versao="",
+             caminho_config=None):
     """Uma rodada do radar: confere o controle do escritório, baixa o caderno de cada tribunal escolhido, separa as
     ações novas contra empresa, consulta a Receita quando há CNPJ, guarda, avalia a saúde, registra no log e grava
     a saída local e a planilha compartilhada. Devolve a situação. Pode levantar RoboDesligado e rede.BloqueadoForaDoBrasil."""
@@ -153,7 +154,14 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     prefs = preferencias.carregar(base_compartilhada)
     if prefs.get("erro"):
         aviso("  " + prefs["erro"])
-    motivo = preferencias.bloqueio(prefs, versao, agora.date())
+    # Licença: pergunta à SolverONE e guarda a resposta; depois, o controle da planilha (aba Controle).
+    conta.verificar(cfg, versao, agora.date())
+    if caminho_config:
+        try:
+            config.salvar(caminho_config, cfg)
+        except OSError:
+            pass
+    motivo = conta.bloqueio(cfg, agora.date()) or preferencias.bloqueio(prefs, versao, agora.date())
     if motivo:
         banco.registrar("radar", {"versao": versao, "tribunais": escolhidos, "resultado": "não rodou", "erro": motivo})
         raise RoboDesligado(motivo)

@@ -11,6 +11,7 @@ A configuração é `docs/marca.json` (publicada no site):
 O que este programa gera (nunca edite os gerados à mão; a automação do GitHub confere):
 - `docs/*.html` a partir de `paginas/*.html` (marcações {{marca.nome}}, {{marca.curto}}, {{marca.logo}}, {{versao}});
 - `robo/MANUAL-DO-ESCRITORIO.html` (o manual de dentro do programa) a partir de `paginas/manual.html`;
+- `robo/marca.json`, a cópia que vai no pacote (a tela do programa lê o nome dali);
 - `docs/atualizacao/instalar.txt`, que o instalador lê: versão, arquivo e SHA-256 publicados em
   `docs/atualizacao/versao.json`, mais o nome do produto (para o atalho);
 - `docs/downloads/Instalar-LexSuiteONE.zip`, com um arquivo só: `instalador/INSTALAR.bat`.
@@ -35,6 +36,7 @@ CONFIG = RAIZ / "docs" / "marca.json"
 PAGINAS = RAIZ / "paginas"
 DESTINO = RAIZ / "docs"
 MANUAL_ROBO = RAIZ / "robo" / "MANUAL-DO-ESCRITORIO.html"
+MARCA_ROBO = RAIZ / "robo" / "marca.json"
 VERSAO_PY = RAIZ / "robo" / "lexsuite" / "__init__.py"
 MANIFESTO = RAIZ / "docs" / "atualizacao" / "versao.json"
 INSTALAR_TXT = RAIZ / "docs" / "atualizacao" / "instalar.txt"
@@ -121,6 +123,7 @@ def gerar(m):
         primeira, _, resto = texto.partition("\n")
         saida[DESTINO / origem.name] = primeira + "\n" + AVISO.format(arquivo=origem.name) + resto
     saida[MANUAL_ROBO] = saida[DESTINO / "manual.html"]
+    saida[MARCA_ROBO] = json.dumps(m, ensure_ascii=False, indent=1) + "\n"
     saida[INSTALAR_TXT] = instalar_txt(m)
     saida[INSTALADOR_ZIP] = instalador_zip()
     return saida

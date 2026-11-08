@@ -3,16 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>JUDICIAL · LexSuiteONE</title>
+<title>RADAR JUDICIAL · LexSuiteONE</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%230f1d33%22/%3E%0A  %3Cg transform=%22rotate%28-40 30 26%29%22 fill=%22%23d4ab6a%22%3E%0A    %3Crect x=%2217%22 y=%2217%22 width=%2226%22 height=%2212%22 rx=%223%22/%3E%0A    %3Crect x=%2214%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2241%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2228%22 y=%2229%22 width=%224.5%22 height=%2224%22 rx=%222%22/%3E%0A  %3C/g%3E%0A  %3Crect x=%2231%22 y=%2247%22 width=%2222%22 height=%226%22 rx=%222%22 fill=%22%23d4ab6a%22/%3E%0A%3C/svg%3E">
 <meta name="description" content="Ações trabalhistas novas contra empresas nos tribunais escolhidos, uma por linha, com a ficha da empresa e do processo.">
-<!-- Nenhum pedido externo: fontes do próprio sistema. -->
+<!-- Nenhum pedido externo: a fonte (Figtree, licença OFL) e o ícone vêm embutidos nesta página. -->
 <style>
-/* Uma lista, uma linha por ação, clique abre a ficha. Papel branco, tinta marinho, latão só no que pede atenção. */
+@font-face { font-family: "Figtree"; src: url(data:font/woff2;base64,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) format("woff2"); font-weight: 300 900; font-display: swap; }
+/* Mesma identidade do site judicial.solverone.com.br: faixa azul-marinho no alto, latão no que pede atenção. */
 :root {
   color-scheme: light;
-  --papel: #f5f6f8; --folha: #ffffff; --tinta: #121a2b; --tinta-2: #4a5468; --tinta-3: #7a8396; --linha: #e1e5ec; --linha-2: #c9d0db;
+  --papel: #ffffff; --folha: #ffffff; --papel-2: #f3f5f8; --tinta: #121a2b; --tinta-2: #4a5468; --tinta-3: #7a8396; --linha: #e1e5ec; --linha-2: #c9d0db;
   --marinho: #0f1d33; --latao: #a87a2e; --latao-texto: #8a6222; --latao-wash: #f7f0e1; --erro: #a33a2e;
-  --f: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --f: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; --noite: #102038; --latao-claro: #d4ab6a;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; }
@@ -23,13 +25,23 @@
 body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 15px/1.5 var(--f); -webkit-font-smoothing: antialiased; }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
-.miolo { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.miolo { max-width: 72rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 :focus-visible { outline: 2px solid var(--latao); outline-offset: 2px; }
 
-header { padding-block: 26px 14px; display: grid; gap: 4px; }
-.topo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.topo .marca { font-weight: 600; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-2); }
-.topo .marca b { color: var(--latao-texto); font-weight: 600; }
+.faixa { background: var(--noite); color: #eef1f6; margin-bottom: 18px; }
+.faixa .miolo { padding-block: 14px 22px; display: grid; gap: 6px; }
+header { display: contents; }
+.topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.topo .marca { display: inline-flex; align-items: center; gap: 10px; font-size: 1.05rem; color: #fff; }
+.topo .marca img { width: 28px; height: 28px; }
+.topo .marca .leve { font-weight: 400; } .topo .marca strong { font-weight: 800; } .topo .marca strong b { color: var(--latao-claro); }
+.topo .direita { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.topo .direita a, .topo .direita button.link { color: #d6dbe6; font-size: .9rem; background: none; border: 0; padding: 4px 2px; text-decoration: underline; text-underline-offset: 3px; }
+.escritorio-nome { color: #c4cbd8; font-size: .95rem; }
+.faixa .pilula { border-color: rgba(255,255,255,.3); } .faixa .pilula button { color: #d6dbe6; } .faixa .pilula button[aria-pressed="true"] { background: #fff; color: var(--noite); }
+.faixa h1 { color: #fff; } .faixa .resumo { color: #d6dbe6; } .faixa .resumo b { color: #fff; } .faixa .ola { color: #c4cbd8; }
+.planilha-btn { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 7px 16px; min-height: 36px; font-weight: 700; font-size: .88rem; background: var(--latao-claro); color: var(--noite); }
+.nota-registro { font-size: .82rem; color: var(--tinta-3); margin: 4px 0 0; }
 .pilula { display: inline-flex; border: 1px solid var(--linha-2); border-radius: 999px; overflow: hidden; }
 .pilula button { border: 0; background: transparent; padding: 5px 10px; min-height: 30px; font-size: .74rem; font-weight: 600; color: var(--tinta-3); }
 .pilula button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
@@ -91,7 +103,7 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .wiz .passos b { color: var(--latao-texto); }
 .wiz h3 { font-size: 1.25rem; text-transform: none; letter-spacing: 0; color: var(--tinta); }
 .wiz p { margin: 0; color: var(--tinta-2); }
-.wiz .campo-conf { grid-template-columns: 1fr; gap: 4px; }
+.wiz .campo-conf { grid-template-columns: 1fr; gap: 4px; margin-bottom: 8px; }
 .wiz .campo-conf > span { font-weight: 600; color: var(--tinta); }
 .wiz .resumo-final dt { color: var(--tinta-3); } .wiz .resumo-final { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: .92rem; }
 @media (max-width: 640px) { .campo-conf, .conf-info { grid-template-columns: 1fr; } }
@@ -108,7 +120,7 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .item { border-top: 1px solid var(--linha); }
 .item:first-child { border-top: 0; }
 .cab { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 3.6rem 1fr auto; gap: 2px 14px; align-items: center; width: 100%; padding: 12px 18px; }
-.cab:hover { background: var(--papel); }
+.cab:hover { background: var(--papel-2, #f3f5f8); }
 .trib { font-size: .74rem; font-weight: 600; color: var(--tinta-3); letter-spacing: .03em; }
 .nome { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
 .nome .mais { font-weight: 400; color: var(--tinta-2); }
@@ -154,25 +166,37 @@ footer a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
-<div class="miolo">
+<div class="faixa"><div class="miolo">
 <header>
   <div class="topo">
-    <span class="marca" id="marca"></span>
-    <div class="pilula" role="group" aria-label="Idioma / Language"><button type="button" id="b-pt" data-lang="pt">PT</button><button type="button" id="b-en" data-lang="en">EN</button></div>
+    <span class="marca"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%230f1d33%22/%3E%0A  %3Cg transform=%22rotate%28-40 30 26%29%22 fill=%22%23d4ab6a%22%3E%0A    %3Crect x=%2217%22 y=%2217%22 width=%2226%22 height=%2212%22 rx=%223%22/%3E%0A    %3Crect x=%2214%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2241%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2228%22 y=%2229%22 width=%224.5%22 height=%2224%22 rx=%222%22/%3E%0A  %3C/g%3E%0A  %3Crect x=%2231%22 y=%2247%22 width=%2222%22 height=%226%22 rx=%222%22 fill=%22%23d4ab6a%22/%3E%0A%3C/svg%3E" alt=""><span id="marca"></span></span>
+    <div class="direita">
+      <span class="escritorio-nome" id="escritorio-nome"></span>
+      <button type="button" class="planilha-btn" id="b-planilha" hidden></button>
+      <button type="button" class="link" id="b-pasta" hidden></button>
+      <a id="link-manual-topo" href="/manual" target="_blank" rel="noopener" hidden></a>
+      <div class="pilula" role="group" aria-label="Idioma / Language"><button type="button" id="b-pt" data-lang="pt">PT</button><button type="button" id="b-en" data-lang="en">EN</button></div>
+    </div>
   </div>
   <h1 id="h1"></h1>
   <p class="resumo" id="resumo"></p>
   <p class="ola" id="ola" hidden></p>
 </header>
+</div></div>
+<div class="miolo">
 
 <section class="painel wiz" id="wizard" hidden>
   <div class="passos" id="w-passos"></div>
   <h3 id="w-titulo"></h3>
   <p id="w-texto"></p>
   <div id="w-p1">
-    <label class="campo-conf"><span id="w-l-nome"></span><input id="w-nome" type="text" maxlength="60" autocomplete="given-name"></label>
-    <label class="campo-conf"><span id="w-l-papel"></span><select id="w-papel"></select></label>
+    <label class="campo-conf"><span id="w-l-codigo"></span><input id="w-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
     <label class="campo-conf"><span id="w-l-escritorio"></span><input id="w-escritorio" type="text" maxlength="80" autocomplete="organization"></label>
+    <label class="campo-conf"><span id="w-l-cnpj"></span><input id="w-cnpj" type="text" maxlength="18" inputmode="numeric" autocomplete="off" placeholder="00.000.000/0000-00"></label>
+    <label class="campo-conf"><span id="w-l-nome"></span><input id="w-nome" type="text" maxlength="60" autocomplete="name"></label>
+    <label class="campo-conf"><span id="w-l-email"></span><input id="w-email" type="email" maxlength="120" autocomplete="email"></label>
+    <label class="campo-conf"><span id="w-l-papel"></span><select id="w-papel"></select></label>
+    <p class="nota-registro" id="w-registro"></p>
   </div>
   <div id="w-p2" hidden>
     <label class="campo-conf"><span id="w-l-pasta"></span><select id="w-pasta"></select></label>
@@ -205,8 +229,10 @@ footer a:hover { text-decoration: underline; }
   <div class="estado" id="estado"></div>
   <div class="painel" id="config" hidden>
     <h3 id="c-titulo"></h3>
-    <label class="campo-conf"><span id="c-l-nome"></span><input id="c-nome" type="text" maxlength="60" autocomplete="given-name"></label>
+    <label class="campo-conf"><span id="c-l-nome"></span><input id="c-nome" type="text" maxlength="60" autocomplete="name"></label>
+    <label class="campo-conf"><span id="c-l-email"></span><input id="c-email" type="email" maxlength="120" autocomplete="email"></label>
     <label class="campo-conf"><span id="c-l-papel"></span><select id="c-papel"></select></label>
+    <label class="campo-conf"><span id="c-l-codigo"></span><input id="c-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
     <label class="campo-conf"><span id="c-l-escritorio"></span><input id="c-escritorio" type="text" maxlength="80" autocomplete="organization"></label>
     <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta"></select></label>
     <label class="campo-conf" id="c-outra-wrap" hidden><span id="c-l-outra"></span><input id="c-outra" type="text" spellcheck="false"></label>
@@ -265,29 +291,33 @@ window.LEXSUITE_RADAR = null;
   var D = window.LEXSUITE_RADAR || { itens: [], tribunais: [] };
   var APP = null, sel = {}, aba = "regiao", ramo = "Trabalhista", vigia = null, limite = 150, periodo = 1, configVista = false, wPasso = 1, wPastas = [];
   var T = {
-    pt: { marca: "Radar Trabalhista", h1: "Ações novas contra empresas",
-      resumo: "{n} ações {p} em {t}. {v} com valor acima de {min}; {s} ainda sem valor.", p1: "no último dia", pn: "nos últimos {d} dias", t1: "{a}", tn: "{k} tribunais ({a})", tk: "{k} tribunais",
-      vazio: "Nenhuma ação com esses filtros.", vazio_app: "Nenhuma ação guardada ainda. Clique em Atualizar agora (os 24 TRTs já estão escolhidos).", vazio_arq: "Nenhuma ação nova nos tribunais acompanhados.",
+    pt: { marca: "RADAR JUDICIAL",
+      cod: "Código de cliente", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "CNPJ do escritório", seu_nome: "Seu nome", seu_email: "Seu e-mail", cad_falta: "Preencha o código, o escritório, o CNPJ, o seu nome e o seu e-mail.", cod_falta: "Informe o código de cliente (está no e-mail de boas-vindas).", registro: "O seu nome, o seu e-mail e o CNPJ ficam registrados na licença do escritório, para a SolverONE falar com você sobre o serviço. Cada e-mail pertence a um escritório só; dá para mudar depois em Configuração.", sem_trib: "Escolha pelo menos um tribunal e clique em Salvar e atualizar agora.", conferindo: "Conferindo o código com a SolverONE...",
+      planilha_abrir: "Abrir a planilha", pasta_abrir: "Abrir a pasta", planilha_falta: "A planilha ainda não existe: escolha a pasta do Google Drive em Configuração.",
+      csv_dica: "Arquivo simples com a lista desta tela, para importar em outros sistemas (ex.: Astrea). A planilha completa está no Google Drive.", licenca: "Licença",
+      h1: "Novos processos contra empresas",
+      resumo: "{n} processos {p} em {t}. {v} com valor acima de {min}; {s} ainda sem valor.", p1: "no último dia", pn: "nos últimos {d} dias", t1: "{a}", tn: "{k} tribunais ({a})", tk: "{k} tribunais",
+      vazio: "Nenhum processo com esses filtros.", vazio_app: "Nenhum processo guardado ainda. Clique em Atualizar agora.", vazio_arq: "Nenhum processo novo nos tribunais acompanhados.",
       b_trib: "Tribunais: {n} de {k}", periodo: "Período", config: "Configuração", excluidas_resumo: " {x} escondidas pelas preferências do escritório.",
       f_exc_mostrar: "Mostrar excluídas ({n})", f_exc_ocultar: "Ocultar excluídas", excluida: "Excluída",
       dica_tj: "Tribunais estaduais publicam diários muito maiores (o TJSP sozinho pode passar de 1 GB por dia) e a regra de \"ação nova\" ainda não foi calibrada neles.",
-      c_titulo: "Configuração deste computador", c_nome: "Seu nome", c_papel: "Seu papel no escritório", c_papel_vazio: "escolha", c_escritorio: "Escritório",
+      c_titulo: "Configuração", c_nome: "Seu nome", c_papel: "Função no escritório (opcional)", c_papel_vazio: "escolha", c_escritorio: "Escritório",
       ola: "Olá, {n}.",
-      w_passo: "Passo {a} de {b}", w_voltar: "Voltar", w_avancar: "Avançar", w_concluir: "Começar a primeira rodada", w_so_salvar: "Salvar e ver a tela",
-      w1_t: "Bem-vindo ao LexSuiteONE", w1_x: "Três perguntas e o robô fica do seu jeito. Nada sai deste computador; o nome serve só para a tela e o manual falarem com você.",
-      w2_t: "Onde guardar a planilha", w2_x: "Escolha a pasta do Google Drive (ou do OneDrive) deste computador. O robô cria ali a subpasta LexSuiteONE com a planilha LexSuiteONE.xlsx, que você pode abrir no Google Planilhas e compartilhar com o suporte.",
-      w3_t: "Tribunais e rotina", w3_x: "Os 24 Tribunais Regionais do Trabalho já estão escolhidos; depois dá para mudar em Tribunais (por região, estado ou ramo).", w3_trib: "Tribunais escolhidos: {n}.",
-      w4_t: "Pronto, {n}", w4_x: "Está tudo salvo. A primeira rodada baixa o diário do dia de cada tribunal e leva de 30 a 60 minutos com os 24 TRTs; o andamento aparece na tela. O manual do escritório fica no rodapé.",
-      w_rotina: "Rodar sozinho", w_nome_falta: "Diga pelo menos o seu nome.", w_pasta_falta: "Escolha uma pasta ou marque \"Nenhuma\".", c_pasta: "Pasta compartilhada", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
+      w_passo: "Passo {a} de {b}", w_voltar: "Voltar", w_avancar: "Avançar", w_concluir: "Começar a primeira leitura", w_so_salvar: "Salvar e ver a tela",
+      w1_t: "Bem-vindo ao {m}, da LexSuiteONE", w1_x: "Para começar, informe o código de cliente que veio no e-mail de boas-vindas e o nome do escritório.",
+      w2_t: "Onde fica a planilha", w2_x: "Escolha a pasta do Google Drive deste computador. O {c} cria ali a pasta LexSuiteONE com a planilha LexSuiteONE.xlsx, atualizada a cada leitura.",
+      w3_t: "Tribunais e leituras automáticas", w3_x: "A frente trabalhista lê os 24 TRTs. Depois dá para reduzir em Tribunais.", w3_trib: "Tribunais escolhidos: {n}.",
+      w4_t: "Tudo pronto", w4_x: "A primeira leitura dos 24 TRTs leva de 30 a 60 minutos; o andamento aparece na tela. O manual fica no alto da tela.",
+      w_rotina: "Leituras automáticas", w_nome_falta: "Informe o nome do escritório.", w_pasta_falta: "Escolha uma pasta ou marque \"Nenhuma\".", c_pasta: "Pasta da planilha (Google Drive)", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
       c_nenhuma: "Nenhuma (só neste computador)", c_outra_op: "Outra pasta...", c_salvar: "Salvar", c_atualizar: "Verificar atualização",
-      c_versao: "Versão instalada", c_pasta_robo: "Pasta do robô", c_controle: "Planilha", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Rodar sozinho todo dia, às 19:40 e às 07:10 (com o computador ligado)", c_agendar_nao: "Agendamento automático só no Windows; neste sistema use o RODAR.bat.",
+      c_versao: "Versão instalada", c_pasta_robo: "Pasta do programa", c_controle: "Planilha", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Ler sozinho todo dia, às 19h40 e às 7h10 (com o computador ligado)", c_agendar_nao: "Leitura automática só no Windows.",
       c_chave: "Chave de atualização", c_chave_falta: "ausente: atualização desligada", c_atu_pasta: "Atualizações chegam por", c_salvo: "Salvo.",
-      c_dica: "A pasta compartilhada é a pasta do Google Drive para computador (ou OneDrive) onde fica a planilha LexSuiteONE.xlsx: a aba Radar é a lista; Preferências e Exclusões são suas para editar; o suporte usa as abas ocultas. Compartilhe a subpasta LexSuiteONE com o suporte uma vez; o resto é automático.",
-      atu_ok: "Atualizado para a versão {v}. Feche a janela LexSuiteONE e abra de novo pelo ABRIR.bat.", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia", pern: "{d} dias", rodar: "Atualizar agora", rodando: "Atualizando...",
+      c_dica: "A planilha LexSuiteONE.xlsx fica na pasta do Google Drive escolhida acima: a aba Radar traz a lista; Preferências e Exclusões são do escritório; as abas ocultas são da SolverONE. A pasta LexSuiteONE é compartilhada com integracao@solverone.com.br uma única vez.",
+      atu_ok: "Atualizado para a versão {v}. Feche a janela LexSuiteONE e abra de novo pelo atalho.", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia", pern: "{d} dias", rodar: "Atualizar agora", rodando: "Atualizando...",
       aba_regiao: "Por região", aba_uf: "Por estado", todos: "Selecionar todos", todos_ramo: "Selecionar todos ({r})", limpar: "Limpar", escolhidos: "{n} de {k} tribunais escolhidos", salvar: "Salvar", salvar_rodar: "Salvar e atualizar agora",
       dica: "Cada tribunal publica um diário por dia, de 5 a 150 MB. Dois tribunais levam uns 5 minutos; os 24, de 30 a 60 minutos na primeira vez. O computador precisa estar no Brasil.",
-      ultima: "Última atualização em {q}: {s}", nunca: "Ainda não rodou neste computador.", erro: "Parou com erro: {e}", carregando: "Carregando...", falha: "Não consegui falar com o robô. A janela preta do ABRIR.bat ainda está aberta?",
-      f_valor: "Acima de {min}", f_gig: "Sem jurídico próprio provável", trib_todos: "Todos os tribunais", ord_valor: "Maior valor primeiro", ord_hora: "Ordem de chegada", exportar: "Exportar planilha",
+      ultima: "Última atualização em {q}: {s}", nunca: "Ainda não leu neste computador.", erro: "Parou com erro: {e}", carregando: "Carregando...", falha: "Não consegui falar com o programa. A janela preta LexSuiteONE ainda está aberta?",
+      f_valor: "Acima de {min}", f_gig: "Sem jurídico próprio provável", trib_todos: "Todos os tribunais", ord_valor: "Maior valor primeiro", ord_hora: "Ordem de chegada", exportar: "Baixar a lista (.csv)",
       mostrando: "Mostrando {a} de {b}", mais: "Mostrar mais {n}", grupo_hora: "{h}, {t}",
       conferir: "valor a conferir", conferir_sub: "no PJe, atrás do captcha", manual: "digitado",
       empresa: "Empresa", processo: "Processo",
@@ -300,31 +330,35 @@ window.LEXSUITE_RADAR = null;
       st_novo: "Novo", st_visto: "Visto", st_contato: "Em contato", st_descartado: "Descartado",
       nota_valor: "O PJe mostra o valor da causa depois do captcha. Digite aqui; fica guardado neste navegador e sai na planilha.",
       gig: "Jurídico próprio provável", e: "e", mais_n: "e mais {n}",
-      link_manual: "Manual do escritório", rodape1: "Fontes: lista de distribuição do DJEN (CNJ) e cadastro público da Receita Federal. Gerado em {q}.",
-      rodape2: "Pessoas físicas do processo não aparecem. Nada aqui usa inteligência artificial. LexSuiteONE, um produto SolverONE, versão {v}." },
-    en: { marca: "Labor Radar", h1: "New lawsuits against companies",
-      resumo: "{n} lawsuits {p} in {t}. {v} above {min}; {s} still without a value.", p1: "in the last day", pn: "in the last {d} days", t1: "{a}", tn: "{k} courts ({a})", tk: "{k} courts",
-      vazio: "No lawsuit matches these filters.", vazio_app: "Nothing stored yet. Click Update now (the 24 labor courts are already selected).", vazio_arq: "No new lawsuits in the watched courts.",
+      link_manual: "Manual", rodape1: "Fontes: lista de distribuição do DJEN (CNJ) e cadastro público da Receita Federal. Gerado em {q}.",
+      rodape2: "Pessoas físicas do processo não aparecem. Nada aqui usa inteligência artificial. {m}, da LexSuiteONE, um produto SolverONE. Versão {v}." },
+    en: { marca: "RADAR JUDICIAL",
+      cod: "Client code", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Firm\u2019s tax ID (CNPJ)", seu_nome: "Your name", seu_email: "Your e-mail", cad_falta: "Fill in the code, the firm, the CNPJ, your name and your e-mail.", cod_falta: "Enter the client code (it is in the welcome e-mail).", registro: "Your name, your e-mail and the CNPJ are registered under the firm\u2019s license so SolverONE can contact you about the service. Each e-mail belongs to one firm only; you can change it later in Settings.", sem_trib: "Choose at least one court and click Save and update now.", conferindo: "Checking the code with SolverONE...",
+      planilha_abrir: "Open the spreadsheet", pasta_abrir: "Open the folder", planilha_falta: "The spreadsheet does not exist yet: choose the Google Drive folder in Settings.",
+      csv_dica: "A plain file with the list on this screen, to import into other systems (e.g. Astrea). The full spreadsheet is in Google Drive.", licenca: "License",
+      h1: "New lawsuits against companies",
+      resumo: "{n} lawsuits {p} in {t}. {v} above {min}; {s} still without an amount.", p1: "in the last day", pn: "in the last {d} days", t1: "{a}", tn: "{k} courts ({a})", tk: "{k} courts",
+      vazio: "No lawsuits with these filters.", vazio_app: "No lawsuits saved yet. Click Update now.", vazio_arq: "No new lawsuits in the courts followed.",
       b_trib: "Courts: {n} of {k}", periodo: "Period", config: "Settings", excluidas_resumo: " {x} hidden by the firm's preferences.",
       f_exc_mostrar: "Show excluded ({n})", f_exc_ocultar: "Hide excluded", excluida: "Excluded",
       dica_tj: "State courts publish much larger gazettes (TJSP alone can exceed 1 GB a day) and the \"new lawsuit\" rule is not calibrated for them yet.",
-      c_titulo: "Settings on this computer", c_nome: "Your name", c_papel: "Your role at the firm", c_papel_vazio: "choose", c_escritorio: "Firm",
+      c_titulo: "Settings", c_nome: "Your name", c_papel: "Role at the firm (optional)", c_papel_vazio: "choose", c_escritorio: "Firm",
       ola: "Hello, {n}.",
-      w_passo: "Step {a} of {b}", w_voltar: "Back", w_avancar: "Next", w_concluir: "Start the first run", w_so_salvar: "Save and open the screen",
-      w1_t: "Welcome to LexSuiteONE", w1_x: "Three questions and the robot is yours. Nothing leaves this computer; the name is only so the screen and the manual can address you.",
-      w2_t: "Where to keep the spreadsheet", w2_x: "Choose this computer's Google Drive (or OneDrive) folder. The robot creates the LexSuiteONE subfolder there with LexSuiteONE.xlsx, which you can open in Google Sheets and share with support.",
-      w3_t: "Courts and routine", w3_x: "The 24 labor courts are already selected; you can change them later under Courts (by region, state or branch).", w3_trib: "Courts selected: {n}.",
-      w4_t: "All set, {n}", w4_x: "Everything is saved. The first run downloads each court's gazette and takes 30 to 60 minutes with all 24; progress shows on screen. The firm manual is in the footer.",
-      w_rotina: "Runs by itself", w_nome_falta: "Please tell us at least your name.", w_pasta_falta: "Choose a folder or pick \"None\".", c_pasta: "Shared folder", c_outra: "Folder path", c_testar: "Test folder",
+      w_passo: "Step {a} of {b}", w_voltar: "Back", w_avancar: "Next", w_concluir: "Start the first reading", w_so_salvar: "Save and open the screen",
+      w1_t: "Welcome to {m}, by LexSuiteONE", w1_x: "To start, enter the client code from the welcome e-mail and the firm's name.",
+      w2_t: "Where the spreadsheet lives", w2_x: "Choose this computer's Google Drive folder. {c} creates the LexSuiteONE folder there with LexSuiteONE.xlsx, updated at every reading.",
+      w3_t: "Courts and automatic readings", w3_x: "The labor practice reads the 24 regional labor courts. You can narrow it later in Courts.", w3_trib: "Courts selected: {n}.",
+      w4_t: "All set", w4_x: "The first reading of the 24 courts takes 30 to 60 minutes; progress shows on screen. The manual is at the top of the screen.",
+      w_rotina: "Automatic readings", w_nome_falta: "Enter the firm's name.", w_pasta_falta: "Choose a folder or pick \"None\".", c_pasta: "Spreadsheet folder (Google Drive)", c_outra: "Folder path", c_testar: "Test folder",
       c_nenhuma: "None (this computer only)", c_outra_op: "Another folder...", c_salvar: "Save", c_atualizar: "Check for updates",
-      c_versao: "Installed version", c_pasta_robo: "Robot folder", c_controle: "Spreadsheet", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Run by itself every day at 19:40 and 07:10 (computer on)", c_agendar_nao: "Automatic scheduling is Windows-only; elsewhere use RODAR.bat.",
+      c_versao: "Installed version", c_pasta_robo: "Program folder", c_controle: "Spreadsheet", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Read by itself every day at 7:40 pm and 7:10 am (computer on)", c_agendar_nao: "Automatic reading only on Windows.",
       c_chave: "Update key", c_chave_falta: "missing: updates disabled", c_atu_pasta: "Updates arrive via", c_salvo: "Saved.",
-      c_dica: "The shared folder is the Google Drive for desktop (or OneDrive) folder that holds LexSuiteONE.xlsx: the Radar sheet is the list; Preferences and Exclusions are yours to edit; support uses the hidden sheets. Share the LexSuiteONE subfolder with support once; the rest is automatic.",
-      atu_ok: "Updated to version {v}. Close the LexSuiteONE window and open it again with ABRIR.bat.", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last day", pern: "{d} days", rodar: "Update now", rodando: "Updating...",
+      c_dica: "The LexSuiteONE.xlsx spreadsheet lives in the Google Drive folder chosen above: the Radar sheet holds the list; Preferences and Exclusions belong to the firm; hidden sheets are SolverONE's. The LexSuiteONE folder is shared once with integracao@solverone.com.br.",
+      atu_ok: "Updated to version {v}. Close the LexSuiteONE window and open it again from the shortcut.", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last day", pern: "{d} days", rodar: "Update now", rodando: "Updating...",
       aba_regiao: "By region", aba_uf: "By state", todos: "Select all", todos_ramo: "Select all ({r})", limpar: "Clear", escolhidos: "{n} of {k} courts chosen", salvar: "Save", salvar_rodar: "Save and update now",
       dica: "Each court publishes one gazette a day, 5 to 150 MB. Two courts take about 5 minutes; all 24, 30 to 60 minutes the first time. The computer must be in Brazil.",
-      ultima: "Last update at {q}: {s}", nunca: "Never run on this computer yet.", erro: "Stopped with an error: {e}", carregando: "Loading...", falha: "Could not reach the robot. Is the ABRIR.bat window still open?",
-      f_valor: "Above {min}", f_gig: "Without likely in-house counsel", trib_todos: "All courts", ord_valor: "Highest value first", ord_hora: "Arrival order", exportar: "Export spreadsheet",
+      ultima: "Last update at {q}: {s}", nunca: "Not read on this computer yet.", erro: "Stopped with an error: {e}", carregando: "Loading...", falha: "Could not reach the program. Is the black LexSuiteONE window still open?",
+      f_valor: "Above {min}", f_gig: "Without likely in-house counsel", trib_todos: "All courts", ord_valor: "Highest value first", ord_hora: "Arrival order", exportar: "Download the list (.csv)",
       mostrando: "Showing {a} of {b}", mais: "Show {n} more", grupo_hora: "{h}, {t}",
       conferir: "value to check", conferir_sub: "in PJe, behind the captcha", manual: "typed",
       empresa: "Company", processo: "Case",
@@ -337,8 +371,8 @@ window.LEXSUITE_RADAR = null;
       st_novo: "New", st_visto: "Seen", st_contato: "In contact", st_descartado: "Discarded",
       nota_valor: "PJe shows the claim value after the captcha. Type it here; it stays in this browser and goes to the spreadsheet.",
       gig: "Likely in-house counsel", e: "and", mais_n: "and {n} more",
-      link_manual: "Firm manual", rodape1: "Sources: DJEN distribution lists (CNJ) and the Federal Revenue public registry. Generated {q}.",
-      rodape2: "Individuals in the case never appear. Nothing here uses artificial intelligence. LexSuiteONE, a SolverONE product, version {v}." }
+      link_manual: "Manual", rodape1: "Sources: DJEN distribution lists (CNJ) and the Federal Revenue public registry. Generated {q}.",
+      rodape2: "Individuals in the case never appear. Nothing here uses artificial intelligence. {m}, by LexSuiteONE, a SolverONE product. Version {v}." }
   };
   var lang = "pt", F = { valor: false, gig: false, exc: false, trib: "" }, ordem = "valor", aberto = {};
   try { lang = localStorage.getItem("lexsuite:idioma") || "pt"; } catch (e) {}
@@ -369,7 +403,7 @@ window.LEXSUITE_RADAR = null;
       if (APP) { (APP.config.tribunais || []).forEach(function (s) { sel[s] = true; }); periodo = Number(APP.config.dias_na_pagina || periodo) || 1; }
       F.gig = !!(D.prefs && D.prefs.esconder_gigantes);
       limite = 150; tudo();
-      if (APP && !APP.usuario.nome && !configVista) { configVista = true; abrirWizard(); }
+      if (APP && (!(APP.conta && APP.conta.codigo) || !APP.config.escritorio) && !configVista) { configVista = true; abrirWizard(); }
       else if (APP && !APP.config.pasta && !configVista) { configVista = true; abrirConfig(true); }
       if (APP && APP.estado && APP.estado.rodando) vigiar();
     }).catch(function () { $("estado").textContent = t("falha"); });
@@ -404,8 +438,10 @@ window.LEXSUITE_RADAR = null;
     vigia = setTimeout(passo, 1500);
   }
   function rodar() {
-    if (!Object.keys(sel).length) { $("painel").hidden = false; return; }
-    post("/rodar", { dias: null }).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo }); }).catch(function () { $("estado").textContent = t("falha"); });
+    if (!Object.keys(sel).length) { $("painel").hidden = false; $("b-trib").setAttribute("aria-expanded", "true"); painel(); mostrarEstado({ erro: t("sem_trib") }); return; }
+    if (APP && APP.conta && !APP.conta.ok) { mostrarEstado({ erro: APP.conta.texto }); abrirConfig(false); return; }
+    $("estado").textContent = t("carregando");
+    post("/rodar", { dias: null }).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo || t("falha") }); }).catch(function () { $("estado").textContent = t("falha"); });
   }
   function salvarTribunais(depoisRodar) {
     post("/config", { tribunais: Object.keys(sel), dias_na_pagina: periodo }).then(function () {
@@ -467,11 +503,12 @@ window.LEXSUITE_RADAR = null;
   /* ---------- configuração deste computador ---------- */
   function abrirConfig(forcar) {
     var p = $("config"), abrir = forcar || p.hidden;
+    $("c-codigo").value = (APP && APP.conta && APP.conta.codigo) || "";
     p.hidden = !abrir; $("b-config").setAttribute("aria-expanded", String(abrir));
     if (!abrir) return;
     $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
     $("c-escritorio").value = (APP && APP.config.escritorio) || "";
-    $("c-nome").value = (APP && APP.usuario.nome) || ""; preencherPapeis($("c-papel"), APP && APP.usuario.papel);
+    $("c-nome").value = (APP && APP.usuario.nome) || ""; $("c-email").value = (APP && APP.usuario.email) || ""; preencherPapeis($("c-papel"), APP && APP.usuario.papel);
     $("c-msg").textContent = ""; $("c-teste-txt").textContent = "";
     var ag = APP && APP.config.agendavel; $("c-agendar").disabled = !ag; $("c-agendar").checked = !!(APP && APP.config.agendado) || (ag && !(APP && APP.config.pasta));
     $("c-l-agendar").textContent = ag ? t("c_agendar") : t("c_agendar_nao");
@@ -492,13 +529,15 @@ window.LEXSUITE_RADAR = null;
   function infoConfig() {
     var dl = $("c-info"); dl.textContent = ""; if (!APP) return;
     function par(k, v) { dl.appendChild(el("dt", null, k)); dl.appendChild(el("dd", null, v || "—")); }
-    par(t("c_versao"), APP.versao); par(t("c_pasta_robo"), APP.pasta_robo);
+    par(t("licenca"), (APP.conta && APP.conta.texto) || "—"); par(t("c_versao"), APP.versao); par(t("c_pasta_robo"), APP.pasta_robo);
     par(t("c_controle"), APP.config.planilha || (APP.config.pasta_base ? t("c_controle_falta") : t("c_sem_pasta")));
     par(t("c_chave"), APP.atualizacao && APP.atualizacao.chave ? APP.atualizacao.impressao : t("c_chave_falta"));
     par(t("c_atu_pasta"), (APP.atualizacao && (APP.atualizacao.pasta || APP.atualizacao.url)) || t("c_sem_pasta"));
   }
   function salvarConfig() {
     var corpo = { escritorio: $("c-escritorio").value, pasta: pastaEscolhida(), nome: $("c-nome").value, papel: $("c-papel").value };
+    var cod = $("c-codigo").value.trim().toUpperCase(); if (cod && !(APP && APP.conta && APP.conta.codigo === cod)) corpo.codigo = cod;
+    var em = $("c-email").value.trim().toLowerCase(); if (em && APP && (em !== APP.usuario.email || $("c-nome").value.trim() !== APP.usuario.nome)) corpo.email = em;
     if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
     post("/config", corpo).then(function (r) {
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
@@ -529,7 +568,8 @@ window.LEXSUITE_RADAR = null;
       var on = el("option", null, t("c_nenhuma")); on.value = ""; sp.appendChild(on);
       sp.value = (d.atual && wPastas.indexOf(d.atual) >= 0) ? d.atual : (wPastas.length ? wPastas[0] : "");
     }).catch(function () {});
-    $("wizard").hidden = false; desenharWizard();
+    $("w-codigo").value = (APP && APP.conta && APP.conta.codigo) || ""; $("w-email").value = (APP && APP.usuario.email) || ""; $("w-cnpj").value = (APP && APP.cnpj_escritorio) || "";
+    $("wizard").hidden = false; desenharWizard(); barraApp();
   }
   function wPasta() { var v = $("w-pasta").value; return v === "__outra" ? $("w-outra").value.trim() : v; }
   function desenharWizard() {
@@ -537,50 +577,65 @@ window.LEXSUITE_RADAR = null;
     for (var i = 1; i <= total; i++) { ps.appendChild(el(i === wPasso ? "b" : "span", null, (i > 1 ? "· " : "") + t("w_passo", { a: i, b: total }).split(" de ")[0].split(" of ")[0] + (i === wPasso ? " " + i : " " + i))); }
     ps.textContent = t("w_passo", { a: wPasso, b: total });
     [1, 2, 3, 4].forEach(function (i) { $("w-p" + i).hidden = i !== wPasso; });
-    $("w-l-nome").textContent = t("c_nome"); $("w-l-papel").textContent = t("c_papel"); $("w-l-escritorio").textContent = t("c_escritorio");
+    $("w-l-nome").textContent = t("c_nome"); $("w-l-papel").textContent = t("c_papel"); $("w-l-escritorio").textContent = t("c_escritorio"); $("w-l-codigo").textContent = t("cod"); $("w-registro").textContent = t("registro"); $("w-l-cnpj").textContent = t("cnpj_esc"); $("w-l-email").textContent = t("seu_email");
     $("w-l-pasta").textContent = t("c_pasta"); $("w-l-outra").textContent = t("c_outra"); $("w-testar").textContent = t("c_testar");
     var nome = $("w-nome").value.trim();
-    $("w-titulo").textContent = wPasso === 1 ? t("w1_t") : wPasso === 2 ? t("w2_t") : wPasso === 3 ? t("w3_t") : t("w4_t", { n: nome });
-    $("w-texto").textContent = wPasso === 1 ? t("w1_x") : wPasso === 2 ? t("w2_x") : wPasso === 3 ? t("w3_x") : t("w4_x");
+    $("w-titulo").textContent = wPasso === 1 ? t("w1_t", { m: marcaNome() }) : wPasso === 2 ? t("w2_t") : wPasso === 3 ? t("w3_t") : t("w4_t", { n: nome });
+    $("w-texto").textContent = wPasso === 1 ? t("w1_x") : wPasso === 2 ? t("w2_x", { c: marcaCurto() }) : wPasso === 3 ? t("w3_x") : t("w4_x");
     $("w-trib-txt").textContent = t("w3_trib", { n: (APP && APP.config.tribunais || []).length });
     if (wPasso === 4) {
       var dl = $("w-resumo"); dl.textContent = "";
-      [[t("c_nome"), nome], [t("c_papel"), $("w-papel").value], [t("c_escritorio"), $("w-escritorio").value], [t("c_pasta"), wPasta() || t("c_nenhuma")], [t("w_rotina"), $("w-agendar").checked ? "19:40 / 07:10" : "—"]].forEach(function (par) { dl.appendChild(el("dt", null, par[0])); dl.appendChild(el("dd", null, par[1] || "—")); });
+      [[t("cod"), $("w-codigo").value.trim().toUpperCase()], [t("c_escritorio"), $("w-escritorio").value], [t("cnpj_esc"), $("w-cnpj").value], [t("seu_nome"), nome], [t("seu_email"), $("w-email").value], [t("c_papel"), $("w-papel").value || "—"], [t("c_pasta"), wPasta() || t("c_nenhuma")], [t("w_rotina"), $("w-agendar").checked ? "19:40 / 07:10" : "—"]].forEach(function (par) { dl.appendChild(el("dt", null, par[0])); dl.appendChild(el("dd", null, par[1] || "—")); });
     }
     $("w-voltar").hidden = wPasso === 1; $("w-voltar").textContent = t("w_voltar");
     $("w-avancar").textContent = wPasso < 4 ? t("w_avancar") : t("w_concluir");
     $("w-msg").textContent = "";
   }
   function wizardAvancar() {
-    if (wPasso === 1 && !$("w-nome").value.trim()) { $("w-msg").textContent = t("w_nome_falta"); return; }
+    if (wPasso === 1) {
+      var faltando = ["w-codigo", "w-escritorio", "w-cnpj", "w-nome", "w-email"].filter(function (id) { return !$(id).value.trim(); });
+      if (faltando.length) { $("w-msg").textContent = t("cad_falta"); $(faltando[0]).focus(); return; }
+      $("w-msg").textContent = t("conferindo"); $("w-avancar").disabled = true;
+      post("/config", { codigo: $("w-codigo").value, escritorio: $("w-escritorio").value, cnpj: $("w-cnpj").value, nome: $("w-nome").value,
+                        email: $("w-email").value, papel: $("w-papel").value }).then(function (r) {
+        $("w-avancar").disabled = false;
+        if (!r.ok) { $("w-msg").textContent = r.motivo || t("falha"); return; }
+        if (APP) APP.conta = r.conta;
+        wPasso = 2; desenharWizard();
+      }).catch(function () { $("w-avancar").disabled = false; $("w-msg").textContent = t("falha"); });
+      return;
+    }
     if (wPasso === 2 && $("w-pasta").value === "__outra" && !$("w-outra").value.trim()) { $("w-msg").textContent = t("w_pasta_falta"); return; }
     if (wPasso < 4) { wPasso += 1; desenharWizard(); return; }
-    var corpo = { nome: $("w-nome").value, papel: $("w-papel").value, escritorio: $("w-escritorio").value, pasta: wPasta() };
+    var corpo = { papel: $("w-papel").value, escritorio: $("w-escritorio").value, pasta: wPasta() };
     if (!$("w-agendar").disabled) corpo.agendar = $("w-agendar").checked;
     $("w-msg").textContent = t("carregando");
     post("/config", corpo).then(function (r) {
       if (!r.ok) { $("w-msg").textContent = r.motivo || t("falha"); wPasso = 2; desenharWizard(); $("w-msg").textContent = r.motivo || t("falha"); return; }
-      $("wizard").hidden = true;
+      $("wizard").hidden = true; barraApp();
       post("/rodar", {}).then(function (rr) { if (rr.ok) vigiar(); carregar(); }).catch(carregar);
     }).catch(function () { $("w-msg").textContent = t("falha"); });
   }
   function bannerControle() {
     var b = $("banner"), p = (D.prefs || {}), c = p.controle || {}, txt = "";
+    if (APP && APP.conta && APP.conta.codigo && !APP.conta.ok) { b.hidden = false; b.textContent = APP.conta.texto; b.className = "banner erro"; return; }
     if (c.mensagem) txt = c.mensagem;
     if (p.erro) txt = (txt ? txt + " " : "") + p.erro;
     b.hidden = !txt; b.textContent = txt; b.className = "banner" + (p.erro ? " erro" : "");
   }
 
   function barraApp() {
-    $("app").hidden = MODO !== "app";
-    if (MODO !== "app") return;
+    var naWizard = !$("wizard").hidden;
+    $("app").hidden = MODO !== "app" || naWizard; $("controles").hidden = naWizard; $("lista").hidden = naWizard; if (naWizard) $("mais").hidden = true;
+    $("resumo").hidden = naWizard; if (naWizard) { $("b-planilha").hidden = true; $("b-pasta").hidden = true; $("ola").hidden = true; }
+    if (MODO !== "app" || naWizard) return;
     $("l-periodo").textContent = t("periodo");
     var sp = $("periodo"); sp.textContent = "";
     [1, 3, 7, 15, 30].forEach(function (d) { var o = el("option", null, d === 1 ? t("per1") : t("pern", { d: d })); o.value = d; sp.appendChild(o); }); sp.value = String(periodo);
     $("b-rodar").textContent = t("rodar");
     document.querySelectorAll(".abas button").forEach(function (b) { b.textContent = t("aba_" + b.getAttribute("data-aba")); b.setAttribute("aria-pressed", String(aba === b.getAttribute("data-aba"))); });
     $("b-limpar").textContent = t("limpar"); $("b-salvar").textContent = t("salvar"); $("b-salvar-rodar").textContent = t("salvar_rodar"); $("painel-dica").textContent = t("dica");
-    $("b-config-txt").textContent = t("config"); $("c-titulo").textContent = t("c_titulo"); $("c-l-escritorio").textContent = t("c_escritorio"); $("c-l-nome").textContent = t("c_nome"); $("c-l-papel").textContent = t("c_papel"); $("c-l-pasta").textContent = t("c_pasta"); $("c-l-outra").textContent = t("c_outra");
+    $("b-config-txt").textContent = t("config"); $("c-titulo").textContent = t("c_titulo"); $("c-l-escritorio").textContent = t("c_escritorio"); $("c-l-codigo").textContent = t("cod"); $("c-l-email").textContent = t("seu_email"); $("c-l-nome").textContent = t("c_nome"); $("c-l-papel").textContent = t("c_papel"); $("c-l-pasta").textContent = t("c_pasta"); $("c-l-outra").textContent = t("c_outra");
     $("c-testar").textContent = t("c_testar"); $("c-salvar").textContent = t("c_salvar"); $("c-atualizar").textContent = t("c_atualizar"); $("c-dica").textContent = t("c_dica");
     painel(); infoConfig(); bannerControle();
     if (APP && !vigia) mostrarEstado(APP.estado);
@@ -702,8 +757,11 @@ window.LEXSUITE_RADAR = null;
   function cabecalho() {
     var itens = D.itens || [], min = minimo(), comValor = itens.filter(function (i) { return valorDe(i).v >= min; }).length, semValor = itens.filter(function (i) { return valorDe(i).v == null; }).length;
     var tribs = D.tribunais || [], tx = tribs.length <= 3 ? t("t1", { a: tribs.join(", ") }) : tribs.length <= 6 ? t("tn", { k: tribs.length, a: tribs.join(", ") }) : t("tk", { k: tribs.length });
-    var m = $("marca"); m.textContent = ""; if (D.escritorio) { m.appendChild(document.createTextNode(D.escritorio + "  ·  ")); }
-    m.appendChild(document.createTextNode("LexSuite")); m.appendChild(el("b", null, "ONE")); m.appendChild(document.createTextNode(" · JUDIC")); m.appendChild(el("b", null, "IA")); m.appendChild(document.createTextNode("L"));
+    desenharMarca($("marca")); $("escritorio-nome").textContent = D.escritorio || (APP && APP.config.escritorio) || "";
+    var temPlanilha = !!(APP && APP.config.planilha);
+    $("b-planilha").hidden = MODO !== "app"; $("b-planilha").textContent = t("planilha_abrir"); $("b-planilha").title = temPlanilha ? APP.config.planilha : t("planilha_falta");
+    $("b-pasta").hidden = MODO !== "app" || !temPlanilha; $("b-pasta").textContent = t("pasta_abrir");
+    $("link-manual-topo").hidden = MODO !== "app"; $("link-manual-topo").textContent = t("link_manual");
     $("h1").textContent = t("h1");
     var r = $("resumo"); r.textContent = ""; var b = el("b", null, num(itens.length)); r.appendChild(b);
     var dias = Number(D.dias || periodo || 1);
@@ -717,17 +775,31 @@ window.LEXSUITE_RADAR = null;
     Object.keys(cont).sort(function (a, b) { return Number(a.replace(/\D/g, "")) - Number(b.replace(/\D/g, "")); }).forEach(function (s) { var o = el("option", null, s + " (" + num(cont[s]) + ")"); o.value = s; ft.appendChild(o); });
     ft.value = cont[F.trib] ? F.trib : ""; if (!cont[F.trib]) F.trib = "";
     var so = $("ordem"); so.textContent = ""; [["valor", t("ord_valor")], ["hora", t("ord_hora")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; so.appendChild(op); }); so.value = ordem;
-    $("exportar").textContent = t("exportar");
-    $("rodape1").textContent = t("rodape1", { q: D.gerado_em ? dataHora(D.gerado_em) : "—" }); $("rodape2").textContent = t("rodape2", { v: D.versao || "?" });
-    $("rodape3").hidden = MODO !== "app"; $("link-manual").textContent = t("link_manual");
+    $("exportar").textContent = t("exportar"); $("exportar").title = t("csv_dica");
+    $("rodape1").textContent = t("rodape1", { q: D.gerado_em ? dataHora(D.gerado_em) : "—" }); $("rodape2").textContent = t("rodape2", { v: D.versao || "?", m: marcaNome() });
+    $("rodape3").hidden = true;
     $("b-pt").setAttribute("aria-pressed", String(lang === "pt")); $("b-en").setAttribute("aria-pressed", String(lang === "en"));
-    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en"; document.title = "JUDICIAL · " + t("marca");
+    document.documentElement.lang = lang === "pt" ? "pt-BR" : "en"; document.title = marcaNome() + " · LexSuiteONE";
   }
   function exportar() {
     var cab = ["Tribunal", "Vara", "Processo", "Classe", "Rito", "No Diário de", "Distribuída em", "Empresa", "Outras empresas", "CNPJ", "CNAE", "Atividade", "Porte", "Capital social", "Simples", "Cidade", "UF", "Telefone", "E-mail", "Sócios", "Jurídico próprio provável", "Valor da causa", "Origem do valor", "Status", "Excluída (motivo)"];
     var linhas = visiveis().map(function (i) { var e = i.empresa || {}, v = valorDe(i); return [i.tribunal, i.vara, i.processo, i.classe, i.rito, i.diario_em || i.distribuida_em, i.ajuizada_em, e.razao_social || (i.empresas || [])[0], (i.empresas || []).slice(1).join(" | "), cnpjFmt(e.cnpj), cnaeFmt(e.cnae), e.atividade, e.porte_legivel || e.porte, e.capital_social, e.simples == null ? "" : (e.simples ? "sim" : "não"), e.municipio, e.uf, [e.telefone, e.telefone2].filter(Boolean).join(" | "), e.email, (e.socios || []).map(function (s) { return s.nome; }).join(" | "), i.gigante ? "sim" : "", v.v == null ? "" : v.v, v.fonte, t("st_" + statusDe(i)), i.excluida || ""]; });
     var csv = "﻿" + [cab].concat(linhas).map(function (l) { return l.map(function (c) { c = c == null ? "" : String(c); if (/^[=+\-@\t\r]/.test(c)) c = "'" + c; return /[;"\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(";"); }).join("\r\n");
     var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); a.download = "radar-" + (D.dia || "dia") + ".csv"; document.body.appendChild(a); a.click(); a.remove();
+  }
+  function marcaInfo() { return (APP && APP.marca) || D.marca || { nome: "RADAR JUDICIAL", curto: "RADAR", destaque: "IA" }; }
+  function marcaNome() { return marcaInfo().nome; }
+  function marcaCurto() { return marcaInfo().curto || marcaNome().split(" ")[0]; }
+  function desenharMarca(alvo) {
+    var m = marcaInfo(), partes = m.nome.split(" "), forte = partes.pop(), s = el("strong");
+    alvo.textContent = ""; if (partes.length) { alvo.appendChild(el("span", "leve", partes.join(" "))); alvo.appendChild(document.createTextNode(" ")); }
+    var i = m.destaque ? forte.indexOf(m.destaque) : -1;
+    if (i >= 0) { s.appendChild(document.createTextNode(forte.slice(0, i))); s.appendChild(el("b", null, m.destaque)); s.appendChild(document.createTextNode(forte.slice(i + m.destaque.length))); }
+    else s.textContent = forte;
+    alvo.appendChild(s);
+  }
+  function abrirPlanilha(oque) {
+    post("/abrir", { o_que: oque }).then(function (r) { if (!r.ok) mostrarEstado({ erro: r.motivo || t("planilha_falta") }); }).catch(function () { $("estado").textContent = t("falha"); });
   }
   function tudo() { cabecalho(); barraApp(); desenhar(); }
 
@@ -738,6 +810,8 @@ window.LEXSUITE_RADAR = null;
   $("ordem").addEventListener("change", function (e) { ordem = e.target.value; limite = 150; desenhar(); });
   $("b-mais").addEventListener("click", function () { limite += 150; desenhar(); });
   $("exportar").addEventListener("click", exportar);
+  $("b-planilha").addEventListener("click", function () { abrirPlanilha("planilha"); });
+  $("b-pasta").addEventListener("click", function () { abrirPlanilha("pasta"); });
   document.querySelectorAll(".pilula button").forEach(function (b) { b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("lexsuite:idioma", lang); } catch (e) {} tudo(); }); });
   $("b-trib").addEventListener("click", function () { var p = $("painel"); p.hidden = !p.hidden; this.setAttribute("aria-expanded", String(!p.hidden)); if (!p.hidden) { $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); painel(); } });
   document.querySelectorAll(".abas button").forEach(function (b) { b.addEventListener("click", function () { aba = b.getAttribute("data-aba"); barraApp(); }); });
@@ -747,7 +821,7 @@ window.LEXSUITE_RADAR = null;
   $("w-voltar").addEventListener("click", function () { if (wPasso > 1) { wPasso -= 1; desenharWizard(); } });
   $("w-pasta").addEventListener("change", function () { $("w-outra-wrap").hidden = this.value !== "__outra"; $("w-teste-txt").textContent = ""; });
   $("w-testar").addEventListener("click", function () { var p = wPasta(); if (!p) { $("w-teste-txt").textContent = t("c_nenhuma"); return; } post("/testar-pasta", { pasta: p }).then(function (r) { $("w-teste-txt").textContent = r.mensagem || ""; }).catch(function () { $("w-teste-txt").textContent = t("falha"); }); });
-  $("w-nome").addEventListener("keydown", function (ev) { if (ev.key === "Enter") wizardAvancar(); });
+  ["w-codigo", "w-escritorio", "w-cnpj", "w-nome", "w-email"].forEach(function (id) { $(id).addEventListener("keydown", function (ev) { if (ev.key === "Enter") wizardAvancar(); }); });
   $("c-pasta").addEventListener("change", function () { $("c-outra-wrap").hidden = this.value !== "__outra"; $("c-teste-txt").textContent = ""; });
   $("c-testar").addEventListener("click", function () { var p = pastaEscolhida(); if (!p) { $("c-teste-txt").textContent = t("c_nenhuma"); return; } post("/testar-pasta", { pasta: p }).then(function (r) { $("c-teste-txt").textContent = r.mensagem || ""; }).catch(function () { $("c-teste-txt").textContent = t("falha"); }); });
   $("c-salvar").addEventListener("click", salvarConfig);

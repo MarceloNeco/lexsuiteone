@@ -290,19 +290,25 @@ class RadarExecutar(unittest.TestCase):
     def test_rodada_completa_sem_internet(self):
         import tempfile
         import shutil
-        from lexsuite import radar, monitor, cnpj
+        from lexsuite import radar, monitor, cnpj, conta
         pasta = tempfile.mkdtemp()
         shutil.copy(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "radar_modelo.html"), pasta)
         banco = bd.Banco(os.path.join(pasta, "t.db"))
         pubs = [djen.normalizar(dict(ITEM_DJEN, tipoComunicacao="Lista de distribuição"))]
         original = (monitor.coletar_caderno, cnpj.consultar)
+        verificar_original = conta.verificar
+        conta.verificar = lambda cfg, versao, hoje=None, pedir=None: verificar_original(cfg, versao, hoje, pedir=lambda u, c, **k: {"ok": True})
         monitor.coletar_caderno = lambda tribunais, dias, banco, diag, aviso, lidos=None, **k: (lidos.append(("TRT2", "2026-10-23", "1")), aviso("  Caderno TRT2: 1 publicações"), pubs)[2]
         cnpj.consultar = lambda c, banco=None, validade_dias=30: {"cnpj": c, "razao_social": "TRANSPORTADORA EXEMPLO LTDA", "porte": "ME", "capital_social": 1000}
         try:
             recados = []
-            sit = radar.executar({"radar": {"tribunais": ["TRT2"]}}, banco, recados.append, pasta, agora=dt.datetime(2026, 10, 24, 19, 0))
+            sit = radar.executar({"radar": {"tribunais": ["TRT2"]}, "conta": {"codigo": "LEX-7K4M-2PQ9"}}, banco, recados.append, pasta,
+                                 agora=dt.datetime(2026, 10, 24, 19, 0))
+            with self.assertRaises(radar.RoboDesligado):  # sem código de cliente, não lê
+                radar.executar({"radar": {"tribunais": ["TRT2"]}}, banco, recados.append, pasta, agora=dt.datetime(2026, 10, 24, 19, 0))
         finally:
             monitor.coletar_caderno, cnpj.consultar = original
+            conta.verificar = verificar_original
         self.assertEqual((sit["lidas"], sit["novas"], sit["com_cnpj"]), (1, 1, 1))
         self.assertTrue(os.path.exists(os.path.join(pasta, "saida", "radar", "radar.html")))
         self.assertTrue(os.path.exists(os.path.join(pasta, "saida", "radar", "radar.csv")))
@@ -346,7 +352,7 @@ class App(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertIn(b"window.LEXSUITE_RADAR = null;", html)
         status, d = self.pedir("GET", "/dados?dias=3")
-        self.assertEqual((status, d["dias"], len(d["app"]["tribunais"]), len(d["app"]["config"]["tribunais"])), (200, 3, 59, 24))
+        self.assertEqual((status, d["dias"], len(d["app"]["tribunais"]), len(d["app"]["config"]["tribunais"])), (200, 3, 24, 24))
         # sem o cabeçalho da própria página, nenhum POST passa
         status, _ = self.pedir("POST", "/config", {"tribunais": ["TRT1"]})
         self.assertEqual(status, 403)

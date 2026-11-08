@@ -407,7 +407,8 @@ def cmd_radar(a):
     banco = bd.Banco(os.path.join(AQUI, "lexsuite.db"))
     pasta_diag = os.path.join(AQUI, "diagnostico") if a.diagnostico else None
     try:
-        radar.executar(cfg, banco, print, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO)
+        radar.executar(cfg, banco, print, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
+                       caminho_config=a.config)
     except (rede.BloqueadoForaDoBrasil, radar.RoboDesligado) as e:
         raise SystemExit("  " + str(e))
 

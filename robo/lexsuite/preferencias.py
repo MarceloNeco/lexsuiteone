@@ -142,7 +142,7 @@ def bloqueio(prefs, versao_atual, hoje=None):
     c = prefs.get("controle") or {}
     msg = (" " + c["mensagem"]) if c.get("mensagem") else ""
     if not c.get("ativo", True):
-        return ("O robô está desligado pelo suporte (aba Controle)." + msg).strip()
+        return ("O programa está pausado pela SolverONE (aba Controle)." + msg).strip()
     if c.get("validade"):
         try:
             if (hoje or dt.date.today()) > dt.date.fromisoformat(c["validade"][:10]):

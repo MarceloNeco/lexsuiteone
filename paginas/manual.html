@@ -176,11 +176,13 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   <p>As mensagens abaixo aparecem na tela exatamente assim.</p>
   <div class="tabela"><table>
     <tr><th>Mensagem ou sintoma</th><th>O que significa</th><th>O que fazer</th></tr>
+    <tr><td>"Este código de cliente não existe" ou "Falta o código de cliente"</td><td>o código não foi digitado ou está diferente do e-mail de boas-vindas</td><td>em Configuração, digite o código exatamente como no e-mail (LEX-XXXX-XXXX)</td></tr>
+    <tr><td>"Este e-mail já está cadastrado em outro escritório"</td><td>cada e-mail pertence a um escritório só</td><td>use o e-mail do escritório ou escreva para judicial@solverone.com.br</td></tr>
     <tr><td>"O Diário só responde a computadores no Brasil"</td><td>o computador está saindo para a internet por fora do país (VPN, rede da empresa)</td><td>desligue a VPN ou use a rede normal e tente de novo</td></tr>
-    <tr><td>"O robô está desligado pelo suporte" ou "A validade terminou"</td><td>a SolverONE pausou o {{marca.curto}}</td><td>escreva para judicial@solverone.com.br</td></tr>
+    <tr><td>"O programa está pausado pela SolverONE", "A licença deste escritório está desativada" ou "A validade terminou"</td><td>a SolverONE pausou o {{marca.curto}}</td><td>escreva para judicial@solverone.com.br</td></tr>
     <tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela LexSuiteONE e abra de novo</td></tr>
     <tr><td>"Planilha em uso ou ilegível"</td><td>alguém estava com a planilha aberta e travada, ou o Drive ainda sincronizava</td><td>nada; o {{marca.curto}} grava na próxima leitura</td></tr>
-    <tr><td>"Não consegui falar com o robô"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>abra de novo pelo atalho {{marca.nome}}</td></tr>
+    <tr><td>"Não consegui falar com o programa"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>abra de novo pelo atalho {{marca.nome}}</td></tr>
     <tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda</td><td>tente mais tarde; se continuar, escreva para judicial@solverone.com.br</td></tr>
     <tr><td>"Falta o Python"</td><td>falta uma peça que o {{marca.curto}} baixa na instalação</td><td>baixe o instalador em judicial.solverone.com.br e rode de novo; nada do que já foi lido se perde</td></tr>
   </table></div>
@@ -193,6 +195,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <li><b>O que sai do computador:</b> pedidos de leitura ao Diário (do CNJ) e ao cadastro público da Receita, sempre por conexão segura; e a planilha, que vai para o Google Drive do próprio escritório e só é vista pela SolverONE se o escritório der acesso.</li>
     <li><b>Nenhuma senha.</b> O {{marca.curto}} não pede, não guarda e não usa senha, certificado digital ou chave de nenhum sistema. Captcha nunca é contornado.</li>
     <li><b>Pessoas físicas não aparecem.</b> Os contatos de empresa e os nomes de sócios e administradores vêm do cadastro público da Receita; a decisão de usar esses dados é do escritório e do seu compliance, dentro da LGPD.</li>
+    <li><b>Licença e cadastro.</b> O código de cliente é conferido com a SolverONE ao abrir a tela e antes de cada leitura: vão só o código, a versão e uma identificação aleatória do computador. No primeiro uso, o nome e o e-mail de quem usa e o CNPJ do escritório ficam registrados na licença, para a SolverONE falar sobre o serviço. Se a SolverONE ficar fora do ar, o {{marca.curto}} segue lendo por até 15 dias.</li>
     <li><b>Guarda por tempo limitado.</b> O {{marca.curto}} apaga sozinho o que tem mais de 365 dias.</li>
     <li><b>Atualizações assinadas.</b> Uma versão nova só é instalada se a assinatura digital conferir. O computador do escritório nunca recebe comando de fora: a SolverONE só pode pausar, avisar ou publicar versão, pela planilha.</li>
     <li><b>Limite honesto.</b> A pausa pela SolverONE é uma cortesia de serviço, não uma trava: quem controla o computador controla o {{marca.curto}}.</li>
