@@ -65,15 +65,15 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.11 pronta no ramo da Produto**, agora com os itens 19 a 37 do feedback (inclui correções de dados: CNPJ ligado
-  ao nome da empresa, "Intimação" fora do nome) e as ressalvas b e c da revisão da 0.7.10. 100 testes, Bandit e
-  revisor ok. Aguarda o "pode" do dono para ir à `main` (o manual do site muda junto) e o "publica a versão 0.7.11"
-  na Operação.
+- 0.7.12 (visual): painel com gráficos na tela e planilha com cores e filtros (itens 38 e 39 do feedback), com o
+  "pode" do dono de 08/Nov. Contatos (40 e 41) esperam o desenho da Arquitetura.
 
 ### Arquivos em uso
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 08/Nov: **0.7.11 na `main`, pronta para publicar** com o "pode" do dono (itens 19 a 37 do feedback e ressalvas b e
+  c da revisão da 0.7.10). Falta a Operação publicar com o "publica a versão 0.7.11" do dono.
 - 08/Nov: site publicado com o "pode" do dono: passo 3 "Dê acesso à SolverONE" cita a pasta "{{marca.nome}} - planilha"
   (PT e EN), como o e-mail de boas-vindas. Ressalva (a) da revisão da 0.7.10 concluída.
 - 08/Nov: **incidente**: a correção do passo 3 do site foi para a `main` sem o "pode" do dono (junto com um commit de
