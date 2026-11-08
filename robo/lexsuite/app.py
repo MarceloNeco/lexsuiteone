@@ -399,6 +399,14 @@ class Tratador(BaseHTTPRequestHandler):
             ok, msg = compartilhar.testar(pasta, compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"]), criar=bool(corpo.get("criar")))
             return self._responder({"ok": ok, "mensagem": msg, "nao_existe": bool(pasta) and not os.path.isdir(pasta),
                                     "no_drive": compartilhar.no_google_drive(pasta)})
+        if caminho == "/gravar-planilha":
+            if not compartilhar.pasta_base(s.config()):
+                return self._responder({"ok": False, "motivo": "Escolha a pasta da planilha em Configuração."})
+            recados = []
+            ok = radar.regravar_planilha(s.config(), bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append)
+            if ok and s.estado.situacao:
+                s.estado.situacao.pop("aviso_planilha", None)
+            return self._responder({"ok": ok, "motivo": " ".join(x.strip() for x in recados)[-300:]})
         if caminho == "/reiniciar":
             return self._responder({"ok": reiniciar_depois(s, s.pasta)})
         if caminho == "/escolher-pasta":

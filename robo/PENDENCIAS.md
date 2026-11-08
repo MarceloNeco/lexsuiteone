@@ -168,7 +168,11 @@ Itens 19 a 26 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`: leitura conta os d
 recesso); faixa de versão nova ao abrir, atualizar com um clique e reinício sozinho; uma tela só por computador (o
 atalho traz a aberta); código só para ler em Configuração; Configuração na engrenagem do alto; "Ler o Diário agora";
 aviso ao abrir a planilha; barra de progresso da leitura e atalhos no fim; versão no alto e na dica do atalho; textos velhos do pacote (ressalvas b e c da revisão
-da 0.7.10).
+da 0.7.10). Também (itens 29 a 37): CNPJ só vale para a ficha se o nome na Receita bater com o da empresa
+processada ("CNPJ a conferir" quando não bate, inclusive no que já estava guardado); "Intimação" e afins saem do fim do
+nome; MEI aparece (decisão do dono); tela larga com duas colunas, lista de 10 em 10, filtros e ordens novas, data
+"SEG, 06 NOV 2026" e cartões novos; aviso e "Gravar a planilha agora" quando o Excel trava a planilha; manual com o
+Google Planilhas.
 
 ## 0.7.10 (08/Nov, feedback do teste de instalação do dono; publicada)
 

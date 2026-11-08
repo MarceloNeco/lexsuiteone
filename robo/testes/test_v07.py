@@ -500,3 +500,42 @@ class Progresso0711(unittest.TestCase):
         self.assertEqual(e.como_dict()["progresso"], 77)
         e.terminar({"pt": "ok"})
         self.assertEqual(e.como_dict()["progresso"], 100)
+
+
+class Dados0711(unittest.TestCase):
+    def test_intimacao_e_cnpj_de_outra_parte(self):
+        from lexsuite import classificar as c
+        self.assertEqual(c.limpar_nome("Polyexcel Industria e Comercio de Compostos Polimericos Ltda Intimação"), "Polyexcel Industria e Comercio de Compostos Polimericos Ltda")
+        self.assertEqual(c.limpar_nome("Li Importes Ltda Notificação"), "Li Importes Ltda")
+        self.assertTrue(c.nomes_batem("AUDITESTE CONSULTORIA LTDA", "Auditeste Consultoria Ltda"))
+        self.assertTrue(c.nomes_batem("NPE NIPLAN SERVICE LTDA", "Npe Niplan Service Ltda - ME"))
+        self.assertFalse(c.nomes_batem("RODRIGO APARECIDO DOS REIS 123", "Auditeste Consultoria Ltda"))
+        self.assertFalse(c.nomes_batem("ALFA COMERCIO E SERVICOS LTDA", "Beta Comercio e Servicos Ltda"))
+        for x, y in (("Alfa Auto Pecas Ltda", "Beta Auto Pecas Ltda"), ("Mercadinho Sao Jose", "Padaria Sao Jose"),
+                     ("Silva Transportes Ltda", "Silva Engenharia Ltda"), ("Restaurante Sabor", "Sabor Brasil Alimentos"),
+                     ("Unimed Paulistana Sociedade Cooperativa", "Unimed Rio"), ("SOL", "CONSOLE LTDA")):
+            self.assertFalse(c.nomes_batem(x, y), (x, y))
+        self.assertTrue(c.nomes_batem("X COMERCIO DE ALIMENTOS LTDA", "X Alimentos Ltda"))
+        lead = {"processo": "1", "empresas": ["Auditeste Consultoria Ltda Intimação"], "cnpjs": ["11222333000181"],
+                "empresa_receita": {"cnpj": "11222333000181", "razao_social": "RODRIGO APARECIDO DOS REIS 12345678900"}}
+        it = radar.item_de_lead(lead, {})
+        self.assertEqual((it["empresa"]["cnpj"], it["cnpj_a_conferir"], it["empresas"]), ("", "11222333000181", ["Auditeste Consultoria Ltda"]))
+        lead["empresa_receita"]["razao_social"] = "AUDITESTE CONSULTORIA LTDA"
+        it = radar.item_de_lead(lead, {})
+        self.assertEqual((it["empresa"]["cnpj"], it["cnpj_a_conferir"]), ("11222333000181", ""))
+
+
+class PlanilhaAberta0711(unittest.TestCase):
+    def test_aviso_quando_o_excel_trava(self):
+        from lexsuite import compartilhar
+        banco = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        recados = []
+        orig = compartilhar.gravar_radar
+        def trava(*a, **k):
+            raise PermissionError("arquivo em uso")
+        compartilhar.gravar_radar = trava
+        try:
+            self.assertFalse(radar.gravar_planilha({}, {"itens": []}, banco, "0.7.11", tempfile.mkdtemp(), recados.append))
+        finally:
+            compartilhar.gravar_radar = orig
+        self.assertIn("aberta no Excel", " ".join(recados))

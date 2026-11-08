@@ -30,7 +30,7 @@ _CNJ = re.compile(r"\b(\d{7})-?(\d{2})\.?(\d{4})\.?(\d)\.?(\d{2})\.?(\d{4})\b")
 _ROT_PASSIVO = r"(?:RECLAMAD[OA]S?|R[EÉ]US?|R[EÉ]|REQUERID[OA]S?|EXECUTAD[OA]S?|IMPETRAD[OA]|RECORRID[OA]S?)"
 _ROT_ATIVO = r"(?:RECLAMANTES?|AUTOR(?:A|ES|AS)?|REQUERENTES?|EXEQUENTES?|IMPETRANTES?|RECORRENTES?)"
 _FIM_NOME = (r"(?=\s+(?:" + _ROT_PASSIVO + r"|" + _ROT_ATIVO + r"|ADVOGAD|PERIT|TERCEIR|CUSTOS|"
-             r"INTIMA|NOTIFICA|CITA|DESTINAT|PODER JUDICI|PROCESSO|FICA|FICAM|Fica|Ficam|DESPACHO|"
+             r"INTIMA|NOTIFICA|CITA|Intima[cç][aã]o|Notifica[cç][aã]o|Cita[cç][aã]o|Edital|DESTINAT|PODER JUDICI|PROCESSO|FICA|FICAM|Fica|Ficam|DESPACHO|"
              r"DECIS|SENTEN|EDITAL|AUDI[EÊ]NCIA|ATOrd|ATSum)\b|\s*[\n;]|$)")
 _PASSIVO = re.compile(_ROT_PASSIVO + r"\s*:\s*(.{3,160}?)" + _FIM_NOME)
 
@@ -156,6 +156,33 @@ def nota(lead, rito_ordinario_desde=40):
 
 
 _SUFIXOS = re.compile(r"\b(LTDA|S\.?/?A\.?|EIRELI|EPP|ME|CIA|COMPANHIA|SOCIEDADE ANONIMA)\b\.?", re.I)
+
+
+# Palavras de cabeçalho do Diário que às vezes grudam no fim do nome da parte (0.7.11).
+_RABO = re.compile(r"(?:\s+(?:intima[cç][aã]o|notifica[cç][aã]o|cita[cç][aã]o|edital|despacho|senten[cç]a|decis[aã]o|"
+                   r"ac[oó]rd[aã]o|ata de audi[eê]ncia|pauta))+\s*$", re.I)
+
+
+def limpar_nome(nome):
+    """Tira do fim do nome as palavras de cabeçalho do Diário ("... Ltda Intimação" vira "... Ltda")."""
+    return _RABO.sub("", re.sub(r"\s+", " ", nome or "").strip()).strip(" -–,:;")
+
+
+_LIGACOES = {"DE", "DA", "DO", "DAS", "DOS", "E", "EM", "A", "O", "S"}
+
+
+def nomes_batem(a, b):
+    """True se dois nomes de empresa parecem a mesma (0.7.11): um está contido no outro palavra por palavra, ou os dois
+    começam pela mesma palavra e dividem a maior parte das palavras. Liga o CNPJ achado no Diário à empresa processada;
+    na dúvida, não liga (a ficha fica "CNPJ a conferir")."""
+    ta = [x for x in chave_nome(a).split() if x not in _LIGACOES]
+    tb = [x for x in chave_nome(b).split() if x not in _LIGACOES]
+    if not ta or not tb:
+        return False
+    sa, sb = set(ta), set(tb)
+    if sa <= sb or sb <= sa:
+        return True
+    return ta[0] == tb[0] and len(sa & sb) / max(len(sa), len(sb)) >= 0.6
 
 
 def chave_nome(nome):

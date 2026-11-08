@@ -168,7 +168,7 @@ def leads(publicacoes, vara=None, ano_minimo=None, ja_vistos=()):
         for p in pubs:
             candidatos = [d["nome"] for d in p["destinatarios"] if d["polo"] == "P"]
             candidatos += cl.reclamadas_no_texto(p["texto"])
-            for nome in candidatos:
+            for nome in (cl.limpar_nome(x) for x in candidatos):
                 # Só empresa entra; pessoa física é descartada aqui mesmo.
                 if cl.eh_empresa(nome) and nome.upper() not in (e.upper() for e in empresas):
                     empresas.append(nome)

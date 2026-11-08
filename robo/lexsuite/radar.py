@@ -55,9 +55,16 @@ def porte_legivel(porte):
 def item_de_lead(lead, cfg_radar):
     """Uma linha da lista do dia a partir de um lead do DJEN (só o que pode sair; nenhuma pessoa física do processo)."""
     emp = lead.get("empresa_receita") or {}
-    nomes = lead.get("empresas") or []
+    nomes = [cl.limpar_nome(x) for x in (lead.get("empresas") or [])]  # 0.7.11: sem "Intimação" no fim (vale para o já guardado)
+    a_conferir = lead.get("cnpj_a_conferir") or ""
+    nomes_rf = [x for x in (emp.get("razao_social") or "", emp.get("nome_fantasia") or "") if x]
+    if emp and nomes and nomes_rf and not any(cl.nomes_batem(x, e) for x in nomes_rf for e in nomes):
+        a_conferir, emp = emp.get("cnpj") or a_conferir, {}  # ficha de outra parte (guardada antes da 0.7.11): não mostra
+    if not emp and not a_conferir:
+        a_conferir = (lead.get("cnpjs") or [""])[0]
     teto = float(cfg_radar.get("teto_capital_gigante") or 0)
     return {
+        "cnpj_a_conferir": a_conferir,
         "id": lead.get("processo"),
         "hora": (lead.get("visto_em") or "")[11:16],
         "visto_em": lead.get("visto_em") or "",
@@ -71,7 +78,7 @@ def item_de_lead(lead, cfg_radar):
         "ajuizada_em": lead.get("ajuizada_em") or "",
         "empresas": nomes,
         "empresa": {
-            "cnpj": emp.get("cnpj") or (lead.get("cnpjs") or [""])[0],
+            "cnpj": emp.get("cnpj") or "",
             "razao_social": emp.get("razao_social") or (nomes[0] if nomes else ""),
             "nome_fantasia": emp.get("nome_fantasia") or "",
             "porte": emp.get("porte") or "", "porte_legivel": porte_legivel(emp.get("porte")),
@@ -181,12 +188,25 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         for n in novos:
             n["rodada"], n["visto_em"] = rodada_id, agora.isoformat(timespec="seconds")
             if consultar and n.get("cnpjs"):
-                dados = receita.consultar(n["cnpjs"][0], banco)
-                feitas += 1
+                # 0.7.11: o CNPJ só vale para a ficha se o nome na Receita bater com o da empresa processada (o texto
+                # do Diário pode trazer o CNPJ de outra parte). Sem bater, fica "CNPJ a conferir".
+                dados, respondeu = None, False
+                for c in n["cnpjs"][:3]:
+                    d = receita.consultar(c, banco)
+                    feitas += 1
+                    if not d:
+                        continue
+                    respondeu = True
+                    nomes_rf = [d.get("razao_social") or "", d.get("nome_fantasia") or ""]
+                    if any(cl.nomes_batem(x, e) for x in nomes_rf if x for e in n.get("empresas") or []):
+                        dados = d
+                        break
+                    n.setdefault("cnpj_a_conferir", c)
                 if dados:
                     n["empresa_receita"] = dados
-                else:
-                    falhas += 1
+                    n.pop("cnpj_a_conferir", None)
+                elif not respondeu:
+                    falhas += 1  # falha é a Receita não responder; nome que não bate não é falha de consulta
                 if feitas % 25 == 0:
                     aviso(f"  Receita: {feitas} de {com_cnpj}")
             banco.guardar_lead(n, agora.date().isoformat())
@@ -214,15 +234,33 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     if pasta_base:
         pagina = gravar_saida(cfg, banco, os.path.join(pasta_base, "saida", "radar"), agora, situacao, aviso, versao, prefs)
         if base_compartilhada and (cfg.get("compartilhar") or {}).get("planilha", True):
-            try:
-                from . import atualizar, assinatura
-                chave = atualizar.chave_publica(pasta_base)
-                compartilhar.gravar_radar(cfg, pagina, banco, versao, COLUNAS_RADAR, linha_csv,
-                                          assinatura.impressao(chave) if chave else "", pasta_base, aviso)
-            except Exception as e:  # a pasta pode estar fora do ar (Drive pausado); a rodada em si deu certo
-                aviso(f"  Não consegui gravar a planilha compartilhada ({e.__class__.__name__}: {e}).")
-                banco.registrar("saude", {"fonte": "Pasta compartilhada", "situacao": "erro", "detalhe": f"{e.__class__.__name__}: {e}"[:200]})
+            if not gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso):
+                situacao["aviso_planilha"] = True
     return situacao
+
+
+def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
+    """Grava a planilha. Se ela estiver aberta no Excel (o Windows trava o arquivo), avisa com clareza: nada se perde,
+    a lista está no computador e a planilha é regravada depois. Devolve True se gravou."""
+    try:
+        from . import atualizar, assinatura
+        chave = atualizar.chave_publica(pasta_base)
+        compartilhar.gravar_radar(cfg, pagina, banco, versao, COLUNAS_RADAR, linha_csv,
+                                  assinatura.impressao(chave) if chave else "", pasta_base, aviso)
+        return True
+    except PermissionError:
+        aviso("  A planilha está aberta no Excel (ou em outro programa): feche-a para ela ser atualizada. A lista está salva.")
+        banco.registrar("saude", {"fonte": "Pasta compartilhada", "situacao": "atenção", "detalhe": "planilha aberta em outro programa"})
+    except Exception as e:  # a pasta pode estar fora do ar (Drive pausado); a rodada em si deu certo
+        aviso(f"  Não consegui gravar a planilha compartilhada ({e.__class__.__name__}: {e}).")
+        banco.registrar("saude", {"fonte": "Pasta compartilhada", "situacao": "erro", "detalhe": f"{e.__class__.__name__}: {e}"[:200]})
+    return False
+
+
+def regravar_planilha(cfg, banco, pasta_base, versao, aviso=print):
+    """Botão "Gravar a planilha agora" (depois de fechar o Excel): grava a lista atual sem ler o Diário de novo."""
+    pagina = montar_radar(cfg, banco, None, False, None)
+    return gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso)
 
 
 def gravar_saida(cfg, banco, pasta, agora, situacao, aviso=print, versao="", prefs=None):
