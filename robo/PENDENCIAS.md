@@ -64,6 +64,15 @@ O que falta para a ficha de canais:
    mas o telefone e o e-mail do cadastro deles costumam ser da própria pessoa. Tratar como pessoa física (fora da
    lista) ou mostrar sem os contatos?
 
+## Site e nome (feedback do dono, 08/Nov)
+
+- Nome em teste: **Radar JUDICIAL** (o "IA" segue em latão), sob a marca LexSuiteONE. Aplicado só na página inicial
+  do site; manual, página 404, e-mail de boas-vindas, tela do robô e pacote continuam "JUDICIAL" até o dono decidir.
+- No que o cliente lê, o programa é "o Radar", não "o robô". Pastas e arquivos internos (`robo/`) não mudam.
+- Horário das rodadas ajustável pela tela (hoje fixo em 19:40 e 07:10, em `lexsuite/agendar.py`). Mexe no pacote:
+  precisa do sim do dono.
+- Imagem de fundo da capa: o dono vai gerar no Higgsfield; a página já aceita uma imagem por trás do radar.
+
 ## Esperando o dono (Marcelo)
 
 - Rodar `DIAGNOSTICO.bat` no computador no Brasil e mandar `diagnostico\radar-diagnostico.txt` (arrastar para o Drive).
