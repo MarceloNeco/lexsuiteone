@@ -5,10 +5,12 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 
 ## O que já existe e funciona
 
-- Robô v0.7.9 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 92 testes verdes,
+- Robô v0.7.10 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 95 testes verdes,
   pacote em `releases/` e `docs/downloads/`. Tela local em 127.0.0.1, planilha `LexSuiteONE.xlsx` no Drive do escritório,
   atualização assinada (chave só na nuvem), manual personalizado, revisão de segurança (risco baixo). Na 0.7.9: horários
-  de leitura escolhidos pelo escritório e leitura perdida compensada.
+  de leitura escolhidos pelo escritório e leitura perdida compensada. Na 0.7.10 (publicada em 08/Nov, 16:39 UTC): domingo e
+  segunda leem a sexta, assistente novo de configuração (planilha, função, tribunais, compartilhamento), tela em janela
+  própria, nomes inteiros em Tribunais e registro ao vivo na janela preta.
 - Site https://judicial.solverone.com.br **no ar** (GitHub Pages, pasta `docs/`, HTTPS forçado). É gerado de `paginas/`
   por `python ferramentas/marca.py`: nunca edite `docs/index.html` nem `docs/404.html` à mão. Tem página inicial PT/EN
   com o carrossel "Como funciona" (quatro passos, passa com o dedo no celular; falta o dono confirmar num iPhone de
@@ -53,7 +55,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 - Repositório segue no GitHub pessoal até depois da visita; migração para a organização `solverone` sem impacto para o
   cliente (tudo que ele vê aponta para `judicial.solverone.com.br`). Roteiro em `robo/PENDENCIAS.md`.
 - Instalação no cliente (KR Law) na quinta-feira 12/Nov, na casa do Leandro, pelo dono. O pacote de quinta é a última
-  versão publicada (0.7.9 em 08/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
+  versão publicada (0.7.10 em 08/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
   em `docs/VISITA-KR-LAW.md`: rodam sozinhos, no Sonnet, na conta do escritório; param em login, token, certificado ou
   captcha e escrevem BLOQUEIO; o relatório final volta à sessão de Produto.
 - Publicação de versão (08/Nov): só a Operação publica, e só depois do dono escrever "publica a versão X" na conversa da
@@ -76,11 +78,11 @@ Zona `solverone.com.br` ativa no Cloudflare, DNSSEC ligado nos dois lados (Regis
 `assinatura-lexsuite` em `assinatura.solverone.com.br`. Tudo gerido pelo conector "Cloudflare" (API). Detalhes em
 `docs/DNS-SOLVERONE.md`.
 
-Worker `integracao-resposta`: encaminha tudo para a caixa do dono com o cabeçalho `X-Resposta` e responde uma vez. Ele
-também responde ao endereço de retorno de serviços de envio (Resend, Amazon SES), e o Resend marca o e-mail de origem
-como "bounced" (log do Email Routing de 08/Nov 01:15 mostra resposta enviada e mensagem encaminhada; a ligação com o
-"bounced" é dedução forte, não provada por log do Resend). Correção proposta e testada, **não aplicada**: espera o "pode"
-do dono (ver o quadro).
+Worker `integracao-resposta`: encaminha tudo para a caixa do dono com o cabeçalho `X-Resposta` e responde uma vez, só a
+pessoa. Quem escreve por um serviço de envio (Resend, Amazon SES) é só encaminhado, sem resposta: antes, a resposta ia
+para o endereço de retorno do serviço e o Resend marcava o e-mail de origem como "bounced". Correção aplicada e testada
+em 08/Nov (log do Email Routing: serviço de envio encaminhado sem resposta; Gmail encaminhado e respondido). A versão
+anterior fica guardada na Cloudflare para voltar.
 
 ## Estado da nuvem (Supabase `solverone-app`, conferido em 08/Nov)
 
@@ -92,32 +94,32 @@ do dono (ver o quadro).
   grava `lex_registros` com limite de 30 por hora.
 - Onde está no repositório: `nuvem/supabase/lex-licencas.sql`, `nuvem/supabase/lex-admin.sql`,
   `nuvem/supabase/functions/lex-conta/index.ts`, `robo/lexsuite/conta.py`, `instalador/INSTALAR.bat`.
-- **Ressalva:** `robo/PENDENCIAS.md` (seção 0.7.7, item "SQL para o dono revisar e rodar") ainda diz que o dono deve revisar e rodar o SQL, e a regra do projeto é que
-  SQL do Supabase nunca roda sem revisão do dono. As migrações acima já estão aplicadas. Não está registrado se o dono as
-  revisou. Pedido à Arquitetura no quadro: confirmar com o dono e revisar o SQL e a função. Esta sessão não alterou nada
-  na nuvem.
+- **SQL já aplicado:** as migrações acima foram aplicadas em 08/Nov pela Produto, com aprovação do dono pelo aplicativo e
+  sem leitura do texto (não é violação a registrar; ver "Fatos" no quadro). `robo/PENDENCIAS.md` (seção 0.7.7, item "SQL
+  para o dono revisar e rodar") ainda diz o contrário. Daqui em diante, SQL vai para arquivo, anotado no quadro, e o dono
+  roda depois de revisar. A segurança do que foi aplicado (função sem JWT, limite de chamadas, tabela do sistema sem RLS)
+  é pendência da Arquitetura. Esta sessão só leu a nuvem.
 - Ainda não existe: `lex_batimentos`, login por e-mail e o aviso ao terminar a leitura (0.8).
 
 ## O que falta, na ordem (estado em 08/Nov à noite)
 
 A infraestrutura está no ar. Falta:
 
-1. **E-mail de boas-vindas ao Leandro** (sessão de operação), pelo Resend, quando o dono passar o endereço corporativo
-   dele (até quarta, 11/Nov): `python docs/email/preencher.py --nome "Leandro" --codigo LEX-XXXX-XXXX ...` e enviar com o
-   conector Resend, só com o "pode" do dono. **O instalador não instala sem um código de cliente válido**, então o e-mail
-   precisa levar o código da KR Law. O código nasce no Supabase (`select public.lex_criar_conta('KR Law');`, SQL que só o
-   dono roda, depois de revisar); falta confirmar com o dono se ele já foi criado (`lex_contas` tem 2 licenças, de quem
-   não se sabe). Ver `docs/email/LEIA-ME.md`, que ainda diz que o código só entra com a 0.8 (pedido à Produto no quadro).
+1. **E-mail de boas-vindas ao Leandro** (sessão de operação), pelo Resend. A licença da KR Law já existe e está ativa
+   (a Produto a criou). O instalador não instala sem o código de cliente, então o e-mail leva o código. O e-mail já está
+   preenchido, fora do repositório; o código nunca entra no repositório, no quadro nem em conversa (se o arquivo
+   temporário se perder, refazer com `python docs/email/preencher.py --nome "Leandro" --codigo <código> ...`, lendo o
+   código no RootifyONE, "Licenças do RADAR", ou no banco, só leitura). Um teste com a licença de teste do dono foi
+   enviado em 08/Nov. Falta o endereço corporativo do Leandro (até quarta, 11/Nov) e o "pode" do dono para enviar.
 2. **Drive**: o dono fecha o link aberto da pasta-mãe (ou autoriza mover só a pasta do projeto); depois a Operação
    atualiza a pasta "LEXSUITE-ONE-ROBO" para a versão atual e coloca as cópias de referência.
-3. **Worker `integracao-resposta`**: o dono diz se a correção proposta pode ser aplicada.
-4. **Antes de quinta, no PC do dono**: ensaio da instalação com a segunda conta Google, `DIAGNOSTICO.bat`, rodada real
+3. **Antes de quinta, no PC do dono**: ensaio da instalação com a segunda conta Google, `DIAGNOSTICO.bat`, rodada real
    nos 24 TRTs, e testar o instalador no Windows (falta, ver `robo/PENDENCIAS.md`). Roteiro em `robo/ROTEIRO-INSTALACAO.md`.
-5. **Quinta (12/Nov)**: instalação na KR Law e os prompts de `docs/VISITA-KR-LAW.md` (relatórios vão para a sessão de
+4. **Quinta (12/Nov)**: instalação na KR Law e os prompts de `docs/VISITA-KR-LAW.md` (relatórios vão para a sessão de
    Produto).
-6. **Documentos internos abertos no site** (pedido à Arquitetura no quadro): os `.md` de `docs/` respondem em
+5. **Documentos internos abertos no site** (pedido à Arquitetura no quadro): os `.md` de `docs/` respondem em
    `judicial.solverone.com.br/NOME.md`. O dono decide se saem de `docs/`.
-7. **Depois de quinta**: organização `solverone` no GitHub (refazer `limpo` como nova `main`, Pages, CNAME para
+6. **Depois de quinta**: organização `solverone` no GitHub (refazer `limpo` como nova `main`, Pages, CNAME para
    `solverone.github.io`), triagem de e-mail por Worker, calibração da regra com o diagnóstico, desenho da 0.8 e da
    frente tributária, ficha de canais da empresa, cancelar ImprovMX.
 

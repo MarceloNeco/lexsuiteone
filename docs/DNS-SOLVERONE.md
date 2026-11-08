@@ -56,7 +56,7 @@ Regras (lista fechada; endereço que não está aqui é recusado):
 | Endereço | O que acontece |
 |---|---|
 | `contato@`, `judicial@`, `admin@`, `privacidade@`, `suporte@`, `ceo@` | encaminhados para a caixa pessoal do dono (destino verificado no Cloudflare; o endereço não fica em documento nenhum) |
-| `integracao@` | Email Worker `integracao-resposta`: encaminha em silêncio para a mesma caixa (por ali chegam os códigos da Conta Google) e, se o remetente for pessoa, responde: "Este endereço é usado por sistemas da SolverONE e não é lido por pessoas. Esta mensagem não será respondida." Mensagens automáticas (no-reply, listas, `Auto-Submitted`) não recebem resposta. |
+| `integracao@` | Email Worker `integracao-resposta`: encaminha em silêncio para a mesma caixa (por ali chegam os códigos da Conta Google) e, se o remetente for pessoa, responde: "Este endereço é usado por sistemas da SolverONE e não é lido por pessoas. Esta mensagem não será respondida." Mensagens automáticas (no-reply, listas, `Auto-Submitted`) não recebem resposta. Quem escreve por um serviço de envio (Resend, Amazon SES) também não: o endereço de retorno é de outro domínio que o remetente visível, e responder a ele aparecia como "bounced" na origem (corrigido e testado em 08/Nov; versão anterior do Worker guardada na Cloudflare). |
 | qualquer outro | recusado (catch-all desligado) |
 
 - `nao-responda@` só envia (Resend) e não tem regra: resposta a ele é recusada, como deve ser.
