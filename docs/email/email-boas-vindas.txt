@@ -13,7 +13,7 @@ A tela pede esse código na instalação. Ele identifica o escritório; não é 
 Como instalar, em quatro passos
 1. Instale: abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Ele baixa o resto, prepara tudo e abre a tela no navegador.
 2. Configure: informe o escritório, quem vai usar e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.
-3. No Google Drive, dê acesso de editor à pasta LexSuiteONE para {{drive}}, a conta de sistemas da SolverONE. É o único passo à mão: por ela acompanhamos o {{marca.curto}} sem acessar o seu computador.
+3. No Google Drive, dê acesso de editor à pasta "{{marca.nome}} - planilha" para {{drive}}, a conta de sistemas da SolverONE (o fim da instalação mostra onde ela ficou e o passo a passo). É o único passo à mão: por ela acompanhamos o {{marca.curto}} sem acessar o seu computador.
 4. Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho.
 
 Onde roda: no seu computador, que lê o DJEN nos horários que o escritório escolher (de início, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
