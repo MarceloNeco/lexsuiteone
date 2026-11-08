@@ -16,7 +16,8 @@ Perguntas antes de começar:
 - O computador tem o **Google Drive para computador**? (Ícone na bandeja; pasta "Meu Drive" no Explorador.) Se não
   tiver, instale pelo site do Google Drive, com a conta do escritório.
 - Qual conta Google é a do escritório? É nela que a planilha vai morar.
-- O computador fica ligado às 19h40 e às 7h10? (Horários das leituras automáticas.)
+- Em que horários o computador costuma estar ligado? (O padrão é 20h e 8h; em Configuração, Leitura automática, dá
+  para mudar. Se estiver desligado na hora, a leitura acontece quando ele ligar.)
 
 Passos:
 1. No navegador do cliente, judicial.solverone.com.br, "Baixar o RADAR JUDICIAL". Abra o arquivo baixado e dê dois

@@ -22,7 +22,7 @@ atualiza sem perder configuração nem lista. A fonte é `instalador/INSTALAR.ba
 3. Na primeira vez a tela abre um **passo a passo de boas-vindas**: seu nome e seu papel no escritório (a tela e o
    manual passam a falar com você), o nome do escritório, a **pasta compartilhada** (a tela lista as pastas do Google
    Drive para computador e do OneDrive que achou; "Testar pasta" confirma) e a opção **rodar sozinho todo dia**
-   (19:40 e 07:10, já marcada). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE.xlsx` no Drive,
+   (de início às 20h e às 8h, já marcada; os horários mudam em Configuração). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE.xlsx` no Drive,
    agenda as rodadas e dispara a primeira. Cada campo do passo a passo fica guardado ao sair dele (fechar a tela no meio
    não perde o que foi digitado). Depois, quem usa (nome, e-mail, função, escritório) muda no **perfil** (as iniciais no
    alto da tela, um lápis ✏️ por dado; trocar o e-mail = outra pessoa usando o computador) e o código, a pasta e as
@@ -67,8 +67,10 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## Rodar sozinho
 
-- A opção "rodar sozinho" da Configuração cria duas tarefas no Agendador do Windows (19:40 e 07:10) que rodam o
-  `RODAR.bat` com o computador ligado. `AGENDAR.bat` faz o mesmo à mão, se precisar. O DJEN libera o diário a partir das 19h.
+- A opção "Ler sozinho" da Configuração cria a tarefa "LexSuiteONE Radar" no Agendador do Windows, com os horários
+  escolhidos (padrão 20h e 8h, até 6, todos os dias ou de segunda a sexta; se o computador estava desligado, roda quando
+  ele ligar). Ela roda o `RODAR.bat`; ao terminar, um aviso no canto da tela diz quantas ações novas chegaram.
+  `AGENDAR.bat` faz o mesmo à mão (botão direito, Executar como administrador), se precisar. O DJEN libera o diário a partir das 19h.
 - **`RODAR.bat`**: uma rodada sem a tela, com os tribunais salvos. Também grava `saida\radar\radar.html`.
 - **`DIAGNOSTICO.bat`**: relatório `diagnostico\radar-diagnostico.txt` do que o robô guardou, sem dado de pessoa física.
 

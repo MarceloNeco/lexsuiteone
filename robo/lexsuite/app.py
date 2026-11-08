@@ -33,7 +33,7 @@ PARA_VOCE = {
                                  "Cadastrar na aba Exclusões da planilha as empresas que a equipe pedir para não aparecer (nome como está no Diário, ou CNPJ, e o motivo).",
                                  "Não é preciso mexer nas abas ocultas da planilha: elas são do suporte."],
     "Equipe administrativa": ["A planilha LexSuiteONE.xlsx no Google Drive é sua: a aba Preferências ajusta a lista e a aba Exclusões guarda clientes e empresas que não devem aparecer.",
-                              "O robô roda sozinho às 19:40 e às 07:10 com o computador ligado; se o computador ficou desligado, a próxima rodada compensa.",
+                              "O RADAR lê sozinho nos horários de Configuração (de início, 20h e 8h); se o computador estava desligado, a leitura acontece quando ele ligar.",
                               "Se a planilha estiver aberta e travada na hora de uma rodada, o robô grava na próxima. Nada se perde.",
                               "Avise o suporte quando a tela mostrar \"robô desligado\", \"precisa atualizar\" ou quando a lista vier vazia dois dias úteis seguidos."],
 }
@@ -104,6 +104,8 @@ class Servidor(ThreadingHTTPServer):
                 situacao = radar.executar(cfg, banco, self.estado.aviso, self.pasta, dias=dias, versao=VERSAO,
                                           caminho_config=self.caminho_config)
                 self.estado.terminar(situacao)
+                if cfg["radar"].get("avisar_ao_terminar", True):
+                    agendar.notificar(marca(self.pasta).get("nome", "RADAR JUDICIAL"), agendar.texto_aviso(situacao, marca(self.pasta).get("curto", "RADAR")))
             except radar.RoboDesligado as e:
                 self.estado.aviso(str(e))
                 self.estado.terminar(erro=str(e))
@@ -170,6 +172,8 @@ class Tratador(BaseHTTPRequestHandler):
             comp = cfg["compartilhar"]
             base = compartilhar.pasta_base(cfg)
             chave = atualizar.chave_publica(s.pasta)
+            horarios, dias = agendar.do_config(cfg)
+            agendado, proxima = agendar.agendado(), agendar.proxima(horarios, dias)
             pagina["app"] = {
                 "usuario": {"nome": cfg["usuario"].get("nome", ""), "papel": cfg["usuario"].get("papel", ""), "email": cfg["usuario"].get("email", "")},
                 "papeis": list(PAPEIS), "documento_escritorio": cfg.get("documento_escritorio") or {},
@@ -180,7 +184,10 @@ class Tratador(BaseHTTPRequestHandler):
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
                            "planilha": preferencias.caminho(base) if base and os.path.exists(preferencias.caminho(base)) else "",
-                           "agendavel": agendar.disponivel(), "agendado": agendar.agendado()},
+                           "agendavel": agendar.disponivel(), "agendado": agendado,
+                           "horarios": horarios, "dias": dias, "tem_noite": agendar.tem_noite(horarios),
+                           "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
+                           "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True))},
                 "atualizacao": {"chave": bool(chave), "impressao": assinatura.impressao(chave) if chave else "",
                                 "url": cfg["atualizacao"].get("url", ""), "pasta": compartilhar.pasta_atualizacao(cfg)},
                 "versao": VERSAO, "estado": s.estado.como_dict(), "pasta_robo": s.pasta,
@@ -263,6 +270,12 @@ class Tratador(BaseHTTPRequestHandler):
                                              doc_tipo=corpo.get("doc_tipo") or doc_atual.get("tipo") or "cnpj")
                 if not ok:
                     return self._responder({"ok": False, "motivo": motivo, "conta": conta.situacao(cfg)})
+            if "horarios" in corpo:
+                r["horarios"] = agendar.validar(corpo["horarios"])
+            if "dias" in corpo:
+                r["dias"] = agendar.validar_dias(corpo["dias"])
+            if "avisar_ao_terminar" in corpo:
+                r["avisar_ao_terminar"] = bool(corpo["avisar_ao_terminar"])
             if "nome" in corpo:
                 cfg["usuario"]["nome"] = str(corpo["nome"] or "").strip()[:60]
             if "papel" in corpo:
@@ -283,8 +296,10 @@ class Tratador(BaseHTTPRequestHandler):
             config.salvar(s.caminho_config, cfg)
             resposta = {"ok": True, "radar": r, "escritorio": cfg.get("escritorio", ""), "pasta": cfg["compartilhar"].get("pasta", ""),
                         "conta": conta.situacao(cfg)}
-            if "agendar" in corpo and agendar.disponivel():
-                ok, msg = agendar.agendar(s.pasta) if corpo["agendar"] else agendar.desagendar()
+            mudou_horario = "horarios" in corpo or "dias" in corpo
+            if agendar.disponivel() and ("agendar" in corpo or (mudou_horario and agendar.agendado())):
+                ligar = corpo["agendar"] if "agendar" in corpo else True
+                ok, msg = agendar.agendar(s.pasta, *agendar.do_config(cfg)) if ligar else agendar.desagendar()
                 resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg})
             return self._responder(resposta)
         if caminho == "/abrir":
@@ -377,6 +392,15 @@ def servir(pasta, porta=None, abrir=True, aviso=print):
     aviso("  Deixe esta janela aberta enquanto usa a tela. Para encerrar, feche a janela (ou Ctrl+C).")
     if abrir:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
+
+    def migrar():
+        try:
+            msg = agendar.migrar_antigas(pasta, servidor.config())
+            if msg:
+                aviso("  " + msg)
+        except Exception:  # migrar a leitura automática nunca impede a tela de abrir
+            pass
+    threading.Thread(target=migrar, daemon=True, name="migrar-agenda").start()
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:

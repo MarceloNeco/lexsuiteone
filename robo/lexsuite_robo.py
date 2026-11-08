@@ -407,8 +407,12 @@ def cmd_radar(a):
     banco = bd.Banco(os.path.join(AQUI, "lexsuite.db"))
     pasta_diag = os.path.join(AQUI, "diagnostico") if a.diagnostico else None
     try:
-        radar.executar(cfg, banco, print, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
-                       caminho_config=a.config)
+        situacao = radar.executar(cfg, banco, print, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
+                                  caminho_config=a.config)
+        if cfg["radar"].get("avisar_ao_terminar", True):
+            from lexsuite import agendar, app
+            m = app.marca(AQUI)
+            agendar.notificar(m.get("nome", "RADAR JUDICIAL"), agendar.texto_aviso(situacao, m.get("curto", "RADAR")))
     except radar.RoboDesligado as e:
         raise SystemExit("  " + str(e))
     except Exception as e:  # leitura agendada: avisa a SolverONE (sem dado pessoal) e encerra com a mensagem
@@ -424,6 +428,16 @@ def cmd_atualizar(a):
     cfg = carregar_config(os.path.join(AQUI, "config.json"))
     r = atualizar.atualizar(AQUI, cfg, VERSAO, print, instalar_agora=not a.so_verificar)
     print("  " + (r.get("motivo") or (f"Versão {r.get('versao')} disponível em {r.get('origem')}" if r.get("disponivel") and not r.get("arquivos") else "")))
+
+
+def cmd_agendar(a):
+    """Cria a leitura automática com os horários do config.json (o AGENDAR.bat chama isto, como administrador)."""
+    from lexsuite import agendar
+    cfg = carregar_config(os.path.join(AQUI, "config.json"))
+    ok, msg = agendar.agendar(AQUI, *agendar.do_config(cfg))
+    print("  " + msg)
+    if not ok:
+        raise SystemExit(1)
 
 
 def cmd_app(a):
@@ -526,6 +540,8 @@ def main(argv=None):
     s.add_argument("--porta", type=int, help="porta local (padrão: a do config.json ou 8765)")
     s.add_argument("--sem-navegador", action="store_true", help="não abrir o navegador sozinho")
     s.set_defaults(f=cmd_app)
+    s = sub.add_parser("agendar", help="cria a leitura automática no Agendador do Windows com os horários do config.json")
+    s.set_defaults(f=cmd_agendar)
     s = sub.add_parser("orgaos", help="descobre o código (idOrgao) das varas de um tribunal, uma vez (precisa rodar no Brasil)")
     s.add_argument("--tribunal", default="TRT2"); s.add_argument("--data", help="aaaa-mm-dd (padrão: último dia útil)")
     s.add_argument("--diagnostico", action="store_true"); s.set_defaults(f=cmd_orgaos)

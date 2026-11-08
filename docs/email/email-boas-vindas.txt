@@ -16,7 +16,7 @@ Como instalar, em quatro passos
 3. No Google Drive, dê acesso de editor à pasta LexSuiteONE para {{drive}}, a conta de sistemas da SolverONE. É o único passo à mão: por ela acompanhamos o {{marca.curto}} sem acessar o seu computador.
 4. Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho.
 
-Onde roda: no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o {{marca.curto}} lê o DJEN. Se estiver desligado, a próxima leitura recupera os dias que faltaram.
+Onde roda: no seu computador, que lê o DJEN nos horários que o escritório escolher (de início, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
 
 Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual do escritório".
 

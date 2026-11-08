@@ -76,12 +76,11 @@ O que falta para a ficha de canais:
 - No que o cliente lê, o programa é "o RADAR", não "o robô". Pastas e arquivos internos (`robo/`) não mudam.
 - Ícone do site: martelo dourado sobre azul-marinho (balança como alternativa). Um ícone só, fixo: trocar a cada carga
   confunde quem procura a aba e o navegador guarda o ícone em cache.
-- Onde roda: o site e o e-mail dizem que o computador precisa estar ligado às 19h40 e às 7h10, e o site oferece "Na
+- Onde roda: o site e o e-mail dizem que o RADAR lê nos horários escolhidos (padrão 20h e 8h), e o site oferece "Na
   nuvem, sob consulta" (judicial@). A versão na nuvem ainda não existe: é a 1.0 (coletor central), mais abaixo.
 - OneDrive: "sob consulta" no site. A tela já aceita a pasta do OneDrive para a planilha, mas o compartilhamento com o
   suporte nunca foi testado lá (pediria uma conta Microsoft para `integracao@`).
-- Horário das rodadas ajustável pela tela (hoje fixo em 19:40 e 07:10, em `lexsuite/agendar.py`). Mexe no pacote:
-  precisa do sim do dono.
+- ~~Horário das rodadas ajustável pela tela~~: feito na 0.7.9 (dono, 08/Nov).
 - Imagem de fundo da capa: o dono vai gerar no Higgsfield; a página já aceita uma imagem por trás do radar.
 
 ### 0.7.7 (08/Nov, para antes da instalação de 12/Nov): licença, cadastro e tela nova
@@ -97,8 +96,8 @@ O que falta para a ficha de canais:
   embutida, fundo branco; boas-vindas formais e só até concluir; "Abrir a planilha"; "Baixar a lista (.csv)"; só os
   24 TRTs (TJs e TRFs voltam com as frentes deles).
 - A "mira" do escritório (passo 1 do site, decisão do dono 08/Nov): em poucos cliques, frente, tribunais, valor mínimo e
-  exclusões (existem); faltam **filtro por porte** (a Receita traz microempresa, pequena, média ou grande) e **horário
-  ajustável das leituras** (hoje fixo em 19h40 e 7h10). Ambos mexem no pacote.
+  exclusões (existem); faltam **filtro por porte** (a Receita traz microempresa, pequena, média ou grande) e ~~horário
+  ajustável das leituras~~ (feito na 0.7.9).
 - **Mac (decisão do dono, 08/Nov):** o site trata Mac como "sob consulta" (requisito e mensagem com contato em
   judicial@), sem recusar o público. Para atender de verdade: o programa já é só Python padrão; faltam o instalador
   `.command` (ou `.pkg`), o agendamento pelo launchd no lugar do Agendador do Windows e a detecção da pasta do Google
@@ -170,6 +169,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
   dado (nome, e-mail, função, escritório); trocar o e-mail avisa que outra pessoa vai usar o computador; o topo não
   mostra mais o nome do escritório nem "Olá"; Configuração fica com código, pasta e leituras automáticas; no passo a
   passo, cada campo é guardado ao sair dele, e ele volta enquanto o cadastro (e-mail) não estiver feito.
+- **Horário de leitura ajustável (0.7.9, pedido do dono 08/Nov):** em Configuração, Leitura automática: horários em
+  pílulas (tirar ×, acrescentar até 6), "Todos os dias" ou "De segunda a sexta"; padrão novo **20h e 8h** (o Diário sai
+  a partir das 19h; às 8h pega o que entrou tarde da noite); leitura perdida acontece quando o computador ligar; aviso
+  se não houver horário depois das 19h; "Próxima leitura automática" na tela; aviso no canto da tela do Windows ao
+  terminar (dá para desligar). "Atualizar agora" continua sendo o executar na hora.
+- **Depois (0.8): e-mail ao terminar** a leitura para quem está cadastrado (dono, 08/Nov: não é imprescindível).
 - **C (RootifyONE 0.18.13):** Clientes → Licenças do RADAR: lista, Criar licença (código para escritório novo), ficha
   com ativar/desativar, validade, limite e mensagem, pessoas, computadores, histórico e erros; aba "Erros sem código".
 
