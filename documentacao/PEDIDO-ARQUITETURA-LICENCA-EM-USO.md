@@ -43,3 +43,20 @@ são seus.
 Entrega: desenho curto (até 2 páginas) em `documentacao/DESENHO-LICENCA-EM-USO.md`, com o que muda em cada arquivo,
 quem implementa, plano de teste e as perguntas para o dono decidir (em linguagem simples, até 10 linhas na resposta a
 ele). Registre no quadro e pare.
+
+---
+
+## Complemento (dono, 08/Nov): tipo de acesso do cliente e busca
+
+Prompt para colar na mesma conversa da Arquitetura (pode entrar no mesmo desenho, como item F):
+
+Acrescente ao desenho da licença em uso o item F, "tipo de acesso do cliente". Cada licença (escritório) passa a ter
+uma modalidade: **Instalado** (o programa roda no computador do escritório; é o que existe hoje, chamado também de
+"on-premises") ou **Nuvem** (o RADAR roda em servidor da SolverONE e o escritório só acessa; ainda não é vendido, mas
+deve existir no cadastro como oportunidade). Desenhe: (1) o campo na licença, com "Instalado" para todas as licenças
+de hoje; (2) a migração de uma modalidade para a outra, registrada no histórico (`lex_eventos`) com data e quem mudou,
+feita no RootifyONE; (3) o que o programa instalado faz se a licença for marcada "Nuvem" (sugestão: aviso e continua
+lendo até a SolverONE desligar); (4) a busca no RootifyONE por domínio do e-mail das pessoas (as funções `admin_lex_*`
+passam a devolver os domínios de cada licença, sem os e-mails). A busca por escritório, código e CNPJ/CPF já foi feita
+pela Produto no RootifyONE 0.18.14, sem mexer no banco. Mesmas restrições: SQL só em arquivo, o dono roda depois de
+revisar; nada pode bloquear quem já usa; a KR Law instala na quinta, 12/Nov.
