@@ -227,12 +227,19 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
     Os cadernos lidos vão para `lidos`; quem marca como conferido é `guardar`, no fim da rodada."""
     hoje = hoje or dt.date.today()
     pubs = []
-    datas = dias_uteis(hoje, dias)
+    # Dias com Diário (0.7.11): volta dia útil a dia útil, até 10, e só conta os dias em que o tribunal publicou o
+    # caderno. Assim feriado (nacional, estadual) e recesso não fazem a leitura sair vazia.
+    candidatas = dias_uteis(hoje, 10)[::-1]
     for sigla in tribunais:
-        for d in datas:
+        contados = 0
+        for d in candidatas:
+            if d != hoje and contados >= max(0, int(dias)):
+                break
             meta = djen.meta_caderno(sigla, d.isoformat(), aviso)
             if meta is None:
                 continue
+            if d != hoje:
+                contados += 1
             versao = str(meta.get("versao", ""))
             if versao and banco.versao_caderno(sigla, d.isoformat()) == versao:
                 aviso(f"  Caderno {sigla} {d:%d/%m}: já conferido (versão {versao})")

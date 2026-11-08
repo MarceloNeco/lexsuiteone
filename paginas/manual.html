@@ -128,10 +128,12 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   <h2>A tela</h2>
   <ol class="passos">
     <li>Abra pelo atalho <b>{{marca.nome}}</b> na área de trabalho ou no menu Iniciar. Abre uma janela preta, "{{marca.nome}} - não feche esta janela", e em seguida a tela, numa janela própria. A janela preta mostra cada passo das leituras, com a hora. <b>Ela precisa ficar aberta</b> enquanto a tela é usada; pode ficar minimizada.</li>
-    <li><b>Atualizar agora</b> faz uma leitura na hora. Os 24 TRTs já vêm escolhidos; em <b>Tribunais</b> dá para mudar por região, por estado ou por ramo. A primeira leitura dos 24 leva de 30 a 60 minutos; as seguintes, bem menos.</li>
+    <li><b>Ler o Diário agora</b> faz uma leitura na hora. A leitura conta só os dias que tiveram Diário: no fim de semana, num feriado ou num recesso do tribunal, ela pega o último dia publicado. Os 24 TRTs já vêm escolhidos; em <b>Tribunais</b> dá para mudar por região, por estado ou por ramo. A primeira leitura dos 24 leva de 30 a 60 minutos; as seguintes, bem menos.</li>
     <li><b>Período</b> mostra o último dia, ou 3, 7, 15 ou 30 dias.</li>
     <li><b>As suas iniciais</b>, no alto à direita, abrem o perfil de quem usa este computador: nome, e-mail, função e nome do escritório. Toque no lápis ✏️ ao lado do dado para mudar. Trocar o e-mail quer dizer que outra pessoa passa a usar este computador: a anterior deixa de ocupar vaga na licença.</li>
-    <li><b>Configuração</b> guarda o código de cliente, a pasta do Google Drive e as leituras automáticas.</li>
+    <li><b>⚙ Configuração</b>, no alto à direita, guarda o código de cliente (só para ler depois de confirmado), a pasta da planilha, as leituras automáticas e mostra a versão. A versão também aparece ao lado do nome, no alto.</li>
+    <li><b>Versão nova:</b> ao abrir, se houver versão nova no site, aparece uma faixa com "Atualizar agora". Seus dados, a lista e a configuração continuam; o {{marca.curto}} reinicia sozinho (a janela preta fecha e reabre) e a tela recarrega.</li>
+    <li>Clicar de novo no atalho com o {{marca.curto}} já aberto só traz a tela de volta: não abre uma segunda janela preta.</li>
   </ol>
   <div class="dica">A tela é do próprio programa, neste computador: o navegador mostra um endereço como <code>127.0.0.1:8765</code>. Ela não é o site judicial.solverone.com.br, que serve só para baixar o {{marca.curto}} e ler este manual.</div>
   <h3>A lista e a ficha</h3>
@@ -146,12 +148,14 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 
 <section id="planilha">
   <h2>A planilha no Google Drive</h2>
-  <p>A planilha é uma só: <code>LexSuiteONE.xlsx</code>. Ela fica numa pasta própria, <code>{{marca.nome}} - planilha</code>, dentro do lugar escolhido no passo 2 das boas-vindas (ou em Configuração). Ao lado dela fica <code>Lista para abrir no celular.html</code>, uma cópia da lista só para consulta. Não confunda com a pasta do programa (<code>C:\LexSuiteONE</code>): o programa roda de onde foi instalado, e a planilha pode ficar em qualquer pasta.</p>
+  <p>A planilha é uma só: <code>LexSuiteONE.xlsx</code>, e o {{marca.curto}} grava só nela. Se a pasta escolhida estiver dentro do Google Drive para computador ("Meu Drive" / "My Drive"), o próprio Google Drive leva a planilha para a nuvem: não é preciso arrastar nada. Se a pasta for outra (por exemplo, "Só neste computador"), a planilha fica só no computador; para levá-la ao Drive, troque a pasta em Configuração para a do Google Drive (não arraste uma cópia: a cópia não seria atualizada). Ela fica numa pasta própria, <code>{{marca.nome}} - planilha</code>, dentro do lugar escolhido no passo 2 das boas-vindas (ou em Configuração). Ao lado dela fica <code>Lista para abrir no celular.html</code>, uma cópia da lista só para consulta. Não confunda com a pasta do programa (<code>C:\LexSuiteONE</code>): o programa roda de onde foi instalado, e a planilha pode ficar em qualquer pasta.</p>
   <ul>
     <li><b>No Google Drive deste computador (recomendado):</b> precisa do <b>Google Drive para computador</b> instalado, com a conta do escritório (a pasta aparece como "Meu Drive" ou "My Drive", em geral na letra G:). Assim a planilha abre em qualquer lugar e pode ser compartilhada.</li>
     <li><b>Outra pasta:</b> o botão "Escolher pasta…" abre a janela de pastas do Windows; se a pasta não existir, o {{marca.curto}} cria.</li>
     <li><b>Só neste computador, por enquanto:</b> a planilha fica na pasta do programa; dá para mudar para o Drive depois, em Configuração.</li>
   </ul>
+  <p><b>Planilha aberta na hora da leitura:</b> o Excel trava o arquivo e o {{marca.curto}} não consegue atualizá-lo. Nada se perde: a lista fica salva e aparece na tela, com o aviso "A planilha estava aberta". Feche a planilha e clique em <b>"Gravar a planilha agora"</b> (ou espere a próxima leitura).</p>
+  <p><b>Sem o Excel:</b> a planilha é um arquivo <code>.xlsx</code> comum e abre no <b>Google Planilhas</b> (no Drive, dois cliques no arquivo) e no Excel online. No Google Planilhas, edite o próprio arquivo (ele aparece com a marca ".XLSX" ao lado do nome) e <b>não</b> use "Salvar como Planilhas Google": isso cria uma cópia que o {{marca.curto}} não lê.</p>
   <p><b>Compartilhar com a SolverONE (uma vez):</b> no Explorador, botão direito na pasta <code>{{marca.nome}} - planilha</code>, Compartilhar (ícone do Google Drive), <code>integracao@solverone.com.br</code> como Editor, Enviar. Sem isso o {{marca.curto}} funciona normalmente; a SolverONE só não vê o registro das leituras para ajudar quando algo der errado. Instalações anteriores à 0.7.10 continuam com a pasta antiga, <code>LexSuiteONE</code>.</p>
   <div class="tabela"><table>
     <tr><th>Aba</th><th>Quem escreve</th><th>Para quê</th></tr>
@@ -188,7 +192,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <tr><td>"Este e-mail já está cadastrado em outro escritório"</td><td>cada e-mail pertence a um escritório só</td><td>use o e-mail do escritório ou escreva para judicial@solverone.com.br</td></tr>
     <tr><td>"O Diário só responde a computadores no Brasil"</td><td>o computador está saindo para a internet por fora do país (VPN, rede da empresa)</td><td>desligue a VPN ou use a rede normal e tente de novo</td></tr>
     <tr><td>"O programa está pausado pela SolverONE", "A licença deste escritório está desativada" ou "A validade terminou"</td><td>a SolverONE pausou o {{marca.curto}}</td><td>escreva para judicial@solverone.com.br</td></tr>
-    <tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela preta e abra de novo pelo atalho</td></tr>
+    <tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>clique em "Atualizar agora" na faixa do alto (ou em Configuração, "Verificar atualização"); o {{marca.curto}} reinicia sozinho</td></tr>
     <tr><td>"Planilha em uso ou ilegível"</td><td>alguém estava com a planilha aberta e travada, ou o Drive ainda sincronizava</td><td>nada; o {{marca.curto}} grava na próxima leitura</td></tr>
     <tr><td>"Não consegui falar com o programa"</td><td>a janela preta foi fechada</td><td>abra de novo pelo atalho {{marca.nome}}</td></tr>
     <tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda</td><td>tente mais tarde; se continuar, escreva para judicial@solverone.com.br</td></tr>

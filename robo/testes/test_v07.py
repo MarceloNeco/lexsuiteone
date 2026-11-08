@@ -443,3 +443,99 @@ class AgendaTela079(AppV07):
             tela = f.read()
         for marca in ('id="c-horas"', 'id="c-hora-nova"', 'id="c-dias"', 'id="c-avisar"', "ag_noite", "quandoProxima"):
             self.assertIn(marca, tela)
+
+
+class V0711(unittest.TestCase):
+    """0.7.11: dias com Diário (feriado), uma tela só por computador, aviso de versão nova."""
+
+    def test_feriado_nao_esvazia_a_leitura(self):
+        from lexsuite import monitor, djen, banco as bd
+        pedidos = []
+        def meta(sigla, data, aviso=print):
+            pedidos.append(data)
+            return None if data in ("2026-11-09", "2026-11-06") else {"versao": "1"}  # segunda e sexta sem Diário
+        orig_meta, orig_baixar = djen.meta_caderno, djen.baixar_caderno
+        djen.meta_caderno, djen.baixar_caderno = meta, (lambda *a, **k: [{"processo": a[1]}])
+        try:
+            b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+            pubs = monitor.coletar_caderno(["TRT2"], 1, b, aviso=lambda *_: None, hoje=dt.date(2026, 11, 10))
+        finally:
+            djen.meta_caderno, djen.baixar_caderno = orig_meta, orig_baixar
+        # terça: lê terça (se houver) e o último dia útil anterior que teve Diário: quinta (pula segunda e sexta)
+        self.assertEqual(sorted(p["processo"] for p in pubs), ["2026-11-05", "2026-11-10"])
+        self.assertNotIn("2026-11-04", pedidos)
+
+    def test_uma_tela_so_e_versao_nova(self):
+        from lexsuite import app
+        import threading
+        pasta = tempfile.mkdtemp()
+        shutil.copy(os.path.join(ROBO, "radar_modelo.html"), pasta)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            porta = srv.server_address[1]
+            self.assertEqual(app.procurar_aberto([porta]), f"http://127.0.0.1:{porta}/")
+            import http.client
+            c = http.client.HTTPConnection("127.0.0.1", porta, timeout=10)
+            c.request("GET", "/versao-nova", headers={"X-LexSuite": "1"})
+            d = json.loads(c.getresponse().read()); c.close()
+            self.assertEqual((d["disponivel"], d["atual"]), (False, app.VERSAO))  # sem chave_publica.txt: não oferece
+        finally:
+            srv.shutdown(); srv.server_close()
+        self.assertEqual(app.procurar_aberto([porta]), "")
+
+
+class Progresso0711(unittest.TestCase):
+    def test_porcentagem_pelos_passos(self):
+        from lexsuite import app
+        e = app.Estado()
+        e.comecar()
+        e.aviso("Radar: lista de distribuição de TRT2, TRT15 (últimos 1 dia(s) úteis)")
+        self.assertEqual(e.como_dict()["progresso"], 5)
+        e.aviso("  Baixando o caderno TRT2 06/11 (pode levar alguns minutos)...")
+        self.assertEqual(e.como_dict()["progresso"], 32)
+        e.aviso("  Caderno TRT15 06/11: já conferido (versão 1)")
+        self.assertEqual(e.como_dict()["progresso"], 60)
+        e.aviso("Receita: 18 de 36")
+        self.assertEqual(e.como_dict()["progresso"], 77)
+        e.terminar({"pt": "ok"})
+        self.assertEqual(e.como_dict()["progresso"], 100)
+
+
+class Dados0711(unittest.TestCase):
+    def test_intimacao_e_cnpj_de_outra_parte(self):
+        from lexsuite import classificar as c
+        self.assertEqual(c.limpar_nome("Polyexcel Industria e Comercio de Compostos Polimericos Ltda Intimação"), "Polyexcel Industria e Comercio de Compostos Polimericos Ltda")
+        self.assertEqual(c.limpar_nome("Li Importes Ltda Notificação"), "Li Importes Ltda")
+        self.assertTrue(c.nomes_batem("AUDITESTE CONSULTORIA LTDA", "Auditeste Consultoria Ltda"))
+        self.assertTrue(c.nomes_batem("NPE NIPLAN SERVICE LTDA", "Npe Niplan Service Ltda - ME"))
+        self.assertFalse(c.nomes_batem("RODRIGO APARECIDO DOS REIS 123", "Auditeste Consultoria Ltda"))
+        self.assertFalse(c.nomes_batem("ALFA COMERCIO E SERVICOS LTDA", "Beta Comercio e Servicos Ltda"))
+        for x, y in (("Alfa Auto Pecas Ltda", "Beta Auto Pecas Ltda"), ("Mercadinho Sao Jose", "Padaria Sao Jose"),
+                     ("Silva Transportes Ltda", "Silva Engenharia Ltda"), ("Restaurante Sabor", "Sabor Brasil Alimentos"),
+                     ("Unimed Paulistana Sociedade Cooperativa", "Unimed Rio"), ("SOL", "CONSOLE LTDA")):
+            self.assertFalse(c.nomes_batem(x, y), (x, y))
+        self.assertTrue(c.nomes_batem("X COMERCIO DE ALIMENTOS LTDA", "X Alimentos Ltda"))
+        lead = {"processo": "1", "empresas": ["Auditeste Consultoria Ltda Intimação"], "cnpjs": ["11222333000181"],
+                "empresa_receita": {"cnpj": "11222333000181", "razao_social": "RODRIGO APARECIDO DOS REIS 12345678900"}}
+        it = radar.item_de_lead(lead, {})
+        self.assertEqual((it["empresa"]["cnpj"], it["cnpj_a_conferir"], it["empresas"]), ("", "11222333000181", ["Auditeste Consultoria Ltda"]))
+        lead["empresa_receita"]["razao_social"] = "AUDITESTE CONSULTORIA LTDA"
+        it = radar.item_de_lead(lead, {})
+        self.assertEqual((it["empresa"]["cnpj"], it["cnpj_a_conferir"]), ("11222333000181", ""))
+
+
+class PlanilhaAberta0711(unittest.TestCase):
+    def test_aviso_quando_o_excel_trava(self):
+        from lexsuite import compartilhar
+        banco = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        recados = []
+        orig = compartilhar.gravar_radar
+        def trava(*a, **k):
+            raise PermissionError("arquivo em uso")
+        compartilhar.gravar_radar = trava
+        try:
+            self.assertFalse(radar.gravar_planilha({}, {"itens": []}, banco, "0.7.11", tempfile.mkdtemp(), recados.append))
+        finally:
+            compartilhar.gravar_radar = orig
+        self.assertIn("aberta no Excel", " ".join(recados))

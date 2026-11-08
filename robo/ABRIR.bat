@@ -18,6 +18,6 @@ if not exist "python\python.exe" (
     exit /b 1
   )
 )
-echo  Abrindo o LexSuiteONE no navegador. A janela "LexSuiteONE" que vai abrir precisa ficar aberta enquanto voce usa a tela.
+echo  Abrindo o RADAR. A janela preta que vai abrir precisa ficar aberta enquanto voce usa a tela (pode minimizar).
 start "LexSuiteONE" "%PY%" lexsuite_robo.py app
 exit /b 0

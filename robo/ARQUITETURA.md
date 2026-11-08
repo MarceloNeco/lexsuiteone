@@ -1,4 +1,4 @@
-# Arquitetura do robô LexSuiteONE · RADAR JUDICIAL (v0.7.10)
+# Arquitetura do robô LexSuiteONE · RADAR JUDICIAL (v0.7.11)
 
 Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
 linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional
@@ -88,7 +88,7 @@ nova dispara o aviso no app (notificação do PWA), no e-mail e no Telegram, e a
 
 ## O fluxo da v0.7 (pasta compartilhada)
 
-1. `ABRIR.bat` abre a tela; na primeira vez a Configuração pede escritório e pasta compartilhada (Drive/OneDrive detectados).
+1. `ABRIR.bat` abre a tela; na primeira vez o assistente pede o cadastro, a pasta da planilha (Google Drive detectado, outra pasta ou a do programa) e os tribunais.
 2. Cada rodada: lê as abas editáveis de `LexSuiteONE.xlsx` (bloqueio? exclusões? mínimo de ações?), baixa os cadernos,
    guarda as ações, avalia a saúde, registra no log, grava `saida/radar/` e regrava `LexSuiteONE.xlsx` (preservando as
    abas editadas) + `.html` na pasta compartilhada. Planilha em uso: deixa como está e tenta na próxima rodada.
