@@ -84,6 +84,21 @@ O que falta para a ficha de canais:
   precisa do sim do dono.
 - Imagem de fundo da capa: o dono vai gerar no Higgsfield; a página já aceita uma imagem por trás do radar.
 
+### 0.7.7 (08/Nov, para antes da instalação de 12/Nov): licença, cadastro e tela nova
+
+- **Licença por código de cliente** (`lexsuite/conta.py`): o código `LEX-XXXX-XXXX` vem no e-mail de boas-vindas e é
+  pedido no primeiro passo; é conferido com a SolverONE ao abrir e antes de cada leitura (função `lex-conta` do
+  Supabase, `nuvem/supabase/functions/lex-conta`; nenhuma chave no programa). Desativar ou vencer: na tabela
+  `lex_contas` (Table Editor do Supabase; depois, tela no RootifyONE). Sem resposta da SolverONE, segue até 15 dias.
+- **Cadastro de quem usa**: nome, e-mail (chave: um e-mail, um escritório) e função, e o CNPJ do escritório, nas
+  tabelas `lex_usuarios` e `lex_instalacoes` (cada computador). Sem limite de pessoas; a SolverONE vê quantas são.
+- **SQL para o dono revisar e rodar**: `nuvem/supabase/lex-licencas.sql`. Criar a licença: `select public.lex_criar_conta('KR Law');`.
+- **Tela com a identidade do site**: cabeçalho azul, ícone e nome de `marca.json` (que agora vai no pacote), fonte
+  embutida, fundo branco; boas-vindas formais e só até concluir; "Abrir a planilha"; "Baixar a lista (.csv)"; só os
+  24 TRTs (TJs e TRFs voltam com as frentes deles).
+- Falta depois: confirmação do e-mail por código (Resend); tela de licenças no RootifyONE; termos de uso e aviso de
+  privacidade do cadastro; trocar a licença MIT antes de vender em escala (decisão do dono).
+
 ### Feito na 0.7.6 (08/Nov): contato do suporte e instalador de um arquivo
 
 - Suporte é sempre `judicial@solverone.com.br`: manual, aba Sobre e linha "suporte" da aba Controle (planilha antiga com

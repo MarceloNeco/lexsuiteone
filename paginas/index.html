@@ -113,6 +113,40 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   width: 430px; height: 430px; right: -40px; top: 50%; transform: translateY(-50%);
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600' fill='none' stroke='%23102038' stroke-width='1.5'%3E%3Ccircle cx='300' cy='300' r='60'/%3E%3Ccircle cx='300' cy='300' r='120'/%3E%3Ccircle cx='300' cy='300' r='180'/%3E%3Ccircle cx='300' cy='300' r='240'/%3E%3Ccircle cx='300' cy='300' r='290'/%3E%3Cpath d='M70 120L250 170'/%3E%3Cpath d='M250 170L205 60'/%3E%3Cpath d='M250 170L470 90'/%3E%3Cpath d='M470 90L560 250'/%3E%3Cpath d='M560 250L420 380'/%3E%3Cpath d='M420 380L520 470'/%3E%3Cpath d='M420 380L330 560'/%3E%3Cpath d='M330 560L110 430'/%3E%3Cpath d='M110 430L40 300'/%3E%3Cpath d='M40 300L70 120'/%3E%3Cpath d='M250 170L420 380'/%3E%3Cpath d='M205 60L470 90'/%3E%3Cg fill='%23102038' stroke='none'%3E%3Ccircle cx='70' cy='120' r='5'/%3E%3Ccircle cx='205' cy='60' r='5'/%3E%3Ccircle cx='470' cy='90' r='5'/%3E%3Ccircle cx='560' cy='250' r='5'/%3E%3Ccircle cx='520' cy='470' r='5'/%3E%3Ccircle cx='330' cy='560' r='5'/%3E%3Ccircle cx='110' cy='430' r='5'/%3E%3Ccircle cx='40' cy='300' r='5'/%3E%3Ccircle cx='250' cy='170' r='5'/%3E%3Ccircle cx='420' cy='380' r='5'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain; }
 @media (max-width: 860px) { .com-marca-dagua section.dagua::before { width: 360px; height: 360px; right: -120px; } }
+/* Carrossel do "Como funciona": desliza da direita para a esquerda, gira sozinho (pausa ao passar o mouse, ao focar e
+   pelo botão), setas e pontos para ir e voltar. Sem movimento para quem pede menos movimento. As imagens entram em
+   docs/img/como-1.webp ... como-4.webp e são ligadas na lista IMAGENS_COMO do script; sem elas, o quadro fica azul. */
+.como-cab { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+.como-cab h2 { margin: 0; }
+.carrossel-ctrl { display: flex; align-items: center; gap: 8px; }
+.seta { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--fio); background: var(--papel); color: var(--tinta); font: 600 1.4rem/1 var(--f); cursor: pointer; display: grid; place-items: center; }
+.seta:hover { border-color: var(--latao); }
+.seta.pausa { font-size: .8rem; letter-spacing: -2px; }
+.seta.pausa[aria-pressed="true"] { background: var(--noite); color: #fff; border-color: var(--noite); }
+.pos { min-width: 3.2rem; text-align: center; color: var(--tinta-3); font-variant-numeric: tabular-nums; }
+.carrossel { overflow: hidden; border-radius: 16px; }
+.trilho { list-style: none; margin: 0; padding: 0; display: flex; transition: transform .7s cubic-bezier(.4,0,.2,1); }
+.slide { flex: 0 0 100%; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); min-height: 300px; background: var(--papel-2); }
+.slide-img { position: relative; background: var(--noite) center / cover no-repeat; overflow: hidden; }
+.slide-img::before { content: ""; position: absolute; inset: -30%; background: repeating-radial-gradient(circle at 70% 40%, rgba(212,171,106,.22) 0 1px, transparent 1px 46px); }
+.slide-img.com-imagem::before, .slide-img.com-imagem span { display: none; }
+.slide-img span { position: absolute; left: 28px; bottom: 6px; font-weight: 800; font-size: 7rem; line-height: 1; color: rgba(212,171,106,.85); }
+.slide-txt { padding: 36px 40px; display: flex; flex-direction: column; justify-content: center; gap: 8px; color: var(--tinta-2); }
+.slide-txt .num { display: none; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--latao-fundo); color: var(--latao-texto); font-weight: 700; }
+.slide-img.com-imagem + .slide-txt .num { display: grid; }
+.slide-txt b { color: var(--tinta); font-size: 1.3rem; font-weight: 700; }
+.slide-txt p { margin: 0; max-width: 46ch; font-size: 1.05rem; }
+.pontos { display: flex; justify-content: center; gap: 6px; margin-top: 14px; }
+.pontos button { width: 24px; height: 24px; border: 0; background: none; padding: 0; cursor: pointer; display: grid; place-items: center; }
+.pontos button::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--fio); }
+.pontos button[aria-current="true"]::before { background: var(--latao); width: 22px; border-radius: 6px; }
+@media (max-width: 860px) {
+  .slide { grid-template-columns: 1fr; min-height: 0; }
+  .slide-img { min-height: 150px; }
+  .slide-img span { font-size: 5rem; }
+  .slide-txt { padding: 22px 20px 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .trilho { transition: none; } }
 @media (max-width: 960px) { .passos.quatro { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 860px) {
   .capa-grade { grid-template-columns: 1fr; padding: 28px 0 40px; }
@@ -177,13 +211,37 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 </header>
 
 <main class="miolo">
-<section class="dagua">
-  <h2 data-t="como">Como funciona</h2>
-  <ol class="passos tres">
-    <li><b data-t="p1t">O DJEN publica, o {{marca.curto}} lê</b><span data-t="p1">Os tribunais remetem as publicações até o fim da tarde e o DJEN as disponibiliza à noite. O {{marca.curto}} faz a leitura às 19h40 e novamente às 7h10: pela manhã, a relação está pronta.</span></li>
-    <li><b data-t="p2t">Cada processo ganha uma ficha</b><span data-t="p2">Rito e valor da causa, quando o DJEN os informa; do contrário, um clique abre a consulta processual do tribunal. Com o CNPJ, os dados cadastrais públicos da empresa: porte, atividade, município, telefone e e-mail.</span></li>
-    <li><b data-t="p3t">A planilha do escritório se atualiza</b><span data-t="p3">A lista aparece na tela do {{marca.curto}} e numa planilha na pasta que o escritório escolher.</span></li>
-  </ol>
+<section class="dagua como" aria-labelledby="como-titulo">
+  <div class="como-cab">
+    <h2 id="como-titulo" data-t="como">Como funciona</h2>
+    <div class="carrossel-ctrl">
+      <button type="button" class="seta" id="c-ant" data-t-aria="c_ant" aria-label="Anterior">&#8249;</button>
+      <span class="pos" id="c-pos" aria-live="polite">1 / 4</span>
+      <button type="button" class="seta" id="c-prox" data-t-aria="c_prox" aria-label="Próximo">&#8250;</button>
+      <button type="button" class="seta pausa" id="c-pausa" data-t-aria="c_pausa" aria-label="Pausar" aria-pressed="false">&#10074;&#10074;</button>
+    </div>
+  </div>
+  <div class="carrossel" id="carrossel" aria-roledescription="carrossel" data-t-aria="como_aria" aria-label="Como funciona, em quatro passos">
+    <ol class="trilho" id="trilho">
+      <li class="slide" aria-roledescription="slide" aria-label="1 / 4">
+        <div class="slide-img" data-imagem="img/como-1.webp" aria-hidden="true"><span>1</span></div>
+        <div class="slide-txt"><span class="num">1</span><b data-t="p1t">O DJEN publica, o {{marca.curto}} lê</b><p data-t="p1">Os tribunais remetem as publicações até o fim da tarde e o DJEN as disponibiliza à noite. O {{marca.curto}} faz a leitura às 19h40 e novamente às 7h10: pela manhã, a relação está pronta.</p></div>
+      </li>
+      <li class="slide" aria-roledescription="slide" aria-label="2 / 4">
+        <div class="slide-img" data-imagem="img/como-2.webp" aria-hidden="true"><span>2</span></div>
+        <div class="slide-txt"><span class="num">2</span><b data-t="p2t">Cada processo ganha uma ficha</b><p data-t="p2">Rito e valor da causa, quando o DJEN os informa; do contrário, um clique abre a consulta processual do tribunal. Com o CNPJ, os dados cadastrais públicos da empresa: porte, atividade, município, telefone e e-mail.</p></div>
+      </li>
+      <li class="slide" aria-roledescription="slide" aria-label="3 / 4">
+        <div class="slide-img" data-imagem="img/como-3.webp" aria-hidden="true"><span>3</span></div>
+        <div class="slide-txt"><span class="num">3</span><b data-t="p3t">A planilha do escritório se atualiza</b><p data-t="p3">A lista aparece na tela do {{marca.curto}} e numa planilha na pasta que o escritório escolher.</p></div>
+      </li>
+      <li class="slide" aria-roledescription="slide" aria-label="4 / 4">
+        <div class="slide-img" data-imagem="img/como-4.webp" aria-hidden="true"><span>4</span></div>
+        <div class="slide-txt"><span class="num">4</span><b data-t="p4t">Organização e prioridade</b><p data-t="p4">Filtros por valor, tribunal e porte, o status de cada processo (visto, em contato, descartado) e a lista de exclusões ajudam o escritório a organizar a carteira e decidir onde concentrar esforço.</p></div>
+      </li>
+    </ol>
+  </div>
+  <div class="pontos" id="c-pontos" role="group" data-t-aria="c_pontos" aria-label="Escolher o passo"></div>
 </section>
 
 <section>
@@ -254,6 +312,8 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     onde: "Where it runs",
     o1t: "On the firm's computer", o1: "The computer must be on at 7:40 pm and 7:10 am, when the {{marca.curto}} reads the DJEN. If it is off, the next reading catches up on the days missed.", o1s: "how it works today",
     o2t: "In the cloud", o2: 'The {{marca.curto}} runs on its own, without depending on a computer being on. Talk to us: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>.', o2s: "on request",
+    p4t: "Organization and priority", p4: "Filters by amount, court and company size, the status of each lawsuit (seen, in contact, discarded) and the exclusion list help the firm organize its pipeline and decide where to focus.",
+    c_ant: "Previous", c_prox: "Next", c_pausa: "Pause", c_tocar: "Play", como_aria: "How it works, in four steps", c_pontos: "Choose the step",
     fr: "Practice areas",
     f1: "Labor", f1d: "New lawsuits in the 24 regional labor courts.", f1s: "available",
     f2: "Tax", f2d: "New tax enforcement actions against companies, in federal and state courts.", f2s: "in preparation",
@@ -290,9 +350,37 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     document.getElementById("b-pt").setAttribute("aria-pressed", String(lang !== "en"));
     document.getElementById("b-en").setAttribute("aria-pressed", String(lang === "en"));
     try { localStorage.setItem("judicial-idioma", lang); } catch (e) {}
+    if (window.rotularPausa) window.rotularPausa();
   }
   document.getElementById("b-pt").addEventListener("click", function () { aplicar("pt"); });
   document.getElementById("b-en").addEventListener("click", function () { aplicar("en"); });
+  // Carrossel do "Como funciona"
+  var IMAGENS_COMO = []; // ex.: [1, 2, 3, 4] quando docs/img/como-N.webp existirem
+  (function () {
+    var trilho = document.getElementById("trilho"), slides = trilho.children, n = slides.length, atual = 0, timer = null,
+        pausadoPeloBotao = false, emCima = false, menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    IMAGENS_COMO.forEach(function (k) { var im = slides[k - 1] && slides[k - 1].querySelector(".slide-img"); if (im) { im.style.backgroundImage = "url(" + im.getAttribute("data-imagem") + ")"; im.classList.add("com-imagem"); } });
+    var pontos = document.getElementById("c-pontos");
+    for (var i = 0; i < n; i++) { (function (k) { var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", String(k + 1)); b.addEventListener("click", function () { ir(k); }); pontos.appendChild(b); })(i); }
+    function ir(k) {
+      atual = (k + n) % n; trilho.style.transform = "translateX(" + (-100 * atual) + "%)";
+      for (var j = 0; j < n; j++) { slides[j].setAttribute("aria-hidden", String(j !== atual)); pontos.children[j].setAttribute("aria-current", String(j === atual)); slides[j].querySelectorAll("a, button").forEach(function (x) { x.tabIndex = j === atual ? 0 : -1; }); }
+      document.getElementById("c-pos").textContent = (atual + 1) + " / " + n; reiniciar();
+    }
+    function reiniciar() { clearInterval(timer); timer = null; if (!pausadoPeloBotao && !emCima && !menosMovimento) timer = setInterval(function () { ir(atual + 1); }, 6500); }
+    document.getElementById("c-ant").addEventListener("click", function () { ir(atual - 1); });
+    document.getElementById("c-prox").addEventListener("click", function () { ir(atual + 1); });
+    var bp = document.getElementById("c-pausa");
+    bp.addEventListener("click", function () { pausadoPeloBotao = !pausadoPeloBotao; bp.setAttribute("aria-pressed", String(pausadoPeloBotao)); rotularPausa(); reiniciar(); });
+    var caixa = document.getElementById("carrossel");
+    ["mouseenter", "focusin"].forEach(function (ev) { caixa.addEventListener(ev, function () { emCima = true; reiniciar(); }); });
+    ["mouseleave", "focusout"].forEach(function (ev) { caixa.addEventListener(ev, function () { emCima = false; reiniciar(); }); });
+    caixa.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") ir(atual - 1); if (e.key === "ArrowRight") ir(atual + 1); });
+    var x0 = null; caixa.addEventListener("pointerdown", function (e) { x0 = e.clientX; });
+    caixa.addEventListener("pointerup", function (e) { if (x0 !== null && Math.abs(e.clientX - x0) > 40) ir(atual + (e.clientX < x0 ? 1 : -1)); x0 = null; });
+    window.rotularPausa = function () { var en = document.documentElement.lang === "en"; bp.setAttribute("aria-label", pausadoPeloBotao ? (en ? "Play" : "Tocar") : (en ? "Pause" : "Pausar")); };
+    ir(0);
+  })();
   var salvo = null; try { salvo = localStorage.getItem("judicial-idioma"); } catch (e) {}
   if (salvo === "en") aplicar("en");
 })();
