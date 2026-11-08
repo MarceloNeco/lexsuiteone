@@ -123,8 +123,11 @@ RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `S
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- Nada em andamento. Próximos (depois dos dois passos do dono): SQL da 0.8 (lex_batimentos, lex_listas, lex_itens,
-  funções do site), pareamento com credencial na `lex-conta`, site `paginas/app/` (desenho para a Produto).
+- **Publicar a `lex-conta` com a leitura de `RESEND_API_KEY_LEX`** (código já na `main`, commit b8d6c1f): o conector do
+  Supabase caiu nesta sessão; publicar na próxima sessão da Arquitetura (ou qualquer sessão com o conector), com
+  `deploy_edge_function` a partir de `nuvem/supabase/functions/lex-conta/index.ts`, `verify_jwt = false`. Enquanto isso a
+  versão no ar (v5) envia os avisos com o segredo `RESEND_API_KEY` que já existia no projeto: funciona.
+- Depois: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com credencial, site `paginas/app/`.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -162,8 +165,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Chave do Resend nos Secrets do Supabase como `RESEND_API_KEY_LEX` (passo a passo em `documentacao/DESENHO-LICENCA-EM-USO.md`);
-  sem ela os avisos ficam "pendente", nada quebra. Na ficha da KR Law: e-mail de boas-vindas e domínio.
+- Nada pendente da nuvem: chave `RESEND_API_KEY_LEX` criada por ele em 08/Nov. Na ficha da KR Law (Clientes → Licenças do
+  RADAR): preencher e-mail de boas-vindas e domínio do escritório quando tiver o e-mail do Leandro.
+- Respostas às 5 perguntas de `documentacao/DESENHO-CONTATOS.md`.
 - Termo de tratamento de dados com a KR Law (bloqueante para a 0.8 entrar no ar).
 
 ---
