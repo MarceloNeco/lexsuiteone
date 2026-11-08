@@ -29,6 +29,11 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 08/Nov: **0.7.12 pronta no ramo `claude/lexsuiteone-judicial-product-22f871`** (itens 38 e 39, com o "pode" do
+  dono): Painel com números e gráficos ao lado da Lista; planilha com cabeçalho azul-marinho, filtro, R$, destaque e
+  aba "Como usar". 101 testes, revisor sem bloqueio. **Não foi à `main` de propósito**: a 0.7.11 ainda não foi
+  publicada, e a automação publica a versão que estiver na `main`. Vai à `main` logo depois que a Operação publicar a
+  0.7.11, ou antes, se o dono preferir publicar direto a 0.7.12 (que contém a 0.7.11).
 - 08/Nov: **0.7.10 publicada** (16:39 UTC) com o "pode" do dono: revisor aprovou, automação da `main` verde, versão no commit `dc609bc` (tag
   `v0.7.10`), publicada pela automação em `eef4306`. Conferido por fora: hash e assinatura do pacote batem com a chave que vai no download, a versão dentro dos dois
   pacotes é 0.7.10, nenhum arquivo proibido nem código de cliente real, o site serve `versao.json` e os downloads.
@@ -65,8 +70,7 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 0.7.12 (visual): painel com gráficos na tela e planilha com cores e filtros (itens 38 e 39 do feedback), com o
-  "pode" do dono de 08/Nov. Contatos (40 e 41) esperam o desenho da Arquitetura.
+- (nada) Contatos (itens 40 e 41) esperam o desenho da Arquitetura.
 
 ### Arquivos em uso
 - (nenhum)
