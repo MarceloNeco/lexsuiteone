@@ -11,13 +11,11 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   depende do GitHub Pages e do registro DNS.
 - E-mail de boas-vindas (`docs/email/`), remetente `LexSuiteONE <nao-responda@solverone.com.br>` pelo Resend, domínio já
   verificado. Teste entregue ao dono. Falta só o e-mail corporativo do Leandro para o envio real.
-- Repositório `MarceloNeco/lexsuiteone` (público, MIT, CI com testes, Bandit, Gitleaks, Dependabot, ações fixadas por SHA).
-  Branch `main` tem 12 commits antigos com o e-mail pessoal do dono como autor; a branch `limpo` tem o **mesmo conteúdo**
-  com autoria anônima. Plano: criar a organização `solverone`, criar `solverone/lexsuiteone` a partir de `limpo` e apagar
-  o repositório antigo. **Decisão de 07/Nov à noite: o piloto do Leandro sai do repositório pessoal mesmo; a mudança
-  para a organização fica para depois de quinta (12/Nov).** Enquanto isso, o CNAME `judicial` aponta para
-  `marceloneco.github.io`; depois da mudança, trocar para `solverone.github.io`. Os links antigos do GitHub
-  continuam funcionando por redirecionamento após a transferência.
+- Repositório `MarceloNeco/lexsuiteone` (público, MIT, CI com testes, Bandit, Gitleaks, Dependabot, ações fixadas por SHA,
+  automação de publicação assinada). Os 12 primeiros commits da `main` têm o e-mail pessoal do dono como autor; a branch
+  `limpo` é a mesma história com autoria anônima, congelada em 08/Nov/2026. **Trabalhe só na `main`.** Na mudança para a
+  organização `solverone` (depois de 12/Nov), `limpo` será refeita com os commits novos da `main` e passará a ser a `main`
+  do repositório novo. Decisão do dono: o piloto do Leandro sai do repositório pessoal mesmo.
 - Documentos de referência também na pasta do Drive do dono (cópia de consulta; o GitHub é a fonte).
 
 ## Decisões do dono que valem

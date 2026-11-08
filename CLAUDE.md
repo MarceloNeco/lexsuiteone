@@ -21,8 +21,14 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro.
   `diagnostico/`, `chave_privada.txt`.
 - O robô é só biblioteca padrão do Python, sem IA no caminho principal, sem contornar captcha, sem dado fictício no
   produto (só em `exemplos/` e testes, marcados como fictícios). Pessoa física nunca sai do robô.
-- Contatos pessoais do dono não aparecem em nada que o cliente vê: site, e-mail, repositório, planilha. Autoria dos
-  commits: o endereço anônimo do GitHub (`169572628+MarceloNeco@users.noreply.github.com`).
+- Contatos pessoais do dono não aparecem em nada que o cliente vê: site, e-mail, repositório, planilha. Antes do
+  primeiro commit de qualquer sessão, rode uma vez na pasta do repositório:
+  `git config user.name "Marcelo Freitas" && git config user.email "169572628+MarceloNeco@users.noreply.github.com"`
+  (o endereço anônimo do GitHub). Nunca commite com e-mail pessoal.
+- Branches: trabalhe e publique só na `main`. A branch `limpo` é uma cópia da `main` com a autoria antiga corrigida,
+  congelada em 08/Nov/2026; não a toque. Na mudança para a organização `solverone`, ela será refeita a partir da `main`.
+- Publicar versão do robô: nunca crie tag à mão. Suba a versão no código, envie para a `main` e dispare a automação
+  "Publicar versão assinada" (workflow_dispatch, `publicar.yml`); ela assina, publica e cria a tag. Ver `docs/PUBLICAR.md`.
 - Textos para o usuário em PT e EN. Nenhum identificador de modelo de IA em commits, PRs ou código.
 - SQL do Supabase nunca roda sem revisão: o dono roda depois de revisar.
 - As páginas do produto não fazem nenhum pedido externo: sem fontes de fora, sem rastreador, sem script de terceiros.
