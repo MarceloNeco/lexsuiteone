@@ -197,15 +197,20 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 ## v0.8 (cliente-servidor e conta na nuvem)
 
-**Desenho completo em `docs/DESENHO-0.8.md` (08/Nov/2026), com as decisões D1 a D8 do dono.** Nada de código antes de ele
-aprovar o conjunto; nenhum SQL roda sem a revisão dele. Pendências novas criadas pelo desenho (lista inteira na seção 13):
+**Desenho completo em `documentacao/DESENHO-0.8.md` (versão 2, 08/Nov/2026, reescrita em cima da licença da 0.7.9),
+com as decisões D1 a D9 do dono.** Nada de código antes de ele aprovar o conjunto; nenhum SQL roda sem a revisão dele.
+Pendências da Arquitetura (lista inteira na seção 13 do desenho):
 
-- **Bloqueante:** termo de tratamento de dados com a KR Law (a SolverONE vira operadora dos dados do escritório) assinado
+- **Bloqueante:** termo de tratamento de dados com a KR Law (a SolverONE guarda dados em nome do escritório) assinado
   antes de a 0.8 entrar no ar. ⏸ Aguardando o dono.
-- O dono está avaliando trocar o nome do produto e avisa antes de o SQL ser escrito (código `judicial` em `sol_apps`,
-  endereço e telas mudam junto; o prefixo `lex_` não muda). ⏸ Aguardando o dono.
+- **Revisão de segurança da nuvem das licenças** (`documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`): nota Baixo hoje,
+  Médio se a 0.8 entrar sem a etapa 0. SQL de correção em `nuvem/supabase/2026-11-08-lex-correcoes-seguranca.sql`
+  ⏸ aguardando o dono revisar e rodar; `lex-conta` v4 (limites, resposta genérica, limpeza de `mensagem`) 🟡 depois do "pode".
+- Copiar `teste/sql-grants.js` do rootify-one para este repositório e ligar na CI. 🟡 Arquitetura.
 - Para a 1.0: e-mail de entrada com a marca de cada suíte (Send Email Hook do Supabase Auth); na 0.8 o remetente é
   "SolverONE <nao-responda@solverone.com.br>".
+
+Os itens abaixo são o texto original da 0.8 (07/Nov) e ficam como histórico; o que vale é o desenho.
 
 - Conta na nuvem (`judicial.solverone.com.br`): o robô, se tiver internet, pergunta a cada abertura se a conta do
   escritório continua ativa e registra um batimento (versão, última rodada, contagens). Gestão no RootifyONE.
