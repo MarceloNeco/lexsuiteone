@@ -1,6 +1,6 @@
 # JUDICIAL 0.8 · Desenho da conta na nuvem (08/Nov/2026)
 
-Documento de arquitetura, aprovado em partes pelo dono em 08/Nov/2026 (decisões D1 a D8 abaixo). **Nenhum código, SQL
+Documento de arquitetura, aprovado em partes pelo dono em 08/Nov/2026 (decisões D1 a D8 abaixo). **Leia a seção 0.1 antes das seções 3 a 7: elas precisam ser reescritas em cima do que a 0.7.9 já colocou na nuvem.** **Nenhum código, SQL
 ou tela sai deste desenho antes de o dono aprovar o conjunto.** Nenhum SQL roda sem a revisão dele (regra C10 da
 plataforma). Quem for implementar lê este arquivo, `robo/ARQUITETURA.md`, `robo/PENDENCIAS.md` e, no rootify-one,
 `PLATAFORMA-DADOS.md` e a diretriz geral.
@@ -38,6 +38,46 @@ Hoje (0.7.5) o robô roda no computador do escritório, grava a planilha `LexSui
 | D6 | Código do app `judicial`, prefixo `lex_`. **O dono está avaliando trocar o nome do produto e avisa antes de o SQL ser escrito.** Tudo que depende do nome está marcado com ⚠️NOME neste documento. |
 | D7 | E-mail do link de entrada com remetente **"SolverONE <nao-responda@solverone.com.br>"**; se o modelo permitir, o assunto diz o produto. Para a 1.0: e-mail com a marca de cada suíte (seção 13). A chave SMTP é colada pelo dono no painel do Supabase, nunca no chat nem em arquivo. |
 | D8 | Módulo comum da plataforma (`diretrizes.js`, AssistONE, interruptores) **fica para a 1.0**; o site da 0.8 é próprio. |
+
+## 0.1 Alinhamento com o que já existe na nuvem (acrescentado em 08/Nov/2026, tarde)
+
+Este desenho foi escrito de manhã a partir de uma cópia do repositório parada na 0.7.5. Entre a noite de 07/Nov e a
+manhã de 08/Nov, outra sessão entregou as versões 0.7.6 a 0.7.9 e **já colocou no Supabase** um primeiro mecanismo de
+licença (`nuvem/supabase/lex-licencas.sql`, `lex-admin.sql`, Edge Function `lex-conta` v3, tela "Licenças do RADAR" no
+RootifyONE 0.18.13). Conferido no projeto em 08/Nov à tarde: tabelas `lex_contas` (2 linhas), `lex_usuarios`,
+`lex_instalacoes`, `lex_registros`, `lex_eventos`, visão `lex_pessoas`, funções `admin_lex_*` e `lex_criar_conta`.
+O robô 0.7.9 (`lexsuite/conta.py`) já confere o código LEX a cada abertura. **As seções 3 a 7 abaixo precisam ser
+reescritas em cima disso, não do zero.** O que muda:
+
+| Neste desenho | O que já existe | Decisão proposta |
+|---|---|---|
+| `lex_contas` com `id` uuid, `situacao`, `retencao_dias`, `frentes` | `lex_contas` com **`codigo` como chave**, `ativo`, `validade`, `max_pessoas`, `mensagem`, `documento` | manter a tabela existente; acrescentar `retencao_dias` e `frentes`; `situacao` vira `ativo` + `encerrada_em` |
+| `lex_pessoas` (tabela de e-mails que entram no site, com `papel` e `situacao`) | `lex_usuarios` (e-mail chave, cadastrado pelo robô) e **visão** `lex_pessoas` | **renomear no desenho**: quem entra no site é `lex_usuarios` com uma coluna nova `acesso_site` (`nenhum` · `usuario` · `responsavel`), concedida pela equipe ou pelo responsável, **nunca pelo cadastro do robô** |
+| `lex_computadores` com credencial | `lex_instalacoes` (id aleatório de 16 hex, sem credencial) | manter `lex_instalacoes`; acrescentar `credencial_hash`, `situacao` e o pareamento da seção 5 como **endurecimento** antes de a nuvem passar a receber listas |
+| `lex_batimentos` | `lex_eventos` (`acesso` por dia) + `lex_instalacoes.ultima_vez` | `lex_batimentos` continua, porque guarda contagens e saúde da rodada; `lex_eventos` fica como está |
+| `lex_log` | `lex_eventos` + `acesso_log` (funções `admin_lex_*` via `lab_registrar_log`) | não criar `lex_log`; ações do site e do robô entram em `lex_eventos` com tipos novos |
+| funções `lex_*` via REST/RPC com credencial | Edge Function `lex-conta` com `verify_jwt = false` e chave de serviço dentro | **uma porta só para o robô**: a `lex-conta` ganha as ações `parear`, `batimento` e `lista`; as funções do site e da equipe ficam no banco (RPC), como desenhado |
+| `admin_lex_criar_conta`, `admin_lex_atualizar_conta`… | `admin_lex_criar`, `admin_lex_salvar`, `admin_lex_listar`, `admin_lex_detalhe` | usar os nomes que existem; acrescentar só `admin_lex_convidar`, `admin_lex_aprovar_computador`, `admin_lex_revogar_computador`, `admin_lex_painel` |
+| código LEX com dígito verificador | 8 símbolos aleatórios, sem verificador, já em uso | **não mudar o formato** (o robô 0.7.9 e o e-mail já o usam); o verificador fica fora |
+| nome `judicial` em `sol_apps` | `docs/marca.json` diz **RADAR JUDICIAL** | código do app `radar-judicial`; o prefixo `lex_` fica |
+
+Pontos de segurança do que já está no ar, para o dono decidir junto com a 0.8 (nada disso vaza dado hoje, porque a
+nuvem ainda só **recebe** e nada **lê**; vira risco quando o site passar a mostrar listas):
+
+1. Quem tem o código LEX e um id aleatório consegue, pela `lex-conta`, **cadastrar qualquer e-mail como pessoa do
+   escritório** e registrar computadores sem aprovação de ninguém. Com o site da 0.8, isso daria leitura das listas a
+   um estranho que soubesse o código. Por isso o acesso ao site não pode nascer do cadastro do robô (coluna
+   `acesso_site`, acima) e o pareamento com credencial entra antes das listas.
+2. A `lex-conta` só limita a ação `registro` (30 por hora). As demais aceitam chamadas sem limite e cada id novo cria
+   uma linha em `lex_instalacoes`: dá para encher o banco grátis. Limite por conta e por id, e teto de computadores
+   por conta (ex.: 20), antes da 0.8.
+3. A resposta `email_em_outro_escritorio` confirma a um estranho que um e-mail existe em outra conta. Trocar por uma
+   recusa genérica.
+4. `lex_criar_conta` usa `search_path = public, extensions` em vez de `''`; `lex-licencas.sql` não tem o "desfazer" ao
+   lado nem data no nome; o repositório não tem o verificador `teste/sql-grants.js`. Acertar num script novo datado,
+   sem editar o aplicado (regra da diretriz).
+5. Os scripts constam como aplicados no projeto em 08/Nov às 05h26 UTC. Confirmar com o dono se foi ele quem rodou,
+   como pede a regra C10; se não foi, registrar a exceção no `PENDENCIAS.md`.
 
 ## 1. As peças e onde moram
 
