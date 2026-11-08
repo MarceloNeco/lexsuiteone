@@ -20,8 +20,8 @@ bloco do código; sem ele, o bloco é removido. Nada é enviado por esse script.
   `nao-responda@` não precisa existir como caixa: ele só envia, e o e-mail avisa que não recebe respostas.
 - Assunto: `Bem-vindo ao <nome do produto>: seu pacote de instalação` (hoje, RADAR JUDICIAL). O `preencher.py` mostra o
   assunto pronto. O nome vem de `docs/marca.json`: o modelo usa `{{marca.nome}}`, `{{marca.curto}}` e `{{marca.logo_email}}`.
-- O link de download é `https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip`, servido pelo site do produto
-  (pasta `docs/downloads/` do repositório). Não depende da conta do GitHub: mudar o repositório de dono não muda o link.
+- O link de download é o instalador de um arquivo, `https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip`,
+  servido pelo site do produto (pasta `docs/downloads/` do repositório). Não depende da conta do GitHub: mudar o repositório de dono não muda o link.
 - Sem anexo, sem rastreador de abertura, sem pedir nada além de baixar o pacote.
 
 ## Regras

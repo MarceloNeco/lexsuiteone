@@ -66,6 +66,7 @@ th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--fi
 th { color: var(--tinta-3); font-weight: 600; font-size: .85rem; background: var(--papel-2); }
 td:first-child { color: var(--tinta); font-weight: 600; }
 code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+.ola { font-size: 1.15rem; color: var(--tinta); margin: 0 0 14px; }
 .faq p { margin-bottom: 16px; }
 .faq b { display: block; color: var(--tinta); }
 .rodape { border-top: 1px solid var(--fio); padding: 26px 0 40px; color: var(--tinta-3); font-size: .92rem; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -106,6 +107,9 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 </nav>
 
 <article>
+<!-- Dentro do programa, os dois marcadores abaixo viram a saudação e o bloco do papel da pessoa. -->
+<!--OLA-->
+<!--PARA_VOCE-->
 <section id="oque">
   <h2>O que o RADAR faz</h2>
   <p>Todo dia, o Diário de Justiça Eletrônico Nacional (DJEN, do Conselho Nacional de Justiça) publica o que aconteceu nos tribunais. O RADAR lê esse Diário nos tribunais que o escritório escolheu e separa as <b>ações trabalhistas novas contra empresas</b>: uma linha por ação, com a empresa, a vara e o rito.</p>
@@ -124,10 +128,11 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section id="tela">
   <h2>A tela</h2>
   <ol class="passos">
-    <li>Dois cliques em <code>ABRIR.bat</code>, na pasta do RADAR. Abre uma janela preta chamada "LexSuiteONE" e, em seguida, a tela no navegador. <b>A janela preta precisa ficar aberta</b> enquanto a tela é usada; pode ficar minimizada.</li>
+    <li>Abra pelo atalho <b>RADAR JUDICIAL</b> na área de trabalho ou no menu Iniciar. Abre uma janela preta chamada "LexSuiteONE" e, em seguida, a tela no navegador. <b>A janela preta precisa ficar aberta</b> enquanto a tela é usada; pode ficar minimizada.</li>
     <li><b>Atualizar agora</b> faz uma leitura na hora. Os 24 TRTs já vêm escolhidos; em <b>Tribunais</b> dá para mudar por região, por estado ou por ramo. A primeira leitura dos 24 leva de 30 a 60 minutos; as seguintes, bem menos.</li>
     <li><b>Período</b> mostra o último dia, ou 3, 7, 15 ou 30 dias.</li>
   </ol>
+  <div class="dica">A tela é do próprio programa, neste computador: o navegador mostra um endereço como <code>127.0.0.1:8765</code>. Ela não é o site judicial.solverone.com.br, que serve só para baixar o RADAR e ler este manual.</div>
   <h3>A lista e a ficha</h3>
   <ul>
     <li>Cada linha: tribunal, empresa, setor, porte, cidade, vara e o valor da causa (ou "valor a conferir").</li>
@@ -176,9 +181,9 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <tr><td>"O robô está desligado pelo suporte" ou "A validade terminou"</td><td>o suporte pausou o RADAR</td><td>escreva para o suporte (endereço no fim da página)</td></tr>
     <tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela LexSuiteONE e abra de novo</td></tr>
     <tr><td>"Planilha em uso ou ilegível"</td><td>alguém estava com a planilha aberta e travada, ou o Drive ainda sincronizava</td><td>nada; o RADAR grava na próxima leitura</td></tr>
-    <tr><td>"Não consegui falar com o robô"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>dois cliques em <code>ABRIR.bat</code></td></tr>
+    <tr><td>"Não consegui falar com o robô"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>abra de novo pelo atalho RADAR JUDICIAL</td></tr>
     <tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda</td><td>tente mais tarde; se continuar, avise o suporte</td></tr>
-    <tr><td>"Falta o Python"</td><td>falta uma peça que o RADAR baixa na primeira vez</td><td>dois cliques em <code>INSTALAR-PYTHON.bat</code> e depois em <code>ABRIR.bat</code></td></tr>
+    <tr><td>"Falta o Python"</td><td>falta uma peça que o RADAR baixa na instalação</td><td>baixe o instalador em judicial.solverone.com.br e rode de novo; nada do que já foi lido se perde</td></tr>
   </table></div>
 </section>
 
@@ -208,7 +213,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 </div>
 
 <footer class="miolo"><div class="rodape">
-  <span>RADAR JUDICIAL é um produto da LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>. Manual da versão 0.7.5.</span>
+  <span>RADAR JUDICIAL é um produto da LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>. Manual da versão 0.7.6.</span>
   <span>Suporte: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a></span>
 </div></footer>
 </body>

@@ -84,28 +84,17 @@ O que falta para a ficha de canais:
   precisa do sim do dono.
 - Imagem de fundo da capa: o dono vai gerar no Higgsfield; a página já aceita uma imagem por trás do radar.
 
-### Contato do suporte errado no pacote 0.7.5 (achado em 08/Nov, corrigir na próxima versão)
+### Feito na 0.7.6 (08/Nov): contato do suporte e instalador de um arquivo
 
-O rodapé do manual (`MANUAL-DO-ESCRITORIO.html`), a aba Sobre da planilha (`compartilhar.py`) e o padrão da aba Controle
-(`preferencias.py`) mostram `integracao@` como "Suporte". Esse endereço só responde que não é lido por pessoas. O certo é
-`judicial@solverone.com.br`. O manual do site já foi corrigido. Até a versão nova: na instalação, trocar o valor
-"suporte" na aba Controle da planilha para `judicial@solverone.com.br` (a aba é editável pelo suporte) e avisar o
-escritório que o contato é `judicial@`.
-
-### Instalar sem descompactar (proposta, esperando o sim do dono; depois da instalação de 12/Nov)
-
-O dono quer que a pessoa não precise descompactar nem ver um monte de arquivos, e que o primeiro passo se chame
-"instalar", não "abrir". Proposta:
-
-1. O botão do site baixa um `.zip` com **um arquivo só**, `INSTALAR.bat`. Dois cliques nele funcionam até sem
-   descompactar (o Windows abre o `.bat` direto do `.zip`).
-2. O `INSTALAR.bat` baixa o pacote de `judicial.solverone.com.br`, confere a impressão digital (SHA-256) gravada nele
-   pela automação de publicação, descompacta numa pasta do usuário (sem pedir senha de administrador), baixa o que o
-   programa precisa para funcionar, cria o atalho **RADAR JUDICIAL** na área de trabalho e no menu Iniciar e abre a tela.
-3. Depois disso, a pessoa só usa o atalho. A pasta com os arquivos fica fora do caminho.
-4. Cuidados: o Chrome e o Windows podem avisar sobre arquivo `.bat` baixado da internet (como hoje); evitar isso de vez
-   pede um instalador `.exe` assinado com certificado de código, que é pago. É o "wizard de um arquivo" já previsto
-   na lista da v0.7.x.
+- Suporte é sempre `judicial@solverone.com.br`: manual, aba Sobre e linha "suporte" da aba Controle (planilha antiga com
+  `integracao@` passa a `judicial@` sozinha). `integracao@` é só a conta de sistemas que recebe acesso à pasta do Drive.
+- Instalador de um arquivo: `instalador/INSTALAR.bat`, servido em `docs/downloads/Instalar-LexSuiteONE.zip` (botão do
+  site). Baixa o pacote, confere o SHA-256 publicado, instala sem administrador, cria o atalho com o nome de
+  `marca.json` e abre a tela. Rodar de novo atualiza. O pacote completo continua no site como plano B.
+- Manual único: `paginas/manual.html` gera o do site e o do pacote.
+- **Falta testar no Windows** (não há Windows na sessão de produto): o dono roda o instalador no computador dele antes
+  de 12/Nov. Limite conhecido: o Windows pode pedir confirmação para `.bat` baixado; tirar de vez pede instalador `.exe`
+  assinado com certificado de código (pago).
 
 ### Manual em inglês
 

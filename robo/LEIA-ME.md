@@ -1,10 +1,18 @@
-# LexSuiteONE · JUDICIAL — robô v0.7.5 (frente Radar Trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.6 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
 inteligência artificial e sem senha de ninguém. A planilha vai para a sua pasta do Google Drive.
 
 ## Instalar (Windows, dois cliques)
+
+O caminho normal é o **instalador de um arquivo**: em judicial.solverone.com.br, "Baixar", abrir o arquivo e dois
+cliques em `INSTALAR.bat`. Ele baixa este pacote do site, confere a impressão digital (SHA-256) publicada em
+`atualizacao/instalar.txt`, instala em `C:\LexSuiteONE` (ou na pasta do usuário, se o Windows não deixar), prepara o
+Python portátil, cria o atalho com o nome do produto na área de trabalho e no menu Iniciar e abre a tela. Rodar de novo
+atualiza sem perder configuração nem lista. A fonte é `instalador/INSTALAR.bat` no repositório (não vem no pacote).
+
+À mão, com o pacote completo:
 
 1. Descompacte o `.zip` numa pasta fácil, por exemplo `C:\LexSuiteONE`. A pasta pode ter qualquer nome; mantenha tudo
    junto, porque o robô guarda ali o `config.json`, o banco `lexsuite.db` e a pasta `saida`.
@@ -19,8 +27,9 @@ inteligência artificial e sem senha de ninguém. A planilha vai para a sua past
 4. **Atualizar agora**: os 24 TRTs já vêm escolhidos (em **Tribunais** dá para mudar: por região, por estado, por
    ramo ou "Selecionar todos"). A primeira rodada baixa o diário do dia de cada tribunal (de 5 a 150 MB cada): os 24
    TRTs levam de 30 a 60 minutos; depois, só o que é novo. O computador precisa estar **no Brasil**.
-5. No Drive, compartilhe a subpasta `LexSuiteONE` com o suporte (botão direito, Compartilhar, como editor). É a
-   única etapa que o robô não faz sozinho.
+5. No Drive, dê acesso de editor à subpasta `LexSuiteONE` para `integracao@solverone.com.br`, a conta de sistemas da
+   SolverONE (botão direito, Compartilhar). É a única etapa que o robô não faz sozinho. Dúvidas de pessoas vão para
+   `judicial@solverone.com.br`; `integracao@` não é lido por ninguém.
 
 Tribunais estaduais publicam diários muito maiores (o TJSP sozinho pode passar de 1 GB) e a regra de "ação nova"
 ainda não foi calibrada neles.

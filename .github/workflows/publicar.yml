@@ -94,6 +94,8 @@ jobs:
           cp /tmp/publicar/LexSuiteONE-robo.zip docs/downloads/LexSuiteONE-robo.zip
           cp /tmp/publicar/LexSuiteONE-robo.zip releases/LexSuiteONE-robo.zip
           cp /tmp/publicar/LexSuiteONE-robo.zip "releases/LexSuiteONE-robo-$VERSAO.zip"
-          git add docs/atualizacao docs/downloads releases
+          # O instalador de um arquivo lê docs/atualizacao/instalar.txt: refazer junto com o manifesto novo.
+          python ferramentas/marca.py
+          git add docs/atualizacao docs/downloads releases docs robo/MANUAL-DO-ESCRITORIO.html
           git commit -m "Publica a versão $VERSAO assinada (automação)" || echo "nada a publicar"
           git push origin main

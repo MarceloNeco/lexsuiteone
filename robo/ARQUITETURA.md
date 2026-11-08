@@ -1,4 +1,4 @@
-# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.5)
+# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.6)
 
 Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
 linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional
@@ -116,6 +116,9 @@ arquivo (ver `PENDENCIAS.md`).
 | Remetente dos e-mails | `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend; não recebe respostas |
 | Dúvidas do cliente | `judicial@solverone.com.br` (contato de toda a suíte LexSuiteONE; cada suíte tem o seu, ex. `moneytrio@`; `contato@` é o genérico da SolverONE) |
 | Compartilhamento do Drive | `integracao@solverone.com.br`: endereço de sistemas, não é caixa de atendimento; vira Conta Google para o Drive |
+| Contato de pessoas (suporte) | `judicial@solverone.com.br` (`preferencias.SUPORTE`): manual, aba Sobre e linha "suporte" da aba Controle; planilha antiga com `integracao@` passa a `judicial@` |
+| Instalação | `instalador/INSTALAR.bat` (fora do pacote), servido em `docs/downloads/Instalar-LexSuiteONE.zip`; lê `docs/atualizacao/instalar.txt` (gerado por `ferramentas/marca.py` a partir de `versao.json` e `marca.json`) e o ícone `docs/radar.ico` |
+| Manual | um só: `paginas/manual.html` gera o do site (`docs/manual.html`) e o do pacote (`robo/MANUAL-DO-ESCRITORIO.html`, com os marcadores `<!--OLA-->` e `<!--PARA_VOCE-->`) |
 
 A zona DNS de `solverone.com.br` está no Cloudflare desde 07/Nov/2026 (servidores `harlee` e `lennon.ns.cloudflare.com`),
 com DNSSEC ativo; o Claude altera registros pelo conector de API. O site segue no GitHub Pages, com proxy desligado.

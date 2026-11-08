@@ -1,64 +1,57 @@
-# Roteiro de instalação no cliente (quinta-feira) — LexSuiteONE v0.7.1
+# Roteiro de instalação no cliente — LexSuiteONE 0.7.6 (RADAR JUDICIAL)
 
-## Antes de sair de casa (uma vez)
+## Antes de sair de casa
 
-1. Gerar o par de chaves da atualização **no seu computador** (não no do cliente):
-   `python ferramentas\publicar.py gerar-chaves` (a pasta `ferramentas` está no pacote "só para desenvolvedor").
-   Guarde `chave_privada.txt` fora do Drive (pen drive ou cofre de senhas). Copie `chave_publica.txt` para a pasta do
-   robô que você vai levar. Anote a "impressão" que o comando mostra: ela aparece na tela do cliente e serve para conferir.
-2. Testar o pacote inteiro em casa, do zero, numa pasta nova: `ABRIR.bat` (instala o Python sozinho), Configuração com
-   a sua pasta do Drive, "Atualizar agora" com 2 TRTs. Conferir que `LexSuiteONE.xlsx` apareceu na pasta do Drive e
-   abre no Google Planilhas, com as abas Radar, Preferências e Exclusões.
-3. **A planilha não precisa ser levada.** O robô cria o `LexSuiteONE.xlsx` quando você clica em Salvar na Configuração
-   (no Drive de quem está instalando). O seu teste em casa cria a sua, no seu Drive; no cliente nasce outra, no dele.
-4. Depois do teste em casa, dois cliques em **`PREPARAR-PARA-CLIENTE.bat`**: ele apaga o `config.json`, o banco e as
-   saídas do seu teste e mantém o Python já instalado e a `chave_publica.txt`. Copie a pasta inteira para um pen drive:
-   no cliente não precisa nem baixar o Python.
+1. **Teste o instalador no seu computador.** Em judicial.solverone.com.br, "Baixar o RADAR JUDICIAL", abra o arquivo
+   baixado e dê dois cliques em `INSTALAR.bat`. Confira: o atalho **RADAR JUDICIAL** apareceu na área de trabalho, a
+   tela abriu no navegador, a Configuração aceitou a sua pasta do Drive e "Atualizar agora" com 2 TRTs criou a planilha
+   `LexSuiteONE.xlsx` na pasta `LexSuiteONE` do Drive.
+2. **Plano B no pen drive:** baixe também o pacote completo (link "Baixe o pacote completo" no fim da página inicial).
+   Serve se a rede do cliente bloquear o instalador.
+3. A planilha não precisa ser levada: ela nasce no Drive de quem instala, na primeira leitura.
 
-## No cliente (30 a 45 minutos, mais o tempo da primeira rodada)
+## No cliente (30 a 45 minutos, mais o tempo da primeira leitura)
 
 Perguntas antes de começar:
-- O computador tem o **Google Drive para computador** instalado? (Ícone na bandeja; pasta "Meu Drive" no Explorador.)
-  Se não tiver, instale pelo site do Google Drive com a conta dele, ou use o OneDrive.
-- Qual conta do Google é a do escritório? É nela que a planilha vai morar.
-- O computador fica ligado às 19:40 e às 07:10? (Para o `AGENDAR.bat`.)
+- O computador tem o **Google Drive para computador**? (Ícone na bandeja; pasta "Meu Drive" no Explorador.) Se não
+  tiver, instale pelo site do Google Drive, com a conta do escritório.
+- Qual conta Google é a do escritório? É nela que a planilha vai morar.
+- O computador fica ligado às 19h40 e às 7h10? (Horários das leituras automáticas.)
 
 Passos:
-1. Copiar a pasta do pen drive para `C:\LexSuiteONE` (ou descompactar o zip do Drive lá dentro).
-2. `ABRIR.bat` → se a pasta `python` não veio junto, ele instala sozinho; a tela abre. Em **Configuração**: nome do
-   escritório; pasta compartilhada = "Meu Drive" dele; "Testar pasta"; deixar "rodar sozinho" marcado → "Salvar".
-4. No Explorador, dentro de "Meu Drive", botão direito na subpasta **LexSuiteONE** → Compartilhar → o seu e-mail de
-   serviço (integracao@solverone.com.br, ou o seu Gmail até a conta existir) como **Editor**.
-5. "Atualizar agora" (os 24 TRTs já estão escolhidos; em Tribunais dá para reduzir a 2 ou 3 para a primeira rodada
-   ser rápida). Enquanto roda, mostrar a ficha, os filtros, a exportação e a planilha no Drive.
-6. Se o agendamento automático falhar (a Configuração avisa), `AGENDAR.bat` com botão direito → Executar como administrador.
-7. Deixar anotado para ele: `ABRIR.bat` abre a tela; a janela "LexSuiteONE" pode ficar minimizada; na planilha, as
-   abas Preferências e Exclusões são dele; o suporte vê o Log pela pasta compartilhada.
+1. No navegador do cliente, judicial.solverone.com.br, "Baixar o RADAR JUDICIAL". Abra o arquivo baixado e dê dois
+   cliques em `INSTALAR.bat` ("Executar"; ou "Mais informações" e "Executar assim mesmo"). Ele instala em
+   `C:\LexSuiteONE` (ou na pasta do usuário, se o Windows não deixar), cria o atalho e abre a tela.
+2. Na tela: escritório, quem vai usar, a pasta compartilhada ("Meu Drive"), "Testar pasta", "rodar sozinho" marcado.
+3. No Explorador, dentro de "Meu Drive", botão direito na subpasta **LexSuiteONE**, Compartilhar,
+   `integracao@solverone.com.br` (ou o seu Gmail até a conta existir) como **Editor**.
+4. "Atualizar agora" (os 24 TRTs já vêm escolhidos; em Tribunais dá para reduzir a 2 ou 3 para a primeira leitura ser
+   rápida). Enquanto roda, mostre a ficha, os filtros, a exportação e a planilha no Drive.
+5. Se o agendamento automático falhar (a Configuração avisa): em `C:\LexSuiteONE`, `AGENDAR.bat` com botão direito,
+   Executar como administrador.
+6. Deixe anotado: abre pelo atalho RADAR JUDICIAL; a janela preta "LexSuiteONE" pode ficar minimizada; as abas
+   Preferências e Exclusões da planilha são do escritório; dúvidas para **judicial@solverone.com.br**
+   (`integracao@` é só a conta de sistemas, ninguém lê).
+
+Plano B (o instalador não baixou): descompacte o pacote completo do pen drive em `C:\LexSuiteONE` e dê dois cliques em
+`ABRIR.bat`. Ele prepara o que falta e abre a mesma tela.
 
 ## Depois, do seu lado
 
-- Abrir a planilha compartilhada: abas ocultas Log (rodou? quantas?), Saúde (algum aviso?) e Sobre (versão, impressão da chave).
-- Para desligar, avisar ou exigir versão: editar a aba oculta Controle.
-- Para publicar uma versão: `python ferramentas\publicar.py empacotar --versao 0.7.1 --chave <sua chave privada>` e
-  copiar o zip e o `versao.json` para a subpasta `atualizacao` da pasta compartilhada do cliente. O robô instala na
-  próxima abertura ou quando ele clicar em "Verificar atualização".
+- Na planilha compartilhada, as abas ocultas Log (leu? quantas?), Saúde (algum aviso?) e Sobre (versão, impressão da chave).
+- Para desligar, avisar ou exigir versão: aba oculta Controle. A linha "suporte" já vem com `judicial@solverone.com.br`.
+- Versão nova: pela automação "Publicar versão assinada" (ver `docs/PUBLICAR.md` no repositório). O programa instalado
+  busca em judicial.solverone.com.br/atualizacao ao abrir, ou quando alguém clica em "Verificar atualização".
 
 ## Ensaio geral com uma segunda conta Google (simulando o cliente)
 
-Vale fazer antes de quinta, com a sua outra conta (a que vai fazer o papel de cliente):
-
-1. No computador de teste, instale o Google Drive para computador entrando com a conta "cliente". Aparece a pasta
-   "Meu Drive" dessa conta.
-2. Instale o robô numa pasta nova (`ABRIR.bat`), aponte a Configuração para esse "Meu Drive" e rode com 2 TRTs.
-   Confira a planilha `LexSuiteONE.xlsx` na pasta `LexSuiteONE` do Drive da conta cliente.
-3. No Drive da conta cliente, compartilhe a subpasta `LexSuiteONE` com a sua conta principal, como editor.
-4. Entre na sua conta principal: abra a planilha (abas ocultas em "Ver > Planilhas ocultas"). Mude `ativo` para `não`
-   na aba Controle e, no computador de teste, clique em "Atualizar agora": o robô deve recusar e mostrar a mensagem.
+1. No computador de teste, instale o Google Drive para computador com a conta "cliente".
+2. Instale pelo site (`INSTALAR.bat`), aponte a Configuração para o "Meu Drive" dessa conta e rode com 2 TRTs.
+3. No Drive da conta cliente, dê acesso de editor à subpasta `LexSuiteONE` para a sua conta principal.
+4. Na conta principal, abra a planilha (abas ocultas em "Ver > Planilhas ocultas"), mude `ativo` para `não` na aba
+   Controle e, no computador de teste, clique em "Atualizar agora": o programa deve recusar e mostrar a mensagem.
    Volte para `sim`.
-5. Gere uma versão de teste com `ferramentas\publicar.py empacotar --versao 0.7.1 ...`, copie o zip e o `versao.json`
-   para a subpasta `atualizacao` da pasta compartilhada (pela sua conta principal) e, no computador de teste, clique em
-   "Verificar atualização": o robô deve instalar e pedir para abrir de novo.
-6. No fim, `PREPARAR-PARA-CLIENTE.bat` e a pasta está pronta para o pen drive.
+5. Rode o `INSTALAR.bat` de novo: deve atualizar sem perder a configuração nem a lista.
 
 Na versão 0.8 a instalação vai pedir também um **código do cliente** (ligado à conta na nuvem); por enquanto a
 identificação é a própria pasta compartilhada.

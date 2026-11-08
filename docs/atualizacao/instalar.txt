@@ -1,0 +1,4 @@
+versao=0.7.5
+arquivo=LEXSUITE-ONE-ROBO-0.7.5.zip
+sha256=f789faff1c0904c5a1f3100447bdecc5fc77ccd5398226d06ac763b2c3fa1d9e
+nome=RADAR JUDICIAL

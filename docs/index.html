@@ -104,6 +104,7 @@ h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 26
 .onde .nuvem i { color: var(--noite); background: var(--latao); }
 .seguranca { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 48px; margin: 0; padding: 0 0 0 1.1em; color: var(--tinta-2); }
 .instalar .passos { margin-bottom: 26px; }
+.links-instalar { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; color: var(--tinta-3); }
 code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
 .rodape { border-top: 1px solid var(--fio); margin-top: 8px; padding-top: 26px; padding-bottom: 40px; color: var(--tinta-3); font-size: .92rem; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
@@ -155,8 +156,8 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
         <span class="suite">LexSuite<b>ONE</b></span>
         <h1 class="nome"><span class="marca-leve">RADAR</span> <strong>JUDIC<b>IA</b>L</strong></h1>
         <p class="lede" data-t="lede">Lê todo dia o Diário de Justiça Eletrônico Nacional e lista as ações novas contra empresas, com a ficha de cada uma.</p>
-        <a class="botao" href="downloads/LexSuiteONE-robo.zip" data-t="baixar">Baixar o RADAR JUDICIAL</a>
-        <span class="requisito" data-t="req">Para Windows 10 ou 11, num computador no Brasil, com Google Drive (OneDrive sob consulta). Arquivo .zip de 113&nbsp;KB.</span>
+        <a class="botao" href="downloads/Instalar-LexSuiteONE.zip" data-t="baixar">Baixar o RADAR JUDICIAL</a>
+        <span class="requisito" data-t="req">Para Windows 10 ou 11, num computador no Brasil, com Google Drive (OneDrive sob consulta). O instalador tem 3&nbsp;KB e baixa o resto sozinho.</span>
       </div>
       <div class="amostra" role="region" aria-label="Exemplo da lista" data-t-aria="am_aria">
         <header data-t="am_cab">Ações distribuídas em 06/Nov/2026 (exemplo, nomes fictícios)</header>
@@ -216,12 +217,12 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section class="instalar">
   <h2 data-t="inst">Instalar em quatro passos</h2>
   <ol class="passos quatro">
-    <li><b data-t="i1t">Baixe</b><span data-t="i1">Descompacte o arquivo numa pasta fácil, como <code>C:\LexSuiteONE</code>.</span></li>
-    <li><b data-t="i2t">Abra</b><span data-t="i2">Dois cliques em <code>ABRIR.bat</code>. Na primeira vez ele baixa o que precisa para funcionar (11 MB) e abre a tela.</span></li>
-    <li><b data-t="i3t">Configure</b><span data-t="i3">Informe o escritório, quem vai usar e a pasta da planilha. A primeira leitura começa em seguida.</span></li>
-    <li><b data-t="i4t">Dê acesso ao suporte</b><span data-t="i4">No Google Drive, dê ao suporte acesso de editor à pasta LexSuiteONE. É o único passo à mão.</span></li>
+    <li><b data-t="i1t">Instale</b><span data-t="i1">Abra o arquivo baixado e dê dois cliques em <code>INSTALAR.bat</code>. Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo").</span></li>
+    <li><b data-t="i2t">Configure</b><span data-t="i2">A tela abre sozinha: informe o escritório, quem vai usar e a pasta da planilha. A primeira leitura começa em seguida.</span></li>
+    <li><b data-t="i3t">Dê acesso à SolverONE</b><span data-t="i3">No Google Drive, dê acesso de editor à pasta LexSuiteONE para <code>integracao@solverone.com.br</code>, a conta de sistemas da SolverONE.</span></li>
+    <li><b data-t="i4t">Use o atalho</b><span data-t="i4">Daí em diante, abra pelo atalho RADAR JUDICIAL na área de trabalho.</span></li>
   </ol>
-  <a href="manual.html" data-t="manual">Ler o manual</a>
+  <p class="links-instalar"><a href="manual.html" data-t="manual">Ler o manual</a><span data-t="completo">Prefere instalar à mão? <a href="downloads/LexSuiteONE-robo.zip">Baixe o pacote completo</a> e descompacte.</span></p>
 </section>
 </main>
 
@@ -237,7 +238,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     manual_topo: "Manual",
     lede: "Reads Brazil's National Electronic Court Gazette every day and lists the new lawsuits filed against companies, with a profile of each one.",
     baixar: "Download RADAR JUDICIAL",
-    req: "For Windows 10 or 11, on a computer in Brazil, with Google Drive (OneDrive on request). A 113 KB .zip file.",
+    req: "For Windows 10 or 11, on a computer in Brazil, with Google Drive (OneDrive on request). The installer is 3 KB and downloads the rest by itself.",
     am_aria: "Sample list",
     am_cab: "Lawsuits filed on Nov/06/2026 (sample, fictitious names)", am_trib: "Court", am_emp: "Company", am_rito: "Procedure", am_valor: "Amount claimed",
     am_v1: "5th Labor Court of Guarulhos", am_v2: "2nd Labor Court of Campinas", am_v3: "1st Labor Court of Contagem",
@@ -264,11 +265,12 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     s5: "Updates install only after the digital signature is checked. The code is open for anyone to review.",
     s6: "Support sees only the folder the firm shares, never the computer.",
     inst: "Install in four steps",
-    i1t: "Download", i1: "Unzip the file into an easy folder, such as <code>C:\\LexSuiteONE</code>.",
-    i2t: "Open", i2: "Double-click <code>ABRIR.bat</code>. The first time, it downloads what it needs to run (11 MB) and opens the screen.",
-    i3t: "Set up", i3: "Enter the firm, who will use it and the spreadsheet folder. The first reading starts right after.",
-    i4t: "Give support access", i4: "In Google Drive, give support editor access to the LexSuiteONE folder. It is the only manual step.",
+    i1t: "Install", i1: "Open the downloaded file and double-click <code>INSTALAR.bat</code>. If Windows asks for confirmation, click \"Run\" (or \"More info\" and \"Run anyway\").",
+    i2t: "Set up", i2: "The screen opens by itself: enter the firm, who will use it and the spreadsheet folder. The first reading starts right after.",
+    i3t: "Give SolverONE access", i3: "In Google Drive, give <code>integracao@solverone.com.br</code>, SolverONE's systems account, editor access to the LexSuiteONE folder.",
+    i4t: "Use the shortcut", i4: "From then on, open it from the RADAR JUDICIAL shortcut on the desktop.",
     manual: "Read the manual",
+    completo: 'Prefer to install by hand? <a href="downloads/LexSuiteONE-robo.zip">Download the full package</a> and unzip it.',
     rod1: 'RADAR JUDICIAL is a LexSuiteONE product by <a href="https://solverone.com.br">SolverONE</a>.',
     rod2: 'Questions: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>' };
   var PT = {};

@@ -2,8 +2,8 @@ Olá, {{nome}}. Seu {{marca.nome}} está pronto.
 
 Todo dia, o {{marca.nome}} lê o Diário de Justiça Eletrônico Nacional nos tribunais que você escolher e lista as ações novas contra empresas, com a ficha de cada uma. A lista aparece na tela do {{marca.curto}} e numa planilha na sua pasta do Google Drive.
 
-Baixar o {{marca.nome}} (arquivo .zip, 113 KB, Windows 10 ou 11):
-https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip
+Baixar o {{marca.nome}} (instalador de 3 KB, Windows 10 ou 11):
+https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip
 
 [CODIGO-INICIO]
 Seu código de cliente: {{codigo}}
@@ -11,14 +11,14 @@ A tela pede esse código na instalação. Ele identifica o escritório; não é 
 
 [CODIGO-FIM]
 Como instalar, em quatro passos
-1. Descompacte o arquivo numa pasta fácil, como C:\LexSuiteONE.
-2. Dois cliques em ABRIR.bat. Na primeira vez ele baixa o que precisa para funcionar (11 MB) e abre a tela no navegador.
-3. Configure: informe o escritório, quem vai usar e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.
-4. No Google Drive, dê acesso de editor à pasta LexSuiteONE para {{drive}}. É o único passo à mão: por ele o suporte acompanha o {{marca.curto}} sem acessar o seu computador.
+1. Instale: abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Ele baixa o resto, prepara tudo e abre a tela no navegador.
+2. Configure: informe o escritório, quem vai usar e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.
+3. No Google Drive, dê acesso de editor à pasta LexSuiteONE para {{drive}}, a conta de sistemas da SolverONE. É o único passo à mão: por ela acompanhamos o {{marca.curto}} sem acessar o seu computador.
+4. Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho.
 
 Onde roda: no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o {{marca.curto}} lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.
 
-Se o Windows perguntar se confia no arquivo, clique em "Mais informações" e "Executar assim mesmo". O manual completo abre dentro da própria tela, no link "Manual do escritório".
+Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual do escritório".
 
 Segurança, em uma linha: o {{marca.curto}} não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.
 
