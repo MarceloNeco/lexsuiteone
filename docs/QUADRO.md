@@ -29,10 +29,13 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
-- 08/Nov: **0.7.12 na `main`, pronta para publicar** (itens 38 e 39): Painel com números e gráficos ao lado da Lista;
-  planilha com cabeçalho azul-marinho, filtro, R$, destaque e aba "Como usar". 101 testes, revisor sem bloqueio.
-  **Decisão do dono (08/Nov): pular a publicação da 0.7.11 e publicar direto a 0.7.12**, que contém tudo da 0.7.11.
-  Falta a Operação publicar com o "publica a versão 0.7.12" do dono.
+- 08/Nov: **0.7.12 publicada** (20:43 UTC) com o "publica a versão 0.7.12" do dono, pulando a 0.7.11 (a 0.7.12 contém tudo
+  dela): Painel com números e gráficos ao lado da Lista; planilha com cabeçalho azul-marinho, filtro, R$, destaque e aba
+  "Como usar". Revisor aprovou sem bloqueio (101 testes, Bandit limpo); automação da `main` verde em `8759f27`; versão no
+  commit `68e2679` (tag `v0.7.12`; sobre o `8759f27` só acrescentou documentos), publicada pela automação em `a593a95`. Conferido por fora:
+  hash e assinatura batem com a chave do download; **40 arquivos no download completo e 39 no pacote de atualização**;
+  versão dentro dos dois é 0.7.12; nenhum arquivo proibido nem código de cliente real; o site serve `versao.json`, o
+  instalador e o pacote (mesmo hash do repositório). Ressalvas do revisor viram pedido à Produto.
 - 08/Nov: **0.7.10 publicada** (16:39 UTC) com o "pode" do dono: revisor aprovou, automação da `main` verde, versão no commit `dc609bc` (tag
   `v0.7.10`), publicada pela automação em `eef4306`. Conferido por fora: hash e assinatura do pacote batem com a chave que vai no download, a versão dentro dos dois
   pacotes é 0.7.10, nenhum arquivo proibido nem código de cliente real, o site serve `versao.json` e os downloads.
@@ -174,7 +177,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | SQL das licenças | Aplicado em 08/Nov pela Produto com aprovação do dono pelo aplicativo, sem leitura do texto. Não é violação a registrar. Daqui em diante: SQL vai para arquivo, anotado no quadro, e o dono roda depois de revisar. Segurança do que foi aplicado (cinco pontos, função sem JWT, limite de chamadas): pendência da Arquitetura. | Arquitetura |
 | Instalador | Exige código de cliente válido antes de baixar. O e-mail de boas-vindas ao Leandro precisa levar o código. | Produto, Operação |
 | Site | Carrossel novo publicado em 08/Nov com o "pode" do dono. Falta teste no iPhone (o dono). | Produto |
-| Versão publicada | 0.7.10, publicada pela Operação em 08/Nov (16:39 UTC) com o "pode" do dono; hash e assinatura conferidos, site e downloads servem a 0.7.10, tag `v0.7.10`. Quem já tem a 0.7.9 recebe pela atualização assinada. | Operação |
+| Versão publicada | 0.7.12, publicada pela Operação em 08/Nov (20:43 UTC) com o "pode" do dono (a 0.7.11 foi pulada e está dentro dela); hash e assinatura conferidos, 40 e 39 arquivos nos pacotes, site e downloads servem a 0.7.12, tag `v0.7.12`. Quem já tem a 0.7.10 recebe pela atualização assinada. | Operação |
 | Worker `integracao-resposta` | Correção do segundo bounce aplicada e testada em 08/Nov (15:18 UTC): serviço de envio é só encaminhado; pessoa recebe a resposta. Versão anterior guardada na Cloudflare. | Operação |
 | Documentos internos em `docs/` | Ficam públicos no site. Mudança para `documentacao/` aprovada pelo dono **para depois de quinta 12/Nov** (Arquitetura faz e ajusta os caminhos). Documentos internos novos já nascem em `documentacao/`. | Arquitetura |
 | Desenho da 0.8 | Na branch `claude/friendly-einstein-li603e` (Arquitetura), seções 3 a 7 sendo reescritas em cima do que a Produto construiu. Entra na `main` em `documentacao/` quando ficar coerente. | Arquitetura |
@@ -202,6 +205,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 08/Nov | Produto | Arquitetura | **Ideia para depois de quinta (não é prioridade):** planilha numa pasta de rede ou Drive compartilhado, usada por várias pessoas (trava do Excel, vários computadores, edição das abas do escritório). Prompt em `documentacao/IDEIA-PLANILHA-EM-REDE.md` | não |
 | 08/Nov | Produto | Arquitetura | (1) Ajustar a regra "Pessoa física nunca sai do robô" do `CLAUDE.md` à decisão do dono de 08/Nov (tabela de decisões abaixo): parte com CNPJ em cadastro público (MEI, empresário individual) aparece; reclamante e quem não tem CNPJ público continuam fora. (2) **Trilha de auditoria** para todos os produtos: cada mudança de configuração e de controle (ativo, valor mínimo, preferências, exclusões, tribunais, horários, licença) registrada com quem, quando (data e hora com fuso) e o antes/depois, num banco e não só na planilha (a planilha é controle extra). Desenhar onde fica (banco local do programa e/ou nuvem, ex.: `lex_eventos`), o que é dado pessoal e por quanto tempo guarda | não |
 | 08/Nov | Produto | Arquitetura | Contatos (itens 40 e 41 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`): o dono quer todos os contatos disponíveis da empresa e dos sócios e, quando faltarem, um fluxo para completá-los pela área logada do PJe com o Claude in Chrome (o RADAR gera o arquivo de busca; a resposta em Markdown volta colada no RADAR e completa tela e planilha). Desenhar: o que pode ser guardado (dado pessoal de sócio só se publicado como contato comercial, com fonte e data), formato do arquivo e da resposta, onde fica o histórico (quem colou, quando, fuso), e o que o compliance valida. A Produto implementa a tela e a planilha depois do desenho | sim (Arquitetura, 08/Nov): desenho curto em `documentacao/DESENHO-CONTATOS.md`, com 5 perguntas ao dono; implementação pela Produto depois do "pode" |
+| 08/Nov | Operação | Produto | Ressalvas da revisão da 0.7.12 (publicada; nada bloqueou). (1) Vão no pacote: `robo/ROTEIRO-INSTALACAO.md` linha 1 diz 0.7.11 e `robo/SEGURANCA.md` linha 1 diz v0.7.1. (2) `robo/lexsuite/radar.py` linhas 248 a 250: `gravar_planilha` ignora o retorno de `gravar_radar` e responde sucesso mesmo com a planilha ilegível ou em uso (o botão "Gravar a planilha agora" diz "Planilha atualizada" sem gravar); sugestão do revisor: devolver `bool` do retorno. (3) `robo/lexsuite/app.py` linha 410: `/reiniciar` não recusa durante uma leitura, ao contrário de `/atualizar`. (4) Cosmético: a janela preta pode mostrar "Receita: 50 de 40" (`radar.py` 194 a 211) e a consulta de versão sem internet fica em cache por 30 minutos (`app.py` 278 a 283). (5) Texto: `robo/PENDENCIAS.md` linha 174 (0.7.11 "publicada ou a publicar"), `robo/ARQUITETURA.md` sem os itens da 0.7.11 (`/versao-nova`, `/reiniciar`, `/gravar-planilha`, `--espera`, `procurar_aberto`, dias com Diário) e `paginas/manual.html` linhas 161 a 165 sem a aba "Como usar" e o Painel. Para quem atualiza da 0.7.10 pela tela: ela diz "feche a janela e abra de novo"; quem não fechar a janela preta continua na versão antiga. Nada foi alterado | não |
 
 ## Decisões do dono registradas aqui
 
