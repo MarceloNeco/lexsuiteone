@@ -6,7 +6,7 @@ puro, obrigatória para não cair em spam). Campos a preencher:
 | Campo | O que entra | Padrão |
 |---|---|---|
 | `{{nome}}` | primeiro nome de quem recebe | (obrigatório) |
-| `{{contato}}` | e-mail para dúvidas; o cliente escreve para ele, nunca responde ao e-mail | `contato@solverone.com.br` |
+| `{{contato}}` | e-mail para dúvidas; o cliente escreve para ele, nunca responde ao e-mail | `judicial@solverone.com.br` (contato de toda a suíte LexSuiteONE; `contato@` é o genérico da SolverONE) |
 | `{{drive}}` | endereço de sistemas da SolverONE, com quem o cliente compartilha a subpasta LexSuiteONE do Drive (não é caixa de atendimento) | `integracao@solverone.com.br` |
 | `{{codigo}}` | código de cliente `LEX-XXXX-XXXX`, opcional; entra em uso com a versão 0.8 | (sem código, o bloco sai) |
 

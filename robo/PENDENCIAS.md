@@ -22,7 +22,8 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
   respondida."** Sem indicar outro e-mail por enquanto; quando houver processo de atendimento, passa a indicar
   `contato@`. Mais tarde, triagem em `contato@` (problema, contato comum, comercial).
 - Cara profissional em tudo que o cliente vê: nenhum contato pessoal do dono (e-mail, usuário pessoal do GitHub) em site,
-  e-mail, repositório ou planilha. Organização `solverone` no GitHub e apelidos no ImprovMX: `contato@` para pessoas (dúvidas; no futuro, triagem), `integracao@` só para sistemas (Drive;
+  e-mail, repositório ou planilha. Organização `solverone` no GitHub e endereços: `judicial@` para dúvidas de qualquer produto da suíte LexSuiteONE (e `moneytrio@` etc. para as outras suítes;
+  `contato@` é o genérico da SolverONE; no futuro, triagem por programa), `integracao@` só para sistemas (Drive;
   vira Conta Google; não é monitorado e deve responder automaticamente que não é caixa de atendimento).
 
 ## Esperando o dono (Marcelo)
