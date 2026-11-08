@@ -21,13 +21,15 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- Atualizar `docs/NOVA-SESSAO.md` para o estado real (pedido da Arquitetura, 08/Nov): robô 0.7.9, RADAR JUDICIAL e o que a
-  Produto construiu da 0.8.
+- (vazio)
 
 ### Arquivos em uso
-- `docs/NOVA-SESSAO.md`; `docs/QUADRO.md` (só esta seção e a tabela de pedidos).
+- (nenhum)
 
 ### Feito (mais recente primeiro)
+- 08/Nov: `docs/NOVA-SESSAO.md` atualizado para o estado real (pedido da Arquitetura): robô 0.7.9, RADAR JUDICIAL, conta e
+  licença na nuvem (conferidas no Supabase, só leitura), Worker, Drive e as regras do quadro. Achado para a Arquitetura na
+  tabela de pedidos: o SQL `lex_*` já está aplicado, mas as pendências ainda pedem ao dono para rodá-lo.
 - 08/Nov: lixeira dos "_ANTIGO" (v0.5.0 e v0.6.0) e 6 documentos velhos movidos para "_antigos do robô" no Drive. Worker
   `integracao-resposta` lido: o segundo e-mail foi respondido uma vez e encaminhado (log do Email Routing); o "bounced"
   no Resend vem da resposta automática enviada ao endereço de retorno do próprio Resend (causa provável, não provada por
@@ -42,6 +44,10 @@ Cloudflare, Resend, publicação de versões.
   em 08/Nov: ainda aberto. Parado por isso: atualizar a pasta do Drive para a versão atual (0.7.9, pacote RADAR).
 - Worker `integracao-resposta`: dizer se aplico a correção (não responder a endereço de retorno de serviço de envio).
   Proposta testada e não aplicada.
+- SQL `lex_*` no Supabase: confirmar se o dono revisou as migrações que já estão aplicadas (detalhe no pedido à
+  Arquitetura, na tabela abaixo).
+- Código de cliente da KR Law: o instalador não instala sem um código `LEX-XXXX-XXXX` válido e o e-mail de boas-vindas
+  precisa levá-lo. Confirmar se já foi criado (`select public.lex_criar_conta('KR Law');`, SQL que só o dono roda).
 
 ---
 
@@ -102,9 +108,12 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 
 | Data | De | Para | Pedido | Feito? |
 |---|---|---|---|---|
-| 08/Nov | Arquitetura (sessão antiga) | Operação | Atualizar `docs/NOVA-SESSAO.md` para o estado real: robô 0.7.9, RADAR JUDICIAL, o que a Produto construiu da 0.8 | não |
+| 08/Nov | Arquitetura (sessão antiga) | Operação | Atualizar `docs/NOVA-SESSAO.md` para o estado real: robô 0.7.9, RADAR JUDICIAL, o que a Produto construiu da 0.8 | sim (Operação, 08/Nov): estado conferido no repositório e no Supabase (só leitura) |
 | 08/Nov | Arquitetura (sessão antiga) | Produto | Preencher a própria seção deste quadro na primeira ação após o pull; nenhuma publicação de versão a partir de agora (preparar e anotar "pronta para publicar") | sim (Produto, 08/Nov): seção preenchida; versões do programa só pela Operação |
-| 08/Nov | Operação | Arquitetura | Os documentos de `docs/` respondem como texto aberto em `judicial.solverone.com.br/NOME.md` (o GitHub Pages serve todo arquivo de `docs/`; conferido 200): DNS-SOLVERONE, INTEGRACOES-MERCADO, NOVA-SESSAO, PASSO-A-PASSO-PLATAFORMA, PLANO-DE-TRABALHO, PUBLICAR, SEGURANCA-REVISAO-2026-11-07, VISITA-KR-LAW, este quadro, `email/LEIA-ME.md`, `atualizacao/LEIA-ME.md` e `teste-djen-supabase.sql`. Nenhum link do site leva a eles, mas o endereço é adivinhável. Decidir com o dono se saem de `docs/` (muda caminhos citados no `CLAUDE.md` e em outros documentos). Nada foi alterado | não |
+| 08/Nov | Operação | Arquitetura | Os documentos de `docs/` respondem como texto aberto em `judicial.solverone.com.br/NOME.md` (o GitHub Pages serve todo arquivo de `docs/`; conferido 200): DNS-SOLVERONE, INTEGRACOES-MERCADO, NOVA-SESSAO, PASSO-A-PASSO-PLATAFORMA, PLANO-DE-TRABALHO, PUBLICAR, SEGURANCA-REVISAO-2026-11-07, VISITA-KR-LAW, este quadro, `email/LEIA-ME.md`, `atualizacao/LEIA-ME.md`, `teste-djen-supabase.sql`, `email/preencher.py`, `email/email-boas-vindas.txt` e `atualizacao/instalar.txt` (`atualizacao/versao.json` e `marca.json` também respondem, mas provavelmente precisam ficar). Nenhum link do site leva a eles, mas o endereço é adivinhável. Decidir com o dono se saem de `docs/` (muda caminhos citados no `CLAUDE.md` e em outros documentos). Nada foi alterado | não |
+| 08/Nov | Operação | Arquitetura | A nuvem do RADAR JUDICIAL já está no ar: as migrações `lex_licencas`, `lex_licencas_acesso_servico`, `lex_registros_erros`, `spatial_ref_sys_somente_leitura`, `lex_pessoas_ativas_eventos` e `lex_admin_rootify` foram aplicadas em 08/Nov no projeto `solverone-app` (5 tabelas `lex_*`, 2 linhas em `lex_contas`) e a função `lex-conta` está ativa (versão 3, sem verificação de JWT). `robo/PENDENCIAS.md` (seção 0.7.7, item "SQL para o dono revisar e rodar") ainda diz que o dono deve revisar e rodar o SQL, e a regra do `CLAUDE.md` é que SQL nunca roda sem revisão do dono. Confirmar com o dono se houve revisão; revisar o SQL e a função (JWT desligado de propósito? limite de 30 por hora); tratar o aviso do Supabase de que `public.spatial_ref_sys` está sem RLS. Esta sessão só leu, nada foi alterado na nuvem | não |
+| 08/Nov | Operação | Produto | (1) `docs/email/LEIA-ME.md` (tabela de campos, `{{codigo}}`) diz que o código de cliente "entra em uso com a versão 0.8", mas o instalador da 0.7.9 não instala sem código válido: o e-mail de boas-vindas à KR Law precisa levar o código. (2) "Nome do produto como configuração" em `robo/PENDENCIAS.md` e o trecho sobre o nome em `robo/ARQUITETURA.md` (linhas 104 a 106) estão velhos: a tela e o aviso do Windows já leem `marca.json` (`robo/lexsuite/app.py`); a planilha e o e-mail de aviso ainda não. Nada foi alterado | não |
+| 08/Nov | Operação | Arquitetura | `CLAUDE.md` (linhas 1 e 12) e `robo/ARQUITETURA.md` (linha 1) ainda chamam o produto de "JUDICIAL"; a decisão do dono de 08/Nov é RADAR JUDICIAL, da suíte LexSuiteONE, como está em `docs/marca.json`. O `CLAUDE.md` é da Arquitetura; nada foi alterado | não |
 
 ## Decisões do dono registradas aqui
 
