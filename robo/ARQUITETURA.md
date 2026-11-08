@@ -1,4 +1,4 @@
-# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.8)
+# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.9)
 
 Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
 linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional
@@ -28,7 +28,7 @@ e trocável, com a chave do próprio escritório, nunca no caminho principal.
 | `lexsuite/prazos.py` | publicação (D+1 útil), início do prazo (D+2 útil), vencimento estimado; feriados nacionais e forenses, recesso e suspensão de 20/12 a 20/01 | feriados |
 | `lexsuite/pauta.py` | pauta pública de audiências do PJe (segunda fonte, roda de qualquer lugar) | tipos de audiência aceitos |
 | `lexsuite/classificar.py` | regras: empresa × pessoa física, CNPJ, valor da causa, nota 0–100 com motivos, carteira de clientes | pesos da nota |
-| `lexsuite/conta.py` | licença do escritório: código `LEX-XXXX-XXXX` conferido na função `lex-conta` do Supabase (sem chave no programa) ao abrir e antes de cada leitura; cadastro de quem usa (e-mail é a chave, um escritório por e-mail) e do CNPJ; bloqueia sem código, desconhecido, desativado, vencido ou 15 dias sem resposta | `DIAS_SEM_RESPOSTA`, `URL_PADRAO` |
+| `lexsuite/conta.py` | licença do escritório: código `LEX-XXXX-XXXX` conferido na função `lex-conta` do Supabase (sem chave no programa) ao abrir e antes de cada leitura; cadastro de quem usa (e-mail é a chave, um escritório por e-mail) e do CNPJ; bloqueia sem código, desconhecido, desativado, vencido ou 15 dias sem resposta. Na nuvem (`nuvem/supabase`): pessoa ativa = num computador e vista em 30 dias; só ativas contam no limite; histórico em `lex_eventos`; a tela Clientes → Licenças do RADAR do RootifyONE usa `lex-admin.sql`. Na tela (0.7.9), o perfil (iniciais no alto) muda um dado por vez pelo `POST /config` | `DIAS_SEM_RESPOSTA`, `URL_PADRAO` |
 | `lexsuite/cnpj.py` | cadastro público da empresa pela Receita (BrasilAPI / Minha Receita), com cache: porte, capital, CNAE principal e secundários, cidade, telefone, e-mail, sócios e administradores | campos da empresa |
 | `lexsuite/banco.py` | SQLite `lexsuite.db`: leads (ações), publicacoes (nossos processos), rodadas, cadernos, cache de CNPJ, execucoes | tabelas (na fase SaaS viram tabelas do Supabase) |
 | `lexsuite/saidas.py` | CSV (; + BOM, abre no Excel), painel HTML e dados.json | colunas da planilha |

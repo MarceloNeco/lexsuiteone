@@ -162,6 +162,17 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## Feito em 08/Nov (a, b, c do dono)
+
+- **A (nuvem, já aplicado):** pessoa ativa ou inativa, última vez, histórico (cadastro, troca de pessoa, alteração,
+  acesso por dia) e limite contando só pessoas ativas (`lex-conta` v3, `lex-licencas.sql`, `lex-admin.sql`).
+- **B (programa 0.7.9, publicar só com o "pode" do dono):** perfil pelas iniciais no alto da tela, com um lápis ✏️ por
+  dado (nome, e-mail, função, escritório); trocar o e-mail avisa que outra pessoa vai usar o computador; o topo não
+  mostra mais o nome do escritório nem "Olá"; Configuração fica com código, pasta e leituras automáticas; no passo a
+  passo, cada campo é guardado ao sair dele, e ele volta enquanto o cadastro (e-mail) não estiver feito.
+- **C (RootifyONE 0.18.13):** Clientes → Licenças do RADAR: lista, Criar licença (código para escritório novo), ficha
+  com ativar/desativar, validade, limite e mensagem, pessoas, computadores, histórico e erros; aba "Erros sem código".
+
 ## v0.7.x (ainda do robô local)
 
 - Privacidade: trocar o trecho de 600 caracteres guardado no banco por rótulos (assunto, rito), eliminando o único

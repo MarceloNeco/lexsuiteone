@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.8 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.9 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -23,7 +23,10 @@ atualiza sem perder configuração nem lista. A fonte é `instalador/INSTALAR.ba
    manual passam a falar com você), o nome do escritório, a **pasta compartilhada** (a tela lista as pastas do Google
    Drive para computador e do OneDrive que achou; "Testar pasta" confirma) e a opção **rodar sozinho todo dia**
    (19:40 e 07:10, já marcada). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE.xlsx` no Drive,
-   agenda as rodadas e dispara a primeira. Tudo isso pode ser mudado depois em **Configuração**.
+   agenda as rodadas e dispara a primeira. Cada campo do passo a passo fica guardado ao sair dele (fechar a tela no meio
+   não perde o que foi digitado). Depois, quem usa (nome, e-mail, função, escritório) muda no **perfil** (as iniciais no
+   alto da tela, um lápis ✏️ por dado; trocar o e-mail = outra pessoa usando o computador) e o código, a pasta e as
+   leituras automáticas, em **Configuração**.
 4. **Atualizar agora**: os 24 TRTs já vêm escolhidos (em **Tribunais** dá para mudar: por região, por estado, por
    ramo ou "Selecionar todos"). A primeira rodada baixa o diário do dia de cada tribunal (de 5 a 150 MB cada): os 24
    TRTs levam de 30 a 60 minutos; depois, só o que é novo. O computador precisa estar **no Brasil**.

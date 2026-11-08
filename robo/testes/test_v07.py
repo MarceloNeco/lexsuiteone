@@ -296,3 +296,29 @@ class Wizard(AppV07):
         c = http.client.HTTPConnection("127.0.0.1", self.porta, timeout=10)
         c.request("GET", "/manual"); html = c.getresponse().read().decode("utf-8"); c.close()
         self.assertIn("Olá, &lt;b&gt;x&lt;/b&gt;.", html)
+
+    def test_perfil_manda_a_funcao_vazia_e_a_tela_tem_o_perfil(self):
+        # 0.7.9: o perfil muda um dado por vez; tirar a função também precisa chegar à licença na nuvem.
+        from lexsuite import conta
+        chamadas = []
+        original = conta.cadastrar
+        def falso(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj"):
+            chamadas.append({"email": email, "nome": nome, "papel": papel})
+            cfg["usuario"].update({"email": email, "nome": nome, "papel": papel})
+            return True, ""
+        conta.cadastrar = falso
+        try:
+            self.pedir("POST", "/config", {"nome": "Ana", "papel": "Advogado ou advogada"})
+            status, r = self.pedir("POST", "/config", {"papel": "", "email": "ana@example.com"})
+            self.assertTrue(r["ok"], r)
+            self.assertEqual(chamadas[-1], {"email": "ana@example.com", "nome": "Ana", "papel": ""})
+            status, r = self.pedir("POST", "/config", {"nome": "Ana Souza", "email": "ana@example.com"})
+            self.assertEqual(chamadas[-1]["nome"], "Ana Souza")
+        finally:
+            conta.cadastrar = original
+        with open(os.path.join(ROBO, "radar_modelo.html"), encoding="utf-8") as f:
+            tela = f.read()
+        for marca in ('id="b-perfil"', 'id="pf-lista"', "troca_aviso", "guardarCampo"):
+            self.assertIn(marca, tela)
+        for antigo in ('id="c-nome"', 'id="c-email"', 'id="ola"'):
+            self.assertNotIn(antigo, tela)

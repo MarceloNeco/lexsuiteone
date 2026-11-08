@@ -258,7 +258,8 @@ class Tratador(BaseHTTPRequestHandler):
                     cfg["escritorio"] = str(corpo["escritorio"] or "").strip()[:80]
                 doc_atual = cfg.get("documento_escritorio") or {}
                 ok, motivo = conta.cadastrar(cfg, VERSAO, corpo.get("email"), corpo.get("nome") or cfg["usuario"].get("nome"),
-                                             corpo.get("documento") or doc_atual.get("numero"), corpo.get("papel") or cfg["usuario"].get("papel"),
+                                             corpo.get("documento") or doc_atual.get("numero"),
+                                             corpo["papel"] if "papel" in corpo else cfg["usuario"].get("papel"),
                                              doc_tipo=corpo.get("doc_tipo") or doc_atual.get("tipo") or "cnpj")
                 if not ok:
                     return self._responder({"ok": False, "motivo": motivo, "conta": conta.situacao(cfg)})
