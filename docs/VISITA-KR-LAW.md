@@ -5,6 +5,36 @@ no computador do Leandro, com o consentimento dele, para aprender como os sistem
 Nada aqui produz efeito nos sistemas: é leitura e anotação. Os textos originais estão também nos Google Docs "Prompt 1"
 e "Prompt 2" do projeto; este arquivo é a cópia de referência no repositório.
 
+## Ordem do dia (quinta 12/Nov)
+
+Links para abrir no celular, todos sem login: este arquivo; instalação em
+[`robo/ROTEIRO-INSTALACAO.md`](https://github.com/MarceloNeco/lexsuiteone/blob/main/robo/ROTEIRO-INSTALACAO.md);
+manual em https://judicial.solverone.com.br/manual.html; pacote em https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip.
+
+**Antes, em casa (até quarta).** Ensaio da instalação no PC do dono com a segunda conta Google, `DIAGNOSTICO.bat` e uma
+rodada real; e-mail de boas-vindas já enviado ao Leandro (sessão de operação). Confirmar com o Leandro: certificado digital
+em mãos para o PJe; qual conta Google do escritório recebe a planilha; se o escritório tem conta Claude com a extensão
+Claude in Chrome. Se não tiver, a extensão roda num perfil novo do Chrome dele ("Visita SolverONE") com a conta do dono,
+e o perfil é apagado no fim. O notebook do dono não recebe login nem certificado de ninguém.
+
+1. **Chegada (15 min).** Explicar o que vai acontecer e pedir o OK: instalar o robô e três observações só de leitura com a
+   extensão, sem senhas. Combinar um processo de referência no TRT2 e um no TRT15. Preparar o Chrome (perfil, extensão,
+   modelo Sonnet).
+2. **Instalar o robô (45 a 60 min).** Seguir o `ROTEIRO-INSTALACAO.md`: baixar o pacote do site, `DIAGNOSTICO.bat`,
+   configurar, ligar a planilha ao Drive do escritório e compartilhar com `integracao@solverone.com.br`, agendar a rodada
+   diária e iniciar a primeira rodada agora (demora: deixar rodando).
+3. **Enquanto roda: Prompt 3, Astrea (20 a 30 min).** O Leandro entra no Astrea; depois a extensão entra na aba.
+4. **Prompt 1, PJe (30 a 45 min).** TRT2 e depois TRT15. O Leandro faz o login com o certificado; a extensão para sempre
+   que o site pedir token ou certificado.
+5. **Lista do dia pronta.** Mostrar na tela local e na planilha; validar 3 ou 4 itens com o Leandro (é ação nova? é
+   empresa? a comarca interessa?); anotar as regras que ele quer ajustar. Escolher 3 empresas para o Prompt 2, que pode
+   rodar em casa.
+6. **Fechamento (15 min).** Conferir: rodada agendada, planilha compartilhada, Leandro sabe abrir a tela e a planilha,
+   manual e `judicial@solverone.com.br` como contato. Apagar o perfil do Chrome se usou a conta do dono. Guardar os
+   relatórios dos prompts (sem dado de pessoa física). Anotar feedbacks e dizer o que vem na 0.8.
+
+Depois: relatórios e feedbacks vão para a sessão de Produto; dúvidas de instalação e e-mail, para a sessão de Operação.
+
 ## Regras que valem para os três prompts
 
 - **Nunca pedir, digitar, copiar, fotografar ou anotar senha, token, código de certificado ou qualquer credencial.** O
