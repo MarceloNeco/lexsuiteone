@@ -208,7 +208,13 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
             <button type="button" class="botao-sec" id="cel-copiar" data-t="cel_copiar">Copiar o link</button>
           </div>
         </div>
-        <span class="requisito" data-t="req">Para Windows 10 ou 11, num computador no Brasil, com Google Drive (OneDrive sob consulta). O instalador tem 3&nbsp;KB e baixa o resto sozinho.</span>
+        <div class="so-computador" id="no-mac" hidden>
+          <p data-t="mac_txt">Usa Mac? A versão para Mac é sob consulta: fale com a gente e combinamos a melhor forma de instalar.</p>
+          <div class="cel-botoes">
+            <a class="botao" href="mailto:judicial@solverone.com.br?subject=RADAR JUDICIAL%20no%20Mac" data-t="mac_botao">Falar com a gente</a>
+          </div>
+        </div>
+        <span class="requisito" data-t="req">Para Windows 10 ou 11 (Mac sob consulta), num computador no Brasil, com Google Drive (OneDrive sob consulta). O instalador tem 3&nbsp;KB e baixa o resto sozinho.</span>
       </div>
       <div class="amostra" role="region" aria-label="Exemplo da lista" data-t-aria="am_aria">
         <header data-t="am_cab">Processos distribuídos em 06/Nov/2026 (exemplo, nomes fictícios)</header>
@@ -313,8 +319,8 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     manual_topo: "Manual",
     lede: "Monitors Brazil's National Electronic Court Gazette (DJEN) daily and lists new lawsuits filed against companies, with each company's registry profile.",
     baixar: "Download RADAR JUDICIAL",
-    cel_txt: "RADAR JUDICIAL is installed on a computer with Windows 10 or 11. Open this address on the computer to install.", cel_email: "E-mail me the link", cel_copiar: "Copy the link", cel_copiado: "Link copied",
-    req: "For Windows 10 or 11, on a computer in Brazil, with Google Drive (OneDrive on request). The installer is 3 KB and downloads the rest by itself.",
+    cel_txt: "RADAR JUDICIAL is installed on a computer with Windows 10 or 11. Open this address on the computer to install.", cel_email: "E-mail me the link", cel_copiar: "Copy the link", cel_copiado: "Link copied", mac_txt: "Using a Mac? The Mac version is available on request: talk to us and we will set up the best way to install it.", mac_botao: "Talk to us",
+    req: "For Windows 10 or 11 (Mac on request), on a computer in Brazil, with Google Drive (OneDrive on request). The installer is 3 KB and downloads the rest by itself.",
     am_aria: "Sample list",
     am_cab: "Lawsuits filed on Nov/06/2026 (sample, fictitious names)", am_trib: "Court", am_emp: "Company, activity and size", am_rito: "Procedure", am_valor: "Amount claimed",
     am_v1: "5th Labor Court of Guarulhos", am_v2: "2nd Labor Court of Campinas", am_v3: "1st Labor Court of Contagem",
@@ -375,8 +381,10 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   (function () {
     var ua = navigator.userAgent || "", windows = /Windows NT/i.test(ua) && !/Windows Phone/i.test(ua);
     if (windows) return;
+    // Mac de verdade (o iPad também diz "Macintosh", mas tem tela de toque): versão sob consulta.
+    var mac = /Macintosh/i.test(ua) && !(navigator.maxTouchPoints > 0);
     document.getElementById("b-baixar").hidden = true;
-    document.getElementById("so-computador").hidden = false;
+    document.getElementById(mac ? "no-mac" : "so-computador").hidden = false;
     var req = document.querySelector(".requisito"); if (req) req.hidden = true;
     var completo = document.querySelector('[data-t="completo"]'); if (completo) completo.hidden = true;
     document.getElementById("cel-copiar").addEventListener("click", function () {

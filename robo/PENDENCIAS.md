@@ -99,6 +99,10 @@ O que falta para a ficha de canais:
 - A "mira" do escritório (passo 1 do site, decisão do dono 08/Nov): em poucos cliques, frente, tribunais, valor mínimo e
   exclusões (existem); faltam **filtro por porte** (a Receita traz microempresa, pequena, média ou grande) e **horário
   ajustável das leituras** (hoje fixo em 19h40 e 7h10). Ambos mexem no pacote.
+- **Mac (decisão do dono, 08/Nov):** o site trata Mac como "sob consulta" (requisito e mensagem com contato em
+  judicial@), sem recusar o público. Para atender de verdade: o programa já é só Python padrão; faltam o instalador
+  `.command` (ou `.pkg`), o agendamento pelo launchd no lugar do Agendador do Windows e a detecção da pasta do Google
+  Drive no Mac. Alternativa: a versão na nuvem (1.0), que dispensa instalação.
 - Falta depois: confirmação do e-mail por código (Resend); tela de licenças no RootifyONE; termos de uso e aviso de
   privacidade do cadastro; trocar a licença MIT antes de vender em escala (decisão do dono).
 
