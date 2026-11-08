@@ -22,6 +22,7 @@ depois). Lista viva da Produto: cada item vira proposta, o dono dá o "pode", a 
 | 14 | Parecem duas planilhas | É uma só (`LexSuiteONE.xlsx`); o `LexSuiteONE - Radar.html` é uma cópia da tela para abrir no celular. Dar um nome claro à cópia ("Lista para abrir no celular.html") e explicar no assistente | "pode" |
 | 15 | Como o RADAR acha o Google Drive? Precisa do Google Drive para computador? | Sim: a planilha vai para o Drive pelo "Google Drive para computador" (a letra G:). O assistente detecta se ele está instalado; se não estiver, explica em uma frase, com o link oficial, e oferece "Só neste computador, por enquanto" | "pode" |
 | 16 | Faltou orientar o compartilhamento da pasta com a SolverONE | Passo novo no assistente, depois da pasta: "Compartilhe a pasta com integracao@solverone.com.br como Editor" com o botão "Abrir a pasta no Google Drive", o passo a passo de 3 cliques e a caixa "Já compartilhei". Sem compartilhar, o RADAR funciona normalmente no escritório; a SolverONE só não vê o registro das leituras para ajudar | "pode" |
+| 17 | Painel Tribunais confuso; nomes cortados com "…" (ex.: TRT2 e TRT15, que começam igual) e sem o nome inteiro ao passar o mouse | Nome inteiro sempre visível: quebra de linha em vez de "…", duas colunas em vez de três (uma no celular), a sigla do estado junto do nome, e o nome completo também ao passar o mouse e para o leitor de tela. Reagrupar o painel: "Todos os 24 TRTs" em destaque no alto, regiões abaixo | "pode" |
 
 ## Para o segundo teste (pelo e-mail de boas-vindas)
 
