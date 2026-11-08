@@ -85,3 +85,23 @@ create index if not exists lex_registros_criado_em on public.lex_registros (cria
 alter table public.lex_registros enable row level security;
 revoke all on public.lex_registros from anon, authenticated;
 grant select, insert on public.lex_registros to service_role;
+
+-- Pessoas ativas, última vez e eventos (aplicado em 08/Nov, migração lex_pessoas_ativas_eventos).
+alter table public.lex_usuarios add column if not exists ultima_vez timestamptz;
+create table if not exists public.lex_eventos (
+  id bigint generated always as identity primary key, criado_em timestamptz not null default now(),
+  codigo text not null references public.lex_contas(codigo) on update cascade, instalacao text, email text,
+  tipo text not null check (tipo in ('cadastro', 'troca_de_pessoa', 'alteracao_de_dados', 'acesso')), detalhe text not null default '');
+create index if not exists lex_eventos_codigo_criado on public.lex_eventos (codigo, criado_em desc);
+alter table public.lex_eventos enable row level security;
+revoke all on public.lex_eventos from anon, authenticated;
+grant select, insert on public.lex_eventos to service_role;
+create or replace view public.lex_pessoas as
+select u.email, u.codigo, u.nome, u.papel, u.criado_em, u.ultima_vez,
+       exists (select 1 from public.lex_instalacoes i where i.email = u.email) as em_computador,
+       (exists (select 1 from public.lex_instalacoes i where i.email = u.email)
+        and coalesce(u.ultima_vez, u.criado_em) >= now() - interval '30 days') as ativa
+from public.lex_usuarios u;
+alter view public.lex_pessoas set (security_invoker = true);
+revoke all on public.lex_pessoas from anon, authenticated;
+grant select on public.lex_pessoas to service_role;

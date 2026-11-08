@@ -1,6 +1,10 @@
-// LexSuiteONE · RADAR JUDICIAL: confere a licença (código de cliente) e registra quem usa e cada instalação.
-// Chamada pelo programa instalado no escritório, sem chave nenhuma (verify_jwt = false). A chave de serviço só
-// existe aqui dentro, no Supabase. Tabelas: nuvem/supabase/lex-licencas.sql.
+// LexSuiteONE · RADAR JUDICIAL: confere a licença (código de cliente), registra quem usa cada computador e o uso.
+// Chamada pelo programa instalado no escritório e pelo instalador, sem chave nenhuma (verify_jwt = false). A chave de
+// serviço só existe aqui dentro, no Supabase. Tabelas: nuvem/supabase/lex-licencas.sql.
+//
+// Modelo: a licença é do escritório (código); a unidade estável é o computador (instalação, identificação aleatória);
+// a pessoa é o e-mail ligado ao computador agora. Trocar o e-mail num computador = outra pessoa usando; a anterior
+// fica no histórico e deixa de contar como ativa. Ativa = ligada a um computador e vista nos últimos 30 dias.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const CODIGO = /^LEX-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/;
@@ -45,28 +49,46 @@ Deno.serve(async (req) => {
   if (!conta) return json({ ok: false, motivo: "codigo_desconhecido" });
 
   const agora = new Date().toISOString();
-  let email: string | null = null;
+  const hoje = agora.slice(0, 10);
+  const { data: instAntes } = await sb.from("lex_instalacoes").select("email, codigo").eq("instalacao", instalacao).maybeSingle();
+  const evento = (tipo: string, email: string | null, detalhe = "") =>
+    sb.from("lex_eventos").insert({ codigo, instalacao, email, tipo, detalhe: detalhe.slice(0, 300) });
+
+  let email: string | null = (instAntes && instAntes.codigo === codigo) ? instAntes.email : null;
   if (e.acao === "cadastrar") {
-    email = texto(e.email, 120).toLowerCase();
+    const novo = texto(e.email, 120).toLowerCase();
     const nome = texto(e.nome, 60), papel = texto(e.papel, 40);
     const docTipo = ["cnpj", "cpf", "passaporte"].includes(String(e.doc_tipo)) ? String(e.doc_tipo) : "";
     const documento = texto(e.documento, 20).toUpperCase().replace(/[^0-9A-Z]/g, "");
-    if (!EMAIL.test(email) || !nome || !docTipo || documento.length < 5) return json({ ok: false, motivo: "dados_invalidos" });
-    const { data: ja } = await sb.from("lex_usuarios").select("codigo").eq("email", email).maybeSingle();
+    if (!EMAIL.test(novo) || !nome || !docTipo || documento.length < 5) return json({ ok: false, motivo: "dados_invalidos" });
+    const { data: ja } = await sb.from("lex_usuarios").select("codigo, nome, papel").eq("email", novo).maybeSingle();
     if (ja && ja.codigo !== codigo) return json({ ok: false, motivo: "email_em_outro_escritorio" });
-    if (!ja && conta.max_pessoas) {
-      const { count } = await sb.from("lex_usuarios").select("email", { count: "exact", head: true }).eq("codigo", codigo);
-      if ((count ?? 0) >= conta.max_pessoas) return json({ ok: false, motivo: "limite_de_pessoas" });
+    // Limite: só pessoas ativas contam; a pessoa que está saindo deste computador não ocupa vaga.
+    if (conta.max_pessoas) {
+      const { data: ativas } = await sb.from("lex_pessoas").select("email").eq("codigo", codigo).eq("ativa", true);
+      const outras = (ativas ?? []).map((p) => p.email).filter((x) => x !== novo && x !== email);
+      if (outras.length >= conta.max_pessoas) return json({ ok: false, motivo: "limite_de_pessoas" });
     }
-    const r1 = await sb.from("lex_usuarios").upsert({ email, codigo, nome, papel, atualizado_em: agora }, { onConflict: "email" });
+    const r1 = await sb.from("lex_usuarios").upsert({ email: novo, codigo, nome, papel, atualizado_em: agora, ultima_vez: agora }, { onConflict: "email" });
     if (r1.error) return json({ ok: false, motivo: "erro" }, 500);
     if (!conta.documento) await sb.from("lex_contas").update({ doc_tipo: docTipo, documento }).eq("codigo", codigo);
+    if (!email) await evento("cadastro", novo, nome);
+    else if (email !== novo) await evento("troca_de_pessoa", novo, `antes: ${email}`);
+    else if (ja && (ja.nome !== nome || ja.papel !== papel)) await evento("alteracao_de_dados", novo, `nome: ${ja.nome} -> ${nome}; função: ${ja.papel} -> ${papel}`);
+    email = novo;
   }
+
   const inst: Record<string, unknown> = { instalacao, codigo, versao, ultima_vez: agora };
   if (email) inst.email = email;
   await sb.from("lex_instalacoes").upsert(inst, { onConflict: "instalacao" });
 
-  const hoje = new Date().toISOString().slice(0, 10);
+  // Uso: última vez da pessoa deste computador e um evento de acesso por dia.
+  if (email && e.acao !== "cadastrar") {
+    const { data: u } = await sb.from("lex_usuarios").select("ultima_vez").eq("email", email).maybeSingle();
+    await sb.from("lex_usuarios").update({ ultima_vez: agora }).eq("email", email);
+    if (!u || !u.ultima_vez || String(u.ultima_vez).slice(0, 10) < hoje) await evento("acesso", email, versao);
+  }
+
   const vencida = conta.validade && conta.validade < hoje;
   const ok = conta.ativo && !vencida;
   return json({ ok, motivo: ok ? "" : (conta.ativo ? "vencido" : "desativado"), escritorio: conta.escritorio,
