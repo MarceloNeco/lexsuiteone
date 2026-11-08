@@ -1,7 +1,8 @@
 # LexSuiteONE · JUDICIAL — regras para o Claude Code neste repositório
 
 Leia antes de qualquer alteração: `robo/ARQUITETURA.md` (como o robô é feito), `robo/PENDENCIAS.md` (decisões do dono e o
-que falta), `docs/DNS-SOLVERONE.md` (domínio, e-mail, site) e `docs/email/LEIA-ME.md`. Para retomar o projeto numa sessão
+que falta), `docs/DNS-SOLVERONE.md` (domínio, e-mail, site), `docs/PUBLICAR.md` (como sai uma versão), `docs/email/LEIA-ME.md`
+e `docs/VISITA-KR-LAW.md` (visita de quinta e prompts do Claude in Chrome). Para retomar o projeto numa sessão
 nova, leia `docs/NOVA-SESSAO.md` primeiro.
 
 ## Quem é quem
@@ -14,7 +15,8 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro.
 ## Regras que não se negociam
 
 - Nenhuma senha, chave, token ou segredo entra no código, no repositório, no chat ou em arquivo. A chave privada de
-  assinatura fica só no computador do dono. Se uma chave aparecer no chat, peça para revogar.
+  assinatura existe só dentro do serviço `assinatura.solverone.com.br` (Cloudflare); ninguém a tem, nem o dono. Se uma
+  chave aparecer no chat, peça para revogar.
 - Regra zero: antes de implementar um requisito novo, liste o que falta e confirme com o dono. Não publique nada que o
   cliente vê (Pages, pacote, DNS, e-mail a cliente) sem permissão explícita dele.
 - Nunca reescreva histórico nem force push sem o dono pedir na hora. Nunca commite `config.json`, `*.db`, `saida/`,
