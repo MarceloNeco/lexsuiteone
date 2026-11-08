@@ -65,7 +65,8 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- (vazio)
+- Feedback do teste do dono para a 0.7.11 (itens 19 a 21 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`: dia com
+  Diário em vez de dia útil, aviso de versão nova ao abrir, código só para ler em Configuração). Espera o "pode".
 
 ### Arquivos em uso
 - (nenhum)
