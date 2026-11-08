@@ -52,9 +52,8 @@ Infraestrutura, sem testar o robô (o dono vai testar depois, com calma):
 1. **HTTPS do site**: no GitHub Pages do repositório, "Check again" e "Enforce HTTPS" (o dono, pela extensão).
 2. **E-mail de recebimento no Cloudflare**: feito em 08/Nov (regras, Worker de resposta em `integracao@`, MX trocado;
    detalhes em `docs/DNS-SOLVERONE.md`). ImprovMX fica como reserva até ser cancelado.
-3. **Chaves de assinatura**: o dono roda `ferramentas\GERAR-CHAVES.bat` (kit em `releases/LexSuiteONE-suporte.zip`) e
-   cola a chave pública; o Claude coloca `chave_publica.txt` no pacote e publica. Opcional para a instalação: sem chave,
-   o robô funciona, só não se atualiza sozinho.
+3. **Assinatura das versões**: feita em 08/Nov pela opção "na nuvem": serviço `assinatura.solverone.com.br` (Cloudflare),
+   chave privada só lá; a automação `publicar.yml` assina e publica ao receber uma tag `vX.Y.Z`. Roteiro em `docs/PUBLICAR.md`.
 4. **E-mail de boas-vindas ao Leandro**, pelo Resend, quando o dono passar o endereço corporativo dele.
 5. Depois da instalação: organização `solverone` no GitHub (roteiro em `robo/PENDENCIAS.md`), triagem em `contato@`,
    calibração da regra com o diagnóstico, desenho da 0.8.

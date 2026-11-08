@@ -76,7 +76,8 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
 - Código de cliente: formato `LEX-XXXX-XXXX` (letras e números, sem 0/O/1/I para não confundir), gerado no
   RootifyONE, enviado no e-mail de boas-vindas (bloco opcional já previsto no modelo em `docs/email/`) e pedido
   pelo passo a passo na instalação. Identifica a conta; não é senha e não dá acesso a nada sozinho.
-- Endereço fixo de atualização já aponta para as Releases do GitHub (`marceloneco/lexsuiteone`).
+- Endereço fixo de atualização: `judicial.solverone.com.br/atualizacao/` (site do produto). Assinatura na nuvem desde 08/Nov
+  (serviço `assinatura.solverone.com.br`; publicação por tag `vX.Y.Z`, ver `docs/PUBLICAR.md`).
 
 - Log de cada rodada numa aba oculta de uma planilha Google do cliente (via Apps Script publicado na conta da SolverONE;
   o robô só faz POST com biblioteca padrão; chave por cliente no `config.json`, nunca no código).

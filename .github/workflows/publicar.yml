@@ -1,0 +1,80 @@
+name: Publicar versão assinada
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Versão da tag
+        id: v
+        run: echo "versao=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - name: Testes do robô
+        working-directory: robo
+        run: python -m unittest discover -s testes
+      - name: Empacotar
+        id: pacote
+        env:
+          VERSAO: ${{ steps.v.outputs.versao }}
+        run: |
+          SHA=$(python robo/ferramentas/empacotar_ci.py preparar --versao "$VERSAO" --saida /tmp/publicar)
+          echo "sha256=$SHA" >> "$GITHUB_OUTPUT"
+      - name: Pedir a assinatura ao serviço (identidade OIDC desta automação)
+        id: assinar
+        env:
+          VERSAO: ${{ steps.v.outputs.versao }}
+          SHA256: ${{ steps.pacote.outputs.sha256 }}
+        run: |
+          TOKEN=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lexsuiteone-assinatura" | python -c 'import json,sys; print(json.load(sys.stdin)["value"])')
+          curl -sS -f -X POST https://assinatura.solverone.com.br/assinar -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            -d "{\"versao\":\"$VERSAO\",\"sha256\":\"$SHA256\"}" > /tmp/publicar/assinatura.json
+          python -c 'import json; d=json.load(open("/tmp/publicar/assinatura.json")); print("assinatura="+d["assinatura_hex"]); print("publica="+d["publica_hex"])' >> "$GITHUB_OUTPUT"
+      - name: Conferir que a chave do serviço é a do pacote
+        env:
+          PUBLICA: ${{ steps.assinar.outputs.publica }}
+        run: test "$(tr -d '[:space:]' < robo/chave_publica.txt)" = "$PUBLICA"
+      - name: Manifesto e conferência da assinatura com o código do robô
+        env:
+          VERSAO: ${{ steps.v.outputs.versao }}
+          SHA256: ${{ steps.pacote.outputs.sha256 }}
+          ASSINATURA: ${{ steps.assinar.outputs.assinatura }}
+        run: |
+          python robo/ferramentas/empacotar_ci.py manifesto --versao "$VERSAO" --sha256 "$SHA256" --assinatura "$ASSINATURA" --saida /tmp/publicar --notas "Versão $VERSAO publicada pela automação"
+          python - <<'PY'
+          import json, sys
+          sys.path.insert(0, "robo")
+          from lexsuite import assinatura
+          from lexsuite.atualizar import mensagem_assinada, chave_publica
+          m = json.load(open("/tmp/publicar/versao.json")); pub = chave_publica("robo")
+          assert assinatura.verificar(mensagem_assinada(m["versao"], m["sha256"]), m["assinatura"], pub), "assinatura não confere"
+          print("assinatura confere com chave_publica.txt")
+          PY
+      - name: Publicar no site (branch main)
+        env:
+          VERSAO: ${{ steps.v.outputs.versao }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          mkdir -p docs/atualizacao docs/downloads releases
+          rm -f docs/atualizacao/LEXSUITE-ONE-ROBO-*.zip
+          cp /tmp/publicar/versao.json docs/atualizacao/versao.json
+          cp "/tmp/publicar/LEXSUITE-ONE-ROBO-$VERSAO.zip" docs/atualizacao/
+          cp /tmp/publicar/LexSuiteONE-robo.zip docs/downloads/LexSuiteONE-robo.zip
+          cp /tmp/publicar/LexSuiteONE-robo.zip releases/LexSuiteONE-robo.zip
+          cp /tmp/publicar/LexSuiteONE-robo.zip "releases/LexSuiteONE-robo-$VERSAO.zip"
+          git add docs/atualizacao docs/downloads releases
+          git commit -m "Publica a versão $VERSAO assinada (automação)" || echo "nada a publicar"
+          git push origin main

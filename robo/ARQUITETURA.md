@@ -1,4 +1,4 @@
-# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.4)
+# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.5)
 
 Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
 linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional
@@ -107,6 +107,7 @@ produto, escrito em maiúsculas com o "IA" em latão (`JUDIC<b>IA</b>L` na tela 
 | Site e serviço | `judicial.solverone.com.br` (GitHub Pages servindo a pasta `docs/` do repositório; CNAME na zona do Cloudflare) |
 | Download | `judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip` (arquivo em `docs/downloads/`; a cópia em `releases/` é histórico) |
 | Atualização assinada | `judicial.solverone.com.br/atualizacao/versao.json` e o `.zip` ao lado (pasta `docs/atualizacao/`), além da subpasta `atualizacao` do Drive do cliente |
+| Assinatura das versões | serviço `assinatura.solverone.com.br` (Worker do Cloudflare com a chave Ed25519 guardada num Durable Object: a chave privada nunca sai do Cloudflare e ninguém a lê). Só assina a pedido da automação deste repositório, para uma tag `vX.Y.Z`. A chave pública está em `chave_publica.txt`, dentro do pacote |
 | Remetente dos e-mails | `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend; não recebe respostas |
 | Dúvidas do cliente | `judicial@solverone.com.br` (contato de toda a suíte LexSuiteONE; cada suíte tem o seu, ex. `moneytrio@`; `contato@` é o genérico da SolverONE) |
 | Compartilhamento do Drive | `integracao@solverone.com.br`: endereço de sistemas, não é caixa de atendimento; vira Conta Google para o Drive |
