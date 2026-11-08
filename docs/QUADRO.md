@@ -65,8 +65,10 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- Feedback do teste do dono para a 0.7.11 (itens 19 a 21 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`: dia com
-  Diário em vez de dia útil, aviso de versão nova ao abrir, código só para ler em Configuração). Espera o "pode".
+- **0.7.11 pronta no ramo da Produto** (itens 19 a 28 do feedback e ressalvas b e c da revisão da 0.7.10). Aguarda o
+  "pode" do dono para ir à `main` (o manual do site muda junto) e, depois, o "publica a versão 0.7.11" na Operação.
+  97 testes e mais 1, Bandit e revisor ok; o que só existe no Windows (reinício, atalho, janela de pastas) fica para o
+  teste do dono.
 
 ### Arquivos em uso
 - (nenhum)
