@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v4: confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v4 (revisão 2, com modalidade): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
   if (!(await pode(`cod:${codigo}:${acao}`, 120, 3600))) return limite();
 
   const { data: conta, error } = await sb.from("lex_contas")
-    .select("codigo, escritorio, documento, max_pessoas, max_computadores, ativo, validade, mensagem, dominios, email_boas_vindas, exigir_aprovacao")
+    .select("codigo, escritorio, documento, max_pessoas, max_computadores, ativo, validade, mensagem, dominios, email_boas_vindas, exigir_aprovacao, modalidade")
     .eq("codigo", codigo).maybeSingle();
   if (error) return json({ ok: false, motivo: "erro" }, 500);
   if (!conta) return json({ ok: false, motivo: "codigo_desconhecido" });
@@ -174,7 +174,8 @@ Deno.serve(async (req) => {
   let ok = !!conta.ativo && !vencida;
   let motivo = ok ? "" : (conta.ativo ? "vencido" : "desativado");
   if (ok && conta.exigir_aprovacao && aprovacaoPessoa === "aguardando") { ok = false; motivo = "aguardando_aprovacao"; }
-  const resposta: Record<string, unknown> = { ok, motivo, escritorio: conta.escritorio, validade: conta.validade ?? "", mensagem: conta.mensagem ?? "" };
+  const resposta: Record<string, unknown> = { ok, motivo, escritorio: conta.escritorio, validade: conta.validade ?? "", mensagem: conta.mensagem ?? "",
+    modalidade: conta.modalidade ?? "instalado" };   // item F: "nuvem" = a tela avisa e continua lendo
   if (aprovacaoPessoa) resposta.aprovacao = aprovacaoPessoa;
   if (emUso) resposta.em_uso = emUso;
   // E-mail de boas-vindas sugerido só enquanto a licença não tem pessoa aprovada (quem tem o código já tem esse e-mail).

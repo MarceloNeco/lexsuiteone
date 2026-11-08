@@ -10,8 +10,9 @@
 --   4. lex_eventos aceita os tipos novos. Visão lex_pessoas ganha a coluna aprovacao.
 --   5. lex_avisos: caixa de saída dos e-mails de aviso (pessoa nova, computador novo), com estado e erro.
 --   6. lex_chamadas + lex_contar_chamada(): contador para os limites por chamada da função lex-conta.
---   7. Funções da equipe: admin_lex_aprovar_pessoa, admin_lex_esquecer_instalacao; admin_lex_criar, admin_lex_salvar,
---      admin_lex_listar e admin_lex_detalhe ampliadas. Só dono/admin da equipe, com log em acesso_log.
+--   7. Funções da equipe: admin_lex_aprovar_pessoa, admin_lex_esquecer_instalacao; admin_lex_criar (versão de 5 parâmetros,
+--      ao lado da antiga), admin_lex_salvar, admin_lex_listar e admin_lex_detalhe ampliadas. Só dono/admin da equipe.
+--   APLICADO em 08/Nov/2026 à noite pelo conector (Arquitetura), menos o bloco 4a (regra de lex_eventos), ver nota lá.
 --   8. Retenção: lex_avisos 90 dias e lex_chamadas 2 dias (pg_cron).
 --   9. Conferência no fim.
 -- COMO APLICAR (só depois de o dono revisar): SQL Editor → New query → colar inteiro → Run. Pode rodar de novo.
@@ -59,6 +60,8 @@ grant select on public.lex_computadores to service_role;
 -- ---------------------------------------------------------------------
 -- 4. lex_eventos: tipos novos; lex_pessoas com aprovacao
 -- ---------------------------------------------------------------------
+-- ⚠ Este bloco (4a) é o ÚNICO que o conector não aplica sem confirmação (tem DROP). Aplicado à parte pelo dono no SQL
+-- Editor, ou pelo conector num computador. Enquanto não rodar, os tipos novos de evento não gravam (a função ignora o erro).
 alter table public.lex_eventos drop constraint if exists lex_eventos_tipo_check;
 alter table public.lex_eventos add constraint lex_eventos_tipo_check check (tipo in (
   'cadastro', 'troca_de_pessoa', 'alteracao_de_dados', 'acesso',
@@ -171,10 +174,10 @@ begin
   return depois;
 end $$;
 
--- admin_lex_criar ganha e-mail de boas-vindas e domínios (a chamada antiga, com 3 parâmetros, continua valendo).
-drop function if exists public.admin_lex_criar(text, date, integer);
-create or replace function public.admin_lex_criar(p_escritorio text, p_validade date default null, p_max_pessoas integer default null,
-                                                  p_email_boas_vindas text default null, p_dominios text[] default null)
+-- admin_lex_criar ganha e-mail de boas-vindas e domínios. A função com 3 parâmetros (lex-admin.sql) CONTINUA existindo,
+-- e esta, com 5 parâmetros SEM valores padrão, fica ao lado dela (assim não há ambiguidade e nada precisa ser apagado;
+-- o conector do Supabase pede confirmação para qualquer DROP, e o dono não consegue confirmar pelo celular).
+create or replace function public.admin_lex_criar(p_escritorio text, p_validade date, p_max_pessoas integer, p_email_boas_vindas text, p_dominios text[])
 returns text language plpgsql security definer set search_path = '' as $$
 declare novo text;
 begin
@@ -189,6 +192,7 @@ begin
   perform public.lab_registrar_log('lex_criar_licenca', null, jsonb_build_object('codigo', novo, 'escritorio', p_escritorio), null);
   return novo;
 end $$;
+-- DESFAZER: drop function public.admin_lex_criar(text, date, integer, text, text[]);
 
 create or replace function public.admin_lex_salvar(p jsonb)
 returns jsonb language plpgsql security definer set search_path = '' as $$
@@ -209,7 +213,6 @@ begin
     dominios          = case when p ? 'dominios' then coalesce((select array_agg(pg_catalog.lower(pg_catalog.btrim(d))) from jsonb_array_elements_text(p->'dominios') d where pg_catalog.btrim(d) <> ''), '{}') else dominios end
   where codigo = p->>'codigo';
   select to_jsonb(c) into depois from public.lex_contas c where c.codigo = p->>'codigo';
-  insert into public.lex_eventos (codigo, tipo, detalhe) values (p->>'codigo', 'licenca_alterada', 'pela equipe');
   perform public.lab_registrar_log('lex_salvar_licenca', null, depois, antes);
   return depois;
 end $$;
