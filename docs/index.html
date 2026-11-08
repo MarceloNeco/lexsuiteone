@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- Gerado por ferramentas/marca.py a partir de paginas/index.html e docs/marca.json. Não edite aqui. -->
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
@@ -27,7 +28,7 @@ a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-of
 :focus-visible { outline: 3px solid var(--latao); outline-offset: 3px; border-radius: 4px; }
 .miolo { max-width: 72rem; margin: 0 auto; padding: 0 20px; }
 
-/* Nome do produto, sempre em maiúsculas: "RADAR" leve, "JUDICIAL" forte, com o IA em latão. */
+/* Nome do produto (docs/marca.json): a parte leve, a última palavra forte e o destaque em latão. */
 .nome { font-weight: 400; letter-spacing: -.01em; white-space: nowrap; }
 .nome strong { font-weight: 800; letter-spacing: .01em; }
 .nome strong b { color: var(--latao); font-weight: 800; }
@@ -57,7 +58,7 @@ a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-of
 .suite { display: block; font-size: 1.05rem; font-weight: 500; color: #c4cbd8; margin: 0 0 6px; }
 .suite b { color: var(--latao); font-weight: 600; }
 h1 { margin: 0 0 22px; font-size: clamp(3rem, 5.4vw, 4.4rem); line-height: .95; color: #fff; }
-h1 .radar-nome { display: block; font-size: .5em; font-weight: 400; letter-spacing: .08em; color: #e6e9f0; margin-bottom: .08em; }
+h1 .marca-leve { display: block; font-size: .5em; font-weight: 400; letter-spacing: .08em; color: #e6e9f0; margin-bottom: .08em; }
 .capa p.lede { margin: 0 0 28px; color: #d6dbe6; font-size: 1.15rem; line-height: 1.55; max-width: 34ch; }
 .botao { display: inline-block; background: var(--latao); color: var(--noite); text-decoration: none; font-weight: 700; padding: 15px 28px; border-radius: 999px; }
 .botao:hover { background: #e2bd80; }
@@ -139,7 +140,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   </svg>
   <div class="miolo">
     <div class="topo">
-      <a class="marca" href="./" aria-label="RADAR JUDICIAL, início"><img src="favicon.svg" alt=""><span class="nome">RADAR <strong>JUDIC<b>IA</b>L</strong></span></a>
+      <a class="marca" href="./" aria-label="RADAR JUDICIAL, início"><img src="favicon.svg" alt=""><span class="nome"><span class="marca-leve">RADAR</span> <strong>JUDIC<b>IA</b>L</strong></span></a>
       <nav>
         <a class="manual-topo" href="manual.html" data-t="manual_topo">Manual</a>
         <div class="idioma" role="group" aria-label="Idioma / Language">
@@ -151,7 +152,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <div class="capa-grade">
       <div>
         <span class="suite">LexSuite<b>ONE</b></span>
-        <h1 class="nome"><span class="radar-nome">RADAR</span> <strong>JUDIC<b>IA</b>L</strong></h1>
+        <h1 class="nome"><span class="marca-leve">RADAR</span> <strong>JUDIC<b>IA</b>L</strong></h1>
         <p class="lede" data-t="lede">Lê todo dia o Diário de Justiça Eletrônico Nacional e lista as ações novas contra empresas, com a ficha de cada uma.</p>
         <a class="botao" href="downloads/LexSuiteONE-robo.zip" data-t="baixar">Baixar o RADAR JUDICIAL</a>
         <span class="requisito" data-t="req">Para Windows 10 ou 11, num computador no Brasil, com Google Drive (OneDrive sob consulta). Arquivo .zip de 113&nbsp;KB.</span>

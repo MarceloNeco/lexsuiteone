@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bem-vindo ao RADAR JUDICIAL</title>
+<title>Bem-vindo ao {{marca.nome}}</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;color:#121a2b;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f6f9;">
@@ -11,14 +11,14 @@
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#ffffff;border:1px solid #dbe1ea;border-radius:12px;overflow:hidden;">
   <tr><td style="background:#0f1d33;padding:22px 28px;">
     <div style="font-size:13px;color:#c4cbd8;margin-bottom:2px;">LexSuite<span style="color:#d4ab6a;">ONE</span></div>
-    <div style="font-size:22px;letter-spacing:.02em;color:#ffffff;">RADAR <b style="font-weight:800;">JUDIC<span style="color:#d4ab6a;">IA</span>L</b></div>
+    <div style="font-size:22px;letter-spacing:.02em;color:#ffffff;">{{marca.logo_email}}</div>
   </td></tr>
   <tr><td style="padding:28px 28px 8px;">
-    <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:600;">Olá, {{nome}}. Seu RADAR JUDICIAL está pronto.</h1>
-    <p style="margin:0 0 14px;font-size:16px;line-height:1.55;color:#4a5468;">Todo dia, o RADAR JUDICIAL lê o Diário de Justiça Eletrônico Nacional nos tribunais que você escolher e lista as <b style="color:#121a2b;">ações novas contra empresas</b>, com a ficha de cada uma. A lista aparece na tela do RADAR e numa planilha na sua pasta do Google Drive.</p>
+    <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:600;">Olá, {{nome}}. Seu {{marca.nome}} está pronto.</h1>
+    <p style="margin:0 0 14px;font-size:16px;line-height:1.55;color:#4a5468;">Todo dia, o {{marca.nome}} lê o Diário de Justiça Eletrônico Nacional nos tribunais que você escolher e lista as <b style="color:#121a2b;">ações novas contra empresas</b>, com a ficha de cada uma. A lista aparece na tela do {{marca.curto}} e numa planilha na sua pasta do Google Drive.</p>
   </td></tr>
   <tr><td align="center" style="padding:8px 28px 22px;">
-    <a href="https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip" style="display:inline-block;background:#d4ab6a;color:#0f1d33;text-decoration:none;font-weight:700;font-size:16px;padding:14px 26px;border-radius:999px;">Baixar o RADAR JUDICIAL</a>
+    <a href="https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip" style="display:inline-block;background:#d4ab6a;color:#0f1d33;text-decoration:none;font-weight:700;font-size:16px;padding:14px 26px;border-radius:999px;">Baixar o {{marca.nome}}</a>
     <div style="margin-top:8px;font-size:12px;color:#7a8396;">Arquivo .zip, 113 KB. Windows 10 ou 11.</div>
   </td></tr>
 <!--CODIGO-INICIO-->
@@ -32,25 +32,25 @@
       <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">1</td><td style="padding:6px 0;">Descompacte o arquivo numa pasta fácil, como <code style="background:#f6efe0;color:#8a6222;padding:1px 6px;border-radius:4px;">C:\LexSuiteONE</code>.</td></tr>
       <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">2</td><td style="padding:6px 0;">Dois cliques em <code style="background:#f6efe0;color:#8a6222;padding:1px 6px;border-radius:4px;">ABRIR.bat</code>. Na primeira vez ele baixa o Python oficial (11 MB) e abre a tela no navegador.</td></tr>
       <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">3</td><td style="padding:6px 0;">Responda o passo a passo: seu nome, seu papel, o escritório e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.</td></tr>
-      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">4</td><td style="padding:6px 0;">No Google Drive, compartilhe a subpasta <b>LexSuiteONE</b> com <b>{{drive}}</b> como editor. É o único passo à mão: por ele o suporte acompanha o RADAR sem acessar o seu computador.</td></tr>
+      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">4</td><td style="padding:6px 0;">No Google Drive, compartilhe a subpasta <b>LexSuiteONE</b> com <b>{{drive}}</b> como editor. É o único passo à mão: por ele o suporte acompanha o {{marca.curto}} sem acessar o seu computador.</td></tr>
     </table>
   </td></tr>
   <tr><td style="padding:14px 28px 0;">
-    <p style="margin:0;font-size:14px;line-height:1.5;color:#4a5468;"><b style="color:#121a2b;">Onde roda:</b> no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o RADAR lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.</p>
+    <p style="margin:0;font-size:14px;line-height:1.5;color:#4a5468;"><b style="color:#121a2b;">Onde roda:</b> no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o {{marca.curto}} lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.</p>
   </td></tr>
   <tr><td style="padding:14px 28px 6px;">
     <div style="background:#f6efe0;color:#8a6222;border-radius:8px;padding:10px 14px;font-size:14px;line-height:1.5;">Se o Windows perguntar se confia no arquivo, clique em "Mais informações" e "Executar assim mesmo". O manual completo abre dentro da própria tela, no link "Manual do escritório".</div>
   </td></tr>
   <tr><td style="padding:16px 28px 8px;">
     <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7a8396;font-weight:600;margin-bottom:6px;">Segurança, em uma linha</div>
-    <p style="margin:0;font-size:14px;line-height:1.5;color:#4a5468;">O RADAR não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.</p>
+    <p style="margin:0;font-size:14px;line-height:1.5;color:#4a5468;">O {{marca.curto}} não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.</p>
   </td></tr>
   <tr><td style="padding:22px 28px 26px;">
     <p style="margin:0;font-size:15px;line-height:1.5;">Dúvidas? Escreva para <a href="mailto:{{contato}}" style="color:#8a6222;">{{contato}}</a>. Este e-mail saiu de um endereço automático e não recebe respostas.</p>
     <p style="margin:14px 0 0;font-size:15px;line-height:1.5;">Marcelo Freitas<br><span style="color:#7a8396;">SolverONE</span></p>
   </td></tr>
   <tr><td style="background:#f4f6f9;border-top:1px solid #dbe1ea;padding:14px 28px;font-size:12px;line-height:1.5;color:#7a8396;">
-    RADAR JUDICIAL é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque pediu o pacote de instalação.
+    {{marca.nome}} é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque pediu o pacote de instalação.
   </td></tr>
 </table>
 </td></tr>

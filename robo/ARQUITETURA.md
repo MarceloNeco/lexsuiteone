@@ -100,6 +100,11 @@ SolverONE é a empresa. **LexSuiteONE** é a suíte jurídica (o repositório e 
 produto, escrito em maiúsculas com o "IA" em latão (`JUDIC<b>IA</b>L` na tela e no manual); dentro dele ficam as frentes
 (Radar Trabalhista hoje; Tributário e Cível e empresarial a seguir). Outros produtos da suíte seguirão o mesmo padrão.
 
+**O nome do produto é configuração** (decisão do dono, 08/Nov): fica só em `docs/marca.json` (`nome` exato, `curto`,
+`destaque` em latão), hoje "RADAR JUDICIAL". O site (`paginas/` → `ferramentas/marca.py` → `docs/`) e o e-mail de
+boas-vindas já leem dali. A tela, o manual e a planilha do robô ainda dizem "JUDICIAL" até a versão que lê o mesmo
+arquivo (ver `PENDENCIAS.md`).
+
 | Onde | Nome |
 |---|---|
 | Suíte (repositório, remetente, nome do pacote) | LexSuiteONE |

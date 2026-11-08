@@ -84,20 +84,21 @@ O que falta para a ficha de canais:
   precisa do sim do dono.
 - Imagem de fundo da capa: o dono vai gerar no Higgsfield; a página já aceita uma imagem por trás do radar.
 
-### Nome que se troca num lugar só (desenho, esperando o sim do dono)
+### Nome do produto como configuração (decisão do dono, 08/Nov)
 
-O dono quer decidir o nome (com maiúsculas e minúsculas exatas: "RADAR JUDICIAL" hoje, "Lex One" amanhã) e ver a
-troca em todo lugar. Proposta:
+O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e minúsculas exatas: "RADAR JUDICIAL" hoje,
+"Lex One" amanhã) e a troca vale em todo lugar. Hoje se troca editando um arquivo; no futuro, num ajuste do RootifyONE.
 
-1. Um arquivo `marca.json` na raiz do site: `{"nome": "RADAR JUDICIAL", "destaque": "IA", "suite": "LexSuiteONE"}`.
-   `destaque` é o trecho em latão (vazio = nenhum). O texto vai exatamente como escrito, sem mudar maiúsculas.
-2. Site, manual e e-mail: um comando (`ferramentas/marca.py`) troca o nome nas marcações de todas as páginas antes de
-   publicar. Sem pedido externo e sem depender de script no navegador.
-3. Robô (tela, manual da tela, planilha, avisos): lê o `marca.json` que vem no pacote e, quando procura atualização,
-   o de `judicial.solverone.com.br`, dentro do manifesto assinado (ninguém consegue trocar o nome no meio do caminho).
-   Assim o nome muda nas instalações sem versão nova. Sem internet, fica o último nome conhecido.
-4. Não mudam sozinhos: nomes de arquivos e pastas (`LexSuiteONE-robo.zip`, `C:\LexSuiteONE`, `LexSuiteONE.xlsx`),
-   porque trocar quebraria instalações. Isso, se um dia for preciso, é uma migração à parte.
+- **Feito (site e e-mail):** `docs/marca.json` guarda `nome`, `curto` (como o texto chama o programa) e `destaque`
+  (trecho em latão). Páginas em `paginas/` com marcações; `python ferramentas/marca.py` gera `docs/`; a automação do
+  GitHub recusa `docs/` desatualizado. O `preencher.py` do e-mail lê o mesmo arquivo e mostra o assunto.
+- **Falta (pacote do robô, precisa de versão nova):** tela, manual (o do site é cópia do do pacote, por isso ficou de
+  fora agora), planilha e avisos passam a ler o `marca.json` que vem no pacote e, ao procurar atualização, o de
+  `judicial.solverone.com.br`, dentro do manifesto assinado. Assim o nome muda nas instalações sem versão nova.
+  Junto, trocar "robô" por "o RADAR" (o `curto`) nos textos do manual.
+- **Não mudam sozinhos:** nomes de arquivos e pastas (`LexSuiteONE-robo.zip`, `C:\LexSuiteONE`, `LexSuiteONE.xlsx`),
+  porque trocar quebraria instalações. Se um dia for preciso, é uma migração à parte.
+- **Futuro:** ajuste "Nome do produto" no RootifyONE que grava o mesmo `marca.json` (pelo GitHub), sem editar arquivo.
 
 ## Esperando o dono (Marcelo)
 

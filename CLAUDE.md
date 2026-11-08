@@ -42,4 +42,8 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro.
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.
 - Testes: `cd robo && python -m unittest discover -s testes`. A automação do GitHub roda testes, Bandit e Gitleaks.
 - Arquivos `.bat` sempre com fim de linha CRLF.
+- Nome do produto é configuração, não texto fixo: fica só em `docs/marca.json` (nome exato, nome curto, trecho em latão).
+  As páginas do site são escritas em `paginas/` com `{{marca.nome}}`, `{{marca.curto}}` e `{{marca.logo}}`; rode
+  `python ferramentas/marca.py` para gerar `docs/`. Nunca edite `docs/index.html` nem `docs/404.html` à mão (a automação
+  do GitHub confere). O e-mail de boas-vindas lê a mesma configuração ao ser preenchido.
 - A pasta do Drive do dono (LEXSUITE-ONE-ROBO) é cópia de consulta: só atualize quando ele pedir.

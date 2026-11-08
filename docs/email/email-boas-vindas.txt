@@ -1,8 +1,8 @@
-Olá, {{nome}}. Seu RADAR JUDICIAL está pronto.
+Olá, {{nome}}. Seu {{marca.nome}} está pronto.
 
-Todo dia, o RADAR JUDICIAL lê o Diário de Justiça Eletrônico Nacional nos tribunais que você escolher e lista as ações novas contra empresas, com a ficha de cada uma. A lista aparece na tela do RADAR e numa planilha na sua pasta do Google Drive.
+Todo dia, o {{marca.nome}} lê o Diário de Justiça Eletrônico Nacional nos tribunais que você escolher e lista as ações novas contra empresas, com a ficha de cada uma. A lista aparece na tela do {{marca.curto}} e numa planilha na sua pasta do Google Drive.
 
-Baixar o RADAR JUDICIAL (arquivo .zip, 113 KB, Windows 10 ou 11):
+Baixar o {{marca.nome}} (arquivo .zip, 113 KB, Windows 10 ou 11):
 https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip
 
 [CODIGO-INICIO]
@@ -14,17 +14,17 @@ Como instalar, em quatro passos
 1. Descompacte o arquivo numa pasta fácil, como C:\LexSuiteONE.
 2. Dois cliques em ABRIR.bat. Na primeira vez ele baixa o Python oficial (11 MB) e abre a tela no navegador.
 3. Responda o passo a passo: seu nome, seu papel, o escritório e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.
-4. No Google Drive, compartilhe a subpasta LexSuiteONE com {{drive}} como editor. É o único passo à mão: por ele o suporte acompanha o RADAR sem acessar o seu computador.
+4. No Google Drive, compartilhe a subpasta LexSuiteONE com {{drive}} como editor. É o único passo à mão: por ele o suporte acompanha o {{marca.curto}} sem acessar o seu computador.
 
-Onde roda: no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o RADAR lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.
+Onde roda: no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o {{marca.curto}} lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.
 
 Se o Windows perguntar se confia no arquivo, clique em "Mais informações" e "Executar assim mesmo". O manual completo abre dentro da própria tela, no link "Manual do escritório".
 
-Segurança, em uma linha: o RADAR não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.
+Segurança, em uma linha: o {{marca.curto}} não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.
 
 Dúvidas? Escreva para {{contato}}. Este e-mail saiu de um endereço automático e não recebe respostas.
 
 Marcelo Freitas
 SolverONE
 
-RADAR JUDICIAL é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque pediu o pacote de instalação.
+{{marca.nome}} é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque pediu o pacote de instalação.
