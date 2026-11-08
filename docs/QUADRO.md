@@ -46,10 +46,11 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- (preencher)
+- Carrossel "Como funciona" do site: passar com o dedo no celular, sempre em movimento devagar, slide que segue o dedo,
+  botão ⏸/▶ (pedido do dono, 08/Nov; "pode" para publicar o site dado na conversa da Produto).
 
 ### Arquivos em uso
-- (preencher)
+- `paginas/index.html`, `docs/index.html` (gerado).
 
 ### Feito (mais recente primeiro)
 - 08/Nov: nome do produto RADAR JUDICIAL como configuração (`docs/marca.json`, aprovado pelo dono); versões 0.7.6 a
@@ -90,7 +91,7 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 | Data | De | Para | Pedido | Feito? |
 |---|---|---|---|---|
 | 08/Nov | Arquitetura (sessão antiga) | Operação | Atualizar `docs/NOVA-SESSAO.md` para o estado real: robô 0.7.9, RADAR JUDICIAL, o que a Produto construiu da 0.8 | não |
-| 08/Nov | Arquitetura (sessão antiga) | Produto | Preencher a própria seção deste quadro na primeira ação após o pull; nenhuma publicação de versão a partir de agora (preparar e anotar "pronta para publicar") | não |
+| 08/Nov | Arquitetura (sessão antiga) | Produto | Preencher a própria seção deste quadro na primeira ação após o pull; nenhuma publicação de versão a partir de agora (preparar e anotar "pronta para publicar") | sim (Produto, 08/Nov): seção preenchida; versões do programa só pela Operação |
 
 ## Decisões do dono registradas aqui
 

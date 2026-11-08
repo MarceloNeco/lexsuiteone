@@ -479,7 +479,8 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     caixa.addEventListener("pointercancel", fimPonteiro);
     var ultimaLargura = largura();  // no celular a barra de endereço some ao rolar e dispara "resize": só a largura conta
     window.addEventListener("resize", function () { if (g || largura() === ultimaLargura) return; ultimaLargura = largura(); por(posicao(atual)); ciclo(); });
-    window.rotularPausa = function () { var en = document.documentElement.lang === "en"; bp.setAttribute("aria-label", pausadoPeloBotao ? (en ? "Play" : "Tocar") : (en ? "Pause" : "Pausar")); };
+    // Rótulo fixo ("Pausar"); aria-pressed diz se está pausado (o leitor de tela lê "Pausar, pressionado"). O ícone muda.
+    window.rotularPausa = function () { bp.setAttribute("aria-label", document.documentElement.lang === "en" ? "Pause" : "Pausar"); };
     ir(0);
   })();
   var salvo = null; try { salvo = localStorage.getItem("judicial-idioma"); } catch (e) {}
