@@ -68,6 +68,16 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
 
 ## v0.8 (cliente-servidor e conta na nuvem)
 
+**Desenho completo em `docs/DESENHO-0.8.md` (08/Nov/2026), com as decisões D1 a D8 do dono.** Nada de código antes de ele
+aprovar o conjunto; nenhum SQL roda sem a revisão dele. Pendências novas criadas pelo desenho (lista inteira na seção 13):
+
+- **Bloqueante:** termo de tratamento de dados com a KR Law (a SolverONE vira operadora dos dados do escritório) assinado
+  antes de a 0.8 entrar no ar. ⏸ Aguardando o dono.
+- O dono está avaliando trocar o nome do produto e avisa antes de o SQL ser escrito (código `judicial` em `sol_apps`,
+  endereço e telas mudam junto; o prefixo `lex_` não muda). ⏸ Aguardando o dono.
+- Para a 1.0: e-mail de entrada com a marca de cada suíte (Send Email Hook do Supabase Auth); na 0.8 o remetente é
+  "SolverONE <nao-responda@solverone.com.br>".
+
 - Conta na nuvem (`judicial.solverone.com.br`): o robô, se tiver internet, pergunta a cada abertura se a conta do
   escritório continua ativa e registra um batimento (versão, última rodada, contagens). Gestão no RootifyONE.
   Regra de queda: sem resposta da nuvem, vale a aba Controle da planilha; sem nenhuma das duas por 30 dias, avisa
