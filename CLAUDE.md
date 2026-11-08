@@ -37,7 +37,7 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro.
 
 ## Como entregar
 
-- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos 39 arquivos em `releases/LexSuiteONE-robo.zip`,
+- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos 38 arquivos em `releases/LexSuiteONE-robo.zip`,
   `releases/LexSuiteONE-robo-<versão>.zip` e `docs/downloads/LexSuiteONE-robo.zip`. Atualize `robo/LEIA-ME.md`,
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.
 - Testes: `cd robo && python -m unittest discover -s testes`. A automação do GitHub roda testes, Bandit e Gitleaks.
