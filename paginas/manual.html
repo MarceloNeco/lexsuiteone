@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual · {{marca.nome}} · LexSuiteONE</title>
+<meta name="description" content="Como usar o {{marca.nome}} no dia a dia: a tela, a planilha, as leituras automáticas, o que fazer quando algo não funciona e a segurança dos dados.">
+<meta name="theme-color" content="#102038">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="fontes/figtree.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Nenhum pedido externo: fonte e ícones moram no próprio site. -->
+<style>
+@font-face { font-family: "Figtree"; src: url("fontes/figtree.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }
+:root { color-scheme: light;
+  --noite: #102038; --tinta: #0f1d33; --tinta-2: #45506a; --tinta-3: #6b7489;
+  --papel: #ffffff; --papel-2: #f3f5f8; --fio: #dbe1ea;
+  --latao: #d4ab6a; --latao-texto: #85601f; --latao-fundo: #f6efe0;
+  --f: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 20px; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 1.0625rem/1.65 var(--f); -webkit-font-smoothing: antialiased; }
+a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--latao); outline-offset: 3px; border-radius: 4px; }
+.miolo { max-width: 72rem; margin: 0 auto; padding: 0 20px; }
+
+.nome { font-weight: 400; letter-spacing: -.01em; white-space: nowrap; }
+.nome strong { font-weight: 800; letter-spacing: .01em; }
+.nome strong b { color: var(--latao); font-weight: 800; }
+
+.capa { background: var(--noite); color: #eef1f6; }
+.topo { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 0; }
+.topo .marca { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-size: 1.05rem; }
+.topo .marca img { width: 28px; height: 28px; }
+.topo nav a { color: #d6dbe6; font-size: .95rem; }
+.titulo { padding: 28px 0 44px; }
+h1 { margin: 0 0 10px; font-size: clamp(2.2rem, 4.6vw, 3.2rem); line-height: 1.05; font-weight: 800; color: #fff; }
+.titulo p { margin: 0; color: #c4cbd8; font-size: 1.15rem; max-width: 46ch; }
+
+.corpo { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 56px; padding: 44px 0 24px; align-items: start; }
+.sumario { position: sticky; top: 20px; font-size: .95rem; }
+.sumario b { display: block; color: var(--tinta-3); font-weight: 600; font-size: .85rem; margin-bottom: 8px; }
+.sumario ol { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--fio); }
+.sumario li { margin: 0; }
+.sumario a { display: block; padding: 6px 0 6px 14px; margin-left: -2px; border-left: 2px solid transparent; color: var(--tinta-2); text-decoration: none; }
+.sumario a:hover { color: var(--tinta); border-left-color: var(--latao); }
+
+article { max-width: 46rem; }
+article > section { padding-bottom: 36px; margin-bottom: 36px; border-bottom: 1px solid var(--fio); }
+article > section:last-child { border-bottom: 0; }
+h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 14px; }
+h3 { font-size: 1.1rem; font-weight: 700; margin: 24px 0 8px; }
+p, li { color: var(--tinta-2); }
+p { margin: 0 0 12px; }
+article b { color: var(--tinta); font-weight: 600; }
+ul, ol.passos { padding-left: 1.2em; margin: 0 0 12px; }
+li { margin: 6px 0; }
+.caixa { background: var(--papel-2); border-radius: 12px; padding: 16px 20px; margin: 14px 0; }
+.caixa ul { margin: 0; }
+.dica { border-left: 3px solid var(--latao); background: var(--latao-fundo); color: var(--latao-texto); padding: 10px 16px; border-radius: 0 10px 10px 0; margin: 14px 0; }
+.tabela { overflow-x: auto; margin: 12px 0; }
+table { border-collapse: collapse; width: 100%; font-size: .97rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--fio); vertical-align: top; color: var(--tinta-2); }
+th { color: var(--tinta-3); font-weight: 600; font-size: .85rem; background: var(--papel-2); }
+td:first-child { color: var(--tinta); font-weight: 600; }
+code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+.faq p { margin-bottom: 16px; }
+.faq b { display: block; color: var(--tinta); }
+.rodape { border-top: 1px solid var(--fio); padding: 26px 0 40px; color: var(--tinta-3); font-size: .92rem; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+@media (max-width: 860px) {
+  .corpo { grid-template-columns: 1fr; gap: 28px; padding-top: 28px; }
+  .sumario { position: static; background: var(--papel-2); border-radius: 12px; padding: 14px 18px; }
+}
+@media print { .capa { background: #fff; color: #000; } .capa * { color: #000 !important; } .sumario { display: none; } .corpo { display: block; } }
+</style>
+</head>
+<body>
+<header class="capa">
+  <div class="miolo">
+    <div class="topo">
+      <a class="marca" href="./" aria-label="{{marca.nome}}, início"><img src="favicon.svg" alt=""><span class="nome">{{marca.logo}}</span></a>
+      <nav><a href="./">Início</a></nav>
+    </div>
+    <div class="titulo">
+      <h1>Manual</h1>
+      <p>Como usar o {{marca.nome}} no dia a dia: a tela, a planilha e o que fazer quando algo não funciona.</p>
+    </div>
+  </div>
+</header>
+
+<div class="miolo corpo">
+<nav class="sumario" aria-label="Nesta página">
+  <b>Nesta página</b>
+  <ol>
+    <li><a href="#oque">O que o {{marca.curto}} faz</a></li>
+    <li><a href="#tela">A tela</a></li>
+    <li><a href="#planilha">A planilha no Google Drive</a></li>
+    <li><a href="#sozinho">Leituras automáticas</a></li>
+    <li><a href="#problemas">Quando algo não funciona</a></li>
+    <li><a href="#seguranca">Segurança e privacidade</a></li>
+    <li><a href="#perguntas">Perguntas frequentes</a></li>
+  </ol>
+</nav>
+
+<article>
+<section id="oque">
+  <h2>O que o {{marca.curto}} faz</h2>
+  <p>Todo dia, o Diário de Justiça Eletrônico Nacional (DJEN, do Conselho Nacional de Justiça) publica o que aconteceu nos tribunais. O {{marca.curto}} lê esse Diário nos tribunais que o escritório escolheu e separa as <b>ações trabalhistas novas contra empresas</b>: uma linha por ação, com a empresa, a vara e o rito.</p>
+  <p>Quando o Diário traz o CNPJ, a linha ganha a ficha da empresa, com os dados públicos da Receita Federal: atividade, porte, capital social, cidade, telefone e e-mail cadastrados, sócios e administradores.</p>
+  <div class="caixa">
+    <b>O que ele não faz</b>
+    <ul>
+      <li>Não usa inteligência artificial: aplica regras fixas, sempre do mesmo jeito.</li>
+      <li>Não entra em sistema com senha, não usa certificado digital e não resolve captcha. Por isso, quando o Diário não informa o <b>valor da causa</b>, ele aparece como "valor a conferir": uma pessoa confere na consulta do tribunal.</li>
+      <li>Não mostra pessoas físicas (reclamantes, testemunhas): elas são descartadas na leitura.</li>
+      <li>Não envia mensagem a ninguém e não publica nada na internet.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="tela">
+  <h2>A tela</h2>
+  <ol class="passos">
+    <li>Dois cliques em <code>ABRIR.bat</code>, na pasta do {{marca.curto}}. Abre uma janela preta chamada "LexSuiteONE" e, em seguida, a tela no navegador. <b>A janela preta precisa ficar aberta</b> enquanto a tela é usada; pode ficar minimizada.</li>
+    <li><b>Atualizar agora</b> faz uma leitura na hora. Os 24 TRTs já vêm escolhidos; em <b>Tribunais</b> dá para mudar por região, por estado ou por ramo. A primeira leitura dos 24 leva de 30 a 60 minutos; as seguintes, bem menos.</li>
+    <li><b>Período</b> mostra o último dia, ou 3, 7, 15 ou 30 dias.</li>
+  </ol>
+  <h3>A lista e a ficha</h3>
+  <ul>
+    <li>Cada linha: tribunal, empresa, setor, porte, cidade, vara e o valor da causa (ou "valor a conferir").</li>
+    <li>Clique na linha e a ficha abre. O que falta aparece como <b>"não informado no cadastro"</b> (a Receita não tem) ou <b>"não capturado"</b> (está no tribunal, atrás do captcha).</li>
+    <li>Na ficha: <b>Abrir consulta no PJe</b> (abre a consulta pública do tribunal; cole o número, resolva o captcha e veja o valor), <b>Copiar número</b>, o campo <b>Valor da causa</b> (digite e salve) e o <b>Status</b> (novo, visto, em contato, descartado).</li>
+    <li>Filtros: <b>Acima de R$ 100 mil</b> (ou o valor das Preferências), <b>Sem jurídico próprio provável</b> (esconde empresas muito grandes, que costumam ter advogado interno), <b>Mostrar excluídas</b> e um tribunal ou todos.</li>
+    <li><b>Exportar planilha</b> gera um arquivo <code>.csv</code> com o que está na tela, inclusive os valores digitados.</li>
+  </ul>
+</section>
+
+<section id="planilha">
+  <h2>A planilha no Google Drive</h2>
+  <p>Na pasta do Google Drive escolhida na configuração fica a subpasta <code>LexSuiteONE</code>, com a planilha <code>LexSuiteONE.xlsx</code> e uma cópia da tela (<code>LexSuiteONE - Radar.html</code>), que abre em qualquer computador ou celular com acesso ao Drive.</p>
+  <div class="tabela"><table>
+    <tr><th>Aba</th><th>Quem escreve</th><th>Para quê</th></tr>
+    <tr><td>Radar</td><td>o {{marca.curto}}, a cada leitura</td><td>a lista, com as mesmas colunas da tela</td></tr>
+    <tr><td>Preferências</td><td>o escritório</td><td>os ajustes da lista (abaixo)</td></tr>
+    <tr><td>Exclusões</td><td>o escritório</td><td>clientes e empresas que não devem aparecer: nome ou CNPJ e o motivo</td></tr>
+    <tr><td>abas ocultas</td><td>o suporte</td><td>registro de cada leitura e avisos de funcionamento; não precisam ser abertas</td></tr>
+  </table></div>
+  <h3>Os ajustes da aba Preferências</h3>
+  <div class="tabela"><table>
+    <tr><th>Ajuste</th><th>O que faz</th></tr>
+    <tr><td>Valor mínimo da causa (R$)</td><td>o filtro "Acima de" da tela. Ações abaixo continuam na lista.</td></tr>
+    <tr><td>Mínimo de ações da mesma empresa</td><td>por exemplo, 3: só destaca empresa com 3 ou mais ações novas na janela de dias. 1 mostra todas.</td></tr>
+    <tr><td>Janela do mínimo de ações (dias)</td><td>quantos dias para trás contar as ações da mesma empresa.</td></tr>
+    <tr><td>Capital social que indica jurídico próprio (R$)</td><td>acima disso, a empresa é marcada "jurídico próprio provável" e vai para o fim da lista.</td></tr>
+    <tr><td>Esconder jurídico próprio provável</td><td>sim ou não.</td></tr>
+    <tr><td>Esconder clientes e exclusões</td><td>sim ou não.</td></tr>
+    <tr><td>Mostrar sócios e administradores</td><td>sim ou não. São nomes de pessoas do cadastro público da Receita; se o escritório não precisa deles, desligue.</td></tr>
+  </table></div>
+  <div class="dica">Para mudar um ajuste, abra a planilha no Google Planilhas e altere direto. O {{marca.curto}} lê a planilha antes de cada leitura. Se ela estiver aberta e travada naquele momento, ele grava na próxima. Nada se perde.</div>
+</section>
+
+<section id="sozinho">
+  <h2>Leituras automáticas</h2>
+  <p>Com a opção "rodar sozinho" marcada na configuração, o {{marca.curto}} lê o Diário todo dia às <b>19h40</b> (o Diário sai a partir das 19h) e às <b>7h10</b>, desde que o computador esteja ligado. Não precisa abrir a tela: a planilha é atualizada e a tela mostra tudo na próxima vez que for aberta. Para saber se leu, veja "Última atualização" no alto da tela.</p>
+</section>
+
+<section id="problemas">
+  <h2>Quando algo não funciona</h2>
+  <p>As mensagens abaixo aparecem na tela exatamente assim.</p>
+  <div class="tabela"><table>
+    <tr><th>Mensagem ou sintoma</th><th>O que significa</th><th>O que fazer</th></tr>
+    <tr><td>"O Diário só responde a computadores no Brasil"</td><td>o computador está saindo para a internet por fora do país (VPN, rede da empresa)</td><td>desligue a VPN ou use a rede normal e tente de novo</td></tr>
+    <tr><td>"O robô está desligado pelo suporte" ou "A validade terminou"</td><td>o suporte pausou o {{marca.curto}}</td><td>escreva para o suporte (endereço no fim da página)</td></tr>
+    <tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela LexSuiteONE e abra de novo</td></tr>
+    <tr><td>"Planilha em uso ou ilegível"</td><td>alguém estava com a planilha aberta e travada, ou o Drive ainda sincronizava</td><td>nada; o {{marca.curto}} grava na próxima leitura</td></tr>
+    <tr><td>"Não consegui falar com o robô"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>dois cliques em <code>ABRIR.bat</code></td></tr>
+    <tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda</td><td>tente mais tarde; se continuar, avise o suporte</td></tr>
+    <tr><td>"Falta o Python"</td><td>falta uma peça que o {{marca.curto}} baixa na primeira vez</td><td>dois cliques em <code>INSTALAR-PYTHON.bat</code> e depois em <code>ABRIR.bat</code></td></tr>
+  </table></div>
+</section>
+
+<section id="seguranca">
+  <h2>Segurança e privacidade</h2>
+  <div class="caixa"><ul>
+    <li><b>Tudo roda no computador do escritório.</b> Não existe servidor da SolverONE recebendo os dados. A tela só responde a este computador e recusa pedidos vindos de qualquer site.</li>
+    <li><b>O que sai do computador:</b> pedidos de leitura ao Diário (do CNJ) e ao cadastro público da Receita, sempre por conexão segura; e a planilha, que vai para o Google Drive do próprio escritório e só é vista pelo suporte se o escritório der acesso.</li>
+    <li><b>Nenhuma senha.</b> O {{marca.curto}} não pede, não guarda e não usa senha, certificado digital ou chave de nenhum sistema. Captcha nunca é contornado.</li>
+    <li><b>Pessoas físicas não aparecem.</b> Os contatos de empresa e os nomes de sócios e administradores vêm do cadastro público da Receita; a decisão de usar esses dados é do escritório e do seu compliance, dentro da LGPD.</li>
+    <li><b>Guarda por tempo limitado.</b> O {{marca.curto}} apaga sozinho o que tem mais de 365 dias.</li>
+    <li><b>Atualizações assinadas.</b> Uma versão nova só é instalada se a assinatura digital conferir. O computador do escritório nunca recebe comando de fora: o suporte só pode pausar, avisar ou publicar versão, pela planilha.</li>
+    <li><b>Limite honesto.</b> A pausa pelo suporte é uma cortesia de serviço, não uma trava: quem controla o computador controla o {{marca.curto}}.</li>
+  </ul></div>
+  <p>Pedidos de titulares de dados são tratados pelo encarregado de dados do próprio escritório, que é o controlador. A SolverONE atua como prestadora de serviço e não acessa o computador do escritório.</p>
+</section>
+
+<section id="perguntas" class="faq">
+  <h2>Perguntas frequentes</h2>
+  <p><b>Preciso deixar o computador ligado?</b> Só nos horários das leituras automáticas. Se estiver desligado, a próxima leitura recupera os dias que faltaram.</p>
+  <p><b>Posso usar no celular?</b> A tela é do computador. No celular, abra <code>LexSuiteONE - Radar.html</code> na pasta do Drive: é a mesma lista, só para consulta.</p>
+  <p><b>Quais tribunais escolher?</b> Os que o escritório atende. Os tribunais estaduais (TJs) publicam diários muito maiores e a regra de "ação nova" ainda não foi ajustada para eles.</p>
+  <p><b>Como faço um cliente não aparecer?</b> Na aba Exclusões da planilha: nome (como está no Diário) ou CNPJ, e o motivo. Vale a partir da próxima leitura.</p>
+  <p><b>Por que algumas linhas dizem "valor a conferir"?</b> Nem sempre o Diário informa o valor da causa. Ele está na consulta pública do tribunal, atrás de um captcha que uma pessoa resolve em segundos: use "Abrir consulta no PJe" e digite o valor na ficha.</p>
+</section>
+</article>
+</div>
+
+<footer class="miolo"><div class="rodape">
+  <span>{{marca.nome}} é um produto da LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>. Manual da versão 0.7.5.</span>
+  <span>Suporte: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a></span>
+</div></footer>
+</body>
+</html>

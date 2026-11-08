@@ -12,9 +12,9 @@ A tela pede esse código na instalação. Ele identifica o escritório; não é 
 [CODIGO-FIM]
 Como instalar, em quatro passos
 1. Descompacte o arquivo numa pasta fácil, como C:\LexSuiteONE.
-2. Dois cliques em ABRIR.bat. Na primeira vez ele baixa o Python oficial (11 MB) e abre a tela no navegador.
-3. Responda o passo a passo: seu nome, seu papel, o escritório e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.
-4. No Google Drive, compartilhe a subpasta LexSuiteONE com {{drive}} como editor. É o único passo à mão: por ele o suporte acompanha o {{marca.curto}} sem acessar o seu computador.
+2. Dois cliques em ABRIR.bat. Na primeira vez ele baixa o que precisa para funcionar (11 MB) e abre a tela no navegador.
+3. Configure: informe o escritório, quem vai usar e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.
+4. No Google Drive, dê acesso de editor à pasta LexSuiteONE para {{drive}}. É o único passo à mão: por ele o suporte acompanha o {{marca.curto}} sem acessar o seu computador.
 
 Onde roda: no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o {{marca.curto}} lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.
 
