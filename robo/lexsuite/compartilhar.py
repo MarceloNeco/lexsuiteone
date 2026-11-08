@@ -1,6 +1,7 @@
 """A pasta compartilhada (Google Drive para computador, OneDrive, Dropbox): onde o robô deixa a planilha e a página
 e de onde lê o controle e as atualizações. Nada de senha: é só uma pasta do computador que o Drive sincroniza."""
 
+import json
 import os
 import platform
 import shutil
@@ -155,9 +156,19 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     for e in banco.execucoes("saude", 300):
         saude.append([e.get("quando", ""), e.get("fonte", ""), e.get("situacao", ""), e.get("detalhe", "")])
     ultima = log[1][0] if len(log) > 1 else ""
+    chaves = [chave for _, chave in colunas]
+    moeda = [chaves.index(k) for k in ("capital_social", "valor_causa") if k in chaves]
+    destacar = set()
+    if "valor_causa" in chaves:
+        minimo = float(pagina.get("valor_minimo") or 0)
+        j = chaves.index("valor_causa")
+        destacar = {n for n, l in enumerate(linhas[1:], 1)
+                    if isinstance(l[j], (int, float)) and not isinstance(l[j], bool) and minimo and l[j] >= minimo}
     planilha.escrever_xlsx(caminho, [
-        {"nome": "Radar", "linhas": linhas, "larguras": [8, 9, 34, 26, 12, 12, 40, 18, 22, 16, 36, 20, 18, 16, 28, 40, 10, 14, 10, 30, 30, 30, 10]},
-    ] + editaveis + [
+        {"nome": "Radar", "linhas": linhas, "visual": True, "filtro": True, "moeda": moeda, "destacar": destacar,
+         "larguras": [8, 9, 34, 26, 12, 12, 40, 18, 22, 16, 36, 20, 18, 16, 28, 40, 15, 16, 12, 30, 30, 30, 10]},
+    ] + [dict(a, visual=True) for a in editaveis] + [
+        {"nome": NOME_COMO_USAR, "linhas": como_usar(_nome_produto(pasta_robo)), "visual": True, "larguras": [24, 70, 70]},
         {"nome": "Log", "linhas": log, "oculta": True, "larguras": [20, 8, 40, 12, 12, 10, 10, 16, 60]},
         {"nome": "Saúde", "linhas": saude, "oculta": True, "larguras": [20, 18, 10, 80]},
         {"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo), versao, chave_impressao, ultima), "oculta": True, "larguras": [30, 80]},
@@ -173,6 +184,42 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
                 pass
     aviso(f"  Planilha compartilhada: {caminho}")
     return caminho
+
+
+NOME_COMO_USAR = "Como usar"
+
+
+def _nome_produto(pasta_robo):
+    try:
+        with open(os.path.join(pasta_robo, "marca.json"), encoding="utf-8") as f:
+            return " ".join(str(json.load(f).get("nome") or "").split())[:40] or "RADAR JUDICIAL"
+    except (OSError, ValueError, AttributeError, TypeError):
+        return "RADAR JUDICIAL"
+
+
+def como_usar(produto="RADAR JUDICIAL"):
+    """Aba visível com o passo a passo da planilha, em português e inglês. Não tem dado de cliente."""
+    return [
+        ["Assunto / Topic", "Como fazer", "How to"],
+        ["O que é esta planilha", f"O {produto} grava aqui, sozinho, a lista de ações novas a cada leitura. Não precisa "
+         "copiar nem compartilhar nada: a planilha se atualiza no lugar.",
+         f"{produto} writes the list of new lawsuits here by itself after every reading. Nothing to copy or share: "
+         "the file updates in place."],
+        ["Filtrar", "Clique na setinha do cabeçalho (Tribunal, Setor, Porte, Cidade/UF...) e marque o que quer ver.",
+         "Click the small arrow in the header (Court, Sector, Size, City...) and tick what you want to see."],
+        ["Ordenar pelo valor", "Na setinha de \"Valor da causa\", escolha \"Classificar do maior para o menor\".",
+         "On the \"Valor da causa\" arrow, choose \"Sort largest to smallest\"."],
+        ["Destaque em latão", "O valor da causa com fundo latão claro está acima do valor mínimo escolhido na Configuração.",
+         "A claim value with a light brass background is above the minimum value set in Settings."],
+        ["Excluir uma empresa", "Na aba Exclusões, escreva o nome ou o CNPJ e o motivo. Na próxima leitura ela some da lista.",
+         "In the Exclusões tab, type the name or CNPJ and the reason. It leaves the list on the next reading."],
+        ["Planilha aberta", "Se a planilha estiver aberta no Excel na hora da leitura, o programa avisa e grava depois. "
+         "Feche e use o botão \"Gravar a planilha agora\".",
+         "If the file is open in Excel during a reading, the program warns you and writes it later. Close it and use "
+         "the \"Write the spreadsheet now\" button."],
+        ["Google Planilhas", "Funciona também: abra pelo Google Drive. Os filtros e as cores vêm junto.",
+         "It also works in Google Sheets: open it from Google Drive. Filters and colours come along."],
+    ]
 
 
 def _celula(v):

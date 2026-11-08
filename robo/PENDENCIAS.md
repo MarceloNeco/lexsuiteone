@@ -162,7 +162,16 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.11 (08/Nov, feedback do teste do dono; pronta para publicar com o "pode")
+## 0.7.12 (08/Nov, visual; pronta para publicar com o "pode")
+
+Itens 38 e 39 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`, com o "pode pra tudo" do dono: a tela ganha o Painel
+(o desenho antigo de Cajamar: cartões de números, ações por dia, faixas de valor, setores, empresas, porte, tribunais
+e estados, nas cores marinho e latão), agnóstico de frente e com os mesmos filtros da Lista; a planilha ganha
+cabeçalho azul-marinho fixo, filtro em todas as colunas, R$, destaque do valor acima do mínimo e a aba "Como usar".
+Testada no LibreOffice e no openpyxl; falta abrir no Excel e no Google Planilhas de verdade. Contatos (itens 40 e 41)
+esperam o desenho da Arquitetura.
+
+## 0.7.11 (08/Nov, feedback do teste do dono; publicada ou a publicar pela Operação)
 
 Itens 19 a 26 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`: leitura conta os dias que tiveram Diário (feriado e
 recesso); faixa de versão nova ao abrir, atualizar com um clique e reinício sozinho; uma tela só por computador (o
