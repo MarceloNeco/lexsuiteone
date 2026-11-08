@@ -108,7 +108,7 @@ produto, escrito em maiúsculas com o "IA" em latão (`JUDIC<b>IA</b>L` na tela 
 | Download | `judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip` (arquivo em `docs/downloads/`; a cópia em `releases/` é histórico) |
 | Atualização assinada | `judicial.solverone.com.br/atualizacao/versao.json` e o `.zip` ao lado (pasta `docs/atualizacao/`), além da subpasta `atualizacao` do Drive do cliente |
 | Remetente dos e-mails | `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend; não recebe respostas |
-| Dúvidas do cliente | `contato@solverone.com.br` |
+| Dúvidas do cliente | `judicial@solverone.com.br` (contato de toda a suíte LexSuiteONE; cada suíte tem o seu, ex. `moneytrio@`; `contato@` é o genérico da SolverONE) |
 | Compartilhamento do Drive | `integracao@solverone.com.br`: endereço de sistemas, não é caixa de atendimento; vira Conta Google para o Drive |
 
 A zona DNS de `solverone.com.br` está no Cloudflare desde 07/Nov/2026 (servidores `harlee` e `lennon.ns.cloudflare.com`),

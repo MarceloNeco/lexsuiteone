@@ -140,7 +140,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 
 <div class="rodape">
   <span data-t="rod1">JUDICIAL é um produto da suíte LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>.</span>
-  <span data-t="rod2">Dúvidas: <a href="mailto:contato@solverone.com.br">contato@solverone.com.br</a></span>
+  <span data-t="rod2">Dúvidas: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a></span>
 </div>
 </div>
 
@@ -175,7 +175,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     i2: "Double-click ABRIR.bat. The first time it prepares what it needs, an 11 MB download from the official Python site, and opens the screen in your browser.",
     i3: "The screen asks three questions, your name, your role and the firm, asks for the Google Drive folder and starts the first run.",
     i4: "In Google Drive, share the LexSuiteONE subfolder with support as an editor. It is the only manual step.",
-    manual: "Firm manual", rod1: "JUDICIAL is a product of the LexSuiteONE suite by SolverONE.", rod2: "Questions: contato@solverone.com.br" } };
+    manual: "Firm manual", rod1: "JUDICIAL is a product of the LexSuiteONE suite by SolverONE.", rod2: "Questions: judicial@solverone.com.br" } };
   var PT = {};
   document.querySelectorAll("[data-t]").forEach(function (n) { PT[n.getAttribute("data-t")] = n.innerHTML; });
   function aplicar(lang) {
@@ -184,7 +184,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
       if (lang === "pt") { n.innerHTML = PT[k]; return; }
       var v = T.en[k]; if (v == null) return;
       if (k === "rod1") { n.innerHTML = 'JUDICIAL is a product of the LexSuiteONE suite by <a href="https://solverone.com.br">SolverONE</a>.'; return; }
-      if (k === "rod2") { n.innerHTML = 'Questions: <a href="mailto:contato@solverone.com.br">contato@solverone.com.br</a>'; return; }
+      if (k === "rod2") { n.innerHTML = 'Questions: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>'; return; }
       if (k === "i1") { n.innerHTML = 'Download the file above and unzip it into an easy folder, for example <code>C:\\LexSuiteONE</code>.'; return; }
       if (k === "i2") { n.innerHTML = 'Double-click <code>ABRIR.bat</code>. The first time it prepares what it needs, an 11 MB download from the official Python site, and opens the screen in your browser.'; return; }
       n.textContent = v;
