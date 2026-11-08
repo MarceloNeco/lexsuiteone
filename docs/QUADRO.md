@@ -59,7 +59,7 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- Juntando o feedback do teste do dono (08/Nov) em `documentacao/FEEDBACK-TESTE-2026-11-08.md` (17 itens; o 12 é um defeito crítico: domingo e segunda não leem a sexta) para a 0.7.10.
+- Juntando o feedback do teste do dono (08/Nov) em `documentacao/FEEDBACK-TESTE-2026-11-08.md` (18 itens; o 12 é um defeito crítico: domingo e segunda não leem a sexta) para a 0.7.10.
   Nada implementado: espera o "pode" do dono item a item. O item 4 (e-mail já preenchido vindo do e-mail de
   boas-vindas) mexe na nuvem: precisa de desenho curto da Arquitetura.
 
