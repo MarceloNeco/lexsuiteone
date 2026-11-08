@@ -13,7 +13,7 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from . import VERSAO, agendar, assinatura, atualizar, banco as bd, compartilhar, config, preferencias, radar, rede, tribunais
+from . import VERSAO, agendar, assinatura, atualizar, banco as bd, cnpj, compartilhar, config, conta, preferencias, radar, rede, tribunais
 
 PORTAS = range(8765, 8776)
 PAPEIS = ("Sócio ou sócia", "Advogado ou advogada", "Estagiário ou estagiária", "Equipe administrativa")
@@ -33,7 +33,7 @@ PARA_VOCE = {
                                  "Cadastrar na aba Exclusões da planilha as empresas que a equipe pedir para não aparecer (nome como está no Diário, ou CNPJ, e o motivo).",
                                  "Não é preciso mexer nas abas ocultas da planilha: elas são do suporte."],
     "Equipe administrativa": ["A planilha LexSuiteONE.xlsx no Google Drive é sua: a aba Preferências ajusta a lista e a aba Exclusões guarda clientes e empresas que não devem aparecer.",
-                              "O robô roda sozinho às 19:40 e às 07:10 com o computador ligado; se o computador ficou desligado, a próxima rodada compensa.",
+                              "O RADAR lê sozinho nos horários de Configuração (de início, 20h e 8h); se o computador estava desligado, a leitura acontece quando ele ligar.",
                               "Se a planilha estiver aberta e travada na hora de uma rodada, o robô grava na próxima. Nada se perde.",
                               "Avise o suporte quando a tela mostrar \"robô desligado\", \"precisa atualizar\" ou quando a lista vier vazia dois dias úteis seguidos."],
 }
@@ -101,14 +101,23 @@ class Servidor(ThreadingHTTPServer):
             try:
                 cfg = self.config()
                 banco = bd.Banco(self.caminho_db)
-                situacao = radar.executar(cfg, banco, self.estado.aviso, self.pasta, dias=dias, versao=VERSAO)
+                situacao = radar.executar(cfg, banco, self.estado.aviso, self.pasta, dias=dias, versao=VERSAO,
+                                          caminho_config=self.caminho_config)
                 self.estado.terminar(situacao)
-            except (rede.BloqueadoForaDoBrasil, radar.RoboDesligado) as e:
+                if cfg["radar"].get("avisar_ao_terminar", True):
+                    agendar.notificar(marca(self.pasta).get("nome", "RADAR JUDICIAL"), agendar.texto_aviso(situacao, marca(self.pasta).get("curto", "RADAR")))
+            except radar.RoboDesligado as e:
                 self.estado.aviso(str(e))
                 self.estado.terminar(erro=str(e))
+            except rede.BloqueadoForaDoBrasil as e:
+                self.estado.aviso(str(e))
+                self.estado.terminar(erro=str(e))
+                conta.registrar_erro(self.config(), VERSAO, "leitura: fora do Brasil", str(e))
             except Exception as e:  # a tela precisa saber que parou, qualquer que seja o motivo
                 self.estado.aviso(f"Erro: {e.__class__.__name__}: {e}")
                 self.estado.terminar(erro=f"{e.__class__.__name__}: {e}")
+                import traceback
+                conta.registrar_erro(self.config(), VERSAO, "leitura pela tela", traceback.format_exc()[-1800:])
 
         threading.Thread(target=alvo, daemon=True, name="radar").start()
         return True
@@ -163,21 +172,41 @@ class Tratador(BaseHTTPRequestHandler):
             comp = cfg["compartilhar"]
             base = compartilhar.pasta_base(cfg)
             chave = atualizar.chave_publica(s.pasta)
+            horarios, dias = agendar.do_config(cfg)
+            agendado, proxima = agendar.agendado(), agendar.proxima(horarios, dias)
             pagina["app"] = {
-                "usuario": {"nome": cfg["usuario"].get("nome", ""), "papel": cfg["usuario"].get("papel", "")}, "papeis": list(PAPEIS),
-                "tribunais": tribunais.TRIBUNAIS, "ramos": tribunais.RAMOS, "regioes": tribunais.REGIOES, "ufs": tribunais.UFS,
+                "usuario": {"nome": cfg["usuario"].get("nome", ""), "papel": cfg["usuario"].get("papel", ""), "email": cfg["usuario"].get("email", "")},
+                "papeis": list(PAPEIS), "documento_escritorio": cfg.get("documento_escritorio") or {},
+                "tribunais": [x for x in tribunais.TRIBUNAIS if x["ramo"] in FRENTES], "ramos": [r for r in tribunais.RAMOS if r in FRENTES], "regioes": tribunais.REGIOES, "ufs": tribunais.UFS,
                 "config": {"tribunais": tribunais.validar(r.get("tribunais")), "escritorio": cfg.get("escritorio", ""),
                            "valor_minimo": r.get("valor_minimo"), "dias_na_pagina": r.get("dias_na_pagina"),
                            "teto_capital_gigante": r.get("teto_capital_gigante"),
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
                            "planilha": preferencias.caminho(base) if base and os.path.exists(preferencias.caminho(base)) else "",
-                           "agendavel": agendar.disponivel(), "agendado": agendar.agendado()},
+                           "agendavel": agendar.disponivel(), "agendado": agendado,
+                           "horarios": horarios, "dias": dias, "tem_noite": agendar.tem_noite(horarios),
+                           "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
+                           "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True))},
                 "atualizacao": {"chave": bool(chave), "impressao": assinatura.impressao(chave) if chave else "",
                                 "url": cfg["atualizacao"].get("url", ""), "pasta": compartilhar.pasta_atualizacao(cfg)},
                 "versao": VERSAO, "estado": s.estado.como_dict(), "pasta_robo": s.pasta,
+                "conta": conta.situacao(cfg), "marca": marca(s.pasta),
             }
             return self._responder(pagina)
+        if u.path == "/cnpj":
+            # Preenche o nome do escritório pelo CNPJ (cadastro público da Receita, pelas mesmas fontes da ficha).
+            numero = conta.limpar_cnpj((qs.get("n") or [""])[0])
+            if not conta.cnpj_valido(numero):
+                return self._responder({"ok": False, "motivo": "cnpj_invalido"})
+            try:
+                d = cnpj.consultar(numero)
+            except Exception:
+                d = None
+            if not d or not d.get("razao_social"):
+                return self._responder({"ok": False, "motivo": "nao_encontrado"})
+            return self._responder({"ok": True, "razao_social": d.get("razao_social", ""), "nome_fantasia": d.get("nome_fantasia", ""),
+                                    "situacao": d.get("situacao", ""), "municipio": d.get("municipio", ""), "uf": d.get("uf", "")})
         if u.path == "/estado":
             return self._responder(s.estado.como_dict())
         if u.path == "/manual":
@@ -219,6 +248,34 @@ class Tratador(BaseHTTPRequestHandler):
                         pass
             if "escritorio" in corpo:
                 cfg["escritorio"] = str(corpo["escritorio"] or "").strip()[:80]
+            if "codigo" in corpo:
+                # Código de cliente: confere na hora com a SolverONE; código errado não é salvo.
+                cfg.setdefault("conta", {})["codigo"] = conta.normalizar(corpo["codigo"])
+                c = conta.verificar(cfg, VERSAO)
+                if c.get("resposta") not in ("ok", "sem_resposta"):
+                    return self._responder({"ok": False, "motivo": conta.bloqueio(cfg), "conta": conta.situacao(cfg)})
+                if c.get("resposta") == "sem_resposta" and not c.get("ultima_ok"):
+                    return self._responder({"ok": False, "motivo": "Não consegui falar com a SolverONE para confirmar o código. "
+                                                                    "Confira a internet e tente de novo.", "conta": conta.situacao(cfg)})
+                if c.get("escritorio_licenca") and not cfg.get("escritorio"):
+                    cfg["escritorio"] = c["escritorio_licenca"]
+            if "email" in corpo:
+                # Cadastro de quem usa: o e-mail é a chave (um e-mail, um escritório). Vai para a licença na SolverONE.
+                if "escritorio" in corpo:
+                    cfg["escritorio"] = str(corpo["escritorio"] or "").strip()[:80]
+                doc_atual = cfg.get("documento_escritorio") or {}
+                ok, motivo = conta.cadastrar(cfg, VERSAO, corpo.get("email"), corpo.get("nome") or cfg["usuario"].get("nome"),
+                                             corpo.get("documento") or doc_atual.get("numero"),
+                                             corpo["papel"] if "papel" in corpo else cfg["usuario"].get("papel"),
+                                             doc_tipo=corpo.get("doc_tipo") or doc_atual.get("tipo") or "cnpj")
+                if not ok:
+                    return self._responder({"ok": False, "motivo": motivo, "conta": conta.situacao(cfg)})
+            if "horarios" in corpo:
+                r["horarios"] = agendar.validar(corpo["horarios"])
+            if "dias" in corpo:
+                r["dias"] = agendar.validar_dias(corpo["dias"])
+            if "avisar_ao_terminar" in corpo:
+                r["avisar_ao_terminar"] = bool(corpo["avisar_ao_terminar"])
             if "nome" in corpo:
                 cfg["usuario"]["nome"] = str(corpo["nome"] or "").strip()[:60]
             if "papel" in corpo:
@@ -237,11 +294,23 @@ class Tratador(BaseHTTPRequestHandler):
                     except Exception as e:
                         return self._responder({"ok": False, "motivo": f"Não consegui criar a planilha ({e.__class__.__name__})."})
             config.salvar(s.caminho_config, cfg)
-            resposta = {"ok": True, "radar": r, "escritorio": cfg.get("escritorio", ""), "pasta": cfg["compartilhar"].get("pasta", "")}
-            if "agendar" in corpo and agendar.disponivel():
-                ok, msg = agendar.agendar(s.pasta) if corpo["agendar"] else agendar.desagendar()
+            resposta = {"ok": True, "radar": r, "escritorio": cfg.get("escritorio", ""), "pasta": cfg["compartilhar"].get("pasta", ""),
+                        "conta": conta.situacao(cfg)}
+            mudou_horario = "horarios" in corpo or "dias" in corpo
+            if agendar.disponivel() and ("agendar" in corpo or (mudou_horario and agendar.agendado())):
+                ligar = corpo["agendar"] if "agendar" in corpo else True
+                ok, msg = agendar.agendar(s.pasta, *agendar.do_config(cfg)) if ligar else agendar.desagendar()
                 resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg})
             return self._responder(resposta)
+        if caminho == "/abrir":
+            cfg = s.config()
+            base = compartilhar.pasta_base(cfg)
+            planilha = preferencias.caminho(base) if base else ""
+            alvo = planilha if corpo.get("o_que") == "planilha" else (os.path.dirname(planilha) if planilha else "")
+            if abrir_no_windows(alvo):
+                return self._responder({"ok": True})
+            return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Escolha a pasta do Google Drive em Configuração e faça uma leitura.",
+                                    "caminho": planilha})
         if caminho == "/testar-pasta":
             ok, msg = compartilhar.testar(str(corpo.get("pasta") or "").strip(), s.config()["compartilhar"].get("subpasta") or "LexSuiteONE")
             return self._responder({"ok": ok, "mensagem": msg})
@@ -262,6 +331,34 @@ class Tratador(BaseHTTPRequestHandler):
             comecou = s.rodar(dias)
             return self._responder({"ok": comecou, "motivo": "" if comecou else "já está rodando"})
         return self._responder({"erro": "não existe"}, status=404)
+
+
+# Ramos oferecidos na tela: só a frente trabalhista por enquanto (os TJs e TRFs são de outras frentes).
+FRENTES = ("Trabalhista",)
+MARCA_PADRAO = {"nome": "RADAR JUDICIAL", "curto": "RADAR", "destaque": "IA"}
+
+
+def marca(pasta):
+    """Nome do produto (marca.json do pacote, gerado de docs/marca.json): exatamente como o dono escreveu."""
+    try:
+        with open(os.path.join(pasta, "marca.json"), encoding="utf-8") as f:
+            m = json.load(f)
+        nome = " ".join(str(m.get("nome") or "").split())[:40]
+        if nome:
+            return {"nome": nome, "curto": " ".join(str(m.get("curto") or "").split())[:40] or nome.split(" ")[0],
+                    "destaque": str(m.get("destaque") or "")[:10]}
+    except (OSError, ValueError, AttributeError):
+        pass
+    return dict(MARCA_PADRAO)
+
+
+def abrir_no_windows(caminho):
+    """Abre um arquivo ou pasta com o programa padrão do Windows (Excel, Explorador). Só caminhos que o próprio
+    programa conhece: a planilha e a pasta dela."""
+    if os.name != "nt" or not caminho or not os.path.exists(caminho):
+        return False
+    os.startfile(caminho)  # nosec B606 - caminho vem do config (planilha do próprio programa), nunca do pedido
+    return True
 
 
 def personalizar_manual(html, cfg):
@@ -295,6 +392,15 @@ def servir(pasta, porta=None, abrir=True, aviso=print):
     aviso("  Deixe esta janela aberta enquanto usa a tela. Para encerrar, feche a janela (ou Ctrl+C).")
     if abrir:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
+
+    def migrar():
+        try:
+            msg = agendar.migrar_antigas(pasta, servidor.config())
+            if msg:
+                aviso("  " + msg)
+        except Exception:  # migrar a leitura automática nunca impede a tela de abrir
+            pass
+    threading.Thread(target=migrar, daemon=True, name="migrar-agenda").start()
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:

@@ -25,6 +25,118 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
   e-mail, repositório ou planilha. Organização `solverone` no GitHub e endereços: `judicial@` para dúvidas de qualquer produto da suíte LexSuiteONE (e `moneytrio@` etc. para as outras suítes;
   `contato@` é o genérico da SolverONE; no futuro, triagem por programa), `integracao@` só para sistemas (Drive;
   vira Conta Google; não é monitorado e deve responder automaticamente que não é caixa de atendimento).
+- Envio de e-mail pelo Resend (anotado em 08/Nov): a mesma conta e o mesmo domínio `solverone.com.br` enviam o LexSuiteONE
+  e o Vagas Nutri (outro projeto do dono, para outra pessoa). Decisão do dono: **mais tarde, separar o envio por
+  subdomínio** (um por produto, cada um verificado no Resend), para que devolução ou reclamação de um projeto não afete a
+  reputação do outro. Nada a fazer agora.
+
+## Requisito novo (08/Nov): ficha de canais da empresa para o compliance
+
+Apontado pelo Leandro como o diferencial do produto: para cada ação nova, **levantar e confirmar os canais de contato da
+empresa processada**, para o time de compliance do escritório analisar e decidir se e como agir. **Nada é enviado a
+ninguém** pelo JUDICIAL. Ainda não implementado; o desenho sai depois da visita de 12/Nov (prompts em `docs/VISITA-KR-LAW.md`)
+e passa pela regra zero antes de virar código.
+
+- Pode: dados da empresa (telefone geral, e-mail comercial, site, LinkedIn e Instagram da empresa, endereço, nomes e
+  cargos públicos de sócios e administradores), sempre com fonte. Celular e e-mail de uma pessoa só se a própria
+  empresa os publica como contato comercial. Nunca: dados do reclamante e de outras pessoas físicas.
+- Formato: uma ficha por empresa, uma linha por canal, com **fonte, data da consulta e grau de confiança** (alta: canal
+  oficial da empresa confirmado por mais uma fonte; média: uma fonte oficial; baixa: só terceiros ou divergente).
+
+O que o robô já traz hoje (conferido no código da 0.7.5, `lexsuite/cnpj.py` e `lexsuite/radar.py`):
+
+- Do cadastro público da Receita (BrasilAPI, com Minha Receita de reserva; cache de 30 dias): telefone 1 e telefone 2,
+  e-mail, cidade/UF e até 8 sócios e administradores com nome e qualificação. Aparece na ficha da tela; na planilha
+  Radar do Drive e no `radar.csv` vão telefone, e-mail e nomes dos sócios. O ajuste "Mostrar sócios e administradores"
+  desliga os nomes.
+- Só quando o Diário traz o CNPJ, o que acontece em cerca de 1% dos casos. Sem CNPJ, a ficha fica vazia.
+
+O que falta para a ficha de canais:
+
+1. Achar o CNPJ pelo nome da empresa (já pendente na v0.6.1): é o que destrava todo o resto.
+2. Endereço completo da sede: o robô guarda só cidade/UF, embora a mesma consulta à Receita devolva logradouro,
+   número, bairro e CEP.
+3. Telefone 2 e a qualificação dos sócios não vão para a planilha nem para o CSV (só para a tela).
+4. Fonte, data da consulta e grau de confiança por dado: a data existe no cache (`consultado_em`), mas não aparece.
+5. Sinalizar "provável contato do contador" quando o e-mail da Receita for de outro domínio (comum no cadastro).
+6. Contatos da ré na petição inicial e na citação do PJe: dependem do relatório do Prompt 1 (onde aparecem, se dá para
+   extrair de forma repetível) e do login do advogado.
+7. Site, LinkedIn, Instagram e ficha no Google: o robô não procura hoje. Decidir se fica como levantamento guiado pela
+   pessoa (como o Prompt 2) ou se entra em versão futura, sempre sem raspagem em massa e sem contornar login.
+8. Entrega no Astrea como contato pessoa jurídica (depende do relatório do Prompt 3).
+9. **Pergunta ao dono:** empresário individual e MEI entram hoje como empresa (`classificar.py` reconhece "ME" e "MEI"),
+   mas o telefone e o e-mail do cadastro deles costumam ser da própria pessoa. Tratar como pessoa física (fora da
+   lista) ou mostrar sem os contatos?
+
+## Site e nome (feedback do dono, 08/Nov)
+
+- Nome por enquanto: **RADAR JUDICIAL**, sempre em maiúsculas (o "IA" segue em latão), sob a marca LexSuiteONE.
+  Aplicado na página inicial do site e no e-mail de boas-vindas. Manual, página 404, tela do robô e pacote continuam
+  "JUDICIAL" (só o Leandro vê o nome antigo na tela).
+- No que o cliente lê, o programa é "o RADAR", não "o robô". Pastas e arquivos internos (`robo/`) não mudam.
+- Ícone do site: martelo dourado sobre azul-marinho (balança como alternativa). Um ícone só, fixo: trocar a cada carga
+  confunde quem procura a aba e o navegador guarda o ícone em cache.
+- Onde roda: o site e o e-mail dizem que o RADAR lê nos horários escolhidos (padrão 20h e 8h), e o site oferece "Na
+  nuvem, sob consulta" (judicial@). A versão na nuvem ainda não existe: é a 1.0 (coletor central), mais abaixo.
+- OneDrive: "sob consulta" no site. A tela já aceita a pasta do OneDrive para a planilha, mas o compartilhamento com o
+  suporte nunca foi testado lá (pediria uma conta Microsoft para `integracao@`).
+- ~~Horário das rodadas ajustável pela tela~~: feito na 0.7.9 (dono, 08/Nov).
+- Imagem de fundo da capa: o dono vai gerar no Higgsfield; a página já aceita uma imagem por trás do radar.
+
+### 0.7.7 (08/Nov, para antes da instalação de 12/Nov): licença, cadastro e tela nova
+
+- **Licença por código de cliente** (`lexsuite/conta.py`): o código `LEX-XXXX-XXXX` vem no e-mail de boas-vindas e é
+  pedido no primeiro passo; é conferido com a SolverONE ao abrir e antes de cada leitura (função `lex-conta` do
+  Supabase, `nuvem/supabase/functions/lex-conta`; nenhuma chave no programa). Desativar ou vencer: na tabela
+  `lex_contas` (Table Editor do Supabase; depois, tela no RootifyONE). Sem resposta da SolverONE, segue até 15 dias.
+- **Cadastro de quem usa**: nome, e-mail (chave: um e-mail, um escritório) e função, e o CNPJ do escritório, nas
+  tabelas `lex_usuarios` e `lex_instalacoes` (cada computador). Sem limite de pessoas; a SolverONE vê quantas são.
+- **SQL para o dono revisar e rodar**: `nuvem/supabase/lex-licencas.sql`. Criar a licença: `select public.lex_criar_conta('KR Law');`.
+- **Tela com a identidade do site**: cabeçalho azul, ícone e nome de `marca.json` (que agora vai no pacote), fonte
+  embutida, fundo branco; boas-vindas formais e só até concluir; "Abrir a planilha"; "Baixar a lista (.csv)"; só os
+  24 TRTs (TJs e TRFs voltam com as frentes deles).
+- A "mira" do escritório (passo 1 do site, decisão do dono 08/Nov): em poucos cliques, frente, tribunais, valor mínimo e
+  exclusões (existem); faltam **filtro por porte** (a Receita traz microempresa, pequena, média ou grande) e ~~horário
+  ajustável das leituras~~ (feito na 0.7.9).
+- **Mac (decisão do dono, 08/Nov):** o site trata Mac como "sob consulta" (requisito e mensagem com contato em
+  judicial@), sem recusar o público. Para atender de verdade: o programa já é só Python padrão; faltam o instalador
+  `.command` (ou `.pkg`), o agendamento pelo launchd no lugar do Agendador do Windows e a detecção da pasta do Google
+  Drive no Mac. Alternativa: a versão na nuvem (1.0), que dispensa instalação.
+- Falta depois: confirmação do e-mail por código (Resend); tela de licenças no RootifyONE; termos de uso e aviso de
+  privacidade do cadastro; trocar a licença MIT antes de vender em escala (decisão do dono).
+
+### Feito na 0.7.6 (08/Nov): contato do suporte e instalador de um arquivo
+
+- Suporte é sempre `judicial@solverone.com.br`: manual, aba Sobre e linha "suporte" da aba Controle (planilha antiga com
+  `integracao@` passa a `judicial@` sozinha). `integracao@` é só a conta de sistemas que recebe acesso à pasta do Drive.
+- Instalador de um arquivo: `instalador/INSTALAR.bat`, servido em `docs/downloads/Instalar-LexSuiteONE.zip` (botão do
+  site). Baixa o pacote, confere o SHA-256 publicado, instala sem administrador, cria o atalho com o nome de
+  `marca.json` e abre a tela. Rodar de novo atualiza. O pacote completo continua no site como plano B.
+- Manual único: `paginas/manual.html` gera o do site e o do pacote.
+- **Falta testar no Windows** (não há Windows na sessão de produto): o dono roda o instalador no computador dele antes
+  de 12/Nov. Limite conhecido: o Windows pode pedir confirmação para `.bat` baixado; tirar de vez pede instalador `.exe`
+  assinado com certificado de código (pago).
+
+### Manual em inglês
+
+O manual do site (`paginas/manual.html`) está só em português. Traduzir junto com a próxima mudança de conteúdo.
+
+### Nome do produto como configuração (decisão do dono, 08/Nov)
+
+O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e minúsculas exatas: "RADAR JUDICIAL" hoje,
+"Lex One" amanhã) e a troca vale em todo lugar. Hoje se troca editando um arquivo; no futuro, num ajuste do RootifyONE.
+
+- **Feito (site e e-mail):** `docs/marca.json` guarda `nome`, `curto` (como o texto chama o programa) e `destaque`
+  (trecho em latão). Páginas em `paginas/` com marcações; `python ferramentas/marca.py` gera `docs/`; a automação do
+  GitHub recusa `docs/` desatualizado. O `preencher.py` do e-mail lê o mesmo arquivo e mostra o assunto.
+- **Feito no pacote (0.7.7 a 0.7.9):** o `marca.json` vai no pacote; a tela, o manual (gerado de `paginas/manual.html`),
+  o atalho do instalador e o aviso do Windows ao fim da leitura leem dele; o manual já diz "o RADAR".
+- **Falta (versão nova):** a planilha (aba Sobre, `compartilhar.py`) e o e-mail de aviso (`avisar.py`) ainda dizem
+  "LexSuiteONE · JUDICIAL"; e a atualização ainda não traz o `marca.json` do site dentro do manifesto assinado (hoje o
+  nome só muda nas instalações com uma versão nova).
+- **Não mudam sozinhos:** nomes de arquivos e pastas (`LexSuiteONE-RADAR.zip`, `C:\LexSuiteONE`, `LexSuiteONE.xlsx`),
+  porque trocar quebraria instalações. Se um dia for preciso, é uma migração à parte.
+- **Futuro:** ajuste "Nome do produto" no RootifyONE que grava o mesmo `marca.json` (pelo GitHub), sem editar arquivo.
 
 ## Esperando o dono (Marcelo)
 
@@ -49,6 +161,23 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
 - Planilha de controle (Preferências, Exclusões, Controle oculto) e planilha Radar (Log, Saúde, Sobre ocultas) na pasta do Drive.
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
+
+## Feito em 08/Nov (a, b, c do dono)
+
+- **A (nuvem, já aplicado):** pessoa ativa ou inativa, última vez, histórico (cadastro, troca de pessoa, alteração,
+  acesso por dia) e limite contando só pessoas ativas (`lex-conta` v3, `lex-licencas.sql`, `lex-admin.sql`).
+- **B (programa 0.7.9, publicar só com o "pode" do dono):** perfil pelas iniciais no alto da tela, com um lápis ✏️ por
+  dado (nome, e-mail, função, escritório); trocar o e-mail avisa que outra pessoa vai usar o computador; o topo não
+  mostra mais o nome do escritório nem "Olá"; Configuração fica com código, pasta e leituras automáticas; no passo a
+  passo, cada campo é guardado ao sair dele, e ele volta enquanto o cadastro (e-mail) não estiver feito.
+- **Horário de leitura ajustável (0.7.9, pedido do dono 08/Nov):** em Configuração, Leitura automática: horários em
+  pílulas (tirar ×, acrescentar até 6), "Todos os dias" ou "De segunda a sexta"; padrão novo **20h e 8h** (o Diário sai
+  a partir das 19h; às 8h pega o que entrou tarde da noite); leitura perdida acontece quando o computador ligar; aviso
+  se não houver horário depois das 19h; "Próxima leitura automática" na tela; aviso no canto da tela do Windows ao
+  terminar (dá para desligar). "Atualizar agora" continua sendo o executar na hora.
+- **Depois (0.8): e-mail ao terminar** a leitura para quem está cadastrado (dono, 08/Nov: não é imprescindível).
+- **C (RootifyONE 0.18.13):** Clientes → Licenças do RADAR: lista, Criar licença (código para escritório novo), ficha
+  com ativar/desativar, validade, limite e mensagem, pessoas, computadores, histórico e erros; aba "Erros sem código".
 
 ## v0.7.x (ainda do robô local)
 

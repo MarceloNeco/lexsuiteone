@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{marca.nome}} · LexSuiteONE</title>
+<meta name="description" content="Acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) e relaciona os novos processos ajuizados em face de pessoas jurídicas, com a ficha cadastral de cada empresa. Roda no computador do escritório.">
+<meta property="og:title" content="{{marca.nome}} · LexSuiteONE">
+<meta property="og:description" content="As ações novas contra empresas, todo dia, com a ficha de cada uma.">
+<meta name="theme-color" content="#102038">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" href="fontes/figtree.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Nenhum pedido externo: a fonte (Figtree, licença OFL) e as imagens moram no próprio site; sem rastreador, sem script de terceiros. -->
+<style>
+@font-face { font-family: "Figtree"; src: url("fontes/figtree.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }
+:root { color-scheme: light;
+  --noite: #102038; --noite-2: #18304f; --tinta: #0f1d33; --tinta-2: #45506a; --tinta-3: #6b7489;
+  --papel: #ffffff; --papel-2: #f3f5f8; --fio: #dbe1ea;
+  --latao: #d4ab6a; --latao-texto: #85601f; --latao-fundo: #f6efe0;
+  --f: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+@media (min-width: 1440px) { html { font-size: 106.25%; } }
+@media (min-width: 1760px) { html { font-size: 112.5%; } }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 1.0625rem/1.6 var(--f); -webkit-font-smoothing: antialiased; }
+a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--latao); outline-offset: 3px; border-radius: 4px; }
+.miolo { max-width: 76rem; margin: 0 auto; padding: 0 20px; }
+
+/* Nome do produto (docs/marca.json): a parte leve, a última palavra forte e o destaque em latão. */
+.nome { font-weight: 400; letter-spacing: -.01em; white-space: nowrap; }
+.nome strong { font-weight: 800; letter-spacing: .01em; }
+.nome strong b { color: var(--latao); font-weight: 800; }
+
+/* Capa escura: a imagem (docs/img/capa.webp) traz o radar e a rede de pontos. O centro do radar na imagem é
+   (1468, 548) de 2000×1116; a imagem é posicionada para esse centro cair no canto superior direito do topo.
+   Por cima, azul-marinho sólido à esquerda (atrás do texto) que some para a direita. */
+.capa { position: relative; overflow: hidden; isolation: isolate; background: var(--noite); color: #eef1f6; }
+.capa-fundo { position: absolute; z-index: -2; width: 2000px; height: 1116px; right: -380px; top: -378px;
+  background: url("img/capa.webp") no-repeat 0 0 / 100% 100%; pointer-events: none;
+  -webkit-mask-image: linear-gradient(#000 55%, transparent 100%); mask-image: linear-gradient(#000 55%, transparent 100%); }
+.capa::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, var(--noite) 0%, var(--noite) 32%, rgba(16,32,56,.82) 44%, rgba(16,32,56,0) 72%); }
+.capa .miolo { position: relative; }
+.topo { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 0; }
+.topo .marca { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-size: 1.05rem; }
+.topo .marca img { width: 28px; height: 28px; }
+.topo nav { display: flex; align-items: center; gap: 14px; }
+.topo nav a { color: #d6dbe6; font-size: .95rem; }
+.idioma { display: flex; gap: 4px; }
+.idioma button { font: inherit; font-size: .85rem; min-width: 44px; min-height: 36px; padding: 4px 10px; border: 1px solid rgba(255,255,255,.28); background: transparent; color: #d6dbe6; border-radius: 999px; cursor: pointer; }
+.idioma button[aria-pressed="true"] { background: #fff; color: var(--noite); border-color: #fff; }
+
+.capa-grade { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.3fr); gap: 40px 48px; align-items: center; padding: 48px 0 64px; }
+.suite { display: block; font-size: 1.05rem; font-weight: 500; color: #c4cbd8; margin: 0 0 6px; }
+.suite b { color: var(--latao); font-weight: 600; }
+h1 { margin: 0 0 22px; font-size: min(clamp(3rem, 5.4vw, 4.4rem), 15vw); line-height: .95; color: #fff; }
+h1 .marca-leve { display: block; font-size: .5em; font-weight: 400; letter-spacing: .08em; color: #e6e9f0; margin-bottom: .08em; }
+.capa p.lede { margin: 0 0 28px; color: #d6dbe6; font-size: 1.15rem; line-height: 1.55; max-width: 34ch; }
+.botao { display: inline-block; background: var(--latao); color: var(--noite); text-decoration: none; font-weight: 700; padding: 15px 28px; border-radius: 999px; }
+.botao:hover { background: #e2bd80; }
+.so-computador p { margin: 0 0 14px; color: #d6dbe6; max-width: 36ch; }
+.cel-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 560px) { .cel-botoes { flex-direction: column; } .cel-botoes .botao, .cel-botoes .botao-sec { width: 100%; text-align: center; padding-left: 16px; padding-right: 16px; } }
+.botao-sec { font: inherit; font-weight: 700; padding: 14px 24px; border-radius: 999px; border: 1px solid rgba(255,255,255,.4); background: transparent; color: #fff; cursor: pointer; }
+.requisito { display: block; margin-top: 12px; font-size: .92rem; color: #aeb7c7; max-width: 40ch; }
+
+.amostra { background: var(--papel); color: var(--tinta); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 60px rgba(4,10,22,.45); }
+.amostra header { padding: 12px 16px; font-size: .88rem; color: var(--tinta-2); background: var(--papel-2); border-bottom: 1px solid var(--fio); }
+.amostra table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+.amostra th, .amostra td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--fio); vertical-align: top; }
+.amostra th { font-weight: 600; color: var(--tinta-3); font-size: .8rem; }
+.amostra td.rito { white-space: nowrap; }
+.amostra td.valor, .amostra th.valor { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.amostra td.valor { font-weight: 600; }
+.amostra td.conferir { font-weight: 500; color: var(--tinta-3); font-style: italic; }
+.amostra tr:last-child td { border-bottom: 0; }
+.amostra .trib { display: block; color: var(--latao-texto); font-weight: 700; }
+.amostra .sub { display: block; color: var(--tinta-3); font-size: .85rem; }
+.amostra td b { font-weight: 600; }
+.amostra footer { padding: 11px 16px; font-size: .85rem; color: var(--tinta-3); border-top: 1px solid var(--fio); }
+
+/* Corpo claro. */
+section { padding: 56px 0; }
+section + section { border-top: 1px solid var(--fio); }
+h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 26px; }
+.passos { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; counter-reset: passo; }
+.passos.tres { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.passos.quatro { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.passos li { counter-increment: passo; color: var(--tinta-2); }
+.passos li::before { content: counter(passo); display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--latao-fundo); color: var(--latao-texto); font-weight: 700; margin-bottom: 12px; }
+.passos li b { display: block; color: var(--tinta); font-weight: 700; font-size: 1.08rem; margin-bottom: 4px; }
+.frentes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.frente { border-top: 3px solid var(--latao); padding-top: 14px; color: var(--tinta-2); }
+.frente b { display: block; color: var(--tinta); font-weight: 700; font-size: 1.08rem; }
+.frente i { display: inline-block; font-style: normal; font-size: .82rem; font-weight: 600; color: var(--latao-texto); background: var(--latao-fundo); padding: 2px 10px; border-radius: 999px; margin-top: 10px; }
+.frente i.pronta { color: #fff; background: var(--noite); }
+.onde { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.onde > div { border: 1px solid var(--fio); border-radius: 12px; padding: 20px 22px; color: var(--tinta-2); }
+.onde > div.nuvem { background: var(--noite); border-color: var(--noite); color: #d6dbe6; }
+.onde b { display: block; color: var(--tinta); font-weight: 700; font-size: 1.08rem; margin-bottom: 4px; }
+.onde .nuvem b { color: #fff; }
+.onde .nuvem a { color: var(--latao); }
+.onde i { display: inline-block; font-style: normal; font-size: .82rem; font-weight: 600; padding: 2px 10px; border-radius: 999px; margin-top: 12px; color: #fff; background: var(--noite); }
+.onde .nuvem i { color: var(--noite); background: var(--latao); }
+.seguranca { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 48px; margin: 0; padding: 0 0 0 1.1em; color: var(--tinta-2); }
+.instalar .passos { margin-bottom: 26px; }
+.links-instalar { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; color: var(--tinta-3); }
+code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+.rodape { border-top: 1px solid var(--fio); margin-top: 8px; padding-top: 26px; padding-bottom: 40px; color: var(--tinta-3); font-size: .92rem; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+/* Marca d'água do corpo claro (opcional): radar e rede de pontos em SVG embutido, parada, 5% de opacidade,
+   atrás de duas seções. Liga com a classe com-marca-dagua no body. */
+.com-marca-dagua main { overflow-x: clip; }
+.com-marca-dagua section.dagua { position: relative; isolation: isolate; }
+.com-marca-dagua section.dagua::before { content: ""; position: absolute; z-index: -1; pointer-events: none; opacity: .05;
+  width: 430px; height: 430px; right: -40px; top: 50%; transform: translateY(-50%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600' fill='none' stroke='%23102038' stroke-width='1.5'%3E%3Ccircle cx='300' cy='300' r='60'/%3E%3Ccircle cx='300' cy='300' r='120'/%3E%3Ccircle cx='300' cy='300' r='180'/%3E%3Ccircle cx='300' cy='300' r='240'/%3E%3Ccircle cx='300' cy='300' r='290'/%3E%3Cpath d='M70 120L250 170'/%3E%3Cpath d='M250 170L205 60'/%3E%3Cpath d='M250 170L470 90'/%3E%3Cpath d='M470 90L560 250'/%3E%3Cpath d='M560 250L420 380'/%3E%3Cpath d='M420 380L520 470'/%3E%3Cpath d='M420 380L330 560'/%3E%3Cpath d='M330 560L110 430'/%3E%3Cpath d='M110 430L40 300'/%3E%3Cpath d='M40 300L70 120'/%3E%3Cpath d='M250 170L420 380'/%3E%3Cpath d='M205 60L470 90'/%3E%3Cg fill='%23102038' stroke='none'%3E%3Ccircle cx='70' cy='120' r='5'/%3E%3Ccircle cx='205' cy='60' r='5'/%3E%3Ccircle cx='470' cy='90' r='5'/%3E%3Ccircle cx='560' cy='250' r='5'/%3E%3Ccircle cx='520' cy='470' r='5'/%3E%3Ccircle cx='330' cy='560' r='5'/%3E%3Ccircle cx='110' cy='430' r='5'/%3E%3Ccircle cx='40' cy='300' r='5'/%3E%3Ccircle cx='250' cy='170' r='5'/%3E%3Ccircle cx='420' cy='380' r='5'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain; }
+@media (max-width: 860px) { .com-marca-dagua section.dagua::before { width: 360px; height: 360px; right: -120px; } }
+/* Carrossel do "Como funciona": sempre em movimento, devagar para a esquerda (mostra que há mais ao lado); depois do
+   tempo de leitura passa rápido ao próximo. Pausa ao passar o mouse, ao focar pelo teclado e pelo botão ⏸/▶. O dedo
+   (ou o mouse) manda: ao encostar, para e o slide segue o dedo; ao soltar, vai ao próximo, ao anterior ou volta.
+   Sem movimento para quem pede menos movimento. As imagens entram em docs/img/como-1.webp ... como-4.webp e são ligadas na lista IMAGENS_COMO do script; sem elas, o quadro fica azul. */
+.como-cab { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+.como-cab h2 { margin: 0; }
+.carrossel-ctrl { display: flex; align-items: center; gap: 8px; }
+.seta { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--fio); background: var(--papel); color: var(--tinta); font: 600 1.4rem/1 var(--f); cursor: pointer; display: grid; place-items: center; }
+.seta:hover { border-color: var(--latao); }
+.seta.pausa svg { width: 16px; height: 16px; fill: currentColor; }
+.seta.pausa .ic-tocar, .seta.pausa[aria-pressed="true"] .ic-pausa { display: none; }
+.seta.pausa[aria-pressed="true"] .ic-tocar { display: block; margin-left: 2px; }
+.seta.pausa[aria-pressed="true"] { border-color: var(--latao); color: var(--latao-texto); }
+.pos { min-width: 3.2rem; text-align: center; color: var(--tinta-3); font-variant-numeric: tabular-nums; }
+/* pan-y: o dedo de lado é do carrossel; para cima e para baixo continua rolando a página. */
+.carrossel { overflow: hidden; border-radius: 16px; touch-action: pan-y; }
+.trilho { list-style: none; margin: 0; padding: 0; display: flex; will-change: transform; }
+.carrossel.arrastando { cursor: grabbing; user-select: none; -webkit-user-select: none; }
+.slide { flex: 0 0 100%; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); min-height: 22rem; background: var(--papel-2); }
+.slide-img { position: relative; background: var(--noite) center / cover no-repeat; overflow: hidden; }
+.slide-img::before { content: ""; position: absolute; inset: -30%; background: repeating-radial-gradient(circle at 70% 40%, rgba(212,171,106,.22) 0 1px, transparent 1px 46px); }
+.slide-img.com-imagem { background-color: #0e1c2c; background-size: cover; background-position: center; }
+.slide-img.com-imagem::before, .slide-img.com-imagem span { display: none; }
+.slide-img span { position: absolute; left: 28px; bottom: 6px; font-weight: 800; font-size: 7rem; line-height: 1; color: rgba(212,171,106,.85); }
+.slide-txt { padding: 40px 48px; display: flex; flex-direction: column; justify-content: center; gap: 8px; color: var(--tinta-2); }
+.slide-txt .num { display: none; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--latao-fundo); color: var(--latao-texto); font-weight: 700; }
+.slide-img.com-imagem + .slide-txt .num { display: grid; }
+.slide-txt b { color: var(--tinta); font-size: 1.75rem; line-height: 1.2; font-weight: 700; letter-spacing: -.01em; }
+.slide-txt p { margin: 0; max-width: 44ch; font-size: 1.22rem; line-height: 1.55; }
+.pontos { display: flex; justify-content: center; gap: 6px; margin-top: 14px; }
+.pontos button { width: 24px; height: 24px; border: 0; background: none; padding: 0; cursor: pointer; display: grid; place-items: center; }
+.pontos button::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--fio); }
+.pontos button[aria-current="true"]::before { background: var(--latao); width: 22px; border-radius: 6px; }
+@media (max-width: 860px) {
+  .slide { grid-template-columns: 1fr; min-height: 0; }
+  .slide-img { min-height: 150px; }
+  .slide-img.com-imagem { min-height: 0; aspect-ratio: 16 / 9; }
+  .slide-txt b { font-size: 1.35rem; }
+  .slide-txt p { font-size: 1.05rem; }
+  .slide-img span { font-size: 5rem; }
+  .slide-txt { padding: 22px 20px 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .trilho { transition: none !important; } }
+@media (max-width: 960px) { .passos.quatro { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 860px) {
+  .capa-grade { grid-template-columns: 1fr; padding: 28px 0 40px; }
+  .capa-fundo { width: 1100px; height: 614px; right: -253px; top: -211px; background-image: url("img/capa-celular.webp"); }
+  .capa::before { background: linear-gradient(90deg, rgba(16,32,56,.93) 0%, rgba(16,32,56,.72) 62%, rgba(16,32,56,.35) 100%); }
+  .passos.tres, .frentes, .seguranca, .onde { grid-template-columns: 1fr; }
+  section { padding: 40px 0; }
+}
+@media (max-width: 560px) {
+  .passos.quatro { grid-template-columns: minmax(0, 1fr); }
+  /* Tabela de exemplo vira um bloco por processo: tribunal e valor na primeira linha, empresa e rito embaixo. */
+  .amostra thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .amostra table, .amostra tbody { display: block; }
+  .amostra tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 6px; padding: 12px 14px; border-bottom: 1px solid var(--fio); }
+  .amostra tr:last-child { border-bottom: 0; }
+  .amostra td { display: block; padding: 0; border: 0; min-width: 0; }
+  .amostra td:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .amostra td.valor { grid-column: 2; grid-row: 1; }
+  .amostra td:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .amostra td.rito { grid-column: 1 / -1; grid-row: 3; color: var(--tinta-3); font-size: .85rem; white-space: normal; }
+  .amostra header, .amostra footer { padding: 10px 14px; }
+  .topo nav a.manual-topo { display: none; }
+}
+</style>
+</head>
+<body class="com-marca-dagua">
+<header class="capa">
+  <div class="capa-fundo" aria-hidden="true"></div>
+  <div class="miolo">
+    <div class="topo">
+      <a class="marca" href="./" aria-label="{{marca.nome}}, início"><img src="favicon.svg" alt=""><span class="nome">{{marca.logo}}</span></a>
+      <nav>
+        <a class="manual-topo" href="manual.html" data-t="manual_topo">Manual</a>
+        <div class="idioma" role="group" aria-label="Idioma / Language">
+          <button type="button" id="b-pt" aria-pressed="true">PT</button>
+          <button type="button" id="b-en" aria-pressed="false">EN</button>
+        </div>
+      </nav>
+    </div>
+    <div class="capa-grade">
+      <div>
+        <span class="suite">LexSuite<b>ONE</b></span>
+        <h1 class="nome">{{marca.logo}}</h1>
+        <p class="lede" data-t="lede">Acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) e relaciona os novos processos ajuizados em face de pessoas jurídicas, com a ficha cadastral de cada empresa.</p>
+        <a class="botao" id="b-baixar" href="downloads/Instalar-LexSuiteONE.zip" data-t="baixar">Baixar o {{marca.nome}}</a>
+        <div class="so-computador" id="so-computador" hidden>
+          <p data-t="cel_txt">O {{marca.nome}} é instalado num computador com Windows 10 ou 11. Abra este endereço no computador para instalar.</p>
+          <div class="cel-botoes">
+            <a class="botao" id="cel-email" href="mailto:?subject=Instalar%20o%20{{marca.nome}}&amp;body=Abrir%20no%20computador%20com%20Windows%3A%20https%3A%2F%2Fjudicial.solverone.com.br%2F" data-t="cel_email">Enviar o link por e-mail</a>
+            <button type="button" class="botao-sec" id="cel-copiar" data-t="cel_copiar">Copiar o link</button>
+          </div>
+        </div>
+        <div class="so-computador" id="no-mac" hidden>
+          <p data-t="mac_txt">Usa Mac? A versão para Mac é sob consulta: fale com a gente e combinamos a melhor forma de instalar.</p>
+          <div class="cel-botoes">
+            <a class="botao" href="mailto:judicial@solverone.com.br?subject={{marca.nome}}%20no%20Mac" data-t="mac_botao">Falar com a gente</a>
+          </div>
+        </div>
+        <span class="requisito" data-t="req">Para Windows 10 ou 11 (Mac sob consulta), num computador no Brasil, com Google Drive (OneDrive sob consulta). O instalador tem 3&nbsp;KB e baixa o resto sozinho.</span>
+      </div>
+      <div class="amostra" role="region" aria-label="Exemplo da lista" data-t-aria="am_aria">
+        <header data-t="am_cab">Processos distribuídos em 06/Nov/2026 (exemplo, nomes fictícios)</header>
+        <table>
+          <thead><tr><th data-t="am_trib">Tribunal e vara</th><th data-t="am_emp">Empresa, atividade e porte</th><th class="rito" data-t="am_rito">Rito</th><th class="valor" data-t="am_valor">Valor da causa</th></tr></thead>
+          <tbody>
+            <tr><td><span class="trib">TRT-2</span><span class="sub" data-t="am_v1">5ª Vara do Trabalho de Guarulhos</span></td><td><b>Exemplo Transportes Ltda</b><span class="sub" data-t="am_c1">Transporte de carga; pequena empresa</span></td><td class="rito" data-t="am_r1">Ordinário</td><td class="valor" data-t="am_x1">R$ 186.400,00</td></tr>
+            <tr><td><span class="trib">TRT-15</span><span class="sub" data-t="am_v2">2ª Vara do Trabalho de Campinas</span></td><td><b>Exemplo Alimentos S.A.</b><span class="sub" data-t="am_c2">Indústria de alimentos; média ou grande</span></td><td class="rito" data-t="am_r2">Sumaríssimo</td><td class="valor conferir" data-t="am_x2">a conferir</td></tr>
+            <tr><td><span class="trib">TRT-3</span><span class="sub" data-t="am_v3">1ª Vara do Trabalho de Contagem</span></td><td><b>Exemplo Comércio Ltda</b><span class="sub" data-t="am_c3">Comércio varejista; microempresa</span></td><td class="rito" data-t="am_r3">Ordinário</td><td class="valor" data-t="am_x3">R$ 92.750,00</td></tr>
+          </tbody>
+        </table>
+        <footer data-t="am_pe">Cada linha abre a ficha da empresa: CNPJ, porte, setor, cidade, telefone e e-mail do cadastro público. "A conferir": o DJEN não informou o valor.</footer>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="miolo">
+<section class="dagua como" aria-labelledby="como-titulo">
+  <div class="como-cab">
+    <h2 id="como-titulo" data-t="como">Como funciona</h2>
+    <div class="carrossel-ctrl">
+      <button type="button" class="seta" id="c-ant" data-t-aria="c_ant" aria-label="Anterior">&#8249;</button>
+      <span class="pos" id="c-pos" aria-live="polite">1 / 4</span>
+      <button type="button" class="seta" id="c-prox" data-t-aria="c_prox" aria-label="Próximo">&#8250;</button>
+      <button type="button" class="seta pausa" id="c-pausa" data-t-aria="c_pausa" aria-label="Pausar" aria-pressed="false"><svg class="ic-pausa" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1"/><rect x="9.5" y="2" width="3.5" height="12" rx="1"/></svg><svg class="ic-tocar" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.2v11.6c0 .8.9 1.3 1.6.9l9-5.8c.6-.4.6-1.4 0-1.8l-9-5.8C4.9.9 4 1.4 4 2.2z"/></svg></button>
+    </div>
+  </div>
+  <div class="carrossel" id="carrossel" aria-roledescription="carrossel" data-t-aria="como_aria" aria-label="Como funciona, em quatro passos">
+    <ol class="trilho" id="trilho">
+      <li class="slide" aria-roledescription="slide" aria-label="1 / 4">
+        <div class="slide-img" data-imagem="img/como-1.webp" aria-hidden="true"><span>1</span></div>
+        <div class="slide-txt"><span class="num">1</span><b data-t="p1t">O escritório define a mira</b><p data-t="p1">Em poucos cliques, o escritório escolhe a frente (hoje, a trabalhista), os tribunais, o valor mínimo da causa e quem fica de fora, como os clientes atuais e as empresas com jurídico próprio.</p></div>
+      </li>
+      <li class="slide" aria-roledescription="slide" aria-label="2 / 4">
+        <div class="slide-img" data-imagem="img/como-2.webp" aria-hidden="true"><span>2</span></div>
+        <div class="slide-txt"><span class="num">2</span><b data-t="p2t">Leitura diária do DJEN</b><p data-t="p2">Todos os dias, o {{marca.curto}} lê o DJEN nos horários escolhidos pelo escritório (de início, às 20h e às 8h). Pela manhã, os novos processos dentro do escopo escolhido estão relacionados.</p></div>
+      </li>
+      <li class="slide" aria-roledescription="slide" aria-label="3 / 4">
+        <div class="slide-img" data-imagem="img/como-3.webp" aria-hidden="true"><span>3</span></div>
+        <div class="slide-txt"><span class="num">3</span><b data-t="p3t">Cada processo, uma ficha</b><p data-t="p3">Rito, valor da causa (quando informado) e os dados cadastrais públicos da empresa, na tela do {{marca.curto}} e na planilha do escritório no Google Drive.</p></div>
+      </li>
+      <li class="slide" aria-roledescription="slide" aria-label="4 / 4">
+        <div class="slide-img" data-imagem="img/como-4.webp" aria-hidden="true"><span>4</span></div>
+        <div class="slide-txt"><span class="num">4</span><b data-t="p4t">Acompanhamento e prioridade</b><p data-t="p4">Cada processo recebe um status (novo, visto, em contato, descartado). Filtros por valor e por tribunal ajudam o escritório a decidir onde concentrar esforço.</p></div>
+      </li>
+    </ol>
+  </div>
+  <div class="pontos" id="c-pontos" role="group" data-t-aria="c_pontos" aria-label="Escolher o passo"></div>
+</section>
+
+<section>
+  <h2 data-t="onde">Onde roda</h2>
+  <div class="onde">
+    <div><b data-t="o1t">No computador do escritório</b><span data-t="o1">O {{marca.curto}} lê o DJEN nos horários escolhidos (de início, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.</span><br><i data-t="o1s">como funciona hoje</i></div>
+    <div class="nuvem"><b data-t="o2t">Na nuvem</b><span data-t="o2">O {{marca.curto}} roda sozinho, sem depender de um computador ligado. Fale com a gente: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>.</span><br><i data-t="o2s">sob consulta</i></div>
+  </div>
+</section>
+
+<section>
+  <h2 data-t="fr">Frentes</h2>
+  <div class="frentes">
+    <div class="frente"><b data-t="f1">Trabalhista</b><span data-t="f1d">Novos processos nos 24 TRTs.</span><br><i class="pronta" data-t="f1s">disponível</i></div>
+    <div class="frente"><b data-t="f2">Tributário</b><span data-t="f2d">Execuções fiscais novas contra empresas, na Justiça Federal e nas varas estaduais.</span><br><i data-t="f2s">em preparação</i></div>
+    <div class="frente"><b data-t="f3">Cível e empresarial</b><span data-t="f3d">Execuções, cobranças e pedidos de falência contra empresas.</span><br><i data-t="f3s">em preparação</i></div>
+  </div>
+</section>
+
+<section class="dagua">
+  <h2 data-t="seg">Segurança e privacidade</h2>
+  <ul class="seguranca">
+    <li data-t="s1">Não pede nem guarda senha, certificado ou login de ninguém.</li>
+    <li data-t="s2">Utiliza apenas fontes públicas: o DJEN e o cadastro da Receita Federal. Não contorna captcha.</li>
+    <li data-t="s3">Pessoas físicas não aparecem na lista nem na planilha.</li>
+    <li data-t="s4">Os dados ficam com o escritório, no computador e na pasta que ele escolher. Nada vai para a SolverONE sem o escritório saber.</li>
+    <li data-t="s5">Atualizações só instalam com assinatura digital conferida. O código é aberto, para quem quiser conferir.</li>
+    <li data-t="s6">A SolverONE acessa apenas a pasta que o escritório compartilhar, nunca o computador.</li>
+  </ul>
+</section>
+
+<section class="instalar">
+  <h2 data-t="inst">Instalar em quatro passos</h2>
+  <ol class="passos quatro">
+    <li><b data-t="i1t">Instale</b><span data-t="i1">Abra o arquivo baixado e dê dois cliques em <code>INSTALAR.bat</code>. Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo").</span></li>
+    <li><b data-t="i2t">Configure</b><span data-t="i2">A tela abre sozinha: informe o escritório, quem vai usar e a pasta da planilha. A primeira leitura começa em seguida.</span></li>
+    <li><b data-t="i3t">Dê acesso à SolverONE</b><span data-t="i3">No Google Drive, dê acesso de editor à pasta LexSuiteONE para <code>integracao@<wbr>solverone.com.br</code>, a conta de sistemas da SolverONE.</span></li>
+    <li><b data-t="i4t">Use o atalho</b><span data-t="i4">Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho.</span></li>
+  </ol>
+  <p class="links-instalar"><a href="manual.html" data-t="manual">Ler o manual</a><span data-t="completo">Prefere instalar à mão? <a href="downloads/LexSuiteONE-RADAR.zip">Baixe o pacote completo</a> e descompacte.</span></p>
+</section>
+</main>
+
+<footer class="miolo"><div class="rodape">
+  <span data-t="rod1">{{marca.nome}} é um produto da LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>.</span>
+  <span data-t="rod2">Dúvidas: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a></span>
+</div></footer>
+
+<script>
+(function () {
+  // Textos em inglês. Só conteúdo fixo desta página (nada vem de fora), por isso vai como HTML.
+  var EN = {
+    manual_topo: "Manual",
+    lede: "Monitors Brazil's National Electronic Court Gazette (DJEN) daily and lists new lawsuits filed against companies, with each company's registry profile.",
+    baixar: "Download {{marca.nome}}",
+    cel_txt: "{{marca.nome}} is installed on a computer with Windows 10 or 11. Open this address on the computer to install.", cel_email: "E-mail the link", cel_copiar: "Copy the link", cel_copiado: "Link copied", mac_txt: "Using a Mac? The Mac version is available on request: talk to us and we will set up the best way to install it.", mac_botao: "Talk to us",
+    req: "For Windows 10 or 11 (Mac on request), on a computer in Brazil, with Google Drive (OneDrive on request). The installer is 3 KB and downloads the rest by itself.",
+    am_aria: "Sample list",
+    am_cab: "Lawsuits filed on Nov/06/2026 (sample, fictitious names)", am_trib: "Court", am_emp: "Company, activity and size", am_rito: "Procedure", am_valor: "Amount claimed",
+    am_v1: "5th Labor Court of Guarulhos", am_v2: "2nd Labor Court of Campinas", am_v3: "1st Labor Court of Contagem",
+    am_c1: "Freight transport; small business", am_c2: "Food manufacturing; medium or large", am_c3: "Retail; micro business",
+    am_r1: "Ordinary", am_r2: "Summary", am_r3: "Ordinary",
+    am_x1: "R$ 186,400.00", am_x2: "to check", am_x3: "R$ 92,750.00",
+    am_pe: "Each row opens the company profile: tax ID, size, sector, city, phone and e-mail from the public registry. \"To check\": the DJEN did not state the amount.",
+    como: "How it works",
+    p1t: "The firm sets its target", p1: "In a few clicks, the firm chooses the practice area (labor, for now), the courts, the minimum amount claimed and who stays out, such as current clients and companies with in-house counsel.",
+    p2t: "Daily DJEN reading", p2: "Every day, the {{marca.curto}} reads the DJEN at the times the firm chooses (8 pm and 8 am to start). By morning, the new lawsuits within the chosen scope are listed.",
+    p3t: "One profile per lawsuit", p3: "Procedure, amount claimed (when stated) and the company's public registry data, on the {{marca.curto}} screen and in the firm's spreadsheet in Google Drive.",
+    onde: "Where it runs",
+    o1t: "On the firm's computer", o1: "The {{marca.curto}} reads the DJEN at the chosen times (8 pm and 8 am to start). If the computer is off at that time, the reading runs when it is back on and catches up on the days missed.", o1s: "how it works today",
+    o2t: "In the cloud", o2: 'The {{marca.curto}} runs on its own, without depending on a computer being on. Talk to us: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>.', o2s: "on request",
+    p4t: "Follow-up and priority", p4: "Each lawsuit gets a status (new, seen, in contact, discarded). Filters by amount and by court help the firm decide where to focus.",
+    c_ant: "Previous", c_prox: "Next", c_pausa: "Pause", c_tocar: "Play", como_aria: "How it works, in four steps", c_pontos: "Choose the step",
+    fr: "Practice areas",
+    f1: "Labor", f1d: "New lawsuits in the 24 regional labor courts.", f1s: "available",
+    f2: "Tax", f2d: "New tax enforcement actions against companies, in federal and state courts.", f2s: "in preparation",
+    f3: "Civil and corporate", f3d: "Enforcement, collection and bankruptcy petitions against companies.", f3s: "in preparation",
+    seg: "Security and privacy",
+    s1: "It never asks for or stores anyone's password, certificate or login.",
+    s2: "Public sources only: the DJEN and the federal tax registry. It does not bypass captchas.",
+    s3: "Individuals do not appear in the list or the spreadsheet.",
+    s4: "Data stays with the firm, on its computer and in the folder it chooses. Nothing goes to SolverONE without the firm knowing.",
+    s5: "Updates install only after the digital signature is checked. The code is open for anyone to review.",
+    s6: "SolverONE accesses only the folder the firm shares, never the computer.",
+    inst: "Install in four steps",
+    i1t: "Install", i1: "Open the downloaded file and double-click <code>INSTALAR.bat</code>. If Windows asks for confirmation, click \"Run\" (or \"More info\" and \"Run anyway\").",
+    i2t: "Set up", i2: "The screen opens by itself: enter the firm, who will use it and the spreadsheet folder. The first reading starts right after.",
+    i3t: "Give SolverONE access", i3: "In Google Drive, give <code>integracao@<wbr>solverone.com.br</code>, SolverONE's systems account, editor access to the LexSuiteONE folder.",
+    i4t: "Use the shortcut", i4: "From then on, open it from the {{marca.nome}} shortcut on the desktop.",
+    manual: "Read the manual",
+    completo: 'Prefer to install by hand? <a href="downloads/LexSuiteONE-RADAR.zip">Download the full package</a> and unzip it.',
+    rod1: '{{marca.nome}} is a LexSuiteONE product by <a href="https://solverone.com.br">SolverONE</a>.',
+    rod2: 'Questions: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>' };
+  var PT = {};
+  document.querySelectorAll("[data-t]").forEach(function (n) { PT[n.getAttribute("data-t")] = n.innerHTML; });
+  var ariaPT = {};
+  document.querySelectorAll("[data-t-aria]").forEach(function (n) { ariaPT[n.getAttribute("data-t-aria")] = n.getAttribute("aria-label"); });
+  function aplicar(lang) {
+    document.querySelectorAll("[data-t]").forEach(function (n) {
+      var k = n.getAttribute("data-t"), v = lang === "en" ? EN[k] : PT[k];
+      if (v != null) n.innerHTML = v;
+    });
+    document.querySelectorAll("[data-t-aria]").forEach(function (n) {
+      var k = n.getAttribute("data-t-aria"); n.setAttribute("aria-label", lang === "en" ? EN[k] : ariaPT[k]);
+    });
+    document.documentElement.lang = lang === "en" ? "en" : "pt-BR";
+    document.getElementById("b-pt").setAttribute("aria-pressed", String(lang !== "en"));
+    document.getElementById("b-en").setAttribute("aria-pressed", String(lang === "en"));
+    try { localStorage.setItem("judicial-idioma", lang); } catch (e) {}
+    if (window.rotularPausa) window.rotularPausa();
+  }
+  document.getElementById("b-pt").addEventListener("click", function () { aplicar("pt"); });
+  document.getElementById("b-en").addEventListener("click", function () { aplicar("en"); });
+  // Download só para computador com Windows (o programa não roda em celular, tablet sem Windows nem Mac).
+  (function () {
+    var ua = navigator.userAgent || "", windows = /Windows NT/i.test(ua) && !/Windows Phone/i.test(ua);
+    if (windows) return;
+    // Mac de verdade (o iPad também diz "Macintosh", mas tem tela de toque): versão sob consulta.
+    var mac = /Macintosh/i.test(ua) && !(navigator.maxTouchPoints > 0);
+    document.getElementById("b-baixar").hidden = true;
+    document.getElementById(mac ? "no-mac" : "so-computador").hidden = false;
+    var req = document.querySelector(".requisito"); if (req) req.hidden = true;
+    var completo = document.querySelector('[data-t="completo"]'); if (completo) completo.hidden = true;
+    document.getElementById("cel-copiar").addEventListener("click", function () {
+      var b = this, link = location.origin + "/";
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () {
+        b.textContent = document.documentElement.lang === "en" ? EN.cel_copiado : "Link copiado";
+      }).catch(function () { window.prompt("", link); });
+    });
+  })();
+  // Carrossel do "Como funciona"
+  var IMAGENS_COMO = [1, 2, 3, 4]; // passos com imagem em docs/img/como-N.webp
+  (function () {
+    var trilho = document.getElementById("trilho"), slides = trilho.children, n = slides.length, atual = 0,
+        caixa = document.getElementById("carrossel"), bp = document.getElementById("c-pausa"), pontos = document.getElementById("c-pontos"),
+        pausadoPeloBotao = false, emCima = false, emFoco = false, segurando = false, tDeriva = null, tProximo = null,
+        menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Tempos: TEMPO por passo (dá para ler a frase), DERIVA em px andados devagar nesse tempo, RAPIDO a troca de passo.
+    var TEMPO = 9000, DERIVA = 28, RAPIDO = 700, PASSAGEM = "transform " + RAPIDO + "ms cubic-bezier(.4,0,.2,1)";
+    IMAGENS_COMO.forEach(function (k) { var im = slides[k - 1] && slides[k - 1].querySelector(".slide-img"); if (im) { im.style.backgroundImage = "url(" + im.getAttribute("data-imagem") + ")"; im.classList.add("com-imagem"); } });
+    for (var i = 0; i < n; i++) { (function (k) { var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", String(k + 1)); b.addEventListener("click", function () { ir(k); }); pontos.appendChild(b); })(i); }
+    function largura() { return caixa.clientWidth || 1; }
+    function posicao(k, d) { return -(k * largura() + (d || 0)); }
+    function por(x, transicao) { trilho.style.transition = menosMovimento ? "none" : (transicao || "none"); trilho.style.transform = "translateX(" + x + "px)"; }
+    function agora() {  // onde o trilho está neste instante (mesmo no meio de um movimento)
+      var m = getComputedStyle(trilho).transform;
+      if (!m || m === "none") return posicao(atual);
+      try { return new (window.DOMMatrix || window.WebKitCSSMatrix)(m).m41; } catch (x) { return posicao(atual); }
+    }
+    function parado() { return pausadoPeloBotao || emCima || emFoco || segurando || menosMovimento; }
+    function limpar() { clearTimeout(tDeriva); clearTimeout(tProximo); tDeriva = tProximo = null; }
+    function ciclo() {  // anda devagar e, no fim do tempo, passa ao próximo
+      limpar(); if (parado()) return;
+      tDeriva = setTimeout(function () {
+        trilho.style.transition = "none"; void getComputedStyle(trilho).transform;  // ponto de partida calculado (primeira vez, ao abrir)
+        por(posicao(atual, DERIVA), "transform " + (TEMPO - RAPIDO - 100) + "ms linear");
+      }, RAPIDO + 50);
+      tProximo = setTimeout(function () { ir(atual + 1); }, TEMPO);
+    }
+    function retomar() { if (parado()) { limpar(); if (!segurando) por(posicao(atual), "transform .4s ease-out"); } else ciclo(); }
+    function ir(k) {
+      atual = (k + n) % n; por(posicao(atual), PASSAGEM);
+      for (var j = 0; j < n; j++) { slides[j].setAttribute("aria-hidden", String(j !== atual)); pontos.children[j].setAttribute("aria-current", String(j === atual)); slides[j].querySelectorAll("a, button").forEach(function (x) { x.tabIndex = j === atual ? 0 : -1; }); }
+      document.getElementById("c-pos").textContent = (atual + 1) + " / " + n; ciclo();
+    }
+    document.getElementById("c-ant").addEventListener("click", function () { ir(atual - 1); });
+    document.getElementById("c-prox").addEventListener("click", function () { ir(atual + 1); });
+    bp.addEventListener("click", function () { pausadoPeloBotao = !pausadoPeloBotao; bp.setAttribute("aria-pressed", String(pausadoPeloBotao)); rotularPausa(); retomar(); });
+    // Pausa só com o mouse em cima (no celular o toque simula "mouse em cima" e não sai mais) ou com o foco do teclado.
+    caixa.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") { emCima = true; retomar(); } });
+    caixa.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { emCima = false; retomar(); } });
+    function focoDeTeclado(alvo) { try { return alvo.matches(":focus-visible"); } catch (x) { return true; } }
+    caixa.addEventListener("focusin", function (e) { emFoco = focoDeTeclado(e.target); retomar(); });
+    caixa.addEventListener("focusout", function () { emFoco = false; retomar(); });
+    caixa.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") ir(atual - 1); if (e.key === "ArrowRight") ir(atual + 1); });
+    // Arrastar: o slide segue o dedo (ou o mouse). Ao soltar: passou de 1/5 da largura, ou foi um gesto rápido,
+    // vai ao próximo ou ao anterior (do último volta ao primeiro, como as setas); senão volta ao lugar.
+    var g = null;  // gesto em andamento: { x, y, base, t, deLado }
+    function comecar(x, y) { segurando = true; limpar(); var base = agora(); por(base); g = { x: x, y: y, base: base, t: Date.now(), deLado: false }; }
+    function mover(x) {
+      var dx = x - g.x;
+      if ((atual === 0 && dx > 0) || (atual === n - 1 && dx < 0)) dx = dx * 0.35;  // nas pontas, resiste
+      por(g.base + dx);
+    }
+    function soltar(x) {
+      var dx = x - g.x, rapido = Math.abs(dx) > 30 && Math.abs(dx) / Math.max(1, Date.now() - g.t) > 0.4, deLado = g.deLado;
+      g = null; segurando = false;
+      if (deLado && (Math.abs(dx) > largura() / 5 || rapido)) ir(atual + (dx < 0 ? 1 : -1)); else ir(atual);
+    }
+    // Dedo (iPhone e Android): eventos de toque. Gesto de lado segura a página (só então); de cima para baixo, rola.
+    caixa.addEventListener("touchstart", function (e) { if (e.touches.length !== 1) { if (g) soltar(g.x); return; } comecar(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    caixa.addEventListener("touchmove", function (e) {
+      if (!g) return;
+      var dx = e.touches[0].clientX - g.x, dy = e.touches[0].clientY - g.y;
+      if (!g.deLado && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) g.deLado = true;
+      if (g.deLado) { if (e.cancelable) e.preventDefault(); mover(e.touches[0].clientX); }
+    }, { passive: false });
+    caixa.addEventListener("touchend", function (e) { if (g) soltar(e.changedTouches[0].clientX); });
+    caixa.addEventListener("touchcancel", function () { if (g) soltar(g.x); });
+    // Mouse (computador): eventos de ponteiro, só para mouse e caneta.
+    caixa.addEventListener("pointerdown", function (e) { if (e.pointerType === "touch" || e.button !== 0) return; comecar(e.clientX, e.clientY); g.deLado = true; caixa.classList.add("arrastando"); try { caixa.setPointerCapture(e.pointerId); } catch (x) {} });
+    caixa.addEventListener("pointermove", function (e) { if (g && e.pointerType !== "touch") mover(e.clientX); });
+    function fimPonteiro(e) { if (g && e.pointerType !== "touch") { caixa.classList.remove("arrastando"); soltar(e.type === "pointercancel" ? g.x : e.clientX); } }
+    caixa.addEventListener("pointerup", fimPonteiro);
+    caixa.addEventListener("pointercancel", fimPonteiro);
+    var ultimaLargura = largura();  // no celular a barra de endereço some ao rolar e dispara "resize": só a largura conta
+    window.addEventListener("resize", function () { if (g || largura() === ultimaLargura) return; ultimaLargura = largura(); por(posicao(atual)); ciclo(); });
+    // Rótulo fixo ("Pausar"); aria-pressed diz se está pausado (o leitor de tela lê "Pausar, pressionado"). O ícone muda.
+    window.rotularPausa = function () { bp.setAttribute("aria-label", document.documentElement.lang === "en" ? "Pause" : "Pausar"); };
+    ir(0);
+  })();
+  var salvo = null; try { salvo = localStorage.getItem("judicial-idioma"); } catch (e) {}
+  if (salvo === "en") aplicar("en");
+})();
+</script>
+</body>
+</html>

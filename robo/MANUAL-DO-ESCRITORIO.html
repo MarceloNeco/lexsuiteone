@@ -1,145 +1,226 @@
 <!doctype html>
+<!-- Gerado por ferramentas/marca.py a partir de paginas/manual.html e docs/marca.json. Não edite aqui. -->
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JUDICIAL · LexSuiteONE · Manual do escritório</title>
+<title>Manual · RADAR JUDICIAL · LexSuiteONE</title>
+<meta name="description" content="Como usar o RADAR JUDICIAL no dia a dia: a tela, a planilha, as leituras automáticas, o que fazer quando algo não funciona e a segurança dos dados.">
+<meta name="theme-color" content="#102038">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="fontes/figtree.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Nenhum pedido externo: fonte e ícones moram no próprio site. -->
 <style>
-:root { color-scheme: light; --papel: #f5f6f8; --folha: #fff; --tinta: #121a2b; --tinta-2: #4a5468; --tinta-3: #7a8396; --linha: #e1e5ec; --latao: #a87a2e; --latao-texto: #8a6222; --latao-wash: #f7f0e1; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; } }
+@font-face { font-family: "Figtree"; src: url("fontes/figtree.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }
+:root { color-scheme: light;
+  --noite: #102038; --tinta: #0f1d33; --tinta-2: #45506a; --tinta-3: #6b7489;
+  --papel: #ffffff; --papel-2: #f3f5f8; --fio: #dbe1ea;
+  --latao: #d4ab6a; --latao-texto: #85601f; --latao-fundo: #f6efe0;
+  --f: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 16px/1.6 "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
-.miolo { max-width: 820px; margin: 0 auto; padding: 32px 16px 56px; }
-.marca { font-weight: 600; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-2); }
-.marca b { color: var(--latao-texto); }
-h1 { font-size: 2rem; font-weight: 600; margin: 8px 0 4px; line-height: 1.15; }
-.sub { color: var(--tinta-2); margin: 0 0 24px; }
-.ola { font-size: 1.1rem; margin: -12px 0 14px; }
-h2 { font-size: 1.2rem; font-weight: 600; margin: 36px 0 10px; padding-top: 18px; border-top: 1px solid var(--linha); }
-h3 { font-size: 1rem; font-weight: 600; margin: 18px 0 6px; }
-p, li { color: var(--tinta); }
-ul, ol { padding-left: 1.3em; }
-li { margin: 4px 0; }
-.caixa { background: var(--folha); border: 1px solid var(--linha); border-radius: 10px; padding: 14px 18px; margin: 12px 0; }
-.dica { border-left: 3px solid var(--latao); background: var(--latao-wash); color: var(--latao-texto); padding: 8px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
-table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: .95rem; }
-th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--linha); vertical-align: top; }
-th { color: var(--tinta-3); font-weight: 600; font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; }
-code { background: var(--latao-wash); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
-.sumario { background: var(--folha); border: 1px solid var(--linha); border-radius: 10px; padding: 12px 18px; }
-.sumario a { color: var(--latao-texto); text-decoration: none; }
-.sumario a:hover { text-decoration: underline; }
-footer { margin-top: 36px; color: var(--tinta-3); font-size: .85rem; }
-@media print { body { background: #fff; } .miolo { padding: 0; } .caixa, .sumario { border-color: #bbb; } }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 20px; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 1.0625rem/1.65 var(--f); -webkit-font-smoothing: antialiased; }
+a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--latao); outline-offset: 3px; border-radius: 4px; }
+.miolo { max-width: 72rem; margin: 0 auto; padding: 0 20px; }
+
+.nome { font-weight: 400; letter-spacing: -.01em; white-space: nowrap; }
+.nome strong { font-weight: 800; letter-spacing: .01em; }
+.nome strong b { color: var(--latao); font-weight: 800; }
+
+.capa { background: var(--noite); color: #eef1f6; }
+.topo { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 0; }
+.topo .marca { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-size: 1.05rem; }
+.topo .marca img { width: 28px; height: 28px; }
+.topo nav a { color: #d6dbe6; font-size: .95rem; }
+.titulo { padding: 28px 0 44px; }
+h1 { margin: 0 0 10px; font-size: clamp(2.2rem, 4.6vw, 3.2rem); line-height: 1.05; font-weight: 800; color: #fff; }
+.titulo p { margin: 0; color: #c4cbd8; font-size: 1.15rem; max-width: 46ch; }
+
+.corpo { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 56px; padding: 44px 0 24px; align-items: start; }
+.sumario { position: sticky; top: 20px; font-size: .95rem; }
+.sumario b { display: block; color: var(--tinta-3); font-weight: 600; font-size: .85rem; margin-bottom: 8px; }
+.sumario ol { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--fio); }
+.sumario li { margin: 0; }
+.sumario a { display: block; padding: 6px 0 6px 14px; margin-left: -2px; border-left: 2px solid transparent; color: var(--tinta-2); text-decoration: none; }
+.sumario a:hover { color: var(--tinta); border-left-color: var(--latao); }
+
+article { max-width: 46rem; min-width: 0; }
+article > section { padding-bottom: 36px; margin-bottom: 36px; border-bottom: 1px solid var(--fio); }
+article > section:last-child { border-bottom: 0; }
+h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 14px; }
+h3 { font-size: 1.1rem; font-weight: 700; margin: 24px 0 8px; }
+p, li { color: var(--tinta-2); }
+p { margin: 0 0 12px; }
+article b { color: var(--tinta); font-weight: 600; }
+ul, ol.passos { padding-left: 1.2em; margin: 0 0 12px; }
+li { margin: 6px 0; }
+.caixa { background: var(--papel-2); border-radius: 12px; padding: 16px 20px; margin: 14px 0; }
+.caixa ul { margin: 0; }
+.dica { border-left: 3px solid var(--latao); background: var(--latao-fundo); color: var(--latao-texto); padding: 10px 16px; border-radius: 0 10px 10px 0; margin: 14px 0; }
+.tabela { overflow-x: auto; margin: 12px 0; }
+table { border-collapse: collapse; width: 100%; font-size: .97rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--fio); vertical-align: top; color: var(--tinta-2); overflow-wrap: anywhere; }
+th { color: var(--tinta-3); font-weight: 600; font-size: .85rem; background: var(--papel-2); }
+td:first-child { color: var(--tinta); font-weight: 600; }
+code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; overflow-wrap: anywhere; }
+.ola { font-size: 1.15rem; color: var(--tinta); margin: 0 0 14px; }
+.faq p { margin-bottom: 16px; }
+.faq b { display: block; color: var(--tinta); }
+.rodape { border-top: 1px solid var(--fio); padding: 26px 0 40px; color: var(--tinta-3); font-size: .92rem; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+@media (max-width: 860px) {
+  .corpo { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 28px; }
+  .sumario { position: static; background: var(--papel-2); border-radius: 12px; padding: 14px 18px; }
+}
+@media print { .capa { background: #fff; color: #000; } .capa * { color: #000 !important; } .sumario { display: none; } .corpo { display: block; } }
 </style>
 </head>
 <body>
-<div class="miolo">
-<div class="marca">LexSuite<b>ONE</b> · JUDIC<b>IA</b>L</div>
-<h1>Manual do escritório</h1>
-<p class="sub">Versão 0.7.5. Para quem usa o robô no dia a dia. Nada aqui exige conhecimento técnico.</p>
+<header class="capa">
+  <div class="miolo">
+    <div class="topo">
+      <a class="marca" href="./" aria-label="RADAR JUDICIAL, início"><img src="favicon.svg" alt=""><span class="nome"><span class="marca-leve">RADAR</span> <strong>JUDIC<b>IA</b>L</strong></span></a>
+      <nav><a href="./">Início</a></nav>
+    </div>
+    <div class="titulo">
+      <h1>Manual</h1>
+      <p>Como usar o RADAR JUDICIAL no dia a dia: a tela, a planilha e o que fazer quando algo não funciona.</p>
+    </div>
+  </div>
+</header>
+
+<div class="miolo corpo">
+<nav class="sumario" aria-label="Nesta página">
+  <b>Nesta página</b>
+  <ol>
+    <li><a href="#oque">O que o RADAR faz</a></li>
+    <li><a href="#tela">A tela</a></li>
+    <li><a href="#planilha">A planilha no Google Drive</a></li>
+    <li><a href="#sozinho">Leituras automáticas</a></li>
+    <li><a href="#problemas">Quando algo não funciona</a></li>
+    <li><a href="#seguranca">Segurança e privacidade</a></li>
+    <li><a href="#perguntas">Perguntas frequentes</a></li>
+  </ol>
+</nav>
+
+<article>
+<!-- Dentro do programa, os dois marcadores abaixo viram a saudação e o bloco do papel da pessoa. -->
 <!--OLA-->
 <!--PARA_VOCE-->
+<section id="oque">
+  <h2>O que o RADAR faz</h2>
+  <p>Todo dia, o Diário de Justiça Eletrônico Nacional (DJEN, do Conselho Nacional de Justiça) publica o que aconteceu nos tribunais. O RADAR lê o DJEN nos tribunais que o escritório escolheu e separa as <b>ações trabalhistas novas contra empresas</b>: uma linha por ação, com a empresa, a vara e o rito.</p>
+  <p>Quando o Diário traz o CNPJ, a linha ganha a ficha da empresa, com os dados públicos da Receita Federal: atividade, porte, capital social, cidade, telefone e e-mail cadastrados, sócios e administradores.</p>
+  <div class="caixa">
+    <b>O que ele não faz</b>
+    <ul>
+      <li>Não usa inteligência artificial: aplica regras fixas, sempre do mesmo jeito.</li>
+      <li>Não entra em sistema com senha, não usa certificado digital e não resolve captcha. Por isso, quando o Diário não informa o <b>valor da causa</b>, ele aparece como "valor a conferir": uma pessoa confere na consulta do tribunal.</li>
+      <li>Não mostra pessoas físicas (reclamantes, testemunhas): elas são descartadas na leitura.</li>
+      <li>Não envia mensagem a ninguém e não publica nada na internet.</li>
+    </ul>
+  </div>
+</section>
 
-<div class="sumario">
-<b>Nesta página</b>
-<ol>
-<li><a href="#oque">O que o robô faz, e o que não faz</a></li>
-<li><a href="#abrir">Abrir e usar a tela</a></li>
-<li><a href="#planilha">A planilha no Google Drive</a></li>
-<li><a href="#sozinho">O robô rodando sozinho</a></li>
-<li><a href="#problemas">Quando algo não funciona</a></li>
-<li><a href="#seguranca">Segurança e privacidade</a></li>
-<li><a href="#perguntas">Perguntas frequentes</a></li>
-</ol>
+<section id="tela">
+  <h2>A tela</h2>
+  <ol class="passos">
+    <li>Abra pelo atalho <b>RADAR JUDICIAL</b> na área de trabalho ou no menu Iniciar. Abre uma janela preta chamada "LexSuiteONE" e, em seguida, a tela no navegador. <b>A janela preta precisa ficar aberta</b> enquanto a tela é usada; pode ficar minimizada.</li>
+    <li><b>Atualizar agora</b> faz uma leitura na hora. Os 24 TRTs já vêm escolhidos; em <b>Tribunais</b> dá para mudar por região, por estado ou por ramo. A primeira leitura dos 24 leva de 30 a 60 minutos; as seguintes, bem menos.</li>
+    <li><b>Período</b> mostra o último dia, ou 3, 7, 15 ou 30 dias.</li>
+    <li><b>As suas iniciais</b>, no alto à direita, abrem o perfil de quem usa este computador: nome, e-mail, função e nome do escritório. Toque no lápis ✏️ ao lado do dado para mudar. Trocar o e-mail quer dizer que outra pessoa passa a usar este computador: a anterior deixa de ocupar vaga na licença.</li>
+    <li><b>Configuração</b> guarda o código de cliente, a pasta do Google Drive e as leituras automáticas.</li>
+  </ol>
+  <div class="dica">A tela é do próprio programa, neste computador: o navegador mostra um endereço como <code>127.0.0.1:8765</code>. Ela não é o site judicial.solverone.com.br, que serve só para baixar o RADAR e ler este manual.</div>
+  <h3>A lista e a ficha</h3>
+  <ul>
+    <li>Cada linha: tribunal, empresa, setor, porte, cidade, vara e o valor da causa (ou "valor a conferir").</li>
+    <li>Clique na linha e a ficha abre. O que falta aparece como <b>"não informado no cadastro"</b> (a Receita não tem) ou <b>"não capturado"</b> (está no tribunal, atrás do captcha).</li>
+    <li>Na ficha: <b>Abrir consulta no PJe</b> (abre a consulta pública do tribunal; cole o número, resolva o captcha e veja o valor), <b>Copiar número</b>, o campo <b>Valor da causa</b> (digite e salve) e o <b>Status</b> (novo, visto, em contato, descartado).</li>
+    <li>Filtros: <b>Acima de R$ 100 mil</b> (ou o valor das Preferências), <b>Sem jurídico próprio provável</b> (esconde empresas muito grandes, que costumam ter advogado interno), <b>Mostrar excluídas</b> e um tribunal ou todos.</li>
+    <li><b>Baixar a lista (.csv)</b> gera um arquivo simples com o que está na tela, inclusive os valores digitados, para importar em outros sistemas (por exemplo, o Astrea). A planilha completa fica no Google Drive; <b>Abrir a planilha</b>, no alto, abre o arquivo.</li>
+  </ul>
+</section>
+
+<section id="planilha">
+  <h2>A planilha no Google Drive</h2>
+  <p>Na pasta do Google Drive escolhida na configuração fica a subpasta <code>LexSuiteONE</code>, com a planilha <code>LexSuiteONE.xlsx</code> e uma cópia da tela (<code>LexSuiteONE - Radar.html</code>), que abre em qualquer computador ou celular com acesso ao Drive.</p>
+  <div class="tabela"><table>
+    <tr><th>Aba</th><th>Quem escreve</th><th>Para quê</th></tr>
+    <tr><td>Radar</td><td>o RADAR, a cada leitura</td><td>a lista, com as mesmas colunas da tela</td></tr>
+    <tr><td>Preferências</td><td>o escritório</td><td>os ajustes da lista (abaixo)</td></tr>
+    <tr><td>Exclusões</td><td>o escritório</td><td>clientes e empresas que não devem aparecer: nome ou CNPJ e o motivo</td></tr>
+    <tr><td>abas ocultas</td><td>a SolverONE</td><td>registro de cada leitura e avisos de funcionamento; não precisam ser abertas</td></tr>
+  </table></div>
+  <h3>Os ajustes da aba Preferências</h3>
+  <div class="tabela"><table>
+    <tr><th>Ajuste</th><th>O que faz</th></tr>
+    <tr><td>Valor mínimo da causa (R$)</td><td>o filtro "Acima de" da tela. Ações abaixo continuam na lista.</td></tr>
+    <tr><td>Mínimo de ações da mesma empresa</td><td>por exemplo, 3: só destaca empresa com 3 ou mais ações novas na janela de dias. 1 mostra todas.</td></tr>
+    <tr><td>Janela do mínimo de ações (dias)</td><td>quantos dias para trás contar as ações da mesma empresa.</td></tr>
+    <tr><td>Capital social que indica jurídico próprio (R$)</td><td>acima disso, a empresa é marcada "jurídico próprio provável" e vai para o fim da lista.</td></tr>
+    <tr><td>Esconder jurídico próprio provável</td><td>sim ou não.</td></tr>
+    <tr><td>Esconder clientes e exclusões</td><td>sim ou não.</td></tr>
+    <tr><td>Mostrar sócios e administradores</td><td>sim ou não. São nomes de pessoas do cadastro público da Receita; se o escritório não precisa deles, desligue.</td></tr>
+  </table></div>
+  <div class="dica">Para mudar um ajuste, abra a planilha no Google Planilhas e altere direto. O RADAR lê a planilha antes de cada leitura. Se ela estiver aberta e travada naquele momento, ele grava na próxima. Nada se perde.</div>
+</section>
+
+<section id="sozinho">
+  <h2>Leituras automáticas</h2>
+  <p>Com a opção <b>"Ler sozinho"</b> marcada em Configuração, o RADAR lê o Diário nos horários da lista: de início, todo dia às <b>20h</b> (o Diário sai a partir das 19h) e às <b>8h</b> (pega o que entrou tarde da noite). Em <b>Leitura automática</b> dá para tirar um horário (×), acrescentar outro (até 6) e escolher "Todos os dias" ou "De segunda a sexta"; vale depois de <b>Salvar</b>. Se o computador estiver desligado ou dormindo na hora, a leitura acontece assim que ele ligar. Ao terminar, aparece um aviso no canto da tela com quantas ações novas chegaram (dá para desligar). Para ler na hora, use <b>Atualizar agora</b>. Não precisa abrir a tela: a planilha é atualizada e a tela mostra tudo na próxima vez que for aberta. Para saber se leu, veja "Última atualização" no alto da tela.</p>
+</section>
+
+<section id="problemas">
+  <h2>Quando algo não funciona</h2>
+  <p>As mensagens abaixo aparecem na tela exatamente assim.</p>
+  <div class="tabela"><table>
+    <tr><th>Mensagem ou sintoma</th><th>O que significa</th><th>O que fazer</th></tr>
+    <tr><td>"Este código de cliente não existe" ou "Falta o código de cliente"</td><td>o código não foi digitado ou está diferente do e-mail de boas-vindas</td><td>em Configuração, digite o código exatamente como no e-mail (LEX-XXXX-XXXX)</td></tr>
+    <tr><td>"Este e-mail já está cadastrado em outro escritório"</td><td>cada e-mail pertence a um escritório só</td><td>use o e-mail do escritório ou escreva para judicial@solverone.com.br</td></tr>
+    <tr><td>"O Diário só responde a computadores no Brasil"</td><td>o computador está saindo para a internet por fora do país (VPN, rede da empresa)</td><td>desligue a VPN ou use a rede normal e tente de novo</td></tr>
+    <tr><td>"O programa está pausado pela SolverONE", "A licença deste escritório está desativada" ou "A validade terminou"</td><td>a SolverONE pausou o RADAR</td><td>escreva para judicial@solverone.com.br</td></tr>
+    <tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela LexSuiteONE e abra de novo</td></tr>
+    <tr><td>"Planilha em uso ou ilegível"</td><td>alguém estava com a planilha aberta e travada, ou o Drive ainda sincronizava</td><td>nada; o RADAR grava na próxima leitura</td></tr>
+    <tr><td>"Não consegui falar com o programa"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>abra de novo pelo atalho RADAR JUDICIAL</td></tr>
+    <tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda</td><td>tente mais tarde; se continuar, escreva para judicial@solverone.com.br</td></tr>
+    <tr><td>"Falta o Python"</td><td>falta uma peça que o RADAR baixa na instalação</td><td>baixe o instalador em judicial.solverone.com.br e rode de novo; nada do que já foi lido se perde</td></tr>
+  </table></div>
+</section>
+
+<section id="seguranca">
+  <h2>Segurança e privacidade</h2>
+  <div class="caixa"><ul>
+    <li><b>Tudo roda no computador do escritório.</b> Não existe servidor da SolverONE recebendo os dados. A tela só responde a este computador e recusa pedidos vindos de qualquer site.</li>
+    <li><b>O que sai do computador:</b> pedidos de leitura ao Diário (do CNJ) e ao cadastro público da Receita, sempre por conexão segura; e a planilha, que vai para o Google Drive do próprio escritório e só é vista pela SolverONE se o escritório der acesso.</li>
+    <li><b>Nenhuma senha.</b> O RADAR não pede, não guarda e não usa senha, certificado digital ou chave de nenhum sistema. Captcha nunca é contornado.</li>
+    <li><b>Pessoas físicas não aparecem.</b> Os contatos de empresa e os nomes de sócios e administradores vêm do cadastro público da Receita; a decisão de usar esses dados é do escritório e do seu compliance, dentro da LGPD.</li>
+    <li><b>Licença e cadastro.</b> O código de cliente é conferido com a SolverONE ao abrir a tela e antes de cada leitura: vão só o código, a versão e uma identificação aleatória do computador. No primeiro uso, o nome e o e-mail de quem usa e o CNPJ do escritório ficam registrados na licença, para a SolverONE falar sobre o serviço. Se a SolverONE ficar fora do ar, o RADAR segue lendo por até 15 dias.</li>
+    <li><b>Avisos de erro.</b> Quando a instalação ou uma leitura falha, vai para a SolverONE um aviso técnico (a etapa, a versão do programa e do Windows e a mensagem do erro, sem o nome da pasta do usuário), para corrigirmos o problema. Nenhum dado de processo ou de pessoa vai junto.</li>
+    <li><b>Guarda por tempo limitado.</b> O RADAR apaga sozinho o que tem mais de 365 dias.</li>
+    <li><b>Atualizações assinadas.</b> Uma versão nova só é instalada se a assinatura digital conferir. O computador do escritório nunca recebe comando de fora: a SolverONE só pode pausar, avisar ou publicar versão, pela planilha.</li>
+    <li><b>Limite honesto.</b> A pausa pela SolverONE é uma cortesia de serviço, não uma trava: quem controla o computador controla o RADAR.</li>
+  </ul></div>
+  <p>Pedidos de titulares de dados são tratados pelo encarregado de dados do próprio escritório, que é o controlador. A SolverONE atua como prestadora de serviço e não acessa o computador do escritório.</p>
+</section>
+
+<section id="perguntas" class="faq">
+  <h2>Perguntas frequentes</h2>
+  <p><b>Preciso deixar o computador ligado?</b> Só nos horários das leituras automáticas. Se estiver desligado, a próxima leitura recupera os dias que faltaram.</p>
+  <p><b>Posso usar no celular?</b> A tela é do computador. No celular, abra <code>LexSuiteONE - Radar.html</code> na pasta do Drive: é a mesma lista, só para consulta.</p>
+  <p><b>Quais tribunais escolher?</b> Os que o escritório atende. Os tribunais estaduais (TJs) publicam diários muito maiores e a regra de "ação nova" ainda não foi ajustada para eles.</p>
+  <p><b>Como faço um cliente não aparecer?</b> Na aba Exclusões da planilha: nome (como está no Diário) ou CNPJ, e o motivo. Vale a partir da próxima leitura.</p>
+  <p><b>Por que algumas linhas dizem "valor a conferir"?</b> Nem sempre o Diário informa o valor da causa. Ele está na consulta pública do tribunal, atrás de um captcha que uma pessoa resolve em segundos: use "Abrir consulta no PJe" e digite o valor na ficha.</p>
+</section>
+</article>
 </div>
 
-<h2 id="oque">1. O que o robô faz, e o que não faz</h2>
-<p>Todo dia, o Diário de Justiça Eletrônico Nacional (DJEN, do Conselho Nacional de Justiça) publica o que aconteceu nos tribunais. O robô lê esse Diário para os tribunais que o escritório escolheu, separa as <b>ações trabalhistas novas movidas contra empresas</b> e monta uma lista: uma linha por ação, com a empresa, a vara, o rito e, quando o Diário traz o CNPJ, a ficha da empresa a partir do cadastro público da Receita Federal (atividade, porte, capital social, cidade, telefone e e-mail cadastrados, sócios e administradores).</p>
-<div class="caixa">
-<b>O que ele não faz:</b>
-<ul>
-<li>Não usa inteligência artificial e não "interpreta" processos: só aplica regras escritas e explicáveis.</li>
-<li>Não entra em nenhum sistema com senha, não usa certificado digital e não resolve captcha. Por isso o <b>valor da causa</b> e a <b>data de distribuição</b>, que ficam atrás do captcha da consulta pública do PJe, são preenchidos por uma pessoa.</li>
-<li>Não mostra pessoas físicas (reclamantes, testemunhas). Elas são descartadas na leitura.</li>
-<li>Não envia mensagem a ninguém e não publica nada na internet.</li>
-</ul>
-</div>
-
-<h2 id="abrir">2. Abrir e usar a tela</h2>
-<ol>
-<li>Dois cliques em <code>ABRIR.bat</code>, na pasta do robô. Abre uma janela preta chamada "LexSuiteONE" e, em seguida, a tela no navegador. <b>A janela preta precisa ficar aberta</b> enquanto a tela é usada; pode ficar minimizada. Para encerrar, feche a janela.</li>
-<li>Na tela, <b>Atualizar agora</b> faz uma rodada: baixa o Diário do dia dos tribunais escolhidos e acrescenta o que é novo. Os 24 Tribunais Regionais do Trabalho já vêm escolhidos; em <b>Tribunais</b> dá para mudar por região, por estado ou por ramo. A primeira rodada com os 24 leva de 30 a 60 minutos; as seguintes, menos, porque só o que é novo entra.</li>
-<li><b>Período</b> mostra o último dia, 3, 7, 15 ou 30 dias do que o robô já guardou.</li>
-</ol>
-<h3>A lista e a ficha</h3>
-<ul>
-<li>Cada linha: tribunal, empresa, setor, porte, cidade, vara e o valor da causa (ou "valor a conferir").</li>
-<li>Clique na linha e a ficha abre, com cada dado numa linha própria. O que falta aparece como <b>"não informado no cadastro"</b> (a Receita não tem) ou <b>"não capturado"</b> (está no PJe, atrás do captcha).</li>
-<li>Na ficha: <b>Abrir consulta no PJe</b> (abre a consulta pública do tribunal; a pessoa cola o número, resolve o captcha e vê o valor da causa), <b>Copiar número</b>, o campo <b>Valor da causa</b> (digite e Salvar; fica guardado neste navegador e sai na planilha exportada) e o <b>Status</b> (novo, visto, em contato, descartado).</li>
-<li>Filtros: <b>Acima de R$ 100 mil</b> (ou o valor definido em Preferências), <b>Sem jurídico próprio provável</b> (esconde empresas com capital social muito alto ou grandes grupos, que costumam ter advogado interno), <b>Mostrar excluídas</b> (as que a aba Exclusões escondeu) e um tribunal ou todos. Ordem por valor ou por chegada.</li>
-<li><b>Exportar planilha</b> gera um arquivo <code>.csv</code> com o que está na tela, inclusive os valores digitados.</li>
-</ul>
-
-<h2 id="planilha">3. A planilha no Google Drive</h2>
-<p>Na pasta do Google Drive escolhida na configuração existe a subpasta <code>LexSuiteONE</code> com um único arquivo, <code>LexSuiteONE.xlsx</code>, e uma cópia da tela (<code>LexSuiteONE - Radar.html</code>), que abre em qualquer computador ou celular com acesso ao Drive.</p>
-<table>
-<tr><th>Aba</th><th>Quem escreve</th><th>Para quê</th></tr>
-<tr><td><b>Radar</b></td><td>o robô, a cada rodada</td><td>a lista do dia, com as mesmas colunas da tela</td></tr>
-<tr><td><b>Preferências</b></td><td>o escritório</td><td>os ajustes da lista (tabela abaixo)</td></tr>
-<tr><td><b>Exclusões</b></td><td>o escritório</td><td>clientes e empresas que não devem aparecer: uma por linha, nome ou CNPJ e o motivo</td></tr>
-<tr><td>abas ocultas</td><td>o suporte</td><td>registro de cada rodada, avisos de saúde do robô e dados da instalação; não precisam ser abertas</td></tr>
-</table>
-<h3>Os ajustes da aba Preferências</h3>
-<table>
-<tr><th>Ajuste</th><th>O que faz</th></tr>
-<tr><td>Valor mínimo da causa (R$)</td><td>o filtro "Acima de" da tela. Ações abaixo continuam na lista.</td></tr>
-<tr><td>Mínimo de ações da mesma empresa</td><td>por exemplo, 3: só destaca empresa com 3 ou mais ações novas na janela de dias. 1 mostra todas.</td></tr>
-<tr><td>Janela do mínimo de ações (dias)</td><td>quantos dias para trás contar as ações da mesma empresa.</td></tr>
-<tr><td>Capital social que indica jurídico próprio (R$)</td><td>acima disso a empresa é marcada "jurídico próprio provável" e vai para o fim da lista.</td></tr>
-<tr><td>Esconder jurídico próprio provável</td><td>sim ou não.</td></tr>
-<tr><td>Esconder clientes e exclusões</td><td>sim ou não. A aba Exclusões lista quem não deve aparecer.</td></tr>
-<tr><td>Mostrar sócios e administradores</td><td>sim ou não. São nomes de pessoas do cadastro público da Receita; se o escritório não precisa deles, desligue.</td></tr>
-</table>
-<div class="dica">Para editar, abra o arquivo no Google Planilhas e altere direto; o Drive leva a mudança para o computador do robô, que lê a planilha antes de cada rodada. Se a planilha estiver aberta e travada no momento de uma rodada, o robô deixa como está e grava na próxima. Nada se perde.</div>
-
-<h2 id="sozinho">4. O robô rodando sozinho</h2>
-<p>Com a opção "rodar sozinho" marcada na configuração, o robô roda todo dia às <b>19:40</b> (o Diário é liberado a partir das 19h) e às <b>07:10</b>, desde que o computador esteja ligado. Não precisa abrir a tela: a planilha no Drive é atualizada e a tela mostra tudo na próxima vez que for aberta. Para saber se rodou, veja "Última atualização" no alto da tela.</p>
-
-<h2 id="problemas">5. Quando algo não funciona</h2>
-<table>
-<tr><th>Mensagem ou sintoma</th><th>O que significa</th><th>O que fazer</th></tr>
-<tr><td>"O Diário só responde a computadores no Brasil"</td><td>o computador está acessando a internet por um endereço de fora do país (VPN, rede da empresa)</td><td>desligue a VPN ou use a rede normal e tente de novo</td></tr>
-<tr><td>"O robô está desligado pelo suporte" ou "A validade terminou"</td><td>o suporte pausou o robô pela planilha</td><td>fale com o suporte (contato no fim desta página)</td></tr>
-<tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela LexSuiteONE e abra de novo</td></tr>
-<tr><td>"Planilha em uso ou ilegível"</td><td>alguém estava com a planilha aberta e travada, ou o Drive ainda sincronizava</td><td>nada; o robô grava na próxima rodada</td></tr>
-<tr><td>"Não consegui falar com o robô"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>dois cliques em <code>ABRIR.bat</code></td></tr>
-<tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda, ou algo mudou na fonte</td><td>tente mais tarde; se persistir, avise o suporte (a aba oculta Saúde já registrou o que o robô percebeu)</td></tr>
-<tr><td>"Falta o Python"</td><td>a pasta <code>python</code> não está na pasta do robô</td><td>dois cliques em <code>INSTALAR-PYTHON.bat</code> e depois em <code>ABRIR.bat</code></td></tr>
-</table>
-
-<h2 id="seguranca">6. Segurança e privacidade</h2>
-<div class="caixa">
-<ul>
-<li><b>Tudo roda no computador do escritório.</b> Não existe servidor da SolverONE recebendo os dados. A tela só responde ao navegador deste computador (endereço 127.0.0.1) e recusa pedidos vindos de qualquer site.</li>
-<li><b>O que sai do computador:</b> pedidos de leitura ao Diário (DJEN, do CNJ) e ao cadastro público da Receita (via BrasilAPI e Minha Receita), sempre por conexão segura (HTTPS); e a planilha, que vai para a conta do Google Drive <b>do próprio escritório</b>, compartilhada com o suporte por decisão do escritório.</li>
-<li><b>Nenhuma senha.</b> O robô não pede, não guarda e não usa senha, certificado digital ou chave de nenhum sistema. Captcha nunca é contornado.</li>
-<li><b>Pessoas físicas não aparecem.</b> Reclamantes e testemunhas são descartados na leitura. Os contatos de empresa (telefone, e-mail) e os nomes de sócios e administradores vêm do cadastro público da Receita Federal; a decisão de usar esses contatos é do escritório e do seu compliance, dentro da LGPD. O ajuste "Mostrar sócios e administradores" pode ser desligado.</li>
-<li><b>Guarda por tempo limitado.</b> O robô mantém no computador só as ações e um trecho curto de cada publicação, e apaga automaticamente o que tem mais de 365 dias.</li>
-<li><b>Atualizações assinadas.</b> Uma versão nova só é instalada se a assinatura digital do suporte conferir; um arquivo trocado por terceiros é recusado. O computador do escritório nunca recebe comando remoto: o suporte só pode pausar, avisar ou publicar versão, pela planilha.</li>
-<li><b>Limite honesto.</b> O "desligar pelo suporte" é uma cortesia de serviço, não uma trava: quem controla o computador controla o robô.</li>
-</ul>
-</div>
-<p>Dúvidas sobre dados pessoais ou pedidos de titulares devem ser tratados pelo encarregado de dados do próprio escritório, que é o controlador dos dados. O suporte da SolverONE atua como prestador de serviço e não acessa o computador do escritório.</p>
-
-<h2 id="perguntas">7. Perguntas frequentes</h2>
-<p><b>Preciso deixar o computador ligado?</b> Só nos horários das rodadas automáticas. Se estiver desligado, a próxima rodada compensa: o Diário dos dias anteriores continua disponível.</p>
-<p><b>Posso usar no celular?</b> A tela é do computador. No celular, abra o arquivo <code>LexSuiteONE - Radar.html</code> na pasta do Drive: é a mesma lista, só para consulta.</p>
-<p><b>Dois tribunais ou todos?</b> Comece pelos que o escritório atende. Tribunais estaduais (TJs) publicam diários muito maiores e a regra de "ação nova" ainda não foi calibrada neles.</p>
-<p><b>Como cadastro um cliente para não aparecer?</b> Aba Exclusões da planilha: nome (como está no Diário) ou CNPJ, e o motivo. Vale a partir da próxima rodada.</p>
-<p><b>O valor da causa não aparece. Por quê?</b> O Diário não traz. Está na consulta pública do PJe, atrás de um captcha que uma pessoa resolve em segundos. Use "Abrir consulta no PJe", veja o valor e digite na ficha.</p>
-
-<footer>LexSuiteONE, um produto SolverONE. Suporte: integracao@solverone.com.br. Manual da versão 0.7.5.</footer>
-</div>
+<footer class="miolo"><div class="rodape">
+  <span>RADAR JUDICIAL é um produto da LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>. Manual da versão 0.7.9.</span>
+  <span>Dúvidas: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a></span>
+</div></footer>
 </body>
 </html>

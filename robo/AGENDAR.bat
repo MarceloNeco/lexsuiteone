@@ -1,19 +1,19 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-echo  Vou criar duas tarefas no Agendador do Windows para o robo rodar sozinho:
-echo   - LexSuiteONE Radar (noite): todo dia as 19:40
-echo   - LexSuiteONE Radar (manha): todo dia as 07:10
-echo  Elas rodam o RODAR.bat desta pasta, so com o computador ligado.
+set "PY=python"
+if exist "python\python.exe" set "PY=python\python.exe"
+echo  Vou criar a leitura automatica no Agendador do Windows, com os horarios escolhidos na tela
+echo  (Configuracao). Sem escolha, o padrao e todo dia as 20h00 e as 08h00. Se o computador estiver
+echo  desligado na hora, a leitura acontece quando ele ligar.
 echo.
-schtasks /create /f /tn "LexSuiteONE Radar (noite)" /sc daily /st 19:40 /tr "\"%~dp0RODAR.bat\" --agendado"
-schtasks /create /f /tn "LexSuiteONE Radar (manha)" /sc daily /st 07:10 /tr "\"%~dp0RODAR.bat\" --agendado"
+"%PY%" lexsuite_robo.py agendar
 if errorlevel 1 (
   echo.
-  echo  Nao consegui criar as tarefas. Tente clicar com o botao direito neste arquivo e "Executar como administrador".
+  echo  Nao consegui criar a leitura automatica. Tente clicar com o botao direito neste arquivo e "Executar como administrador".
 ) else (
   echo.
-  echo  Pronto. Para desfazer: abra o Agendador de Tarefas do Windows e apague as duas tarefas "LexSuiteONE Radar".
+  echo  Pronto. Para desligar: na tela, Configuracao, desmarque "Ler sozinho".
 )
 echo.
 pause

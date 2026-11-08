@@ -18,6 +18,8 @@ jobs:
       - name: Testes do robô (só biblioteca padrão)
         working-directory: robo
         run: python -m unittest discover -s testes -v
+      - name: Site em dia com o nome do produto (docs/marca.json)
+        run: python ferramentas/marca.py --conferir
       - name: Bandit (análise estática de segurança)
         run: |
           python -m pip install --quiet bandit

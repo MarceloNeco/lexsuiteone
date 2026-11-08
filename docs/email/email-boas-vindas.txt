@@ -1,9 +1,9 @@
-Olá, {{nome}}. Seu LexSuiteONE está pronto.
+Olá, {{nome}}. Seu {{marca.nome}} está pronto.
 
-Todo dia, o Diário de Justiça Eletrônico Nacional publica as ações trabalhistas novas. O LexSuiteONE lê o Diário dos tribunais que você escolher, separa as ações novas movidas contra empresas e entrega a lista, com a ficha de cada empresa, na sua tela e numa planilha no seu Google Drive. Sem inteligência artificial, sem senha de ninguém, rodando no seu próprio computador.
+O {{marca.nome}} acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) nos tribunais que você escolher e relaciona os novos processos ajuizados em face de pessoas jurídicas, com a ficha cadastral de cada empresa. A relação aparece na tela do {{marca.curto}} e numa planilha na sua pasta do Google Drive.
 
-Baixar o LexSuiteONE (arquivo .zip, 120 KB, Windows 10 ou 11):
-https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip
+Baixar o {{marca.nome}} (instalador de 3 KB, Windows 10 ou 11):
+https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip
 
 [CODIGO-INICIO]
 Seu código de cliente: {{codigo}}
@@ -11,18 +11,20 @@ A tela pede esse código na instalação. Ele identifica o escritório; não é 
 
 [CODIGO-FIM]
 Como instalar, em quatro passos
-1. Descompacte o arquivo numa pasta fácil, por exemplo C:\LexSuiteONE.
-2. Dois cliques em ABRIR.bat. Na primeira vez ele prepara o que precisa (um download de 11 MB do site oficial do Python) e abre a tela no navegador.
-3. A tela faz três perguntas (seu nome, seu papel, o escritório), pede a pasta do Google Drive e começa a primeira rodada. Os 24 Tribunais Regionais do Trabalho já vêm escolhidos.
-4. No Google Drive, compartilhe a subpasta LexSuiteONE com {{drive}} como editor. É o único passo manual: por ele o suporte acompanha o robô sem nunca acessar o seu computador.
+1. Instale: abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Ele baixa o resto, prepara tudo e abre a tela no navegador.
+2. Configure: informe o escritório, quem vai usar e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.
+3. No Google Drive, dê acesso de editor à pasta LexSuiteONE para {{drive}}, a conta de sistemas da SolverONE. É o único passo à mão: por ela acompanhamos o {{marca.curto}} sem acessar o seu computador.
+4. Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho.
 
-Se o Windows perguntar se confia no arquivo, clique em "Mais informações" e "Executar assim mesmo". O manual completo abre dentro da própria tela, no link "Manual do escritório".
+Onde roda: no seu computador, que lê o DJEN nos horários que o escritório escolher (de início, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
 
-Segurança, em uma linha: o robô não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.
+Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual do escritório".
+
+Segurança, em uma linha: o {{marca.curto}} não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.
 
 Dúvidas? Escreva para {{contato}}. Este e-mail saiu de um endereço automático e não recebe respostas.
 
 Marcelo Freitas
 SolverONE
 
-LexSuiteONE é um produto SolverONE (solverone.com.br). Você recebeu este e-mail porque pediu o pacote de instalação.
+{{marca.nome}} é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque pediu o pacote de instalação.

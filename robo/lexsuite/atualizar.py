@@ -22,7 +22,8 @@ from .preferencias import versao_tupla
 ARQUIVO_CHAVE = "chave_publica.txt"
 MANIFESTO = "versao.json"
 RAIZ_PERMITIDA = {"lexsuite_robo.py", "radar_modelo.html", "config.exemplo.json", "LEIA-ME.md", "ROTEIRO-INSTALACAO.md", "SEGURANCA.md", "MANUAL-DO-ESCRITORIO.html",
-                  "ABRIR.bat", "RODAR.bat", "DIAGNOSTICO.bat", "INSTALAR-PYTHON.bat", "AGENDAR.bat", "PREPARAR-PARA-CLIENTE.bat"}
+                  "ABRIR.bat", "RODAR.bat", "DIAGNOSTICO.bat", "INSTALAR-PYTHON.bat", "AGENDAR.bat", "PREPARAR-PARA-CLIENTE.bat",
+                  "marca.json"}
 LIMITE_BYTES = 50 * 1024 * 1024
 LIMITE_ARQUIVOS = 500
 

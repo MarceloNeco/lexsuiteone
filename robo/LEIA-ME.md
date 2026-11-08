@@ -1,10 +1,18 @@
-# LexSuiteONE · JUDICIAL — robô v0.7.5 (frente Radar Trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.9 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
 inteligência artificial e sem senha de ninguém. A planilha vai para a sua pasta do Google Drive.
 
 ## Instalar (Windows, dois cliques)
+
+O caminho normal é o **instalador de um arquivo**: em judicial.solverone.com.br, "Baixar", abrir o arquivo e dois
+cliques em `INSTALAR.bat`. Ele baixa este pacote do site, confere a impressão digital (SHA-256) publicada em
+`atualizacao/instalar.txt`, instala em `C:\LexSuiteONE` (ou na pasta do usuário, se o Windows não deixar), prepara o
+Python portátil, cria o atalho com o nome do produto na área de trabalho e no menu Iniciar e abre a tela. Rodar de novo
+atualiza sem perder configuração nem lista. A fonte é `instalador/INSTALAR.bat` no repositório (não vem no pacote).
+
+À mão, com o pacote completo:
 
 1. Descompacte o `.zip` numa pasta fácil, por exemplo `C:\LexSuiteONE`. A pasta pode ter qualquer nome; mantenha tudo
    junto, porque o robô guarda ali o `config.json`, o banco `lexsuite.db` e a pasta `saida`.
@@ -14,13 +22,17 @@ inteligência artificial e sem senha de ninguém. A planilha vai para a sua past
 3. Na primeira vez a tela abre um **passo a passo de boas-vindas**: seu nome e seu papel no escritório (a tela e o
    manual passam a falar com você), o nome do escritório, a **pasta compartilhada** (a tela lista as pastas do Google
    Drive para computador e do OneDrive que achou; "Testar pasta" confirma) e a opção **rodar sozinho todo dia**
-   (19:40 e 07:10, já marcada). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE.xlsx` no Drive,
-   agenda as rodadas e dispara a primeira. Tudo isso pode ser mudado depois em **Configuração**.
+   (de início às 20h e às 8h, já marcada; os horários mudam em Configuração). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE.xlsx` no Drive,
+   agenda as rodadas e dispara a primeira. Cada campo do passo a passo fica guardado ao sair dele (fechar a tela no meio
+   não perde o que foi digitado). Depois, quem usa (nome, e-mail, função, escritório) muda no **perfil** (as iniciais no
+   alto da tela, um lápis ✏️ por dado; trocar o e-mail = outra pessoa usando o computador) e o código, a pasta e as
+   leituras automáticas, em **Configuração**.
 4. **Atualizar agora**: os 24 TRTs já vêm escolhidos (em **Tribunais** dá para mudar: por região, por estado, por
    ramo ou "Selecionar todos"). A primeira rodada baixa o diário do dia de cada tribunal (de 5 a 150 MB cada): os 24
    TRTs levam de 30 a 60 minutos; depois, só o que é novo. O computador precisa estar **no Brasil**.
-5. No Drive, compartilhe a subpasta `LexSuiteONE` com o suporte (botão direito, Compartilhar, como editor). É a
-   única etapa que o robô não faz sozinho.
+5. No Drive, dê acesso de editor à subpasta `LexSuiteONE` para `integracao@solverone.com.br`, a conta de sistemas da
+   SolverONE (botão direito, Compartilhar). É a única etapa que o robô não faz sozinho. Dúvidas de pessoas vão para
+   `judicial@solverone.com.br`; `integracao@` não é lido por ninguém.
 
 Tribunais estaduais publicam diários muito maiores (o TJSP sozinho pode passar de 1 GB) e a regra de "ação nova"
 ainda não foi calibrada neles.
@@ -55,8 +67,10 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## Rodar sozinho
 
-- A opção "rodar sozinho" da Configuração cria duas tarefas no Agendador do Windows (19:40 e 07:10) que rodam o
-  `RODAR.bat` com o computador ligado. `AGENDAR.bat` faz o mesmo à mão, se precisar. O DJEN libera o diário a partir das 19h.
+- A opção "Ler sozinho" da Configuração cria a tarefa "LexSuiteONE Radar" no Agendador do Windows, com os horários
+  escolhidos (padrão 20h e 8h, até 6, todos os dias ou de segunda a sexta; se o computador estava desligado, roda quando
+  ele ligar). Ela roda o `RODAR.bat`; ao terminar, um aviso no canto da tela diz quantas ações novas chegaram.
+  `AGENDAR.bat` faz o mesmo à mão (botão direito, Executar como administrador), se precisar. O DJEN libera o diário a partir das 19h.
 - **`RODAR.bat`**: uma rodada sem a tela, com os tribunais salvos. Também grava `saida\radar\radar.html`.
 - **`DIAGNOSTICO.bat`**: relatório `diagnostico\radar-diagnostico.txt` do que o robô guardou, sem dado de pessoa física.
 

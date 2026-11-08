@@ -3,7 +3,7 @@
   python ferramentas/publicar.py gerar-chaves
       Cria chave_privada.txt (GUARDE fora do Drive e do repositório) e chave_publica.txt (vai na pasta do robô).
   python ferramentas/publicar.py empacotar --versao 0.7.1 --chave C:\\caminho\\chave_privada.txt [--robo pasta] [--notas "texto"]
-      Gera publicar/<versao>/LEXSUITE-ONE-ROBO-<versao>.zip e versao.json. Copie os dois para docs/atualizacao/ do
+      Gera publicar/<versao>/LexSuiteONE-RADAR-atualizacao-<versao>.zip e versao.json. Copie os dois para docs/atualizacao/ do
       repositório (vira https://judicial.solverone.com.br/atualizacao/) e/ou para a subpasta "atualizacao" do Drive do cliente.
 """
 
@@ -41,7 +41,7 @@ def empacotar(versao, caminho_chave, pasta_robo, notas):
         privada = "".join(f.read().split())
     saida = os.path.join(ROBO, "publicar", versao)
     os.makedirs(saida, exist_ok=True)
-    nome_zip = f"LEXSUITE-ONE-ROBO-{versao}.zip"
+    nome_zip = f"LexSuiteONE-RADAR-atualizacao-{versao}.zip"
     caminho_zip = os.path.join(saida, nome_zip)
     arquivos = []
     for nome in sorted(RAIZ_PERMITIDA):

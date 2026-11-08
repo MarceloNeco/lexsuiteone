@@ -214,7 +214,7 @@ class AppV07(unittest.TestCase):
 
     def test_configuracao_pasta_e_atualizacao(self):
         status, d = self.pedir("GET", "/dados")
-        self.assertEqual((len(d["app"]["tribunais"]), d["app"]["ramos"][0], d["app"]["config"]["pasta"], d["app"]["atualizacao"]["chave"]), (59, "Trabalhista", "", False))
+        self.assertEqual((len(d["app"]["tribunais"]), d["app"]["ramos"][0], d["app"]["config"]["pasta"], d["app"]["atualizacao"]["chave"]), (24, "Trabalhista", "", False))
         status, d = self.pedir("GET", "/pastas")
         self.assertIn("candidatas", d)
         status, r = self.pedir("POST", "/testar-pasta", {"pasta": "/nao/existe"})
@@ -296,3 +296,93 @@ class Wizard(AppV07):
         c = http.client.HTTPConnection("127.0.0.1", self.porta, timeout=10)
         c.request("GET", "/manual"); html = c.getresponse().read().decode("utf-8"); c.close()
         self.assertIn("Olá, &lt;b&gt;x&lt;/b&gt;.", html)
+
+    def test_perfil_manda_a_funcao_vazia_e_a_tela_tem_o_perfil(self):
+        # 0.7.9: o perfil muda um dado por vez; tirar a função também precisa chegar à licença na nuvem.
+        from lexsuite import conta
+        chamadas = []
+        original = conta.cadastrar
+        def falso(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj"):
+            chamadas.append({"email": email, "nome": nome, "papel": papel})
+            cfg["usuario"].update({"email": email, "nome": nome, "papel": papel})
+            return True, ""
+        conta.cadastrar = falso
+        try:
+            self.pedir("POST", "/config", {"nome": "Ana", "papel": "Advogado ou advogada"})
+            status, r = self.pedir("POST", "/config", {"papel": "", "email": "ana@example.com"})
+            self.assertTrue(r["ok"], r)
+            self.assertEqual(chamadas[-1], {"email": "ana@example.com", "nome": "Ana", "papel": ""})
+            status, r = self.pedir("POST", "/config", {"nome": "Ana Souza", "email": "ana@example.com"})
+            self.assertEqual(chamadas[-1]["nome"], "Ana Souza")
+        finally:
+            conta.cadastrar = original
+        with open(os.path.join(ROBO, "radar_modelo.html"), encoding="utf-8") as f:
+            tela = f.read()
+        for marca in ('id="b-perfil"', 'id="pf-lista"', "troca_aviso", "guardarCampo"):
+            self.assertIn(marca, tela)
+        for antigo in ('id="c-nome"', 'id="c-email"', 'id="ola"'):
+            self.assertNotIn(antigo, tela)
+
+
+class Agenda079(unittest.TestCase):
+    """0.7.9: horários da leitura automática escolhidos pela pessoa (dono, 08/Nov)."""
+
+    def test_validar_e_descrever(self):
+        from lexsuite import agendar
+        self.assertEqual(agendar.validar(None), ["20:00", "08:00"])
+        self.assertEqual(agendar.validar(["8:05", "20:00", "20:00", "25:00", "x", " 07:30 "]), ["07:30", "08:05", "20:00"])
+        self.assertEqual(len(agendar.validar([f"{h:02d}:00" for h in range(10)])), agendar.MAXIMO)
+        self.assertEqual(agendar.validar_dias("fim"), "todos")
+        self.assertEqual(agendar.descricao(["20:00", "08:00"]), "todo dia às 08h00 e 20h00")
+        self.assertEqual(agendar.descricao(["21:30"], "uteis"), "de segunda a sexta às 21h30")
+        self.assertTrue(agendar.tem_noite(["08:00", "19:30"]))
+        self.assertFalse(agendar.tem_noite(["08:00", "12:00"]))
+
+    def test_proxima(self):
+        from lexsuite import agendar
+        sexta = dt.datetime(2026, 11, 13, 21, 0)
+        self.assertEqual(agendar.proxima(["20:00", "08:00"], "todos", sexta), dt.datetime(2026, 11, 14, 8, 0))
+        self.assertEqual(agendar.proxima(["20:00", "08:00"], "uteis", sexta), dt.datetime(2026, 11, 16, 8, 0))
+        self.assertEqual(agendar.proxima(["20:00"], "todos", dt.datetime(2026, 11, 13, 19, 59)), dt.datetime(2026, 11, 13, 20, 0))
+
+    def test_xml_compensa_horario_perdido(self):
+        from lexsuite import agendar
+        import xml.etree.ElementTree as ET
+        ns = {"t": "http://schemas.microsoft.com/windows/2004/02/mit/task"}
+        x = agendar.xml_tarefa(r"C:\Lex & Cia\RODAR.bat", ["20:00", "08:00"], "uteis", dt.date(2026, 11, 8))
+        raiz = ET.fromstring(x.split("\n", 1)[1])
+        gat = raiz.findall("t:Triggers/t:CalendarTrigger", ns)
+        self.assertEqual([g.find("t:StartBoundary", ns).text for g in gat], ["2026-11-08T08:00:00", "2026-11-08T20:00:00"])
+        self.assertEqual(len(gat[0].findall("t:ScheduleByWeek/t:DaysOfWeek/*", ns)), 5)
+        self.assertEqual(raiz.find("t:Settings/t:StartWhenAvailable", ns).text, "true")
+        self.assertEqual(raiz.find("t:Settings/t:DisallowStartIfOnBatteries", ns).text, "false")
+        self.assertEqual(raiz.find("t:Actions/t:Exec/t:Command", ns).text, r"C:\Lex & Cia\RODAR.bat")
+        self.assertEqual(raiz.find("t:Actions/t:Exec/t:Arguments", ns).text, "--agendado")
+        todos = ET.fromstring(agendar.xml_tarefa("C:\\L\\RODAR.bat", ["20:00"], "todos").split("\n", 1)[1])
+        self.assertIsNotNone(todos.find("t:Triggers/t:CalendarTrigger/t:ScheduleByDay", ns))
+
+    def test_aviso_e_fora_do_windows(self):
+        from lexsuite import agendar
+        self.assertIn("12 ações novas", agendar.texto_aviso({"novas": 12}, "RADAR"))
+        self.assertIn("1 ação nova", agendar.texto_aviso({"novas": 1}))
+        self.assertIn("nenhuma ação nova", agendar.texto_aviso({}))
+        if os.name != "nt":
+            self.assertFalse(agendar.notificar("t", "x"))
+            self.assertEqual(agendar.agendar("/tmp")[0], False)
+            self.assertEqual(agendar.migrar_antigas("/tmp", {}), "")
+
+
+class AgendaTela079(AppV07):
+    def test_config_guarda_horarios_e_dados_mostram(self):
+        status, d = self.pedir("GET", "/dados")
+        c = d["app"]["config"]
+        self.assertEqual((c["horarios"], c["dias"], c["avisar_ao_terminar"], c["tem_noite"]), (["08:00", "20:00"], "todos", True, True))
+        status, r = self.pedir("POST", "/config", {"horarios": ["07:30", "21:00", "lixo"], "dias": "uteis", "avisar_ao_terminar": False})
+        self.assertTrue(r["ok"], r)
+        status, d = self.pedir("GET", "/dados")
+        c = d["app"]["config"]
+        self.assertEqual((c["horarios"], c["dias"], c["avisar_ao_terminar"]), (["07:30", "21:00"], "uteis", False))
+        with open(os.path.join(ROBO, "radar_modelo.html"), encoding="utf-8") as f:
+            tela = f.read()
+        for marca in ('id="c-horas"', 'id="c-hora-nova"', 'id="c-dias"', 'id="c-avisar"', "ag_noite", "quandoProxima"):
+            self.assertIn(marca, tela)

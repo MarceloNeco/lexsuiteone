@@ -20,7 +20,7 @@ updates (Ed25519) arrive through the shared folder or GitHub Releases.
 |---|---|
 | `INSTALAR-PYTHON.bat` | baixa o Python portátil oficial para dentro da pasta (só na primeira vez) |
 | `ABRIR.bat` | abre a tela no navegador: configuração, tribunais, período, atualizar agora, lista e ficha |
-| `RODAR.bat`, `AGENDAR.bat` | uma rodada sem tela; tarefas das 19:40 e 07:10 no Agendador do Windows |
+| `RODAR.bat`, `AGENDAR.bat` | uma rodada sem tela; leitura automática no Agendador do Windows (horários da Configuração; padrão 20h e 8h) |
 | `DIAGNOSTICO.bat` | relatório do que o robô guardou, sem dado de pessoa física, para calibrar a regra |
 | `PREPARAR-PARA-CLIENTE.bat` | limpa os dados de teste antes de copiar a pasta para um cliente |
 | `LEIA-ME.md`, `ROTEIRO-INSTALACAO.md`, `SEGURANCA.md`, `MANUTENCAO.md`, `ARQUITETURA.md`, `PENDENCIAS.md` | manuais |

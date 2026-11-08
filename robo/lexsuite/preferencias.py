@@ -37,13 +37,17 @@ LINHAS_EXCLUSOES = [
     ["Nome ou CNPJ", "Motivo"],
     ["(exemplo, pode apagar) Empresa Exemplo Ltda", "cliente atual"],
 ]
+# Contato de atendimento do JUDICIAL. integracao@ é só para sistemas (compartilhamento do Drive), nunca para pessoas.
+SUPORTE = "judicial@solverone.com.br"
+SISTEMAS = "integracao@solverone.com.br"
+
 LINHAS_CONTROLE = [
     ["Chave", "Valor", "O que faz"],
     ["ativo", "sim", "não = o robô não roda e mostra a mensagem abaixo."],
     ["validade", "", "aaaa-mm-dd. Depois dessa data o robô para e avisa."],
     ["versao_minima", "", "Se a versão instalada for menor, o robô pede atualização antes de rodar."],
     ["mensagem", "", "Texto mostrado na tela do escritório (avisos do suporte)."],
-    ["suporte", "integracao@solverone.com.br", "Contato do suporte."],
+    ["suporte", SUPORTE, "Contato do suporte (atendimento a pessoas)."],
 ]
 
 
@@ -93,7 +97,7 @@ def versao_tupla(v):
 def padrao():
     p = dict(PADRAO)
     p.update({"exclusoes": [], "controle": {"ativo": True, "validade": "", "versao_minima": "", "mensagem": "",
-                                            "suporte": "integracao@solverone.com.br"}, "origem": "padrão", "erro": ""})
+                                            "suporte": SUPORTE}, "origem": "padrão", "erro": ""})
     return p
 
 
@@ -126,6 +130,9 @@ def carregar(pasta_base, doc=None):
             prefs["controle"]["ativo"] = _sim(valor) if str(valor).strip() else True
         elif chave in ("validade", "versao_minima", "mensagem", "suporte"):
             prefs["controle"][chave] = str(valor if valor is not None else "").strip()
+    # integracao@ é só para sistemas (não é lido por pessoas); planilhas antigas que o trazem como suporte passam a judicial@.
+    if prefs["controle"].get("suporte", "").strip().lower() in ("", SISTEMAS):
+        prefs["controle"]["suporte"] = SUPORTE
     prefs["origem"] = c
     return prefs
 
@@ -135,7 +142,7 @@ def bloqueio(prefs, versao_atual, hoje=None):
     c = prefs.get("controle") or {}
     msg = (" " + c["mensagem"]) if c.get("mensagem") else ""
     if not c.get("ativo", True):
-        return ("O robô está desligado pelo suporte (aba Controle)." + msg).strip()
+        return ("O programa está pausado pela SolverONE (aba Controle)." + msg).strip()
     if c.get("validade"):
         try:
             if (hoje or dt.date.today()) > dt.date.fromisoformat(c["validade"][:10]):

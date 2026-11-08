@@ -1,4 +1,4 @@
-# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.5)
+# Arquitetura do robô LexSuiteONE · JUDICIAL (v0.7.9)
 
 Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
 linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional
@@ -12,7 +12,7 @@ e trocável, com a chave do próprio escritório, nunca no caminho principal.
 | `lexsuite/tribunais.py` | os 59 tribunais do DJEN que o robô lê (24 TRTs, 27 TJs, 6 TRFs, STJ e TST): sigla, estados, região, ramo; consulta pública do PJe nos TRTs; validação da escolha | nomes, regiões |
 | `lexsuite/preferencias.py` | as abas editáveis da planilha única (`LexSuiteONE.xlsx`): Preferências, Exclusões e a aba oculta Controle (ativo, validade, versão mínima, mensagem); `bloqueio()` e `aplicar()` (marca excluídas, nunca apaga) | chaves e padrões |
 | `lexsuite/compartilhar.py` | a pasta compartilhada: detecção das pastas do Drive/OneDrive, teste de gravação e a planilha única `LexSuiteONE.xlsx` (Radar + abas editáveis preservadas + ocultas Log, Saúde, Sobre); se a planilha estiver em uso, não regrava | colunas, nomes dos arquivos |
-| `lexsuite/agendar.py` | "rodar sozinho": cria ou remove as tarefas diárias do Agendador do Windows (schtasks, sem shell) a partir da tela | horários |
+| `lexsuite/agendar.py` | "Ler sozinho" (0.7.9): uma tarefa "LexSuiteONE Radar" no Agendador do Windows (schtasks com XML, sem shell), um gatilho por horário de `radar.horarios` (padrão 20h e 8h, até 6), `radar.dias` todos ou úteis, e "executar assim que possível" quando o horário foi perdido; se o XML for recusado, uma tarefa simples por horário. Migra as tarefas antigas (19h40/7h10) ao abrir a tela. `notificar()`: aviso no canto da tela ao fim de cada leitura (PowerShell escondido, texto por variável de ambiente) | `PADRAO`, `MAXIMO` |
 | `lexsuite/planilha.py` | leitor e escritor de `.xlsx` só com a biblioteca padrão (strings inline, abas ocultas, cabeçalho em negrito, limite de 50 MB na leitura) | |
 | `lexsuite/saude.py` | avaliação sem IA de cada rodada (DJEN mudou? regra frouxa? Receita sem resposta?) gravada no banco e na aba Saúde | limiares |
 | `lexsuite/atualizar.py` | atualização assinada: procura em `<compartilhada>/LexSuiteONE/atualizacao` e no endereço fixo, verifica Ed25519 + SHA-256, lista fechada de arquivos, guarda a anterior em `_anterior/` | nomes permitidos |
@@ -28,6 +28,7 @@ e trocável, com a chave do próprio escritório, nunca no caminho principal.
 | `lexsuite/prazos.py` | publicação (D+1 útil), início do prazo (D+2 útil), vencimento estimado; feriados nacionais e forenses, recesso e suspensão de 20/12 a 20/01 | feriados |
 | `lexsuite/pauta.py` | pauta pública de audiências do PJe (segunda fonte, roda de qualquer lugar) | tipos de audiência aceitos |
 | `lexsuite/classificar.py` | regras: empresa × pessoa física, CNPJ, valor da causa, nota 0–100 com motivos, carteira de clientes | pesos da nota |
+| `lexsuite/conta.py` | licença do escritório: código `LEX-XXXX-XXXX` conferido na função `lex-conta` do Supabase (sem chave no programa) ao abrir e antes de cada leitura; cadastro de quem usa (e-mail é a chave, um escritório por e-mail) e do CNPJ; bloqueia sem código, desconhecido, desativado, vencido ou 15 dias sem resposta. Na nuvem (`nuvem/supabase`): pessoa ativa = num computador e vista em 30 dias; só ativas contam no limite; histórico em `lex_eventos`; a tela Clientes → Licenças do RADAR do RootifyONE usa `lex-admin.sql`. Na tela (0.7.9), o perfil (iniciais no alto) muda um dado por vez pelo `POST /config` | `DIAS_SEM_RESPOSTA`, `URL_PADRAO` |
 | `lexsuite/cnpj.py` | cadastro público da empresa pela Receita (BrasilAPI / Minha Receita), com cache: porte, capital, CNAE principal e secundários, cidade, telefone, e-mail, sócios e administradores | campos da empresa |
 | `lexsuite/banco.py` | SQLite `lexsuite.db`: leads (ações), publicacoes (nossos processos), rodadas, cadernos, cache de CNPJ, execucoes | tabelas (na fase SaaS viram tabelas do Supabase) |
 | `lexsuite/saidas.py` | CSV (; + BOM, abre no Excel), painel HTML e dados.json | colunas da planilha |
@@ -96,21 +97,29 @@ nova dispara o aviso no app (notificação do PWA), no e-mail e no Telegram, e a
 
 ## Nomes e endereços: um só nome em tudo
 
-SolverONE é a empresa. **LexSuiteONE** é a suíte jurídica (o repositório e o remetente dos e-mails). **JUDICIAL** é este
-produto, escrito em maiúsculas com o "IA" em latão (`JUDIC<b>IA</b>L` na tela e no manual); dentro dele ficam as frentes
+SolverONE é a empresa. **LexSuiteONE** é a suíte jurídica (o repositório e o remetente dos e-mails). **RADAR JUDICIAL** é
+este produto, escrito em maiúsculas com o "IA" em latão (`RADAR JUDIC<b>IA</b>L` na tela e no manual); dentro dele ficam as frentes
 (Radar Trabalhista hoje; Tributário e Cível e empresarial a seguir). Outros produtos da suíte seguirão o mesmo padrão.
+
+**O nome do produto é configuração** (decisão do dono, 08/Nov): fica só em `docs/marca.json` (`nome` exato, `curto`,
+`destaque` em latão), hoje "RADAR JUDICIAL". O site (`paginas/` → `ferramentas/marca.py` → `docs/`) e o e-mail de
+boas-vindas já leem dali, e o pacote leva uma cópia (`robo/marca.json`) que a tela, o manual, o atalho e o aviso do
+Windows usam. Ainda fixos: a aba Sobre da planilha e o e-mail de aviso (ver `PENDENCIAS.md`).
 
 | Onde | Nome |
 |---|---|
 | Suíte (repositório, remetente, nome do pacote) | LexSuiteONE |
 | Produto (tela, manual, site) | JUDICIAL, frente Radar Trabalhista |
 | Site e serviço | `judicial.solverone.com.br` (GitHub Pages servindo a pasta `docs/` do repositório; CNAME na zona do Cloudflare) |
-| Download | `judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip` (arquivo em `docs/downloads/`; a cópia em `releases/` é histórico) |
+| Download | instalador `judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip`; pacote completo (plano B) `downloads/LexSuiteONE-RADAR.zip` (arquivos em `docs/downloads/`; as cópias em `releases/` são histórico) |
 | Atualização assinada | `judicial.solverone.com.br/atualizacao/versao.json` e o `.zip` ao lado (pasta `docs/atualizacao/`), além da subpasta `atualizacao` do Drive do cliente |
 | Assinatura das versões | serviço `assinatura.solverone.com.br` (Worker do Cloudflare com a chave Ed25519 guardada num Durable Object: a chave privada nunca sai do Cloudflare e ninguém a lê). Só assina a pedido da automação deste repositório, para uma tag `vX.Y.Z`. A chave pública está em `chave_publica.txt`, dentro do pacote |
 | Remetente dos e-mails | `LexSuiteONE <nao-responda@solverone.com.br>`, pelo Resend; não recebe respostas |
 | Dúvidas do cliente | `judicial@solverone.com.br` (contato de toda a suíte LexSuiteONE; cada suíte tem o seu, ex. `moneytrio@`; `contato@` é o genérico da SolverONE) |
 | Compartilhamento do Drive | `integracao@solverone.com.br`: endereço de sistemas, não é caixa de atendimento; vira Conta Google para o Drive |
+| Contato de pessoas (suporte) | `judicial@solverone.com.br` (`preferencias.SUPORTE`): manual, aba Sobre e linha "suporte" da aba Controle; planilha antiga com `integracao@` passa a `judicial@` |
+| Instalação | `instalador/INSTALAR.bat` (fora do pacote), servido em `docs/downloads/Instalar-LexSuiteONE.zip`; lê `docs/atualizacao/instalar.txt` (gerado por `ferramentas/marca.py` a partir de `versao.json` e `marca.json`) e o ícone `docs/radar.ico` |
+| Manual | um só: `paginas/manual.html` gera o do site (`docs/manual.html`) e o do pacote (`robo/MANUAL-DO-ESCRITORIO.html`, com os marcadores `<!--OLA-->` e `<!--PARA_VOCE-->`) |
 
 A zona DNS de `solverone.com.br` está no Cloudflare desde 07/Nov/2026 (servidores `harlee` e `lennon.ns.cloudflare.com`),
 com DNSSEC ativo; o Claude altera registros pelo conector de API. O site segue no GitHub Pages, com proxy desligado.
