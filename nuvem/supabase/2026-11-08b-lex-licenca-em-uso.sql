@@ -12,7 +12,7 @@
 --   6. lex_chamadas + lex_contar_chamada(): contador para os limites por chamada da função lex-conta.
 --   7. Funções da equipe: admin_lex_aprovar_pessoa, admin_lex_esquecer_instalacao; admin_lex_criar (versão de 5 parâmetros,
 --      ao lado da antiga), admin_lex_salvar, admin_lex_listar e admin_lex_detalhe ampliadas. Só dono/admin da equipe.
---   APLICADO em 08/Nov/2026 à noite pelo conector (Arquitetura), menos o bloco 4a (regra de lex_eventos), ver nota lá.
+--   APLICADO em 08/Nov/2026 à noite pelo conector (Arquitetura); o bloco 4a (regra de lex_eventos) em seguida, com a confirmação do dono no computador.
 --   8. Retenção: lex_avisos 90 dias e lex_chamadas 2 dias (pg_cron).
 --   9. Conferência no fim.
 -- COMO APLICAR (só depois de o dono revisar): SQL Editor → New query → colar inteiro → Run. Pode rodar de novo.
@@ -60,8 +60,7 @@ grant select on public.lex_computadores to service_role;
 -- ---------------------------------------------------------------------
 -- 4. lex_eventos: tipos novos; lex_pessoas com aprovacao
 -- ---------------------------------------------------------------------
--- ⚠ Este bloco (4a) é o ÚNICO que o conector não aplica sem confirmação (tem DROP). Aplicado à parte pelo dono no SQL
--- Editor, ou pelo conector num computador. Enquanto não rodar, os tipos novos de evento não gravam (a função ignora o erro).
+-- Bloco 4a: o único com DROP (o conector pede confirmação, que só aparece num computador). APLICADO em 08/Nov à noite.
 alter table public.lex_eventos drop constraint if exists lex_eventos_tipo_check;
 alter table public.lex_eventos add constraint lex_eventos_tipo_check check (tipo in (
   'cadastro', 'troca_de_pessoa', 'alteracao_de_dados', 'acesso',
