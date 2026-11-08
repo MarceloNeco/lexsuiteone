@@ -36,8 +36,13 @@ def _texto_xml(txt):
     return escape(_limpa(txt), {'"': "&quot;"})
 
 
+# Estilos (0.7.12): 0 normal, 1 negrito (cabeçalho simples), 2 cabeçalho azul-marinho com letra branca, 3 texto com
+# quebra de linha, 4 valor em R$, 5 valor em R$ destacado (fundo latão claro), 6 título grande.
+_X_CAB, _X_TEXTO, _X_MOEDA, _X_MOEDA_DEST, _X_TITULO = 2, 3, 4, 5, 6
+
+
 def _celula(ref, v, estilo):
-    est = ' s="1"' if estilo else ""
+    est = (f' s="{int(estilo)}"' if estilo is not True else ' s="1"') if estilo else ""
     if v is None:
         return f'<c r="{ref}"{est}/>' if estilo else ""
     if isinstance(v, bool):
@@ -58,16 +63,36 @@ def _celula(ref, v, estilo):
     return f'<c r="{ref}"{est} t="inlineStr"><is><t{pres}>{t}</t></is></c>'
 
 
+def _ncols(aba):
+    return max((len(l) for l in (aba.get("linhas") or [])), default=0)
+
+
+def _estilo(aba, i, j):
+    """Estilo da célula (linha i a partir de 1, coluna j a partir de 0). Aba com "visual": cabeçalho escuro, texto com
+    quebra, colunas de dinheiro em R$ e linhas destacadas; sem "visual", como antes (só o cabeçalho em negrito)."""
+    if not aba.get("visual"):
+        return i == 1
+    if i == 1:
+        return _X_CAB
+    if j in (aba.get("moeda") or ()):
+        return _X_MOEDA_DEST if (i - 1) in (aba.get("destacar") or ()) else _X_MOEDA
+    return _X_TEXTO
+
+
 def _xml_aba(aba):
     linhas = aba.get("linhas") or []
     larguras = aba.get("larguras")
     congelar = aba.get("congelar_cabecalho", True)
+    fixar_col = int(aba.get("fixar_colunas") or 0)
     ncols = max((len(l) for l in linhas), default=0)
     ult = f"{_col(max(ncols, 1) - 1)}{max(len(linhas), 1)}"
     p = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n',
          f'<worksheet xmlns="{NS}" xmlns:r="{NS_R}">',
          f'<dimension ref="A1:{ult}"/>']
-    if congelar and linhas:
+    if congelar and linhas and fixar_col:
+        p.append(f'<sheetViews><sheetView workbookViewId="0"><pane xSplit="{fixar_col}" ySplit="1" '
+                 f'topLeftCell="{_col(fixar_col)}2" activePane="bottomRight" state="frozen"/></sheetView></sheetViews>')
+    elif congelar and linhas:
         p.append('<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" '
                  'activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>')
     else:
@@ -80,9 +105,13 @@ def _xml_aba(aba):
         p.append("</cols>")
     p.append("<sheetData>")
     for i, linha in enumerate(linhas, 1):
-        cels = "".join(_celula(f"{_col(j)}{i}", v, i == 1) for j, v in enumerate(linha))
-        p.append(f'<row r="{i}">{cels}</row>')
-    p.append("</sheetData></worksheet>")
+        cels = "".join(_celula(f"{_col(j)}{i}", v, _estilo(aba, i, j)) for j, v in enumerate(linha))
+        altura = ' ht="30" customHeight="1"' if (aba.get("visual") and i == 1) else ""
+        p.append(f'<row r="{i}"{altura}>{cels}</row>')
+    p.append("</sheetData>")
+    if aba.get("filtro") and len(linhas) >= 1 and ncols:
+        p.append(f'<autoFilter ref="A1:{ult}"/>')
+    p.append("</worksheet>")
     return "".join(p)
 
 
@@ -123,10 +152,17 @@ def escrever_xlsx(caminho, abas):
         f'<sheet name="{_texto_xml(a["nome"])}" sheetId="{i}"'
         f'{oculto if a.get("oculta") else ""} r:id="rId{i}"/>'
         for i, a in enumerate(abas, 1))
+    # Filtro automático: o Excel e o Google Planilhas esperam o nome oculto _xlnm._FilterDatabase de cada aba filtrada.
+    nomes = "".join(
+        f'<definedName name="_xlnm._FilterDatabase" localSheetId="{i}" hidden="1">'
+        f"'{_texto_xml(a['nome']).replace(chr(39), chr(39) * 2)}'!$A$1:${_col(_ncols(a) - 1)}${len(a['linhas'])}"
+        "</definedName>"
+        for i, a in enumerate(abas) if a.get("filtro") and a.get("linhas") and _ncols(a))
     wb = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
           f'<workbook xmlns="{NS}" xmlns:r="{NS_R}">'
           '<bookViews><workbookView activeTab="0"/></bookViews>'
-          f'<sheets>{folhas}</sheets></workbook>')
+          f'<sheets>{folhas}</sheets>'
+          + (f"<definedNames>{nomes}</definedNames>" if nomes else "") + '</workbook>')
     wbrels = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
               f'<Relationships xmlns="{NS_PKG_REL}">'
               + "".join(f'<Relationship Id="rId{i}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet{i}.xml"/>' for i in range(1, n + 1))
@@ -134,14 +170,29 @@ def escrever_xlsx(caminho, abas):
               '</Relationships>')
     estilos = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
                f'<styleSheet xmlns="{NS}">'
-               '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font>'
-               '<font><b/><sz val="11"/><name val="Calibri"/></font></fonts>'
-               '<fills count="2"><fill><patternFill patternType="none"/></fill>'
-               '<fill><patternFill patternType="gray125"/></fill></fills>'
-               '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
+               '<numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;R$&quot; #,##0"/></numFmts>'
+               '<fonts count="4"><font><sz val="11"/><name val="Calibri"/></font>'
+               '<font><b/><sz val="11"/><name val="Calibri"/></font>'
+               '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>'
+               '<font><b/><sz val="14"/><color rgb="FF0F1D33"/><name val="Calibri"/></font></fonts>'
+               '<fills count="4"><fill><patternFill patternType="none"/></fill>'
+               '<fill><patternFill patternType="gray125"/></fill>'
+               '<fill><patternFill patternType="solid"><fgColor rgb="FF0F1D33"/><bgColor indexed="64"/></patternFill></fill>'
+               '<fill><patternFill patternType="solid"><fgColor rgb="FFF7F0E1"/><bgColor indexed="64"/></patternFill></fill></fills>'
+               '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'
+               '<border><left/><right/><top/><bottom style="thin"><color rgb="FFD9DEE7"/></bottom><diagonal/></border></borders>'
                '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
-               '<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
-               '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs>'
+               '<cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+               '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
+               '<xf numFmtId="0" fontId="2" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1">'
+               '<alignment vertical="center" wrapText="1"/></xf>'
+               '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1">'
+               '<alignment vertical="top" wrapText="1"/></xf>'
+               '<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1">'
+               '<alignment vertical="top"/></xf>'
+               '<xf numFmtId="164" fontId="1" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1">'
+               '<alignment vertical="top"/></xf>'
+               '<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs>'
                '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
                '</styleSheet>')
     agora = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")

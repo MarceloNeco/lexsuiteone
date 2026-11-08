@@ -163,11 +163,11 @@ class Compartilhada(unittest.TestCase):
         caminho = compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "abcd", "", lambda *_: None)
         doc = planilha.ler_xlsx(caminho)
         nomes = [(a["nome"], a["oculta"]) for a in doc["abas"]]
-        self.assertEqual(nomes, [("Radar", False), ("Preferências", False), ("Exclusões", False), ("Controle", True), ("Log", True), ("Saúde", True), ("Sobre", True)])
+        self.assertEqual(nomes, [("Radar", False), ("Preferências", False), ("Exclusões", False), ("Controle", True), ("Como usar", False), ("Log", True), ("Saúde", True), ("Sobre", True)])
         col = doc["abas"][0]["linhas"][0].index("Excluída (motivo)")
         self.assertEqual(doc["abas"][0]["linhas"][1][col], "Exclusão: cliente")
-        self.assertEqual(doc["abas"][4]["linhas"][1][3], 10)
-        self.assertIn(["Escritório", "Escritório Teste"], doc["abas"][6]["linhas"])
+        self.assertEqual(doc["abas"][5]["linhas"][1][3], 10)
+        self.assertIn(["Escritório", "Escritório Teste"], doc["abas"][7]["linhas"])
         # o escritório edita Exclusões; a próxima regravação preserva
         abas = [{"nome": a["nome"], "linhas": a["linhas"], "oculta": a["oculta"]} for a in doc["abas"]]
         abas[2]["linhas"] = [["Nome ou CNPJ", "Motivo"], ["Cliente Preservado Ltda", "cliente"]]
@@ -181,6 +181,51 @@ class Compartilhada(unittest.TestCase):
             f.write(b"nao e um zip")
         self.assertEqual(compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "", "", lambda *_: None), "")
         self.assertEqual(open(caminho, "rb").read(), b"nao e um zip")
+
+    def test_planilha_visual(self):
+        """0.7.12: cabeçalho azul-marinho, filtro em todas as colunas, valor em R$ e destaque acima do mínimo; abre no
+        Excel e no Google Planilhas (o XML segue a ordem do padrão) e a leitura continua igual."""
+        pasta = tempfile.mkdtemp()
+        banco = bd.Banco(os.path.join(pasta, "t.db"))
+        cfg = {"escritorio": "Escritório Teste", "compartilhar": {"pasta": pasta, "subpasta": "LexSuiteONE"}}
+        emp = {"cnpj": "11222333000181", "porte_legivel": "Micro", "capital_social": 50000.0, "atividade": "", "municipio": "SAO PAULO", "uf": "SP", "telefone": "", "email": "", "socios": []}
+        base = {"hora": "19:00", "visto_em": "", "tribunal": "TRT2", "vara": "V", "rito": "Ordinário", "distribuida_em": "2026-11-05", "empresas": ["X LTDA"],
+                "empresa": emp, "setor": "", "gigante": False, "valor_fonte": "", "link_djen": "", "link_pje": ""}
+        pagina = {"valor_minimo": 100000, "itens": [dict(base, id="1", processo="1", valor_causa=250000), dict(base, id="2", processo="2", valor_causa=30000),
+                                                    dict(base, id="3", processo="3", valor_causa=None)]}
+        caminho = compartilhar.gravar_radar(cfg, pagina, banco, "0.7.12", radar.COLUNAS_RADAR, radar.linha_csv, "", "", lambda *_: None)
+        z = zipfile.ZipFile(caminho)
+        folha = z.read("xl/worksheets/sheet1.xml").decode()
+        estilos = z.read("xl/styles.xml").decode()
+        wb = z.read("xl/workbook.xml").decode()
+        ncol = len(radar.COLUNAS_RADAR) + 2
+        ult = planilha._col(ncol - 1)
+        self.assertIn(f'<autoFilter ref="A1:{ult}4"/>', folha)
+        self.assertLess(folha.index("</sheetData>"), folha.index("<autoFilter"))
+        self.assertIn("_xlnm._FilterDatabase", wb)
+        self.assertIn(f"'Radar'!$A$1:${ult}$4", wb)
+        self.assertIn('FF0F1D33', estilos)
+        self.assertIn('numFmtId="164"', estilos)
+        self.assertIn('<cellXfs count="7">', estilos)
+        self.assertLess(estilos.index("<numFmts"), estilos.index("<fonts"))
+        j = planilha._col([c for _, c in radar.COLUNAS_RADAR].index("valor_causa"))
+        self.assertIn(f'<c r="{j}2" s="5"><v>250000</v></c>', folha)  # acima do mínimo: destacado
+        self.assertIn(f'<c r="{j}3" s="4"><v>30000</v></c>', folha)   # abaixo: só o formato R$
+        self.assertIn('<c r="A1" s="2"', folha)
+        import xml.etree.ElementTree as ET
+        for nome in z.namelist():
+            if nome.endswith(".xml") or nome.endswith(".rels"):
+                ET.fromstring(z.read(nome))  # todo XML é bem formado
+        doc = planilha.ler_xlsx(caminho)
+        self.assertEqual(doc["abas"][0]["linhas"][1][[c for _, c in radar.COLUNAS_RADAR].index("valor_causa")], 250000)
+        como = [a for a in doc["abas"] if a["nome"] == "Como usar"][0]
+        self.assertFalse(como["oculta"])
+        self.assertTrue(any("Google" in " ".join(map(str, l)) for l in como["linhas"]))
+        # aba sem "visual" continua como antes (cabeçalho em negrito, sem filtro)
+        planilha.escrever_xlsx(os.path.join(pasta, "simples.xlsx"), [{"nome": "A", "linhas": [["x"], [1]]}])
+        simples = zipfile.ZipFile(os.path.join(pasta, "simples.xlsx")).read("xl/worksheets/sheet1.xml").decode()
+        self.assertIn('<c r="A1" s="1"', simples)
+        self.assertNotIn("autoFilter", simples)
 
     def test_saude(self):
         pubs = [{"processo": "1", "texto": "x"}] * 100 + [{"processo": "", "texto": ""}] * 30
