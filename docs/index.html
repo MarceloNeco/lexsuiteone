@@ -22,11 +22,14 @@
   --latao: #d4ab6a; --latao-texto: #85601f; --latao-fundo: #f6efe0;
   --f: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
+@media (min-width: 1440px) { html { font-size: 106.25%; } }
+@media (min-width: 1760px) { html { font-size: 112.5%; } }
 body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 1.0625rem/1.6 var(--f); -webkit-font-smoothing: antialiased; }
 a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 :focus-visible { outline: 3px solid var(--latao); outline-offset: 3px; border-radius: 4px; }
-.miolo { max-width: 72rem; margin: 0 auto; padding: 0 20px; }
+.miolo { max-width: 76rem; margin: 0 auto; padding: 0 20px; }
 
 /* Nome do produto (docs/marca.json): a parte leve, a última palavra forte e o destaque em latão. */
 .nome { font-weight: 400; letter-spacing: -.01em; white-space: nowrap; }
@@ -60,6 +63,9 @@ h1 .marca-leve { display: block; font-size: .5em; font-weight: 400; letter-spaci
 .capa p.lede { margin: 0 0 28px; color: #d6dbe6; font-size: 1.15rem; line-height: 1.55; max-width: 34ch; }
 .botao { display: inline-block; background: var(--latao); color: var(--noite); text-decoration: none; font-weight: 700; padding: 15px 28px; border-radius: 999px; }
 .botao:hover { background: #e2bd80; }
+.so-computador p { margin: 0 0 14px; color: #d6dbe6; max-width: 36ch; }
+.cel-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
+.botao-sec { font: inherit; font-weight: 700; padding: 14px 24px; border-radius: 999px; border: 1px solid rgba(255,255,255,.4); background: transparent; color: #fff; cursor: pointer; }
 .requisito { display: block; margin-top: 12px; font-size: .92rem; color: #aeb7c7; max-width: 40ch; }
 
 .amostra { background: var(--papel); color: var(--tinta); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 60px rgba(4,10,22,.45); }
@@ -103,7 +109,7 @@ h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 26
 .seguranca { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 48px; margin: 0; padding: 0 0 0 1.1em; color: var(--tinta-2); }
 .instalar .passos { margin-bottom: 26px; }
 .links-instalar { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; color: var(--tinta-3); }
-code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; overflow-wrap: anywhere; }
+code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
 .rodape { border-top: 1px solid var(--fio); margin-top: 8px; padding-top: 26px; padding-bottom: 40px; color: var(--tinta-3); font-size: .92rem; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
 /* Marca d'água do corpo claro (opcional): radar e rede de pontos em SVG embutido, parada, 5% de opacidade,
@@ -194,7 +200,14 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
         <span class="suite">LexSuite<b>ONE</b></span>
         <h1 class="nome"><span class="marca-leve">RADAR</span> <strong>JUDIC<b>IA</b>L</strong></h1>
         <p class="lede" data-t="lede">Acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) e relaciona os novos processos ajuizados em face de pessoas jurídicas, com a ficha cadastral de cada empresa.</p>
-        <a class="botao" href="downloads/Instalar-LexSuiteONE.zip" data-t="baixar">Baixar o RADAR JUDICIAL</a>
+        <a class="botao" id="b-baixar" href="downloads/Instalar-LexSuiteONE.zip" data-t="baixar">Baixar o RADAR JUDICIAL</a>
+        <div class="so-computador" id="so-computador" hidden>
+          <p data-t="cel_txt">O RADAR JUDICIAL é instalado num computador com Windows 10 ou 11. Abra este endereço no computador para instalar.</p>
+          <div class="cel-botoes">
+            <a class="botao" id="cel-email" href="mailto:?subject=Instalar%20o%20RADAR JUDICIAL&amp;body=Abrir%20no%20computador%20com%20Windows%3A%20https%3A%2F%2Fjudicial.solverone.com.br%2F" data-t="cel_email">Enviar o link para o meu e-mail</a>
+            <button type="button" class="botao-sec" id="cel-copiar" data-t="cel_copiar">Copiar o link</button>
+          </div>
+        </div>
         <span class="requisito" data-t="req">Para Windows 10 ou 11, num computador no Brasil, com Google Drive (OneDrive sob consulta). O instalador tem 3&nbsp;KB e baixa o resto sozinho.</span>
       </div>
       <div class="amostra" role="region" aria-label="Exemplo da lista" data-t-aria="am_aria">
@@ -281,7 +294,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   <ol class="passos quatro">
     <li><b data-t="i1t">Instale</b><span data-t="i1">Abra o arquivo baixado e dê dois cliques em <code>INSTALAR.bat</code>. Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo").</span></li>
     <li><b data-t="i2t">Configure</b><span data-t="i2">A tela abre sozinha: informe o escritório, quem vai usar e a pasta da planilha. A primeira leitura começa em seguida.</span></li>
-    <li><b data-t="i3t">Dê acesso à SolverONE</b><span data-t="i3">No Google Drive, dê acesso de editor à pasta LexSuiteONE para <code>integracao@solverone.com.br</code>, a conta de sistemas da SolverONE.</span></li>
+    <li><b data-t="i3t">Dê acesso à SolverONE</b><span data-t="i3">No Google Drive, dê acesso de editor à pasta LexSuiteONE para <code>integracao@<wbr>solverone.com.br</code>, a conta de sistemas da SolverONE.</span></li>
     <li><b data-t="i4t">Use o atalho</b><span data-t="i4">Daí em diante, abra pelo atalho RADAR JUDICIAL na área de trabalho.</span></li>
   </ol>
   <p class="links-instalar"><a href="manual.html" data-t="manual">Ler o manual</a><span data-t="completo">Prefere instalar à mão? <a href="downloads/LexSuiteONE-RADAR.zip">Baixe o pacote completo</a> e descompacte.</span></p>
@@ -300,6 +313,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     manual_topo: "Manual",
     lede: "Monitors Brazil's National Electronic Court Gazette (DJEN) daily and lists new lawsuits filed against companies, with each company's registry profile.",
     baixar: "Download RADAR JUDICIAL",
+    cel_txt: "RADAR JUDICIAL is installed on a computer with Windows 10 or 11. Open this address on the computer to install.", cel_email: "E-mail me the link", cel_copiar: "Copy the link", cel_copiado: "Link copied",
     req: "For Windows 10 or 11, on a computer in Brazil, with Google Drive (OneDrive on request). The installer is 3 KB and downloads the rest by itself.",
     am_aria: "Sample list",
     am_cab: "Lawsuits filed on Nov/06/2026 (sample, fictitious names)", am_trib: "Court", am_emp: "Company, activity and size", am_rito: "Procedure", am_valor: "Amount claimed",
@@ -331,7 +345,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     inst: "Install in four steps",
     i1t: "Install", i1: "Open the downloaded file and double-click <code>INSTALAR.bat</code>. If Windows asks for confirmation, click \"Run\" (or \"More info\" and \"Run anyway\").",
     i2t: "Set up", i2: "The screen opens by itself: enter the firm, who will use it and the spreadsheet folder. The first reading starts right after.",
-    i3t: "Give SolverONE access", i3: "In Google Drive, give <code>integracao@solverone.com.br</code>, SolverONE's systems account, editor access to the LexSuiteONE folder.",
+    i3t: "Give SolverONE access", i3: "In Google Drive, give <code>integracao@<wbr>solverone.com.br</code>, SolverONE's systems account, editor access to the LexSuiteONE folder.",
     i4t: "Use the shortcut", i4: "From then on, open it from the RADAR JUDICIAL shortcut on the desktop.",
     manual: "Read the manual",
     completo: 'Prefer to install by hand? <a href="downloads/LexSuiteONE-RADAR.zip">Download the full package</a> and unzip it.',
@@ -357,6 +371,21 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   }
   document.getElementById("b-pt").addEventListener("click", function () { aplicar("pt"); });
   document.getElementById("b-en").addEventListener("click", function () { aplicar("en"); });
+  // Download só para computador com Windows (o programa não roda em celular, tablet sem Windows nem Mac).
+  (function () {
+    var ua = navigator.userAgent || "", windows = /Windows NT/i.test(ua) && !/Windows Phone/i.test(ua);
+    if (windows) return;
+    document.getElementById("b-baixar").hidden = true;
+    document.getElementById("so-computador").hidden = false;
+    var req = document.querySelector(".requisito"); if (req) req.hidden = true;
+    var completo = document.querySelector('[data-t="completo"]'); if (completo) completo.hidden = true;
+    document.getElementById("cel-copiar").addEventListener("click", function () {
+      var b = this, link = location.origin + "/";
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () {
+        b.textContent = document.documentElement.lang === "en" ? EN.cel_copiado : "Link copiado";
+      }).catch(function () { window.prompt("", link); });
+    });
+  })();
   // Carrossel do "Como funciona"
   var IMAGENS_COMO = [1, 2, 3, 4]; // passos com imagem em docs/img/como-N.webp
   (function () {
