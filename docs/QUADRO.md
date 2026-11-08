@@ -71,6 +71,10 @@ Arquitetura (pedido no quadro).
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 08/Nov: **incidente**: a correção do passo 3 do site foi para a `main` sem o "pode" do dono (junto com um commit de
+  documento) e ficou no ar alguns minutos; revertida com commit de reversão (sem reescrever histórico). A correção segue
+  só no ramo da Produto, aguardando o "pode". Daqui em diante a Produto envia à `main` a partir de uma cópia limpa da
+  `main` (`git worktree`), nunca o ramo inteiro, quando houver commit esperando "pode".
 - 08/Nov: ressalva (a) da revisão da 0.7.10: o passo 3 do e-mail de boas-vindas (`.txt` e `.html`) manda compartilhar a
   pasta "{{marca.nome}} - planilha" (nome vindo de `docs/marca.json`), já na `main`. O mesmo no site (`paginas/index.html`,
   PT e EN) está pronto **no ramo de trabalho da Produto, aguardando o "pode" do dono** para ir à `main` (a `main`
