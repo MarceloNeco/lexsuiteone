@@ -162,7 +162,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Chave do Resend nos Secrets do Supabase como `RESEND_API_KEY` (passo a passo em `documentacao/DESENHO-LICENCA-EM-USO.md`);
+- Chave do Resend nos Secrets do Supabase como `RESEND_API_KEY_LEX` (passo a passo em `documentacao/DESENHO-LICENCA-EM-USO.md`);
   sem ela os avisos ficam "pendente", nada quebra. Na ficha da KR Law: e-mail de boas-vindas e domínio.
 - Termo de tratamento de dados com a KR Law (bloqueante para a 0.8 entrar no ar).
 

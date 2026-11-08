@@ -32,11 +32,11 @@ transferência nem o valor da chave.
 1. Abra https://supabase.com/dashboard/project/qvdvkqydhnadhewcidia/settings/functions . Se essa página não tiver a
    seção de segredos, vá no menu da esquerda em "Edge Functions" e procure a aba ou o botão "Secrets" / "Manage secrets".
 2. Na seção de segredos, clique em "Add new secret" (ou no campo vazio de nova linha).
-3. No campo Key (ou Name), digite exatamente: RESEND_API_KEY
+3. No campo Key (ou Name), digite exatamente: RESEND_API_KEY_LEX
 4. No campo Value, NÃO digite nada. Clique no campo para deixá-lo selecionado e me diga: "Cole a chave agora com
    Ctrl+V e me avise quando tiver colado." Então espere.
 5. Só depois que eu disser "colei", clique em "Save" (ou "Add secret").
-6. Confirme que RESEND_API_KEY aparece na lista de segredos. Diga só o nome; nunca o valor.
+6. Confirme que RESEND_API_KEY_LEX aparece na lista de segredos. Diga só o nome; nunca o valor.
 Se a tela pedir para confirmar ou mostrar erro, descreva e espere. Não mexa em outros segredos nem em outras
 configurações do projeto.
 ```

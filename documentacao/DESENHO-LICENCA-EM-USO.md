@@ -115,7 +115,7 @@ Tudo aplicado pela Arquitetura pelo conector: SQL de correção, SQL da licença
 
 1. **Chave do Resend nos Secrets.** resend.com → API Keys → Create API Key → nome `supabase-lex-conta`, permissão
    **Sending access**, domínio `solverone.com.br` → Create → copiar. Supabase → Edge Functions → Secrets → Add new
-   secret → Name `RESEND_API_KEY`, Value = a chave → Save. Até lá os avisos ficam em `lex_avisos` como "pendente".
+   secret → Name `RESEND_API_KEY_LEX`, Value = a chave → Save. Até lá os avisos ficam em `lex_avisos` como "pendente".
 2. Na ficha da KR Law no RootifyONE (Clientes → Licenças do RADAR): preencher e-mail de boas-vindas e domínio do escritório.
 
 ## Plano de teste
