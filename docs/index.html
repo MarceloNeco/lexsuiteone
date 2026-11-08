@@ -65,6 +65,7 @@ h1 .marca-leve { display: block; font-size: .5em; font-weight: 400; letter-spaci
 .botao:hover { background: #e2bd80; }
 .so-computador p { margin: 0 0 14px; color: #d6dbe6; max-width: 36ch; }
 .cel-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 560px) { .cel-botoes { flex-direction: column; } .cel-botoes .botao, .cel-botoes .botao-sec { width: 100%; text-align: center; padding-left: 16px; padding-right: 16px; } }
 .botao-sec { font: inherit; font-weight: 700; padding: 14px 24px; border-radius: 999px; border: 1px solid rgba(255,255,255,.4); background: transparent; color: #fff; cursor: pointer; }
 .requisito { display: block; margin-top: 12px; font-size: .92rem; color: #aeb7c7; max-width: 40ch; }
 
@@ -133,17 +134,17 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 .pos { min-width: 3.2rem; text-align: center; color: var(--tinta-3); font-variant-numeric: tabular-nums; }
 .carrossel { overflow: hidden; border-radius: 16px; }
 .trilho { list-style: none; margin: 0; padding: 0; display: flex; transition: transform .7s cubic-bezier(.4,0,.2,1); }
-.slide { flex: 0 0 100%; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); min-height: 300px; background: var(--papel-2); }
+.slide { flex: 0 0 100%; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); min-height: 22rem; background: var(--papel-2); }
 .slide-img { position: relative; background: var(--noite) center / cover no-repeat; overflow: hidden; }
 .slide-img::before { content: ""; position: absolute; inset: -30%; background: repeating-radial-gradient(circle at 70% 40%, rgba(212,171,106,.22) 0 1px, transparent 1px 46px); }
-.slide-img.com-imagem { background-color: #0e1c2c; background-size: contain; }
+.slide-img.com-imagem { background-color: #0e1c2c; background-size: cover; background-position: center; }
 .slide-img.com-imagem::before, .slide-img.com-imagem span { display: none; }
 .slide-img span { position: absolute; left: 28px; bottom: 6px; font-weight: 800; font-size: 7rem; line-height: 1; color: rgba(212,171,106,.85); }
-.slide-txt { padding: 36px 40px; display: flex; flex-direction: column; justify-content: center; gap: 8px; color: var(--tinta-2); }
+.slide-txt { padding: 40px 48px; display: flex; flex-direction: column; justify-content: center; gap: 8px; color: var(--tinta-2); }
 .slide-txt .num { display: none; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--latao-fundo); color: var(--latao-texto); font-weight: 700; }
 .slide-img.com-imagem + .slide-txt .num { display: grid; }
-.slide-txt b { color: var(--tinta); font-size: 1.3rem; font-weight: 700; }
-.slide-txt p { margin: 0; max-width: 46ch; font-size: 1.05rem; }
+.slide-txt b { color: var(--tinta); font-size: 1.75rem; line-height: 1.2; font-weight: 700; letter-spacing: -.01em; }
+.slide-txt p { margin: 0; max-width: 44ch; font-size: 1.22rem; line-height: 1.55; }
 .pontos { display: flex; justify-content: center; gap: 6px; margin-top: 14px; }
 .pontos button { width: 24px; height: 24px; border: 0; background: none; padding: 0; cursor: pointer; display: grid; place-items: center; }
 .pontos button::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--fio); }
@@ -151,7 +152,9 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 @media (max-width: 860px) {
   .slide { grid-template-columns: 1fr; min-height: 0; }
   .slide-img { min-height: 150px; }
-  .slide-img.com-imagem { min-height: 210px; }
+  .slide-img.com-imagem { min-height: 0; aspect-ratio: 16 / 9; }
+  .slide-txt b { font-size: 1.35rem; }
+  .slide-txt p { font-size: 1.05rem; }
   .slide-img span { font-size: 5rem; }
   .slide-txt { padding: 22px 20px 26px; }
 }
@@ -204,7 +207,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
         <div class="so-computador" id="so-computador" hidden>
           <p data-t="cel_txt">O RADAR JUDICIAL é instalado num computador com Windows 10 ou 11. Abra este endereço no computador para instalar.</p>
           <div class="cel-botoes">
-            <a class="botao" id="cel-email" href="mailto:?subject=Instalar%20o%20RADAR JUDICIAL&amp;body=Abrir%20no%20computador%20com%20Windows%3A%20https%3A%2F%2Fjudicial.solverone.com.br%2F" data-t="cel_email">Enviar o link para o meu e-mail</a>
+            <a class="botao" id="cel-email" href="mailto:?subject=Instalar%20o%20RADAR JUDICIAL&amp;body=Abrir%20no%20computador%20com%20Windows%3A%20https%3A%2F%2Fjudicial.solverone.com.br%2F" data-t="cel_email">Enviar o link por e-mail</a>
             <button type="button" class="botao-sec" id="cel-copiar" data-t="cel_copiar">Copiar o link</button>
           </div>
         </div>
@@ -319,7 +322,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     manual_topo: "Manual",
     lede: "Monitors Brazil's National Electronic Court Gazette (DJEN) daily and lists new lawsuits filed against companies, with each company's registry profile.",
     baixar: "Download RADAR JUDICIAL",
-    cel_txt: "RADAR JUDICIAL is installed on a computer with Windows 10 or 11. Open this address on the computer to install.", cel_email: "E-mail me the link", cel_copiar: "Copy the link", cel_copiado: "Link copied", mac_txt: "Using a Mac? The Mac version is available on request: talk to us and we will set up the best way to install it.", mac_botao: "Talk to us",
+    cel_txt: "RADAR JUDICIAL is installed on a computer with Windows 10 or 11. Open this address on the computer to install.", cel_email: "E-mail the link", cel_copiar: "Copy the link", cel_copiado: "Link copied", mac_txt: "Using a Mac? The Mac version is available on request: talk to us and we will set up the best way to install it.", mac_botao: "Talk to us",
     req: "For Windows 10 or 11 (Mac on request), on a computer in Brazil, with Google Drive (OneDrive on request). The installer is 3 KB and downloads the rest by itself.",
     am_aria: "Sample list",
     am_cab: "Lawsuits filed on Nov/06/2026 (sample, fictitious names)", am_trib: "Court", am_emp: "Company, activity and size", am_rito: "Procedure", am_valor: "Amount claimed",
