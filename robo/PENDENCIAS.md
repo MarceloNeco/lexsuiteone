@@ -70,12 +70,34 @@ O que falta para a ficha de canais:
 
 ## Site e nome (feedback do dono, 08/Nov)
 
-- Nome em teste: **Radar JUDICIAL** (o "IA" segue em latão), sob a marca LexSuiteONE. Aplicado só na página inicial
-  do site; manual, página 404, e-mail de boas-vindas, tela do robô e pacote continuam "JUDICIAL" até o dono decidir.
-- No que o cliente lê, o programa é "o Radar", não "o robô". Pastas e arquivos internos (`robo/`) não mudam.
+- Nome por enquanto: **RADAR JUDICIAL**, sempre em maiúsculas (o "IA" segue em latão), sob a marca LexSuiteONE.
+  Aplicado na página inicial do site e no e-mail de boas-vindas. Manual, página 404, tela do robô e pacote continuam
+  "JUDICIAL" (só o Leandro vê o nome antigo na tela).
+- No que o cliente lê, o programa é "o RADAR", não "o robô". Pastas e arquivos internos (`robo/`) não mudam.
+- Ícone do site: martelo dourado sobre azul-marinho (balança como alternativa). Um ícone só, fixo: trocar a cada carga
+  confunde quem procura a aba e o navegador guarda o ícone em cache.
+- Onde roda: o site e o e-mail dizem que o computador precisa estar ligado às 19h40 e às 7h10, e o site oferece "Na
+  nuvem, sob consulta" (judicial@). A versão na nuvem ainda não existe: é a 1.0 (coletor central), mais abaixo.
+- OneDrive: "sob consulta" no site. A tela já aceita a pasta do OneDrive para a planilha, mas o compartilhamento com o
+  suporte nunca foi testado lá (pediria uma conta Microsoft para `integracao@`).
 - Horário das rodadas ajustável pela tela (hoje fixo em 19:40 e 07:10, em `lexsuite/agendar.py`). Mexe no pacote:
   precisa do sim do dono.
 - Imagem de fundo da capa: o dono vai gerar no Higgsfield; a página já aceita uma imagem por trás do radar.
+
+### Nome que se troca num lugar só (desenho, esperando o sim do dono)
+
+O dono quer decidir o nome (com maiúsculas e minúsculas exatas: "RADAR JUDICIAL" hoje, "Lex One" amanhã) e ver a
+troca em todo lugar. Proposta:
+
+1. Um arquivo `marca.json` na raiz do site: `{"nome": "RADAR JUDICIAL", "destaque": "IA", "suite": "LexSuiteONE"}`.
+   `destaque` é o trecho em latão (vazio = nenhum). O texto vai exatamente como escrito, sem mudar maiúsculas.
+2. Site, manual e e-mail: um comando (`ferramentas/marca.py`) troca o nome nas marcações de todas as páginas antes de
+   publicar. Sem pedido externo e sem depender de script no navegador.
+3. Robô (tela, manual da tela, planilha, avisos): lê o `marca.json` que vem no pacote e, quando procura atualização,
+   o de `judicial.solverone.com.br`, dentro do manifesto assinado (ninguém consegue trocar o nome no meio do caminho).
+   Assim o nome muda nas instalações sem versão nova. Sem internet, fica o último nome conhecido.
+4. Não mudam sozinhos: nomes de arquivos e pastas (`LexSuiteONE-robo.zip`, `C:\LexSuiteONE`, `LexSuiteONE.xlsx`),
+   porque trocar quebraria instalações. Isso, se um dia for preciso, é uma migração à parte.
 
 ## Esperando o dono (Marcelo)
 

@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Radar JUDICIAL · LexSuiteONE</title>
+<title>RADAR JUDICIAL · LexSuiteONE</title>
 <meta name="description" content="Lê o Diário de Justiça Eletrônico Nacional e lista, todo dia, as ações novas contra empresas, com a ficha de cada uma. Roda no computador do escritório.">
-<meta property="og:title" content="Radar JUDICIAL · LexSuiteONE">
+<meta property="og:title" content="RADAR JUDICIAL · LexSuiteONE">
 <meta property="og:description" content="As ações novas contra empresas, todo dia, com a ficha de cada uma.">
 <meta name="theme-color" content="#102038">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -27,7 +27,7 @@ a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-of
 :focus-visible { outline: 3px solid var(--latao); outline-offset: 3px; border-radius: 4px; }
 .miolo { max-width: 72rem; margin: 0 auto; padding: 0 20px; }
 
-/* Nome do produto: "Radar" leve, "JUDICIAL" forte, com o IA em latão. */
+/* Nome do produto, sempre em maiúsculas: "RADAR" leve, "JUDICIAL" forte, com o IA em latão. */
 .nome { font-weight: 400; letter-spacing: -.01em; white-space: nowrap; }
 .nome strong { font-weight: 800; letter-spacing: .01em; }
 .nome strong b { color: var(--latao); font-weight: 800; }
@@ -57,7 +57,7 @@ a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-of
 .suite { display: block; font-size: 1.05rem; font-weight: 500; color: #c4cbd8; margin: 0 0 6px; }
 .suite b { color: var(--latao); font-weight: 600; }
 h1 { margin: 0 0 22px; font-size: clamp(3rem, 5.4vw, 4.4rem); line-height: .95; color: #fff; }
-h1 .radar-nome { display: block; font-size: .56em; font-weight: 400; color: #e6e9f0; margin-bottom: .06em; }
+h1 .radar-nome { display: block; font-size: .5em; font-weight: 400; letter-spacing: .08em; color: #e6e9f0; margin-bottom: .08em; }
 .capa p.lede { margin: 0 0 28px; color: #d6dbe6; font-size: 1.15rem; line-height: 1.55; max-width: 34ch; }
 .botao { display: inline-block; background: var(--latao); color: var(--noite); text-decoration: none; font-weight: 700; padding: 15px 28px; border-radius: 999px; }
 .botao:hover { background: #e2bd80; }
@@ -92,6 +92,14 @@ h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 26
 .frente b { display: block; color: var(--tinta); font-weight: 700; font-size: 1.08rem; }
 .frente i { display: inline-block; font-style: normal; font-size: .82rem; font-weight: 600; color: var(--latao-texto); background: var(--latao-fundo); padding: 2px 10px; border-radius: 999px; margin-top: 10px; }
 .frente i.pronta { color: #fff; background: var(--noite); }
+.onde { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.onde > div { border: 1px solid var(--fio); border-radius: 12px; padding: 20px 22px; color: var(--tinta-2); }
+.onde > div.nuvem { background: var(--noite); border-color: var(--noite); color: #d6dbe6; }
+.onde b { display: block; color: var(--tinta); font-weight: 700; font-size: 1.08rem; margin-bottom: 4px; }
+.onde .nuvem b { color: #fff; }
+.onde .nuvem a { color: var(--latao); }
+.onde i { display: inline-block; font-style: normal; font-size: .82rem; font-weight: 600; padding: 2px 10px; border-radius: 999px; margin-top: 12px; color: #fff; background: var(--noite); }
+.onde .nuvem i { color: var(--noite); background: var(--latao); }
 .seguranca { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 48px; margin: 0; padding: 0 0 0 1.1em; color: var(--tinta-2); }
 .instalar .passos { margin-bottom: 26px; }
 code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
@@ -102,7 +110,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   .capa-grade { grid-template-columns: 1fr; padding: 28px 0 40px; }
   .radar { width: 620px; height: 620px; right: -260px; top: -120px; opacity: .7; }
   .radar .varredura { transform-origin: 310px 310px; }
-  .passos.tres, .frentes, .seguranca { grid-template-columns: 1fr; }
+  .passos.tres, .frentes, .seguranca, .onde { grid-template-columns: 1fr; }
   section { padding: 40px 0; }
 }
 @media (max-width: 560px) {
@@ -131,7 +139,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   </svg>
   <div class="miolo">
     <div class="topo">
-      <a class="marca" href="./" aria-label="Radar JUDICIAL, início"><img src="favicon.svg" alt=""><span class="nome">Radar <strong>JUDIC<b>IA</b>L</strong></span></a>
+      <a class="marca" href="./" aria-label="RADAR JUDICIAL, início"><img src="favicon.svg" alt=""><span class="nome">RADAR <strong>JUDIC<b>IA</b>L</strong></span></a>
       <nav>
         <a class="manual-topo" href="manual.html" data-t="manual_topo">Manual</a>
         <div class="idioma" role="group" aria-label="Idioma / Language">
@@ -143,10 +151,10 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <div class="capa-grade">
       <div>
         <span class="suite">LexSuite<b>ONE</b></span>
-        <h1 class="nome"><span class="radar-nome">Radar</span> <strong>JUDIC<b>IA</b>L</strong></h1>
+        <h1 class="nome"><span class="radar-nome">RADAR</span> <strong>JUDIC<b>IA</b>L</strong></h1>
         <p class="lede" data-t="lede">Lê todo dia o Diário de Justiça Eletrônico Nacional e lista as ações novas contra empresas, com a ficha de cada uma.</p>
-        <a class="botao" href="downloads/LexSuiteONE-robo.zip" data-t="baixar">Baixar o Radar JUDICIAL</a>
-        <span class="requisito" data-t="req">Para Windows 10 ou 11, num computador no Brasil, com Google Drive ou OneDrive. Arquivo .zip de 113&nbsp;KB.</span>
+        <a class="botao" href="downloads/LexSuiteONE-robo.zip" data-t="baixar">Baixar o RADAR JUDICIAL</a>
+        <span class="requisito" data-t="req">Para Windows 10 ou 11, num computador no Brasil, com Google Drive (OneDrive sob consulta). Arquivo .zip de 113&nbsp;KB.</span>
       </div>
       <div class="amostra" role="region" aria-label="Exemplo da lista" data-t-aria="am_aria">
         <header data-t="am_cab">Exemplo de um dia, com nomes fictícios</header>
@@ -168,10 +176,18 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section>
   <h2 data-t="como">Como funciona</h2>
   <ol class="passos tres">
-    <li><b data-t="p1t">O Diário sai, o Radar lê</b><span data-t="p1">Os tribunais enviam as publicações até o fim da tarde e o Diário as libera à noite. O Radar lê às 19h40 e de novo às 7h10: de manhã, a lista está pronta.</span></li>
+    <li><b data-t="p1t">O Diário sai, o RADAR lê</b><span data-t="p1">Os tribunais enviam as publicações até o fim da tarde e o Diário as libera à noite. O RADAR lê às 19h40 e de novo às 7h10: de manhã, a lista está pronta.</span></li>
     <li><b data-t="p2t">Cada ação ganha uma ficha</b><span data-t="p2">Rito e valor da causa, quando o Diário informa. Com o CNPJ, os dados públicos da empresa: porte, setor, cidade, telefone e e-mail.</span></li>
-    <li><b data-t="p3t">A planilha do escritório se atualiza</b><span data-t="p3">A lista aparece na tela do Radar e numa planilha na pasta que o escritório escolher.</span></li>
+    <li><b data-t="p3t">A planilha do escritório se atualiza</b><span data-t="p3">A lista aparece na tela do RADAR e numa planilha na pasta que o escritório escolher.</span></li>
   </ol>
+</section>
+
+<section>
+  <h2 data-t="onde">Onde roda</h2>
+  <div class="onde">
+    <div><b data-t="o1t">No computador do escritório</b><span data-t="o1">O computador precisa estar ligado às 19h40 e às 7h10, quando o RADAR lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.</span><br><i data-t="o1s">como funciona hoje</i></div>
+    <div class="nuvem"><b data-t="o2t">Na nuvem</b><span data-t="o2">O RADAR roda sozinho, sem depender de um computador ligado. Fale com a gente: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>.</span><br><i data-t="o2s">sob consulta</i></div>
+  </div>
 </section>
 
 <section>
@@ -208,7 +224,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 </main>
 
 <footer class="miolo"><div class="rodape">
-  <span data-t="rod1">Radar JUDICIAL é um produto da LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>.</span>
+  <span data-t="rod1">RADAR JUDICIAL é um produto da LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>.</span>
   <span data-t="rod2">Dúvidas: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a></span>
 </div></footer>
 
@@ -218,8 +234,8 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   var EN = {
     manual_topo: "Manual",
     lede: "Reads Brazil's National Electronic Court Gazette every day and lists the new lawsuits filed against companies, with a profile of each one.",
-    baixar: "Download Radar JUDICIAL",
-    req: "For Windows 10 or 11, on a computer in Brazil, with Google Drive or OneDrive. A 113 KB .zip file.",
+    baixar: "Download RADAR JUDICIAL",
+    req: "For Windows 10 or 11, on a computer in Brazil, with Google Drive (OneDrive on request). A 113 KB .zip file.",
     am_aria: "Sample list",
     am_cab: "Sample day, with fictitious names", am_trib: "Court", am_emp: "Company", am_rito: "Procedure", am_valor: "Amount claimed",
     am_v1: "5th Labor Court of Guarulhos", am_v2: "2nd Labor Court of Campinas", am_v3: "1st Labor Court of Contagem",
@@ -228,9 +244,12 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     am_x1: "R$ 186,400.00", am_x2: "R$ 38,900.00", am_x3: "R$ 92,750.00",
     am_pe: "Each row opens the company profile: tax ID, size, sector, city, phone and e-mail from the public registry.",
     como: "How it works",
-    p1t: "The gazette comes out, the Radar reads it", p1: "Courts send their notices by late afternoon and the gazette releases them in the evening. The Radar reads at 7:40 pm and again at 7:10 am: by morning, the list is ready.",
+    p1t: "The gazette comes out, the RADAR reads it", p1: "Courts send their notices by late afternoon and the gazette releases them in the evening. The RADAR reads at 7:40 pm and again at 7:10 am: by morning, the list is ready.",
     p2t: "Each lawsuit gets a profile", p2: "Procedure and amount claimed, when the gazette states them. With the tax ID, the company's public data: size, sector, city, phone and e-mail.",
-    p3t: "The firm's spreadsheet updates itself", p3: "The list shows on the Radar screen and in a spreadsheet in the folder the firm chooses.",
+    p3t: "The firm's spreadsheet updates itself", p3: "The list shows on the RADAR screen and in a spreadsheet in the folder the firm chooses.",
+    onde: "Where it runs",
+    o1t: "On the firm's computer", o1: "The computer must be on at 7:40 pm and 7:10 am, when the RADAR reads the gazette. If it is off, the next reading catches up on the days missed.", o1s: "how it works today",
+    o2t: "In the cloud", o2: 'The RADAR runs on its own, without depending on a computer being on. Talk to us: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>.', o2s: "on request",
     fr: "Practice areas",
     f1: "Labor", f1d: "New lawsuits in the 24 regional labor courts.", f1s: "available",
     f2: "Tax", f2d: "New tax enforcement actions against companies, in federal and state courts.", f2s: "in preparation",
@@ -248,7 +267,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     i3t: "Answer", i3: "Your name, your role, the firm and the spreadsheet folder. The first reading starts right after.",
     i4t: "Share", i4: "Share the LexSuiteONE subfolder with support as an editor. It is the only manual step.",
     manual: "Firm manual",
-    rod1: 'Radar JUDICIAL is a LexSuiteONE product by <a href="https://solverone.com.br">SolverONE</a>.',
+    rod1: 'RADAR JUDICIAL is a LexSuiteONE product by <a href="https://solverone.com.br">SolverONE</a>.',
     rod2: 'Questions: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>' };
   var PT = {};
   document.querySelectorAll("[data-t]").forEach(function (n) { PT[n.getAttribute("data-t")] = n.innerHTML; });

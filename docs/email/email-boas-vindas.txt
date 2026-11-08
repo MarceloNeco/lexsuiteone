@@ -1,8 +1,8 @@
-Olá, {{nome}}. Seu LexSuiteONE está pronto.
+Olá, {{nome}}. Seu RADAR JUDICIAL está pronto.
 
-Todo dia, o Diário de Justiça Eletrônico Nacional publica as ações trabalhistas novas. O LexSuiteONE lê o Diário dos tribunais que você escolher, separa as ações novas movidas contra empresas e entrega a lista, com a ficha de cada empresa, na sua tela e numa planilha no seu Google Drive. Sem inteligência artificial, sem senha de ninguém, rodando no seu próprio computador.
+Todo dia, o RADAR JUDICIAL lê o Diário de Justiça Eletrônico Nacional nos tribunais que você escolher e lista as ações novas contra empresas, com a ficha de cada uma. A lista aparece na tela do RADAR e numa planilha na sua pasta do Google Drive.
 
-Baixar o LexSuiteONE (arquivo .zip, 120 KB, Windows 10 ou 11):
+Baixar o RADAR JUDICIAL (arquivo .zip, 113 KB, Windows 10 ou 11):
 https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip
 
 [CODIGO-INICIO]
@@ -11,18 +11,20 @@ A tela pede esse código na instalação. Ele identifica o escritório; não é 
 
 [CODIGO-FIM]
 Como instalar, em quatro passos
-1. Descompacte o arquivo numa pasta fácil, por exemplo C:\LexSuiteONE.
-2. Dois cliques em ABRIR.bat. Na primeira vez ele prepara o que precisa (um download de 11 MB do site oficial do Python) e abre a tela no navegador.
-3. A tela faz três perguntas (seu nome, seu papel, o escritório), pede a pasta do Google Drive e começa a primeira rodada. Os 24 Tribunais Regionais do Trabalho já vêm escolhidos.
-4. No Google Drive, compartilhe a subpasta LexSuiteONE com {{drive}} como editor. É o único passo manual: por ele o suporte acompanha o robô sem nunca acessar o seu computador.
+1. Descompacte o arquivo numa pasta fácil, como C:\LexSuiteONE.
+2. Dois cliques em ABRIR.bat. Na primeira vez ele baixa o Python oficial (11 MB) e abre a tela no navegador.
+3. Responda o passo a passo: seu nome, seu papel, o escritório e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.
+4. No Google Drive, compartilhe a subpasta LexSuiteONE com {{drive}} como editor. É o único passo à mão: por ele o suporte acompanha o RADAR sem acessar o seu computador.
+
+Onde roda: no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o RADAR lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.
 
 Se o Windows perguntar se confia no arquivo, clique em "Mais informações" e "Executar assim mesmo". O manual completo abre dentro da própria tela, no link "Manual do escritório".
 
-Segurança, em uma linha: o robô não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.
+Segurança, em uma linha: o RADAR não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.
 
 Dúvidas? Escreva para {{contato}}. Este e-mail saiu de um endereço automático e não recebe respostas.
 
 Marcelo Freitas
 SolverONE
 
-LexSuiteONE é um produto SolverONE (solverone.com.br). Você recebeu este e-mail porque pediu o pacote de instalação.
+RADAR JUDICIAL é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque pediu o pacote de instalação.
