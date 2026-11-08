@@ -14,12 +14,13 @@
   color-scheme: light;
   --papel: #ffffff; --folha: #ffffff; --papel-2: #f3f5f8; --tinta: #121a2b; --tinta-2: #4a5468; --tinta-3: #7a8396; --linha: #e1e5ec; --linha-2: #c9d0db;
   --marinho: #0f1d33; --latao: #a87a2e; --latao-texto: #8a6222; --latao-wash: #f7f0e1; --erro: #a33a2e;
+  --barra: #2b62ad; --trilho: #e8ebf1;
   --f: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; --noite: #102038; --latao-claro: #d4ab6a;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; }
+  :root:not([data-theme="light"]) { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; --barra: #5b8fd6; --trilho: #222b40; }
 }
-:root[data-theme="dark"] { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; }
+:root[data-theme="dark"] { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; --barra: #5b8fd6; --trilho: #222b40; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 15px/1.5 var(--f); -webkit-font-smoothing: antialiased; }
@@ -181,6 +182,50 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .wiz .resumo-final dt { color: var(--tinta-3); } .wiz .resumo-final { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: .92rem; }
 @media (max-width: 640px) { .campo-conf, .conf-info { grid-template-columns: 1fr; } }
 
+/* 0.7.12: Painel (gráficos) e Lista, nas cores da marca. Sem biblioteca nem pedido externo: barras em HTML e CSS. */
+.visao { display: flex; gap: 2px; border-bottom: 1px solid var(--linha); margin: 6px 0 14px; }
+.visao button { all: unset; box-sizing: border-box; cursor: pointer; padding: 10px 16px 9px; font-weight: 600; font-size: .92rem; color: var(--tinta-3); border-bottom: 2px solid transparent; }
+.visao button[aria-selected="true"] { color: var(--tinta); border-bottom-color: var(--latao); }
+.visao button:hover { color: var(--tinta); }
+.visao button:focus-visible { outline: 2px solid var(--latao); outline-offset: -2px; }
+.graficos { display: grid; gap: 16px; padding-bottom: 8px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 165px), 1fr)); gap: 12px; }
+.kpi { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+.kpi .rot { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3); font-weight: 600; }
+.kpi .val { font-size: 1.9rem; line-height: 1.05; font-weight: 700; color: var(--tinta); font-variant-numeric: tabular-nums; }
+.kpi .det { font-size: .78rem; color: var(--tinta-3); }
+.kpi.destaque { border-color: var(--latao); background: var(--latao-wash); }
+.kpi.destaque .val { color: var(--latao-texto); }
+.grade-graf { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+.graf { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.graf.largo { grid-column: 1 / -1; }
+.graf h3 { margin: 0; font-size: .76rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--tinta-2); }
+.nota-g { margin: 0; font-size: .8rem; color: var(--tinta-3); }
+.barras { display: grid; gap: 4px; }
+.barra-l { all: unset; box-sizing: border-box; display: grid; grid-template-columns: minmax(7rem, 38%) 1fr auto; gap: 10px; align-items: center; font-size: .84rem; padding: 3px 4px; border-radius: 6px; }
+button.barra-l { cursor: pointer; }
+button.barra-l:hover { background: var(--papel-2, #f3f5f8); }
+button.barra-l:focus-visible { outline: 2px solid var(--latao); }
+.barra-l .rot { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--tinta-2); }
+.barra-l .trilho { height: 10px; background: var(--trilho); border-radius: 999px; overflow: hidden; }
+.barra-l .enche { display: block; height: 100%; background: var(--barra); border-radius: 999px; min-width: 2px; }
+.barra-l.ouro .enche { background: var(--latao); }
+.barra-l.apagada .enche { background: var(--linha-2); }
+.barra-l .n { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 2.5rem; text-align: right; }
+.barra-l .n small { font-weight: 500; color: var(--tinta-3); margin-left: 6px; }
+.colunas { display: flex; align-items: flex-end; gap: 6px; height: 170px; padding-top: 18px; overflow-x: auto; scrollbar-width: thin; }
+.col { all: unset; box-sizing: border-box; flex: 1 0 34px; max-width: 96px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
+button.col { cursor: pointer; }
+.col .n { font-size: .74rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--tinta-2); }
+.col .pe { width: 100%; background: var(--barra); border-radius: 5px 5px 2px 2px; min-height: 2px; }
+button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
+.col .d { font-size: .68rem; color: var(--tinta-3); text-align: center; line-height: 1.15; white-space: nowrap; }
+.col .d b { display: block; color: var(--tinta-2); font-weight: 600; }
+@media (max-width: 640px) {
+  .barra-l { grid-template-columns: 1fr auto; gap: 2px 10px; padding: 4px 2px; }
+  .barra-l .rot { grid-column: 1 / -1; white-space: normal; }
+  .kpi .val { font-size: 1.6rem; }
+}
 .controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-bottom: 12px; }
 .chip[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
 .controles select { border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 6px 12px; min-height: 36px; font-size: .84rem; }
@@ -385,6 +430,11 @@ footer a:hover { text-decoration: underline; }
   </div>
 </section>
 
+<div class="visao" id="visao" role="tablist">
+  <button type="button" role="tab" id="v-painel" data-visao="painel" aria-selected="false" aria-controls="graficos"></button>
+  <button type="button" role="tab" id="v-lista" data-visao="lista" aria-selected="true" aria-controls="lista"></button>
+</div>
+
 <div class="controles" id="controles">
   <button type="button" class="chip" id="f-valor" aria-pressed="false"></button>
   <button type="button" class="chip" id="f-gig" aria-pressed="false"></button>
@@ -401,7 +451,8 @@ footer a:hover { text-decoration: underline; }
   <button type="button" class="btn-txt" id="exportar"></button>
 </div>
 
-<div class="lista" id="lista"></div>
+<div class="graficos" id="graficos" role="tabpanel" hidden></div>
+<div class="lista" id="lista" role="tabpanel"></div>
 <div class="mais" id="mais" hidden><span id="mais-txt"></span><button type="button" class="chip" id="b-mais"></button><button type="button" class="chip" id="b-mais50"></button></div>
 
 <footer>
@@ -466,6 +517,14 @@ window.LEXSUITE_RADAR = null;
       st_novo: "Novo", st_visto: "Visto", st_contato: "Em contato", st_descartado: "Descartado",
       nota_valor: "O PJe mostra o valor da causa depois do captcha. Digite aqui; fica guardado neste navegador e sai na planilha.",
       gig: "Jurídico próprio provável", e: "e", mais_n: "e mais {n}",
+      v_painel: "Painel", v_lista: "Lista", k_acoes: "Ações", k_acoes_det: "{d} dia(s) com Diário", k_cnpj: "Com CNPJ confirmado", k_pct: "{p}% das ações",
+      k_acima: "Acima de {min}", k_acima_det: "pelo valor da causa", k_soma: "Valor somado", k_soma_det: "{n} ação(ões) com valor", k_empresas: "Empresas",
+      k_empresas_det: "{n} com mais de uma ação", k_sem_valor: "Sem valor no Diário", k_sem_valor_det: "o valor aparece no PJe",
+      g_dia: "Ações por dia", g_mes: "Ações por mês", g_faixas: "Faixas de valor da causa", g_setores: "Setores", g_empresas: "Empresas com mais ações",
+      g_porte: "Porte da empresa", g_trib: "Tribunais", g_uf: "Estado da empresa", g_vara: "Varas com mais ações",
+      g_nota: "Os números seguem os filtros acima. Clique numa barra para ver essas ações na lista.", g_vazio: "Nenhuma ação com estes filtros.",
+      fx_sem: "Sem valor", fx_ate: "Até {a}", fx_entre: "{a} a {b}", fx_acima: "Acima de {a}", sem_setor: "Sem setor (sem CNPJ)", sem_porte: "Sem porte (sem CNPJ)", sem_uf: "Sem estado (sem CNPJ)",
+      g_acoes_n: "{n} ação(ões)", g_ver: "Ver na lista: {r}",
       link_manual: "Manual", rodape1: "Fontes: lista de distribuição do DJEN (CNJ) e cadastro público da Receita Federal. Gerado em {q}.",
       rodape2: "Pessoas físicas do processo não aparecem. Nada aqui usa inteligência artificial. {m}, da LexSuiteONE, um produto SolverONE. Versão {v}." },
     en: { marca: "RADAR JUDICIAL",
@@ -513,9 +572,18 @@ window.LEXSUITE_RADAR = null;
       st_novo: "New", st_visto: "Seen", st_contato: "In contact", st_descartado: "Discarded",
       nota_valor: "PJe shows the claim value after the captcha. Type it here; it stays in this browser and goes to the spreadsheet.",
       gig: "Likely in-house counsel", e: "and", mais_n: "and {n} more",
+      v_painel: "Dashboard", v_lista: "List", k_acoes: "Lawsuits", k_acoes_det: "{d} day(s) with a gazette", k_cnpj: "Confirmed tax ID", k_pct: "{p}% of lawsuits",
+      k_acima: "Above {min}", k_acima_det: "by claim value", k_soma: "Total claim value", k_soma_det: "{n} lawsuit(s) with a value", k_empresas: "Companies",
+      k_empresas_det: "{n} with more than one lawsuit", k_sem_valor: "No value in the gazette", k_sem_valor_det: "the value shows in PJe",
+      g_dia: "Lawsuits per day", g_mes: "Lawsuits per month", g_faixas: "Claim value ranges", g_setores: "Sectors", g_empresas: "Companies with most lawsuits",
+      g_porte: "Company size", g_trib: "Courts", g_uf: "Company state", g_vara: "Court units with most lawsuits",
+      g_nota: "Numbers follow the filters above. Click a bar to see those lawsuits in the list.", g_vazio: "No lawsuit with these filters.",
+      fx_sem: "No value", fx_ate: "Up to {a}", fx_entre: "{a} to {b}", fx_acima: "Above {a}", sem_setor: "No sector (no tax ID)", sem_porte: "No size (no tax ID)", sem_uf: "No state (no tax ID)",
+      g_acoes_n: "{n} lawsuit(s)", g_ver: "See in the list: {r}",
       link_manual: "Manual", rodape1: "Sources: DJEN distribution lists (CNJ) and the Federal Revenue public registry. Generated {q}.",
       rodape2: "Individuals in the case never appear. Nothing here uses artificial intelligence. {m}, by LexSuiteONE, a SolverONE product. Version {v}." }
   };
+  var visao = "painel"; try { visao = localStorage.getItem("lexsuite:visao") || "painel"; } catch (e) {}
   var lang = "pt", F = { valor: false, gig: false, exc: false, trib: "", cnpj: false, data: "", vara: "", setor: "", porte: "", uf: "" }, ordem = "valor", aberto = {};
   try { lang = localStorage.getItem("lexsuite:idioma") || "pt"; } catch (e) {}
   function t(k, v) { var s = (T[lang][k] != null ? T[lang][k] : T.pt[k]) || k; if (v) Object.keys(v).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); return s; }
@@ -575,7 +643,7 @@ window.LEXSUITE_RADAR = null;
         av.appendChild(bg); box.appendChild(av);
       }
       var lk = el("span", "atalhos-fim"), ver = el("button", "btn-txt", t("ver_lista")), pl = el("button", "btn-txt", t("planilha_abrir"));
-      ver.type = pl.type = "button"; ver.addEventListener("click", function () { $("controles").scrollIntoView({ behavior: "smooth" }); });
+      ver.type = pl.type = "button"; ver.addEventListener("click", function () { visao = "lista"; desenhar(); $("visao").scrollIntoView({ behavior: "smooth" }); });
       pl.addEventListener("click", function () { abrirPlanilha("planilha"); }); lk.appendChild(ver); lk.appendChild(pl); box.appendChild(lk);
     }
     else if (!e.erro) box.appendChild(el("span", "ok", t("nunca")));
@@ -1148,7 +1216,98 @@ window.LEXSUITE_RADAR = null;
     box.appendChild(ficha);
     return box;
   }
+  /* ---------- 0.7.12: o painel (mesmos itens da lista, com os mesmos filtros) ---------- */
+  function trocarVisao(v) {
+    visao = v === "lista" ? "lista" : "painel"; try { localStorage.setItem("lexsuite:visao", visao); } catch (e) {}
+    desenhar();
+  }
+  function filtrarPor(campo, valor) {
+    if (campo === "trib") { F.trib = valor; }
+    else if (campo === "valor") { F.valor = true; }
+    else { F[campo] = valor; }
+    limite = 10; visao = "lista"; try { localStorage.setItem("lexsuite:visao", visao); } catch (e) {}
+    cabecalho(); desenhar(); $("visao").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function contar(itens, chave) {
+    var m = {}; itens.forEach(function (i) { var k = chave(i); if (k == null) return; if (!m[k[0]]) m[k[0]] = { k: k[0], r: k[1], n: 0, v: 0 }; m[k[0]].n++; m[k[0]].v += valorDe(i).v || 0; });
+    return Object.keys(m).map(function (k) { return m[k]; }).sort(function (a, b) { return b.n - a.n || b.v - a.v || String(a.r).localeCompare(String(b.r), loc()); });
+  }
+  function kpi(rot, val, det, destaque) {
+    var k = el("div", "kpi" + (destaque ? " destaque" : "")); k.appendChild(el("span", "rot", rot)); k.appendChild(el("span", "val", val)); if (det) k.appendChild(el("span", "det", det)); return k;
+  }
+  function grafBarras(tit, linhas, opc) {
+    opc = opc || {}; var g = el("div", "graf" + (opc.largo ? " largo" : "")); g.appendChild(el("h3", null, tit));
+    var max = Math.max.apply(null, linhas.map(function (l) { return l.n; }).concat([1])), b = el("div", "barras");
+    linhas.slice(0, opc.max || 8).forEach(function (l) {
+      var clicavel = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro);
+      var row = el(clicavel ? "button" : "div", "barra-l" + (l.ouro ? " ouro" : "") + (l.apagada ? " apagada" : ""));
+      if (clicavel) { row.type = "button"; row.title = t("g_ver", { r: l.r }); row.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
+      var r = el("span", "rot", l.r); r.title = l.r; row.appendChild(r);
+      var tr_ = el("span", "trilho"), en = el("span", "enche"); en.style.width = (100 * l.n / max).toFixed(1) + "%"; tr_.appendChild(en); row.appendChild(tr_);
+      var n = el("span", "n", num(l.n)); if (opc.comValor && l.v) n.appendChild(el("small", null, reaisCurto(l.v))); row.appendChild(n);
+      row.setAttribute("aria-label", l.r + ": " + t("g_acoes_n", { n: num(l.n) }) + (opc.comValor && l.v ? ", " + reaisCurto(l.v) : ""));
+      b.appendChild(row);
+    });
+    g.appendChild(b); if (opc.nota) g.appendChild(el("p", "nota-g", opc.nota)); return g;
+  }
+  function grafDias(itens) {
+    var dias = contar(itens, function (i) { var d = diaDe(i); return d ? [d, d] : null; }).sort(function (a, b) { return a.k.localeCompare(b.k); });
+    var porMes = dias.length > 31;
+    if (porMes) dias = contar(itens, function (i) { var d = diaDe(i); return d ? [d.slice(0, 7), d.slice(0, 7)] : null; }).sort(function (a, b) { return a.k.localeCompare(b.k); });
+    var g = el("div", "graf largo"); g.appendChild(el("h3", null, t(porMes ? "g_mes" : "g_dia")));
+    var max = Math.max.apply(null, dias.map(function (d) { return d.n; }).concat([1])), c = el("div", "colunas");
+    dias.forEach(function (d) {
+      var col = el(porMes ? "div" : "button", "col"); if (!porMes) { col.type = "button"; col.addEventListener("click", function () { filtrarPor("data", d.k); }); }
+      var rot = porMes ? d.k.slice(5) + "/" + d.k.slice(0, 4) : dataSemana(d.k);
+      col.setAttribute("aria-label", rot + ": " + t("g_acoes_n", { n: num(d.n) })); col.title = col.getAttribute("aria-label");
+      col.appendChild(el("span", "n", num(d.n)));
+      var pe = el("span", "pe"); pe.style.height = Math.max(2, Math.round(120 * d.n / max)) + "px"; col.appendChild(pe);
+      var lab = el("span", "d"); if (porMes) lab.textContent = rot; else { var p_ = rot.split(", "); lab.appendChild(el("b", null, p_[0])); lab.appendChild(document.createTextNode((p_[1] || "").slice(0, 6))); }
+      col.appendChild(lab); c.appendChild(col);
+    });
+    g.appendChild(c); return g;
+  }
+  function desenharPainel(itens) {
+    var alvo = $("graficos"); alvo.textContent = "";
+    if (!itens.length) { alvo.appendChild(el("div", "vazio-lista", (D.itens || []).length ? t("g_vazio") : (MODO === "app" ? t("vazio_app") : t("vazio_arq")))); return; }
+    var min = minimo(), comCnpj = itens.filter(function (i) { return i.empresa && i.empresa.cnpj; }).length;
+    var comV = itens.filter(function (i) { return valorDe(i).v != null; }), soma = comV.reduce(function (a, i) { return a + valorDe(i).v; }, 0);
+    var acima = comV.filter(function (i) { return valorDe(i).v >= min; }).length;
+    var emp = contar(itens, function (i) { var e = i.empresa || {}; var nome = nomeDe(i); return nome ? [e.cnpj || nome.toLowerCase(), nome] : null; });
+    var dias = {}; itens.forEach(function (i) { var d = diaDe(i); if (d) dias[d] = 1; });
+    var k = el("div", "kpis");
+    k.appendChild(kpi(t("k_acoes"), num(itens.length), t("k_acoes_det", { d: num(Object.keys(dias).length) })));
+    k.appendChild(kpi(t("k_acima", { min: reaisCurto(min) }), num(acima), t("k_acima_det"), true));
+    k.appendChild(kpi(t("k_soma"), soma ? reaisCurto(soma) : "—", t("k_soma_det", { n: num(comV.length) })));
+    k.appendChild(kpi(t("k_cnpj"), num(comCnpj), t("k_pct", { p: num(Math.round(100 * comCnpj / itens.length)) })));
+    k.appendChild(kpi(t("k_empresas"), num(emp.length), t("k_empresas_det", { n: num(emp.filter(function (e) { return e.n > 1; }).length) })));
+    k.appendChild(kpi(t("k_sem_valor"), num(itens.length - comV.length), t("k_sem_valor_det")));
+    alvo.appendChild(k);
+    alvo.appendChild(grafDias(itens));
+    var grade = el("div", "grade-graf");
+    var fx = [[null, null], [0, 50000], [50000, 100000], [100000, 300000], [300000, 1000000], [1000000, Infinity]];
+    var faixas = fx.map(function (f, ix) {
+      var n = itens.filter(function (i) { var v = valorDe(i).v; return ix === 0 ? v == null : (v != null && v >= f[0] && v < f[1]); }).length;
+      var r = ix === 0 ? t("fx_sem") : ix === 1 ? t("fx_ate", { a: reaisCurto(f[1]) }) : f[1] === Infinity ? t("fx_acima", { a: reaisCurto(f[0]) }) : t("fx_entre", { a: reaisCurto(f[0]), b: reaisCurto(f[1]) });
+      return { k: "", r: r, n: n, ouro: ix > 0 && f[0] >= min, apagada: ix === 0 };
+    });
+    grade.appendChild(grafBarras(t("g_faixas"), faixas, { max: 6, nota: t("k_acima", { min: reaisCurto(min) }) + ": " + num(acima) }));
+    grade.appendChild(grafBarras(t("g_setores"), contar(itens, function (i) { return i.setor ? [i.setor, i.setor] : ["", t("sem_setor")]; }), { campo: "setor", comValor: true }));
+    grade.appendChild(grafBarras(t("g_empresas"), emp.map(function (e) { return { k: "", r: e.r, n: e.n, v: e.v }; }), { comValor: true }));
+    grade.appendChild(grafBarras(t("g_porte"), contar(itens, function (i) { var p_ = porteCurto(i); return p_ ? [p_, p_] : ["", t("sem_porte")]; }), { campo: "porte" }));
+    var tribs = contar(itens, function (i) { return i.tribunal ? [i.tribunal, i.tribunal] : null; });
+    if (tribs.length > 1) grade.appendChild(grafBarras(t("g_trib"), tribs, { campo: "trib", comValor: true, max: 24 }));
+    else grade.appendChild(grafBarras(t("g_vara"), contar(itens, function (i) { return i.vara ? [i.vara, i.vara] : null; }), { campo: "vara" }));
+    grade.appendChild(grafBarras(t("g_uf"), contar(itens, function (i) { var u = (i.empresa || {}).uf; return u ? [u, u] : ["", t("sem_uf")]; }), { campo: "uf" }));
+    alvo.appendChild(grade);
+    alvo.appendChild(el("p", "nota-g", t("g_nota")));
+  }
   function desenhar() {
+    $("v-painel").textContent = t("v_painel"); $("v-lista").textContent = t("v_lista");
+    $("v-painel").setAttribute("aria-selected", String(visao === "painel")); $("v-lista").setAttribute("aria-selected", String(visao === "lista"));
+    $("graficos").hidden = visao !== "painel"; $("lista").hidden = visao === "painel";
+    var oc = ["ordem", "exportar"]; oc.forEach(function (id) { $(id).style.visibility = visao === "painel" ? "hidden" : ""; });
+    if (visao === "painel") { $("mais").hidden = true; desenharPainel(visiveis()); return; }
     var alvo = $("lista"); alvo.textContent = "";
     var itens = visiveis(), total = itens.length;
     if (!total) { alvo.appendChild(el("div", "vazio-lista", (D.itens || []).length ? t("vazio") : (MODO === "app" ? t("vazio_app") : t("vazio_arq")))); $("mais").hidden = true; return; }
@@ -1289,6 +1448,8 @@ window.LEXSUITE_RADAR = null;
   $("f-cnpj").addEventListener("click", function () { F.cnpj = !F.cnpj; this.setAttribute("aria-pressed", String(F.cnpj)); limite = 10; desenhar(); });
   ["data", "vara", "setor", "porte", "uf"].forEach(function (k) { $("f-" + k).addEventListener("change", function (e) { F[k] = e.target.value; limite = 10; desenhar(); }); });
   $("exportar").addEventListener("click", exportar);
+  $("v-painel").addEventListener("click", function () { trocarVisao("painel"); });
+  $("v-lista").addEventListener("click", function () { trocarVisao("lista"); });
   $("b-planilha").addEventListener("click", function () { abrirPlanilha("planilha"); });
   $("b-pasta").addEventListener("click", function () { abrirPlanilha("pasta"); });
   document.querySelectorAll(".pilula button").forEach(function (b) { b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("lexsuite:idioma", lang); } catch (e) {} tudo();

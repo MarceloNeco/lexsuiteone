@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.11 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.12 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -44,7 +44,10 @@ ainda não foi calibrada neles.
 
 Uma só: `<pasta compartilhada>\LexSuiteONE\LexSuiteONE.xlsx`.
 
-- **Radar** (o robô escreve a cada rodada): a lista do dia, com as mesmas colunas da tela.
+- **Radar** (o robô escreve a cada rodada): a lista do dia, com as mesmas colunas da tela. A partir da 0.7.12, com
+  cabeçalho azul-marinho fixo, filtro em todas as colunas, valores em R$ e o valor da causa acima do mínimo em latão
+  claro; abre igual no Excel e no Google Planilhas.
+- **Como usar**: o passo a passo da planilha, em português e inglês.
 - **Preferências** e **Exclusões** (o escritório edita; o robô lê antes de cada rodada e preserva): valor mínimo,
   mínimo de ações da mesma empresa e janela de dias, capital que indica jurídico próprio, esconder ou não; e a lista de
   clientes e empresas que não devem aparecer (nome ou CNPJ e o motivo).
@@ -58,6 +61,9 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **Painel e Lista (0.7.12):** o Painel mostra os números do período (ações, acima do valor mínimo, valor somado, com
+  CNPJ, empresas, sem valor), ações por dia, faixas de valor, setores, empresas com mais ações, porte, tribunais e
+  estados. Os filtros valem para os dois; clicar numa barra abre a Lista já filtrada. A tela lembra a última aba.
 - **Uma linha por ação:** tribunal, empresa, setor, porte, cidade, vara e o valor da causa (ou "a conferir").
 - **Clique na linha, a ficha abre:** cada dado numa linha própria, sempre presente; o que falta aparece como
   "não informado no cadastro" (a Receita não tem) ou "não capturado" (está no PJe, atrás do captcha).
