@@ -29,11 +29,10 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
-- 08/Nov: **0.7.12 pronta no ramo `claude/lexsuiteone-judicial-product-22f871`** (itens 38 e 39, com o "pode" do
-  dono): Painel com números e gráficos ao lado da Lista; planilha com cabeçalho azul-marinho, filtro, R$, destaque e
-  aba "Como usar". 101 testes, revisor sem bloqueio. **Não foi à `main` de propósito**: a 0.7.11 ainda não foi
-  publicada, e a automação publica a versão que estiver na `main`. Vai à `main` logo depois que a Operação publicar a
-  0.7.11, ou antes, se o dono preferir publicar direto a 0.7.12 (que contém a 0.7.11).
+- 08/Nov: **0.7.12 na `main`, pronta para publicar** (itens 38 e 39): Painel com números e gráficos ao lado da Lista;
+  planilha com cabeçalho azul-marinho, filtro, R$, destaque e aba "Como usar". 101 testes, revisor sem bloqueio.
+  **Decisão do dono (08/Nov): pular a publicação da 0.7.11 e publicar direto a 0.7.12**, que contém tudo da 0.7.11.
+  Falta a Operação publicar com o "publica a versão 0.7.12" do dono.
 - 08/Nov: **0.7.10 publicada** (16:39 UTC) com o "pode" do dono: revisor aprovou, automação da `main` verde, versão no commit `dc609bc` (tag
   `v0.7.10`), publicada pela automação em `eef4306`. Conferido por fora: hash e assinatura do pacote batem com a chave que vai no download, a versão dentro dos dois
   pacotes é 0.7.10, nenhum arquivo proibido nem código de cliente real, o site serve `versao.json` e os downloads.
@@ -76,8 +75,8 @@ Arquitetura (pedido no quadro).
 - (nenhum)
 
 ### Feito (mais recente primeiro)
-- 08/Nov: **0.7.11 na `main`, pronta para publicar** com o "pode" do dono (itens 19 a 37 do feedback e ressalvas b e
-  c da revisão da 0.7.10). Falta a Operação publicar com o "publica a versão 0.7.11" do dono.
+- 08/Nov: 0.7.11 na `main` (itens 19 a 37 do feedback e ressalvas b e c da revisão da 0.7.10). Não será publicada
+  sozinha: sai dentro da 0.7.12.
 - 08/Nov: site publicado com o "pode" do dono: passo 3 "Dê acesso à SolverONE" cita a pasta "{{marca.nome}} - planilha"
   (PT e EN), como o e-mail de boas-vindas. Ressalva (a) da revisão da 0.7.10 concluída.
 - 08/Nov: **incidente**: a correção do passo 3 do site foi para a `main` sem o "pode" do dono (junto com um commit de
