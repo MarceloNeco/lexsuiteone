@@ -59,12 +59,13 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- Juntando o feedback do teste do dono (08/Nov) em `documentacao/FEEDBACK-TESTE-2026-11-08.md` (18 itens; o 12 é um defeito crítico: domingo e segunda não leem a sexta) para a 0.7.10.
-  Nada implementado: espera o "pode" do dono item a item. O item 4 (e-mail já preenchido vindo do e-mail de
-  boas-vindas) mexe na nuvem: precisa de desenho curto da Arquitetura.
+- 0.7.10 com o feedback do teste (`documentacao/FEEDBACK-TESTE-2026-11-08.md`), "pode" do dono para todos os itens
+  menos o 4 (nuvem, espera a Arquitetura). Ao terminar: "pronta para publicar" aqui; quem publica é a Operação.
 
 ### Arquivos em uso
-- (nenhum)
+- `robo/lexsuite/` (monitor, app, compartilhar, config, agendar), `robo/radar_modelo.html`, `robo/lexsuite_robo.py`,
+  `robo/testes/`, `paginas/manual.html` e os gerados (`docs/manual.html`, `robo/MANUAL-DO-ESCRITORIO.html`),
+  `robo/LEIA-ME.md`, `robo/ARQUITETURA.md`, seção Produto de `robo/PENDENCIAS.md`.
 
 ### Feito (mais recente primeiro)
 - 08/Nov: pedidos da Operação atendidos (texto do código no LEIA-ME do e-mail; nome do produto em PENDENCIAS e
