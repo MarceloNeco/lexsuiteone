@@ -1,8 +1,8 @@
 """Empacota uma versão para publicação. Usado pela automação do GitHub (publicar.yml); também roda à mão.
 
   python ferramentas/empacotar_ci.py preparar --versao 0.7.5 --saida publicar/0.7.5
-      Gera LEXSUITE-ONE-ROBO-0.7.5.zip (pacote de atualização, sem pasta de topo, só os arquivos permitidos) e
-      LexSuiteONE-robo.zip (download completo, com a pasta LexSuiteONE/ e chave_publica.txt). Imprime o SHA-256 do
+      Gera LexSuiteONE-RADAR-atualizacao-0.7.6.zip (pacote de atualização, sem pasta de topo, só os arquivos permitidos) e
+      LexSuiteONE-RADAR.zip (download completo, com a pasta LexSuiteONE/ e chave_publica.txt). Imprime o SHA-256 do
       pacote de atualização, que é o que o serviço de assinatura assina junto com a versão.
   python ferramentas/empacotar_ci.py manifesto --versao 0.7.5 --sha256 ... --assinatura ... --saida publicar/0.7.5
       Escreve versao.json no formato que o robô instalado lê (igual ao do publicar.py).
@@ -38,11 +38,11 @@ def preparar(versao, saida, pasta_robo):
         raise SystemExit(f"falta {ARQUIVO_CHAVE} na pasta do robô")
     os.makedirs(saida, exist_ok=True)
     lista = arquivos(pasta_robo)
-    atualizacao = os.path.join(saida, f"LEXSUITE-ONE-ROBO-{versao}.zip")
+    atualizacao = os.path.join(saida, f"LexSuiteONE-RADAR-atualizacao-{versao}.zip")
     with zipfile.ZipFile(atualizacao, "w", zipfile.ZIP_DEFLATED) as z:
         for a in lista:
             z.write(os.path.join(pasta_robo, *a.split("/")), a)
-    download = os.path.join(saida, "LexSuiteONE-robo.zip")
+    download = os.path.join(saida, "LexSuiteONE-RADAR.zip")
     with zipfile.ZipFile(download, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr(zipfile.ZipInfo("LexSuiteONE/"), b"")
         z.writestr(zipfile.ZipInfo("LexSuiteONE/lexsuite/"), b"")
@@ -55,7 +55,7 @@ def preparar(versao, saida, pasta_robo):
 
 
 def manifesto(versao, sha256, assinatura, saida, notas):
-    m = {"versao": versao, "arquivo": f"LEXSUITE-ONE-ROBO-{versao}.zip", "sha256": sha256.lower(),
+    m = {"versao": versao, "arquivo": f"LexSuiteONE-RADAR-atualizacao-{versao}.zip", "sha256": sha256.lower(),
          "assinatura": assinatura.lower(), "notas": notas or ""}
     caminho = os.path.join(saida, "versao.json")
     with open(caminho, "w", encoding="utf-8") as f:

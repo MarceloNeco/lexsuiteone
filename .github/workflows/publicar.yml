@@ -88,12 +88,12 @@ jobs:
           git checkout main
           if ! git rev-parse -q --verify "refs/tags/v$VERSAO" >/dev/null; then git tag -a "v$VERSAO" -m "LexSuiteONE $VERSAO"; git push origin "v$VERSAO"; fi
           mkdir -p docs/atualizacao docs/downloads releases
-          rm -f docs/atualizacao/LEXSUITE-ONE-ROBO-*.zip
+          rm -f docs/atualizacao/LEXSUITE-ONE-ROBO-*.zip docs/atualizacao/LexSuiteONE-RADAR-atualizacao-*.zip
           cp /tmp/publicar/versao.json docs/atualizacao/versao.json
-          cp "/tmp/publicar/LEXSUITE-ONE-ROBO-$VERSAO.zip" docs/atualizacao/
-          cp /tmp/publicar/LexSuiteONE-robo.zip docs/downloads/LexSuiteONE-robo.zip
-          cp /tmp/publicar/LexSuiteONE-robo.zip releases/LexSuiteONE-robo.zip
-          cp /tmp/publicar/LexSuiteONE-robo.zip "releases/LexSuiteONE-robo-$VERSAO.zip"
+          cp "/tmp/publicar/LexSuiteONE-RADAR-atualizacao-$VERSAO.zip" docs/atualizacao/
+          cp /tmp/publicar/LexSuiteONE-RADAR.zip docs/downloads/LexSuiteONE-RADAR.zip
+          cp /tmp/publicar/LexSuiteONE-RADAR.zip releases/LexSuiteONE-RADAR.zip
+          cp /tmp/publicar/LexSuiteONE-RADAR.zip "releases/LexSuiteONE-RADAR-$VERSAO.zip"
           # O instalador de um arquivo lê docs/atualizacao/instalar.txt: refazer junto com o manifesto novo.
           python ferramentas/marca.py
           git add docs/atualizacao docs/downloads releases docs robo/MANUAL-DO-ESCRITORIO.html

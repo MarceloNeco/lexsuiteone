@@ -51,7 +51,7 @@ class Instalador(unittest.TestCase):
 
     def test_nao_aceita_qualquer_variavel_do_site(self):
         self.assertNotRegex(self.texto, r'set "%%a=%%b"')
-        self.assertIn('findstr /r /x /c:"LEXSUITE-ONE-ROBO-', self.texto)
+        self.assertIn('findstr /r /x /c:"LexSuiteONE-RADAR-atualizacao-', self.texto)
 
     def test_gerados_em_dia(self):
         r = subprocess.run([sys.executable, os.path.join(RAIZ, "ferramentas", "marca.py"), "--conferir"],

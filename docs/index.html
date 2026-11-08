@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RADAR JUDICIAL · LexSuiteONE</title>
-<meta name="description" content="Lê o Diário de Justiça Eletrônico Nacional e lista, todo dia, as ações novas contra empresas, com a ficha de cada uma. Roda no computador do escritório.">
+<meta name="description" content="Acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) e relaciona os novos processos ajuizados em face de pessoas jurídicas, com a ficha cadastral de cada empresa. Roda no computador do escritório.">
 <meta property="og:title" content="RADAR JUDICIAL · LexSuiteONE">
 <meta property="og:description" content="As ações novas contra empresas, todo dia, com a ficha de cada uma.">
 <meta name="theme-color" content="#102038">
@@ -55,7 +55,7 @@ a { color: var(--latao-texto); text-decoration-thickness: 1px; text-underline-of
 .capa-grade { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.3fr); gap: 40px 48px; align-items: center; padding: 48px 0 64px; }
 .suite { display: block; font-size: 1.05rem; font-weight: 500; color: #c4cbd8; margin: 0 0 6px; }
 .suite b { color: var(--latao); font-weight: 600; }
-h1 { margin: 0 0 22px; font-size: clamp(3rem, 5.4vw, 4.4rem); line-height: .95; color: #fff; }
+h1 { margin: 0 0 22px; font-size: min(clamp(3rem, 5.4vw, 4.4rem), 15vw); line-height: .95; color: #fff; }
 h1 .marca-leve { display: block; font-size: .5em; font-weight: 400; letter-spacing: .08em; color: #e6e9f0; margin-bottom: .08em; }
 .capa p.lede { margin: 0 0 28px; color: #d6dbe6; font-size: 1.15rem; line-height: 1.55; max-width: 34ch; }
 .botao { display: inline-block; background: var(--latao); color: var(--noite); text-decoration: none; font-weight: 700; padding: 15px 28px; border-radius: 999px; }
@@ -103,11 +103,12 @@ h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 26
 .seguranca { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 48px; margin: 0; padding: 0 0 0 1.1em; color: var(--tinta-2); }
 .instalar .passos { margin-bottom: 26px; }
 .links-instalar { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; color: var(--tinta-3); }
-code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; overflow-wrap: anywhere; }
 .rodape { border-top: 1px solid var(--fio); margin-top: 8px; padding-top: 26px; padding-bottom: 40px; color: var(--tinta-3); font-size: .92rem; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
 /* Marca d'água do corpo claro (opcional): radar e rede de pontos em SVG embutido, parada, 5% de opacidade,
    atrás de duas seções. Liga com a classe com-marca-dagua no body. */
+.com-marca-dagua main { overflow-x: clip; }
 .com-marca-dagua section.dagua { position: relative; isolation: isolate; }
 .com-marca-dagua section.dagua::before { content: ""; position: absolute; z-index: -1; pointer-events: none; opacity: .05;
   width: 430px; height: 430px; right: -40px; top: 50%; transform: translateY(-50%);
@@ -122,14 +123,23 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   section { padding: 40px 0; }
 }
 @media (max-width: 560px) {
-  .passos.quatro { grid-template-columns: 1fr; }
-  .amostra th.rito, .amostra td.rito { display: none; }
-  .amostra th, .amostra td { padding: 10px 12px; }
+  .passos.quatro { grid-template-columns: minmax(0, 1fr); }
+  /* Tabela de exemplo vira um bloco por processo: tribunal e valor na primeira linha, empresa e rito embaixo. */
+  .amostra thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .amostra table, .amostra tbody { display: block; }
+  .amostra tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 6px; padding: 12px 14px; border-bottom: 1px solid var(--fio); }
+  .amostra tr:last-child { border-bottom: 0; }
+  .amostra td { display: block; padding: 0; border: 0; min-width: 0; }
+  .amostra td:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .amostra td.valor { grid-column: 2; grid-row: 1; }
+  .amostra td:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .amostra td.rito { grid-column: 1 / -1; grid-row: 3; color: var(--tinta-3); font-size: .85rem; white-space: normal; }
+  .amostra header, .amostra footer { padding: 10px 14px; }
   .topo nav a.manual-topo { display: none; }
 }
 </style>
 </head>
-<body>
+<body class="com-marca-dagua">
 <header class="capa">
   <div class="capa-fundo" aria-hidden="true"></div>
   <div class="miolo">
@@ -147,12 +157,12 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
       <div>
         <span class="suite">LexSuite<b>ONE</b></span>
         <h1 class="nome"><span class="marca-leve">RADAR</span> <strong>JUDIC<b>IA</b>L</strong></h1>
-        <p class="lede" data-t="lede">Lê todo dia o Diário de Justiça Eletrônico Nacional e lista as ações novas contra empresas, com a ficha de cada uma.</p>
+        <p class="lede" data-t="lede">Acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) e relaciona os novos processos ajuizados em face de pessoas jurídicas, com a ficha cadastral de cada empresa.</p>
         <a class="botao" href="downloads/Instalar-LexSuiteONE.zip" data-t="baixar">Baixar o RADAR JUDICIAL</a>
         <span class="requisito" data-t="req">Para Windows 10 ou 11, num computador no Brasil, com Google Drive (OneDrive sob consulta). O instalador tem 3&nbsp;KB e baixa o resto sozinho.</span>
       </div>
       <div class="amostra" role="region" aria-label="Exemplo da lista" data-t-aria="am_aria">
-        <header data-t="am_cab">Ações distribuídas em 06/Nov/2026 (exemplo, nomes fictícios)</header>
+        <header data-t="am_cab">Processos distribuídos em 06/Nov/2026 (exemplo, nomes fictícios)</header>
         <table>
           <thead><tr><th data-t="am_trib">Tribunal e vara</th><th data-t="am_emp">Empresa</th><th class="rito" data-t="am_rito">Rito</th><th class="valor" data-t="am_valor">Valor da causa</th></tr></thead>
           <tbody>
@@ -161,7 +171,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
             <tr><td><span class="trib">TRT-3</span><span class="sub" data-t="am_v3">1ª Vara do Trabalho de Contagem</span></td><td><b>Exemplo Comércio Ltda</b><span class="sub" data-t="am_c3">Comércio varejista, micro</span></td><td class="rito" data-t="am_r3">Ordinário</td><td class="valor" data-t="am_x3">R$ 92.750,00</td></tr>
           </tbody>
         </table>
-        <footer data-t="am_pe">Cada linha abre a ficha da empresa: CNPJ, porte, setor, cidade, telefone e e-mail do cadastro público. "A conferir": o Diário não trouxe o valor.</footer>
+        <footer data-t="am_pe">Cada linha abre a ficha da empresa: CNPJ, porte, setor, cidade, telefone e e-mail do cadastro público. "A conferir": o DJEN não informou o valor.</footer>
       </div>
     </div>
   </div>
@@ -171,8 +181,8 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section class="dagua">
   <h2 data-t="como">Como funciona</h2>
   <ol class="passos tres">
-    <li><b data-t="p1t">O Diário sai, o RADAR lê</b><span data-t="p1">Os tribunais enviam as publicações até o fim da tarde e o Diário as libera à noite. O RADAR lê às 19h40 e de novo às 7h10: de manhã, a lista está pronta.</span></li>
-    <li><b data-t="p2t">Cada ação ganha uma ficha</b><span data-t="p2">Rito e valor da causa, quando o Diário informa; se não, um clique abre a consulta do tribunal. Com o CNPJ, os dados públicos da empresa: porte, setor, cidade, telefone e e-mail.</span></li>
+    <li><b data-t="p1t">O DJEN publica, o RADAR lê</b><span data-t="p1">Os tribunais remetem as publicações até o fim da tarde e o DJEN as disponibiliza à noite. O RADAR faz a leitura às 19h40 e novamente às 7h10: pela manhã, a relação está pronta.</span></li>
+    <li><b data-t="p2t">Cada processo ganha uma ficha</b><span data-t="p2">Rito e valor da causa, quando o DJEN os informa; do contrário, um clique abre a consulta processual do tribunal. Com o CNPJ, os dados cadastrais públicos da empresa: porte, atividade, município, telefone e e-mail.</span></li>
     <li><b data-t="p3t">A planilha do escritório se atualiza</b><span data-t="p3">A lista aparece na tela do RADAR e numa planilha na pasta que o escritório escolher.</span></li>
   </ol>
 </section>
@@ -180,7 +190,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section>
   <h2 data-t="onde">Onde roda</h2>
   <div class="onde">
-    <div><b data-t="o1t">No computador do escritório</b><span data-t="o1">O computador precisa estar ligado às 19h40 e às 7h10, quando o RADAR lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.</span><br><i data-t="o1s">como funciona hoje</i></div>
+    <div><b data-t="o1t">No computador do escritório</b><span data-t="o1">O computador precisa estar ligado às 19h40 e às 7h10, quando o RADAR lê o DJEN. Se estiver desligado, a próxima leitura recupera os dias que faltaram.</span><br><i data-t="o1s">como funciona hoje</i></div>
     <div class="nuvem"><b data-t="o2t">Na nuvem</b><span data-t="o2">O RADAR roda sozinho, sem depender de um computador ligado. Fale com a gente: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>.</span><br><i data-t="o2s">sob consulta</i></div>
   </div>
 </section>
@@ -188,7 +198,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section>
   <h2 data-t="fr">Frentes</h2>
   <div class="frentes">
-    <div class="frente"><b data-t="f1">Trabalhista</b><span data-t="f1d">Ações novas nos 24 TRTs.</span><br><i class="pronta" data-t="f1s">disponível</i></div>
+    <div class="frente"><b data-t="f1">Trabalhista</b><span data-t="f1d">Novos processos nos 24 TRTs.</span><br><i class="pronta" data-t="f1s">disponível</i></div>
     <div class="frente"><b data-t="f2">Tributário</b><span data-t="f2d">Execuções fiscais novas contra empresas, na Justiça Federal e nas varas estaduais.</span><br><i data-t="f2s">em preparação</i></div>
     <div class="frente"><b data-t="f3">Cível e empresarial</b><span data-t="f3d">Execuções, cobranças e pedidos de falência contra empresas.</span><br><i data-t="f3s">em preparação</i></div>
   </div>
@@ -198,11 +208,11 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   <h2 data-t="seg">Segurança e privacidade</h2>
   <ul class="seguranca">
     <li data-t="s1">Não pede nem guarda senha, certificado ou login de ninguém.</li>
-    <li data-t="s2">Usa só fontes públicas: o Diário de Justiça e o cadastro da Receita. Não contorna captcha.</li>
+    <li data-t="s2">Utiliza apenas fontes públicas: o DJEN e o cadastro da Receita Federal. Não contorna captcha.</li>
     <li data-t="s3">Pessoas físicas não aparecem na lista nem na planilha.</li>
     <li data-t="s4">Os dados ficam com o escritório, no computador e na pasta que ele escolher. Nada vai para a SolverONE sem o escritório saber.</li>
     <li data-t="s5">Atualizações só instalam com assinatura digital conferida. O código é aberto, para quem quiser conferir.</li>
-    <li data-t="s6">O suporte só vê a pasta que o escritório compartilhar, nunca o computador.</li>
+    <li data-t="s6">A SolverONE acessa apenas a pasta que o escritório compartilhar, nunca o computador.</li>
   </ul>
 </section>
 
@@ -214,7 +224,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <li><b data-t="i3t">Dê acesso à SolverONE</b><span data-t="i3">No Google Drive, dê acesso de editor à pasta LexSuiteONE para <code>integracao@solverone.com.br</code>, a conta de sistemas da SolverONE.</span></li>
     <li><b data-t="i4t">Use o atalho</b><span data-t="i4">Daí em diante, abra pelo atalho RADAR JUDICIAL na área de trabalho.</span></li>
   </ol>
-  <p class="links-instalar"><a href="manual.html" data-t="manual">Ler o manual</a><span data-t="completo">Prefere instalar à mão? <a href="downloads/LexSuiteONE-robo.zip">Baixe o pacote completo</a> e descompacte.</span></p>
+  <p class="links-instalar"><a href="manual.html" data-t="manual">Ler o manual</a><span data-t="completo">Prefere instalar à mão? <a href="downloads/LexSuiteONE-RADAR.zip">Baixe o pacote completo</a> e descompacte.</span></p>
 </section>
 </main>
 
@@ -228,7 +238,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   // Textos em inglês. Só conteúdo fixo desta página (nada vem de fora), por isso vai como HTML.
   var EN = {
     manual_topo: "Manual",
-    lede: "Reads Brazil's National Electronic Court Gazette every day and lists the new lawsuits filed against companies, with a profile of each one.",
+    lede: "Monitors Brazil's National Electronic Court Gazette (DJEN) daily and lists new lawsuits filed against companies, with each company's registry profile.",
     baixar: "Download RADAR JUDICIAL",
     req: "For Windows 10 or 11, on a computer in Brazil, with Google Drive (OneDrive on request). The installer is 3 KB and downloads the rest by itself.",
     am_aria: "Sample list",
@@ -237,13 +247,13 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     am_c1: "Freight transport, small", am_c2: "Food manufacturing, medium", am_c3: "Retail, micro",
     am_r1: "Ordinary", am_r2: "Summary", am_r3: "Ordinary",
     am_x1: "R$ 186,400.00", am_x2: "to check", am_x3: "R$ 92,750.00",
-    am_pe: "Each row opens the company profile: tax ID, size, sector, city, phone and e-mail from the public registry. \"To check\": the gazette did not state the amount.",
+    am_pe: "Each row opens the company profile: tax ID, size, sector, city, phone and e-mail from the public registry. \"To check\": the DJEN did not state the amount.",
     como: "How it works",
-    p1t: "The gazette comes out, the RADAR reads it", p1: "Courts send their notices by late afternoon and the gazette releases them in the evening. The RADAR reads at 7:40 pm and again at 7:10 am: by morning, the list is ready.",
-    p2t: "Each lawsuit gets a profile", p2: "Procedure and amount claimed, when the gazette states them; if not, one click opens the court's lookup. With the tax ID, the company's public data: size, sector, city, phone and e-mail.",
+    p1t: "The DJEN publishes, the RADAR reads", p1: "Courts submit their notices by late afternoon and the DJEN releases them in the evening. The RADAR reads at 7:40 pm and again at 7:10 am: by morning, the list is ready.",
+    p2t: "Each lawsuit gets a profile", p2: "Procedure and amount claimed, when the DJEN states them; otherwise, one click opens the court's case lookup. With the tax ID, the company's public registry data: size, activity, city, phone and e-mail.",
     p3t: "The firm's spreadsheet updates itself", p3: "The list shows on the RADAR screen and in a spreadsheet in the folder the firm chooses.",
     onde: "Where it runs",
-    o1t: "On the firm's computer", o1: "The computer must be on at 7:40 pm and 7:10 am, when the RADAR reads the gazette. If it is off, the next reading catches up on the days missed.", o1s: "how it works today",
+    o1t: "On the firm's computer", o1: "The computer must be on at 7:40 pm and 7:10 am, when the RADAR reads the DJEN. If it is off, the next reading catches up on the days missed.", o1s: "how it works today",
     o2t: "In the cloud", o2: 'The RADAR runs on its own, without depending on a computer being on. Talk to us: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>.', o2s: "on request",
     fr: "Practice areas",
     f1: "Labor", f1d: "New lawsuits in the 24 regional labor courts.", f1s: "available",
@@ -251,18 +261,18 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     f3: "Civil and corporate", f3d: "Enforcement, collection and bankruptcy petitions against companies.", f3s: "in preparation",
     seg: "Security and privacy",
     s1: "It never asks for or stores anyone's password, certificate or login.",
-    s2: "Public sources only: the court gazette and the federal tax registry. It does not bypass captchas.",
+    s2: "Public sources only: the DJEN and the federal tax registry. It does not bypass captchas.",
     s3: "Individuals do not appear in the list or the spreadsheet.",
     s4: "Data stays with the firm, on its computer and in the folder it chooses. Nothing goes to SolverONE without the firm knowing.",
     s5: "Updates install only after the digital signature is checked. The code is open for anyone to review.",
-    s6: "Support sees only the folder the firm shares, never the computer.",
+    s6: "SolverONE accesses only the folder the firm shares, never the computer.",
     inst: "Install in four steps",
     i1t: "Install", i1: "Open the downloaded file and double-click <code>INSTALAR.bat</code>. If Windows asks for confirmation, click \"Run\" (or \"More info\" and \"Run anyway\").",
     i2t: "Set up", i2: "The screen opens by itself: enter the firm, who will use it and the spreadsheet folder. The first reading starts right after.",
     i3t: "Give SolverONE access", i3: "In Google Drive, give <code>integracao@solverone.com.br</code>, SolverONE's systems account, editor access to the LexSuiteONE folder.",
     i4t: "Use the shortcut", i4: "From then on, open it from the RADAR JUDICIAL shortcut on the desktop.",
     manual: "Read the manual",
-    completo: 'Prefer to install by hand? <a href="downloads/LexSuiteONE-robo.zip">Download the full package</a> and unzip it.',
+    completo: 'Prefer to install by hand? <a href="downloads/LexSuiteONE-RADAR.zip">Download the full package</a> and unzip it.',
     rod1: 'RADAR JUDICIAL is a LexSuiteONE product by <a href="https://solverone.com.br">SolverONE</a>.',
     rod2: 'Questions: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>' };
   var PT = {};

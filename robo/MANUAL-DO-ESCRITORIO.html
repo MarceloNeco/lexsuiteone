@@ -47,7 +47,7 @@ h1 { margin: 0 0 10px; font-size: clamp(2.2rem, 4.6vw, 3.2rem); line-height: 1.0
 .sumario a { display: block; padding: 6px 0 6px 14px; margin-left: -2px; border-left: 2px solid transparent; color: var(--tinta-2); text-decoration: none; }
 .sumario a:hover { color: var(--tinta); border-left-color: var(--latao); }
 
-article { max-width: 46rem; }
+article { max-width: 46rem; min-width: 0; }
 article > section { padding-bottom: 36px; margin-bottom: 36px; border-bottom: 1px solid var(--fio); }
 article > section:last-child { border-bottom: 0; }
 h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 14px; }
@@ -62,17 +62,17 @@ li { margin: 6px 0; }
 .dica { border-left: 3px solid var(--latao); background: var(--latao-fundo); color: var(--latao-texto); padding: 10px 16px; border-radius: 0 10px 10px 0; margin: 14px 0; }
 .tabela { overflow-x: auto; margin: 12px 0; }
 table { border-collapse: collapse; width: 100%; font-size: .97rem; }
-th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--fio); vertical-align: top; color: var(--tinta-2); }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--fio); vertical-align: top; color: var(--tinta-2); overflow-wrap: anywhere; }
 th { color: var(--tinta-3); font-weight: 600; font-size: .85rem; background: var(--papel-2); }
 td:first-child { color: var(--tinta); font-weight: 600; }
-code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; font-size: .92em; overflow-wrap: anywhere; }
 .ola { font-size: 1.15rem; color: var(--tinta); margin: 0 0 14px; }
 .faq p { margin-bottom: 16px; }
 .faq b { display: block; color: var(--tinta); }
 .rodape { border-top: 1px solid var(--fio); padding: 26px 0 40px; color: var(--tinta-3); font-size: .92rem; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
 @media (max-width: 860px) {
-  .corpo { grid-template-columns: 1fr; gap: 28px; padding-top: 28px; }
+  .corpo { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 28px; }
   .sumario { position: static; background: var(--papel-2); border-radius: 12px; padding: 14px 18px; }
 }
 @media print { .capa { background: #fff; color: #000; } .capa * { color: #000 !important; } .sumario { display: none; } .corpo { display: block; } }
@@ -112,7 +112,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <!--PARA_VOCE-->
 <section id="oque">
   <h2>O que o RADAR faz</h2>
-  <p>Todo dia, o Diário de Justiça Eletrônico Nacional (DJEN, do Conselho Nacional de Justiça) publica o que aconteceu nos tribunais. O RADAR lê esse Diário nos tribunais que o escritório escolheu e separa as <b>ações trabalhistas novas contra empresas</b>: uma linha por ação, com a empresa, a vara e o rito.</p>
+  <p>Todo dia, o Diário de Justiça Eletrônico Nacional (DJEN, do Conselho Nacional de Justiça) publica o que aconteceu nos tribunais. O RADAR lê o DJEN nos tribunais que o escritório escolheu e separa as <b>ações trabalhistas novas contra empresas</b>: uma linha por ação, com a empresa, a vara e o rito.</p>
   <p>Quando o Diário traz o CNPJ, a linha ganha a ficha da empresa, com os dados públicos da Receita Federal: atividade, porte, capital social, cidade, telefone e e-mail cadastrados, sócios e administradores.</p>
   <div class="caixa">
     <b>O que ele não faz</b>
@@ -151,7 +151,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <tr><td>Radar</td><td>o RADAR, a cada leitura</td><td>a lista, com as mesmas colunas da tela</td></tr>
     <tr><td>Preferências</td><td>o escritório</td><td>os ajustes da lista (abaixo)</td></tr>
     <tr><td>Exclusões</td><td>o escritório</td><td>clientes e empresas que não devem aparecer: nome ou CNPJ e o motivo</td></tr>
-    <tr><td>abas ocultas</td><td>o suporte</td><td>registro de cada leitura e avisos de funcionamento; não precisam ser abertas</td></tr>
+    <tr><td>abas ocultas</td><td>a SolverONE</td><td>registro de cada leitura e avisos de funcionamento; não precisam ser abertas</td></tr>
   </table></div>
   <h3>Os ajustes da aba Preferências</h3>
   <div class="tabela"><table>
@@ -178,11 +178,11 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   <div class="tabela"><table>
     <tr><th>Mensagem ou sintoma</th><th>O que significa</th><th>O que fazer</th></tr>
     <tr><td>"O Diário só responde a computadores no Brasil"</td><td>o computador está saindo para a internet por fora do país (VPN, rede da empresa)</td><td>desligue a VPN ou use a rede normal e tente de novo</td></tr>
-    <tr><td>"O robô está desligado pelo suporte" ou "A validade terminou"</td><td>o suporte pausou o RADAR</td><td>escreva para o suporte (endereço no fim da página)</td></tr>
+    <tr><td>"O robô está desligado pelo suporte" ou "A validade terminou"</td><td>a SolverONE pausou o RADAR</td><td>escreva para judicial@solverone.com.br</td></tr>
     <tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela LexSuiteONE e abra de novo</td></tr>
     <tr><td>"Planilha em uso ou ilegível"</td><td>alguém estava com a planilha aberta e travada, ou o Drive ainda sincronizava</td><td>nada; o RADAR grava na próxima leitura</td></tr>
     <tr><td>"Não consegui falar com o robô"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>abra de novo pelo atalho RADAR JUDICIAL</td></tr>
-    <tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda</td><td>tente mais tarde; se continuar, avise o suporte</td></tr>
+    <tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda</td><td>tente mais tarde; se continuar, escreva para judicial@solverone.com.br</td></tr>
     <tr><td>"Falta o Python"</td><td>falta uma peça que o RADAR baixa na instalação</td><td>baixe o instalador em judicial.solverone.com.br e rode de novo; nada do que já foi lido se perde</td></tr>
   </table></div>
 </section>
@@ -191,12 +191,12 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   <h2>Segurança e privacidade</h2>
   <div class="caixa"><ul>
     <li><b>Tudo roda no computador do escritório.</b> Não existe servidor da SolverONE recebendo os dados. A tela só responde a este computador e recusa pedidos vindos de qualquer site.</li>
-    <li><b>O que sai do computador:</b> pedidos de leitura ao Diário (do CNJ) e ao cadastro público da Receita, sempre por conexão segura; e a planilha, que vai para o Google Drive do próprio escritório e só é vista pelo suporte se o escritório der acesso.</li>
+    <li><b>O que sai do computador:</b> pedidos de leitura ao Diário (do CNJ) e ao cadastro público da Receita, sempre por conexão segura; e a planilha, que vai para o Google Drive do próprio escritório e só é vista pela SolverONE se o escritório der acesso.</li>
     <li><b>Nenhuma senha.</b> O RADAR não pede, não guarda e não usa senha, certificado digital ou chave de nenhum sistema. Captcha nunca é contornado.</li>
     <li><b>Pessoas físicas não aparecem.</b> Os contatos de empresa e os nomes de sócios e administradores vêm do cadastro público da Receita; a decisão de usar esses dados é do escritório e do seu compliance, dentro da LGPD.</li>
     <li><b>Guarda por tempo limitado.</b> O RADAR apaga sozinho o que tem mais de 365 dias.</li>
-    <li><b>Atualizações assinadas.</b> Uma versão nova só é instalada se a assinatura digital conferir. O computador do escritório nunca recebe comando de fora: o suporte só pode pausar, avisar ou publicar versão, pela planilha.</li>
-    <li><b>Limite honesto.</b> A pausa pelo suporte é uma cortesia de serviço, não uma trava: quem controla o computador controla o RADAR.</li>
+    <li><b>Atualizações assinadas.</b> Uma versão nova só é instalada se a assinatura digital conferir. O computador do escritório nunca recebe comando de fora: a SolverONE só pode pausar, avisar ou publicar versão, pela planilha.</li>
+    <li><b>Limite honesto.</b> A pausa pela SolverONE é uma cortesia de serviço, não uma trava: quem controla o computador controla o RADAR.</li>
   </ul></div>
   <p>Pedidos de titulares de dados são tratados pelo encarregado de dados do próprio escritório, que é o controlador. A SolverONE atua como prestadora de serviço e não acessa o computador do escritório.</p>
 </section>
@@ -214,7 +214,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 
 <footer class="miolo"><div class="rodape">
   <span>RADAR JUDICIAL é um produto da LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>. Manual da versão 0.7.6.</span>
-  <span>Suporte: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a></span>
+  <span>Dúvidas: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a></span>
 </div></footer>
 </body>
 </html>

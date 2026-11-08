@@ -9,7 +9,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   `LexSuiteONE.xlsx` no Drive do escritório, atualização assinada (chave só na nuvem), manual personalizado, revisão de
   segurança (risco baixo).
 - Site https://judicial.solverone.com.br **no ar** (GitHub Pages, pasta `docs/`, HTTPS forçado): página inicial PT/EN,
-  manual, 404, download do pacote em `/downloads/LexSuiteONE-robo.zip`, atualização assinada em `/atualizacao/`.
+  manual, 404, download do pacote em `/downloads/Instalar-LexSuiteONE.zip` (pacote completo em `/downloads/LexSuiteONE-RADAR.zip`), atualização assinada em `/atualizacao/`.
 - Domínio `solverone.com.br` no Cloudflare (DNS + DNSSEC), e-mail de recebimento pelo Cloudflare Email Routing
   (`contato@`, `judicial@`, `admin@`, `privacidade@`, `suporte@`, `ceo@` encaminham; `integracao@` responde sozinho que é
   caixa de sistemas). Envio pelo Resend (`nao-responda@`). Detalhes em `docs/DNS-SOLVERONE.md`.

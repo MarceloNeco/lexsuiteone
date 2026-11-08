@@ -50,7 +50,7 @@ for /f "usebackq tokens=1,* delims==" %%a in ("%T%\instalar.txt") do (
 if not defined arquivo goto manifesto_ruim
 if not defined sha256 goto manifesto_ruim
 if not defined nome set "nome=LexSuiteONE"
-echo(%arquivo%| findstr /r /x /c:"LEXSUITE-ONE-ROBO-[0-9][0-9.]*\.zip" >nul || goto manifesto_ruim
+echo(%arquivo%| findstr /r /x /c:"LexSuiteONE-RADAR-atualizacao-[0-9][0-9.]*\.zip" /c:"LEXSUITE-ONE-ROBO-[0-9][0-9.]*\.zip" >nul || goto manifesto_ruim
 
 echo  2 de 5  Baixando o %nome% %versao%...
 curl.exe -fL --retry 3 -o "%T%\pacote.zip" "%SITE%/atualizacao/%arquivo%" || goto sem_internet

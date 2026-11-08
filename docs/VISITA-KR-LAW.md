@@ -21,7 +21,7 @@ O que pode entrar na ficha e o que nunca entra:
 
 Links para abrir no celular, todos sem login: este arquivo; instalação em
 [`robo/ROTEIRO-INSTALACAO.md`](https://github.com/MarceloNeco/lexsuiteone/blob/main/robo/ROTEIRO-INSTALACAO.md);
-manual em https://judicial.solverone.com.br/manual.html; pacote em https://judicial.solverone.com.br/downloads/LexSuiteONE-robo.zip.
+manual em https://judicial.solverone.com.br/manual.html; pacote em https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip.
 
 **Antes, em casa (até quarta).** Ensaio da instalação no PC do dono com a segunda conta Google, `DIAGNOSTICO.bat` e uma
 rodada real; e-mail de boas-vindas já enviado ao Leandro (sessão de operação). Confirmar com o Leandro: certificado digital

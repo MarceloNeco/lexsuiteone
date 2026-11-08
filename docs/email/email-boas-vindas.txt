@@ -1,6 +1,6 @@
 Olá, {{nome}}. Seu {{marca.nome}} está pronto.
 
-Todo dia, o {{marca.nome}} lê o Diário de Justiça Eletrônico Nacional nos tribunais que você escolher e lista as ações novas contra empresas, com a ficha de cada uma. A lista aparece na tela do {{marca.curto}} e numa planilha na sua pasta do Google Drive.
+O {{marca.nome}} acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) nos tribunais que você escolher e relaciona os novos processos ajuizados em face de pessoas jurídicas, com a ficha cadastral de cada empresa. A relação aparece na tela do {{marca.curto}} e numa planilha na sua pasta do Google Drive.
 
 Baixar o {{marca.nome}} (instalador de 3 KB, Windows 10 ou 11):
 https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip
@@ -16,7 +16,7 @@ Como instalar, em quatro passos
 3. No Google Drive, dê acesso de editor à pasta LexSuiteONE para {{drive}}, a conta de sistemas da SolverONE. É o único passo à mão: por ela acompanhamos o {{marca.curto}} sem acessar o seu computador.
 4. Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho.
 
-Onde roda: no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o {{marca.curto}} lê o Diário. Se estiver desligado, a próxima leitura recupera os dias que faltaram.
+Onde roda: no seu computador, que precisa estar ligado às 19h40 e às 7h10, quando o {{marca.curto}} lê o DJEN. Se estiver desligado, a próxima leitura recupera os dias que faltaram.
 
 Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual do escritório".
 

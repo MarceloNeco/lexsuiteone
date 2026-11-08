@@ -112,7 +112,7 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
   fora agora), planilha e avisos passam a ler o `marca.json` que vem no pacote e, ao procurar atualização, o de
   `judicial.solverone.com.br`, dentro do manifesto assinado. Assim o nome muda nas instalações sem versão nova.
   Junto, trocar "robô" por "o RADAR" (o `curto`) nos textos do manual.
-- **Não mudam sozinhos:** nomes de arquivos e pastas (`LexSuiteONE-robo.zip`, `C:\LexSuiteONE`, `LexSuiteONE.xlsx`),
+- **Não mudam sozinhos:** nomes de arquivos e pastas (`LexSuiteONE-RADAR.zip`, `C:\LexSuiteONE`, `LexSuiteONE.xlsx`),
   porque trocar quebraria instalações. Se um dia for preciso, é uma migração à parte.
 - **Futuro:** ajuste "Nome do produto" no RootifyONE que grava o mesmo `marca.json` (pelo GitHub), sem editar arquivo.
 
