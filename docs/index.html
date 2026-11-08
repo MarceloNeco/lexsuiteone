@@ -121,20 +121,24 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   width: 430px; height: 430px; right: -40px; top: 50%; transform: translateY(-50%);
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600' fill='none' stroke='%23102038' stroke-width='1.5'%3E%3Ccircle cx='300' cy='300' r='60'/%3E%3Ccircle cx='300' cy='300' r='120'/%3E%3Ccircle cx='300' cy='300' r='180'/%3E%3Ccircle cx='300' cy='300' r='240'/%3E%3Ccircle cx='300' cy='300' r='290'/%3E%3Cpath d='M70 120L250 170'/%3E%3Cpath d='M250 170L205 60'/%3E%3Cpath d='M250 170L470 90'/%3E%3Cpath d='M470 90L560 250'/%3E%3Cpath d='M560 250L420 380'/%3E%3Cpath d='M420 380L520 470'/%3E%3Cpath d='M420 380L330 560'/%3E%3Cpath d='M330 560L110 430'/%3E%3Cpath d='M110 430L40 300'/%3E%3Cpath d='M40 300L70 120'/%3E%3Cpath d='M250 170L420 380'/%3E%3Cpath d='M205 60L470 90'/%3E%3Cg fill='%23102038' stroke='none'%3E%3Ccircle cx='70' cy='120' r='5'/%3E%3Ccircle cx='205' cy='60' r='5'/%3E%3Ccircle cx='470' cy='90' r='5'/%3E%3Ccircle cx='560' cy='250' r='5'/%3E%3Ccircle cx='520' cy='470' r='5'/%3E%3Ccircle cx='330' cy='560' r='5'/%3E%3Ccircle cx='110' cy='430' r='5'/%3E%3Ccircle cx='40' cy='300' r='5'/%3E%3Ccircle cx='250' cy='170' r='5'/%3E%3Ccircle cx='420' cy='380' r='5'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain; }
 @media (max-width: 860px) { .com-marca-dagua section.dagua::before { width: 360px; height: 360px; right: -120px; } }
-/* Carrossel do "Como funciona": desliza da direita para a esquerda, gira sozinho (pausa ao passar o mouse, ao focar
-   pelo teclado e pelo botão), setas, pontos, teclado, arrastar com o mouse e passar com o dedo para ir e voltar.
+/* Carrossel do "Como funciona": sempre em movimento, devagar para a esquerda (mostra que há mais ao lado); depois do
+   tempo de leitura passa rápido ao próximo. Pausa ao passar o mouse, ao focar pelo teclado e pelo botão ⏸/▶. O dedo
+   (ou o mouse) manda: ao encostar, para e o slide segue o dedo; ao soltar, vai ao próximo, ao anterior ou volta.
    Sem movimento para quem pede menos movimento. As imagens entram em docs/img/como-1.webp ... como-4.webp e são ligadas na lista IMAGENS_COMO do script; sem elas, o quadro fica azul. */
 .como-cab { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
 .como-cab h2 { margin: 0; }
 .carrossel-ctrl { display: flex; align-items: center; gap: 8px; }
 .seta { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--fio); background: var(--papel); color: var(--tinta); font: 600 1.4rem/1 var(--f); cursor: pointer; display: grid; place-items: center; }
 .seta:hover { border-color: var(--latao); }
-.seta.pausa { font-size: .8rem; letter-spacing: -2px; }
-.seta.pausa[aria-pressed="true"] { background: var(--noite); color: #fff; border-color: var(--noite); }
+.seta.pausa svg { width: 16px; height: 16px; fill: currentColor; }
+.seta.pausa .ic-tocar, .seta.pausa[aria-pressed="true"] .ic-pausa { display: none; }
+.seta.pausa[aria-pressed="true"] .ic-tocar { display: block; margin-left: 2px; }
+.seta.pausa[aria-pressed="true"] { border-color: var(--latao); color: var(--latao-texto); }
 .pos { min-width: 3.2rem; text-align: center; color: var(--tinta-3); font-variant-numeric: tabular-nums; }
 /* pan-y: o dedo de lado é do carrossel; para cima e para baixo continua rolando a página. */
 .carrossel { overflow: hidden; border-radius: 16px; touch-action: pan-y; }
-.trilho { list-style: none; margin: 0; padding: 0; display: flex; transition: transform .7s cubic-bezier(.4,0,.2,1); }
+.trilho { list-style: none; margin: 0; padding: 0; display: flex; will-change: transform; }
+.carrossel.arrastando { cursor: grabbing; user-select: none; -webkit-user-select: none; }
 .slide { flex: 0 0 100%; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); min-height: 22rem; background: var(--papel-2); }
 .slide-img { position: relative; background: var(--noite) center / cover no-repeat; overflow: hidden; }
 .slide-img::before { content: ""; position: absolute; inset: -30%; background: repeating-radial-gradient(circle at 70% 40%, rgba(212,171,106,.22) 0 1px, transparent 1px 46px); }
@@ -159,7 +163,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   .slide-img span { font-size: 5rem; }
   .slide-txt { padding: 22px 20px 26px; }
 }
-@media (prefers-reduced-motion: reduce) { .trilho { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .trilho { transition: none !important; } }
 @media (max-width: 960px) { .passos.quatro { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 860px) {
   .capa-grade { grid-template-columns: 1fr; padding: 28px 0 40px; }
@@ -244,7 +248,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
       <button type="button" class="seta" id="c-ant" data-t-aria="c_ant" aria-label="Anterior">&#8249;</button>
       <span class="pos" id="c-pos" aria-live="polite">1 / 4</span>
       <button type="button" class="seta" id="c-prox" data-t-aria="c_prox" aria-label="Próximo">&#8250;</button>
-      <button type="button" class="seta pausa" id="c-pausa" data-t-aria="c_pausa" aria-label="Pausar" aria-pressed="false">&#10074;&#10074;</button>
+      <button type="button" class="seta pausa" id="c-pausa" data-t-aria="c_pausa" aria-label="Pausar" aria-pressed="false"><svg class="ic-pausa" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1"/><rect x="9.5" y="2" width="3.5" height="12" rx="1"/></svg><svg class="ic-tocar" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.2v11.6c0 .8.9 1.3 1.6.9l9-5.8c.6-.4.6-1.4 0-1.8l-9-5.8C4.9.9 4 1.4 4 2.2z"/></svg></button>
     </div>
   </div>
   <div class="carrossel" id="carrossel" aria-roledescription="carrossel" data-t-aria="como_aria" aria-label="Como funciona, em quatro passos">
@@ -401,51 +405,80 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   // Carrossel do "Como funciona"
   var IMAGENS_COMO = [1, 2, 3, 4]; // passos com imagem em docs/img/como-N.webp
   (function () {
-    var trilho = document.getElementById("trilho"), slides = trilho.children, n = slides.length, atual = 0, timer = null,
-        pausadoPeloBotao = false, emCima = false, emFoco = false, menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var trilho = document.getElementById("trilho"), slides = trilho.children, n = slides.length, atual = 0,
+        caixa = document.getElementById("carrossel"), bp = document.getElementById("c-pausa"), pontos = document.getElementById("c-pontos"),
+        pausadoPeloBotao = false, emCima = false, emFoco = false, segurando = false, tDeriva = null, tProximo = null,
+        menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Tempos: TEMPO por passo (dá para ler a frase), DERIVA em px andados devagar nesse tempo, RAPIDO a troca de passo.
+    var TEMPO = 9000, DERIVA = 28, RAPIDO = 700, PASSAGEM = "transform " + RAPIDO + "ms cubic-bezier(.4,0,.2,1)";
     IMAGENS_COMO.forEach(function (k) { var im = slides[k - 1] && slides[k - 1].querySelector(".slide-img"); if (im) { im.style.backgroundImage = "url(" + im.getAttribute("data-imagem") + ")"; im.classList.add("com-imagem"); } });
-    var pontos = document.getElementById("c-pontos");
     for (var i = 0; i < n; i++) { (function (k) { var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", String(k + 1)); b.addEventListener("click", function () { ir(k); }); pontos.appendChild(b); })(i); }
-    function ir(k) {
-      atual = (k + n) % n; trilho.style.transform = "translateX(" + (-100 * atual) + "%)";
-      for (var j = 0; j < n; j++) { slides[j].setAttribute("aria-hidden", String(j !== atual)); pontos.children[j].setAttribute("aria-current", String(j === atual)); slides[j].querySelectorAll("a, button").forEach(function (x) { x.tabIndex = j === atual ? 0 : -1; }); }
-      document.getElementById("c-pos").textContent = (atual + 1) + " / " + n; reiniciar();
+    function largura() { return caixa.clientWidth || 1; }
+    function posicao(k, d) { return -(k * largura() + (d || 0)); }
+    function por(x, transicao) { trilho.style.transition = menosMovimento ? "none" : (transicao || "none"); trilho.style.transform = "translateX(" + x + "px)"; }
+    function agora() {  // onde o trilho está neste instante (mesmo no meio de um movimento)
+      var m = getComputedStyle(trilho).transform;
+      if (!m || m === "none") return posicao(atual);
+      try { return new (window.DOMMatrix || window.WebKitCSSMatrix)(m).m41; } catch (x) { return posicao(atual); }
     }
-    function reiniciar() { clearInterval(timer); timer = null; if (!pausadoPeloBotao && !emCima && !emFoco && !menosMovimento) timer = setInterval(function () { ir(atual + 1); }, 6500); }
+    function parado() { return pausadoPeloBotao || emCima || emFoco || segurando || menosMovimento; }
+    function limpar() { clearTimeout(tDeriva); clearTimeout(tProximo); tDeriva = tProximo = null; }
+    function ciclo() {  // anda devagar e, no fim do tempo, passa ao próximo
+      limpar(); if (parado()) return;
+      tDeriva = setTimeout(function () {
+        trilho.style.transition = "none"; void getComputedStyle(trilho).transform;  // ponto de partida calculado (primeira vez, ao abrir)
+        por(posicao(atual, DERIVA), "transform " + (TEMPO - RAPIDO - 100) + "ms linear");
+      }, RAPIDO + 50);
+      tProximo = setTimeout(function () { ir(atual + 1); }, TEMPO);
+    }
+    function retomar() { if (parado()) { limpar(); if (!segurando) por(posicao(atual), "transform .4s ease-out"); } else ciclo(); }
+    function ir(k) {
+      atual = (k + n) % n; por(posicao(atual), PASSAGEM);
+      for (var j = 0; j < n; j++) { slides[j].setAttribute("aria-hidden", String(j !== atual)); pontos.children[j].setAttribute("aria-current", String(j === atual)); slides[j].querySelectorAll("a, button").forEach(function (x) { x.tabIndex = j === atual ? 0 : -1; }); }
+      document.getElementById("c-pos").textContent = (atual + 1) + " / " + n; ciclo();
+    }
     document.getElementById("c-ant").addEventListener("click", function () { ir(atual - 1); });
     document.getElementById("c-prox").addEventListener("click", function () { ir(atual + 1); });
-    var bp = document.getElementById("c-pausa");
-    bp.addEventListener("click", function () { pausadoPeloBotao = !pausadoPeloBotao; bp.setAttribute("aria-pressed", String(pausadoPeloBotao)); rotularPausa(); reiniciar(); });
-    var caixa = document.getElementById("carrossel");
+    bp.addEventListener("click", function () { pausadoPeloBotao = !pausadoPeloBotao; bp.setAttribute("aria-pressed", String(pausadoPeloBotao)); rotularPausa(); retomar(); });
     // Pausa só com o mouse em cima (no celular o toque simula "mouse em cima" e não sai mais) ou com o foco do teclado.
-    caixa.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") { emCima = true; reiniciar(); } });
-    caixa.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { emCima = false; reiniciar(); } });
+    caixa.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") { emCima = true; retomar(); } });
+    caixa.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { emCima = false; retomar(); } });
     function focoDeTeclado(alvo) { try { return alvo.matches(":focus-visible"); } catch (x) { return true; } }
-    caixa.addEventListener("focusin", function (e) { emFoco = focoDeTeclado(e.target); reiniciar(); });
-    caixa.addEventListener("focusout", function () { emFoco = false; reiniciar(); });
+    caixa.addEventListener("focusin", function (e) { emFoco = focoDeTeclado(e.target); retomar(); });
+    caixa.addEventListener("focusout", function () { emFoco = false; retomar(); });
     caixa.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") ir(atual - 1); if (e.key === "ArrowRight") ir(atual + 1); });
-    // Arrastar com o mouse (computador): eventos de ponteiro.
-    var x0 = null;
-    caixa.addEventListener("pointerdown", function (e) { x0 = e.pointerType === "touch" ? null : e.clientX; });
-    caixa.addEventListener("pointerup", function (e) { if (x0 !== null && Math.abs(e.clientX - x0) > 40) ir(atual + (e.clientX < x0 ? 1 : -1)); x0 = null; });
-    caixa.addEventListener("pointercancel", function () { x0 = null; });
-    // Dedo (iPhone e Android): eventos de toque. Quando o gesto é de lado, segura a página (só então); de cima para
-    // baixo, a página rola normalmente. Passou de 40 px para o lado: próximo ou anterior.
-    var t0 = null, deLado = false;
-    caixa.addEventListener("touchstart", function (e) { t0 = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; deLado = false; }, { passive: true });
+    // Arrastar: o slide segue o dedo (ou o mouse). Ao soltar: passou de 1/5 da largura, ou foi um gesto rápido,
+    // vai ao próximo ou ao anterior (do último volta ao primeiro, como as setas); senão volta ao lugar.
+    var g = null;  // gesto em andamento: { x, y, base, t, deLado }
+    function comecar(x, y) { segurando = true; limpar(); var base = agora(); por(base); g = { x: x, y: y, base: base, t: Date.now(), deLado: false }; }
+    function mover(x) {
+      var dx = x - g.x;
+      if ((atual === 0 && dx > 0) || (atual === n - 1 && dx < 0)) dx = dx * 0.35;  // nas pontas, resiste
+      por(g.base + dx);
+    }
+    function soltar(x) {
+      var dx = x - g.x, rapido = Math.abs(dx) > 30 && Math.abs(dx) / Math.max(1, Date.now() - g.t) > 0.4, deLado = g.deLado;
+      g = null; segurando = false;
+      if (deLado && (Math.abs(dx) > largura() / 5 || rapido)) ir(atual + (dx < 0 ? 1 : -1)); else ir(atual);
+    }
+    // Dedo (iPhone e Android): eventos de toque. Gesto de lado segura a página (só então); de cima para baixo, rola.
+    caixa.addEventListener("touchstart", function (e) { if (e.touches.length !== 1) { if (g) soltar(g.x); return; } comecar(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
     caixa.addEventListener("touchmove", function (e) {
-      if (!t0) return;
-      var dx = e.touches[0].clientX - t0.x, dy = e.touches[0].clientY - t0.y;
-      if (!deLado && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) deLado = true;
-      if (deLado && e.cancelable) e.preventDefault();
+      if (!g) return;
+      var dx = e.touches[0].clientX - g.x, dy = e.touches[0].clientY - g.y;
+      if (!g.deLado && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) g.deLado = true;
+      if (g.deLado) { if (e.cancelable) e.preventDefault(); mover(e.touches[0].clientX); }
     }, { passive: false });
-    caixa.addEventListener("touchend", function (e) {
-      if (!t0) return;
-      var dx = e.changedTouches[0].clientX - t0.x, dy = e.changedTouches[0].clientY - t0.y;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) ir(atual + (dx < 0 ? 1 : -1));
-      t0 = null;
-    });
-    caixa.addEventListener("touchcancel", function () { t0 = null; });
+    caixa.addEventListener("touchend", function (e) { if (g) soltar(e.changedTouches[0].clientX); });
+    caixa.addEventListener("touchcancel", function () { if (g) soltar(g.x); });
+    // Mouse (computador): eventos de ponteiro, só para mouse e caneta.
+    caixa.addEventListener("pointerdown", function (e) { if (e.pointerType === "touch" || e.button !== 0) return; comecar(e.clientX, e.clientY); g.deLado = true; caixa.classList.add("arrastando"); try { caixa.setPointerCapture(e.pointerId); } catch (x) {} });
+    caixa.addEventListener("pointermove", function (e) { if (g && e.pointerType !== "touch") mover(e.clientX); });
+    function fimPonteiro(e) { if (g && e.pointerType !== "touch") { caixa.classList.remove("arrastando"); soltar(e.type === "pointercancel" ? g.x : e.clientX); } }
+    caixa.addEventListener("pointerup", fimPonteiro);
+    caixa.addEventListener("pointercancel", fimPonteiro);
+    var ultimaLargura = largura();  // no celular a barra de endereço some ao rolar e dispara "resize": só a largura conta
+    window.addEventListener("resize", function () { if (g || largura() === ultimaLargura) return; ultimaLargura = largura(); por(posicao(atual)); ciclo(); });
     window.rotularPausa = function () { var en = document.documentElement.lang === "en"; bp.setAttribute("aria-label", pausadoPeloBotao ? (en ? "Play" : "Tocar") : (en ? "Pause" : "Pausar")); };
     ir(0);
   })();
