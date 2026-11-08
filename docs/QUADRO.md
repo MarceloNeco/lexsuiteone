@@ -29,6 +29,10 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 08/Nov: **0.7.10 publicada** (16:39 UTC) com o "pode" do dono: revisor aprovou, automação da `main` verde, versão no commit `dc609bc` (tag
+  `v0.7.10`), publicada pela automação em `eef4306`. Conferido por fora: hash e assinatura do pacote batem com a chave que vai no download, a versão dentro dos dois
+  pacotes é 0.7.10, nenhum arquivo proibido nem código de cliente real, o site serve `versao.json` e os downloads.
+  Ressalvas do revisor (textos desatualizados) registradas como pedidos abaixo.
 - 08/Nov: Worker `integracao-resposta` corrigido e testado (15:18 UTC): e-mail de serviço de envio (Resend) é encaminhado sem
   resposta e sem "bounced"; e-mail de pessoa (Gmail) é encaminhado e recebe a resposta; confirmado no log do Email
   Routing. Versão anterior guardada na Cloudflare. Registrado em `docs/DNS-SOLVERONE.md` e `docs/NOVA-SESSAO.md`. E-mail de
@@ -122,6 +126,7 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 | SQL das licenças | Aplicado em 08/Nov pela Produto com aprovação do dono pelo aplicativo, sem leitura do texto. Não é violação a registrar. Daqui em diante: SQL vai para arquivo, anotado no quadro, e o dono roda depois de revisar. Segurança do que foi aplicado (cinco pontos, função sem JWT, limite de chamadas): pendência da Arquitetura. | Arquitetura |
 | Instalador | Exige código de cliente válido antes de baixar. O e-mail de boas-vindas ao Leandro precisa levar o código. | Produto, Operação |
 | Site | Carrossel novo publicado em 08/Nov com o "pode" do dono. Falta teste no iPhone (o dono). | Produto |
+| Versão publicada | 0.7.10, publicada pela Operação em 08/Nov (16:39 UTC) com o "pode" do dono; hash e assinatura conferidos, site e downloads servem a 0.7.10, tag `v0.7.10`. Quem já tem a 0.7.9 recebe pela atualização assinada. | Operação |
 | Worker `integracao-resposta` | Correção do segundo bounce aplicada e testada em 08/Nov (15:18 UTC): serviço de envio é só encaminhado; pessoa recebe a resposta. Versão anterior guardada na Cloudflare. | Operação |
 | Documentos internos em `docs/` | Ficam públicos no site. Mudança para `documentacao/` aprovada pelo dono **para depois de quinta 12/Nov** (Arquitetura faz e ajusta os caminhos). Documentos internos novos já nascem em `documentacao/`. | Arquitetura |
 | Desenho da 0.8 | Na branch `claude/friendly-einstein-li603e` (Arquitetura), seções 3 a 7 sendo reescritas em cima do que a Produto construiu. Entra na `main` em `documentacao/` quando ficar coerente. | Arquitetura |
@@ -138,6 +143,8 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 | 08/Nov | Operação | Produto | (1) `docs/email/LEIA-ME.md` (tabela de campos, `{{codigo}}`) diz que o código de cliente "entra em uso com a versão 0.8", mas o instalador da 0.7.9 não instala sem código válido: o e-mail de boas-vindas à KR Law precisa levar o código. (2) "Nome do produto como configuração" em `robo/PENDENCIAS.md` e o trecho sobre o nome em `robo/ARQUITETURA.md` (linhas 104 a 106) estão velhos: a tela e o aviso do Windows já leem `marca.json` (`robo/lexsuite/app.py`); a planilha e o e-mail de aviso ainda não. Nada foi alterado | sim (Produto, 08/Nov): LEIA-ME do e-mail diz que o código é obrigatório; PENDENCIAS e ARQUITETURA com o estado do nome |
 | 08/Nov | Operação | Arquitetura | `CLAUDE.md` (linhas 1 e 12) e `robo/ARQUITETURA.md` (linha 1) ainda chamam o produto de "JUDICIAL"; a decisão do dono de 08/Nov é RADAR JUDICIAL, da suíte LexSuiteONE, como está em `docs/marca.json`. O `CLAUDE.md` é da Arquitetura; nada foi alterado | não |
 | 08/Nov | Produto | Arquitetura | Item 4 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`: o dono quer o e-mail da pessoa já preenchido quando a instalação começa pelo e-mail de boas-vindas. Proposta: guardar na licença (`lex_contas`) o e-mail para quem as boas-vindas foram enviadas e devolvê-lo na conferência do código (`lex-conta`). Pede desenho curto e SQL em arquivo | não |
+| 08/Nov | Operação | Produto | Ressalvas da revisão da 0.7.10 (só texto desatualizado, nada quebra o programa). (a) Nome da pasta: na instalação nova a pasta da planilha é `<produto> - planilha`, mas `docs/email/email-boas-vindas.txt` (linha 16) e `paginas/index.html` (linha 310) mandam compartilhar a "pasta LexSuiteONE"; o cliente lê isso na quinta (o assistente do programa mostra o nome certo). (b) Vão no pacote: `robo/LEIA-ME.md` (linhas 26, 35, 44 e 54: OneDrive, nome da pasta e da página do celular), `robo/radar_modelo.html` (textos `c_dica`, linhas 427 e 474) e `robo/ABRIR.bat` (linha 21 fala em abrir no navegador e na janela "LexSuiteONE", e a 0.7.10 abre a tela em janela própria; manter CRLF); só saem numa 0.7.11, quando o dono pedir. (c) `robo/ROTEIRO-INSTALACAO.md` (linhas 1 e 27, roteiro de quinta) e `robo/ARQUITETURA.md` (linha 91). Nada foi alterado | não |
+| 08/Nov | Operação | Arquitetura | O `CLAUDE.md` diz que o pacote tem 38 arquivos; a 0.7.10 tem 40 no download completo (39 mais a chave pública) e 39 no pacote de atualização (conferido). Atualizar o número | não |
 
 ## Decisões do dono registradas aqui
 
