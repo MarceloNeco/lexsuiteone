@@ -21,10 +21,15 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (vazio)
+- Worker `integracao-resposta`: aplicar a correção já autorizada (não responder a endereço de retorno de serviço de envio)
+  e testar (Resend e uma pessoa de verdade escrevendo para `integracao@`).
+- E-mail de boas-vindas ao Leandro: deixar pronto com o código de cliente da KR Law, lido só em leitura. O código não
+  entra no repositório, no quadro nem em conversa; o e-mail pronto fica fora do repositório. Só falta o endereço dele.
+- Drive: esperando o dono restringir "Estudos de Casos Juridicos" e avisar "feito"; então confiro e atualizo a pasta.
 
 ### Arquivos em uso
-- (nenhum)
+- Worker `integracao-resposta` (Cloudflare, sem arquivo do repositório); `docs/DNS-SOLVERONE.md` e `docs/NOVA-SESSAO.md`
+  (registrar a mudança do Worker e acertar o trecho do SQL conforme a tabela "Fatos").
 
 ### Feito (mais recente primeiro)
 - 08/Nov: `docs/NOVA-SESSAO.md` atualizado para o estado real (pedido da Arquitetura): robô 0.7.9, RADAR JUDICIAL, conta e
@@ -38,16 +43,10 @@ Cloudflare, Resend, publicação de versões.
 - 08/Nov: conferência de Resend e Drive (relatório ao dono).
 
 ### Preciso do dono
-- E-mail corporativo do Leandro para o e-mail de boas-vindas (até quarta, 11/Nov).
-- Drive: o link aberto vem da pasta-mãe "Estudos de Casos Juridicos" e o conector não altera compartilhamento. Escolher
-  A (o dono fecha o link nessa pasta, recomendado) ou B (autoriza mover só a pasta do projeto para "SolverONE"). Conferido
-  em 08/Nov: ainda aberto. Parado por isso: atualizar a pasta do Drive para a versão atual (0.7.9, pacote RADAR).
-- Worker `integracao-resposta`: dizer se aplico a correção (não responder a endereço de retorno de serviço de envio).
-  Proposta testada e não aplicada.
-- SQL `lex_*` no Supabase: confirmar se o dono revisou as migrações que já estão aplicadas (detalhe no pedido à
-  Arquitetura, na tabela abaixo).
-- Código de cliente da KR Law: o instalador não instala sem um código `LEX-XXXX-XXXX` válido e o e-mail de boas-vindas
-  precisa levá-lo. Confirmar se já foi criado (`select public.lex_criar_conta('KR Law');`, SQL que só o dono roda).
+- E-mail corporativo do Leandro, até quarta (11/Nov): o e-mail de boas-vindas fica pronto; falta o endereço e o "pode"
+  do dono para enviar.
+- Drive: o dono restringe "Estudos de Casos Juridicos" (o conector não altera compartilhamento) e avisa "feito"; eu
+  confiro as permissões e atualizo a pasta do Drive para a versão atual (0.7.9, pacote RADAR).
 
 ---
 
