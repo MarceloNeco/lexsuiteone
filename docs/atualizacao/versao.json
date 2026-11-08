@@ -1,7 +1,7 @@
 {
- "versao": "0.7.5",
- "arquivo": "LEXSUITE-ONE-ROBO-0.7.5.zip",
- "sha256": "f789faff1c0904c5a1f3100447bdecc5fc77ccd5398226d06ac763b2c3fa1d9e",
- "assinatura": "ab1cadf2e64e5dbf6626c5e9ca90efc805288b2e0bc443d986c4342e08c0e381e99cdb34d3214b2f8669a84e04248837ba45f403793162dbd8f85238a2e4230d",
- "notas": "Versão 0.7.5 publicada pela automação"
+ "versao": "0.7.6",
+ "arquivo": "LexSuiteONE-RADAR-atualizacao-0.7.6.zip",
+ "sha256": "fda2a4409c9bdbf5ff030d062f6c785830c84c3ddf98570ba815cdc468a3b835",
+ "assinatura": "191a167cae28810e6252fe786e3b99d9fc9b84d37c9a87e45a3c224b54b54ef6c94704ce3f3bf0241550f92129454b69b975a9d845aa322062fa7e1f73b87205",
+ "notas": "Versão 0.7.6 publicada pela automação"
 }
