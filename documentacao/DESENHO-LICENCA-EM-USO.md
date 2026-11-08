@@ -109,23 +109,14 @@ Ordem: SQL (dono roda) → `lex-conta` v4 → programa e instalador (Produto, ve
 
 ## Estado em 08/Nov à noite e o que só o dono faz
 
-Aplicado pela Arquitetura pelo conector: SQL de correção (completo) e SQL da licença em uso (tudo menos o bloco 4a);
-`lex-conta` v4 publicada e testada. Faltam dois passos que exigem login do dono:
+Tudo aplicado pela Arquitetura pelo conector: SQL de correção, SQL da licença em uso (inclusive a regra de tipos de
+`lex_eventos`, confirmada pelo dono no computador), SQL da modalidade; `lex-conta` v4 publicada e testada; RootifyONE
+0.18.15 publicado. Falta um passo que exige login do dono:
 
-1. **Regra de tipos de `lex_eventos`** (bloco 4a; o conector pede confirmação para DROP e o celular não mostra o botão).
-   supabase.com → projeto `solverone-app` → SQL Editor → New query → colar as 5 linhas abaixo → Run.
-   ```sql
-   alter table public.lex_eventos drop constraint if exists lex_eventos_tipo_check;
-   alter table public.lex_eventos add constraint lex_eventos_tipo_check check (tipo in (
-     'cadastro', 'troca_de_pessoa', 'alteracao_de_dados', 'acesso',
-     'pessoa_aguardando', 'pessoa_aprovada', 'pessoa_recusada', 'computador_esquecido', 'computador_voltou',
-     'aviso_enviado', 'aviso_falhou', 'licenca_alterada', 'limite'));
-   ```
-   Enquanto não rodar: o histórico não grava os tipos novos (aprovação, esquecer, avisos). Nada mais é afetado.
-2. **Chave do Resend nos Secrets.** resend.com → API Keys → Create API Key → nome `supabase-lex-conta`, permissão
+1. **Chave do Resend nos Secrets.** resend.com → API Keys → Create API Key → nome `supabase-lex-conta`, permissão
    **Sending access**, domínio `solverone.com.br` → Create → copiar. Supabase → Edge Functions → Secrets → Add new
    secret → Name `RESEND_API_KEY`, Value = a chave → Save. Até lá os avisos ficam em `lex_avisos` como "pendente".
-3. Na ficha da KR Law no RootifyONE (quando a tela nova chegar): preencher e-mail de boas-vindas e domínio do escritório.
+2. Na ficha da KR Law no RootifyONE (Clientes → Licenças do RADAR): preencher e-mail de boas-vindas e domínio do escritório.
 
 ## Plano de teste
 

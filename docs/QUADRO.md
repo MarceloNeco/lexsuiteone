@@ -129,8 +129,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   Teste `teste/licencas.js` com 26 verificações verdes. Item F (modalidade) aplicado no banco (SQL `2026-11-08c`) e na
   `lex-conta` (publicada de novo, devolve `modalidade`).
 - 08/Nov (noite): **nuvem aplicada pela Arquitetura, pelo conector** (decisão do dono): SQL de correção de segurança
-  (tudo "true") e SQL da licença em uso, menos um bloco (regra de tipos de `lex_eventos`, tem DROP e o conector exige
-  confirmação que o celular não mostra; fica para o dono colar ou para um computador). `lex-conta` **v4 publicada** e
+  (tudo "true") e SQL da licença em uso, e, em seguida, a regra de tipos de `lex_eventos` (confirmada pelo dono no computador). `lex-conta` **v4 publicada** e
   testada: código inválido, desconhecido, registro de erro com limpeza de caminho e e-mail, limite 429 na 7ª chamada,
   GET recusado. Enquanto a regra de eventos não rodar, os tipos novos de evento não gravam (a função ignora o erro;
   nada mais é afetado). Migrações registradas como 20261108230001 e 20261108230002.
@@ -152,10 +151,8 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- **Dois passos que só você faz** (passo a passo em `documentacao/DESENHO-LICENCA-EM-USO.md`, "Passo a passo do dono"):
-  (1) colar no SQL Editor do Supabase as 5 linhas da regra de `lex_eventos` (bloco 4a do SQL 2026-11-08b), ou aprovar a
-  caixinha do conector num computador; (2) criar no Resend uma chave só de envio e colar nos Secrets do Supabase como
-  `RESEND_API_KEY`. Sem (2) os avisos ficam na caixa de saída como "pendente"; nada quebra.
+- Chave do Resend nos Secrets do Supabase como `RESEND_API_KEY` (passo a passo em `documentacao/DESENHO-LICENCA-EM-USO.md`);
+  sem ela os avisos ficam "pendente", nada quebra. Na ficha da KR Law: e-mail de boas-vindas e domínio.
 - Termo de tratamento de dados com a KR Law (bloqueante para a 0.8 entrar no ar).
 
 ---
