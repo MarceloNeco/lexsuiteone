@@ -76,6 +76,22 @@ de `verificar` traz `email_sugerido` **só enquanto a licença não tem nenhuma 
 Depois disso, nunca mais. Risco: quem tem o código vê esse e-mail; mas quem tem o código recebeu o mesmo e-mail de
 boas-vindas, onde os dois estão juntos, então não há vazamento novo. A tela mostra o e-mail preenchido e editável.
 
+## F. Tipo de acesso do cliente (modalidade) e busca por domínio (pedido do dono, 08/Nov)
+
+- `lex_contas.modalidade`: **Instalado** (o programa roda no computador do escritório; é o de hoje, também chamado
+  on-premises) ou **Nuvem** (o RADAR roda em servidor da SolverONE e o escritório só acessa; ainda não é vendido, fica no
+  cadastro como oportunidade). Todas as licenças de hoje nascem `instalado`. `modalidade_desde` guarda a data da troca.
+- Migração: feita na ficha do RootifyONE (`admin_lex_salvar` com `modalidade`); gera evento `licenca_alterada`
+  "modalidade: instalado -> nuvem" em `lex_eventos`, com a hora; quem mudou fica em `acesso_log`, como toda ação da equipe.
+- Programa instalado numa licença marcada `nuvem`: a resposta da `lex-conta` traz `modalidade`; a tela mostra "Esta
+  licença passou para a versão na nuvem; este computador continua lendo até a SolverONE desligar" e **continua lendo**.
+  Desligar de verdade continua sendo `ativo = false`. Nada bloqueia sozinho.
+- Busca por domínio no RootifyONE: `admin_lex_listar` devolve `dominios` (da licença) e `dominios_pessoas` (domínios
+  dos e-mails cadastrados, **sem os e-mails**); a tela filtra por qualquer um dos dois. Busca por escritório, código e
+  CNPJ/CPF já existe (Produto, 0.18.14).
+- SQL: `nuvem/supabase/2026-11-08c-lex-modalidade.sql` (aplicado pelo conector em 08/Nov à noite). Função: `lex-conta`
+  v4 passa a devolver `modalidade`.
+
 ## O que muda em cada arquivo e quem faz
 
 | Arquivo | Mudança | Quem |
@@ -85,7 +101,7 @@ boas-vindas, onde os dois estão juntos, então não há vazamento novo. A tela 
 | `robo/lexsuite/conta.py`, `config.py` | id em `%LOCALAPPDATA%\LexSuiteONE\instalacao.json` com cópia na pasta; `nome_pc`; ler `em_uso`, `email_sugerido`, `aprovacao` da resposta | Produto |
 | `robo/radar_modelo.html`, `app.py` | passo 1: aviso "código em uso" com confirmação; e-mail preenchido; selo "aguardando confirmação" / "e-mail não aceito" | Produto |
 | `instalador/INSTALAR.bat` | ler o id do `%LOCALAPPDATA%` antes de gerar; gravar lá também | Produto |
-| `rootify-one/rootify-lex.js` | ficha: pessoas aguardando (Aprovar/Recusar), computadores inativos e Esquecer, domínios, e-mail de boas-vindas, avisos enviados/falhos | Arquitetura (PR) |
+| `rootify-one/rootify-lex.js` | ficha: pessoas aguardando (Aprovar/Recusar), computadores inativos e Esquecer, domínios, e-mail de boas-vindas, avisos enviados/falhos, modalidade (Instalado/Nuvem) com histórico; lista com busca por domínio | Arquitetura (PR) |
 | Texto dos avisos; chave do Resend nos Secrets do Supabase (passo a passo para o dono) | | Operação (texto), dono (chave) |
 | `robo/testes/` | id estável, confirmação, aprovação, programa antigo contra resposta nova | Produto |
 
