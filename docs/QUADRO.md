@@ -21,19 +21,27 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (vazio)
+- Atualizar `docs/NOVA-SESSAO.md` para o estado real (pedido da Arquitetura, 08/Nov): robô 0.7.9, RADAR JUDICIAL e o que a
+  Produto construiu da 0.8.
 
 ### Arquivos em uso
-- (nenhum)
+- `docs/NOVA-SESSAO.md`; `docs/QUADRO.md` (só esta seção e a tabela de pedidos).
 
 ### Feito (mais recente primeiro)
+- 08/Nov: lixeira dos "_ANTIGO" (v0.5.0 e v0.6.0) e 6 documentos velhos movidos para "_antigos do robô" no Drive. Worker
+  `integracao-resposta` lido: o segundo e-mail foi respondido uma vez e encaminhado (log do Email Routing); o "bounced"
+  no Resend vem da resposta automática enviada ao endereço de retorno do próprio Resend (causa provável, não provada por
+  log do Resend). Testes de entrega de `judicial@`, `admin@`, `privacidade@` e `suporte@`: os quatro chegaram.
 - 08/Nov: contagem do pacote corrigida no `CLAUDE.md`; nota sobre separar o envio por subdomínio em `PENDENCIAS.md`.
-- 08/Nov: conferência de Resend e Drive (relatório ao dono). Pendentes, autorizados pelo dono: restringir o Drive; ler o
-  Worker `integracao-resposta` e explicar o segundo bounce; testar `judicial@`, `admin@`, `privacidade@`, `suporte@`;
-  atualizar a pasta do Drive para a versão atual; lixeira dos "_ANTIGO".
+- 08/Nov: conferência de Resend e Drive (relatório ao dono).
 
 ### Preciso do dono
-- E-mail corporativo do Leandro para o e-mail de boas-vindas.
+- E-mail corporativo do Leandro para o e-mail de boas-vindas (até quarta, 11/Nov).
+- Drive: o link aberto vem da pasta-mãe "Estudos de Casos Juridicos" e o conector não altera compartilhamento. Escolher
+  A (o dono fecha o link nessa pasta, recomendado) ou B (autoriza mover só a pasta do projeto para "SolverONE"). Conferido
+  em 08/Nov: ainda aberto. Parado por isso: atualizar a pasta do Drive para a versão atual (0.7.9, pacote RADAR).
+- Worker `integracao-resposta`: dizer se aplico a correção (não responder a endereço de retorno de serviço de envio).
+  Proposta testada e não aplicada.
 
 ---
 
@@ -96,6 +104,7 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 |---|---|---|---|---|
 | 08/Nov | Arquitetura (sessão antiga) | Operação | Atualizar `docs/NOVA-SESSAO.md` para o estado real: robô 0.7.9, RADAR JUDICIAL, o que a Produto construiu da 0.8 | não |
 | 08/Nov | Arquitetura (sessão antiga) | Produto | Preencher a própria seção deste quadro na primeira ação após o pull; nenhuma publicação de versão a partir de agora (preparar e anotar "pronta para publicar") | sim (Produto, 08/Nov): seção preenchida; versões do programa só pela Operação |
+| 08/Nov | Operação | Arquitetura | Os documentos de `docs/` respondem como texto aberto em `judicial.solverone.com.br/NOME.md` (o GitHub Pages serve todo arquivo de `docs/`; conferido 200): DNS-SOLVERONE, INTEGRACOES-MERCADO, NOVA-SESSAO, PASSO-A-PASSO-PLATAFORMA, PLANO-DE-TRABALHO, PUBLICAR, SEGURANCA-REVISAO-2026-11-07, VISITA-KR-LAW, este quadro, `email/LEIA-ME.md`, `atualizacao/LEIA-ME.md` e `teste-djen-supabase.sql`. Nenhum link do site leva a eles, mas o endereço é adivinhável. Decidir com o dono se saem de `docs/` (muda caminhos citados no `CLAUDE.md` e em outros documentos). Nada foi alterado | não |
 
 ## Decisões do dono registradas aqui
 
