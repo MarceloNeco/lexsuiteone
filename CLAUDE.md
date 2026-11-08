@@ -37,7 +37,10 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
   reescrever); ele será refeito na migração para a organização `solverone`.
 - Respostas ao dono em até 10 linhas, salvo quando ele pedir detalhe. Relatório longo vai para um arquivo ou para o
   quadro, com o caminho na resposta. O dono não é desenvolvedor e não processa relatórios extensos.
-- SQL do Supabase nunca roda sem revisão: o dono roda depois de revisar.
+- SQL do Supabase nunca roda sem revisão. **Decisão do dono (08/Nov, noite): quem revisa e aplica é a sessão de
+  Arquitetura, pelo conector**, com o arquivo datado em `nuvem/supabase/` como registro (com o "desfazer" ao lado) e a
+  anotação no quadro. O dono não lê SQL; ele só entra onde precisa de login ou de segredo (chaves, painéis) ou num
+  teste que a sessão não consegue fazer. A Arquitetura avisa antes de aplicar o que mexe em dado de cliente.
 - As páginas do produto não fazem nenhum pedido externo: sem fontes de fora, sem rastreador, sem script de terceiros.
 
 ## Trabalho em três sessões (coordenação)

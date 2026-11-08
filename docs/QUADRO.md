@@ -185,6 +185,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 | Data | Decisão |
 |---|---|
+| 08/Nov (noite) | **A Arquitetura decide e aplica** (SQL pelo conector, função da nuvem, PR no RootifyONE), sem pedir ao dono para revisar texto técnico. O dono só faz o que exige login ou segredo (chave do Resend nos Secrets) e os testes que a sessão não consegue fazer (Windows, instalador). Vale sobre a frase "o dono roda depois de revisar". |
 | 08/Nov | Nome do produto: RADAR JUDICIAL (suíte LexSuiteONE). Fica como configuração em `docs/marca.json`; pode mudar depois sem mexer em código. |
 | 08/Nov | Quadro no repositório em vez de uma quarta conversa orquestradora. Dono por arquivo. Só a Operação publica versão. |
 | 08/Nov | Subagentes com modelo por tarefa (`.claude/agents/`): a conversa principal decide e edita; leitura pesada, testes e pesquisa vão para o subagente. |
