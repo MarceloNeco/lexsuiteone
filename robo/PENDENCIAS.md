@@ -96,6 +96,9 @@ O que falta para a ficha de canais:
 - **Tela com a identidade do site**: cabeçalho azul, ícone e nome de `marca.json` (que agora vai no pacote), fonte
   embutida, fundo branco; boas-vindas formais e só até concluir; "Abrir a planilha"; "Baixar a lista (.csv)"; só os
   24 TRTs (TJs e TRFs voltam com as frentes deles).
+- A "mira" do escritório (passo 1 do site, decisão do dono 08/Nov): em poucos cliques, frente, tribunais, valor mínimo e
+  exclusões (existem); faltam **filtro por porte** (a Receita traz microempresa, pequena, média ou grande) e **horário
+  ajustável das leituras** (hoje fixo em 19h40 e 7h10). Ambos mexem no pacote.
 - Falta depois: confirmação do e-mail por código (Resend); tela de licenças no RootifyONE; termos de uso e aviso de
   privacidade do cadastro; trocar a licença MIT antes de vender em escala (decisão do dono).
 
