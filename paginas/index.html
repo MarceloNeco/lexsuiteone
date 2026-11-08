@@ -129,6 +129,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 .slide { flex: 0 0 100%; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); min-height: 300px; background: var(--papel-2); }
 .slide-img { position: relative; background: var(--noite) center / cover no-repeat; overflow: hidden; }
 .slide-img::before { content: ""; position: absolute; inset: -30%; background: repeating-radial-gradient(circle at 70% 40%, rgba(212,171,106,.22) 0 1px, transparent 1px 46px); }
+.slide-img.com-imagem { background-color: #0e1c2c; background-size: contain; }
 .slide-img.com-imagem::before, .slide-img.com-imagem span { display: none; }
 .slide-img span { position: absolute; left: 28px; bottom: 6px; font-weight: 800; font-size: 7rem; line-height: 1; color: rgba(212,171,106,.85); }
 .slide-txt { padding: 36px 40px; display: flex; flex-direction: column; justify-content: center; gap: 8px; color: var(--tinta-2); }
@@ -143,6 +144,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 @media (max-width: 860px) {
   .slide { grid-template-columns: 1fr; min-height: 0; }
   .slide-img { min-height: 150px; }
+  .slide-img.com-imagem { min-height: 210px; }
   .slide-img span { font-size: 5rem; }
   .slide-txt { padding: 22px 20px 26px; }
 }
@@ -355,7 +357,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   document.getElementById("b-pt").addEventListener("click", function () { aplicar("pt"); });
   document.getElementById("b-en").addEventListener("click", function () { aplicar("en"); });
   // Carrossel do "Como funciona"
-  var IMAGENS_COMO = []; // ex.: [1, 2, 3, 4] quando docs/img/como-N.webp existirem
+  var IMAGENS_COMO = [1]; // passos com imagem em docs/img/como-N.webp
   (function () {
     var trilho = document.getElementById("trilho"), slides = trilho.children, n = slides.length, atual = 0, timer = null,
         pausadoPeloBotao = false, emCima = false, menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
