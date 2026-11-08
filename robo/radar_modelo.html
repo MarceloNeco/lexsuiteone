@@ -18,9 +18,9 @@
   --f: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; --noite: #102038; --latao-claro: #d4ab6a;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; --barra: #5b8fd6; --trilho: #222b40; }
+  :root:not([data-theme="light"]) { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; --barra: #5b8fd6; --trilho: #222b40; --papel-2: #1d2436; }
 }
-:root[data-theme="dark"] { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; --barra: #5b8fd6; --trilho: #222b40; }
+:root[data-theme="dark"] { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; --barra: #5b8fd6; --trilho: #222b40; --papel-2: #1d2436; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 15px/1.5 var(--f); -webkit-font-smoothing: antialiased; }
@@ -600,7 +600,9 @@ window.LEXSUITE_RADAR = null;
   function titulo(s) { return String(s || "").toLowerCase().replace(/(^|\s|\.|-|\/)([a-zà-ú])/g, function (m, a, b) { return a + b.toUpperCase(); }).replace(/\bS\.a\./g, "S.A.").replace(/\bLtda\b/g, "Ltda").replace(/\b(De|Da|Do|Das|Dos|E)\b/g, function (m) { return m.toLowerCase(); }); }
   function guardado(chave) { try { return localStorage.getItem("lexsuite:radar:" + chave); } catch (e) { return null; } }
   function guardar(chave, v) { try { if (v == null || v === "") localStorage.removeItem("lexsuite:radar:" + chave); else localStorage.setItem("lexsuite:radar:" + chave, String(v)); } catch (e) {} }
-  function valorDe(i) { var m = guardado("valor:" + i.id); if (m) return { v: Number(m), fonte: "manual" }; if (i.valor_causa) return { v: Number(i.valor_causa), fonte: i.valor_fonte || "djen" }; return { v: null, fonte: "" }; }
+  var cacheValor = null;  // durante o desenho do painel, cada item é lido do navegador uma vez só
+  function valorDe(i) { if (cacheValor && cacheValor[i.id]) return cacheValor[i.id]; var r = valorDe_(i); if (cacheValor) cacheValor[i.id] = r; return r; }
+  function valorDe_(i) { var m = guardado("valor:" + i.id); if (m) return { v: Number(m), fonte: "manual" }; if (i.valor_causa) return { v: Number(i.valor_causa), fonte: i.valor_fonte || "djen" }; return { v: null, fonte: "" }; }
   function statusDe(i) { return guardado("status:" + i.id) || "novo"; }
   function minimo() { return Number(D.valor_minimo || 100000); }
 
@@ -1268,6 +1270,9 @@ window.LEXSUITE_RADAR = null;
     g.appendChild(c); return g;
   }
   function desenharPainel(itens) {
+    cacheValor = {}; try { desenharPainel_(itens); } finally { cacheValor = null; }
+  }
+  function desenharPainel_(itens) {
     var alvo = $("graficos"); alvo.textContent = "";
     if (!itens.length) { alvo.appendChild(el("div", "vazio-lista", (D.itens || []).length ? t("g_vazio") : (MODO === "app" ? t("vazio_app") : t("vazio_arq")))); return; }
     var min = minimo(), comCnpj = itens.filter(function (i) { return i.empresa && i.empresa.cnpj; }).length;
@@ -1289,7 +1294,7 @@ window.LEXSUITE_RADAR = null;
     var faixas = fx.map(function (f, ix) {
       var n = itens.filter(function (i) { var v = valorDe(i).v; return ix === 0 ? v == null : (v != null && v >= f[0] && v < f[1]); }).length;
       var r = ix === 0 ? t("fx_sem") : ix === 1 ? t("fx_ate", { a: reaisCurto(f[1]) }) : f[1] === Infinity ? t("fx_acima", { a: reaisCurto(f[0]) }) : t("fx_entre", { a: reaisCurto(f[0]), b: reaisCurto(f[1]) });
-      return { k: "", r: r, n: n, ouro: ix > 0 && f[0] >= min, apagada: ix === 0 };
+      return { k: "", r: r, n: n, ouro: ix > 0 && f[1] > min, apagada: ix === 0 };
     });
     grade.appendChild(grafBarras(t("g_faixas"), faixas, { max: 6, nota: t("k_acima", { min: reaisCurto(min) }) + ": " + num(acima) }));
     grade.appendChild(grafBarras(t("g_setores"), contar(itens, function (i) { return i.setor ? [i.setor, i.setor] : ["", t("sem_setor")]; }), { campo: "setor", comValor: true }));
