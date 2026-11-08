@@ -49,7 +49,7 @@ header { display: contents; }
 @media (max-width: 640px) { .painel-cab { flex-direction: column; align-items: stretch; } .painel-arte { flex-basis: auto; height: 150px; } }
 .nota-registro { font-size: .82rem; color: var(--tinta-3); margin: 4px 0 0; }
 /* Assistente (0.7.10): opções explicadas, código só para ler, função com dica, frentes, destino da planilha. */
-.wiz input[readonly] { background: var(--papel-2); color: var(--tinta-2); cursor: default; }
+.wiz input[readonly], .campo-conf input[readonly] { background: var(--papel-2); color: var(--tinta-2); cursor: default; }
 .w-opcoes { display: grid; gap: 8px; margin: 6px 0 10px; }
 .w-opcao { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--linha-2); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
 .w-opcao:has(input:checked) { border-color: var(--latao); background: var(--latao-wash); }
@@ -85,6 +85,16 @@ header { display: contents; }
 .agenda-info { margin: 0; font-size: .86rem; color: var(--tinta-2); }
 .agenda-info.alerta { color: var(--latao-texto); background: var(--latao-wash); border-radius: 8px; padding: 8px 12px; }
 .estado .proxima { color: var(--tinta-3); }
+/* 0.7.11: versão ao lado do nome, Configuração na engrenagem do alto, faixa de versão nova. */
+.versao-topo { color: #9aa6ba; font-size: .78rem; font-weight: 500; margin-left: 4px; }
+.engrenagem { display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,.3); background: transparent; color: #d6dbe6; border-radius: 999px; padding: 6px 12px; min-height: 36px; font-size: .88rem; cursor: pointer; }
+.engrenagem[aria-expanded="true"], .engrenagem:hover { background: #fff; color: var(--noite); }
+.banner.nova { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; background: var(--latao-wash); color: var(--latao-texto); border-color: var(--latao); }
+#config .nota-registro#c-mira { margin-bottom: 10px; }
+.progresso { height: 8px; border-radius: 999px; background: var(--linha); overflow: hidden; margin: 2px 0 6px; max-width: 520px; }
+.progresso i { display: block; height: 100%; background: var(--latao); border-radius: 999px; transition: width .6s ease; }
+.atalhos-fim { display: inline-flex; gap: 16px; margin-left: 10px; }
+.atalhos-fim .btn-txt { color: var(--latao-texto); font-weight: 600; font-size: .86rem; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 /* Perfil: iniciais no alto; painel com um lápis por dado (nome, e-mail, função, escritório). */
 .perfil-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--latao-claro); background: transparent; color: #fff; font-weight: 800; font-size: .86rem; letter-spacing: .03em; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
 .perfil-btn:hover, .perfil-btn[aria-expanded="true"] { background: var(--latao-claro); color: var(--noite); }
@@ -232,12 +242,13 @@ footer a:hover { text-decoration: underline; }
 <div class="faixa"><div class="miolo">
 <header>
   <div class="topo">
-    <span class="marca"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%230f1d33%22/%3E%0A  %3Cg transform=%22rotate%28-40 30 26%29%22 fill=%22%23d4ab6a%22%3E%0A    %3Crect x=%2217%22 y=%2217%22 width=%2226%22 height=%2212%22 rx=%223%22/%3E%0A    %3Crect x=%2214%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2241%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2228%22 y=%2229%22 width=%224.5%22 height=%2224%22 rx=%222%22/%3E%0A  %3C/g%3E%0A  %3Crect x=%2231%22 y=%2247%22 width=%2222%22 height=%226%22 rx=%222%22 fill=%22%23d4ab6a%22/%3E%0A%3C/svg%3E" alt=""><span id="marca"></span></span>
+    <span class="marca"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%230f1d33%22/%3E%0A  %3Cg transform=%22rotate%28-40 30 26%29%22 fill=%22%23d4ab6a%22%3E%0A    %3Crect x=%2217%22 y=%2217%22 width=%2226%22 height=%2212%22 rx=%223%22/%3E%0A    %3Crect x=%2214%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2241%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2228%22 y=%2229%22 width=%224.5%22 height=%2224%22 rx=%222%22/%3E%0A  %3C/g%3E%0A  %3Crect x=%2231%22 y=%2247%22 width=%2222%22 height=%226%22 rx=%222%22 fill=%22%23d4ab6a%22/%3E%0A%3C/svg%3E" alt=""><span id="marca"></span><small class="versao-topo" id="versao-topo"></small></span>
     <div class="direita">
       <span class="escritorio-nome" id="escritorio-nome"></span>
       <button type="button" class="planilha-btn" id="b-planilha" hidden></button>
       <button type="button" class="link" id="b-pasta" hidden></button>
       <a id="link-manual-topo" href="/manual" target="_blank" rel="noopener" hidden></a>
+      <button type="button" class="engrenagem" id="b-config" aria-expanded="false" aria-controls="config" hidden><span aria-hidden="true">⚙</span> <span id="b-config-txt"></span></button>
       <div class="pilula" role="group" aria-label="Idioma / Language"><button type="button" id="b-pt" data-lang="pt">PT</button><button type="button" id="b-en" data-lang="en">EN</button></div>
       <button type="button" class="perfil-btn" id="b-perfil" aria-expanded="false" aria-controls="perfil" hidden></button>
     </div>
@@ -308,16 +319,17 @@ footer a:hover { text-decoration: underline; }
   <div class="barra">
     <button type="button" class="seletor" id="b-trib" aria-expanded="false"><span id="b-trib-txt"></span><i>▼</i></button>
     <label class="campo"><span id="l-periodo"></span><select id="periodo"></select></label>
-    <button type="button" class="seletor" id="b-config" aria-expanded="false"><span id="b-config-txt"></span><i>▼</i></button>
     <span class="espaco"></span>
     <button type="button" class="primario" id="b-rodar"></button>
   </div>
+  <div class="banner nova" id="b-nova" hidden><span id="b-nova-txt"></span> <button type="button" class="primario" id="b-nova-btn"></button></div>
   <div class="banner" id="banner" hidden></div>
   <div class="estado" id="estado"></div>
   <div class="painel" id="config" hidden>
-    <div class="painel-cab"><div class="painel-arte" aria-hidden="true"></div><p><b id="c-mira-t"></b><span id="c-mira"></span></p></div>
     <h3 id="c-titulo"></h3>
+    <p class="nota-registro" id="c-mira"></p>
     <label class="campo-conf"><span id="c-l-codigo"></span><input id="c-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
+    <p class="nota-registro" id="c-codigo-nota" hidden></p>
     <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta"></select></label>
     <label class="campo-conf" id="c-outra-wrap" hidden><span id="c-l-outra"></span><input id="c-outra" type="text" spellcheck="false"></label>
     <div class="conf-acoes"><button type="button" class="chip" id="c-escolher" hidden></button><button type="button" class="chip" id="c-testar"></button><button type="button" class="chip" id="c-criar" hidden></button><span id="c-teste-txt"></span></div>
@@ -398,16 +410,16 @@ window.LEXSUITE_RADAR = null;
   var APP = null, sel = {}, aba = "regiao", ramo = "Trabalhista", vigia = null, limite = 150, periodo = 1, configVista = false, wPasso = 1, wPastas = [];
   var T = {
     pt: { marca: "RADAR JUDICIAL",
-      mira_t: "A mira do escritório", mira_trib: "Escolha os tribunais que o {c} acompanha. A frente trabalhista cobre os 24 TRTs.", mira_conf: "O código de cliente, onde fica a planilha e as leituras automáticas. Quem usa este computador fica no perfil (as iniciais no alto da tela).", cod: "Código de cliente", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Número", doc_tipo: "Documento do escritório", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (sem CNPJ)", tipo_pass: "Passaporte (não brasileiro)", doc_invalido: "Número inválido: confira os dígitos.", doc_ok: "Número válido.", cnpj_achado: "Encontrado na Receita: {s}. O nome do escritório foi preenchido; dá para ajustar.", cnpj_nao_achado: "CNPJ válido, mas não encontrado na base pública (ou sem internet). Escreva o nome do escritório.", cnpj_buscando: "Consultando o cadastro público da Receita...", seu_nome: "Seu nome", seu_email: "Seu e-mail", cad_falta: "Preencha o código, o documento do escritório, o nome do escritório, o seu nome e o seu e-mail.", cod_falta: "Informe o código de cliente (está no e-mail de boas-vindas).", registro: "O seu nome, o seu e-mail e o documento do escritório ficam registrados na licença do escritório, para a SolverONE falar com você sobre o serviço. Cada e-mail pertence a um escritório só; dá para mudar depois no perfil (as iniciais no alto da tela).", sem_trib: "Escolha pelo menos um tribunal e clique em Salvar e atualizar agora.", conferindo: "Conferindo o código com a SolverONE...",
+      mira_t: "A mira do escritório", mira_trib: "Escolha os tribunais que o {c} acompanha. A frente trabalhista cobre os 24 TRTs.", mira_conf: "O código de cliente, onde fica a planilha, as leituras automáticas e a versão do programa. Quem usa este computador fica no perfil (as iniciais no alto da tela).", ver_lista: "Ver a lista", cod_fixo: "Código confirmado. Para trocar, fale com judicial@solverone.com.br.", nova_txt: "Versão {v} disponível (a sua é a {a}). Seus dados, a lista e a configuração continuam.", nova_btn: "Atualizar agora", nova_ok: "Atualizado. Reiniciando o {c} (a janela preta reabre sozinha)...", nova_volta: "Pronto: versão {v}.", abrindo_planilha: "Abrindo a planilha no Excel (pode levar alguns segundos e abrir atrás desta janela).", abrindo_pasta: "Abrindo a pasta da planilha no Explorador.", cod: "Código de cliente", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Número", doc_tipo: "Documento do escritório", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (sem CNPJ)", tipo_pass: "Passaporte (não brasileiro)", doc_invalido: "Número inválido: confira os dígitos.", doc_ok: "Número válido.", cnpj_achado: "Encontrado na Receita: {s}. O nome do escritório foi preenchido; dá para ajustar.", cnpj_nao_achado: "CNPJ válido, mas não encontrado na base pública (ou sem internet). Escreva o nome do escritório.", cnpj_buscando: "Consultando o cadastro público da Receita...", seu_nome: "Seu nome", seu_email: "Seu e-mail", cad_falta: "Preencha o código, o documento do escritório, o nome do escritório, o seu nome e o seu e-mail.", cod_falta: "Informe o código de cliente (está no e-mail de boas-vindas).", registro: "O seu nome, o seu e-mail e o documento do escritório ficam registrados na licença do escritório, para a SolverONE falar com você sobre o serviço. Cada e-mail pertence a um escritório só; dá para mudar depois no perfil (as iniciais no alto da tela).", sem_trib: "Escolha pelo menos um tribunal e clique em Salvar e ler agora.", conferindo: "Conferindo o código com a SolverONE...",
       planilha_abrir: "Abrir a planilha", pasta_abrir: "Abrir a pasta", planilha_falta: "A planilha ainda não existe: escolha a pasta do Google Drive em Configuração.",
       csv_dica: "Arquivo simples com a lista desta tela, para importar em outros sistemas (ex.: Astrea). A planilha completa está no Google Drive.", licenca: "Licença",
       h1: "Novos processos contra empresas",
       resumo: "{n} processos {p} em {t}. {v} com valor acima de {min}; {s} ainda sem valor.", p1: "no último dia", pn: "nos últimos {d} dias", t1: "{a}", tn: "{k} tribunais ({a})", tk: "{k} tribunais",
-      vazio: "Nenhum processo com esses filtros.", vazio_app: "Nenhum processo guardado ainda. Clique em Atualizar agora.", vazio_arq: "Nenhum processo novo nos tribunais acompanhados.",
+      vazio: "Nenhum processo com esses filtros.", vazio_app: "Nenhum processo guardado ainda. Clique em Ler o Diário agora.", vazio_arq: "Nenhum processo novo nos tribunais acompanhados.",
       b_trib: "Tribunais: {n} de {k}", periodo: "Período", config: "Configuração", excluidas_resumo: " {x} escondidas pelas preferências do escritório.",
       f_exc_mostrar: "Mostrar excluídas ({n})", f_exc_ocultar: "Ocultar excluídas", excluida: "Excluída",
       dica_tj: "Tribunais estaduais publicam diários muito maiores (o TJSP sozinho pode passar de 1 GB por dia) e a regra de \"ação nova\" ainda não foi calibrada neles.",
-      c_titulo: "Configuração", c_nome: "Seu nome", c_papel: "Função no escritório", c_papel_vazio: "escolha", c_escritorio: "Escritório",
+      c_titulo: "Configuração deste computador", c_nome: "Seu nome", c_papel: "Função no escritório", c_papel_vazio: "escolha", c_escritorio: "Escritório",
       perfil: "Seu perfil", perfil_rot: "Seu perfil: {n}", perfil_x: "Quem usa o {c} neste computador. O nome, o e-mail e a função ficam registrados na licença do escritório; o nome do escritório vale para este computador. Toque no lápis para mudar.",
       editar: "Editar {r}", cancelar: "Cancelar", fechar: "Fechar", troca_aviso: "Outra pessoa vai usar este computador: {a} deixa de usar o {c} aqui e não ocupa mais vaga na licença do escritório. Depois, confira o nome e a função.", troca_btn: "Trocar a pessoa", email_invalido: "Confira o e-mail: falta o @ ou o domínio.", nome_falta: "Escreva o nome.", w_guardado: "Guardado neste computador.", cod_ok: "Código confirmado: {e}.", cod_ok_sem: "Código confirmado.",
       w_passo: "Passo {a} de {b}", w_voltar: "Voltar", w_avancar: "Avançar", w_concluir: "Começar a primeira leitura", w_so_salvar: "Salvar e ver a tela",
@@ -424,9 +436,9 @@ window.LEXSUITE_RADAR = null;
       w_frente: "Frente", fr_trab: "✓ Trabalhista · 24 TRTs", fr_trib: "Tributário · em breve", fr_civel: "Cível e empresarial · em breve", w_tribs: "Tribunais", tr_todos: "Todos os 24 TRTs (recomendado)", tr_todos_x: "A primeira leitura leva de 30 a 60 minutos; as seguintes, bem menos.", tr_escolher: "Escolher os tribunais agora", tr_escolher_x: "Por região ou por estado. Dá para mudar quando quiser, em Tribunais.", w_tribs_falta: "Escolha pelo menos um tribunal.",
       w_destino: "A planilha vai ficar em:", w_sem_planilha: "Sem planilha por enquanto: a lista fica só nesta tela.", comp_t: "Falta um passo: compartilhar a pasta com a SolverONE (uma vez só)", comp_1: "Clique em \"Abrir a pasta\", logo abaixo.", comp_2: "Na janela que abrir, clique com o botão direito na pasta \"{s}\" e escolha Compartilhar (com o ícone do Google Drive).", comp_3: "Digite integracao@solverone.com.br, deixe como Editor e clique em Enviar.", comp_nota: "Sem isso o {c} funciona normalmente no escritório; a SolverONE só não vê o registro das leituras para ajudar quando algo der errado.", abrir_pasta_mae: "Abrir a pasta",
       c_chave: "Chave de atualização", c_chave_falta: "ausente: atualização desligada", c_atu_pasta: "Atualizações chegam por", c_salvo: "Salvo.",
-      c_dica: "A planilha LexSuiteONE.xlsx fica na pasta do Google Drive escolhida acima: a aba Radar traz a lista; Preferências e Exclusões são do escritório; as abas ocultas são da SolverONE. A pasta LexSuiteONE é compartilhada com integracao@solverone.com.br uma única vez.",
-      atu_ok: "Atualizado para a versão {v}. Feche a janela LexSuiteONE e abra de novo pelo atalho.", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia", pern: "{d} dias", rodar: "Atualizar agora", rodando: "Atualizando...",
-      aba_regiao: "Por região", aba_uf: "Por estado", todos: "Selecionar todos", todos_ramo: "Selecionar todos ({r})", limpar: "Limpar", escolhidos: "{n} de {k} tribunais escolhidos", salvar: "Salvar", salvar_rodar: "Salvar e atualizar agora",
+      c_dica: "A planilha LexSuiteONE.xlsx fica numa pasta própria, dentro da pasta escolhida acima: a aba Radar traz a lista; Preferências e Exclusões são do escritório; as abas ocultas são da SolverONE. Essa pasta é compartilhada uma vez com integracao@solverone.com.br (Editor).",
+      atu_ok: "Atualizado para a versão {v}. Reiniciando...", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia", pern: "{d} dias", rodar: "Ler o Diário agora", rodando: "Lendo o Diário...",
+      aba_regiao: "Por região", aba_uf: "Por estado", todos: "Selecionar todos", todos_ramo: "Selecionar todos ({r})", limpar: "Limpar", escolhidos: "{n} de {k} tribunais escolhidos", salvar: "Salvar", salvar_rodar: "Salvar e ler agora",
       dica: "Cada tribunal publica um diário por dia, de 5 a 150 MB. Dois tribunais levam uns 5 minutos; os 24, de 30 a 60 minutos na primeira vez. O computador precisa estar no Brasil.",
       ultima: "Última atualização em {q}: {s}", nunca: "Ainda não leu neste computador.", erro: "Parou com erro: {e}", carregando: "Carregando...", falha: "Não consegui falar com o programa. A janela preta LexSuiteONE ainda está aberta?",
       f_valor: "Acima de {min}", f_gig: "Sem jurídico próprio provável", trib_todos: "Todos os tribunais", ord_valor: "Maior valor primeiro", ord_hora: "Ordem de chegada", exportar: "Baixar a lista (.csv)",
@@ -445,16 +457,16 @@ window.LEXSUITE_RADAR = null;
       link_manual: "Manual", rodape1: "Fontes: lista de distribuição do DJEN (CNJ) e cadastro público da Receita Federal. Gerado em {q}.",
       rodape2: "Pessoas físicas do processo não aparecem. Nada aqui usa inteligência artificial. {m}, da LexSuiteONE, um produto SolverONE. Versão {v}." },
     en: { marca: "RADAR JUDICIAL",
-      mira_t: "The firm\u2019s target", mira_trib: "Choose the courts the {c} follows. The labor practice covers the 24 regional labor courts.", mira_conf: "The client code, where the spreadsheet lives and the automatic readings. Who uses this computer is in the profile (the initials at the top).", cod: "Client code", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Number", doc_tipo: "Firm\u2019s document", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (no CNPJ)", tipo_pass: "Passport (non-Brazilian)", doc_invalido: "Invalid number: check the digits.", doc_ok: "Valid number.", cnpj_achado: "Found at the Federal Revenue: {s}. The firm name was filled in; you can adjust it.", cnpj_nao_achado: "Valid CNPJ, but not found in the public registry (or no internet). Type the firm name.", cnpj_buscando: "Checking the Federal Revenue public registry...", seu_nome: "Your name", seu_email: "Your e-mail", cad_falta: "Fill in the code, the firm, the CNPJ, your name and your e-mail.", cod_falta: "Enter the client code (it is in the welcome e-mail).", registro: "Your name, your e-mail and the firm\u2019s document are registered under the firm\u2019s license so SolverONE can contact you about the service. Each e-mail belongs to one firm only; you can change it later in the profile (the initials at the top).", sem_trib: "Choose at least one court and click Save and update now.", conferindo: "Checking the code with SolverONE...",
+      mira_t: "The firm\u2019s target", mira_trib: "Choose the courts the {c} follows. The labor practice covers the 24 regional labor courts.", mira_conf: "The client code, where the spreadsheet lives, the automatic readings and the program version. Who uses this computer is in the profile (the initials at the top).", ver_lista: "See the list", cod_fixo: "Code confirmed. To change it, write to judicial@solverone.com.br.", nova_txt: "Version {v} is available (yours is {a}). Your data, the list and the settings stay.", nova_btn: "Update now", nova_ok: "Updated. Restarting {c} (the black window reopens by itself)...", nova_volta: "Done: version {v}.", abrindo_planilha: "Opening the spreadsheet in Excel (it may take a few seconds and open behind this window).", abrindo_pasta: "Opening the spreadsheet folder in File Explorer.", cod: "Client code", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Number", doc_tipo: "Firm\u2019s document", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (no CNPJ)", tipo_pass: "Passport (non-Brazilian)", doc_invalido: "Invalid number: check the digits.", doc_ok: "Valid number.", cnpj_achado: "Found at the Federal Revenue: {s}. The firm name was filled in; you can adjust it.", cnpj_nao_achado: "Valid CNPJ, but not found in the public registry (or no internet). Type the firm name.", cnpj_buscando: "Checking the Federal Revenue public registry...", seu_nome: "Your name", seu_email: "Your e-mail", cad_falta: "Fill in the code, the firm, the CNPJ, your name and your e-mail.", cod_falta: "Enter the client code (it is in the welcome e-mail).", registro: "Your name, your e-mail and the firm\u2019s document are registered under the firm\u2019s license so SolverONE can contact you about the service. Each e-mail belongs to one firm only; you can change it later in the profile (the initials at the top).", sem_trib: "Choose at least one court and click Save and read now.", conferindo: "Checking the code with SolverONE...",
       planilha_abrir: "Open the spreadsheet", pasta_abrir: "Open the folder", planilha_falta: "The spreadsheet does not exist yet: choose the Google Drive folder in Settings.",
       csv_dica: "A plain file with the list on this screen, to import into other systems (e.g. Astrea). The full spreadsheet is in Google Drive.", licenca: "License",
       h1: "New lawsuits against companies",
       resumo: "{n} lawsuits {p} in {t}. {v} above {min}; {s} still without an amount.", p1: "in the last day", pn: "in the last {d} days", t1: "{a}", tn: "{k} courts ({a})", tk: "{k} courts",
-      vazio: "No lawsuits with these filters.", vazio_app: "No lawsuits saved yet. Click Update now.", vazio_arq: "No new lawsuits in the courts followed.",
+      vazio: "No lawsuits with these filters.", vazio_app: "No lawsuits saved yet. Click Read the gazette now.", vazio_arq: "No new lawsuits in the courts followed.",
       b_trib: "Courts: {n} of {k}", periodo: "Period", config: "Settings", excluidas_resumo: " {x} hidden by the firm's preferences.",
       f_exc_mostrar: "Show excluded ({n})", f_exc_ocultar: "Hide excluded", excluida: "Excluded",
       dica_tj: "State courts publish much larger gazettes (TJSP alone can exceed 1 GB a day) and the \"new lawsuit\" rule is not calibrated for them yet.",
-      c_titulo: "Settings", c_nome: "Your name", c_papel: "Role at the firm", c_papel_vazio: "choose", c_escritorio: "Firm",
+      c_titulo: "Settings for this computer", c_nome: "Your name", c_papel: "Role at the firm", c_papel_vazio: "choose", c_escritorio: "Firm",
       perfil: "Your profile", perfil_rot: "Your profile: {n}", perfil_x: "Who uses {c} on this computer. Name, e-mail and role are registered under the firm\u2019s license; the firm name applies to this computer. Tap the pencil to change.",
       editar: "Edit {r}", cancelar: "Cancel", fechar: "Close", troca_aviso: "Someone else will use this computer: {a} stops using {c} here and no longer takes a seat on the firm\u2019s license. Then check the name and role.", troca_btn: "Change the person", email_invalido: "Check the e-mail: the @ or the domain is missing.", nome_falta: "Type the name.", w_guardado: "Saved on this computer.", cod_ok: "Code confirmed: {e}.", cod_ok_sem: "Code confirmed.",
       w_passo: "Step {a} of {b}", w_voltar: "Back", w_avancar: "Next", w_concluir: "Start the first reading", w_so_salvar: "Save and open the screen",
@@ -471,9 +483,9 @@ window.LEXSUITE_RADAR = null;
       w_frente: "Practice", fr_trab: "✓ Labor · 24 regional courts", fr_trib: "Tax · coming soon", fr_civel: "Civil and corporate · coming soon", w_tribs: "Courts", tr_todos: "All 24 regional labor courts (recommended)", tr_todos_x: "The first reading takes 30 to 60 minutes; later ones much less.", tr_escolher: "Choose the courts now", tr_escolher_x: "By region or by state. Change it any time in Courts.", w_tribs_falta: "Choose at least one court.",
       w_destino: "The spreadsheet will be at:", w_sem_planilha: "No spreadsheet for now: the list stays on this screen only.", comp_t: "One step left: share the folder with SolverONE (only once)", comp_1: "Click \"Open the folder\", below.", comp_2: "In the window that opens, right-click the \"{s}\" folder and choose Share (with the Google Drive icon).", comp_3: "Type integracao@solverone.com.br, keep it as Editor and click Send.", comp_nota: "Without it {c} works normally at the firm; SolverONE just cannot see the reading log to help when something goes wrong.", abrir_pasta_mae: "Open the folder",
       c_chave: "Update key", c_chave_falta: "missing: updates disabled", c_atu_pasta: "Updates arrive via", c_salvo: "Saved.",
-      c_dica: "The LexSuiteONE.xlsx spreadsheet lives in the Google Drive folder chosen above: the Radar sheet holds the list; Preferences and Exclusions belong to the firm; hidden sheets are SolverONE's. The LexSuiteONE folder is shared once with integracao@solverone.com.br.",
-      atu_ok: "Updated to version {v}. Close the LexSuiteONE window and open it again from the shortcut.", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last day", pern: "{d} days", rodar: "Update now", rodando: "Updating...",
-      aba_regiao: "By region", aba_uf: "By state", todos: "Select all", todos_ramo: "Select all ({r})", limpar: "Clear", escolhidos: "{n} of {k} courts chosen", salvar: "Save", salvar_rodar: "Save and update now",
+      c_dica: "The LexSuiteONE.xlsx spreadsheet lives in its own folder inside the folder chosen above: the Radar sheet holds the list; Preferences and Exclusions belong to the firm; hidden sheets are SolverONE\u2019s. That folder is shared once with integracao@solverone.com.br (Editor).",
+      atu_ok: "Updated to version {v}. Restarting...", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last day", pern: "{d} days", rodar: "Read the gazette now", rodando: "Reading the gazette...",
+      aba_regiao: "By region", aba_uf: "By state", todos: "Select all", todos_ramo: "Select all ({r})", limpar: "Clear", escolhidos: "{n} of {k} courts chosen", salvar: "Save", salvar_rodar: "Save and read now",
       dica: "Each court publishes one gazette a day, 5 to 150 MB. Two courts take about 5 minutes; all 24, 30 to 60 minutes the first time. The computer must be in Brazil.",
       ultima: "Last update at {q}: {s}", nunca: "Not read on this computer yet.", erro: "Stopped with an error: {e}", carregando: "Loading...", falha: "Could not reach the program. Is the black LexSuiteONE window still open?",
       f_valor: "Above {min}", f_gig: "Without likely in-house counsel", trib_todos: "All courts", ord_valor: "Highest value first", ord_hora: "Arrival order", exportar: "Download the list (.csv)",
@@ -535,12 +547,20 @@ window.LEXSUITE_RADAR = null;
     if (!e) return;
     if (e.rodando) {
       var ultima = e.mensagens && e.mensagens.length ? e.mensagens[e.mensagens.length - 1].texto : "";
-      box.appendChild(el("span", "andando", t("rodando") + (ultima ? " " + ultima : "")));
+      var pct = Math.max(1, Math.min(99, Number(e.progresso) || 1)), barra = el("div", "progresso"), cheio = el("i");
+      cheio.style.width = pct + "%"; barra.appendChild(cheio); barra.setAttribute("role", "progressbar"); barra.setAttribute("aria-valuemin", "0"); barra.setAttribute("aria-valuemax", "100"); barra.setAttribute("aria-valuenow", String(pct)); barra.setAttribute("aria-label", t("rodando"));
+      box.appendChild(barra);
+      box.appendChild(el("span", "andando", t("rodando") + " " + pct + "%" + (ultima ? " · " + ultima : "")));
       (e.mensagens || []).slice(-4, -1).forEach(function (m) { box.appendChild(el("span", "log", m.hora + "  " + m.texto)); });
       return;
     }
     if (e.erro) box.appendChild(el("span", "erro", t("erro", { e: e.erro })));
-    if (e.situacao) box.appendChild(el("span", "ok", t("ultima", { q: dataHora(e.situacao.quando || e.fim), s: e.situacao[lang] || e.situacao.pt })));
+    if (e.situacao) {
+      box.appendChild(el("span", "ok", t("ultima", { q: dataHora(e.situacao.quando || e.fim), s: e.situacao[lang] || e.situacao.pt })));
+      var lk = el("span", "atalhos-fim"), ver = el("button", "btn-txt", t("ver_lista")), pl = el("button", "btn-txt", t("planilha_abrir"));
+      ver.type = pl.type = "button"; ver.addEventListener("click", function () { $("controles").scrollIntoView({ behavior: "smooth" }); });
+      pl.addEventListener("click", function () { abrirPlanilha("planilha"); }); lk.appendChild(ver); lk.appendChild(pl); box.appendChild(lk);
+    }
     else if (!e.erro) box.appendChild(el("span", "ok", t("nunca")));
     if (APP && APP.config.proxima) box.appendChild(el("span", "proxima", t("proxima", { q: quandoProxima(APP.config.proxima) })));
   }
@@ -624,6 +644,8 @@ window.LEXSUITE_RADAR = null;
   function abrirConfig(forcar) {
     var p = $("config"), abrir = forcar || p.hidden;
     $("c-codigo").value = (APP && APP.conta && APP.conta.codigo) || "";
+    var fixo = !!(APP && APP.conta && APP.conta.codigo && APP.conta.ok);  // código válido e salvo: só para ler
+    $("c-codigo").readOnly = fixo; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
     p.hidden = !abrir; $("b-config").setAttribute("aria-expanded", String(abrir));
     if (!abrir) return;
     $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false"); fecharPerfil();
@@ -665,7 +687,7 @@ window.LEXSUITE_RADAR = null;
   }
   function salvarConfig() {
     var corpo = { pasta: pastaEscolhida(), criar: true };
-    var cod = $("c-codigo").value.trim().toUpperCase(); if (cod && !(APP && APP.conta && APP.conta.codigo === cod)) corpo.codigo = cod;
+    var cod = $("c-codigo").value.trim().toUpperCase(); if (!$("c-codigo").readOnly && cod && !(APP && APP.conta && APP.conta.codigo === cod)) corpo.codigo = cod;
     if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
     if ($("c-agendar").checked && !cHoras.length) { $("c-msg").textContent = t("ag_um"); return; }
     corpo.horarios = cHoras.slice(); corpo.dias = $("c-dias").value; corpo.avisar_ao_terminar = $("c-avisar").checked;
@@ -677,7 +699,7 @@ window.LEXSUITE_RADAR = null;
   function verificarAtualizacao() {
     $("c-msg").textContent = t("carregando");
     post("/atualizar", { instalar: true }).then(function (r) {
-      if (r.arquivos) $("c-msg").textContent = t("atu_ok", { v: r.versao });
+      if (r.arquivos) { $("c-msg").textContent = t("atu_ok", { v: r.versao }); reiniciarDepois(r.versao); }
       else if (r.ok) $("c-msg").textContent = t("atu_nada", { m: r.motivo || "" });
       else $("c-msg").textContent = t("atu_erro", { m: r.motivo || "" });
     }).catch(function () { $("c-msg").textContent = t("falha"); });
@@ -962,6 +984,7 @@ window.LEXSUITE_RADAR = null;
   function barraApp() {
     var naWizard = !$("wizard").hidden;
     $("app").hidden = MODO !== "app" || naWizard; $("controles").hidden = naWizard; $("lista").hidden = naWizard; if (naWizard) $("mais").hidden = true;
+    $("b-config").hidden = MODO !== "app" || naWizard; $("versao-topo").textContent = D.versao ? "v" + D.versao : "";
     $("resumo").hidden = naWizard; if (naWizard) { $("b-planilha").hidden = true; $("b-pasta").hidden = true; $("perfil").hidden = true; }
     botaoPerfil();
     if (MODO !== "app" || naWizard) return;
@@ -971,7 +994,7 @@ window.LEXSUITE_RADAR = null;
     $("b-rodar").textContent = t("rodar");
     document.querySelectorAll(".abas button").forEach(function (b) { b.textContent = t("aba_" + b.getAttribute("data-aba")); b.setAttribute("aria-pressed", String(aba === b.getAttribute("data-aba"))); });
     $("b-limpar").textContent = t("limpar"); $("b-salvar").textContent = t("salvar"); $("b-salvar-rodar").textContent = t("salvar_rodar"); $("painel-dica").textContent = t("dica");
-    $("p-mira-t").textContent = t("mira_t"); $("p-mira").textContent = t("mira_trib", { c: marcaCurto() }); $("c-mira-t").textContent = t("mira_t"); $("c-mira").textContent = t("mira_conf");
+    $("p-mira-t").textContent = t("mira_t"); $("p-mira").textContent = t("mira_trib", { c: marcaCurto() }); $("c-mira").textContent = t("mira_conf");
     $("b-config-txt").textContent = t("config"); $("c-titulo").textContent = t("c_titulo"); $("c-l-codigo").textContent = t("cod"); $("c-l-pasta").textContent = t("c_pasta"); $("c-l-outra").textContent = t("c_outra");
     $("c-testar").textContent = t("c_testar"); $("c-escolher").textContent = t("op_escolher"); $("c-criar").textContent = t("criar_pasta"); $("c-salvar").textContent = t("c_salvar"); $("c-atualizar").textContent = t("c_atualizar"); $("c-dica").textContent = t("c_dica");
     painel(); infoConfig(); bannerControle(); if (!$("config").hidden) desenharAgenda(); if (!$("perfil").hidden && !editando) desenharPerfil();
@@ -1166,9 +1189,41 @@ window.LEXSUITE_RADAR = null;
     }).catch(function () { txt.textContent = t("cnpj_nao_achado"); txt.className = "doc-situacao"; });
   }
   function abrirPlanilha(oque) {
-    post("/abrir", { o_que: oque }).then(function (r) { if (!r.ok) mostrarEstado({ erro: r.motivo || t("planilha_falta") }); }).catch(function () { $("estado").textContent = t("falha"); });
+    post("/abrir", { o_que: oque }).then(function (r) {
+      if (!r.ok) { mostrarEstado({ erro: r.motivo || t("planilha_falta") }); return; }
+      var n = el("span", "ok", t(oque === "planilha" ? "abrindo_planilha" : "abrindo_pasta")); $("estado").insertBefore(n, $("estado").firstChild);
+      setTimeout(function () { if (n.parentNode) n.parentNode.removeChild(n); }, 8000);
+    }).catch(function () { $("estado").textContent = t("falha"); });
   }
   function tudo() { cabecalho(); barraApp(); desenhar(); }
+  /* ---------- versão nova: aviso ao abrir, atualizar com um clique e reiniciar sozinho ---------- */
+  var novaVista = false;
+  function verVersaoNova() {
+    if (MODO !== "app" || novaVista) return; novaVista = true;
+    fetch("/versao-nova", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.disponivel) return;
+      $("b-nova").hidden = false; $("b-nova-txt").textContent = t("nova_txt", { v: d.versao, a: d.atual }); $("b-nova-btn").textContent = t("nova_btn");
+      $("b-nova-btn").onclick = function () {
+        this.disabled = true; $("b-nova-txt").textContent = t("carregando");
+        post("/atualizar", { instalar: true }).then(function (r) {
+          if (r.arquivos) { $("b-nova-txt").textContent = t("nova_ok", { c: marcaCurto() }); $("b-nova-btn").hidden = true; reiniciarDepois(r.versao); }
+          else { $("b-nova-btn").disabled = false; $("b-nova-txt").textContent = t("atu_erro", { m: r.motivo || "" }); }
+        }).catch(function () { $("b-nova-btn").disabled = false; $("b-nova-txt").textContent = t("falha"); });
+      };
+    }).catch(function () {});
+  }
+  function reiniciarDepois(versao) {
+    post("/reiniciar", {}).catch(function () {}).then(function () {
+      var tentativas = 0, caiu = false;
+      (function esperar() {
+        tentativas += 1; if (tentativas > 90) { $("estado").textContent = t("falha"); return; }
+        fetch("/estado", { headers: cabecalhosApp(), cache: "no-store" }).then(function (r) {
+          if (!caiu && tentativas < 6) { setTimeout(esperar, 1000); return; }  // dá tempo ao programa antigo de sair
+          if (r.ok) location.reload(); else setTimeout(esperar, 1000);
+        }).catch(function () { caiu = true; setTimeout(esperar, 1000); });
+      })();
+    });
+  }
 
   $("f-valor").addEventListener("click", function () { F.valor = !F.valor; this.setAttribute("aria-pressed", String(F.valor)); limite = 150; desenhar(); });
   $("f-gig").addEventListener("click", function () { F.gig = !F.gig; this.setAttribute("aria-pressed", String(F.gig)); limite = 150; desenhar(); });
@@ -1234,7 +1289,7 @@ window.LEXSUITE_RADAR = null;
   $("b-rodar").addEventListener("click", rodar);
   $("periodo").addEventListener("change", function (e) { periodo = Number(e.target.value) || 1; post("/config", { dias_na_pagina: periodo }).then(carregar, carregar); });
 
-  if (MODO === "app") carregar(); else tudo();
+  if (MODO === "app") carregar().then(verVersaoNova); else tudo();
 })();
 </script>
 </body>

@@ -446,7 +446,7 @@ def cmd_app(a):
     """Tela local no navegador: escolher os tribunais, rodar e ver a lista (ABRIR.bat)."""
     from lexsuite import app
     cfg = carregar_config(os.path.join(AQUI, "config.json"))
-    app.servir(AQUI, a.porta or cfg["radar"].get("porta"), abrir=not a.sem_navegador)
+    app.servir(AQUI, a.porta or cfg["radar"].get("porta"), abrir=not a.sem_navegador, espera=a.espera)
 
 
 def cmd_orgaos(a):
@@ -541,6 +541,7 @@ def main(argv=None):
     s = sub.add_parser("app", help="abre a tela do Radar no navegador (escolher tribunais, rodar, ver a lista)")
     s.add_argument("--porta", type=int, help="porta local (padrão: a do config.json ou 8765)")
     s.add_argument("--sem-navegador", action="store_true", help="não abrir o navegador sozinho")
+    s.add_argument("--espera", action="store_true", help="reinício depois de atualizar: espera a porta liberar e não procura outra tela aberta")
     s.set_defaults(f=cmd_app)
     s = sub.add_parser("agendar", help="cria a leitura automática no Agendador do Windows com os horários do config.json")
     s.set_defaults(f=cmd_agendar)

@@ -58,6 +58,7 @@ class Estado:
         self.lock = threading.Lock()
         self.eco = eco  # janela preta: cada passo da leitura aparece também ali, com a hora
         self.rodando = False
+        self.progresso, self.total_trib, self.tribs_vistos = 0, 0, set()
         self.mensagens = []
         self.inicio = self.fim = None
         self.situacao = None
@@ -68,7 +69,32 @@ class Estado:
         with self.lock:
             self.mensagens.append({"hora": hora, "texto": texto})
             del self.mensagens[:-80]
+            self._progredir(texto)
         self._eco(f"  {hora}  {texto}")
+
+    def _progredir(self, texto):
+        """Porcentagem estimada a partir dos passos que a leitura já informa: tribunais (5 a 60%), consultas à Receita
+        (60 a 95%), gravação (95 a 99%). Não é tempo: o Diário e a Receita variam muito."""
+        import re
+        m = re.search(r"Radar: lista de distribuição de (.+?) \(", texto)
+        if m:
+            self.total_trib = max(1, len([x for x in m.group(1).split(",") if x.strip()]))
+            self.tribs_vistos, self.progresso = set(), 5
+            return
+        m = re.search(r"[Cc]aderno (\S+) ", texto)
+        if m and getattr(self, "total_trib", 0):
+            self.tribs_vistos.add(m.group(1))
+            self.progresso = max(self.progresso, 5 + int(55 * min(1, len(self.tribs_vistos) / self.total_trib)))
+            return
+        if texto.startswith("Consultando a Receita"):
+            self.progresso = max(self.progresso, 60)
+            return
+        m = re.search(r"Receita: (\d+) de (\d+)", texto)
+        if m and int(m.group(2)):
+            self.progresso = max(self.progresso, 60 + int(35 * int(m.group(1)) / int(m.group(2))))
+            return
+        if "publicações lidas" in texto or "Planilha" in texto or "planilha" in texto:
+            self.progresso = max(self.progresso, 95)
 
     def _eco(self, linha):
         if self.eco:
@@ -79,7 +105,8 @@ class Estado:
 
     def como_dict(self):
         with self.lock:
-            return {"rodando": self.rodando, "mensagens": list(self.mensagens[-15:]), "inicio": self.inicio,
+            return {"rodando": self.rodando, "progresso": min(99, self.progresso) if self.rodando else (100 if self.fim else 0),
+                    "mensagens": list(self.mensagens[-15:]), "inicio": self.inicio,
                     "fim": self.fim, "situacao": self.situacao, "erro": self.erro}
 
     def comecar(self):
@@ -87,6 +114,7 @@ class Estado:
             if self.rodando:
                 return False
             self.rodando, self.mensagens, self.erro = True, [], None
+            self.progresso, self.total_trib, self.tribs_vistos = 1, 0, set()
             self.inicio, self.fim = dt.datetime.now().isoformat(timespec="seconds"), None
         self._eco("")
         self._eco(f"  ===== Leitura começou às {dt.datetime.now():%H:%M} (não feche esta janela) =====")
@@ -111,6 +139,7 @@ class Servidor(ThreadingHTTPServer):
         super().__init__(endereco, Tratador)
         self.pasta = pasta
         self.estado = Estado(eco=print)
+        self.versao_cache = None
         self.caminho_config = os.path.join(pasta, "config.json")
         self.caminho_db = os.path.join(pasta, "lexsuite.db")
         self.modelo = os.path.join(pasta, "radar_modelo.html")
@@ -243,6 +272,17 @@ class Tratador(BaseHTTPRequestHandler):
             with open(manual, encoding="utf-8") as f:
                 html = f.read()
             return self._responder(personalizar_manual(html, s.config()).encode("utf-8"), "text/html; charset=utf-8")
+        if u.path == "/versao-nova":
+            # Ao abrir a tela: há versão nova no site? (só pergunta; instalar é com o botão). Guarda por 30 minutos.
+            import time
+            if not s.versao_cache or time.monotonic() - s.versao_cache[0] > 1800:
+                try:
+                    r = atualizar.atualizar(s.pasta, s.config(), VERSAO, lambda *_: None, instalar_agora=False)
+                except Exception:  # sem internet ou site fora: a tela segue sem o aviso
+                    r = {"ok": False, "disponivel": False}
+                s.versao_cache = (time.monotonic(), {"disponivel": bool(r.get("disponivel") and r.get("ok")), "versao": r.get("versao", ""),
+                                                     "atual": VERSAO})
+            return self._responder(s.versao_cache[1])
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
@@ -359,6 +399,8 @@ class Tratador(BaseHTTPRequestHandler):
             ok, msg = compartilhar.testar(pasta, compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"]), criar=bool(corpo.get("criar")))
             return self._responder({"ok": ok, "mensagem": msg, "nao_existe": bool(pasta) and not os.path.isdir(pasta),
                                     "no_drive": compartilhar.no_google_drive(pasta)})
+        if caminho == "/reiniciar":
+            return self._responder({"ok": reiniciar_depois(s, s.pasta)})
         if caminho == "/escolher-pasta":
             pasta = escolher_pasta(str(corpo.get("inicio") or ""))
             return self._responder({"ok": bool(pasta), "pasta": pasta})
@@ -485,17 +527,88 @@ def abrir_janela(url):
     return False
 
 
-def criar(pasta, porta=None):
-    for p in ([int(porta)] if porta else list(PORTAS)):
+_ATALHO_PS = ("$w = New-Object -ComObject WScript.Shell; "
+              "foreach ($p in @([Environment]::GetFolderPath('Desktop'), [Environment]::GetFolderPath('Programs'))) { "
+              "$f = Join-Path $p ($env:LEXSUITE_NOME + '.lnk'); if (Test-Path $f) { $s = $w.CreateShortcut($f); "
+              "$s.Description = $env:LEXSUITE_DESC; $s.Save() } }")
+
+
+def atualizar_atalho(pasta):
+    """Dica do atalho (ao passar o mouse) com o nome e a versão: "RADAR JUDICIAL 0.7.11". O nome do atalho não muda, para
+    não deixar atalhos velhos na área de trabalho a cada versão."""
+    if os.name != "nt":
+        return False
+    import subprocess  # nosec B404 - só powershell, sem shell, comando fixo; nome e versão vão por variável de ambiente
+    m = marca(pasta)
+    env = dict(os.environ, LEXSUITE_NOME=m["nome"], LEXSUITE_DESC=f"{m['nome']} {VERSAO} - LexSuiteONE")
+    try:
+        subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", _ATALHO_PS], env=env, timeout=30,  # nosec B603 B607
+                       capture_output=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        return True
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
+def procurar_aberto(portas=None):
+    """Endereço de uma tela do RADAR que já está aberta neste computador ("" se nenhuma). Evita a segunda janela preta
+    quando a pessoa clica de novo no atalho."""
+    import http.client
+    for p in portas or PORTAS:
         try:
-            return Servidor(("127.0.0.1", p), pasta)
-        except OSError:
+            c = http.client.HTTPConnection("127.0.0.1", p, timeout=0.6)
+            c.request("GET", "/estado", headers={"X-LexSuite": "1", "Host": f"127.0.0.1:{p}"})
+            r = c.getresponse()
+            ok = r.status == 200 and "LexSuiteONE" in (r.getheader("Server") or "") and "rodando" in json.loads(r.read() or b"{}")
+            c.close()
+            if ok:
+                return f"http://127.0.0.1:{p}/"
+        except (OSError, ValueError):
             continue
+    return ""
+
+
+def reiniciar_depois(servidor, pasta):
+    """Depois de atualizar: abre o programa novo (outra janela preta, sem abrir outra tela) e encerra este. A tela
+    aberta no navegador espera o novo responder e recarrega sozinha."""
+    import subprocess  # nosec B404 - só o próprio programa, sem shell, argumentos fixos
+    import sys
+    porta = servidor.server_address[1]
+    args = [sys.executable, os.path.join(pasta, "lexsuite_robo.py"), "app", "--sem-navegador", "--espera", "--porta", str(porta)]
+    try:
+        subprocess.Popen(args, cwd=pasta, close_fds=True,  # nosec B603
+                         creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0))
+    except OSError:
+        return False
+    threading.Timer(0.8, servidor.shutdown).start()
+    return True
+
+
+def criar(pasta, porta=None, espera=0):
+    import time
+    limite = time.monotonic() + espera
+    while True:
+        for p in ([int(porta)] if porta else list(PORTAS)):
+            try:
+                return Servidor(("127.0.0.1", p), pasta)
+            except OSError:
+                continue
+        if time.monotonic() >= limite:
+            break
+        time.sleep(0.5)  # reinício depois de atualizar: espera o programa antigo liberar a porta
     raise SystemExit("  Nenhuma porta livre entre 8765 e 8775. Feche outra janela do LexSuiteONE e tente de novo.")
 
 
-def servir(pasta, porta=None, abrir=True, aviso=print):
-    servidor = criar(pasta, porta)
+def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
+    if not espera:
+        ja = procurar_aberto()
+        if ja:
+            aviso("  O RADAR já está aberto neste computador: trazendo a tela. Esta janela fecha sozinha.")
+            if abrir:
+                abrir_janela(ja)
+            import time
+            time.sleep(3)
+            return
+    servidor = criar(pasta, porta, espera=20 if espera else 0)
     url = f"http://127.0.0.1:{servidor.server_address[1]}/"
     aviso(f"  LexSuiteONE aberto em {url}")
     aviso("  Deixe esta janela aberta enquanto usa a tela. Para encerrar, feche a janela (ou Ctrl+C).")
@@ -508,6 +621,7 @@ def servir(pasta, porta=None, abrir=True, aviso=print):
             msg = agendar.migrar_antigas(pasta, servidor.config())
             if msg:
                 aviso("  " + msg)
+            atualizar_atalho(pasta)
         except Exception:  # migrar a leitura automática nunca impede a tela de abrir
             pass
     threading.Thread(target=migrar, daemon=True, name="migrar-agenda").start()

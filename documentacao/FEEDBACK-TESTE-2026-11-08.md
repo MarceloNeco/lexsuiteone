@@ -28,6 +28,14 @@ depois). Lista viva da Produto: cada item vira proposta, o dono dá o "pode", a 
 | 20 | O programa não avisa quando sai versão nova; só atualiza se a pessoa clicar em "Verificar atualização" (Configuração) | Ao abrir a tela, o RADAR confere a versão no site (o campo `verificar_ao_abrir` existe no config mas não era usado) e mostra uma faixa: "Versão X disponível. Atualizar agora? Seus dados, a lista e a configuração continuam." com o botão; depois de atualizar, "feche e abra de novo pelo atalho" (ou reabre sozinho) | 0.7.11, "pode" |
 | 21 | Em Configuração ainda dá para mudar o código de cliente | Código válido e salvo fica só para ler (cinza), com a frase "Para trocar o código, fale com judicial@solverone.com.br"; só volta a ser editável se a licença deixar de valer (código desativado, vencido ou desconhecido) | 0.7.11, "pode" |
 
+| 22 | "Configuração" junto do filtro, misturada com "A mira do escritório"; "Atualizar agora" parece atualizar a configuração ou a versão | Engrenagem "⚙ Configuração" no alto, junto do perfil; painel "Configuração deste computador" sem a imagem da mira; o botão da leitura vira "Ler o Diário agora" | feito na 0.7.11 |
+| 23 | "Abrir a planilha" não dava sinal (o Excel abriu atrás) | Aviso "Abrindo a planilha no Excel (pode abrir atrás desta janela)" | feito na 0.7.11 |
+| 24 | Depois de atualizar e fechar/abrir o navegador, continuava 0.7.9 | Quem roda é a janela preta: agora o RADAR reinicia sozinho depois de atualizar (abre a janela preta nova, fecha a antiga) e a tela recarrega | feito na 0.7.11 |
+| 25 | Dois cliques no atalho abriram duas janelas pretas | Se o RADAR já está aberto, o atalho só traz a tela de volta | feito na 0.7.11 |
+| 26 | Versão sempre à vista; atalho com o nome certo | Versão ao lado do nome, no alto; dica do atalho (ao passar o mouse) com nome e versão, atualizada ao abrir; o nome do atalho fica fixo | feito na 0.7.11 |
+| 27 | Não está claro o que fazer com a planilha (arrastar para o Drive? duas cópias?) | É uma só e o RADAR grava só nela. Na pasta do Google Drive para computador, o Drive a leva para a nuvem sozinho; fora dele, fica só no computador, e o certo é trocar a pasta em Configuração (não arrastar cópia). Explicado no manual; depois, botão "Levar a planilha para o Google Drive" em Configuração | texto na 0.7.11; botão: proposta |
+| 28 | Durante a leitura não dá para saber quanto falta; no fim, faltam atalhos para a lista e a planilha | Barra de 0 a 100% calculada pelos passos (tribunais lidos, consultas à Receita, gravação; não é tempo) e, no fim, "Ver a lista" e "Abrir a planilha" | feito na 0.7.11 |
+
 ## Para o segundo teste (pelo e-mail de boas-vindas)
 
 Antes de começar: limpar o computador de novo (Parte A do roteiro) para o instalador não só atualizar. A licença de

@@ -443,3 +443,60 @@ class AgendaTela079(AppV07):
             tela = f.read()
         for marca in ('id="c-horas"', 'id="c-hora-nova"', 'id="c-dias"', 'id="c-avisar"', "ag_noite", "quandoProxima"):
             self.assertIn(marca, tela)
+
+
+class V0711(unittest.TestCase):
+    """0.7.11: dias com Diário (feriado), uma tela só por computador, aviso de versão nova."""
+
+    def test_feriado_nao_esvazia_a_leitura(self):
+        from lexsuite import monitor, djen, banco as bd
+        pedidos = []
+        def meta(sigla, data, aviso=print):
+            pedidos.append(data)
+            return None if data in ("2026-11-09", "2026-11-06") else {"versao": "1"}  # segunda e sexta sem Diário
+        orig_meta, orig_baixar = djen.meta_caderno, djen.baixar_caderno
+        djen.meta_caderno, djen.baixar_caderno = meta, (lambda *a, **k: [{"processo": a[1]}])
+        try:
+            b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+            pubs = monitor.coletar_caderno(["TRT2"], 1, b, aviso=lambda *_: None, hoje=dt.date(2026, 11, 10))
+        finally:
+            djen.meta_caderno, djen.baixar_caderno = orig_meta, orig_baixar
+        # terça: lê terça (se houver) e o último dia útil anterior que teve Diário: quinta (pula segunda e sexta)
+        self.assertEqual(sorted(p["processo"] for p in pubs), ["2026-11-05", "2026-11-10"])
+        self.assertNotIn("2026-11-04", pedidos)
+
+    def test_uma_tela_so_e_versao_nova(self):
+        from lexsuite import app
+        import threading
+        pasta = tempfile.mkdtemp()
+        shutil.copy(os.path.join(ROBO, "radar_modelo.html"), pasta)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            porta = srv.server_address[1]
+            self.assertEqual(app.procurar_aberto([porta]), f"http://127.0.0.1:{porta}/")
+            import http.client
+            c = http.client.HTTPConnection("127.0.0.1", porta, timeout=10)
+            c.request("GET", "/versao-nova", headers={"X-LexSuite": "1"})
+            d = json.loads(c.getresponse().read()); c.close()
+            self.assertEqual((d["disponivel"], d["atual"]), (False, app.VERSAO))  # sem chave_publica.txt: não oferece
+        finally:
+            srv.shutdown(); srv.server_close()
+        self.assertEqual(app.procurar_aberto([porta]), "")
+
+
+class Progresso0711(unittest.TestCase):
+    def test_porcentagem_pelos_passos(self):
+        from lexsuite import app
+        e = app.Estado()
+        e.comecar()
+        e.aviso("Radar: lista de distribuição de TRT2, TRT15 (últimos 1 dia(s) úteis)")
+        self.assertEqual(e.como_dict()["progresso"], 5)
+        e.aviso("  Baixando o caderno TRT2 06/11 (pode levar alguns minutos)...")
+        self.assertEqual(e.como_dict()["progresso"], 32)
+        e.aviso("  Caderno TRT15 06/11: já conferido (versão 1)")
+        self.assertEqual(e.como_dict()["progresso"], 60)
+        e.aviso("Receita: 18 de 36")
+        self.assertEqual(e.como_dict()["progresso"], 77)
+        e.terminar({"pt": "ok"})
+        self.assertEqual(e.como_dict()["progresso"], 100)
