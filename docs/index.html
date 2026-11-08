@@ -121,9 +121,9 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   width: 430px; height: 430px; right: -40px; top: 50%; transform: translateY(-50%);
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600' fill='none' stroke='%23102038' stroke-width='1.5'%3E%3Ccircle cx='300' cy='300' r='60'/%3E%3Ccircle cx='300' cy='300' r='120'/%3E%3Ccircle cx='300' cy='300' r='180'/%3E%3Ccircle cx='300' cy='300' r='240'/%3E%3Ccircle cx='300' cy='300' r='290'/%3E%3Cpath d='M70 120L250 170'/%3E%3Cpath d='M250 170L205 60'/%3E%3Cpath d='M250 170L470 90'/%3E%3Cpath d='M470 90L560 250'/%3E%3Cpath d='M560 250L420 380'/%3E%3Cpath d='M420 380L520 470'/%3E%3Cpath d='M420 380L330 560'/%3E%3Cpath d='M330 560L110 430'/%3E%3Cpath d='M110 430L40 300'/%3E%3Cpath d='M40 300L70 120'/%3E%3Cpath d='M250 170L420 380'/%3E%3Cpath d='M205 60L470 90'/%3E%3Cg fill='%23102038' stroke='none'%3E%3Ccircle cx='70' cy='120' r='5'/%3E%3Ccircle cx='205' cy='60' r='5'/%3E%3Ccircle cx='470' cy='90' r='5'/%3E%3Ccircle cx='560' cy='250' r='5'/%3E%3Ccircle cx='520' cy='470' r='5'/%3E%3Ccircle cx='330' cy='560' r='5'/%3E%3Ccircle cx='110' cy='430' r='5'/%3E%3Ccircle cx='40' cy='300' r='5'/%3E%3Ccircle cx='250' cy='170' r='5'/%3E%3Ccircle cx='420' cy='380' r='5'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain; }
 @media (max-width: 860px) { .com-marca-dagua section.dagua::before { width: 360px; height: 360px; right: -120px; } }
-/* Carrossel do "Como funciona": desliza da direita para a esquerda, gira sozinho (pausa ao passar o mouse, ao focar e
-   pelo botão), setas e pontos para ir e voltar. Sem movimento para quem pede menos movimento. As imagens entram em
-   docs/img/como-1.webp ... como-4.webp e são ligadas na lista IMAGENS_COMO do script; sem elas, o quadro fica azul. */
+/* Carrossel do "Como funciona": desliza da direita para a esquerda, gira sozinho (pausa ao passar o mouse, ao focar
+   pelo teclado e pelo botão), setas, pontos, teclado, arrastar com o mouse e passar com o dedo para ir e voltar.
+   Sem movimento para quem pede menos movimento. As imagens entram em docs/img/como-1.webp ... como-4.webp e são ligadas na lista IMAGENS_COMO do script; sem elas, o quadro fica azul. */
 .como-cab { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
 .como-cab h2 { margin: 0; }
 .carrossel-ctrl { display: flex; align-items: center; gap: 8px; }
@@ -132,7 +132,8 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 .seta.pausa { font-size: .8rem; letter-spacing: -2px; }
 .seta.pausa[aria-pressed="true"] { background: var(--noite); color: #fff; border-color: var(--noite); }
 .pos { min-width: 3.2rem; text-align: center; color: var(--tinta-3); font-variant-numeric: tabular-nums; }
-.carrossel { overflow: hidden; border-radius: 16px; }
+/* pan-y: o dedo de lado é do carrossel; para cima e para baixo continua rolando a página. */
+.carrossel { overflow: hidden; border-radius: 16px; touch-action: pan-y; }
 .trilho { list-style: none; margin: 0; padding: 0; display: flex; transition: transform .7s cubic-bezier(.4,0,.2,1); }
 .slide { flex: 0 0 100%; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); min-height: 22rem; background: var(--papel-2); }
 .slide-img { position: relative; background: var(--noite) center / cover no-repeat; overflow: hidden; }
@@ -401,7 +402,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   var IMAGENS_COMO = [1, 2, 3, 4]; // passos com imagem em docs/img/como-N.webp
   (function () {
     var trilho = document.getElementById("trilho"), slides = trilho.children, n = slides.length, atual = 0, timer = null,
-        pausadoPeloBotao = false, emCima = false, menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        pausadoPeloBotao = false, emCima = false, emFoco = false, menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     IMAGENS_COMO.forEach(function (k) { var im = slides[k - 1] && slides[k - 1].querySelector(".slide-img"); if (im) { im.style.backgroundImage = "url(" + im.getAttribute("data-imagem") + ")"; im.classList.add("com-imagem"); } });
     var pontos = document.getElementById("c-pontos");
     for (var i = 0; i < n; i++) { (function (k) { var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", String(k + 1)); b.addEventListener("click", function () { ir(k); }); pontos.appendChild(b); })(i); }
@@ -410,17 +411,41 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
       for (var j = 0; j < n; j++) { slides[j].setAttribute("aria-hidden", String(j !== atual)); pontos.children[j].setAttribute("aria-current", String(j === atual)); slides[j].querySelectorAll("a, button").forEach(function (x) { x.tabIndex = j === atual ? 0 : -1; }); }
       document.getElementById("c-pos").textContent = (atual + 1) + " / " + n; reiniciar();
     }
-    function reiniciar() { clearInterval(timer); timer = null; if (!pausadoPeloBotao && !emCima && !menosMovimento) timer = setInterval(function () { ir(atual + 1); }, 6500); }
+    function reiniciar() { clearInterval(timer); timer = null; if (!pausadoPeloBotao && !emCima && !emFoco && !menosMovimento) timer = setInterval(function () { ir(atual + 1); }, 6500); }
     document.getElementById("c-ant").addEventListener("click", function () { ir(atual - 1); });
     document.getElementById("c-prox").addEventListener("click", function () { ir(atual + 1); });
     var bp = document.getElementById("c-pausa");
     bp.addEventListener("click", function () { pausadoPeloBotao = !pausadoPeloBotao; bp.setAttribute("aria-pressed", String(pausadoPeloBotao)); rotularPausa(); reiniciar(); });
     var caixa = document.getElementById("carrossel");
-    ["mouseenter", "focusin"].forEach(function (ev) { caixa.addEventListener(ev, function () { emCima = true; reiniciar(); }); });
-    ["mouseleave", "focusout"].forEach(function (ev) { caixa.addEventListener(ev, function () { emCima = false; reiniciar(); }); });
+    // Pausa só com o mouse em cima (no celular o toque simula "mouse em cima" e não sai mais) ou com o foco do teclado.
+    caixa.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") { emCima = true; reiniciar(); } });
+    caixa.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { emCima = false; reiniciar(); } });
+    function focoDeTeclado(alvo) { try { return alvo.matches(":focus-visible"); } catch (x) { return true; } }
+    caixa.addEventListener("focusin", function (e) { emFoco = focoDeTeclado(e.target); reiniciar(); });
+    caixa.addEventListener("focusout", function () { emFoco = false; reiniciar(); });
     caixa.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") ir(atual - 1); if (e.key === "ArrowRight") ir(atual + 1); });
-    var x0 = null; caixa.addEventListener("pointerdown", function (e) { x0 = e.clientX; });
+    // Arrastar com o mouse (computador): eventos de ponteiro.
+    var x0 = null;
+    caixa.addEventListener("pointerdown", function (e) { x0 = e.pointerType === "touch" ? null : e.clientX; });
     caixa.addEventListener("pointerup", function (e) { if (x0 !== null && Math.abs(e.clientX - x0) > 40) ir(atual + (e.clientX < x0 ? 1 : -1)); x0 = null; });
+    caixa.addEventListener("pointercancel", function () { x0 = null; });
+    // Dedo (iPhone e Android): eventos de toque. Quando o gesto é de lado, segura a página (só então); de cima para
+    // baixo, a página rola normalmente. Passou de 40 px para o lado: próximo ou anterior.
+    var t0 = null, deLado = false;
+    caixa.addEventListener("touchstart", function (e) { t0 = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; deLado = false; }, { passive: true });
+    caixa.addEventListener("touchmove", function (e) {
+      if (!t0) return;
+      var dx = e.touches[0].clientX - t0.x, dy = e.touches[0].clientY - t0.y;
+      if (!deLado && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) deLado = true;
+      if (deLado && e.cancelable) e.preventDefault();
+    }, { passive: false });
+    caixa.addEventListener("touchend", function (e) {
+      if (!t0) return;
+      var dx = e.changedTouches[0].clientX - t0.x, dy = e.changedTouches[0].clientY - t0.y;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) ir(atual + (dx < 0 ? 1 : -1));
+      t0 = null;
+    });
+    caixa.addEventListener("touchcancel", function () { t0 = null; });
     window.rotularPausa = function () { var en = document.documentElement.lang === "en"; bp.setAttribute("aria-label", pausadoPeloBotao ? (en ? "Play" : "Tocar") : (en ? "Pause" : "Pausar")); };
     ir(0);
   })();
