@@ -75,7 +75,7 @@ nunca é delegada a subagente. Resultado de subagente é dado a conferir, não o
 
 ## Como entregar
 
-- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos 38 arquivos em `releases/LexSuiteONE-RADAR.zip`,
+- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos arquivos (40 no download completo, 39 no de atualização, conferido na 0.7.10) em `releases/LexSuiteONE-RADAR.zip`,
   `releases/LexSuiteONE-RADAR-<versão>.zip` e `docs/downloads/LexSuiteONE-RADAR.zip` (o pacote de atualização é
   `LexSuiteONE-RADAR-atualizacao-<versão>.zip`; o botão do site baixa o instalador `Instalar-LexSuiteONE.zip`). Atualize `robo/LEIA-ME.md`,
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.

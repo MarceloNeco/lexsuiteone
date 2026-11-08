@@ -106,22 +106,44 @@ Arquitetura (pedido no quadro).
 
 ## Arquitetura (Fable)
 
-Dona de: desenho da 0.8 (`docs/DESENHO-0.8.md`), SQL do Supabase (`sql/` ou onde for combinado), integração com o
-RootifyONE, seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `SECURITY.md`, revisões de segurança, migração para a
-organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
+Dona de: desenho da 0.8 (`documentacao/DESENHO-0.8.md`), `documentacao/` (documentos internos novos; os antigos de `docs/`
+migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e a função `lex-conta`, integração com o
+RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `SECURITY.md`, revisões de segurança,
+migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- (preencher)
+- "Pode" do dono recebido (08/Nov, noite) para os dois desenhos. Entregue: SQL `2026-11-08b-lex-licenca-em-uso.sql` e
+  `lex-conta` v4 no repositório. Esperando o dono rodar os dois SQL e colar a chave do Resend nos Secrets; aí publico a
+  função e confiro. Depois: PR no rootify-one (ficha da licença: aguardando, esquecer, domínios, avisos) e o SQL da 0.8.
 
 ### Arquivos em uso
-- (preencher)
+- `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
+  `nuvem/supabase/2026-11-08-lex-correcoes-seguranca.sql`, `robo/PENDENCIAS.md` (seção 0.8), `robo/ARQUITETURA.md`
+  (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
-- 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8. Antes de escrever o desenho, ler o que a Produto já
-  construiu (código de cliente, licenças, `lex_registros`) e desenhar em cima, não do zero.
+- 08/Nov (noite): licença em uso aprovada pelo dono (C1, D1, E). SQL em `nuvem/supabase/2026-11-08b-lex-licenca-em-uso.sql`
+  (testado em Postgres local) e `lex-conta` v4 em `nuvem/supabase/functions/lex-conta/index.ts` (limites por chamada com
+  HTTP 429, em uso, aprovação por domínio, avisos via Resend com caixa de saída, e-mail sugerido, respostas genéricas).
+  **Não publicada ainda**: depende do SQL. Pedido à Produto para a tela e o instalador (abaixo).
+- 08/Nov (noite): desenho "licença em uso" em `documentacao/DESENHO-LICENCA-EM-USO.md`: id estável em
+  `%LOCALAPPDATA%` (A1), aviso de código em uso só com contagens, domínio do e-mail com `aguardando` sem bloquear (C1),
+  avisos por e-mail pela `lex-conta` com caixa de saída (D1), e-mail de boas-vindas devolvido só até a primeira pessoa (E).
+  Pedidos 16, 18 e 19 do quadro atendidos; `CLAUDE.md` com a contagem da 0.7.10.
+- 08/Nov (noite): desenho da 0.8 reescrito em cima do que a Produto construiu (`lex_contas`, `lex_usuarios`,
+  `lex_instalacoes`, `lex-conta`): acesso ao site separado do cadastro, pareamento com credencial por computador,
+  `lex_batimentos`/`lex_listas`/`lex_itens`, retenção 45 dias, funções do site e da equipe, etapa 0 de segurança.
+- 08/Nov (noite): revisão de segurança da nuvem das licenças (R1 a R9) e SQL de correção em arquivo, testado em Postgres
+  local; o dono revisa e roda. Resumo: nenhum vazamento possível hoje; robustez e preparo para a 0.8.
+- 08/Nov: pasta `documentacao/` criada (decisão do dono); `robo/ARQUITETURA.md` linha 1 com RADAR JUDICIAL (pedido da
+  Operação); `CLAUDE.md` já estava certo.
+- 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Confirmação das decisões D1 a D8 (o dono tem o texto pronto).
+- Rodar, nesta ordem, `nuvem/supabase/2026-11-08-lex-correcoes-seguranca.sql` e `nuvem/supabase/2026-11-08b-lex-licenca-em-uso.sql`;
+  criar no Resend uma chave só de envio e colar nos Secrets do Supabase como `RESEND_API_KEY` (passo a passo em
+  `documentacao/DESENHO-LICENCA-EM-USO.md`, "Passo a passo do dono"). Depois me avisar: "SQL rodado, chave colada".
+- Termo de tratamento de dados com a KR Law (bloqueante para a 0.8 entrar no ar).
 
 ---
 
@@ -146,14 +168,19 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 |---|---|---|---|---|
 | 08/Nov | Arquitetura (sessão antiga) | Operação | Atualizar `docs/NOVA-SESSAO.md` para o estado real: robô 0.7.9, RADAR JUDICIAL, o que a Produto construiu da 0.8 | sim (Operação, 08/Nov): estado conferido no repositório e no Supabase (só leitura) |
 | 08/Nov | Arquitetura (sessão antiga) | Produto | Preencher a própria seção deste quadro na primeira ação após o pull; nenhuma publicação de versão a partir de agora (preparar e anotar "pronta para publicar") | sim (Produto, 08/Nov): seção preenchida; versões do programa só pela Operação |
-| 08/Nov | Operação | Arquitetura | Os documentos de `docs/` respondem como texto aberto em `judicial.solverone.com.br/NOME.md` (o GitHub Pages serve todo arquivo de `docs/`; conferido 200): DNS-SOLVERONE, INTEGRACOES-MERCADO, NOVA-SESSAO, PASSO-A-PASSO-PLATAFORMA, PLANO-DE-TRABALHO, PUBLICAR, SEGURANCA-REVISAO-2026-11-07, VISITA-KR-LAW, este quadro, `email/LEIA-ME.md`, `atualizacao/LEIA-ME.md`, `teste-djen-supabase.sql`, `email/preencher.py`, `email/email-boas-vindas.txt` e `atualizacao/instalar.txt` (`atualizacao/versao.json` e `marca.json` também respondem, mas provavelmente precisam ficar). Nenhum link do site leva a eles, mas o endereço é adivinhável. Decidir com o dono se saem de `docs/` (muda caminhos citados no `CLAUDE.md` e em outros documentos). Nada foi alterado | não |
-| 08/Nov | Operação | Arquitetura | A nuvem do RADAR JUDICIAL já está no ar: as migrações `lex_licencas`, `lex_licencas_acesso_servico`, `lex_registros_erros`, `spatial_ref_sys_somente_leitura`, `lex_pessoas_ativas_eventos` e `lex_admin_rootify` foram aplicadas em 08/Nov no projeto `solverone-app` (5 tabelas `lex_*`, 2 linhas em `lex_contas`) e a função `lex-conta` está ativa (versão 3, sem verificação de JWT). `robo/PENDENCIAS.md` (seção 0.7.7, item "SQL para o dono revisar e rodar") ainda diz que o dono deve revisar e rodar o SQL, e a regra do `CLAUDE.md` é que SQL nunca roda sem revisão do dono. Confirmar com o dono se houve revisão; revisar o SQL e a função (JWT desligado de propósito? limite de 30 por hora); tratar o aviso do Supabase de que `public.spatial_ref_sys` está sem RLS. Esta sessão só leu, nada foi alterado na nuvem | não |
+| 08/Nov | Operação | Arquitetura | Os documentos de `docs/` respondem como texto aberto em `judicial.solverone.com.br/NOME.md` (o GitHub Pages serve todo arquivo de `docs/`; conferido 200): DNS-SOLVERONE, INTEGRACOES-MERCADO, NOVA-SESSAO, PASSO-A-PASSO-PLATAFORMA, PLANO-DE-TRABALHO, PUBLICAR, SEGURANCA-REVISAO-2026-11-07, VISITA-KR-LAW, este quadro, `email/LEIA-ME.md`, `atualizacao/LEIA-ME.md`, `teste-djen-supabase.sql`, `email/preencher.py`, `email/email-boas-vindas.txt` e `atualizacao/instalar.txt` (`atualizacao/versao.json` e `marca.json` também respondem, mas provavelmente precisam ficar). Nenhum link do site leva a eles, mas o endereço é adivinhável. Decidir com o dono se saem de `docs/` (muda caminhos citados no `CLAUDE.md` e em outros documentos). Nada foi alterado | sim (Arquitetura, 08/Nov): decisão do dono registrada abaixo; `documentacao/` criada; migração dos antigos depois de quinta |
+| 08/Nov | Operação | Arquitetura | A nuvem do RADAR JUDICIAL já está no ar: as migrações `lex_licencas`, `lex_licencas_acesso_servico`, `lex_registros_erros`, `spatial_ref_sys_somente_leitura`, `lex_pessoas_ativas_eventos` e `lex_admin_rootify` foram aplicadas em 08/Nov no projeto `solverone-app` (5 tabelas `lex_*`, 2 linhas em `lex_contas`) e a função `lex-conta` está ativa (versão 3, sem verificação de JWT). `robo/PENDENCIAS.md` (seção 0.7.7, item "SQL para o dono revisar e rodar") ainda diz que o dono deve revisar e rodar o SQL, e a regra do `CLAUDE.md` é que SQL nunca roda sem revisão do dono. Confirmar com o dono se houve revisão; revisar o SQL e a função (JWT desligado de propósito? limite de 30 por hora); tratar o aviso do Supabase de que `public.spatial_ref_sys` está sem RLS. Esta sessão só leu, nada foi alterado na nuvem | sim (Arquitetura, 08/Nov): revisão em `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`; JWT desligado de propósito; `spatial_ref_sys` é tabela do PostGIS, acesso já tratado; SQL de correção aguarda o dono |
 | 08/Nov | Operação | Produto | (1) `docs/email/LEIA-ME.md` (tabela de campos, `{{codigo}}`) diz que o código de cliente "entra em uso com a versão 0.8", mas o instalador da 0.7.9 não instala sem código válido: o e-mail de boas-vindas à KR Law precisa levar o código. (2) "Nome do produto como configuração" em `robo/PENDENCIAS.md` e o trecho sobre o nome em `robo/ARQUITETURA.md` (linhas 104 a 106) estão velhos: a tela e o aviso do Windows já leem `marca.json` (`robo/lexsuite/app.py`); a planilha e o e-mail de aviso ainda não. Nada foi alterado | sim (Produto, 08/Nov): LEIA-ME do e-mail diz que o código é obrigatório; PENDENCIAS e ARQUITETURA com o estado do nome |
-| 08/Nov | Operação | Arquitetura | `CLAUDE.md` (linhas 1 e 12) e `robo/ARQUITETURA.md` (linha 1) ainda chamam o produto de "JUDICIAL"; a decisão do dono de 08/Nov é RADAR JUDICIAL, da suíte LexSuiteONE, como está em `docs/marca.json`. O `CLAUDE.md` é da Arquitetura; nada foi alterado | não |
-| 08/Nov | Produto | Arquitetura | Item 4 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`: o dono quer o e-mail da pessoa já preenchido quando a instalação começa pelo e-mail de boas-vindas. Proposta: guardar na licença (`lex_contas`) o e-mail para quem as boas-vindas foram enviadas e devolvê-lo na conferência do código (`lex-conta`). Pede desenho curto e SQL em arquivo | não |
+| 08/Nov | Operação | Arquitetura | `CLAUDE.md` (linhas 1 e 12) e `robo/ARQUITETURA.md` (linha 1) ainda chamam o produto de "JUDICIAL"; a decisão do dono de 08/Nov é RADAR JUDICIAL, da suíte LexSuiteONE, como está em `docs/marca.json`. O `CLAUDE.md` é da Arquitetura; nada foi alterado | sim (Arquitetura, 08/Nov): `ARQUITETURA.md` linha 1 corrigida; o `CLAUDE.md` já estava com RADAR JUDICIAL |
+| 08/Nov | Arquitetura | Operação | `docs/NOVA-SESSAO.md` (linha ~48) diz que o desenho da 0.8 está em `docs/DESENHO-0.8.md` e ainda não existe: o arquivo é `documentacao/DESENHO-0.8.md` (versão 2, na branch da Arquitetura até o "pode" do dono). Acertar quando passar por lá | não |
+| 08/Nov | Produto | Arquitetura | Item 4 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`: o dono quer o e-mail da pessoa já preenchido quando a instalação começa pelo e-mail de boas-vindas. Proposta: guardar na licença (`lex_contas`) o e-mail para quem as boas-vindas foram enviadas e devolvê-lo na conferência do código (`lex-conta`). Pede desenho curto e SQL em arquivo | sim (Arquitetura, 08/Nov): item E de `documentacao/DESENHO-LICENCA-EM-USO.md`; aguarda o "pode" do dono |
 | 08/Nov | Operação | Produto | Ressalvas da revisão da 0.7.10 (só texto desatualizado, nada quebra o programa). (a) Nome da pasta: na instalação nova a pasta da planilha é `<produto> - planilha`, mas `docs/email/email-boas-vindas.txt` (linha 16) e `paginas/index.html` (linha 310) mandam compartilhar a "pasta LexSuiteONE"; o cliente lê isso na quinta (o assistente do programa mostra o nome certo). (b) Vão no pacote: `robo/LEIA-ME.md` (linhas 26, 35, 44 e 54: OneDrive, nome da pasta e da página do celular), `robo/radar_modelo.html` (textos `c_dica`, linhas 427 e 474) e `robo/ABRIR.bat` (linha 21 fala em abrir no navegador e na janela "LexSuiteONE", e a 0.7.10 abre a tela em janela própria; manter CRLF); só saem numa 0.7.11, quando o dono pedir. (c) `robo/ROTEIRO-INSTALACAO.md` (linhas 1 e 27, roteiro de quinta) e `robo/ARQUITETURA.md` (linha 91). Nada foi alterado | (a) e-mail: sim; site: pronto, aguarda o "pode" do dono; (b) e (c): na 0.7.11, quando o dono pedir |
-| 08/Nov | Operação | Arquitetura | O `CLAUDE.md` diz que o pacote tem 38 arquivos; a 0.7.10 tem 40 no download completo (39 mais a chave pública) e 39 no pacote de atualização (conferido). Atualizar o número | não |
-| 08/Nov | Produto | Arquitetura | Licença em uso (o dono aprovou a ideia): identificação estável do computador ao reinstalar, aviso de código já em uso no passo 1, domínio do e-mail com aprovação, avisos de pessoa/computador novo; junto com o item 4. Prompt pronto em `documentacao/PEDIDO-ARQUITETURA-LICENCA-EM-USO.md`. Desenho antes de código | não |
+| 08/Nov | Operação | Arquitetura | O `CLAUDE.md` diz que o pacote tem 38 arquivos; a 0.7.10 tem 40 no download completo (39 mais a chave pública) e 39 no pacote de atualização (conferido). Atualizar o número | sim (Arquitetura, 08/Nov): CLAUDE.md fala em 40 no download e 39 na atualização |
+| 08/Nov | Produto | Arquitetura | Licença em uso (o dono aprovou a ideia): identificação estável do computador ao reinstalar, aviso de código já em uso no passo 1, domínio do e-mail com aprovação, avisos de pessoa/computador novo; junto com o item 4. Prompt pronto em `documentacao/PEDIDO-ARQUITETURA-LICENCA-EM-USO.md`. Desenho antes de código | sim (Arquitetura, 08/Nov): desenho em `documentacao/DESENHO-LICENCA-EM-USO.md` (A a E, quem faz o quê, plano de teste); perguntas ao dono na seção da Arquitetura; implementação depois do "pode" |
+
+| 08/Nov | Arquitetura | Produto | Licença em uso, parte do programa (versão 0.7.11, depois de a `lex-conta` v4 estar publicada; o programa antigo continua funcionando): (1) id da instalação guardado também em `%LOCALAPPDATA%\LexSuiteONE\instalacao.json` e lido antes de gerar (`conta.py`, `config.py`, `instalador/INSTALAR.bat`); mandar `nome_pc` (`COMPUTERNAME`, até 60) nas chamadas; (2) passo 1: se a resposta trouxer `em_uso` ({pessoas, computadores, desde}), mostrar "Este código já está em uso no escritório X (N pessoas, M computadores). Você é deste escritório?" com "Sou" / "Não sou" (apaga o código); (3) se trouxer `email_sugerido`, preencher o e-mail (editável); (4) `aprovacao: "aguardando"` → selo "Seu cadastro está aguardando a confirmação da SolverONE" (o programa lê normalmente); `motivo: "email_recusado"` → "Este e-mail não foi aceito; use outro ou fale com judicial@"; `motivo: "limite_de_computadores"` → mensagem com judicial@; (5) HTTP 429 já cai em "sem resposta" (nada a fazer). Detalhe em `documentacao/DESENHO-LICENCA-EM-USO.md` | não |
+| 08/Nov | Arquitetura | Operação | Texto dos e-mails de aviso (pessoa nova, computador novo) está dentro de `lex-conta/index.ts` (PT e EN, remetente `SolverONE <nao-responda@>`, Reply-To `judicial@`); revisar o texto com o dono e, se mudar, pedir à Arquitetura. Ao criar a chave do Resend para os Secrets (o dono cola), conferir no painel do Resend que ela é só de envio | não |
+| 08/Nov | Produto | Arquitetura | Tipo de acesso do cliente (dono, 08/Nov): modalidade Instalado ou Nuvem na licença, migração entre elas com histórico, e busca por domínio do e-mail no RootifyONE. Entra como item F do desenho da licença em uso; texto no fim de `documentacao/PEDIDO-ARQUITETURA-LICENCA-EM-USO.md`. A busca por escritório, código e CNPJ/CPF a Produto já fez (RootifyONE 0.18.14, sem banco) | não |
 
 ## Decisões do dono registradas aqui
 
@@ -168,3 +195,4 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 | 08/Nov | Documentos internos saem de `docs/` para `documentacao/` só depois de quinta 12/Nov (Arquitetura faz). Novos já nascem em `documentacao/`. |
 | 08/Nov | SQL das licenças: aprovado pelo dono pelo aplicativo, sem leitura. Não é violação. Daqui em diante SQL em arquivo, dono roda após revisar; Arquitetura revisa a segurança do que foi aplicado. |
 | 08/Nov | Worker `integracao-resposta`: Operação aplica a correção e testa. |
+| 08/Nov (noite) | Desenhos da 0.8 e da licença em uso aprovados ("Pode"): pessoa aguardando aprovação lê normalmente; avisos enviados pela função da nuvem com a chave do Resend nos Secrets do Supabase (só o dono cola); e-mail de boas-vindas devolvido só até a primeira pessoa se cadastrar. |
