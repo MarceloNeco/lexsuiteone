@@ -50,10 +50,8 @@ desligamento manual. Detalhes em
 Infraestrutura, sem testar o robô (o dono vai testar depois, com calma):
 
 1. **HTTPS do site**: no GitHub Pages do repositório, "Check again" e "Enforce HTTPS" (o dono, pela extensão).
-2. **E-mail de recebimento no Cloudflare** (quando o dono disser "pode o e-mail"): Email Routing com os apelidos atuais
-   (`contato`, `admin`, `privacidade`, `suporte`, `ceo` encaminhando para a caixa do dono) e `integracao@` indo para um
-   Email Worker que só responde "Este endereço é usado por sistemas da SolverONE e não é lido por pessoas. Esta mensagem
-   não será respondida." Só trocar o MX depois de o destino estar confirmado e o Worker testado. ImprovMX fica como reserva.
+2. **E-mail de recebimento no Cloudflare**: feito em 08/Nov (regras, Worker de resposta em `integracao@`, MX trocado;
+   detalhes em `docs/DNS-SOLVERONE.md`). ImprovMX fica como reserva até ser cancelado.
 3. **Chaves de assinatura**: o dono roda `ferramentas\GERAR-CHAVES.bat` (kit em `releases/LexSuiteONE-suporte.zip`) e
    cola a chave pública; o Claude coloca `chave_publica.txt` no pacote e publica. Opcional para a instalação: sem chave,
    o robô funciona, só não se atualiza sozinho.
