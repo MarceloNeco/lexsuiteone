@@ -85,9 +85,17 @@ def logo(m, estilo_destaque=None, estilo_forte=None):
     return ('<span class="marca-leve">%s</span> ' % html.escape(leve) if leve else "") + abre_forte + forte + "</strong>"
 
 
-def aplicar(texto, m, campos_extras=None):
+def versao_publicada():
+    """A versão que o site oferece (docs/atualizacao/versao.json); pode estar atrás da versão do código."""
+    try:
+        return json.loads(MANIFESTO.read_text(encoding="utf-8")).get("versao") or versao()
+    except (OSError, ValueError):
+        return versao()
+
+
+def aplicar(texto, m, campos_extras=None, versao_doc=None):
     campos = {"marca.nome": html.escape(m["nome"]), "marca.curto": html.escape(m["curto"]), "marca.logo": logo(m),
-              "versao": html.escape(versao())}
+              "versao": html.escape(versao_doc or versao())}
     campos.update(campos_extras or {})
     for chave, valor in campos.items():
         texto = texto.replace("{{%s}}" % chave, valor)
@@ -118,11 +126,14 @@ def instalador_zip():
 def gerar(m):
     """{caminho: conteúdo (str ou bytes)} de tudo o que é gerado."""
     saida = {}
-    for origem in sorted(PAGINAS.glob("*.html")):
-        texto = aplicar(origem.read_text(encoding="utf-8"), m)
+    def gerar_pagina(origem, versao_doc):
+        texto = aplicar(origem.read_text(encoding="utf-8"), m, versao_doc=versao_doc)
         primeira, _, resto = texto.partition("\n")
-        saida[DESTINO / origem.name] = primeira + "\n" + AVISO.format(arquivo=origem.name) + resto
-    saida[MANUAL_ROBO] = saida[DESTINO / "manual.html"]
+        return primeira + "\n" + AVISO.format(arquivo=origem.name) + resto
+    for origem in sorted(PAGINAS.glob("*.html")):
+        # O site mostra a versão publicada; o manual que vai no pacote, a versão do código.
+        saida[DESTINO / origem.name] = gerar_pagina(origem, versao_publicada())
+    saida[MANUAL_ROBO] = gerar_pagina(PAGINAS / "manual.html", versao())
     saida[MARCA_ROBO] = json.dumps(m, ensure_ascii=False, indent=1) + "\n"
     saida[INSTALAR_TXT] = instalar_txt(m)
     saida[INSTALADOR_ZIP] = instalador_zip()

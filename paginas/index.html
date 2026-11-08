@@ -357,7 +357,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   document.getElementById("b-pt").addEventListener("click", function () { aplicar("pt"); });
   document.getElementById("b-en").addEventListener("click", function () { aplicar("en"); });
   // Carrossel do "Como funciona"
-  var IMAGENS_COMO = [1]; // passos com imagem em docs/img/como-N.webp
+  var IMAGENS_COMO = [1, 2, 3, 4]; // passos com imagem em docs/img/como-N.webp
   (function () {
     var trilho = document.getElementById("trilho"), slides = trilho.children, n = slides.length, atual = 0, timer = null,
         pausadoPeloBotao = false, emCima = false, menosMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
