@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.9 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.10 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -19,7 +19,9 @@ atualiza sem perder configuração nem lista. A fonte é `instalador/INSTALAR.ba
 2. Dois cliques em **`ABRIR.bat`**. Na primeira vez ele baixa o Python portátil oficial para dentro da pasta (11 MB,
    sem instalador, sem senha de administrador) e abre a tela no navegador. Uma janela "LexSuiteONE" fica aberta
    enquanto a tela é usada.
-3. Na primeira vez a tela abre um **passo a passo de boas-vindas**: seu nome e seu papel no escritório (a tela e o
+3. Na primeira vez a tela (numa janela própria, sem barra de endereço) abre um **passo a passo de boas-vindas** (0.7.10:
+   código só para ler, função obrigatória, três opções para a planilha, tribunais escolhidos ali, onde a planilha fica e
+   como compartilhar): seu nome e seu papel no escritório (a tela e o
    manual passam a falar com você), o nome do escritório, a **pasta compartilhada** (a tela lista as pastas do Google
    Drive para computador e do OneDrive que achou; "Testar pasta" confirma) e a opção **rodar sozinho todo dia**
    (de início às 20h e às 8h, já marcada; os horários mudam em Configuração). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE.xlsx` no Drive,

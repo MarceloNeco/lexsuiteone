@@ -151,7 +151,8 @@ class Compartilhada(unittest.TestCase):
         self.assertFalse(ok)
         pasta = tempfile.mkdtemp()
         ok, msg = compartilhar.testar(pasta)
-        self.assertTrue(ok and os.path.isdir(os.path.join(pasta, "LexSuiteONE")))
+        self.assertTrue(ok)
+        self.assertFalse(os.path.isdir(os.path.join(pasta, "LexSuiteONE")))  # 0.7.10: só testar não deixa pasta vazia
         banco = bd.Banco(os.path.join(pasta, "t.db"))
         banco.registrar("radar", {"versao": "0.7.0", "tribunais": ["TRT2"], "lidas": 10, "novas": 2, "com_cnpj": 1, "duracao": 3, "resultado": "ok", "erro": ""})
         banco.registrar("saude", {"fonte": "DJEN", "situacao": "ok", "detalhe": "10 publicações"})
@@ -222,7 +223,8 @@ class AppV07(unittest.TestCase):
         compartilhada = tempfile.mkdtemp()
         status, r = self.pedir("POST", "/config", {"escritorio": "  KR Law  ", "pasta": compartilhada})
         self.assertTrue(r["ok"], r)
-        self.assertTrue(os.path.exists(os.path.join(compartilhada, "LexSuiteONE", preferencias.NOME_ARQUIVO)))
+        # 0.7.10: instalação nova usa "<produto> - planilha" (não confunde com a pasta do programa, C:\\LexSuiteONE)
+        self.assertTrue(os.path.exists(os.path.join(compartilhada, "RADAR JUDICIAL - planilha", preferencias.NOME_ARQUIVO)))
         status, d = self.pedir("GET", "/dados")
         self.assertEqual((d["app"]["config"]["escritorio"], d["app"]["config"]["pasta_ok"], bool(d["app"]["config"]["planilha"]), d["app"]["config"]["agendavel"]), ("KR Law", True, True, os.name == "nt"))
         self.assertEqual(d["prefs"]["controle"]["ativo"], True)
@@ -230,6 +232,61 @@ class AppV07(unittest.TestCase):
         self.assertFalse(r["disponivel"]) and self.assertIn("chave", r["motivo"])
         status, r = self.pedir("POST", "/config", {"pasta": "/nao/existe"})
         self.assertFalse(r["ok"])
+        # quem já tinha pasta continua com a subpasta dela, mesmo trocando de pasta
+        outra = tempfile.mkdtemp()
+        status, r = self.pedir("POST", "/config", {"pasta": outra})
+        self.assertTrue(os.path.isdir(os.path.join(outra, "RADAR JUDICIAL - planilha")), r)
+
+
+class Pasta0710(AppV07.__bases__[0]):
+    """0.7.10: pasta escolhida que não existe é criada com "criar"; só Google Drive na lista; função "Outra"."""
+
+    def setUp(self):
+        AppV07.setUp(self)
+
+    def tearDown(self):
+        AppV07.tearDown(self)
+
+    pedir = AppV07.pedir
+
+    def test_criar_pasta_e_listar(self):
+        nova = os.path.join(tempfile.mkdtemp(), "testeradar")
+        status, r = self.pedir("POST", "/testar-pasta", {"pasta": nova})
+        self.assertEqual((r["ok"], r["nao_existe"]), (False, True))
+        status, r = self.pedir("POST", "/testar-pasta", {"pasta": nova, "criar": True})
+        self.assertTrue(r["ok"], r)
+        self.assertIn("RADAR JUDICIAL - planilha", r["mensagem"])
+        nova2 = os.path.join(tempfile.mkdtemp(), "outra")
+        status, r = self.pedir("POST", "/config", {"pasta": nova2})
+        self.assertEqual((r["ok"], r.get("nao_existe")), (False, True))
+        status, r = self.pedir("POST", "/config", {"pasta": nova2, "criar": True})
+        self.assertTrue(r["ok"], r)
+        status, d = self.pedir("GET", "/pastas")
+        self.assertTrue(all(("drive" in p.lower()) for p in d["candidatas"]), d)
+        self.assertEqual(d["pasta_programa"], self.pasta)
+        from lexsuite import compartilhar
+        self.assertTrue(compartilhar.no_google_drive(r"G:\My Drive\x"))
+        self.assertTrue(compartilhar.no_google_drive("/Users/a/Google Drive/Meu Drive"))
+        self.assertFalse(compartilhar.no_google_drive(r"c:\testeradar"))
+
+    def test_funcao_outra_e_prefiro_nao(self):
+        status, r = self.pedir("POST", "/config", {"papel": "Outra", "papel_outro": " Sócio-<b>diretor</b> "})
+        status, d = self.pedir("GET", "/dados")
+        self.assertEqual(d["app"]["usuario"]["papel"], "Sócio-bdiretor/b")
+        status, r = self.pedir("POST", "/config", {"papel": "Prefiro não informar"})
+        status, d = self.pedir("GET", "/dados")
+        self.assertEqual(d["app"]["usuario"]["papel"], "Prefiro não informar")
+
+
+class DiasUteis0710(unittest.TestCase):
+    def test_domingo_e_segunda_leem_a_sexta(self):
+        from lexsuite.monitor import dias_uteis
+        sexta, sab, dom, seg = (dt.date(2026, 11, d) for d in (6, 7, 8, 9))
+        self.assertEqual(dias_uteis(sab, 1), [sexta])
+        self.assertEqual(dias_uteis(dom, 1), [sexta])
+        self.assertEqual(dias_uteis(seg, 1), [sexta, seg])
+        self.assertEqual(dias_uteis(seg, 0), [seg])
+        self.assertEqual(dias_uteis(dt.date(2026, 11, 10), 3), [dt.date(2026, 11, 5), sexta, seg, dt.date(2026, 11, 10)])
 
 
 class SegurancaV071(unittest.TestCase):

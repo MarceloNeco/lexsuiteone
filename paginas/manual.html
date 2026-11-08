@@ -127,7 +127,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section id="tela">
   <h2>A tela</h2>
   <ol class="passos">
-    <li>Abra pelo atalho <b>{{marca.nome}}</b> na área de trabalho ou no menu Iniciar. Abre uma janela preta chamada "LexSuiteONE" e, em seguida, a tela no navegador. <b>A janela preta precisa ficar aberta</b> enquanto a tela é usada; pode ficar minimizada.</li>
+    <li>Abra pelo atalho <b>{{marca.nome}}</b> na área de trabalho ou no menu Iniciar. Abre uma janela preta, "{{marca.nome}} - não feche esta janela", e em seguida a tela, numa janela própria. A janela preta mostra cada passo das leituras, com a hora. <b>Ela precisa ficar aberta</b> enquanto a tela é usada; pode ficar minimizada.</li>
     <li><b>Atualizar agora</b> faz uma leitura na hora. Os 24 TRTs já vêm escolhidos; em <b>Tribunais</b> dá para mudar por região, por estado ou por ramo. A primeira leitura dos 24 leva de 30 a 60 minutos; as seguintes, bem menos.</li>
     <li><b>Período</b> mostra o último dia, ou 3, 7, 15 ou 30 dias.</li>
     <li><b>As suas iniciais</b>, no alto à direita, abrem o perfil de quem usa este computador: nome, e-mail, função e nome do escritório. Toque no lápis ✏️ ao lado do dado para mudar. Trocar o e-mail quer dizer que outra pessoa passa a usar este computador: a anterior deixa de ocupar vaga na licença.</li>
@@ -146,7 +146,13 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 
 <section id="planilha">
   <h2>A planilha no Google Drive</h2>
-  <p>Na pasta do Google Drive escolhida na configuração fica a subpasta <code>LexSuiteONE</code>, com a planilha <code>LexSuiteONE.xlsx</code> e uma cópia da tela (<code>LexSuiteONE - Radar.html</code>), que abre em qualquer computador ou celular com acesso ao Drive.</p>
+  <p>A planilha é uma só: <code>LexSuiteONE.xlsx</code>. Ela fica numa pasta própria, <code>{{marca.nome}} - planilha</code>, dentro do lugar escolhido no passo 2 das boas-vindas (ou em Configuração). Ao lado dela fica <code>Lista para abrir no celular.html</code>, uma cópia da lista só para consulta. Não confunda com a pasta do programa (<code>C:\LexSuiteONE</code>): o programa roda de onde foi instalado, e a planilha pode ficar em qualquer pasta.</p>
+  <ul>
+    <li><b>No Google Drive deste computador (recomendado):</b> precisa do <b>Google Drive para computador</b> instalado, com a conta do escritório (a pasta aparece como "Meu Drive" ou "My Drive", em geral na letra G:). Assim a planilha abre em qualquer lugar e pode ser compartilhada.</li>
+    <li><b>Outra pasta:</b> o botão "Escolher pasta…" abre a janela de pastas do Windows; se a pasta não existir, o {{marca.curto}} cria.</li>
+    <li><b>Só neste computador, por enquanto:</b> a planilha fica na pasta do programa; dá para mudar para o Drive depois, em Configuração.</li>
+  </ul>
+  <p><b>Compartilhar com a SolverONE (uma vez):</b> no Explorador, botão direito na pasta <code>{{marca.nome}} - planilha</code>, Compartilhar (ícone do Google Drive), <code>integracao@solverone.com.br</code> como Editor, Enviar. Sem isso o {{marca.curto}} funciona normalmente; a SolverONE só não vê o registro das leituras para ajudar quando algo der errado. Instalações anteriores à 0.7.10 continuam com a pasta antiga, <code>LexSuiteONE</code>.</p>
   <div class="tabela"><table>
     <tr><th>Aba</th><th>Quem escreve</th><th>Para quê</th></tr>
     <tr><td>Radar</td><td>o {{marca.curto}}, a cada leitura</td><td>a lista, com as mesmas colunas da tela</td></tr>
@@ -182,9 +188,9 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <tr><td>"Este e-mail já está cadastrado em outro escritório"</td><td>cada e-mail pertence a um escritório só</td><td>use o e-mail do escritório ou escreva para judicial@solverone.com.br</td></tr>
     <tr><td>"O Diário só responde a computadores no Brasil"</td><td>o computador está saindo para a internet por fora do país (VPN, rede da empresa)</td><td>desligue a VPN ou use a rede normal e tente de novo</td></tr>
     <tr><td>"O programa está pausado pela SolverONE", "A licença deste escritório está desativada" ou "A validade terminou"</td><td>a SolverONE pausou o {{marca.curto}}</td><td>escreva para judicial@solverone.com.br</td></tr>
-    <tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela LexSuiteONE e abra de novo</td></tr>
+    <tr><td>"Precisa atualizar para a versão X"</td><td>há uma versão nova obrigatória</td><td>em Configuração, clique em "Verificar atualização"; depois feche a janela preta e abra de novo pelo atalho</td></tr>
     <tr><td>"Planilha em uso ou ilegível"</td><td>alguém estava com a planilha aberta e travada, ou o Drive ainda sincronizava</td><td>nada; o {{marca.curto}} grava na próxima leitura</td></tr>
-    <tr><td>"Não consegui falar com o programa"</td><td>a janela preta "LexSuiteONE" foi fechada</td><td>abra de novo pelo atalho {{marca.nome}}</td></tr>
+    <tr><td>"Não consegui falar com o programa"</td><td>a janela preta foi fechada</td><td>abra de novo pelo atalho {{marca.nome}}</td></tr>
     <tr><td>A lista veio vazia num dia útil</td><td>o Diário daquele dia pode não ter saído ainda</td><td>tente mais tarde; se continuar, escreva para judicial@solverone.com.br</td></tr>
     <tr><td>"Falta o Python"</td><td>falta uma peça que o {{marca.curto}} baixa na instalação</td><td>baixe o instalador em judicial.solverone.com.br e rode de novo; nada do que já foi lido se perde</td></tr>
   </table></div>
@@ -209,7 +215,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section id="perguntas" class="faq">
   <h2>Perguntas frequentes</h2>
   <p><b>Preciso deixar o computador ligado?</b> Só nos horários das leituras automáticas. Se estiver desligado, a próxima leitura recupera os dias que faltaram.</p>
-  <p><b>Posso usar no celular?</b> A tela é do computador. No celular, abra <code>LexSuiteONE - Radar.html</code> na pasta do Drive: é a mesma lista, só para consulta.</p>
+  <p><b>Posso usar no celular?</b> A tela é do computador. No celular, abra <code>Lista para abrir no celular.html</code> na pasta da planilha, no Drive: é a mesma lista, só para consulta.</p>
   <p><b>Quais tribunais escolher?</b> Os que o escritório atende. Os tribunais estaduais (TJs) publicam diários muito maiores e a regra de "ação nova" ainda não foi ajustada para eles.</p>
   <p><b>Como faço um cliente não aparecer?</b> Na aba Exclusões da planilha: nome (como está no Diário) ou CNPJ, e o motivo. Vale a partir da próxima leitura.</p>
   <p><b>Por que algumas linhas dizem "valor a conferir"?</b> Nem sempre o Diário informa o valor da causa. Ele está na consulta pública do tribunal, atrás de um captcha que uma pessoa resolve em segundos: use "Abrir consulta no PJe" e digite o valor na ficha.</p>

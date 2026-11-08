@@ -162,6 +162,24 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.10 (08/Nov, feedback do teste de instalação do dono; pronta para publicar)
+
+Detalhe item a item em `documentacao/FEEDBACK-TESTE-2026-11-08.md`. Feito:
+- **Defeito corrigido:** a leitura conta dias úteis (`monitor.dias_uteis`): sábado e domingo leem a sexta; segunda de
+  manhã não pula mais a sexta.
+- **Assistente:** código vindo do instalador só para ler; função obrigatória com "Outra" (texto) e "Prefiro não
+  informar", e a dica (i); passo 2 com três opções explicadas (Google Drive deste computador, outra pasta com
+  "Escolher pasta…" do Windows e criação da pasta, só neste computador), só o Google Drive na lista (OneDrive "sob
+  consulta"); passo 3 com a frente (Tributário e Cível "em breve") e a escolha dos tribunais ali mesmo; passo 4 mostra
+  onde a planilha fica e, se estiver no Drive, o passo a passo para compartilhar com `integracao@`.
+- **Planilha:** instalação nova usa a pasta "<produto> - planilha" (as antigas continuam "LexSuiteONE"); a cópia da tela
+  se chama "Lista para abrir no celular.html"; "Testar pasta" não deixa pasta vazia para trás.
+- **Tela:** abre numa janela própria do Chrome ou do Edge (sem barra de endereço); painel Tribunais com o nome inteiro
+  (duas colunas, sem "…", nome completo ao passar o mouse).
+- **Janela preta:** título "<produto> - não feche esta janela" e cada passo da leitura com a hora (pela tela e na
+  leitura automática).
+- **Fica para depois:** e-mail já preenchido vindo do e-mail de boas-vindas (item 4; nuvem, desenho da Arquitetura).
+
 ## Feito em 08/Nov (a, b, c do dono)
 
 - **A (nuvem, já aplicado):** pessoa ativa ou inativa, última vez, histórico (cadastro, troca de pessoa, alteração,

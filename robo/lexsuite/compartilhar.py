@@ -8,23 +8,19 @@ import shutil
 from . import planilha, preferencias
 
 NOME_RADAR = preferencias.NOME_ARQUIVO  # uma planilha só: Radar + Preferências + Exclusões + (ocultas) Controle, Log, Saúde, Sobre
-NOME_PAGINA = "LexSuiteONE - Radar.html"
+NOME_PAGINA = "Lista para abrir no celular.html"  # cópia da tela; até a 0.7.9 se chamava "LexSuiteONE - Radar.html"
+NOME_PAGINA_ANTIGO = "LexSuiteONE - Radar.html"
 SUBPASTA_ATUALIZACAO = "atualizacao"
 
 
 def candidatas():
-    """Pastas sincronizadas que existem neste computador, na ordem de probabilidade."""
+    """Pastas do Google Drive para computador que existem aqui ("Meu Drive" / "My Drive"), na ordem de probabilidade.
+    OneDrive e Dropbox ficam de fora da lista (não testados; "sob consulta"); dá para escolher qualquer pasta à mão."""
     home = os.path.expanduser("~")
     opcoes = []
     for base in (home, os.path.join(home, "Google Drive")):
-        for nome in ("Meu Drive", "My Drive", "Google Drive", "OneDrive", "Dropbox"):
+        for nome in ("Meu Drive", "My Drive"):
             opcoes.append(os.path.join(base, nome))
-    try:
-        for nome in sorted(os.listdir(home)):
-            if nome.lower().startswith("onedrive") and nome not in ("OneDrive",):
-                opcoes.append(os.path.join(home, nome))
-    except OSError:
-        pass
     if os.name == "nt":
         for letra in "DEFGHIJKLMNOPQRSTUVWXYZ":
             for nome in ("Meu Drive", "My Drive"):
@@ -34,6 +30,21 @@ def candidatas():
         if os.path.isdir(p) and p not in achadas:
             achadas.append(p)
     return achadas
+
+
+def no_google_drive(pasta):
+    """True se a pasta fica dentro do Meu Drive / My Drive do Google Drive para computador."""
+    partes = [x.lower() for x in os.path.normpath(str(pasta or "")).replace("\\", "/").split("/")]
+    return "meu drive" in partes or "my drive" in partes
+
+
+def subpasta_para(cfg, nome_produto="RADAR JUDICIAL"):
+    """Nome da pasta da planilha. Quem já tinha pasta escolhida continua com a dela ("LexSuiteONE"); instalação nova
+    usa "<produto> - planilha", para não confundir com a pasta do programa (C:\\LexSuiteONE)."""
+    c = cfg.get("compartilhar") or {}
+    if c.get("pasta"):
+        return c.get("subpasta") or "LexSuiteONE"
+    return f"{nome_produto} - planilha"
 
 
 def pasta_base(cfg):
@@ -46,20 +57,29 @@ def pasta_atualizacao(cfg):
     return os.path.join(base, SUBPASTA_ATUALIZACAO) if base else ""
 
 
-def testar(pasta, subpasta="LexSuiteONE"):
-    """Confere se dá para criar a subpasta e gravar nela. Devolve (ok, mensagem)."""
+def testar(pasta, subpasta="LexSuiteONE", criar=False):
+    """Confere se dá para criar a subpasta e gravar nela (com criar=True, cria também a pasta escolhida).
+    Devolve (ok, mensagem)."""
+    if pasta and not os.path.isdir(pasta) and criar:
+        try:
+            os.makedirs(pasta, exist_ok=True)
+        except OSError as e:
+            return False, f"Não consegui criar a pasta {pasta} ({e.__class__.__name__})."
     if not pasta or not os.path.isdir(pasta):
-        return False, "Essa pasta não existe neste computador."
+        return False, "Essa pasta ainda não existe neste computador."
     alvo = os.path.join(pasta, subpasta)
+    existia = os.path.isdir(alvo)
     try:
         os.makedirs(alvo, exist_ok=True)
         prova = os.path.join(alvo, "teste-lexsuite.txt")
         with open(prova, "w", encoding="utf-8") as f:
             f.write("ok\n")
         os.remove(prova)
+        if not existia:
+            os.rmdir(alvo)  # só testar não deixa pasta vazia para trás; ela nasce ao salvar
     except OSError as e:
         return False, f"Não consegui gravar em {alvo} ({e.__class__.__name__})."
-    return True, f"Pronto: o robô vai gravar em {alvo}."
+    return True, f"Pronto: a planilha vai ficar em {alvo}."
 
 
 def _sobre(cfg, versao, chave_impressao, ultima):
@@ -145,6 +165,12 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     html = os.path.join(pasta_robo, "saida", "radar", "radar.html") if pasta_robo else ""
     if html and os.path.exists(html):
         shutil.copyfile(html, os.path.join(base, NOME_PAGINA))
+        antiga = os.path.join(base, NOME_PAGINA_ANTIGO)
+        if os.path.exists(antiga):
+            try:
+                os.remove(antiga)  # o nome antigo confundia (parecia uma segunda planilha)
+            except OSError:
+                pass
     aviso(f"  Planilha compartilhada: {caminho}")
     return caminho
 

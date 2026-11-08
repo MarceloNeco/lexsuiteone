@@ -209,16 +209,27 @@ def coletar_api(alvos, inicio, fim, limite, diagnostico=None, aviso=print):
     return pubs
 
 
+def dias_uteis(hoje, dias):
+    """Datas a ler, da mais antiga para a mais nova: hoje (se for dia útil) e os `dias` dias úteis anteriores.
+    Assim, no sábado e no domingo lê a sexta, e na segunda de manhã não pula a sexta."""
+    datas, d = [], hoje
+    if d.weekday() < 5:
+        datas.append(d)
+    while len([x for x in datas if x != hoje]) < max(0, int(dias)):
+        d -= dt.timedelta(days=1)
+        if d.weekday() < 5:
+            datas.append(d)
+    return sorted(datas)
+
+
 def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=None, lidos=None):
     """Cadernos dos últimos dias úteis. Só baixa de novo se o CNJ reprocessou (versão mudou).
     Os cadernos lidos vão para `lidos`; quem marca como conferido é `guardar`, no fim da rodada."""
     hoje = hoje or dt.date.today()
     pubs = []
+    datas = dias_uteis(hoje, dias)
     for sigla in tribunais:
-        for i in range(dias, -1, -1):
-            d = hoje - dt.timedelta(days=i)
-            if d.weekday() >= 5:
-                continue
+        for d in datas:
             meta = djen.meta_caderno(sigla, d.isoformat(), aviso)
             if meta is None:
                 continue

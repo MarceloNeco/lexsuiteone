@@ -61,15 +61,18 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 0.7.10 com o feedback do teste (`documentacao/FEEDBACK-TESTE-2026-11-08.md`), "pode" do dono para todos os itens
-  menos o 4 (nuvem, espera a Arquitetura). Ao terminar: "pronta para publicar" aqui; quem publica é a Operação.
+- (vazio)
 
 ### Arquivos em uso
-- `robo/lexsuite/` (monitor, app, compartilhar, config, agendar), `robo/radar_modelo.html`, `robo/lexsuite_robo.py`,
-  `robo/testes/`, `paginas/manual.html` e os gerados (`docs/manual.html`, `robo/MANUAL-DO-ESCRITORIO.html`),
-  `robo/LEIA-ME.md`, `robo/ARQUITETURA.md`, seção Produto de `robo/PENDENCIAS.md`.
+- (nenhum)
 
 ### Feito (mais recente primeiro)
+- 08/Nov: **0.7.10 pronta para publicar** (código na `main`; a Operação publica com o "publica a versão 0.7.10" do
+  dono). Corrige o defeito de domingo e segunda (não liam a sexta) e traz o feedback do teste: assistente novo
+  (código só para ler, função obrigatória, três opções para a planilha com "Escolher pasta…" e criação da pasta,
+  tribunais no assistente, onde a planilha fica e como compartilhar), tela em janela própria, nomes inteiros em
+  Tribunais, registro ao vivo na janela preta. 95 testes, Bandit e revisor ok; Windows real (janela de pastas,
+  janela própria, título da janela preta) só no teste do dono. O manual do site já descreve a 0.7.10.
 - 08/Nov: pedidos da Operação atendidos (texto do código no LEIA-ME do e-mail; nome do produto em PENDENCIAS e
   ARQUITETURA). Só documentos; nada no pacote.
 - 08/Nov: site no ar com o carrossel novo: passa com o dedo (iPhone e Android), anda devagar mostrando o próximo,

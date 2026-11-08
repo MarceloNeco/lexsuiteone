@@ -407,7 +407,9 @@ def cmd_radar(a):
     banco = bd.Banco(os.path.join(AQUI, "lexsuite.db"))
     pasta_diag = os.path.join(AQUI, "diagnostico") if a.diagnostico else None
     try:
-        situacao = radar.executar(cfg, banco, print, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
+        def com_hora(msg):  # janela preta da leitura automática: cada passo com a hora
+            print(f"  {dt.datetime.now():%H:%M:%S}  {str(msg).strip()}", flush=True)
+        situacao = radar.executar(cfg, banco, com_hora, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
                                   caminho_config=a.config)
         if cfg["radar"].get("avisar_ao_terminar", True):
             from lexsuite import agendar, app

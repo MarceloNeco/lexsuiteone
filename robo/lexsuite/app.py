@@ -17,6 +17,18 @@ from . import VERSAO, agendar, assinatura, atualizar, banco as bd, cnpj, compart
 
 PORTAS = range(8765, 8776)
 PAPEIS = ("Sócio ou sócia", "Advogado ou advogada", "Estagiário ou estagiária", "Equipe administrativa")
+SEM_PAPEL = "Prefiro não informar"
+
+
+def papel_valido(corpo):
+    """Função escolhida na tela: uma da lista, "Prefiro não informar" ou, com "Outra", o texto digitado (até 40)."""
+    p = corpo.get("papel")
+    if p in PAPEIS or p == SEM_PAPEL:
+        return p
+    if p == "Outra":
+        texto = " ".join(str(corpo.get("papel_outro") or "").replace("<", "").replace(">", "").split())[:40]
+        return texto
+    return ""
 
 # O manual fala com a pessoa pelo papel dela (texto curto; o manual inteiro continua valendo para todos).
 PARA_VOCE = {
@@ -42,8 +54,9 @@ PARA_VOCE = {
 class Estado:
     """O que a tela pergunta a cada 2 segundos enquanto o robô roda."""
 
-    def __init__(self):
+    def __init__(self, eco=None):
         self.lock = threading.Lock()
+        self.eco = eco  # janela preta: cada passo da leitura aparece também ali, com a hora
         self.rodando = False
         self.mensagens = []
         self.inicio = self.fim = None
@@ -51,9 +64,18 @@ class Estado:
         self.erro = None
 
     def aviso(self, msg):
+        hora, texto = dt.datetime.now().strftime("%H:%M:%S"), str(msg).strip()
         with self.lock:
-            self.mensagens.append({"hora": dt.datetime.now().strftime("%H:%M:%S"), "texto": str(msg).strip()})
+            self.mensagens.append({"hora": hora, "texto": texto})
             del self.mensagens[:-80]
+        self._eco(f"  {hora}  {texto}")
+
+    def _eco(self, linha):
+        if self.eco:
+            try:
+                self.eco(linha)
+            except (OSError, ValueError, UnicodeError):  # a janela preta nunca derruba a leitura
+                pass
 
     def como_dict(self):
         with self.lock:
@@ -66,7 +88,9 @@ class Estado:
                 return False
             self.rodando, self.mensagens, self.erro = True, [], None
             self.inicio, self.fim = dt.datetime.now().isoformat(timespec="seconds"), None
-            return True
+        self._eco("")
+        self._eco(f"  ===== Leitura começou às {dt.datetime.now():%H:%M} (não feche esta janela) =====")
+        return True
 
     def terminar(self, situacao=None, erro=None):
         with self.lock:
@@ -75,6 +99,8 @@ class Estado:
             if situacao:
                 self.situacao = situacao
             self.erro = erro
+        fim = f"  ===== Leitura terminou às {dt.datetime.now():%H:%M}"
+        self._eco(fim + (f" com erro: {erro} =====" if erro else (f": {situacao.get('pt', '')} =====" if situacao else " =====")))
 
 
 class Servidor(ThreadingHTTPServer):
@@ -84,7 +110,7 @@ class Servidor(ThreadingHTTPServer):
     def __init__(self, endereco, pasta):
         super().__init__(endereco, Tratador)
         self.pasta = pasta
-        self.estado = Estado()
+        self.estado = Estado(eco=print)
         self.caminho_config = os.path.join(pasta, "config.json")
         self.caminho_db = os.path.join(pasta, "lexsuite.db")
         self.modelo = os.path.join(pasta, "radar_modelo.html")
@@ -184,6 +210,7 @@ class Tratador(BaseHTTPRequestHandler):
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
                            "planilha": preferencias.caminho(base) if base and os.path.exists(preferencias.caminho(base)) else "",
+                           "planilha_prevista": preferencias.caminho(base) if base else "", "no_drive": compartilhar.no_google_drive(comp.get("pasta", "")),
                            "agendavel": agendar.disponivel(), "agendado": agendado,
                            "horarios": horarios, "dias": dias, "tem_noite": agendar.tem_noite(horarios),
                            "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
@@ -218,7 +245,10 @@ class Tratador(BaseHTTPRequestHandler):
             return self._responder(personalizar_manual(html, s.config()).encode("utf-8"), "text/html; charset=utf-8")
         if u.path == "/pastas":
             cfg = s.config()
-            return self._responder({"candidatas": compartilhar.candidatas(), "atual": cfg["compartilhar"].get("pasta", "")})
+            cand = compartilhar.candidatas()
+            return self._responder({"candidatas": cand, "atual": cfg["compartilhar"].get("pasta", ""), "drive": bool(cand),
+                                    "pasta_programa": s.pasta, "subpasta": compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"]),
+                                    "escolher": os.name == "nt"})
         return self._responder({"erro": "não existe"}, status=404)
 
     def do_POST(self):
@@ -266,7 +296,7 @@ class Tratador(BaseHTTPRequestHandler):
                 doc_atual = cfg.get("documento_escritorio") or {}
                 ok, motivo = conta.cadastrar(cfg, VERSAO, corpo.get("email"), corpo.get("nome") or cfg["usuario"].get("nome"),
                                              corpo.get("documento") or doc_atual.get("numero"),
-                                             corpo["papel"] if "papel" in corpo else cfg["usuario"].get("papel"),
+                                             papel_valido(corpo) if "papel" in corpo else cfg["usuario"].get("papel"),
                                              doc_tipo=corpo.get("doc_tipo") or doc_atual.get("tipo") or "cnpj")
                 if not ok:
                     return self._responder({"ok": False, "motivo": motivo, "conta": conta.situacao(cfg)})
@@ -279,14 +309,20 @@ class Tratador(BaseHTTPRequestHandler):
             if "nome" in corpo:
                 cfg["usuario"]["nome"] = str(corpo["nome"] or "").strip()[:60]
             if "papel" in corpo:
-                cfg["usuario"]["papel"] = corpo["papel"] if corpo["papel"] in PAPEIS else ""
+                cfg["usuario"]["papel"] = papel_valido(corpo)
             if "pasta" in corpo:
                 pasta = str(corpo["pasta"] or "").strip()
+                if pasta and not os.path.isdir(pasta) and corpo.get("criar"):
+                    try:
+                        os.makedirs(pasta, exist_ok=True)
+                    except OSError as e:
+                        return self._responder({"ok": False, "motivo": f"Não consegui criar a pasta ({e.__class__.__name__})."})
                 if pasta and not os.path.isdir(pasta):
-                    return self._responder({"ok": False, "motivo": "Essa pasta não existe neste computador."})
+                    return self._responder({"ok": False, "motivo": "Essa pasta ainda não existe neste computador.", "nao_existe": True})
+                cfg["compartilhar"]["subpasta"] = compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"])
                 cfg["compartilhar"]["pasta"] = pasta
                 if pasta:
-                    ok, msg = compartilhar.testar(pasta, cfg["compartilhar"].get("subpasta") or "LexSuiteONE")
+                    ok, msg = compartilhar.testar(pasta, cfg["compartilhar"]["subpasta"])
                     if not ok:
                         return self._responder({"ok": False, "motivo": msg})
                     try:
@@ -294,7 +330,10 @@ class Tratador(BaseHTTPRequestHandler):
                     except Exception as e:
                         return self._responder({"ok": False, "motivo": f"Não consegui criar a planilha ({e.__class__.__name__})."})
             config.salvar(s.caminho_config, cfg)
+            base_nova = compartilhar.pasta_base(cfg)
             resposta = {"ok": True, "radar": r, "escritorio": cfg.get("escritorio", ""), "pasta": cfg["compartilhar"].get("pasta", ""),
+                        "planilha": preferencias.caminho(base_nova) if base_nova else "", "subpasta": cfg["compartilhar"].get("subpasta", ""),
+                        "no_drive": compartilhar.no_google_drive(cfg["compartilhar"].get("pasta", "")),
                         "conta": conta.situacao(cfg)}
             mudou_horario = "horarios" in corpo or "dias" in corpo
             if agendar.disponivel() and ("agendar" in corpo or (mudou_horario and agendar.agendado())):
@@ -306,14 +345,23 @@ class Tratador(BaseHTTPRequestHandler):
             cfg = s.config()
             base = compartilhar.pasta_base(cfg)
             planilha = preferencias.caminho(base) if base else ""
-            alvo = planilha if corpo.get("o_que") == "planilha" else (os.path.dirname(planilha) if planilha else "")
+            if corpo.get("o_que") == "pasta_mae":  # a pasta escolhida, onde aparece a pasta da planilha (para compartilhar)
+                alvo = os.path.dirname(base) if base else ""
+            else:
+                alvo = planilha if corpo.get("o_que") == "planilha" else (os.path.dirname(planilha) if planilha else "")
             if abrir_no_windows(alvo):
                 return self._responder({"ok": True})
             return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Escolha a pasta do Google Drive em Configuração e faça uma leitura.",
                                     "caminho": planilha})
         if caminho == "/testar-pasta":
-            ok, msg = compartilhar.testar(str(corpo.get("pasta") or "").strip(), s.config()["compartilhar"].get("subpasta") or "LexSuiteONE")
-            return self._responder({"ok": ok, "mensagem": msg})
+            cfg = s.config()
+            pasta = str(corpo.get("pasta") or "").strip()
+            ok, msg = compartilhar.testar(pasta, compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"]), criar=bool(corpo.get("criar")))
+            return self._responder({"ok": ok, "mensagem": msg, "nao_existe": bool(pasta) and not os.path.isdir(pasta),
+                                    "no_drive": compartilhar.no_google_drive(pasta)})
+        if caminho == "/escolher-pasta":
+            pasta = escolher_pasta(str(corpo.get("inicio") or ""))
+            return self._responder({"ok": bool(pasta), "pasta": pasta})
         if caminho == "/atualizar":
             if s.estado.como_dict()["rodando"]:
                 return self._responder({"ok": False, "motivo": "espere a rodada terminar"})
@@ -376,6 +424,67 @@ def personalizar_manual(html, cfg):
     return html.replace("<!--OLA-->", ola, 1).replace("<!--PARA_VOCE-->", bloco, 1)
 
 
+_ESCOLHER_PS = ("Add-Type -AssemblyName System.Windows.Forms; [Console]::OutputEncoding = [Text.Encoding]::UTF8; "
+                "$f = New-Object System.Windows.Forms.Form; $f.TopMost = $true; "
+                "$d = New-Object System.Windows.Forms.FolderBrowserDialog; $d.Description = $env:LEXSUITE_TITULO; "
+                "$d.ShowNewFolderButton = $true; if ($env:LEXSUITE_INICIO) { $d.SelectedPath = $env:LEXSUITE_INICIO }; "
+                "if ($d.ShowDialog($f) -eq 'OK') { [Console]::Out.Write($d.SelectedPath) }")
+
+
+def escolher_pasta(inicio=""):
+    """Abre a janela de pastas do Windows e devolve a pasta escolhida ("" se cancelou ou fora do Windows)."""
+    if os.name != "nt":
+        return ""
+    import subprocess  # nosec B404 - só powershell, sem shell, comando fixo; o texto vai por variável de ambiente
+    env = dict(os.environ, LEXSUITE_TITULO="Escolha a pasta da planilha (de preferência dentro do Meu Drive / My Drive)",
+               LEXSUITE_INICIO=inicio if os.path.isdir(inicio) else "")
+    try:
+        r = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-STA", "-Command", _ESCOLHER_PS],  # nosec B603 B607
+                           capture_output=True, env=env, timeout=600, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        pasta = r.stdout.decode("utf-8", "replace").strip()
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return pasta if pasta and os.path.isdir(pasta) else ""
+
+
+def titulo_janela(texto):
+    """Título da janela preta no Windows (lembra que ela precisa ficar aberta)."""
+    if os.name == "nt":
+        try:
+            import ctypes
+            ctypes.windll.kernel32.SetConsoleTitleW(str(texto)[:80])
+        except (OSError, AttributeError):
+            pass
+
+
+def navegador_app():
+    """Chrome ou Edge deste computador, para abrir a tela como janela de aplicativo (sem barra de endereço)."""
+    if os.name != "nt":
+        return ""
+    bases = [os.environ.get(v, "") for v in ("ProgramFiles", "ProgramFiles(x86)", "LOCALAPPDATA")]
+    for rel in (r"Google\Chrome\Application\chrome.exe", r"Microsoft\Edge\Application\msedge.exe"):
+        for b in bases:
+            exe = os.path.join(b, rel) if b else ""
+            if exe and os.path.isfile(exe):
+                return exe
+    return ""
+
+
+def abrir_janela(url):
+    """Abre a tela numa janela própria, com o nome e o ícone do produto e sem o endereço 127.0.0.1 à vista.
+    Sem Chrome nem Edge, abre no navegador padrão."""
+    exe = navegador_app()
+    if exe:
+        try:
+            import subprocess  # nosec B404 - só o navegador, sem shell, argumentos fixos
+            subprocess.Popen([exe, f"--app={url}", "--window-size=1320,900"], close_fds=True)  # nosec B603
+            return True
+        except OSError:
+            pass
+    webbrowser.open(url)
+    return False
+
+
 def criar(pasta, porta=None):
     for p in ([int(porta)] if porta else list(PORTAS)):
         try:
@@ -390,8 +499,9 @@ def servir(pasta, porta=None, abrir=True, aviso=print):
     url = f"http://127.0.0.1:{servidor.server_address[1]}/"
     aviso(f"  LexSuiteONE aberto em {url}")
     aviso("  Deixe esta janela aberta enquanto usa a tela. Para encerrar, feche a janela (ou Ctrl+C).")
+    titulo_janela(f"{marca(pasta).get('nome', 'RADAR JUDICIAL')} - não feche esta janela")
     if abrir:
-        threading.Timer(0.6, lambda: webbrowser.open(url)).start()
+        threading.Timer(0.6, lambda: abrir_janela(url)).start()
 
     def migrar():
         try:
