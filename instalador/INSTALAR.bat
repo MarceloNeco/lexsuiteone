@@ -25,6 +25,44 @@ where curl.exe >nul 2>nul || goto sem_ferramentas
 where tar.exe >nul 2>nul || goto sem_ferramentas
 where certutil.exe >nul 2>nul || goto sem_ferramentas
 
+if exist "%T%" rd /s /q "%T%"
+mkdir "%T%" 2>nul
+
+rem Codigo de cliente, antes de tudo: sem codigo valido nada e instalado, e todo aviso de erro deste computador
+rem chega a SolverONE com o codigo do escritorio e a identificacao (aleatoria) desta instalacao.
+set "INST="
+set "CODIGO_OK="
+for /f "usebackq delims=" %%g in (`powershell.exe -NoProfile -Command "[guid]::NewGuid().ToString('N').Substring(0,16)"`) do set "INST=%%g"
+echo  Digite o codigo de cliente que veio no e-mail de boas-vindas (exemplo: LEX-ABCD-2345).
+echo  Para colar, clique com o botao direito dentro desta janela.
+echo.
+set "TENTATIVAS=0"
+:pedir_codigo
+set "CODIGO="
+set /p "CODIGO=  Codigo de cliente: "
+if not defined CODIGO goto pedir_codigo
+set "CODIGO=%CODIGO: =%"
+echo(%CODIGO%| findstr /r /i /x /c:"LEX-[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]-[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]" >nul || goto codigo_formato
+set "CODIGO_OK=%CODIGO%"
+curl.exe -s -m 20 -o "%T%\conta.txt" -X POST "%REGISTRO%" -H "Content-Type: application/json" -d "{\"codigo\":\"%CODIGO_OK%\",\"instalacao\":\"%INST%\",\"versao\":\"instalador\"}" || goto sem_internet
+findstr /r /c:"ok.:true" "%T%\conta.txt" >nul && goto codigo_ok
+findstr /c:"codigo_desconhecido" "%T%\conta.txt" >nul && goto codigo_desconhecido
+findstr /c:"desativado" "%T%\conta.txt" >nul && goto licenca_inativa
+findstr /c:"vencido" "%T%\conta.txt" >nul && goto licenca_inativa
+goto sem_internet
+:codigo_formato
+echo  O codigo tem o formato LEX-XXXX-XXXX. Tente de novo.
+goto mais_uma
+:codigo_desconhecido
+echo  Este codigo nao existe. Confira no e-mail de boas-vindas e tente de novo.
+:mais_uma
+set /a TENTATIVAS+=1
+if %TENTATIVAS% GEQ 3 goto codigo_esgotado
+goto pedir_codigo
+:codigo_ok
+echo  Codigo confirmado.
+echo.
+
 rem Pasta de destino: C:\LexSuiteONE; se o Windows nao deixar, a pasta do usuario.
 set "DEST=C:\LexSuiteONE"
 if exist "%LOCALAPPDATA%\LexSuiteONE\lexsuite_robo.py" if not exist "C:\LexSuiteONE\lexsuite_robo.py" set "DEST=%LOCALAPPDATA%\LexSuiteONE"
@@ -37,9 +75,6 @@ if not exist "%DEST%\" mkdir "%DEST%" 2>nul
 if not exist "%DEST%\.teste-escrita" goto sem_pasta
 :destino_ok
 del "%DEST%\.teste-escrita" 2>nul
-
-if exist "%T%" rd /s /q "%T%"
-mkdir "%T%" 2>nul
 
 echo  1 de 5  Consultando a versao mais nova...
 curl.exe -fsSL --retry 3 -o "%T%\instalar.txt" "%SITE%/atualizacao/instalar.txt" || goto sem_internet
@@ -74,6 +109,8 @@ if not exist "%DEST%\lexsuite_robo.py" goto falha_extrair
 if exist "%DEST%\chave_publica.txt" goto chave_ok
 >"%DEST%\chave_publica.txt" echo %CHAVE%
 :chave_ok
+rem O programa le este arquivo na primeira abertura: o codigo ja vem preenchido e a identificacao e a mesma.
+>"%DEST%\conta-inicial.json" echo {"codigo":"%CODIGO_OK%","instalacao":"%INST%"}
 
 echo  4 de 5  Preparando o que o programa precisa para funcionar (11 MB, so na primeira vez)...
 call "%DEST%\INSTALAR-PYTHON.bat" --silencioso >nul
@@ -98,6 +135,15 @@ exit /b 0
 :sem_ferramentas
 echo  Este Windows nao tem as ferramentas basicas que o instalador usa ^(curl, tar e certutil^).
 echo  Ele precisa de Windows 10 atualizado ou Windows 11.
+goto erro
+:codigo_esgotado
+set "ETAPA=codigo de cliente"
+set "DETALHE=3 tentativas sem codigo valido"
+echo  Nao foi possivel confirmar o codigo de cliente.
+goto erro
+:licenca_inativa
+set "ETAPA=licenca inativa"
+echo  A licenca deste escritorio nao esta ativa.
 goto erro
 :sem_pasta
 set "ETAPA=pasta de destino"
@@ -131,7 +177,7 @@ echo  Confira a internet ^(o download vem do site oficial python.org^) e rode o 
 goto erro
 :erro
 if defined ETAPA (
-  curl.exe -s -m 15 -X POST "%REGISTRO%" -H "Content-Type: application/json" -d "{\"acao\":\"registro\",\"origem\":\"instalador\",\"etapa\":\"%ETAPA%\",\"versao\":\"%versao%\",\"windows\":\"%WINVER%\",\"mensagem\":\"%DETALHE%\"}" >nul 2>&1
+  curl.exe -s -m 15 -X POST "%REGISTRO%" -H "Content-Type: application/json" -d "{\"acao\":\"registro\",\"origem\":\"instalador\",\"etapa\":\"%ETAPA%\",\"versao\":\"%versao%\",\"windows\":\"%WINVER%\",\"mensagem\":\"%DETALHE%\",\"codigo\":\"%CODIGO_OK%\",\"instalacao\":\"%INST%\"}" >nul 2>&1
   echo.
   echo  A SolverONE recebeu um aviso tecnico deste erro ^(sem dados pessoais^).
 )

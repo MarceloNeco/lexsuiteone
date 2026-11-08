@@ -49,6 +49,21 @@ class Instalador(unittest.TestCase):
         self.assertEqual(ordem, sorted(ordem))
         self.assertIn('if /i not "%H%"=="%sha256%" goto hash_ruim', self.texto)
 
+    def test_pede_e_confere_o_codigo_antes_de_baixar(self):
+        self.assertLess(self.texto.index('set /p "CODIGO='), self.texto.index("instalar.txt"))
+        self.assertLess(self.texto.index('"versao\\":\\"instalador'), self.texto.index("tar.exe -xf"))
+        self.assertIn("conta-inicial.json", self.texto)
+        self.assertIn('\\"codigo\\":\\"%CODIGO_OK%\\",\\"instalacao\\":\\"%INST%\\"}', self.texto)  # todo aviso de erro diz a origem
+
+    def test_programa_le_o_codigo_do_instalador(self):
+        import json, tempfile
+        from lexsuite import config
+        pasta = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "conta-inicial.json"), "w", encoding="utf-8") as f:
+            json.dump({"codigo": "LEX-7K4M-2PQ9", "instalacao": "0123456789abcdef"}, f)
+        cfg = config.carregar(os.path.join(pasta, "config.json"), aviso=lambda *_: None)
+        self.assertEqual((cfg["conta"]["codigo"], cfg["conta"]["instalacao"]), ("LEX-7K4M-2PQ9", "0123456789abcdef"))
+
     def test_nao_aceita_qualquer_variavel_do_site(self):
         self.assertNotRegex(self.texto, r'set "%%a=%%b"')
         self.assertIn('findstr /r /x /c:"LexSuiteONE-RADAR-atualizacao-', self.texto)

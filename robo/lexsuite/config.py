@@ -39,6 +39,20 @@ def carregar(caminho, aviso=print):
             cfg[bloco] = {}
         for chave, valor in PADRAO[bloco].items():
             cfg[bloco].setdefault(chave, valor)
+    # O instalador deixa o código de cliente já conferido e a identificação desta instalação (conta-inicial.json).
+    inicial = os.path.join(os.path.dirname(caminho), "conta-inicial.json")
+    if os.path.exists(inicial):
+        try:
+            with open(inicial, encoding="utf-8-sig") as f:
+                ini = json.load(f)
+        except (OSError, ValueError):
+            ini = {}
+        if not isinstance(cfg.get("conta"), dict):
+            cfg["conta"] = {}
+        for chave in ("codigo", "instalacao"):
+            valor = str((ini or {}).get(chave) or "").strip()
+            if valor and not cfg["conta"].get(chave):
+                cfg["conta"][chave] = valor
     return cfg
 
 
