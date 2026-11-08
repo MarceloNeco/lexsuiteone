@@ -1,11 +1,11 @@
 # Retomar o projeto numa sessão nova (estado em 08/Nov/2026, noite)
 
 Este arquivo existe para uma conversa nova do Claude Code começar sem reler o histórico. Leia junto `CLAUDE.md`,
-`robo/PENDENCIAS.md`, `docs/DNS-SOLVERONE.md`, `docs/PUBLICAR.md` e `docs/VISITA-KR-LAW.md`. Confirme o estado por fora antes de agir: nada aqui substitui conferir.
+`robo/PENDENCIAS.md`, `docs/DNS-SOLVERONE.md`, `docs/PUBLICAR.md` e `docs/VISITA-KR-LAW.md`. Confirme o estado por fora antes de agir: nada aqui substitui conferir. **Antes de qualquer tarefa, leia `docs/QUADRO.md`**: é onde as três sessões anotam o que estão fazendo.
 
 ## O que já existe e funciona
 
-- Robô v0.7.5 (`robo/`), testes verdes, pacote em `releases/` e `docs/downloads/`. Tela local em 127.0.0.1, planilha
+- Robô v0.7.9 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), testes verdes, pacote em `releases/` e `docs/downloads/`. Tela local em 127.0.0.1, planilha
   `LexSuiteONE.xlsx` no Drive do escritório, atualização assinada (chave só na nuvem), manual personalizado, revisão de
   segurança (risco baixo).
 - Site https://judicial.solverone.com.br **no ar** (GitHub Pages, pasta `docs/`, HTTPS forçado): página inicial PT/EN,
@@ -37,7 +37,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   sem Gmail. ImprovMX fica de reserva até ser cancelado (~2 semanas).
 - Repositório segue no GitHub pessoal até depois da visita; migração para a organização `solverone` sem impacto para o
   cliente (tudo que ele vê aponta para `judicial.solverone.com.br`). Roteiro em `robo/PENDENCIAS.md`.
-- Instalação no cliente (KR Law) na quinta-feira 12/Nov, na casa do Leandro, pelo dono. O pacote de quinta é o 0.7.5.
+- Instalação no cliente (KR Law) na quinta-feira 12/Nov, na casa do Leandro, pelo dono. O pacote de quinta é a última versão publicada (0.7.9 em 08/Nov).
   Roteiro da visita e prompts do Claude in Chrome (PJe, contatos e anúncios, Astrea) em `docs/VISITA-KR-LAW.md`.
 
 ## O que só o dono faz (sem conector)
