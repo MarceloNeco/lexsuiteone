@@ -16,8 +16,8 @@ Lista viva. Quem continuar (qualquer modelo ou pessoa) lê este arquivo e o `ARQ
   transferência para a organização: mover o repositório, religar o Pages com o mesmo domínio, trocar o alvo do CNAME
   `judicial` para `solverone.github.io` (no Cloudflare, pelo conector), atualizar links do README. O GitHub redireciona
   os endereços antigos. A chave pública de assinatura não muda.
-- E-mail (depois de quinta): levar o recebimento do ImprovMX para o Cloudflare Email Routing (grátis, DNS já lá), com um
-  Email Worker que responde automaticamente em `integracao@` e encaminha `contato@`. Texto da resposta, por decisão do
+- E-mail: **feito em 08/Nov**. Recebimento no Cloudflare Email Routing, com Email Worker que responde automaticamente
+  em `integracao@` e encaminha `contato@` e os demais apelidos. Texto da resposta, por decisão do
   dono: **"Este endereço é usado por sistemas da SolverONE e não é lido por pessoas. Esta mensagem não será
   respondida."** Sem indicar outro e-mail por enquanto; quando houver processo de atendimento, passa a indicar
   `contato@`. Mais tarde, triagem em `contato@` (problema, contato comum, comercial).

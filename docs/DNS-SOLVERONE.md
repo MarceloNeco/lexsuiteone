@@ -44,16 +44,25 @@ No painel do Registro.br, em `solverone.com.br`, "Editar zona", modo avançado, 
 Depois, no repositório, Settings, Pages: branch `main`, pasta `/docs`, domínio `judicial.solverone.com.br`, e "Enforce HTTPS"
 quando o GitHub liberar (até uma hora). O arquivo `docs/CNAME` já está no repositório.
 
-## Caixas de e-mail sem Google Workspace
+## E-mail de recebimento: Cloudflare Email Routing (desde 08/Nov/2026, 00h39 UTC)
 
-O recebimento é pelo ImprovMX (encaminhamento), não pelo Google Workspace. Isso muda como criar as caixas:
+O recebimento saiu do ImprovMX e passou para o **Cloudflare Email Routing**, na própria zona. Registros no apex:
+MX `route1/2/3.mx.cloudflare.net`, TXT SPF `v=spf1 include:_spf.mx.cloudflare.net ~all`, DKIM `cf2024-1._domainkey`.
+Os registros do ImprovMX (MX `mx1/mx2.improvmx.com` e o SPF antigo) foram removidos; a conta do ImprovMX fica como
+reserva por algumas semanas e depois pode ser cancelada.
 
-- `contato@solverone.com.br` e `integracao@solverone.com.br`: **apelidos no ImprovMX** (já existem), encaminhando para a
-  caixa que você lê. O cliente só vê `@solverone.com.br`.
-- `integracao@` precisa também ser uma **Conta Google**, porque é com ela que o cliente compartilha a pasta do Drive. Crie em
-  `accounts.google.com/SignUpWithoutGmail` usando `integracao@solverone.com.br` como e-mail (o código de confirmação chega
-  pelo encaminhamento). Essa conta passa a ser a identidade do suporte no Drive, sem expor nenhum Gmail pessoal.
-- `nao-responda@` não precisa existir: só envia, pelo Resend.
+Regras (lista fechada; endereço que não está aqui é recusado):
+
+| Endereço | O que acontece |
+|---|---|
+| `contato@`, `admin@`, `privacidade@`, `suporte@`, `ceo@` | encaminhados para a caixa pessoal do dono (destino verificado no Cloudflare; o endereço não fica em documento nenhum) |
+| `integracao@` | Email Worker `integracao-resposta`: encaminha em silêncio para a mesma caixa (por ali chegam os códigos da Conta Google) e, se o remetente for pessoa, responde: "Este endereço é usado por sistemas da SolverONE e não é lido por pessoas. Esta mensagem não será respondida." Mensagens automáticas (no-reply, listas, `Auto-Submitted`) não recebem resposta. |
+| qualquer outro | recusado (catch-all desligado) |
+
+- `nao-responda@` só envia (Resend) e não tem regra: resposta a ele é recusada, como deve ser.
+- `integracao@` é também uma Conta Google (criada em 07/Nov), com a qual o cliente compartilha a pasta do Drive.
+- Para mudar o destino, regras ou o texto da resposta: pelo conector de API do Cloudflare (o Worker é o script
+  `integracao-resposta` na conta) ou no painel, Email, Email Routing.
 
 ## DNSSEC: como está e como trocar sem derrubar
 
