@@ -119,5 +119,20 @@ class Cadastro(unittest.TestCase):
         self.assertIn("número máximo", motivo)
 
 
+
+class RegistroDeErro(unittest.TestCase):
+    def test_tira_o_nome_da_pasta_do_usuario(self):
+        t = conta._sem_caminho_pessoal('File "C:\\Users\\Fulano de Tal\\AppData\\x.py", c:/users/ana/b.txt')
+        self.assertNotIn("Fulano", t)
+        self.assertNotIn("ana/", t)
+
+    def test_envia_sem_travar(self):
+        enviado = {}
+        self.assertTrue(conta.registrar_erro({"conta": {"codigo": CODIGO, "instalacao": "0123456789abcdef"}}, "0.7.7", "leitura", "erro X",
+                                             pedir=lambda u, c, **k: enviado.update(c)))
+        self.assertEqual((enviado["acao"], enviado["origem"], enviado["codigo"]), ("registro", "programa", CODIGO))
+        self.assertFalse(conta.registrar_erro({}, "0.7.7", "leitura", "erro", pedir=sem_internet))
+
+
 if __name__ == "__main__":
     unittest.main()

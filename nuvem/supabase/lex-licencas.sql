@@ -68,3 +68,20 @@ revoke all on function public.lex_criar_conta(text, date) from public, anon, aut
 
 -- Neste projeto, tabela nova não dá acesso automático à chave de serviço: a função lex-conta precisa disto.
 grant select, insert, update on public.lex_contas, public.lex_usuarios, public.lex_instalacoes to service_role;
+
+-- Registros técnicos de erro (instalador e programa), para diagnóstico. Sem dado pessoal.
+create table if not exists public.lex_registros (
+  id          bigint generated always as identity primary key,
+  criado_em   timestamptz not null default now(),
+  origem      text not null check (origem in ('instalador', 'programa')),
+  etapa       text not null default '',
+  mensagem    text not null default '',
+  versao      text not null default '',
+  windows     text not null default '',
+  instalacao  text check (instalacao is null or instalacao ~ '^[0-9a-f]{16}$'),
+  codigo      text
+);
+create index if not exists lex_registros_criado_em on public.lex_registros (criado_em desc);
+alter table public.lex_registros enable row level security;
+revoke all on public.lex_registros from anon, authenticated;
+grant select, insert on public.lex_registros to service_role;

@@ -6,10 +6,16 @@ rem Baixa o pacote de judicial.solverone.com.br, confere a impressao digital (SH
 rem pasta deste computador, prepara o que o programa precisa e cria o atalho. Nao pede senha de administrador.
 rem Pode ser rodado de novo para atualizar ou consertar: configuracao, banco e lista ficam como estao.
 rem Funciona aberto direto de dentro do .zip: nao depende de nenhum arquivo ao lado dele.
+rem Se falhar, avisa a SolverONE (etapa, versao do Windows e detalhe tecnico; nada pessoal) para o diagnostico.
 set "SITE=https://judicial.solverone.com.br"
 set "CHAVE=d62d303a9f1361971d959e68a48e63d5c128d20b5874b08a6a7beeca825147ca"
 set "CONTATO=judicial@solverone.com.br"
 set "T=%TEMP%\LexSuiteONE-instalar"
+set "REGISTRO=https://qvdvkqydhnadhewcidia.supabase.co/functions/v1/lex-conta"
+set "ETAPA="
+set "DETALHE="
+set "WINVER="
+for /f "tokens=2 delims=[]" %%v in ('ver') do set "WINVER=%%v"
 echo.
 echo  Instalando o LexSuiteONE neste computador
 echo  -----------------------------------------
@@ -94,27 +100,41 @@ echo  Este Windows nao tem as ferramentas basicas que o instalador usa ^(curl, t
 echo  Ele precisa de Windows 10 atualizado ou Windows 11.
 goto erro
 :sem_pasta
+set "ETAPA=pasta de destino"
 echo  Nao consegui criar a pasta do programa nem em C:\LexSuiteONE nem na pasta do usuario.
 goto erro
 :sem_internet
+set "ETAPA=download"
 echo  Nao consegui baixar de judicial.solverone.com.br.
 echo  Confira a internet ^(ou o proxy da empresa^) e rode o instalador de novo.
 goto erro
 :manifesto_ruim
+set "ETAPA=manifesto instalar.txt"
+set "DETALHE=arquivo=%arquivo% versao=%versao%"
 echo  A informacao de versao baixada do site veio incompleta. Nada foi instalado.
 goto erro
 :hash_ruim
+set "ETAPA=impressao digital"
+set "DETALHE=esperado=%sha256% obtido=%H%"
 echo  O arquivo baixado nao confere com a impressao digital publicada. Nada foi instalado.
 echo  Rode o instalador de novo; se repetir, avise o suporte.
 goto erro
 :falha_extrair
+set "ETAPA=descompactar"
+set "DETALHE=errorlevel=%errorlevel%"
 echo  Nao consegui descompactar o pacote em %DEST%.
 goto erro
 :sem_python
+set "ETAPA=preparar python"
 echo  Nao consegui preparar o que o programa precisa para funcionar.
 echo  Confira a internet ^(o download vem do site oficial python.org^) e rode o instalador de novo.
 goto erro
 :erro
+if defined ETAPA (
+  curl.exe -s -m 15 -X POST "%REGISTRO%" -H "Content-Type: application/json" -d "{\"acao\":\"registro\",\"origem\":\"instalador\",\"etapa\":\"%ETAPA%\",\"versao\":\"%versao%\",\"windows\":\"%WINVER%\",\"mensagem\":\"%DETALHE%\"}" >nul 2>&1
+  echo.
+  echo  A SolverONE recebeu um aviso tecnico deste erro ^(sem dados pessoais^).
+)
 echo.
 echo  Duvidas: %CONTATO%
 rd /s /q "%T%" 2>nul

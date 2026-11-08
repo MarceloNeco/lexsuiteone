@@ -206,3 +206,29 @@ def cadastrar(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnp
     cfg["documento_escritorio"] = {"tipo": doc_tipo, "numero": doc}
     c["cadastrado"] = email
     return True, ""
+
+
+# ---------- registro técnico de erro, para diagnóstico ----------
+def _sem_caminho_pessoal(texto):
+    """Tira do texto a pasta do usuário do Windows (que traz o nome da pessoa)."""
+    import os
+    t = str(texto or "")
+    for pasta in {os.path.expanduser("~"), os.environ.get("USERPROFILE", ""), os.environ.get("LOCALAPPDATA", "")}:
+        if pasta and len(pasta) > 3:
+            t = t.replace(pasta, "~").replace(pasta.replace("\\", "/"), "~")
+    return re.sub(r"(?i)([a-z]:[\\/]+users[\\/]+)[^\\/\"']+", r"\1~", t)
+
+
+def registrar_erro(cfg, versao, etapa, mensagem, pedir=None):
+    """Envia à SolverONE um registro técnico de erro (etapa, versão, Windows, mensagem sem caminhos pessoais).
+    Nunca levanta exceção e nunca atrasa o programa mais que alguns segundos."""
+    import platform
+    c = (cfg or {}).get("conta") or {}
+    corpo = {"acao": "registro", "origem": "programa", "etapa": str(etapa)[:60], "versao": str(versao)[:20],
+             "mensagem": _sem_caminho_pessoal(mensagem)[:2000], "windows": f"{platform.system()} {platform.release()} {platform.version()}"[:80],
+             "instalacao": c.get("instalacao", ""), "codigo": normalizar(c.get("codigo"))}
+    try:
+        (pedir or rede.pedir_json)(c.get("url") or URL_PADRAO, corpo, tentativas=1, tempo_limite=10)
+        return True
+    except Exception:
+        return False

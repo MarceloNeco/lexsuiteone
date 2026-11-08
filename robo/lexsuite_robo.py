@@ -409,7 +409,12 @@ def cmd_radar(a):
     try:
         radar.executar(cfg, banco, print, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
                        caminho_config=a.config)
-    except (rede.BloqueadoForaDoBrasil, radar.RoboDesligado) as e:
+    except radar.RoboDesligado as e:
+        raise SystemExit("  " + str(e))
+    except Exception as e:  # leitura agendada: avisa a SolverONE (sem dado pessoal) e encerra com a mensagem
+        import traceback
+        from lexsuite import conta
+        conta.registrar_erro(cfg, VERSAO, "leitura agendada", traceback.format_exc()[-1800:])
         raise SystemExit("  " + str(e))
 
 

@@ -104,12 +104,18 @@ class Servidor(ThreadingHTTPServer):
                 situacao = radar.executar(cfg, banco, self.estado.aviso, self.pasta, dias=dias, versao=VERSAO,
                                           caminho_config=self.caminho_config)
                 self.estado.terminar(situacao)
-            except (rede.BloqueadoForaDoBrasil, radar.RoboDesligado) as e:
+            except radar.RoboDesligado as e:
                 self.estado.aviso(str(e))
                 self.estado.terminar(erro=str(e))
+            except rede.BloqueadoForaDoBrasil as e:
+                self.estado.aviso(str(e))
+                self.estado.terminar(erro=str(e))
+                conta.registrar_erro(self.config(), VERSAO, "leitura: fora do Brasil", str(e))
             except Exception as e:  # a tela precisa saber que parou, qualquer que seja o motivo
                 self.estado.aviso(f"Erro: {e.__class__.__name__}: {e}")
                 self.estado.terminar(erro=f"{e.__class__.__name__}: {e}")
+                import traceback
+                conta.registrar_erro(self.config(), VERSAO, "leitura pela tela", traceback.format_exc()[-1800:])
 
         threading.Thread(target=alvo, daemon=True, name="radar").start()
         return True

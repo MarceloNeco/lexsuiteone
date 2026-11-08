@@ -16,13 +16,30 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ ok: false, motivo: "metodo" }, 405);
   let e: Record<string, unknown>;
   try { e = await req.json(); } catch { return json({ ok: false, motivo: "dados_invalidos" }, 400); }
+  const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
+
+  // Registro técnico de erro (instalador ou programa). Aceito sem código de cliente: o instalador falha antes dele.
+  // Limites: tamanho dos campos e no máximo 30 registros por instalação (ou sem instalação) por hora.
+  if (e.acao === "registro") {
+    const origem = e.origem === "programa" ? "programa" : "instalador";
+    const inst = INSTALACAO.test(texto(e.instalacao, 16).toLowerCase()) ? texto(e.instalacao, 16).toLowerCase() : null;
+    const desde = new Date(Date.now() - 3600_000).toISOString();
+    let q = sb.from("lex_registros").select("id", { count: "exact", head: true }).gte("criado_em", desde);
+    q = inst ? q.eq("instalacao", inst) : q.is("instalacao", null);
+    const { count } = await q;
+    if ((count ?? 0) >= 30) return json({ ok: false, motivo: "limite" });
+    const cod = texto(e.codigo, 13).toUpperCase();
+    await sb.from("lex_registros").insert({ origem, etapa: texto(e.etapa, 60), mensagem: texto(e.mensagem, 2000), versao: texto(e.versao, 20),
+      windows: texto(e.windows, 80), instalacao: inst, codigo: CODIGO.test(cod) ? cod : null });
+    return json({ ok: true });
+  }
+
   const codigo = texto(e.codigo, 13).toUpperCase();
   const instalacao = texto(e.instalacao, 16).toLowerCase();
   const versao = texto(e.versao, 20);
   if (!CODIGO.test(codigo)) return json({ ok: false, motivo: "codigo_invalido" });
   if (!INSTALACAO.test(instalacao)) return json({ ok: false, motivo: "dados_invalidos" });
 
-  const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
   const { data: conta, error } = await sb.from("lex_contas").select("codigo, escritorio, documento, max_pessoas, ativo, validade, mensagem").eq("codigo", codigo).maybeSingle();
   if (error) return json({ ok: false, motivo: "erro" }, 500);
   if (!conta) return json({ ok: false, motivo: "codigo_desconhecido" });
