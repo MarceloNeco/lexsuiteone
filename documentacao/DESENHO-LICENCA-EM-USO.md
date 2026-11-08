@@ -1,5 +1,11 @@
 # Licença em uso · desenho curto (Arquitetura, 08/Nov/2026)
 
+**Aprovado pelo dono em 08/Nov à noite ("Pode"), com as três respostas: (1) enquanto aguarda aprovação, o programa lê
+normalmente (C1); (2) avisos enviados pela função da nuvem com a chave do Resend nos Secrets do Supabase, colada só pelo
+dono (D1); (3) e-mail de boas-vindas devolvido só até a primeira pessoa se cadastrar (E).** Estado: SQL em
+`nuvem/supabase/2026-11-08b-lex-licenca-em-uso.sql` (o dono revisa e roda, depois do SQL de correção); `lex-conta` v4
+escrita em `nuvem/supabase/functions/lex-conta/index.ts`, **publicada só depois de o SQL rodar** (ela usa as colunas novas).
+
 Pedido da Produto (quadro, 08/Nov) com a ideia aprovada pelo dono. **Nada é implementado antes do "pode" dele.**
 Vale para o que já está no ar (0.7.10 instalada; KR Law instala quinta 12/Nov): todo campo novo é opcional e nenhum
 programa antigo é bloqueado. SQL só em arquivo; o dono roda depois de revisar. Reaproveita o que existe: `lex_contas`,
@@ -74,7 +80,7 @@ boas-vindas, onde os dois estão juntos, então não há vazamento novo. A tela 
 
 | Arquivo | Mudança | Quem |
 |---|---|---|
-| `nuvem/supabase/2026-11-09-lex-licenca-em-uso.sql` (novo) | colunas: `lex_contas.dominios`, `email_boas_vindas`, `exigir_aprovacao`; `lex_usuarios.aprovacao/aprovado_por/aprovado_em`; `lex_instalacoes.nome_pc/esquecida_em`; tabela `lex_avisos`; visão `lex_computadores`; tipos novos em `lex_eventos`; `admin_lex_aprovar_pessoa`, `admin_lex_esquecer_instalacao`; `admin_lex_salvar`/`admin_lex_detalhe`/`admin_lex_criar` ampliadas. Tudo opcional, com GRANT, "desfazer" e conferência | Arquitetura (dono roda) |
+| `nuvem/supabase/2026-11-08b-lex-licenca-em-uso.sql` (novo) | colunas: `lex_contas.dominios`, `email_boas_vindas`, `exigir_aprovacao`; `lex_usuarios.aprovacao/aprovado_por/aprovado_em`; `lex_instalacoes.nome_pc/esquecida_em`; tabela `lex_avisos`; visão `lex_computadores`; tipos novos em `lex_eventos`; `admin_lex_aprovar_pessoa`, `admin_lex_esquecer_instalacao`; `admin_lex_salvar`/`admin_lex_detalhe`/`admin_lex_criar` ampliadas. Tudo opcional, com GRANT, "desfazer" e conferência | Arquitetura (dono roda) |
 | `nuvem/supabase/functions/lex-conta/index.ts` → v4 | limites por chamada (revisão de 08/Nov), `em_uso`, `email_sugerido`, regra de aprovação, avisos (D1), respostas genéricas | Arquitetura |
 | `robo/lexsuite/conta.py`, `config.py` | id em `%LOCALAPPDATA%\LexSuiteONE\instalacao.json` com cópia na pasta; `nome_pc`; ler `em_uso`, `email_sugerido`, `aprovacao` da resposta | Produto |
 | `robo/radar_modelo.html`, `app.py` | passo 1: aviso "código em uso" com confirmação; e-mail preenchido; selo "aguardando confirmação" / "e-mail não aceito" | Produto |
@@ -84,6 +90,17 @@ boas-vindas, onde os dois estão juntos, então não há vazamento novo. A tela 
 | `robo/testes/` | id estável, confirmação, aprovação, programa antigo contra resposta nova | Produto |
 
 Ordem: SQL (dono roda) → `lex-conta` v4 → programa e instalador (Produto, versão 0.7.11) → RootifyONE → textos e chave.
+
+## Passo a passo do dono (nesta ordem)
+
+1. Rodar `nuvem/supabase/2026-11-08-lex-correcoes-seguranca.sql` (SQL Editor → New query → colar → Run; tudo "true").
+2. Rodar `nuvem/supabase/2026-11-08b-lex-licenca-em-uso.sql` do mesmo jeito (tudo "true").
+3. Resend → API Keys → Create API Key → nome `supabase-lex-conta`, permissão **Sending access**, domínio
+   `solverone.com.br` → Create → copiar.
+4. Supabase → projeto `solverone-app` → Edge Functions → **Secrets** → Add new secret → Name `RESEND_API_KEY`, Value = a
+   chave do passo 3 → Save. A chave não vai para lugar nenhum além disso.
+5. Avisar a Arquitetura "SQL rodado, chave colada": ela publica a `lex-conta` v4 e confere com um teste.
+6. Na ficha da KR Law no RootifyONE (quando a tela nova chegar): preencher e-mail de boas-vindas e domínio do escritório.
 
 ## Plano de teste
 

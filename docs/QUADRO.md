@@ -112,9 +112,9 @@ RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `S
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- Esperando o dono: "pode" do desenho da 0.8 e do desenho "licença em uso"; revisar e rodar o SQL de correção.
-- Depois do "pode": SQL `2026-11-09-lex-licenca-em-uso.sql` + `lex-conta` v4 (limites, em uso, aprovação, avisos,
-  e-mail sugerido), em arquivo; PR no rootify-one (ficha da licença). Programa e instalador ficam com a Produto.
+- "Pode" do dono recebido (08/Nov, noite) para os dois desenhos. Entregue: SQL `2026-11-08b-lex-licenca-em-uso.sql` e
+  `lex-conta` v4 no repositório. Esperando o dono rodar os dois SQL e colar a chave do Resend nos Secrets; aí publico a
+  função e confiro. Depois: PR no rootify-one (ficha da licença: aguardando, esquecer, domínios, avisos) e o SQL da 0.8.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -122,6 +122,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 08/Nov (noite): licença em uso aprovada pelo dono (C1, D1, E). SQL em `nuvem/supabase/2026-11-08b-lex-licenca-em-uso.sql`
+  (testado em Postgres local) e `lex-conta` v4 em `nuvem/supabase/functions/lex-conta/index.ts` (limites por chamada com
+  HTTP 429, em uso, aprovação por domínio, avisos via Resend com caixa de saída, e-mail sugerido, respostas genéricas).
+  **Não publicada ainda**: depende do SQL. Pedido à Produto para a tela e o instalador (abaixo).
 - 08/Nov (noite): desenho "licença em uso" em `documentacao/DESENHO-LICENCA-EM-USO.md`: id estável em
   `%LOCALAPPDATA%` (A1), aviso de código em uso só com contagens, domínio do e-mail com `aguardando` sem bloquear (C1),
   avisos por e-mail pela `lex-conta` com caixa de saída (D1), e-mail de boas-vindas devolvido só até a primeira pessoa (E).
@@ -136,11 +140,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- "Pode" dos dois desenhos (0.8 e licença em uso) ou o que muda; as perguntas da licença em uso: (1) enquanto a pessoa
-  aguarda aprovação, o programa lê normalmente (recomendo) ou fica bloqueado? (2) avisos por e-mail para o responsável
-  do escritório e para judicial@, enviados pela função da nuvem com a chave do Resend colada por você nos Secrets do
-  Supabase: ok? (3) e-mail de boas-vindas devolvido ao passo 1 só até a primeira pessoa se cadastrar: ok?
-- Revisar e rodar `nuvem/supabase/2026-11-08-lex-correcoes-seguranca.sql` (passo a passo no fim da revisão).
+- Rodar, nesta ordem, `nuvem/supabase/2026-11-08-lex-correcoes-seguranca.sql` e `nuvem/supabase/2026-11-08b-lex-licenca-em-uso.sql`;
+  criar no Resend uma chave só de envio e colar nos Secrets do Supabase como `RESEND_API_KEY` (passo a passo em
+  `documentacao/DESENHO-LICENCA-EM-USO.md`, "Passo a passo do dono"). Depois me avisar: "SQL rodado, chave colada".
 - Termo de tratamento de dados com a KR Law (bloqueante para a 0.8 entrar no ar).
 
 ---
@@ -176,6 +178,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 08/Nov | Operação | Arquitetura | O `CLAUDE.md` diz que o pacote tem 38 arquivos; a 0.7.10 tem 40 no download completo (39 mais a chave pública) e 39 no pacote de atualização (conferido). Atualizar o número | sim (Arquitetura, 08/Nov): CLAUDE.md fala em 40 no download e 39 na atualização |
 | 08/Nov | Produto | Arquitetura | Licença em uso (o dono aprovou a ideia): identificação estável do computador ao reinstalar, aviso de código já em uso no passo 1, domínio do e-mail com aprovação, avisos de pessoa/computador novo; junto com o item 4. Prompt pronto em `documentacao/PEDIDO-ARQUITETURA-LICENCA-EM-USO.md`. Desenho antes de código | sim (Arquitetura, 08/Nov): desenho em `documentacao/DESENHO-LICENCA-EM-USO.md` (A a E, quem faz o quê, plano de teste); perguntas ao dono na seção da Arquitetura; implementação depois do "pode" |
 
+| 08/Nov | Arquitetura | Produto | Licença em uso, parte do programa (versão 0.7.11, depois de a `lex-conta` v4 estar publicada; o programa antigo continua funcionando): (1) id da instalação guardado também em `%LOCALAPPDATA%\LexSuiteONE\instalacao.json` e lido antes de gerar (`conta.py`, `config.py`, `instalador/INSTALAR.bat`); mandar `nome_pc` (`COMPUTERNAME`, até 60) nas chamadas; (2) passo 1: se a resposta trouxer `em_uso` ({pessoas, computadores, desde}), mostrar "Este código já está em uso no escritório X (N pessoas, M computadores). Você é deste escritório?" com "Sou" / "Não sou" (apaga o código); (3) se trouxer `email_sugerido`, preencher o e-mail (editável); (4) `aprovacao: "aguardando"` → selo "Seu cadastro está aguardando a confirmação da SolverONE" (o programa lê normalmente); `motivo: "email_recusado"` → "Este e-mail não foi aceito; use outro ou fale com judicial@"; `motivo: "limite_de_computadores"` → mensagem com judicial@; (5) HTTP 429 já cai em "sem resposta" (nada a fazer). Detalhe em `documentacao/DESENHO-LICENCA-EM-USO.md` | não |
+| 08/Nov | Arquitetura | Operação | Texto dos e-mails de aviso (pessoa nova, computador novo) está dentro de `lex-conta/index.ts` (PT e EN, remetente `SolverONE <nao-responda@>`, Reply-To `judicial@`); revisar o texto com o dono e, se mudar, pedir à Arquitetura. Ao criar a chave do Resend para os Secrets (o dono cola), conferir no painel do Resend que ela é só de envio | não |
+
 ## Decisões do dono registradas aqui
 
 | Data | Decisão |
@@ -189,3 +194,4 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 08/Nov | Documentos internos saem de `docs/` para `documentacao/` só depois de quinta 12/Nov (Arquitetura faz). Novos já nascem em `documentacao/`. |
 | 08/Nov | SQL das licenças: aprovado pelo dono pelo aplicativo, sem leitura. Não é violação. Daqui em diante SQL em arquivo, dono roda após revisar; Arquitetura revisa a segurança do que foi aplicado. |
 | 08/Nov | Worker `integracao-resposta`: Operação aplica a correção e testa. |
+| 08/Nov (noite) | Desenhos da 0.8 e da licença em uso aprovados ("Pode"): pessoa aguardando aprovação lê normalmente; avisos enviados pela função da nuvem com a chave do Resend nos Secrets do Supabase (só o dono cola); e-mail de boas-vindas devolvido só até a primeira pessoa se cadastrar. |
