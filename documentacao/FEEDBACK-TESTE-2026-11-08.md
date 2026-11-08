@@ -34,6 +34,8 @@ depois). Lista viva da Produto: cada item vira proposta, o dono dá o "pode", a 
 | 33 | Lista vira uma tripa de milhares de cartões | Começar pelos 10 melhores (maior valor, depois os demais) com "Mostrar mais 10"; resumo no alto com contagens por faixa de valor; filtros: tribunal, vara/cidade, setor, porte, faixa de valor, data, "só com CNPJ"; ordenar por valor, data, porte | "pode" |
 | 34 | Falta a data de entrada | Data no cartão no formato "SEG, 06 NOV 2026" (EN: "MON, 06 NOV 2026") | "pode" |
 | 35 | Cartões sem identidade; linha "e … Intimação" solta no meio | Cartão claro e igual para todos (sem listra), com faixa fina em latão à esquerda, cabeçalho (empresa, data, tribunal), corpo (vara, setor, porte, cidade) e valor à direita; outras empresas do processo numa linha discreta abaixo | "pode" |
+| 36 | Planilha aberta no Excel na hora da leitura: o RADAR não consegue gravar (o Excel trava o arquivo) | Nada se perde (a lista fica no computador e a planilha é regravada inteira na leitura seguinte), mas o aviso hoje é só uma linha técnica. Mostrar na tela "Feche a planilha no Excel para ela ser atualizada; a lista está salva" e tentar de novo sozinho quando ela for fechada | "pode" |
+| 37 | Cliente sem Excel (sem Office) | O `.xlsx` abre no LibreOffice (grátis), no Excel online e no Google Planilhas. Cuidado: "Salvar como Planilhas Google" cria uma cópia que o RADAR não lê; o certo é editar o próprio arquivo (modo de arquivo do Office). Explicar no manual e no assistente e indicar o LibreOffice | "pode" |
 
 ## Para o segundo teste (pelo e-mail de boas-vindas)
 
