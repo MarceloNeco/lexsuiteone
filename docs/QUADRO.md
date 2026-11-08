@@ -21,17 +21,19 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- Worker `integracao-resposta`: aplicar a correção já autorizada (não responder a endereço de retorno de serviço de envio)
-  e testar (Resend e uma pessoa de verdade escrevendo para `integracao@`).
-- E-mail de boas-vindas ao Leandro: deixar pronto com o código de cliente da KR Law, lido só em leitura. O código não
-  entra no repositório, no quadro nem em conversa; o e-mail pronto fica fora do repositório. Só falta o endereço dele.
 - Drive: esperando o dono restringir "Estudos de Casos Juridicos" e avisar "feito"; então confiro e atualizo a pasta.
+- E-mail de boas-vindas ao Leandro: pronto, fora do repositório (o código não entra no repositório, no quadro nem em
+  conversa). Falta o endereço dele e o "pode" do dono para enviar.
 
 ### Arquivos em uso
-- Worker `integracao-resposta` (Cloudflare, sem arquivo do repositório); `docs/DNS-SOLVERONE.md` e `docs/NOVA-SESSAO.md`
-  (registrar a mudança do Worker e acertar o trecho do SQL conforme a tabela "Fatos").
+- (nenhum)
 
 ### Feito (mais recente primeiro)
+- 08/Nov: Worker `integracao-resposta` corrigido e testado (15:18 UTC): e-mail de serviço de envio (Resend) é encaminhado sem
+  resposta e sem "bounced"; e-mail de pessoa (Gmail) é encaminhado e recebe a resposta; confirmado no log do Email
+  Routing. Versão anterior guardada na Cloudflare. Registrado em `docs/DNS-SOLVERONE.md` e `docs/NOVA-SESSAO.md`. E-mail de
+  boas-vindas da KR Law preparado fora do repositório; e-mail de teste com a licença de teste enviado ao dono (a licença
+  de teste não tem e-mail cadastrado no banco; o dono escolheu o destino).
 - 08/Nov: `docs/NOVA-SESSAO.md` atualizado para o estado real (pedido da Arquitetura): robô 0.7.9, RADAR JUDICIAL, conta e
   licença na nuvem (conferidas no Supabase, só leitura), Worker, Drive e as regras do quadro. Achado para a Arquitetura na
   tabela de pedidos: o SQL `lex_*` já está aplicado, mas as pendências ainda pedem ao dono para rodá-lo.
@@ -117,7 +119,7 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 | SQL das licenças | Aplicado em 08/Nov pela Produto com aprovação do dono pelo aplicativo, sem leitura do texto. Não é violação a registrar. Daqui em diante: SQL vai para arquivo, anotado no quadro, e o dono roda depois de revisar. Segurança do que foi aplicado (cinco pontos, função sem JWT, limite de chamadas): pendência da Arquitetura. | Arquitetura |
 | Instalador | Exige código de cliente válido antes de baixar. O e-mail de boas-vindas ao Leandro precisa levar o código. | Produto, Operação |
 | Site | Carrossel novo publicado em 08/Nov com o "pode" do dono. Falta teste no iPhone (o dono). | Produto |
-| Worker `integracao-resposta` | Correção do segundo bounce proposta pela Operação, revisada pela Arquitetura (risco baixo), autorizada pelo dono em 08/Nov. | Operação |
+| Worker `integracao-resposta` | Correção do segundo bounce aplicada e testada em 08/Nov (15:18 UTC): serviço de envio é só encaminhado; pessoa recebe a resposta. Versão anterior guardada na Cloudflare. | Operação |
 | Documentos internos em `docs/` | Ficam públicos no site. Mudança para `documentacao/` aprovada pelo dono **para depois de quinta 12/Nov** (Arquitetura faz e ajusta os caminhos). Documentos internos novos já nascem em `documentacao/`. | Arquitetura |
 | Desenho da 0.8 | Na branch `claude/friendly-einstein-li603e` (Arquitetura), seções 3 a 7 sendo reescritas em cima do que a Produto construiu. Entra na `main` em `documentacao/` quando ficar coerente. | Arquitetura |
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
