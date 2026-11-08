@@ -79,5 +79,45 @@ class Licenca(unittest.TestCase):
         self.assertEqual(conta.bloqueio(cfg, HOJE), "")
 
 
+
+class Documento(unittest.TestCase):
+    def test_cnpj_numerico_e_com_letras(self):
+        self.assertTrue(conta.cnpj_valido("11.222.333/0001-81"))
+        self.assertTrue(conta.cnpj_valido("12.ABC.345/01DE-35"))  # exemplo da Receita para o formato de jul/2026
+        for ruim in ("11.222.333/0001-82", "00.000.000/0000-00", "12.ABC.345/01DE-36", "123"):
+            self.assertFalse(conta.cnpj_valido(ruim), ruim)
+
+    def test_cpf_e_passaporte(self):
+        self.assertTrue(conta.cpf_valido("529.982.247-25"))
+        self.assertFalse(conta.cpf_valido("529.982.247-26"))
+        self.assertFalse(conta.cpf_valido("111.111.111-11"))
+        self.assertEqual(conta.documento("passaporte", "fd 123456"), "FD123456")
+        self.assertEqual(conta.documento("passaporte", "12"), "")
+        self.assertEqual(conta.documento("cpf", "529.982.247-25"), "52998224725")
+
+
+class Cadastro(unittest.TestCase):
+    def test_envia_e_guarda(self):
+        enviado = {}
+        cfg = {"conta": {"codigo": CODIGO}}
+        ok, motivo = conta.cadastrar(cfg, "0.7.7", "Ana@Escritorio.com.br", "Ana Lima", "11.222.333/0001-81", "Sócio ou sócia",
+                                     pedir=lambda u, c, **k: (enviado.update(c), {"ok": True})[1])
+        self.assertEqual((ok, motivo), (True, ""))
+        self.assertEqual((enviado["acao"], enviado["email"], enviado["doc_tipo"], enviado["documento"]), ("cadastrar", "ana@escritorio.com.br", "cnpj", "11222333000181"))
+        self.assertEqual(cfg["usuario"]["email"], "ana@escritorio.com.br")
+
+    def test_recusas(self):
+        cfg = {"conta": {"codigo": CODIGO}}
+        self.assertFalse(conta.cadastrar(cfg, "0.7.7", "sem-arroba", "Ana", "11.222.333/0001-81")[0])
+        self.assertFalse(conta.cadastrar(cfg, "0.7.7", "a@b.com", "Ana", "11.222.333/0001-82")[0])
+        ok, motivo = conta.cadastrar(cfg, "0.7.7", "a@b.com", "Ana", "529.982.247-25", doc_tipo="cpf",
+                                     pedir=resposta({"ok": False, "motivo": "email_em_outro_escritorio"}))
+        self.assertFalse(ok)
+        self.assertIn("outro escritório", motivo)
+        ok, motivo = conta.cadastrar(cfg, "0.7.7", "b@b.com", "Bia", "529.982.247-25", doc_tipo="cpf",
+                                     pedir=resposta({"ok": False, "motivo": "limite_de_pessoas"}))
+        self.assertIn("número máximo", motivo)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -13,7 +13,7 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from . import VERSAO, agendar, assinatura, atualizar, banco as bd, compartilhar, config, conta, preferencias, radar, rede, tribunais
+from . import VERSAO, agendar, assinatura, atualizar, banco as bd, cnpj, compartilhar, config, conta, preferencias, radar, rede, tribunais
 
 PORTAS = range(8765, 8776)
 PAPEIS = ("Sócio ou sócia", "Advogado ou advogada", "Estagiário ou estagiária", "Equipe administrativa")
@@ -166,7 +166,7 @@ class Tratador(BaseHTTPRequestHandler):
             chave = atualizar.chave_publica(s.pasta)
             pagina["app"] = {
                 "usuario": {"nome": cfg["usuario"].get("nome", ""), "papel": cfg["usuario"].get("papel", ""), "email": cfg["usuario"].get("email", "")},
-                "papeis": list(PAPEIS), "cnpj_escritorio": cfg.get("cnpj_escritorio", ""),
+                "papeis": list(PAPEIS), "documento_escritorio": cfg.get("documento_escritorio") or {},
                 "tribunais": [x for x in tribunais.TRIBUNAIS if x["ramo"] in FRENTES], "ramos": [r for r in tribunais.RAMOS if r in FRENTES], "regioes": tribunais.REGIOES, "ufs": tribunais.UFS,
                 "config": {"tribunais": tribunais.validar(r.get("tribunais")), "escritorio": cfg.get("escritorio", ""),
                            "valor_minimo": r.get("valor_minimo"), "dias_na_pagina": r.get("dias_na_pagina"),
@@ -181,6 +181,19 @@ class Tratador(BaseHTTPRequestHandler):
                 "conta": conta.situacao(cfg), "marca": marca(s.pasta),
             }
             return self._responder(pagina)
+        if u.path == "/cnpj":
+            # Preenche o nome do escritório pelo CNPJ (cadastro público da Receita, pelas mesmas fontes da ficha).
+            numero = conta.limpar_cnpj((qs.get("n") or [""])[0])
+            if not conta.cnpj_valido(numero):
+                return self._responder({"ok": False, "motivo": "cnpj_invalido"})
+            try:
+                d = cnpj.consultar(numero)
+            except Exception:
+                d = None
+            if not d or not d.get("razao_social"):
+                return self._responder({"ok": False, "motivo": "nao_encontrado"})
+            return self._responder({"ok": True, "razao_social": d.get("razao_social", ""), "nome_fantasia": d.get("nome_fantasia", ""),
+                                    "situacao": d.get("situacao", ""), "municipio": d.get("municipio", ""), "uf": d.get("uf", "")})
         if u.path == "/estado":
             return self._responder(s.estado.como_dict())
         if u.path == "/manual":
@@ -237,8 +250,10 @@ class Tratador(BaseHTTPRequestHandler):
                 # Cadastro de quem usa: o e-mail é a chave (um e-mail, um escritório). Vai para a licença na SolverONE.
                 if "escritorio" in corpo:
                     cfg["escritorio"] = str(corpo["escritorio"] or "").strip()[:80]
+                doc_atual = cfg.get("documento_escritorio") or {}
                 ok, motivo = conta.cadastrar(cfg, VERSAO, corpo.get("email"), corpo.get("nome") or cfg["usuario"].get("nome"),
-                                             corpo.get("cnpj") or cfg.get("cnpj_escritorio"), corpo.get("papel") or cfg["usuario"].get("papel"))
+                                             corpo.get("documento") or doc_atual.get("numero"), corpo.get("papel") or cfg["usuario"].get("papel"),
+                                             doc_tipo=corpo.get("doc_tipo") or doc_atual.get("tipo") or "cnpj")
                 if not ok:
                     return self._responder({"ok": False, "motivo": motivo, "conta": conta.situacao(cfg)})
             if "nome" in corpo:

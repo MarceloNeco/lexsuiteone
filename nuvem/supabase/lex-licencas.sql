@@ -5,13 +5,15 @@
 create table if not exists public.lex_contas (
   codigo     text primary key check (codigo ~ '^LEX-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$'),
   escritorio text not null,
-  cnpj       text check (cnpj is null or cnpj ~ '^[0-9]{14}$'),
+  doc_tipo   text check (doc_tipo is null or doc_tipo in ('cnpj', 'cpf', 'passaporte')),
+  documento  text check (documento is null or documento ~ '^[0-9A-Z]{5,20}$'),
+  max_pessoas integer check (max_pessoas is null or max_pessoas > 0),
   ativo      boolean not null default true,
   validade   date,
   mensagem   text not null default '',
   criado_em  timestamptz not null default now()
 );
-comment on table public.lex_contas is 'RADAR JUDICIAL: uma linha por escritório (licença). Desativar: ativo = false. Vencer: validade. mensagem aparece na tela do escritório.';
+comment on table public.lex_contas is 'RADAR JUDICIAL: uma linha por escritório (licença). Desativar: ativo = false. Vencer: validade. Limitar pessoas: max_pessoas (vazio = sem limite). mensagem aparece na tela do escritório. documento: CNPJ (com ou sem letras), CPF ou passaporte, só números e letras.';
 
 create table if not exists public.lex_usuarios (
   email         text primary key check (email = lower(email) and email like '%_@_%._%'),
@@ -63,3 +65,6 @@ begin
   end loop;
 end $$;
 revoke all on function public.lex_criar_conta(text, date) from public, anon, authenticated;
+
+-- Neste projeto, tabela nova não dá acesso automático à chave de serviço: a função lex-conta precisa disto.
+grant select, insert, update on public.lex_contas, public.lex_usuarios, public.lex_instalacoes to service_role;

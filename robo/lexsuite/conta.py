@@ -127,7 +127,8 @@ def situacao(cfg):
 # escritório reaproveita o cadastro. Os dados servem para a SolverONE falar com quem usa sobre o serviço.
 MOTIVOS.update({
     "email_em_outro_escritorio": "Este e-mail já está cadastrado em outro escritório. Use o e-mail do escritório ou fale com " + CONTATO + ".",
-    "dados_invalidos": "Confira o CNPJ do escritório, o seu nome e o seu e-mail.",
+    "dados_invalidos": "Confira o documento do escritório (CNPJ, CPF ou passaporte), o seu nome e o seu e-mail.",
+    "limite_de_pessoas": "Esta licença já tem o número máximo de pessoas cadastradas. Fale com " + CONTATO + ".",
 })
 _EMAIL = re.compile(r"^[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}$")
 
@@ -136,31 +137,64 @@ def so_digitos(texto):
     return re.sub(r"\D", "", str(texto or ""))
 
 
+def _dv_cnpj(base):
+    """Dígito verificador do CNPJ, numérico ou alfanumérico (Receita, a partir de jul/2026): valor = código ASCII - 48."""
+    pesos = list(range(len(base) - 7, 1, -1)) + list(range(9, 1, -1))
+    resto = sum((ord(c) - 48) * p for c, p in zip(base, pesos)) % 11
+    return "0" if resto < 2 else str(11 - resto)
+
+
+def limpar_cnpj(cnpj):
+    return re.sub(r"[^0-9A-Z]", "", str(cnpj or "").upper())
+
+
 def cnpj_valido(cnpj):
-    d = so_digitos(cnpj)
-    if len(d) != 14 or d == d[0] * 14:
+    """CNPJ com 14 posições: as 12 primeiras com números ou letras (formato novo), as 2 últimas números (dígitos)."""
+    d = limpar_cnpj(cnpj)
+    if not re.fullmatch(r"[0-9A-Z]{12}[0-9]{2}", d) or d == d[0] * 14:
         return False
-    def dv(base, pesos):
-        resto = sum(int(a) * b for a, b in zip(base, pesos)) % 11
-        return "0" if resto < 2 else str(11 - resto)
-    p1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-    return d[12] == dv(d[:12], p1) and d[13] == dv(d[:13], [6] + p1)
+    return d[12] == _dv_cnpj(d[:12]) and d[13] == _dv_cnpj(d[:13])
+
+
+def cpf_valido(cpf):
+    d = so_digitos(cpf)
+    if len(d) != 11 or d == d[0] * 11:
+        return False
+    for n in (9, 10):
+        resto = sum(int(d[i]) * (n + 1 - i) for i in range(n)) * 10 % 11
+        if str(resto % 10) != d[n]:
+            return False
+    return True
+
+
+def documento(tipo, valor):
+    """Documento do titular da licença, normalizado, ou '' se inválido. tipo: cnpj, cpf (sem CNPJ) ou passaporte."""
+    if tipo == "cnpj":
+        return limpar_cnpj(valor) if cnpj_valido(valor) else ""
+    if tipo == "cpf":
+        return so_digitos(valor) if cpf_valido(valor) else ""
+    if tipo == "passaporte":
+        p = re.sub(r"[^0-9A-Z]", "", str(valor or "").upper())
+        return p if 5 <= len(p) <= 20 else ""
+    return ""
 
 
 def email_valido(email):
     return bool(_EMAIL.match(str(email or "").strip())) and len(str(email).strip()) <= 120
 
 
-def cadastrar(cfg, versao, email, nome, cnpj, papel="", pedir=None):
+def cadastrar(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj"):
     """Registra quem usa esta instalação na licença do escritório. Devolve (ok, motivo)."""
     c = _bloco(cfg)
     email = str(email or "").strip().lower()
     nome = " ".join(str(nome or "").split())[:60]
-    if not (email_valido(email) and nome and cnpj_valido(cnpj)):
+    doc_tipo = doc_tipo if doc_tipo in ("cnpj", "cpf", "passaporte") else "cnpj"
+    doc = documento(doc_tipo, doc)
+    if not (email_valido(email) and nome and doc):
         return False, MOTIVOS["dados_invalidos"]
     pedir = pedir or rede.pedir_json
     corpo = {"acao": "cadastrar", "codigo": normalizar(c.get("codigo")), "instalacao": c["instalacao"], "versao": versao,
-             "email": email, "nome": nome, "papel": str(papel or "")[:40], "cnpj": so_digitos(cnpj)}
+             "email": email, "nome": nome, "papel": str(papel or "")[:40], "doc_tipo": doc_tipo, "documento": doc}
     try:
         r = pedir(c.get("url") or URL_PADRAO, corpo, tentativas=2, tempo_limite=20)
     except Exception:
@@ -169,6 +203,6 @@ def cadastrar(cfg, versao, email, nome, cnpj, papel="", pedir=None):
         motivo = str((r or {}).get("motivo") or "") if isinstance(r, dict) else ""
         return False, MOTIVOS.get(motivo, "A SolverONE recusou o cadastro.") + ("" if motivo in MOTIVOS else f" Fale com {CONTATO}.")
     cfg.setdefault("usuario", {}).update({"email": email, "nome": nome, "papel": str(papel or "")[:40]})
-    cfg["cnpj_escritorio"] = so_digitos(cnpj)
+    cfg["documento_escritorio"] = {"tipo": doc_tipo, "numero": doc}
     c["cadastrado"] = email
     return True, ""

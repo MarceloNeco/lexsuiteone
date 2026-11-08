@@ -42,6 +42,11 @@ header { display: contents; }
 .faixa h1 { color: #fff; } .faixa .resumo { color: #d6dbe6; } .faixa .resumo b { color: #fff; } .faixa .ola { color: #c4cbd8; }
 .planilha-btn { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 7px 16px; min-height: 36px; font-weight: 700; font-size: .88rem; background: var(--latao-claro); color: var(--noite); }
 .nota-registro { font-size: .82rem; color: var(--tinta-3); margin: 4px 0 0; }
+.doc-tipo { border: 0; padding: 0; margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .92rem; }
+.doc-tipo legend { font-weight: 600; margin-bottom: 6px; padding: 0; }
+.doc-tipo input { accent-color: var(--latao); }
+.doc-situacao { font-size: .84rem; margin: -2px 0 8px; color: var(--tinta-3); min-height: 1.2em; }
+.doc-situacao.ok { color: #2f6b3a; } .doc-situacao.erro { color: var(--erro); }
 .pilula { display: inline-flex; border: 1px solid var(--linha-2); border-radius: 999px; overflow: hidden; }
 .pilula button { border: 0; background: transparent; padding: 5px 10px; min-height: 30px; font-size: .74rem; font-weight: 600; color: var(--tinta-3); }
 .pilula button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
@@ -191,8 +196,14 @@ footer a:hover { text-decoration: underline; }
   <p id="w-texto"></p>
   <div id="w-p1">
     <label class="campo-conf"><span id="w-l-codigo"></span><input id="w-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
+    <fieldset class="doc-tipo"><legend id="w-l-doctipo"></legend>
+      <label><input type="radio" name="w-doctipo" value="cnpj" checked> <span id="w-l-tipo-cnpj"></span></label>
+      <label><input type="radio" name="w-doctipo" value="cpf"> <span id="w-l-tipo-cpf"></span></label>
+      <label><input type="radio" name="w-doctipo" value="passaporte"> <span id="w-l-tipo-pass"></span></label>
+    </fieldset>
+    <label class="campo-conf"><span id="w-l-cnpj"></span><input id="w-cnpj" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="00.000.000/0000-00"></label>
+    <p class="doc-situacao" id="w-doc-txt" aria-live="polite"></p>
     <label class="campo-conf"><span id="w-l-escritorio"></span><input id="w-escritorio" type="text" maxlength="80" autocomplete="organization"></label>
-    <label class="campo-conf"><span id="w-l-cnpj"></span><input id="w-cnpj" type="text" maxlength="18" inputmode="numeric" autocomplete="off" placeholder="00.000.000/0000-00"></label>
     <label class="campo-conf"><span id="w-l-nome"></span><input id="w-nome" type="text" maxlength="60" autocomplete="name"></label>
     <label class="campo-conf"><span id="w-l-email"></span><input id="w-email" type="email" maxlength="120" autocomplete="email"></label>
     <label class="campo-conf"><span id="w-l-papel"></span><select id="w-papel"></select></label>
@@ -292,7 +303,7 @@ window.LEXSUITE_RADAR = null;
   var APP = null, sel = {}, aba = "regiao", ramo = "Trabalhista", vigia = null, limite = 150, periodo = 1, configVista = false, wPasso = 1, wPastas = [];
   var T = {
     pt: { marca: "RADAR JUDICIAL",
-      cod: "Código de cliente", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "CNPJ do escritório", seu_nome: "Seu nome", seu_email: "Seu e-mail", cad_falta: "Preencha o código, o escritório, o CNPJ, o seu nome e o seu e-mail.", cod_falta: "Informe o código de cliente (está no e-mail de boas-vindas).", registro: "O seu nome, o seu e-mail e o CNPJ ficam registrados na licença do escritório, para a SolverONE falar com você sobre o serviço. Cada e-mail pertence a um escritório só; dá para mudar depois em Configuração.", sem_trib: "Escolha pelo menos um tribunal e clique em Salvar e atualizar agora.", conferindo: "Conferindo o código com a SolverONE...",
+      cod: "Código de cliente", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Número", doc_tipo: "Documento do escritório", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (sem CNPJ)", tipo_pass: "Passaporte (não brasileiro)", doc_invalido: "Número inválido: confira os dígitos.", doc_ok: "Número válido.", cnpj_achado: "Encontrado na Receita: {s}. O nome do escritório foi preenchido; dá para ajustar.", cnpj_nao_achado: "CNPJ válido, mas não encontrado na base pública (ou sem internet). Escreva o nome do escritório.", cnpj_buscando: "Consultando o cadastro público da Receita...", seu_nome: "Seu nome", seu_email: "Seu e-mail", cad_falta: "Preencha o código, o documento do escritório, o nome do escritório, o seu nome e o seu e-mail.", cod_falta: "Informe o código de cliente (está no e-mail de boas-vindas).", registro: "O seu nome, o seu e-mail e o documento do escritório ficam registrados na licença do escritório, para a SolverONE falar com você sobre o serviço. Cada e-mail pertence a um escritório só; dá para mudar depois em Configuração.", sem_trib: "Escolha pelo menos um tribunal e clique em Salvar e atualizar agora.", conferindo: "Conferindo o código com a SolverONE...",
       planilha_abrir: "Abrir a planilha", pasta_abrir: "Abrir a pasta", planilha_falta: "A planilha ainda não existe: escolha a pasta do Google Drive em Configuração.",
       csv_dica: "Arquivo simples com a lista desta tela, para importar em outros sistemas (ex.: Astrea). A planilha completa está no Google Drive.", licenca: "Licença",
       h1: "Novos processos contra empresas",
@@ -333,7 +344,7 @@ window.LEXSUITE_RADAR = null;
       link_manual: "Manual", rodape1: "Fontes: lista de distribuição do DJEN (CNJ) e cadastro público da Receita Federal. Gerado em {q}.",
       rodape2: "Pessoas físicas do processo não aparecem. Nada aqui usa inteligência artificial. {m}, da LexSuiteONE, um produto SolverONE. Versão {v}." },
     en: { marca: "RADAR JUDICIAL",
-      cod: "Client code", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Firm\u2019s tax ID (CNPJ)", seu_nome: "Your name", seu_email: "Your e-mail", cad_falta: "Fill in the code, the firm, the CNPJ, your name and your e-mail.", cod_falta: "Enter the client code (it is in the welcome e-mail).", registro: "Your name, your e-mail and the CNPJ are registered under the firm\u2019s license so SolverONE can contact you about the service. Each e-mail belongs to one firm only; you can change it later in Settings.", sem_trib: "Choose at least one court and click Save and update now.", conferindo: "Checking the code with SolverONE...",
+      cod: "Client code", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Number", doc_tipo: "Firm\u2019s document", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (no CNPJ)", tipo_pass: "Passport (non-Brazilian)", doc_invalido: "Invalid number: check the digits.", doc_ok: "Valid number.", cnpj_achado: "Found at the Federal Revenue: {s}. The firm name was filled in; you can adjust it.", cnpj_nao_achado: "Valid CNPJ, but not found in the public registry (or no internet). Type the firm name.", cnpj_buscando: "Checking the Federal Revenue public registry...", seu_nome: "Your name", seu_email: "Your e-mail", cad_falta: "Fill in the code, the firm, the CNPJ, your name and your e-mail.", cod_falta: "Enter the client code (it is in the welcome e-mail).", registro: "Your name, your e-mail and the firm\u2019s document are registered under the firm\u2019s license so SolverONE can contact you about the service. Each e-mail belongs to one firm only; you can change it later in Settings.", sem_trib: "Choose at least one court and click Save and update now.", conferindo: "Checking the code with SolverONE...",
       planilha_abrir: "Open the spreadsheet", pasta_abrir: "Open the folder", planilha_falta: "The spreadsheet does not exist yet: choose the Google Drive folder in Settings.",
       csv_dica: "A plain file with the list on this screen, to import into other systems (e.g. Astrea). The full spreadsheet is in Google Drive.", licenca: "License",
       h1: "New lawsuits against companies",
@@ -568,7 +579,7 @@ window.LEXSUITE_RADAR = null;
       var on = el("option", null, t("c_nenhuma")); on.value = ""; sp.appendChild(on);
       sp.value = (d.atual && wPastas.indexOf(d.atual) >= 0) ? d.atual : (wPastas.length ? wPastas[0] : "");
     }).catch(function () {});
-    $("w-codigo").value = (APP && APP.conta && APP.conta.codigo) || ""; $("w-email").value = (APP && APP.usuario.email) || ""; $("w-cnpj").value = (APP && APP.cnpj_escritorio) || "";
+    $("w-codigo").value = (APP && APP.conta && APP.conta.codigo) || ""; $("w-email").value = (APP && APP.usuario.email) || ""; var docAtual = (APP && APP.documento_escritorio) || {}; if (docAtual.tipo) { document.querySelector('input[name="w-doctipo"][value="' + docAtual.tipo + '"]').checked = true; } $("w-cnpj").value = docAtual.numero ? mascarar(docAtual.numero) : ""; validarDoc(false);
     $("wizard").hidden = false; desenharWizard(); barraApp();
   }
   function wPasta() { var v = $("w-pasta").value; return v === "__outra" ? $("w-outra").value.trim() : v; }
@@ -577,7 +588,7 @@ window.LEXSUITE_RADAR = null;
     for (var i = 1; i <= total; i++) { ps.appendChild(el(i === wPasso ? "b" : "span", null, (i > 1 ? "· " : "") + t("w_passo", { a: i, b: total }).split(" de ")[0].split(" of ")[0] + (i === wPasso ? " " + i : " " + i))); }
     ps.textContent = t("w_passo", { a: wPasso, b: total });
     [1, 2, 3, 4].forEach(function (i) { $("w-p" + i).hidden = i !== wPasso; });
-    $("w-l-nome").textContent = t("c_nome"); $("w-l-papel").textContent = t("c_papel"); $("w-l-escritorio").textContent = t("c_escritorio"); $("w-l-codigo").textContent = t("cod"); $("w-registro").textContent = t("registro"); $("w-l-cnpj").textContent = t("cnpj_esc"); $("w-l-email").textContent = t("seu_email");
+    $("w-l-nome").textContent = t("c_nome"); $("w-l-papel").textContent = t("c_papel"); $("w-l-escritorio").textContent = t("c_escritorio"); $("w-l-codigo").textContent = t("cod"); $("w-registro").textContent = t("registro"); $("w-l-cnpj").textContent = t("cnpj_esc"); $("w-l-doctipo").textContent = t("doc_tipo"); $("w-l-tipo-cnpj").textContent = t("tipo_cnpj"); $("w-l-tipo-cpf").textContent = t("tipo_cpf"); $("w-l-tipo-pass").textContent = t("tipo_pass"); $("w-l-email").textContent = t("seu_email");
     $("w-l-pasta").textContent = t("c_pasta"); $("w-l-outra").textContent = t("c_outra"); $("w-testar").textContent = t("c_testar");
     var nome = $("w-nome").value.trim();
     $("w-titulo").textContent = wPasso === 1 ? t("w1_t", { m: marcaNome() }) : wPasso === 2 ? t("w2_t") : wPasso === 3 ? t("w3_t") : t("w4_t", { n: nome });
@@ -585,7 +596,7 @@ window.LEXSUITE_RADAR = null;
     $("w-trib-txt").textContent = t("w3_trib", { n: (APP && APP.config.tribunais || []).length });
     if (wPasso === 4) {
       var dl = $("w-resumo"); dl.textContent = "";
-      [[t("cod"), $("w-codigo").value.trim().toUpperCase()], [t("c_escritorio"), $("w-escritorio").value], [t("cnpj_esc"), $("w-cnpj").value], [t("seu_nome"), nome], [t("seu_email"), $("w-email").value], [t("c_papel"), $("w-papel").value || "—"], [t("c_pasta"), wPasta() || t("c_nenhuma")], [t("w_rotina"), $("w-agendar").checked ? "19:40 / 07:10" : "—"]].forEach(function (par) { dl.appendChild(el("dt", null, par[0])); dl.appendChild(el("dd", null, par[1] || "—")); });
+      [[t("cod"), $("w-codigo").value.trim().toUpperCase()], [t("c_escritorio"), $("w-escritorio").value], [t("doc_tipo"), t("tipo_" + (tipoDoc() === "passaporte" ? "pass" : tipoDoc())) + ": " + $("w-cnpj").value], [t("seu_nome"), nome], [t("seu_email"), $("w-email").value], [t("c_papel"), $("w-papel").value || "—"], [t("c_pasta"), wPasta() || t("c_nenhuma")], [t("w_rotina"), $("w-agendar").checked ? "19:40 / 07:10" : "—"]].forEach(function (par) { dl.appendChild(el("dt", null, par[0])); dl.appendChild(el("dd", null, par[1] || "—")); });
     }
     $("w-voltar").hidden = wPasso === 1; $("w-voltar").textContent = t("w_voltar");
     $("w-avancar").textContent = wPasso < 4 ? t("w_avancar") : t("w_concluir");
@@ -596,7 +607,8 @@ window.LEXSUITE_RADAR = null;
       var faltando = ["w-codigo", "w-escritorio", "w-cnpj", "w-nome", "w-email"].filter(function (id) { return !$(id).value.trim(); });
       if (faltando.length) { $("w-msg").textContent = t("cad_falta"); $(faltando[0]).focus(); return; }
       $("w-msg").textContent = t("conferindo"); $("w-avancar").disabled = true;
-      post("/config", { codigo: $("w-codigo").value, escritorio: $("w-escritorio").value, cnpj: $("w-cnpj").value, nome: $("w-nome").value,
+      if (!docValido()) { $("w-msg").textContent = t("doc_invalido"); $("w-cnpj").focus(); $("w-avancar").disabled = false; return; }
+      post("/config", { codigo: $("w-codigo").value, escritorio: $("w-escritorio").value, doc_tipo: tipoDoc(), documento: $("w-cnpj").value, nome: $("w-nome").value,
                         email: $("w-email").value, papel: $("w-papel").value }).then(function (r) {
         $("w-avancar").disabled = false;
         if (!r.ok) { $("w-msg").textContent = r.motivo || t("falha"); return; }
@@ -798,6 +810,37 @@ window.LEXSUITE_RADAR = null;
     else s.textContent = forte;
     alvo.appendChild(s);
   }
+  /* Documento do escritório: CNPJ (numérico ou com letras, regra da Receita de jul/2026), CPF ou passaporte.
+     A máscara põe os pontos enquanto a pessoa digita; o que vai para o programa são só os números e letras. */
+  function tipoDoc() { var r = document.querySelector('input[name="w-doctipo"]:checked'); return r ? r.value : "cnpj"; }
+  function limpo(v) { return String(v || "").toUpperCase().replace(/[^0-9A-Z]/g, ""); }
+  function mascarar(v) {
+    var tp = tipoDoc(), d = limpo(v);
+    if (tp === "cpf") { d = d.replace(/\D/g, "").slice(0, 11); return d.replace(/^(\d{3})(\d)/, "$1.$2").replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d{1,2})$/, ".$1-$2"); }
+    if (tp === "cnpj") { d = d.slice(0, 14); var o = d.slice(0, 2); if (d.length > 2) o += "." + d.slice(2, 5); if (d.length > 5) o += "." + d.slice(5, 8); if (d.length > 8) o += "/" + d.slice(8, 12); if (d.length > 12) o += "-" + d.slice(12, 14); return o; }
+    return d.slice(0, 20);
+  }
+  function dvCnpj(b) { var p = [], k, soma = 0; for (k = b.length - 7; k >= 2; k--) p.push(k); for (k = 9; k >= 2; k--) p.push(k); for (k = 0; k < b.length; k++) soma += (b.charCodeAt(k) - 48) * p[k]; var r = soma % 11; return r < 2 ? "0" : String(11 - r); }
+  function cnpjOk(v) { var d = limpo(v); return /^[0-9A-Z]{12}[0-9]{2}$/.test(d) && !/^(.)\1+$/.test(d) && d[12] === dvCnpj(d.slice(0, 12)) && d[13] === dvCnpj(d.slice(0, 13)); }
+  function cpfOk(v) { var d = String(v || "").replace(/\D/g, ""); if (d.length !== 11 || /^(\d)\1+$/.test(d)) return false; for (var n = 9; n <= 10; n++) { var s = 0; for (var i = 0; i < n; i++) s += Number(d[i]) * (n + 1 - i); if (String(s * 10 % 11 % 10) !== d[n]) return false; } return true; }
+  function docValido() { var tp = tipoDoc(), v = $("w-cnpj").value; return tp === "cnpj" ? cnpjOk(v) : tp === "cpf" ? cpfOk(v) : limpo(v).length >= 5; }
+  var ultimoCnpj = "";
+  function validarDoc(consultar) {
+    var tp = tipoDoc(), v = $("w-cnpj").value, txt = $("w-doc-txt"), completo = tp === "cnpj" ? limpo(v).length === 14 : tp === "cpf" ? v.replace(/\D/g, "").length === 11 : limpo(v).length >= 5;
+    $("w-cnpj").placeholder = tp === "cnpj" ? "00.000.000/0000-00" : tp === "cpf" ? "000.000.000-00" : "";
+    $("w-cnpj").inputMode = tp === "cpf" ? "numeric" : "text";
+    if (!v || !completo) { txt.textContent = ""; txt.className = "doc-situacao"; return; }
+    if (!docValido()) { txt.textContent = t("doc_invalido"); txt.className = "doc-situacao erro"; return; }
+    txt.textContent = t("doc_ok"); txt.className = "doc-situacao ok";
+    if (tp !== "cnpj" || !consultar || limpo(v) === ultimoCnpj) return;
+    ultimoCnpj = limpo(v); txt.textContent = t("cnpj_buscando"); txt.className = "doc-situacao";
+    fetch("/cnpj?n=" + encodeURIComponent(ultimoCnpj), { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
+      if (limpo($("w-cnpj").value) !== ultimoCnpj) return;
+      if (d.ok) { var nome = d.nome_fantasia || d.razao_social; if (!$("w-escritorio").value.trim() || $("w-escritorio").dataset.auto === "1") { $("w-escritorio").value = nome; $("w-escritorio").dataset.auto = "1"; }
+        txt.textContent = t("cnpj_achado", { s: d.razao_social + (d.situacao ? " (" + d.situacao.toLowerCase() + ")" : "") }); txt.className = "doc-situacao ok"; }
+      else { txt.textContent = t("cnpj_nao_achado"); txt.className = "doc-situacao"; $("w-escritorio").focus(); }
+    }).catch(function () { txt.textContent = t("cnpj_nao_achado"); txt.className = "doc-situacao"; });
+  }
   function abrirPlanilha(oque) {
     post("/abrir", { o_que: oque }).then(function (r) { if (!r.ok) mostrarEstado({ erro: r.motivo || t("planilha_falta") }); }).catch(function () { $("estado").textContent = t("falha"); });
   }
@@ -821,6 +864,9 @@ window.LEXSUITE_RADAR = null;
   $("w-voltar").addEventListener("click", function () { if (wPasso > 1) { wPasso -= 1; desenharWizard(); } });
   $("w-pasta").addEventListener("change", function () { $("w-outra-wrap").hidden = this.value !== "__outra"; $("w-teste-txt").textContent = ""; });
   $("w-testar").addEventListener("click", function () { var p = wPasta(); if (!p) { $("w-teste-txt").textContent = t("c_nenhuma"); return; } post("/testar-pasta", { pasta: p }).then(function (r) { $("w-teste-txt").textContent = r.mensagem || ""; }).catch(function () { $("w-teste-txt").textContent = t("falha"); }); });
+  $("w-cnpj").addEventListener("input", function () { var c = this.selectionStart === this.value.length; this.value = mascarar(this.value); if (c) this.setSelectionRange(this.value.length, this.value.length); validarDoc(true); });
+  document.querySelectorAll('input[name="w-doctipo"]').forEach(function (r) { r.addEventListener("change", function () { $("w-cnpj").value = mascarar($("w-cnpj").value); ultimoCnpj = ""; validarDoc(true); $("w-cnpj").focus(); }); });
+  $("w-escritorio").addEventListener("input", function () { this.dataset.auto = ""; });
   ["w-codigo", "w-escritorio", "w-cnpj", "w-nome", "w-email"].forEach(function (id) { $(id).addEventListener("keydown", function (ev) { if (ev.key === "Enter") wizardAvancar(); }); });
   $("c-pasta").addEventListener("change", function () { $("c-outra-wrap").hidden = this.value !== "__outra"; $("c-teste-txt").textContent = ""; });
   $("c-testar").addEventListener("click", function () { var p = pastaEscolhida(); if (!p) { $("c-teste-txt").textContent = t("c_nenhuma"); return; } post("/testar-pasta", { pasta: p }).then(function (r) { $("c-teste-txt").textContent = r.mensagem || ""; }).catch(function () { $("c-teste-txt").textContent = t("falha"); }); });

@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
   if (!INSTALACAO.test(instalacao)) return json({ ok: false, motivo: "dados_invalidos" });
 
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
-  const { data: conta, error } = await sb.from("lex_contas").select("codigo, escritorio, cnpj, ativo, validade, mensagem").eq("codigo", codigo).maybeSingle();
+  const { data: conta, error } = await sb.from("lex_contas").select("codigo, escritorio, documento, max_pessoas, ativo, validade, mensagem").eq("codigo", codigo).maybeSingle();
   if (error) return json({ ok: false, motivo: "erro" }, 500);
   if (!conta) return json({ ok: false, motivo: "codigo_desconhecido" });
 
@@ -31,13 +31,19 @@ Deno.serve(async (req) => {
   let email: string | null = null;
   if (e.acao === "cadastrar") {
     email = texto(e.email, 120).toLowerCase();
-    const nome = texto(e.nome, 60), papel = texto(e.papel, 40), cnpj = texto(e.cnpj, 14).replace(/\D/g, "");
-    if (!EMAIL.test(email) || !nome || cnpj.length !== 14) return json({ ok: false, motivo: "dados_invalidos" });
+    const nome = texto(e.nome, 60), papel = texto(e.papel, 40);
+    const docTipo = ["cnpj", "cpf", "passaporte"].includes(String(e.doc_tipo)) ? String(e.doc_tipo) : "";
+    const documento = texto(e.documento, 20).toUpperCase().replace(/[^0-9A-Z]/g, "");
+    if (!EMAIL.test(email) || !nome || !docTipo || documento.length < 5) return json({ ok: false, motivo: "dados_invalidos" });
     const { data: ja } = await sb.from("lex_usuarios").select("codigo").eq("email", email).maybeSingle();
     if (ja && ja.codigo !== codigo) return json({ ok: false, motivo: "email_em_outro_escritorio" });
+    if (!ja && conta.max_pessoas) {
+      const { count } = await sb.from("lex_usuarios").select("email", { count: "exact", head: true }).eq("codigo", codigo);
+      if ((count ?? 0) >= conta.max_pessoas) return json({ ok: false, motivo: "limite_de_pessoas" });
+    }
     const r1 = await sb.from("lex_usuarios").upsert({ email, codigo, nome, papel, atualizado_em: agora }, { onConflict: "email" });
     if (r1.error) return json({ ok: false, motivo: "erro" }, 500);
-    if (!conta.cnpj) await sb.from("lex_contas").update({ cnpj }).eq("codigo", codigo);
+    if (!conta.documento) await sb.from("lex_contas").update({ doc_tipo: docTipo, documento }).eq("codigo", codigo);
   }
   const inst: Record<string, unknown> = { instalacao, codigo, versao, ultima_vez: agora };
   if (email) inst.email = email;
