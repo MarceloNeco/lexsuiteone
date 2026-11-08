@@ -60,7 +60,9 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- (vazio)
+- Juntando o feedback do teste do dono (08/Nov) para a 0.7.10, só depois do "pode" dele: (1) endereço da tela com nome
+  em vez de 127.0.0.1 (janela de aplicativo sem barra de endereço e/ou `radar.localhost`); (2) nome do atalho na área
+  de trabalho. Nada mexido ainda.
 
 ### Arquivos em uso
 - (nenhum)
