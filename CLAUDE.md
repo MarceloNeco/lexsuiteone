@@ -1,4 +1,4 @@
-# LexSuiteONE · JUDICIAL — regras para o Claude Code neste repositório
+# LexSuiteONE · RADAR JUDICIAL — regras para o Claude Code neste repositório
 
 Leia antes de qualquer alteração: `robo/ARQUITETURA.md` (como o robô é feito), `robo/PENDENCIAS.md` (decisões do dono e o
 que falta), `docs/DNS-SOLVERONE.md` (domínio, e-mail, site), `docs/PUBLICAR.md` (como sai uma versão), `docs/email/LEIA-ME.md`
@@ -9,7 +9,7 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
 
 - Dono: Marcelo, da SolverONE. Não é desenvolvedor: instruções em português, passo a passo, como para iniciante. Ele
   costuma mandar áudio transcrito, e nomes saem errados ("Lex Switch One" = LexSuiteONE, "solver1" = solverone, "Torex" = TORIX).
-- Produto: **JUDICIAL**, da suíte **LexSuiteONE**. Endereço `judicial.solverone.com.br`. Frentes: trabalhista (pronta),
+- Produto: **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), da suíte **LexSuiteONE**. Endereço `judicial.solverone.com.br`. Frentes: trabalhista (pronta),
   tributário, cível e empresarial. Primeiro cliente: KR Law (Leandro), trabalhista e tributário; o escritório usa o Astrea.
 
 ## Regras que não se negociam
@@ -32,6 +32,11 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
 - Publicar versão do robô: nunca crie tag à mão. Suba a versão no código, envie para a `main` e dispare a automação
   "Publicar versão assinada" (workflow_dispatch, `publicar.yml`); ela assina, publica e cria a tag. Ver `docs/PUBLICAR.md`.
 - Textos para o usuário em PT e EN. Nenhum identificador de modelo de IA em commits, PRs ou código.
+- Commits sem rastro de ferramenta de IA (decisão do dono, 08/Nov): nenhuma linha `Co-Authored-By`, `Claude-Session`,
+  `Generated with` ou parecida, nenhum nome de modelo ou de fornecedor. O histórico antigo fica como está (nunca
+  reescrever); ele será refeito na migração para a organização `solverone`.
+- Respostas ao dono em até 10 linhas, salvo quando ele pedir detalhe. Relatório longo vai para um arquivo ou para o
+  quadro, com o caminho na resposta. O dono não é desenvolvedor e não processa relatórios extensos.
 - SQL do Supabase nunca roda sem revisão: o dono roda depois de revisar.
 - As páginas do produto não fazem nenhum pedido externo: sem fontes de fora, sem rastreador, sem script de terceiros.
 

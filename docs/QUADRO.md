@@ -104,6 +104,20 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 
 ---
 
+## Fatos que toda sessão precisa saber (atualizar quando mudar)
+
+| Fato | Estado em 08/Nov (tarde) | Quem sabe mais |
+|---|---|---|
+| Licença da KR Law | Criada no Supabase pela Produto (`lex_contas`). O código `LEX-…` **nunca** entra no repositório, no quadro ou em chat; quem precisar lê no RootifyONE ("Licenças do RADAR") ou no banco, só leitura. | Produto |
+| Licença de teste do dono | Criada, zerada, para o ensaio da instalação. | Produto |
+| SQL das licenças | Aplicado em 08/Nov pela Produto com aprovação do dono pelo aplicativo, sem leitura do texto. Não é violação a registrar. Daqui em diante: SQL vai para arquivo, anotado no quadro, e o dono roda depois de revisar. Segurança do que foi aplicado (cinco pontos, função sem JWT, limite de chamadas): pendência da Arquitetura. | Arquitetura |
+| Instalador | Exige código de cliente válido antes de baixar. O e-mail de boas-vindas ao Leandro precisa levar o código. | Produto, Operação |
+| Site | Carrossel novo publicado em 08/Nov com o "pode" do dono. Falta teste no iPhone (o dono). | Produto |
+| Worker `integracao-resposta` | Correção do segundo bounce proposta pela Operação, revisada pela Arquitetura (risco baixo), autorizada pelo dono em 08/Nov. | Operação |
+| Documentos internos em `docs/` | Ficam públicos no site. Mudança para `documentacao/` aprovada pelo dono **para depois de quinta 12/Nov** (Arquitetura faz e ajusta os caminhos). Documentos internos novos já nascem em `documentacao/`. | Arquitetura |
+| Desenho da 0.8 | Na branch `claude/friendly-einstein-li603e` (Arquitetura), seções 3 a 7 sendo reescritas em cima do que a Produto construiu. Entra na `main` em `documentacao/` quando ficar coerente. | Arquitetura |
+| Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
+
 ## Pedidos entre sessões
 
 | Data | De | Para | Pedido | Feito? |
@@ -123,3 +137,8 @@ organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude
 | 08/Nov | Quadro no repositório em vez de uma quarta conversa orquestradora. Dono por arquivo. Só a Operação publica versão. |
 | 08/Nov | Subagentes com modelo por tarefa (`.claude/agents/`): a conversa principal decide e edita; leitura pesada, testes e pesquisa vão para o subagente. |
 | 08/Nov | Visita à KR Law: prompts da extensão rodam sozinhos, no Sonnet, na conta do escritório (`docs/VISITA-KR-LAW.md`). |
+| 08/Nov | Commits sem rastro de ferramenta de IA: nenhuma linha Co-Authored-By, Claude-Session ou nome de modelo. Histórico antigo fica; some na migração para a organização. |
+| 08/Nov | Respostas ao dono em até 10 linhas; detalhe vai para arquivo ou quadro. |
+| 08/Nov | Documentos internos saem de `docs/` para `documentacao/` só depois de quinta 12/Nov (Arquitetura faz). Novos já nascem em `documentacao/`. |
+| 08/Nov | SQL das licenças: aprovado pelo dono pelo aplicativo, sem leitura. Não é violação. Daqui em diante SQL em arquivo, dono roda após revisar; Arquitetura revisa a segurança do que foi aplicado. |
+| 08/Nov | Worker `integracao-resposta`: Operação aplica a correção e testa. |
