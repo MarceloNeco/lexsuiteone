@@ -97,14 +97,14 @@ nova dispara o aviso no app (notificação do PWA), no e-mail e no Telegram, e a
 
 ## Nomes e endereços: um só nome em tudo
 
-SolverONE é a empresa. **LexSuiteONE** é a suíte jurídica (o repositório e o remetente dos e-mails). **JUDICIAL** é este
-produto, escrito em maiúsculas com o "IA" em latão (`JUDIC<b>IA</b>L` na tela e no manual); dentro dele ficam as frentes
+SolverONE é a empresa. **LexSuiteONE** é a suíte jurídica (o repositório e o remetente dos e-mails). **RADAR JUDICIAL** é
+este produto, escrito em maiúsculas com o "IA" em latão (`RADAR JUDIC<b>IA</b>L` na tela e no manual); dentro dele ficam as frentes
 (Radar Trabalhista hoje; Tributário e Cível e empresarial a seguir). Outros produtos da suíte seguirão o mesmo padrão.
 
 **O nome do produto é configuração** (decisão do dono, 08/Nov): fica só em `docs/marca.json` (`nome` exato, `curto`,
 `destaque` em latão), hoje "RADAR JUDICIAL". O site (`paginas/` → `ferramentas/marca.py` → `docs/`) e o e-mail de
-boas-vindas já leem dali. A tela, o manual e a planilha do robô ainda dizem "JUDICIAL" até a versão que lê o mesmo
-arquivo (ver `PENDENCIAS.md`).
+boas-vindas já leem dali, e o pacote leva uma cópia (`robo/marca.json`) que a tela, o manual, o atalho e o aviso do
+Windows usam. Ainda fixos: a aba Sobre da planilha e o e-mail de aviso (ver `PENDENCIAS.md`).
 
 | Onde | Nome |
 |---|---|
