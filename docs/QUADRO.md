@@ -112,9 +112,9 @@ RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `S
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- "Pode" do dono recebido (08/Nov, noite) para os dois desenhos. Entregue: SQL `2026-11-08b-lex-licenca-em-uso.sql` e
-  `lex-conta` v4 no repositório. Esperando o dono rodar os dois SQL e colar a chave do Resend nos Secrets; aí publico a
-  função e confiro. Depois: PR no rootify-one (ficha da licença: aguardando, esquecer, domínios, avisos) e o SQL da 0.8.
+- Item F da licença em uso (modalidade Instalado/Nuvem com histórico, busca por domínio): desenho curto e SQL em seguida.
+- Depois: PR no rootify-one (ficha da licença: aguardando/aprovar, esquecer computador, domínios, e-mail de boas-vindas,
+  avisos, modalidade). Programa e instalador (0.7.11) ficam com a Produto, pedido já no quadro.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -122,6 +122,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 08/Nov (noite): **nuvem aplicada pela Arquitetura, pelo conector** (decisão do dono): SQL de correção de segurança
+  (tudo "true") e SQL da licença em uso, menos um bloco (regra de tipos de `lex_eventos`, tem DROP e o conector exige
+  confirmação que o celular não mostra; fica para o dono colar ou para um computador). `lex-conta` **v4 publicada** e
+  testada: código inválido, desconhecido, registro de erro com limpeza de caminho e e-mail, limite 429 na 7ª chamada,
+  GET recusado. Enquanto a regra de eventos não rodar, os tipos novos de evento não gravam (a função ignora o erro;
+  nada mais é afetado). Migrações registradas como 20261108230001 e 20261108230002.
 - 08/Nov (noite): licença em uso aprovada pelo dono (C1, D1, E). SQL em `nuvem/supabase/2026-11-08b-lex-licenca-em-uso.sql`
   (testado em Postgres local) e `lex-conta` v4 em `nuvem/supabase/functions/lex-conta/index.ts` (limites por chamada com
   HTTP 429, em uso, aprovação por domínio, avisos via Resend com caixa de saída, e-mail sugerido, respostas genéricas).
@@ -140,9 +146,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Rodar, nesta ordem, `nuvem/supabase/2026-11-08-lex-correcoes-seguranca.sql` e `nuvem/supabase/2026-11-08b-lex-licenca-em-uso.sql`;
-  criar no Resend uma chave só de envio e colar nos Secrets do Supabase como `RESEND_API_KEY` (passo a passo em
-  `documentacao/DESENHO-LICENCA-EM-USO.md`, "Passo a passo do dono"). Depois me avisar: "SQL rodado, chave colada".
+- **Dois passos que só você faz** (passo a passo em `documentacao/DESENHO-LICENCA-EM-USO.md`, "Passo a passo do dono"):
+  (1) colar no SQL Editor do Supabase as 5 linhas da regra de `lex_eventos` (bloco 4a do SQL 2026-11-08b), ou aprovar a
+  caixinha do conector num computador; (2) criar no Resend uma chave só de envio e colar nos Secrets do Supabase como
+  `RESEND_API_KEY`. Sem (2) os avisos ficam na caixa de saída como "pendente"; nada quebra.
 - Termo de tratamento de dados com a KR Law (bloqueante para a 0.8 entrar no ar).
 
 ---
