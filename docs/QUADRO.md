@@ -112,9 +112,8 @@ RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `S
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- Item F da licença em uso (modalidade Instalado/Nuvem com histórico, busca por domínio): desenho curto e SQL em seguida.
-- Depois: PR no rootify-one (ficha da licença: aguardando/aprovar, esquecer computador, domínios, e-mail de boas-vindas,
-  avisos, modalidade). Programa e instalador (0.7.11) ficam com a Produto, pedido já no quadro.
+- Nada em andamento. Próximos (depois dos dois passos do dono): SQL da 0.8 (lex_batimentos, lex_listas, lex_itens,
+  funções do site), pareamento com credencial na `lex-conta`, site `paginas/app/` (desenho para a Produto).
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -122,6 +121,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 08/Nov (noite): **RootifyONE 0.18.15 publicado** (PR #98 do rootify-one): Licenças do RADAR com aprovar/recusar pessoa,
+  Esquecer computador, domínios, e-mail de boas-vindas, modalidade Instalado/Nuvem, avisos da nuvem e busca por domínio.
+  Teste `teste/licencas.js` com 26 verificações verdes. Item F (modalidade) aplicado no banco (SQL `2026-11-08c`) e na
+  `lex-conta` (publicada de novo, devolve `modalidade`).
 - 08/Nov (noite): **nuvem aplicada pela Arquitetura, pelo conector** (decisão do dono): SQL de correção de segurança
   (tudo "true") e SQL da licença em uso, menos um bloco (regra de tipos de `lex_eventos`, tem DROP e o conector exige
   confirmação que o celular não mostra; fica para o dono colar ou para um computador). `lex-conta` **v4 publicada** e
