@@ -46,13 +46,17 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- Carrossel "Como funciona" do site: passar com o dedo no celular, sempre em movimento devagar, slide que segue o dedo,
-  botão ⏸/▶ (pedido do dono, 08/Nov; "pode" para publicar o site dado na conversa da Produto).
+- (vazio)
 
 ### Arquivos em uso
-- `paginas/index.html`, `docs/index.html` (gerado).
+- (nenhum)
 
 ### Feito (mais recente primeiro)
+- 08/Nov: site no ar com o carrossel novo: passa com o dedo (iPhone e Android), anda devagar mostrando o próximo,
+  o slide segue o dedo, botão ⏸/▶, o giro não trava depois de um toque. Testado com toque real no Chromium (Android e
+  iPhone emulados); falta a confirmação do dono num iPhone de verdade (Safari não roda neste ambiente).
+- 08/Nov: atenção às três sessões: 40 commits da `main` levam "Co-Authored-By: Claude Opus ..." (nome do modelo), contra
+  a regra do `CLAUDE.md`. A Produto passou a assinar só "Claude". Mexer no histórico é decisão do dono.
 - 08/Nov: nome do produto RADAR JUDICIAL como configuração (`docs/marca.json`, aprovado pelo dono); versões 0.7.6 a
   0.7.9 publicadas; site (carrossel, mira, Mac sob consulta, tamanhos); instalador com código de cliente; avisos de erro
   para a SolverONE (tabela `lex_registros`); licenças na nuvem (pessoa ativa/inativa, histórico); horários de leitura
