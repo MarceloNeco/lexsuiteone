@@ -23,7 +23,7 @@ FAIXAS = ((10000, "ate10k"), (50000, "10k-50k"), (100000, "50k-100k"), (300000, 
           (1000000, "500k-1mi"), (float("inf"), "1mi+"))
 # O que fica de cada ação depois que o dado completo é limpo (sem o trecho do Diário, onde aparece o reclamante).
 _RESUMO = ("processo", "tribunal", "vara", "classe", "rito", "data_publicacao", "ajuizada_em", "empresas", "cnpjs",
-           "valor_causa", "fonte", "link", "visto_em", "rodada", "cnpj_a_conferir")
+           "valor_causa", "fonte", "link", "visto_em", "rodada", "cnpj_a_conferir", "manual", "sinal")
 _RESUMO_RECEITA = ("cnpj", "razao_social", "nome_fantasia", "porte", "capital_social", "cnae", "atividade", "municipio",
                    "uf", "telefone", "telefone2", "email", "logradouro", "numero", "complemento", "bairro", "cep",
                    "situacao", "inicio_atividade", "simples", "socios", "consultado_em")
@@ -268,16 +268,18 @@ class Banco:
         return {"bytes": tamanho, "acoes": r[0] or 0, "com_detalhe": r[1] or 0, "desde": r[2] or "", "ate": r[3] or "",
                 "estatisticas_dias": self.con.execute("SELECT count(DISTINCT data) FROM estatisticas_diarias").fetchone()[0] or 0}
 
-    def limpar_detalhe(self, meses=12, perfil=""):
+    def limpar_detalhe(self, meses=12, perfil="", so_nunca_abertos=False):
         """Apaga só o dado completo (trecho do Diário etc.) das ações mais velhas que `meses`; fica o resumo e as
-        estatísticas. Devolve quantas ações foram resumidas."""
+        estatísticas. `so_nunca_abertos`: só as que continuam na situação Novo (0.7.17, banco acima de 1 GB, decisão
+        14 do dono). Devolve quantas ações foram resumidas."""
         meses = int(meses or 0)
         if meses <= 0:
             return 0
         self.atualizar_estatisticas()
         limite = (dt.date.today() - dt.timedelta(days=round(meses * 30.44))).isoformat()
         feitas = 0
-        for proc, dados in self.con.execute("SELECT processo, dados FROM leads WHERE bruto_limpo = 0 AND primeira_vez < ?", (limite,)).fetchall():
+        sql = "SELECT processo, dados FROM leads WHERE bruto_limpo = 0 AND primeira_vez < ?" + (" AND status = 'novo'" if so_nunca_abertos else "")
+        for proc, dados in self.con.execute(sql, (limite,)).fetchall():
             try:
                 d = json.loads(dados or "{}")
             except ValueError:
@@ -288,7 +290,7 @@ class Banco:
             self.con.execute("UPDATE leads SET dados = ?, bruto_limpo = 1 WHERE processo = ?", (json.dumps(r, ensure_ascii=False), proc))
             feitas += 1
         if feitas:
-            self.registrar_acao(perfil, "limpeza", f"mais de {meses} meses", "", "", feitas)
+            self.registrar_acao(perfil, "limpeza", f"mais de {meses} meses" + (", só nunca abertos" if so_nunca_abertos else ""), "", "", feitas)
         self.con.commit()
         return feitas
 

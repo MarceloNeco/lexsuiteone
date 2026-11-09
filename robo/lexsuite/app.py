@@ -396,6 +396,8 @@ class Tratador(BaseHTTPRequestHandler):
             except Exception:  # noqa: BLE001 - o retrato do armazenamento nunca derruba a tela
                 pagina["armazenamento"] = {}
             pagina["espaco"] = banco.espaco()
+            crit = banco.execucoes("criterio", 1)
+            pagina["criterio"] = crit[0] if crit else {}
             ultimo = banco.execucoes("retorno", 1)
             pagina["retorno"] = ultimo[0] if ultimo else {}
             comp = cfg["compartilhar"]

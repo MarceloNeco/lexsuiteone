@@ -211,10 +211,10 @@ def limpar(cfg, banco, pasta_robo, versao, aviso=print, automatico=False, hoje=N
     from . import radar
     hoje = hoje or dt.date.today()
     ok, onde = copia_seguranca(cfg, banco, "limpeza automática" if automatico else "antes de limpar", aviso)
-    if not ok and not automatico:
+    if not ok:  # 0.7.17 (revisão da Arquitetura): sem cópia bem-sucedida, não enxuga
+        if automatico:
+            aviso(f"  Sem cópia de segurança ({onde}): a aba Arquivo não foi enxugada; a planilha fica só com as linhas mais recentes até o limite.")
         return False, onde + " A limpeza não foi feita."
-    if not ok:
-        aviso(f"  Sem cópia de segurança: {onde} A aba Arquivo é enxugada mesmo assim (nada sai do programa).")
     corte_data = (hoje - dt.timedelta(days=DIAS_DEPOIS_DE_LIMPAR)).isoformat()
     banco.registrar("limpeza_planilha", {"corte": corte_data, "automatica": bool(automatico), "copia": onde if ok else "",
                                          "frentes": list(preferencias.NOMES_FRENTE)})

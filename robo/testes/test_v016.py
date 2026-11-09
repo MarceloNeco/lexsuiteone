@@ -344,5 +344,40 @@ class TestTelaEProcessos(unittest.TestCase):
         self.assertFalse(andamento.get("rodando"))
 
 
+class V0717(unittest.TestCase):
+    """0.7.17: turmas (2º grau) fora, banco grande resume só nunca abertos, limpeza só com cópia, data do critério."""
+
+    def test_turma_de_recurso_nao_e_acao_nova(self):
+        pub = djen.normalizar(dict(ITEM_DJEN, tipoComunicacao="Lista de distribuição", nomeOrgao="10ª Turma - Cadeira 3"))
+        self.assertEqual(djen.leads([pub], ano_minimo=2026), [])
+        self.assertTrue(cl.segundo_grau("Gabinete da Desembargadora Fictícia"))
+        self.assertFalse(cl.segundo_grau("1ª Vara do Trabalho de São Paulo"))
+        from lexsuite import radar
+        b = _banco_com(2)
+        b.guardar_lead({"processo": "9999999-11.2026.5.02.0001", "tribunal": "TRT2", "vara": "10ª Turma - Cadeira 3",
+                        "empresas": ["Empresa Fictícia Recurso Ltda"]}, dt.date.today().isoformat())
+        itens = radar.montar_radar({"radar": {"tribunais": ["TRT2"], "dias_na_pagina": 5}}, b)["itens"]
+        self.assertNotIn("9999999-11.2026.5.02.0001", [i["processo"] for i in itens])
+
+    def test_resumo_so_dos_nunca_abertos(self):
+        b = _banco_com(3, hoje=dt.date.today() - dt.timedelta(days=400))
+        b.mudar_situacao(["0000001-11.2026.5.02.0001"], "em_contato")
+        self.assertEqual(b.limpar_detalhe(6, so_nunca_abertos=True), 2)
+        resumidos = {l["processo"]: l["resumido"] for l in b.todos_leads()}
+        self.assertFalse(resumidos["0000001-11.2026.5.02.0001"])
+
+    def test_limpeza_automatica_sem_copia_nao_enxuga(self):
+        from lexsuite import armazenamento as ar
+        b = _banco_com(2)
+        orig = ar.copia_seguranca
+        ar.copia_seguranca = lambda *a, **k: (False, "Pouco espaço no disco.")
+        try:
+            ok, _ = ar.limpar({"compartilhar": {"pasta": tempfile.mkdtemp()}}, b, "", "0.7.17", lambda *_: None, automatico=True)
+        finally:
+            ar.copia_seguranca = orig
+        self.assertFalse(ok)
+        self.assertEqual(b.execucoes("limpeza_planilha", 5), [])
+
+
 if __name__ == "__main__":
     unittest.main()

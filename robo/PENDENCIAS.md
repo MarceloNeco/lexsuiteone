@@ -162,6 +162,15 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.17 (09/Nov, noite; para publicar antes da visita, depois da 0.7.16)
+
+Feedback do dono sobre os filtros (print da 0.7.15): "Limpar filtros" não aparecia ao escolher numa lista (defeito da
+0.7.14), filtros sem várias opções, contagem que não seguia os outros filtros (escolher vara e setor dava "nenhum
+processo"). Agora: caixas de marcar com busca, contagem cruzada, opção com zero some. A lista trazia "10ª Turma -
+Cadeira 3": recurso distribuído a turma não é ação nova; 2º grau fica de fora. Observações da Arquitetura sobre a
+planilha grande: limpeza automática só com cópia, data do critério no Painel, aviso de cópias em pasta compartilhada
+(tela e manual), decisão 14 (banco acima de 1 GB). Pacote igual ao da 0.7.16 (44 e 43 arquivos).
+
 ## 0.7.16 (09/Nov, noite; tudo antes da visita de quinta, decisão do dono)
 
 Itens 89 a 101 de `documentacao/FEEDBACK-TESTE-2026-11-09.md` e as ressalvas da terceira revisão da Operação. **Planilha

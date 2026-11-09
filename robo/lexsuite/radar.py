@@ -142,6 +142,8 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     for lead in banco.todos_leads(desde=None if arquivo else desde):
         if lead.get("fonte", "DJEN") != "DJEN":
             continue
+        if cl.segundo_grau(lead.get("vara")):  # 0.7.17: guardados antes, quando turma ainda entrava (não é ação nova)
+            continue
         if not arquivo and ((lead.get("tribunal") or "").upper() not in escolhidos or lead.get("status") == "arquivado"):
             continue
         item = item_de_lead(lead, r, por_processo)
@@ -232,6 +234,9 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
             except Exception as e:  # noqa: BLE001 - o histórico nunca esconde o erro da leitura
                 aviso(f"  Não consegui gravar o histórico de leituras ({e.__class__.__name__}).")
         ano_min = agora.year - 1 if agora.month <= 2 else agora.year
+        if not banco.execucoes("criterio", 1):  # 0.7.17: data em que o critério de "ação nova" mudou (estatísticas antes e depois não se comparam)
+            banco.registrar("criterio", {"desde": agora.date().isoformat(), "versao": versao or _versao(),
+                                         "regra": "ação nova = lista de distribuição, audiência inicial/una/de conciliação ou notificação inicial, só 1º grau"})
         novos = acoes_do_dia(pubs, ano_min, banco.processos_vistos())
         if novos:  # 0.7.16: quantas entraram por cada sinal, para conferir a regra de "ação nova" com o escritório
             por_sinal = {}
@@ -301,6 +306,15 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     except Exception as e:  # noqa: BLE001 - estatística nunca derruba a leitura
         aviso(f"  Não consegui atualizar as estatísticas ({e.__class__.__name__}).")
     apagados = banco.limpar_antigos(int(r.get("guardar_dias") or 365))
+    try:  # 0.7.17 (decisão 14): banco acima de 1 GB resume com 6 meses só os processos nunca abertos
+        if banco.espaco()["bytes"] > 1024 ** 3:
+            resumidos = banco.limpar_detalhe(6, perfil="automático", so_nunca_abertos=True)
+            if resumidos:
+                banco.compactar()
+                aviso(f"  O banco do programa passou de 1 GB: {resumidos} processo(s) nunca aberto(s) com mais de 6 meses ficaram só com o resumo.")
+                banco.registrar("saude", {"fonte": "Banco do programa", "situacao": "atenção", "detalhe": f"acima de 1 GB: {resumidos} resumidos (6 meses, nunca abertos)"})
+    except Exception as e:  # noqa: BLE001 - a retenção nunca derruba a leitura
+        aviso(f"  Não consegui resumir o banco ({e.__class__.__name__}).")
     if apagados:
         aviso(f"  Retenção: {apagados} registro(s) com mais de {int(r.get('guardar_dias') or 365)} dias resumidos ou apagados (o detalhe sai; o resumo e as estatísticas ficam).")
     if interrompida:  # 0.7.16: depois de uma parada na Receita, conta só o que foi feito (antes misturava parcial e total)

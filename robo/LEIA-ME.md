@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.16 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.17 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,10 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.17:** filtros com várias opções (caixas de marcar), contagem de cada opção que segue os outros filtros (o que
+  daria zero some), "Limpar filtros" sempre que houver filtro ligado; turmas e gabinetes (2º grau) fora da lista; banco
+  acima de 1 GB resume com 6 meses só os processos nunca abertos; limpeza automática só com cópia; data da mudança do
+  critério de "ação nova" no Painel.
 - **0.7.16:** regra de "ação nova" mais estreita (antes, "fica notificado" e "citação" de qualquer processo do ano
   entravam: dois TRTs davam 20 mil "novos"); uma planilha por frente; cópias de segurança e armazenamento; leitura só
   das abas editáveis (a planilha grande dava "ValueError"); Configuração em janela própria com ✕ e Salvar; "Buscar na

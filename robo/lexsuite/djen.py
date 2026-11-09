@@ -164,6 +164,8 @@ def leads(publicacoes, vara=None, ano_minimo=None, ja_vistos=()):
     for p in publicacoes:
         if vara and cl.sem_acento(vara).lower() not in cl.sem_acento(p["vara"]).lower():
             continue
+        if cl.segundo_grau(p.get("vara")):  # 0.7.17: recurso distribuído a turma não é ação nova
+            continue
         ano = cl.ano_do_processo(p["processo"])
         if ano_minimo and (ano is None or ano < ano_minimo):
             continue  # processo antigo: não é ação nova
