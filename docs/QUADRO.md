@@ -94,7 +94,10 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- (nada) Próximo: 0.7.15 (estatísticas no tempo e "Atualizar estatísticas", depois do desenho da Arquitetura do item 82).
+- **0.7.15 no ramo `claude/lexsuiteone-judicial-product-22f871`** (não vai à `main` antes de a 0.7.14 ser publicada, para
+  a automação não publicar a versão errada): botão Interromper seguro, aviso "leitura das 08h00 feita agora porque o
+  computador estava desligado", próxima leitura que se atualiza (itens 85 a 88). Depois, com os desenhos da Arquitetura:
+  termos por pessoa e "Atualizar estatísticas".
 
 ### Arquivos em uso
 - (nenhum)
