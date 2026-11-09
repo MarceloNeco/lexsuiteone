@@ -32,6 +32,7 @@ p, li { margin: 0 0 10px; } .mudo { color: var(--tinta-2); }
 .termos h2:first-child { margin-top: 0; }
 .fim { text-align: center; color: var(--tinta-3); font-size: .9rem; padding: 10px 0 0; border-top: 1px dashed var(--fio); margin-top: 16px; }
 label { display: block; font-weight: 600; margin: 14px 0 6px; } label small { display: block; font-weight: 400; color: var(--tinta-3); }
+input.fixo { background: var(--papel-2); color: var(--tinta-2); }
 input[type=text], input[type=email] { width: 100%; font: inherit; padding: 12px 14px; border: 1px solid var(--fio); border-radius: 10px; background: var(--papel); }
 .marca { display: flex; gap: 12px; align-items: flex-start; font-weight: 500; margin-top: 16px; } .marca input { width: 22px; height: 22px; margin-top: 3px; flex: none; }
 button { font: 700 1.05rem var(--f); background: var(--latao); color: var(--noite); border: 0; border-radius: 12px; padding: 14px 22px; cursor: pointer; margin-top: 18px; min-height: 48px; }
@@ -47,7 +48,7 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
 <main><div class="miolo">
   <h1>Aceite dos termos</h1>
   <p id="quem" class="aviso info" hidden></p>
-  <p class="mudo">Antes de instalar e usar o {{marca.nome}}, leia os termos até o fim, confira seus dados e confirme. O aceite fica registrado com data e hora e vale como assinatura eletrônica simples entre particulares (MP 2.200-2/2001, art. 10, §2º; Código Civil, art. 107). Versão dos termos: <b id="versao">1.0</b>, de 09/Nov/2026.</p>
+  <p class="mudo">Sua licença já está ativa; o {{marca.nome}} só libera a leitura depois deste aceite. Leia os termos até o fim, confira seus dados e confirme. O aceite fica registrado com data e hora e vale como assinatura eletrônica simples entre particulares (MP 2.200-2/2001, art. 10, §2º; Código Civil, art. 107). Versão dos termos: <b id="versao">1.0</b>, de 09/Nov/2026.</p>
 
   <div class="cartao">
     <div class="termos" id="termos" tabindex="0" aria-label="Texto dos termos; role até o fim para liberar o aceite">
@@ -77,9 +78,9 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
     </div>
 
     <form id="form" novalidate>
-      <label for="nome">Nome completo<small>Como no documento. Ex.: Maria da Silva Santos</small></label>
+      <label for="nome">Nome completo<small>Confira e corrija se preciso. Ex.: Maria da Silva Santos</small></label>
       <input type="text" id="nome" autocomplete="name" maxlength="120" required>
-      <label for="email">E-mail<small>O mesmo que recebeu o e-mail de boas-vindas, se possível.</small></label>
+      <label for="email">E-mail do responsável<small>O e-mail cadastrado na licença, que recebeu o e-mail de boas-vindas.</small></label>
       <input type="email" id="email" autocomplete="email" maxlength="120" required>
       <label for="codigo">Código de cliente<small>Veio no e-mail de boas-vindas (LEX-XXXX-XXXX). Identifica o escritório.</small></label>
       <input type="text" id="codigo" autocomplete="off" maxlength="13" required>
@@ -106,19 +107,27 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
   var termos = document.getElementById("termos"), li = document.getElementById("li"), botao = document.getElementById("botao"), dica = document.getElementById("dica"), msg = document.getElementById("msg");
   var q = new URLSearchParams(location.search);
   function normCodigo(c) { c = String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); return c.length === 11 && c.indexOf("LEX") === 0 ? c.slice(0, 3) + "-" + c.slice(3, 7) + "-" + c.slice(7, 11) : String(c || "").toUpperCase(); }
-  if (q.get("codigo")) document.getElementById("codigo").value = normCodigo(q.get("codigo"));
+  var campoCodigo = document.getElementById("codigo"), campoEmail = document.getElementById("email"), campoNome = document.getElementById("nome");
+  function fixar(campo) { campo.readOnly = true; campo.setAttribute("aria-readonly", "true"); campo.classList.add("fixo"); campo.title = "Veio do e-mail de boas-vindas; não se altera aqui."; }
+  // Pelo link do e-mail: código e e-mail vêm preenchidos e fixos (identificam a licença e o responsável); o nome vem
+  // preenchido mas pode ser corrigido, porque o cadastro às vezes está errado.
+  if (q.get("codigo")) { campoCodigo.value = normCodigo(q.get("codigo")); fixar(campoCodigo); }
+  if (q.get("email")) { campoEmail.value = String(q.get("email")).trim().toLowerCase(); fixar(campoEmail); }
+  if (q.get("nome")) campoNome.value = String(q.get("nome")).trim().slice(0, 120);
   var quem = document.getElementById("quem");
   async function contexto() {   // mostra "em nome de <escritório>" quando o código é conhecido
     var c = normCodigo(document.getElementById("codigo").value); if (!/^LEX-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(c)) { quem.hidden = true; return; }
     try {
       var r = await fetch(NUVEM + "/rest/v1/rpc/sol_aceite_contexto", { method: "POST", headers: { apikey: CHAVE, Authorization: "Bearer " + CHAVE, "Content-Type": "application/json" }, body: JSON.stringify({ p_app: APP, p_licenca: c }) });
       var j = r.ok ? await r.json() : null;
-      if (j && j.ok) { quem.textContent = "Este aceite é dado em nome de " + j.escritorio + " (código " + c + ")." + (j.ja_aceito ? " Já existe um aceite registrado para este escritório; um novo aceite não faz mal." : ""); quem.hidden = false; }
+      if (j && j.ok) {
+        quem.textContent = "Este aceite é dado em nome de " + j.escritorio + " (código " + c + ")." + (j.ja_aceito ? " Já existe um aceite registrado para este escritório; um novo aceite não faz mal." : ""); quem.hidden = false;
+        if (j.email && !campoEmail.value) { campoEmail.value = String(j.email).toLowerCase(); fixar(campoEmail); }   // e-mail do responsável cadastrado na licença
+      }
       else quem.hidden = true;
     } catch (e) { quem.hidden = true; }
   }
   document.getElementById("codigo").addEventListener("change", contexto); contexto();
-  if (q.get("email")) document.getElementById("email").value = String(q.get("email")).toLowerCase();
   function leuTudo() { return termos.scrollTop + termos.clientHeight >= termos.scrollHeight - 8; }
   function liberar() { if (leuTudo() && li.disabled) { li.disabled = false; dica.textContent = "Obrigado por ler. Marque a caixa para aceitar."; } }
   termos.addEventListener("scroll", liberar); setTimeout(liberar, 300);
@@ -142,6 +151,7 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
         var m = (j && (j.message || j.hint)) || "";
         if (/desconhecido/i.test(m)) m = "Código de cliente não encontrado. Confira no e-mail de boas-vindas.";
         else if (/tentativas/i.test(m)) m = "Muitas tentativas. Espere um pouco e tente de novo.";
+        else if (/responsável/i.test(m)) m = "O aceite é feito com o e-mail do responsável pela licença. Abra o link que veio no e-mail de boas-vindas.";
         else if (!m) m = "Não consegui registrar agora. Confira a internet e tente de novo; se continuar, escreva para judicial@solverone.com.br.";
         botao.disabled = false; return mostrar(m, "erro");
       }
