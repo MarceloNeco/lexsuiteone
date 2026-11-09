@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v4 (revisão 2, com modalidade): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v6 (v4 + modalidade + retorno dos processos): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -22,6 +22,8 @@ const PUBLICOS = new Set(["gmail.com", "googlemail.com", "outlook.com", "outlook
 const CONTATO = "judicial@solverone.com.br";
 const REMETENTE = "SolverONE <nao-responda@solverone.com.br>";
 const AVISOS_POR_DIA = 20;
+// Retorno dos processos à SolverONE (decisão do dono, 09/Nov): só contagens por situação. Situações do programa:
+const SITUACOES = new Set(["novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado"]);
 
 function json(corpo: unknown, status = 200) {
   return new Response(JSON.stringify(corpo), { status, headers: { "Content-Type": "application/json; charset=utf-8" } });
@@ -164,6 +166,31 @@ Deno.serve(async (req) => {
     try { await enviarAviso(sb, pode, conta as Record<string, unknown>, a.tipo, a.ref); } catch { /* fica na caixa de saída como falhou */ }
   }
 
+  // Retorno dos processos (só totais; nunca nome, processo, CNPJ ou pessoa). Campo opcional da ação verificar.
+  // Linha: {data, tribunal, frente, faixa_valor, situacao, qtd}. Até 2.000 linhas; 1 envio a cada 10 min por instalação.
+  let retorno: Record<string, number> | null = null;
+  if (acao === "verificar" && Array.isArray(e.retorno)) {
+    if (!(await pode(`inst:${instalacao}:retorno`, 1, 600))) {
+      retorno = { gravadas: 0, recusadas: 0, limite: 1 };
+    } else {
+      const linhas: Array<Record<string, unknown>> = [];
+      let recusadas = 0;
+      for (const l of (e.retorno as unknown[]).slice(0, 2000)) {
+        const r = (l && typeof l === "object") ? l as Record<string, unknown> : {};
+        const data = texto(r.data, 10), sit = texto(r.situacao, 40).toLowerCase(), qtd = Number(r.qtd);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(data) || !SITUACOES.has(sit) || !Number.isInteger(qtd) || qtd < 0 || qtd > 1_000_000) { recusadas++; continue; }
+        linhas.push({ data, dim1: texto(r.tribunal, 40), dim2: texto(r.frente, 40), dim3: texto(r.faixa_valor, 40), situacao: sit, qtd });
+      }
+      let gravadas = 0;
+      if (linhas.length) {
+        const { data: n, error: errR } = await sb.rpc("sol_retorno_gravar", { p_app: "radar-judicial", p_licenca: codigo, p_linhas: linhas });
+        gravadas = errR ? 0 : Number(n) || 0;
+        if (errR) recusadas += linhas.length;
+      }
+      retorno = { gravadas, recusadas };
+    }
+  }
+
   // Situação da pessoa deste computador (para a tela mostrar "aguardando" ou pedir outro e-mail).
   let aprovacaoPessoa = "";
   if (email) {
@@ -178,6 +205,7 @@ Deno.serve(async (req) => {
     modalidade: conta.modalidade ?? "instalado" };   // item F: "nuvem" = a tela avisa e continua lendo
   if (aprovacaoPessoa) resposta.aprovacao = aprovacaoPessoa;
   if (emUso) resposta.em_uso = emUso;
+  if (retorno) resposta.retorno = retorno;
   // E-mail de boas-vindas sugerido só enquanto a licença não tem pessoa aprovada (quem tem o código já tem esse e-mail).
   if (!temAprovada && conta.email_boas_vindas && acao === "verificar") resposta.email_sugerido = conta.email_boas_vindas;
   return json(resposta);
