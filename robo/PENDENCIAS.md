@@ -170,7 +170,7 @@ arquivo pela metade, turma trabalhada de volta, código mascarado. Feedback do d
 reiniciar; Interromper como botão vermelho; termos com um link só e aceite já preenchido; pastas explicadas, caminho
 inteiro, teste automático e janela do Windows na frente; menu em gaveta com hierarquia; lupa de busca; engrenagem
 centrada; gráfico do sinal para calibrar a regra com o Leandro. **Pedido ao Fable:** página do aceite na largura toda.
-**Falta decidir (dono):** AssistONE no RADAR (ver "Perguntas ao dono" no quadro). Pacote continua com 45/44 arquivos.
+**AssistONE** já nesta versão (decisão do dono, pergunta 15): embutido, sem IA e sem internet, para validar com o Leandro na visita. Pacote continua com 45/44 arquivos.
 
 ## 0.7.18 (09/Nov, noite; antes da visita, depois da 0.7.17)
 
