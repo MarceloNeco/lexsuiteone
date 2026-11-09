@@ -20,35 +20,40 @@ depois.
 Nada do que o escritório trabalhou sai da planilha; o que é só leitura antiga sai da planilha, mas fica no banco e na
 cópia de segurança.
 
-## Proposta para a 0.7.16 (Produto implementa; números ajustáveis em Configuração)
+## Decisões (Produto, por delegação do dono, 09/Nov noite: "tome as melhores decisões"; tudo na 0.7.16, antes da visita)
 
-1. **Limite da planilha**: 60 mil linhas (abas Radar e Arquivo somadas; ≈ 100 MB por dentro, ≈ 5 MB no disco).
-2. **Aviso em três lugares** a partir de 80% do limite: faixa amarela no topo da tela, linha 1 em vermelho na planilha
-   e mensagem na janela preta. Texto: "A planilha está ficando grande (48 mil de 60 mil linhas). Recomendamos limpar:
-   antes, o RADAR guarda uma cópia completa." Botão **Limpar a planilha (com cópia)**.
-3. **Limpar com cópia**: grava a planilha inteira (Excel) e o Arquivo em CSV em
-   `<pasta escolhida>/Cópias de segurança/AAAA-MM-DD HHhMM/`; depois a aba Arquivo fica com os **últimos 90 dias** e
-   **todo processo trabalhado** (Em análise, Em contato, Virou cliente), de qualquer idade. O banco não perde nada.
-4. **Ao chegar a 100%**, o RADAR faz a limpeza com cópia sozinho antes de gravar, e avisa. Assim a planilha nunca
-   quebra, mesmo sem ninguém olhar.
-5. **Cópias de segurança**: ficam as 6 mais recentes; ao fazer a 7ª, a mais antiga sai, com aviso na tela.
-6. **Armazenamento** (seção nova na Configuração): planilha (tamanho, linhas, % do limite), banco do computador, pasta
-   `saida/`, cópias de segurança (quantas e quanto ocupam) e **espaço livre no disco** (o Windows informa isso sem o RADAR
-   abrir arquivo de ninguém). Botões: abrir a pasta das cópias, limpar agora.
-7. **Disco quase cheio** (menos de 5 GB livres ou menos de 10%): o RADAR não faz cópia nova, avisa em vermelho e
-   continua lendo (a lista fica no banco).
-8. **Tela Arquivo** com dezenas de milhares de processos: a busca passa a ser feita no computador, em páginas de 200
-   (hoje a página carrega tudo de uma vez).
-9. **Conferir o volume**: 20.699 "novos" em dois TRTs parece alto (a estatística pública fica perto de 2,5 a 3 mil
-   ações novas por dia útil nos dois). Conferir se a regra de "ação nova" está deixando passar comunicações de processos
-   já em andamento.
+O dono não terá outra visita ao Leandro: a estrutura da pasta e da planilha precisa nascer definitiva na 0.7.16.
 
-## Para a Arquitetura (regra de negócio e estrutura)
+1. **A pasta escolhida nunca muda.** Dentro dela, na subpasta `LexSuiteONE/`, ficam: **uma planilha por frente**
+   (`LexSuiteONE - Trabalhista.xlsx` agora; `LexSuiteONE - Tributário.xlsx`, `- Cível.xlsx` e `- Empresarial.xlsx`
+   nascem sozinhas na mesma pasta quando a frente tiver processos), `Cópias de segurança/`, `Cópias/` e o
+   `Retrato da última leitura.html`. A frente é a do `frentes.py` (TRT e TST = trabalhista).
+2. **Migração**: na primeira leitura da 0.7.16, a `LexSuiteONE.xlsx` antiga vira `LexSuiteONE - Trabalhista.xlsx`, com
+   as abas editadas preservadas (se estiver aberta no Excel, tenta de novo na leitura seguinte).
+3. **Preferências por planilha** (o valor mínimo de uma causa tributária não é o de uma trabalhista); **Exclusões
+   somadas**: quem está na aba Exclusões de qualquer planilha some de todas (cliente é cliente em todas as frentes).
+4. **Aba Arquivo da planilha**: últimos 90 dias (ajustável na aba Preferências) + todo processo trabalhado (Em análise,
+   Em contato, Virou cliente), de qualquer idade. O resto continua no banco do computador (12 meses, decisão de 09/Nov)
+   e na tela Arquivo, que passa a buscar no computador em páginas de 200.
+5. **Limite por planilha**: 60 mil linhas (ajustável). A partir de 80%: aviso na faixa do topo da tela, na linha 1 da
+   planilha (vermelho) e na janela preta, com o botão **"Limpar a planilha (com cópia)"**. A 100%, o RADAR faz a limpeza
+   com cópia sozinho antes de gravar e avisa.
+6. **Limpar com cópia**: grava a planilha inteira (Excel) e o Arquivo completo do banco em CSV em
+   `Cópias de segurança/AAAA-MM-DD HHhMM/`; depois deixa na aba Arquivo só os últimos 30 dias + trabalhados.
+   Ficam as **6 cópias** mais recentes; a mais antiga sai com aviso. Botão "Exportar o Arquivo completo (CSV)" a qualquer
+   hora.
+7. **Armazenamento** (seção nova na Configuração e na tela de boas-vindas da instalação): planilhas (tamanho, linhas,
+   % do limite), banco do computador, pasta `saida/`, cópias de segurança e **espaço livre no disco** (o Windows informa
+   o espaço livre; o RADAR não abre arquivo de ninguém). Botões: abrir a pasta das cópias, limpar agora, exportar CSV.
+8. **Disco quase cheio** (menos de 5 GB ou menos de 10% livres): o RADAR não faz cópia nova, avisa em vermelho na tela e
+   na janela preta e continua lendo (a lista fica no banco). Menos de 1 GB: não grava planilha, só o banco, e avisa.
+9. **"Ação nova" mais estreita**: entra o processo do ano com lista de distribuição, notificação inicial, citação inicial
+   ou audiência inicial/una; deixa de entrar a intimação comum ("fica notificado", "designada audiência" sem ser
+   inicial). A janela preta e o Histórico mostram quantas entraram por cada sinal, para conferir com o Leandro.
 
-- **Uma planilha por frente** (ideia do dono, para quando o tributário entrar; as colunas são diferentes):
-  `LexSuiteONE - Trabalhista.xlsx`, `LexSuiteONE - Tributário.xlsx`, na mesma pasta; Preferências e Exclusões por
-  frente ou comuns? Configuração lista as planilhas; migração da planilha atual sem perder as abas editadas; textos do
-  manual, do e-mail e do site falam de "planilhas". Desenho curto antes do tributário; nada muda na 0.7.16.
-- Confirmar que limpar a **planilha** (vitrine) não conflita com a retenção de 12 meses do **banco** (decisão de 09/Nov).
-- Avaliar se o banco do computador precisa de teto próprio com esse volume (estimativa: 1 a 2 GB por ano com dois TRTs
-  e dado completo de 12 meses) ou resumo mais cedo para quem não foi trabalhado.
+## Para a Arquitetura (revisar, sem bloquear a 0.7.16)
+
+- Conferir que as decisões 1 a 9 não ferem regra de negócio ou de nuvem (nada vai à SolverONE além do que já ia; o
+  retorno por situação continua igual, somando as frentes).
+- Banco do computador com o volume de muitos tribunais: avaliar resumo mais cedo do que 12 meses para o que nunca foi
+  trabalhado (decisão do dono depois; o painel de armazenamento já mostra o tamanho).

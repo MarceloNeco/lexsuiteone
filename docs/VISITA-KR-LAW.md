@@ -2,8 +2,8 @@
 
 Complementa `robo/ROTEIRO-INSTALACAO.md` (instalação do robô). Aqui ficam os prompts para usar no **Claude in Chrome**
 no computador do Leandro, com o consentimento dele, para aprender como os sistemas funcionam e planejar as integrações.
-Nada aqui produz efeito nos sistemas: é leitura e anotação. **Atualizado em 09/Nov/2026**: programa na versão 0.7.15
-(0.7.16 em preparo), termos de uso 1.1 com aceite, autorização do Leandro antes de qualquer prompt na área logada e
+Nada aqui produz efeito nos sistemas: é leitura e anotação. **Atualizado em 09/Nov/2026 (noite)**: programa na versão 0.7.16
+(tudo o que a visita precisa: planilha por frente, cópias de segurança, armazenamento, "Colar resposta da área logada"), termos de uso 1.1 com aceite, autorização do Leandro antes de qualquer prompt na área logada e
 formato padronizado de resposta que o RADAR lê (seção "Resposta para o RADAR"). Os prompts foram escritos para o Claude
 in Chrome, mas servem em qualquer extensão de IA de navegador. Versão anterior: 08/Nov/2026 (foco na ficha de canais; prompts
 escritos para rodar **sozinhos**, no Sonnet, na conta do escritório, sem ninguém acompanhando; o relatório volta para a
@@ -111,8 +111,13 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
    escritório ou perfil novo, extensão instalada, modelo Sonnet). Testar com uma conversa curta e conferir se ela aparece
    no claude.ai dessa conta.
 2. **Instalar o robô (45 a 60 min).** Seguir o `ROTEIRO-INSTALACAO.md`: baixar o pacote do site, `DIAGNOSTICO.bat`,
-   configurar, ligar a planilha ao Drive do escritório e compartilhar com `integracao@solverone.com.br`, agendar a rodada
-   diária e iniciar a primeira rodada agora (demora: deixar rodando).
+   configurar, escolher a pasta da planilha (no computador ou no Drive do escritório; **não** se compartilha com a
+   SolverONE), agendar a rodada diária e iniciar a primeira rodada agora (demora: deixar rodando). Instalar no
+   computador que fica ligado nos horários das leituras (o do escritório ou o de casa: perguntar ao Leandro qual).
+   **Conferir o armazenamento** (Configuração → Armazenamento): espaço livre no disco (o ideal é mais de 10 GB), onde
+   ficam `LexSuiteONE - Trabalhista.xlsx` e a pasta `Cópias de segurança`, e se o aviso de disco aparece. Anotar
+   quantos GB livres o computador tem. A pasta escolhida aqui não precisa mudar depois: as frentes novas (tributário,
+   cível, empresarial) ganham a própria planilha na mesma pasta, sozinhas.
 3. **Em paralelo: Prompt 3, Astrea.** O Leandro entra no Astrea na janela da extensão, cola o Prompt 3, clica em
    "Permitir" quando ela pedir, e deixa a janela sozinha. Se ela escrever `BLOQUEIO`, só o Leandro resolve e digita
    "continue".
@@ -124,7 +129,8 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
 6. **Lista do dia pronta.** Mostrar na tela local e na planilha; validar 3 ou 4 itens com o Leandro (é ação nova? é
    empresa? a comarca interessa?); anotar as regras que ele quer ajustar. Escolher 3 empresas para o Prompt 2, que roda
    em casa, sem login em nada.
-7. **Fechamento (15 min).** Conferir: rodada agendada, planilha compartilhada, Leandro sabe abrir a tela e a planilha,
+7. **Fechamento (15 min).** Conferir: rodada agendada, Leandro sabe abrir a tela e a planilha, sabe o que fazer se
+   aparecer o aviso "a planilha está ficando grande" (clicar em "Limpar a planilha (com cópia)"),
    manual e `judicial@solverone.com.br` como contato. Entregar os relatórios: em cada conversa da extensão, no claude.ai
    da conta do escritório, "Compartilhar" e mandar o link ao dono; se não der, selecionar todo o texto do painel e colar
    num Google Doc compartilhado com `integracao@`. Apagar o perfil do Chrome se usou a conta do dono. Anotar feedbacks e
