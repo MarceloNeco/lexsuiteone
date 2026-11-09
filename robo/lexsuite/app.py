@@ -241,6 +241,7 @@ class Servidor(ThreadingHTTPServer):
         self.caminho_db = os.path.join(pasta, "lexsuite.db")
         self.modelo = os.path.join(pasta, "radar_modelo.html")
         self.hist = {}  # 0.7.18: andamento das estatísticas dos meses anteriores
+        self._ultima_cache = None  # 0.7.19: (data do arquivo do banco, última leitura) para a tela
         self.hist_trava = threading.Lock()
         import time as _t
         self.ultimo_pedido = _t.monotonic()  # 0.7.16: a janela preta fecha sozinha quando a tela some (ver vigiar_tela)
@@ -259,15 +260,38 @@ class Servidor(ThreadingHTTPServer):
                           "atrasada": fora.get("atrasada", ""), "parando": os.path.exists(os.path.join(os.path.dirname(self.arquivo_andamento), "parar.json")),
                           "progresso": min(99, int(fora.get("progresso") or 1)), "mensagens": fora.get("mensagens") or []})
         if not d["rodando"] and not d.get("situacao") and not d.get("erro"):
-            try:  # 0.7.19: depois de reiniciar (atualização), a última leitura vem do banco, não "Ainda não leu"
-                for e in bd.Banco(self.caminho_db).execucoes("radar", 10):
-                    if e.get("resultado") == "ok" or e.get("lidas"):
-                        d["situacao"] = {"quando": e.get("quando", ""), "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} ações novas contra empresas.",
-                                         "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new lawsuits against companies."}
-                        break
-            except Exception:  # noqa: BLE001 - sem banco, fica o "Ainda não leu"
-                pass
+            ult = self.ultima_do_banco()
+            if ult:
+                d["situacao"] = ult
         return d
+
+    def ultima_do_banco(self):
+        """0.7.19: depois de reiniciar (atualização), a última leitura vem do banco, não "Ainda não leu". Consulta só
+        leitura, guardada até o banco mudar (a tela pergunta o estado a cada poucos segundos)."""
+        import sqlite3
+        try:
+            marca_ = os.path.getmtime(self.caminho_db)
+        except OSError:
+            return None
+        if self._ultima_cache and self._ultima_cache[0] == marca_:
+            return self._ultima_cache[1]
+        achou = None
+        try:
+            con = sqlite3.connect(f"file:{self.caminho_db}?mode=ro", uri=True, timeout=1)
+            try:
+                linhas = con.execute("SELECT quando, resumo FROM execucoes WHERE tipo = 'radar' ORDER BY quando DESC LIMIT 10").fetchall()
+            finally:
+                con.close()
+            for quando, dados in linhas:
+                e = json.loads(dados or "{}")
+                if e.get("resultado") == "ok" or e.get("lidas"):
+                    achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} ações novas contra empresas.",
+                             "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new lawsuits against companies."}
+                    break
+        except (sqlite3.Error, ValueError):
+            return None
+        self._ultima_cache = (marca_, achou)
+        return achou
 
     def planilha_depois(self, intervalo=120, limite_s=7200, primeira=5):
         """0.7.14: regrava a planilha em segundo plano; se ela estiver aberta (travada), tenta de novo a cada 2 minutos
@@ -797,7 +821,7 @@ class Tratador(BaseHTTPRequestHandler):
             cfg = s.config()
             pasta = str(corpo.get("pasta") or "").strip()
             sub_ = compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"])
-            ok, msg = compartilhar.testar(pasta, sub_, criar=bool(corpo.get("criar")))
+            ok, msg = compartilhar.testar(pasta, sub_, criar=bool(corpo.get("criar")), leve=bool(corpo.get("leve")))
             return self._responder({"ok": ok, "mensagem": msg, "nao_existe": bool(pasta) and not os.path.isdir(pasta),
                                     "alvo": os.path.join(pasta, sub_) if pasta else "",
                                     "no_drive": compartilhar.no_google_drive(pasta)})

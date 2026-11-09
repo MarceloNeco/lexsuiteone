@@ -62,9 +62,10 @@ def pasta_atualizacao(cfg):
     return os.path.join(base, SUBPASTA_ATUALIZACAO) if base else ""
 
 
-def testar(pasta, subpasta="LexSuiteONE", criar=False):
+def testar(pasta, subpasta="LexSuiteONE", criar=False, leve=False):
     """Confere se dá para criar a subpasta e gravar nela (com criar=True, cria também a pasta escolhida).
-    Devolve (ok, mensagem)."""
+    Com leve=True (0.7.19, teste automático da tela) só confere, sem criar nem gravar nada (no Drive, gravar e apagar
+    um arquivo de teste a cada clique gera sincronização à toa). Devolve (ok, mensagem)."""
     if pasta and not os.path.isdir(pasta) and criar:
         try:
             os.makedirs(pasta, exist_ok=True)
@@ -74,6 +75,10 @@ def testar(pasta, subpasta="LexSuiteONE", criar=False):
         return False, "Essa pasta ainda não existe neste computador."
     alvo = os.path.join(pasta, subpasta)
     existia = os.path.isdir(alvo)
+    if leve and not criar:
+        if os.access(alvo if existia else pasta, os.W_OK):
+            return True, f"Pronto: a planilha vai ficar em {alvo}."
+        return False, f"Sem permissão para gravar em {alvo if existia else pasta}."
     try:
         os.makedirs(alvo, exist_ok=True)
         prova = os.path.join(alvo, "teste-lexsuite.txt")

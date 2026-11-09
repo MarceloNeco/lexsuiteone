@@ -1337,10 +1337,12 @@ window.LEXSUITE_RADAR = null;
       lb.appendChild(r); lb.appendChild(txt); box.appendChild(lb);
     });
   }
-  function testarPastaC(criar) {  // 0.7.19: roda sozinho ao escolher a opção; mostra onde as planilhas ficam, com o caminho inteiro
-    var p = pastaEscolhida(), tx = $("c-teste-txt"); if (!p) { tx.textContent = t("w_pasta_falta"); return; }
+  var testeN = 0;
+  function testarPastaC(criar) {  // 0.7.19: roda sozinho ao escolher a opção (só confere, sem gravar); mostra o caminho inteiro
+    var p = pastaEscolhida(), tx = $("c-teste-txt"), n_ = ++testeN; if (!p) { tx.textContent = t("w_pasta_falta"); return; }
     tx.textContent = t("carregando");
-    post("/testar-pasta", { pasta: p, criar: !!criar }).then(function (r) {
+    post("/testar-pasta", { pasta: p, criar: !!criar, leve: !criar }).then(function (r) {
+      if (n_ !== testeN) return;  // resposta de uma escolha anterior
       $("c-criar").hidden = !r.nao_existe; tx.textContent = "";
       if (r.nao_existe) { tx.textContent = t("pasta_nao_existe", { c: marcaCurto() }); return; }
       tx.appendChild(el("span", r.ok ? "pasta-ok" : "pasta-erro", r.ok ? "✓ " + t("pasta_fica") + " " : "✗ " + (r.mensagem || t("falha"))));
@@ -2113,7 +2115,9 @@ window.LEXSUITE_RADAR = null;
   }
   function fecharMenu() {
     var g = $("gaveta"), v = $("veu"); if (g.hidden) return;
+    var dentro = g.contains(document.activeElement);
     g.classList.remove("aberta"); v.classList.remove("aberta"); $("b-menu").setAttribute("aria-expanded", "false");
+    if (dentro) $("b-menu").focus();
     clearTimeout(menuTimer); menuTimer = setTimeout(function () { g.hidden = true; v.hidden = true; }, 250);
   }
   // 0.7.19: busca geral (lupa no topo): telas e opções do menu, ações da Lista e do Arquivo carregado, e títulos do manual

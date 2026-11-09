@@ -526,8 +526,18 @@ class V0719Tela(unittest.TestCase):
                                                          "com_cnpj": 3, "duracao": 9, "resultado": "ok", "erro": ""})
             sit = srv.estado_atual()["situacao"]
             self.assertIn("120", sit["pt"]); self.assertIn("7", sit["en"]); self.assertTrue(sit["quando"])
+            self.assertIs(srv.ultima_do_banco(), srv.ultima_do_banco())  # guardada até o banco mudar
         finally:
             srv.server_close()
+
+
+    def test_teste_leve_da_pasta_nao_grava(self):
+        from lexsuite import compartilhar
+        pasta = tempfile.mkdtemp()
+        ok, msg = compartilhar.testar(pasta, "RADAR - planilha", leve=True)
+        self.assertTrue(ok); self.assertIn("RADAR - planilha", msg)
+        self.assertEqual(os.listdir(pasta), [])  # nada criado nem gravado
+        self.assertFalse(compartilhar.testar(os.path.join(pasta, "nao-existe"), "x", leve=True)[0])
 
 
 if __name__ == "__main__":
