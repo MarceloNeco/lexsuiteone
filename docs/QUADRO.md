@@ -94,15 +94,18 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.15 no ramo `claude/lexsuiteone-judicial-product-22f871`** (não vai à `main` antes de a 0.7.14 ser publicada, para
-  a automação não publicar a versão errada): botão Interromper seguro, aviso "leitura das 08h00 feita agora porque o
-  computador estava desligado", próxima leitura que se atualiza (itens 85 a 88). Depois, com os desenhos da Arquitetura:
-  termos por pessoa e "Atualizar estatísticas".
+- (nada) Próximo, com os desenhos da Arquitetura: termos por pessoa e "Atualizar estatísticas" (itens 79 e 82).
 
 ### Arquivos em uso
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 09/Nov: **0.7.15 na `main`, pronta para publicar** (itens 85 a 88): botão **Interromper** que para num ponto seguro
+  (entre Diários ou entre consultas à Receita; o que já foi gravado entra na rodada, nas estatísticas e na planilha; o
+  Diário interrompido não fica marcado como lido; vale para a leitura agendada), aviso "fazendo agora a leitura das
+  08h00, que não rodou na hora porque o computador estava desligado ou em repouso", e a "próxima leitura" que se
+  atualiza sozinha. 124 testes, 28 verificações de tela; revisor: o único bloqueio (parada no meio da Receita) foi
+  corrigido e testado. Pacote: 43 e 42 arquivos (nenhum arquivo novo). Falta o "publica a versão 0.7.15" do dono.
 - 09/Nov: **0.7.14 pronta de novo na `main`** com o "pode corrigir e incluir" do dono: textos sobre dados corrigidos
   (manual, `SEGURANCA.md`, e-mail de boas-vindas, página inicial), aceite dos termos no programa e no instalador, leitura
   agendada visível na tela (barra e "Ler o Diário agora" desligado; duas leituras nunca juntas, pelo
