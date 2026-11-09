@@ -44,6 +44,8 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
   anotação no quadro. O dono não lê SQL; ele só entra onde precisa de login ou de segredo (chaves, painéis) ou num
   teste que a sessão não consegue fazer. A Arquitetura avisa antes de aplicar o que mexe em dado de cliente.
 - As páginas do produto não fazem nenhum pedido externo: sem fontes de fora, sem rastreador, sem script de terceiros.
+- O e-mail de boas-vindas aos clientes é enviado pelo dono, pelo botão do RootifyONE; nenhuma conversa lembra, pergunta ou
+  comenta esse envio (decisão do dono, 09/Nov).
 
 ## Trabalho em três sessões (coordenação)
 
@@ -85,7 +87,7 @@ nunca é delegada a subagente. Resultado de subagente é dado a conferir, não o
 
 ## Como entregar
 
-- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos arquivos (44 no download completo, 43 no de atualização, a partir da 0.7.16 com `lexsuite/armazenamento.py`; a 0.7.15 tinha 43 e 42) em `releases/LexSuiteONE-RADAR.zip`,
+- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos arquivos (45 no download completo, 44 no de atualização, a partir da 0.7.18 com `lexsuite/historico.py`; a 0.7.16 tinha 44 e 43) em `releases/LexSuiteONE-RADAR.zip`,
   `releases/LexSuiteONE-RADAR-<versão>.zip` e `docs/downloads/LexSuiteONE-RADAR.zip` (o pacote de atualização é
   `LexSuiteONE-RADAR-atualizacao-<versão>.zip`; o botão do site baixa o instalador `Instalar-LexSuiteONE.zip`). Atualize `robo/LEIA-ME.md`,
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.
