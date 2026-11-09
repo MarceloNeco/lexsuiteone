@@ -102,7 +102,8 @@ Cloudflare, Resend, publicação de versões.
 - 08/Nov: conferência de Resend e Drive (relatório ao dono).
 
 ### Preciso do dono
-- **Teste no Windows da 0.7.20** (a Operação roda em Linux e não consegue): (1) abra o programa; se oferecer "Atualizar agora"
+- **Teste no Windows da 0.7.20: com o dono, pela conversa da Produto** (decisão do dono, 09/Nov noite: ele prefere testar e
+  relatar só na Produto; a Produto passou o roteiro abaixo e traz o resultado para o quadro). Roteiro de referência: (1) abra o programa; se oferecer "Atualizar agora"
   (estando na 0.7.18), clique e reinicie; a tela deve abrir normal, sem área em branco (há um cabeçalho de proteção novo, e o
   que mais interessa é a janela própria do Edge ou do Chrome); (2) no primeiro acesso o personagem do AssistONE fica escondido;
   depois do assistente ele aparece no canto inferior direito: abra a ajuda, faça o tour e use a busca da lupa; (3) Configuração:
