@@ -232,6 +232,11 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
                 aviso(f"  Não consegui gravar o histórico de leituras ({e.__class__.__name__}).")
         ano_min = agora.year - 1 if agora.month <= 2 else agora.year
         novos = acoes_do_dia(pubs, ano_min, banco.processos_vistos())
+        if novos:  # 0.7.16: quantas entraram por cada sinal, para conferir a regra de "ação nova" com o escritório
+            por_sinal = {}
+            for n in novos:
+                por_sinal[n.get("sinal") or "outro"] = por_sinal.get(n.get("sinal") or "outro", 0) + 1
+            aviso("  Ações novas por sinal: " + "; ".join(f"{k}: {v}" for k, v in sorted(por_sinal.items(), key=lambda x: -x[1])) + ".")
         consultar = bool(r.get("receita", True)) and not sem_cnpj
         com_cnpj = sum(1 for n in novos if n.get("cnpjs"))
         if consultar and com_cnpj:
@@ -321,18 +326,63 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
 
 
 def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
-    """Grava a planilha. Se ela estiver aberta no Excel (o Windows trava o arquivo), avisa com clareza: nada se perde,
-    a lista está no computador e a planilha é regravada depois. Devolve True se gravou."""
+    """Grava as planilhas (0.7.16: uma por frente). Se uma estiver aberta no Excel (o Windows trava o arquivo), avisa com
+    clareza: nada se perde, a lista está no computador e a planilha é regravada depois. Antes, confere o disco e o
+    tamanho: a 80% do limite avisa; a 100% faz a cópia de segurança e enxuga a aba Arquivo sozinho. Devolve True se
+    gravou todas."""
     try:
-        from . import atualizar, assinatura
-        chave = atualizar.chave_publica(pasta_base)
-        doze = (dt.date.today() - dt.timedelta(days=366)).isoformat()
-        arquivo = [i for i in montar_radar(cfg, banco, visao="arquivo")["itens"] if (i.get("primeira_vez") or "9") >= doze]
-        caminho = compartilhar.gravar_radar(cfg, pagina, banco, versao, COLUNAS_RADAR, linha_csv,
-                                            assinatura.impressao(chave) if chave else "", pasta_base, aviso, arquivo=arquivo)
-        if not caminho:  # planilha em uso ou ilegível: gravar_radar já avisou e não regravou nada
+        from . import atualizar, assinatura, armazenamento
+        base = compartilhar.pasta_base(cfg)
+        if not base:
             return False
-        return True
+        d = armazenamento.disco(base)
+        if d["nivel"] == "critico":
+            aviso("  " + armazenamento.texto_disco(d))
+            banco.registrar("saude", {"fonte": "Disco", "situacao": "erro", "detalhe": armazenamento.texto_disco(d)[:200]})
+            return False
+        if d["nivel"] == "baixo":
+            aviso("  " + armazenamento.texto_disco(d))
+        chave = atualizar.chave_publica(pasta_base)
+        impressao = assinatura.impressao(chave) if chave else ""
+        doze = (dt.date.today() - dt.timedelta(days=366)).isoformat()
+        todos = [i for i in montar_radar(cfg, banco, visao="arquivo")["itens"] if (i.get("primeira_vez") or "9") >= doze]
+        lista = pagina.get("itens") or []
+        frentes = {armazenamento.frente_do(i) for i in lista + todos} | {f for f, _ in preferencias.planilhas_existentes(base)}
+        ordem = [f for f in preferencias.NOMES_FRENTE if f in frentes] or ["trabalhista"]
+        tudo_ok, limpou = True, False
+        for frente in ordem:
+            prefs = preferencias.carregar(base, frente=frente)
+            limite = int(prefs.get("limite_linhas") or 60000)
+            radar_f = [i for i in lista if armazenamento.frente_do(i) == frente]
+            todos_f = [i for i in todos if armazenamento.frente_do(i) == frente]
+            arquivo = armazenamento.selecionar_arquivo(todos_f, prefs.get("dias_arquivo") or 90, armazenamento.corte(banco, frente))
+            if len(radar_f) + len(arquivo) >= limite and not limpou:
+                aviso(f"  A planilha {armazenamento.FRENTE_LEGIVEL.get(frente, frente)} chegou ao limite de {limite} linhas: "
+                      "guardo uma cópia de segurança e enxugo a aba Arquivo (nada sai do programa).")
+                armazenamento.limpar(cfg, banco, pasta_base, versao, aviso, automatico=True)
+                limpou = True
+                arquivo = armazenamento.selecionar_arquivo(todos_f, prefs.get("dias_arquivo") or 90, armazenamento.corte(banco, frente))
+            radar_f, arquivo, cortou = armazenamento.caber(radar_f, arquivo, limite)
+            if cortou:
+                aviso(f"  A planilha ficou só com as {limite} linhas mais recentes; o resto está no programa (tela Arquivo).")
+            linhas = len(radar_f) + len(arquivo)
+            texto = armazenamento.aviso_tamanho(frente, linhas, limite)
+            if texto:
+                aviso("  " + texto)
+            processos = {i.get("processo") for i in radar_f + arquivo} if len(ordem) > 1 else None
+            caminho = compartilhar.gravar_radar(cfg, pagina, banco, versao, COLUNAS_RADAR, linha_csv, impressao, pasta_base,
+                                                aviso, arquivo=arquivo, frente=frente, itens=radar_f, aviso_tamanho=texto,
+                                                processos=processos)
+            if not caminho:  # planilha em uso ou ilegível: gravar_radar já avisou e não regravou nada
+                tudo_ok = False
+                continue
+            try:
+                tamanho = os.path.getsize(caminho)
+            except OSError:
+                tamanho = 0
+            banco.registrar("planilha", {"frente": frente, "linhas": linhas, "limite": limite, "bytes": tamanho,
+                                         "nome": os.path.basename(caminho)})
+        return tudo_ok
     except PermissionError:
         aviso("  A planilha está aberta no Excel (ou em outro programa): feche-a para ela ser atualizada. A lista está salva.")
         banco.registrar("saude", {"fonte": "Pasta compartilhada", "situacao": "atenção", "detalhe": "planilha aberta em outro programa"})

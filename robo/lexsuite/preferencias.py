@@ -10,10 +10,17 @@ import re
 from . import classificar as cl
 from . import planilha
 
-NOME_ARQUIVO = "LexSuiteONE.xlsx"
+# 0.7.16: uma planilha por frente, na mesma pasta (decisão de 09/Nov, documentacao/DESENHO-PLANILHA-GRANDE.md). A frente
+# trabalhista é a de hoje; as outras nascem sozinhas quando houver processos delas. A planilha única antiga
+# (LexSuiteONE.xlsx) vira a trabalhista na primeira leitura, com as abas editadas.
+NOMES_FRENTE = {"trabalhista": "LexSuiteONE - Trabalhista.xlsx", "tributario": "LexSuiteONE - Tributário.xlsx",
+                "civel": "LexSuiteONE - Cível.xlsx", "empresarial": "LexSuiteONE - Empresarial.xlsx"}
+NOME_ARQUIVO = NOMES_FRENTE["trabalhista"]
+NOME_ANTIGO = "LexSuiteONE.xlsx"
 
 PADRAO = {"valor_minimo": 100000, "minimo_acoes": 1, "janela_dias": 30, "teto_capital_gigante": 50000000,
-          "esconder_gigantes": False, "esconder_excluidas": True, "mostrar_socios": True}
+          "esconder_gigantes": False, "esconder_excluidas": True, "mostrar_socios": True,
+          "dias_arquivo": 90, "limite_linhas": 60000}
 CHAVES = {
     "Valor mínimo da causa (R$)": "valor_minimo",
     "Mínimo de ações da mesma empresa": "minimo_acoes",
@@ -22,6 +29,8 @@ CHAVES = {
     "Esconder jurídico próprio provável": "esconder_gigantes",
     "Esconder clientes e exclusões": "esconder_excluidas",
     "Mostrar sócios e administradores": "mostrar_socios",
+    "Dias na aba Arquivo": "dias_arquivo",
+    "Limite de linhas da planilha": "limite_linhas",
 }
 LINHAS_PREFERENCIAS = [
     ["Ajuste", "Valor", "Como usar"],
@@ -32,6 +41,8 @@ LINHAS_PREFERENCIAS = [
     ["Esconder jurídico próprio provável", "não", "sim ou não."],
     ["Esconder clientes e exclusões", "sim", "sim ou não. A aba Exclusões lista quem não deve aparecer."],
     ["Mostrar sócios e administradores", "sim", "sim ou não. São nomes de pessoas do cadastro público da Receita; se o escritório não precisa, desligue."],
+    ["Dias na aba Arquivo", 90, "A aba Arquivo mostra os últimos N dias e todo processo trabalhado (Em análise, Em contato, Virou cliente). O resto continua no programa e na tela Arquivo."],
+    ["Limite de linhas da planilha", 60000, "Acima de 80% o RADAR avisa; a 100% guarda uma cópia de segurança e enxuga a aba Arquivo sozinho. Mais linhas deixam o Excel lento."],
 ]
 LINHAS_EXCLUSOES = [
     ["Nome ou CNPJ", "Motivo"],
@@ -51,8 +62,37 @@ LINHAS_CONTROLE = [
 ]
 
 
-def caminho(pasta_base):
-    return os.path.join(pasta_base, NOME_ARQUIVO) if pasta_base else ""
+def caminho(pasta_base, frente="trabalhista"):
+    """Caminho da planilha da frente. Antes, troca o nome da planilha única antiga, se for o caso."""
+    if not pasta_base:
+        return ""
+    migrar_nome(pasta_base)
+    return os.path.join(pasta_base, NOMES_FRENTE.get(frente) or NOME_ARQUIVO)
+
+
+def migrar_nome(pasta_base, aviso=None):
+    """LexSuiteONE.xlsx (até a 0.7.15) vira "LexSuiteONE - Trabalhista.xlsx". Se estiver aberta no Excel, fica para a
+    próxima vez. Devolve True quando trocou."""
+    antigo, novo = os.path.join(pasta_base, NOME_ANTIGO), os.path.join(pasta_base, NOME_ARQUIVO)
+    if not os.path.exists(antigo) or os.path.exists(novo):
+        return False
+    try:
+        os.replace(antigo, novo)
+    except OSError:
+        if aviso:
+            aviso(f"  A planilha {NOME_ANTIGO} está aberta: o novo nome ({NOME_ARQUIVO}) fica para a próxima leitura.")
+        return False
+    if aviso:
+        aviso(f"  A planilha passou a se chamar {NOME_ARQUIVO} (uma por frente); as abas editadas foram mantidas.")
+    return True
+
+
+def planilhas_existentes(pasta_base):
+    """[(frente, caminho)] das planilhas que já existem na pasta, na ordem das frentes."""
+    if not pasta_base:
+        return []
+    migrar_nome(pasta_base)
+    return [(f, os.path.join(pasta_base, n)) for f, n in NOMES_FRENTE.items() if os.path.exists(os.path.join(pasta_base, n))]
 
 
 ABAS_EDITAVEIS = ("Preferências", "Exclusões", "Controle")
@@ -101,18 +141,32 @@ def padrao():
     return p
 
 
-def carregar(pasta_base, doc=None):
-    """Lê as abas editáveis da planilha. Sem pasta ou sem arquivo, devolve o padrão; se não conseguir ler, diz o erro.
-    `doc` pode ser a planilha já lida (evita ler duas vezes)."""
+def carregar(pasta_base, doc=None, frente="trabalhista"):
+    """Lê as abas editáveis da planilha da frente. Sem pasta ou sem arquivo, devolve o padrão; se não conseguir ler,
+    diz o erro. `doc` pode ser a planilha já lida (evita ler duas vezes). 0.7.16: as Exclusões das planilhas das outras
+    frentes também valem (cliente é cliente em todas)."""
     prefs = padrao()
-    c = caminho(pasta_base)
+    c = caminho(pasta_base, frente)
     if doc is None:
+        for outra_frente, outro in planilhas_existentes(pasta_base):
+            if outra_frente == frente:
+                continue
+            try:
+                outra = planilha.ler_xlsx(outro, so_abas=("Exclusões",))
+            except Exception:  # noqa: BLE001 - a outra planilha ilegível não impede esta
+                continue
+            for a in outra["abas"]:
+                if cl.sem_acento(a["nome"]).strip().lower() == "exclusoes":
+                    for linha in a["linhas"][1:]:
+                        nome = str(linha[0] if linha else "").strip()
+                        if nome and not nome.lower().startswith("(exemplo"):
+                            prefs["exclusoes"].append({"nome": nome, "motivo": str(linha[1]).strip() if len(linha) > 1 else ""})
         if not c or not os.path.exists(c):
             return prefs
         try:
             doc = planilha.ler_xlsx(c, so_abas=ABAS_EDITAVEIS)
         except Exception as e:  # planilha corrompida ou em uso: o robô segue com o padrão e avisa
-            prefs["erro"] = (f"Não consegui ler as abas Preferências e Exclusões de {NOME_ARQUIVO} (arquivo corrompido ou bloqueado). "
+            prefs["erro"] = (f"Não consegui ler as abas Preferências e Exclusões de {os.path.basename(c)} (arquivo corrompido ou bloqueado). "
                              "Nesta leitura valem as preferências padrão. / Could not read the Preferences and Exclusions tabs; "
                              f"default preferences apply this time. ({e.__class__.__name__})")
             return prefs

@@ -594,7 +594,8 @@ class PlanilhaAberta0711(unittest.TestCase):
             raise PermissionError("arquivo em uso")
         compartilhar.gravar_radar = trava
         try:
-            self.assertFalse(radar.gravar_planilha({}, {"itens": []}, banco, "0.7.11", tempfile.mkdtemp(), recados.append))
+            cfg = {"compartilhar": {"pasta": tempfile.mkdtemp()}}  # 0.7.16: sem pasta, nem tenta gravar
+            self.assertFalse(radar.gravar_planilha(cfg, {"itens": []}, banco, "0.7.11", tempfile.mkdtemp(), recados.append))
         finally:
             compartilhar.gravar_radar = orig
         self.assertIn("aberta no Excel", " ".join(recados))
