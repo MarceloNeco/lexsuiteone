@@ -65,7 +65,7 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 - **0.7.18:** **estatísticas dos meses anteriores** no Painel ("Sazonalidade": ações novas por mês e por dia da
   semana, mês de pico): o escritório escolhe quantos meses (padrão 3), o RADAR lê os Diários antigos 30 por vez, à
-  noite depois da leitura agendada ou com "Ler agora", e guarda só os totais; engrenagem ⚙ ao lado do perfil (abre a
+  noite depois da leitura agendada ou com "Ler agora", e guarda os totais e, só neste computador, o número dos processos já contados; engrenagem ⚙ ao lado do perfil (abre a
   Configuração numa janela por cima); perfil na mesma janela, com a licença do escritório, e-mail e escritório fixos
   e "Outra pessoa vai usar este computador"; pelo menu ☰, Configuração e perfil abrem como página com "Voltar";
   "Gerar uma cópia" com "Abrir a cópia" e "Abrir a pasta"; o estado (UF) da empresa vem do endereço trazido da área
