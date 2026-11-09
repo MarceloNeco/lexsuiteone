@@ -5,7 +5,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 
 ## O que já existe e funciona
 
-- Robô v0.7.14 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 120 testes verdes,
+- Robô v0.7.15 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 126 testes verdes,
   pacote em `releases/` e `docs/downloads/`. Tela local em 127.0.0.1, planilha `LexSuiteONE.xlsx` no Drive do escritório,
   atualização assinada (chave só na nuvem), manual personalizado, revisão de segurança (risco baixo). Na 0.7.9: horários
   de leitura escolhidos pelo escritório e leitura perdida compensada. Na 0.7.10 (publicada em 08/Nov, 16:39 UTC): domingo e
@@ -19,7 +19,10 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   tribunal à parte, mensagens claras em PT e EN, "Histórico de leituras" na tela e aba Log visível. A 0.7.14 (publicada em
   09/Nov, 13:01 UTC) é o pacote de tela e planilha: menu ☰, abas Painel · Lista · Arquivo · Histórico, situação no banco
   com lote e Desfazer, contatos, planilha com aviso e só para leitura, retorno de totais à SolverONE, aceite dos termos no
-  programa e no instalador (só vale com `exigir_aceite` ligado na licença) e leitura agendada visível.
+  programa e no instalador (só vale com `exigir_aceite` ligado na licença) e leitura agendada visível. A 0.7.15 (publicada
+  em 09/Nov, 14:55 UTC) traz o botão Interromper (para num ponto seguro, também na leitura agendada), o aviso da leitura
+  de horário perdido e a "próxima leitura" que se atualiza sozinha, mais os textos corrigidos sobre o que vai à
+  SolverONE e o que fica guardado.
 - Site https://judicial.solverone.com.br **no ar** (GitHub Pages, pasta `docs/`, HTTPS forçado). É gerado de `paginas/`
   por `python ferramentas/marca.py`: nunca edite `docs/index.html` nem `docs/404.html` à mão. Tem página inicial PT/EN
   com o carrossel "Como funciona" (quatro passos, passa com o dedo no celular; falta o dono confirmar num iPhone de
@@ -64,7 +67,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 - Repositório segue no GitHub pessoal até depois da visita; migração para a organização `solverone` sem impacto para o
   cliente (tudo que ele vê aponta para `judicial.solverone.com.br`). Roteiro em `robo/PENDENCIAS.md`.
 - Instalação no cliente (KR Law) na quinta-feira 12/Nov, na casa do Leandro, pelo dono. O pacote de quinta é a última
-  versão publicada (0.7.14 em 09/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
+  versão publicada (0.7.15 em 09/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
   em `docs/VISITA-KR-LAW.md`: rodam sozinhos, no Sonnet, na conta do escritório; param em login, token, certificado ou
   captcha e escrevem BLOQUEIO; o relatório final volta à sessão de Produto.
 - Publicação de versão (08/Nov): só a Operação publica, e só depois do dono escrever "publica a versão X" na conversa da
