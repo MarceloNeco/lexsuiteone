@@ -24,7 +24,7 @@ AVISO_PCT = 80
 DIAS_DEPOIS_DE_LIMPAR = 30
 GB = 1024 ** 3
 DISCO_BAIXO_GB, DISCO_BAIXO_PCT, DISCO_CRITICO_GB = 5, 10, 1
-_NOME_COPIA = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}h\d{2}m\d{2}")
+_NOME_COPIA = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}h\d{2}m\d{2}( - (antes de limpar|limpeza automática|feita à mão|exportação|teste))?$")
 
 FRENTE_LEGIVEL = {"trabalhista": "Trabalhista", "tributario": "Tributário", "civel": "Cível", "empresarial": "Empresarial"}
 

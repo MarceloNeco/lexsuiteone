@@ -67,7 +67,15 @@ def caminho(pasta_base, frente="trabalhista"):
     if not pasta_base:
         return ""
     migrar_nome(pasta_base)
+    if frente == "trabalhista" and nome_pendente(pasta_base):  # a antiga está aberta: continua valendo até trocar de nome
+        return os.path.join(pasta_base, NOME_ANTIGO)
     return os.path.join(pasta_base, NOMES_FRENTE.get(frente) or NOME_ARQUIVO)
+
+
+def nome_pendente(pasta_base):
+    """True quando a planilha antiga ainda não pôde trocar de nome (aberta no Excel): nada pode criar a nova, senão as
+    abas editadas pelo escritório ficariam na antiga, esquecida."""
+    return bool(pasta_base) and os.path.exists(os.path.join(pasta_base, NOME_ANTIGO)) and not os.path.exists(os.path.join(pasta_base, NOME_ARQUIVO))
 
 
 def migrar_nome(pasta_base, aviso=None):
@@ -92,7 +100,10 @@ def planilhas_existentes(pasta_base):
     if not pasta_base:
         return []
     migrar_nome(pasta_base)
-    return [(f, os.path.join(pasta_base, n)) for f, n in NOMES_FRENTE.items() if os.path.exists(os.path.join(pasta_base, n))]
+    saida = [(f, os.path.join(pasta_base, n)) for f, n in NOMES_FRENTE.items() if os.path.exists(os.path.join(pasta_base, n))]
+    if nome_pendente(pasta_base):
+        saida.insert(0, ("trabalhista", os.path.join(pasta_base, NOME_ANTIGO)))
+    return saida
 
 
 ABAS_EDITAVEIS = ("Preferências", "Exclusões", "Controle")

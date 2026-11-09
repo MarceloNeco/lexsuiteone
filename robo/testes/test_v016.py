@@ -85,6 +85,31 @@ class TestPlanilhaPorFrente(unittest.TestCase):
         self.assertIn("Dias na aba Arquivo", nomes)
         self.assertEqual(editaveis[0]["linhas"][1][1], 250000)
 
+    def test_planilha_antiga_aberta_nao_perde_as_abas(self):
+        """Revisão da 0.7.16: com a antiga aberta no Excel, a troca de nome falha; nada pode criar a nova sem as abas."""
+        from lexsuite import planilha, preferencias as pf, compartilhar, radar
+        abas = pf.abas_padrao()
+        abas[1]["linhas"].append(["Cliente Fictício Ltda", "cliente atual"])
+        antiga = os.path.join(self.base, "LexSuiteONE.xlsx")
+        planilha.escrever_xlsx(antiga, [{"nome": "Radar", "linhas": [["x"]]}] + abas)
+        orig = pf.os.replace
+        def trava(*a, **k):
+            raise PermissionError("aberta no Excel")
+        pf.os.replace = trava
+        try:
+            prefs = pf.carregar(self.base)
+            self.assertIn("Cliente Fictício Ltda", [e["nome"] for e in prefs["exclusoes"]])  # lê as abas da antiga
+            recados = []
+            b = _banco_com(2)
+            self.assertFalse(radar.gravar_planilha(self.cfg, radar.montar_radar(self.cfg, b), b, "0.7.16", self.pasta, recados.append))
+            self.assertIn("está aberta", " ".join(recados))
+            self.assertEqual(compartilhar.criar_se_faltar(self.cfg), antiga)
+            self.assertFalse(os.path.exists(os.path.join(self.base, pf.NOME_ARQUIVO)))
+        finally:
+            pf.os.replace = orig
+        self.assertTrue(pf.migrar_nome(self.base))  # fechou o Excel: troca o nome com as abas
+        self.assertIn("Cliente Fictício Ltda", [e["nome"] for e in pf.carregar(self.base)["exclusoes"]])
+
     def test_exclusoes_valem_em_todas_as_frentes(self):
         from lexsuite import planilha, preferencias as pf
         abas = pf.abas_padrao()
@@ -167,6 +192,10 @@ class TestArmazenamento(unittest.TestCase):
             self.assertTrue(ok, onde)
         lista = ar.copias(self.base)
         self.assertEqual(len(lista), 6)
+        alheia = os.path.join(self.base, "Cópias de segurança", "2025-03-01 10h00m00 contratos do escritório")
+        os.makedirs(alheia)
+        ar._podar(self.base, lambda *_: None)
+        self.assertTrue(os.path.isdir(alheia))  # pasta do escritório com nome parecido nunca é apagada
         self.assertTrue(lista[0]["nome"].startswith("2026-11-09 10h07"))
         arquivos = os.listdir(lista[0]["caminho"])
         self.assertIn("LexSuiteONE - Trabalhista.xlsx", arquivos)

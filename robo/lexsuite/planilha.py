@@ -313,8 +313,9 @@ def _caminho_parte(destino):
 
 
 def _ler_xml(z, nome):
-    # Cada parte lida tem teto (protege contra arquivo zip que se expande demais); as abas não lidas não contam.
-    if z.getinfo(nome).file_size > LIMITE_BYTES:
+    # Cada parte lida tem teto (protege contra arquivo zip que se expande demais); as abas não lidas não contam. O texto
+    # compartilhado (o Excel guarda ali os textos de todas as abas) tem teto maior: com 60 mil linhas passa de 50 MB.
+    if z.getinfo(nome).file_size > (LIMITE_BYTES * 4 if nome.endswith("sharedStrings.xml") else LIMITE_BYTES):
         raise ValueError(f"Parte grande demais (acima de 50 MB descompactado): {nome}")
     dados = z.read(nome)
     # Planilha é entrada não confiável: nenhuma DTD ou entidade é aceita (evita XML bomb e entidade externa).

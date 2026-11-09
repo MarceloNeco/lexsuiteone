@@ -130,6 +130,8 @@ def criar_se_faltar(cfg, versao="", pasta_robo="", aviso=print):
     os.makedirs(base, exist_ok=True)
     preferencias.migrar_nome(base, aviso)
     os.makedirs(os.path.join(base, "Cópias de segurança"), exist_ok=True)
+    if preferencias.nome_pendente(base):
+        return os.path.join(base, preferencias.NOME_ANTIGO)
     caminho = os.path.join(base, NOME_RADAR)
     if os.path.exists(caminho):
         return caminho
@@ -169,6 +171,9 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     os.makedirs(base, exist_ok=True)
     os.makedirs(os.path.join(base, "Cópias de segurança"), exist_ok=True)
     preferencias.migrar_nome(base, aviso)
+    if frente == "trabalhista" and preferencias.nome_pendente(base):  # 0.7.16: nunca cria a nova sem as abas editadas
+        aviso(f"  A planilha {preferencias.NOME_ANTIGO} está aberta: feche-a para o RADAR trocar o nome e gravar. A lista está salva.")
+        return ""
     caminho = os.path.join(base, preferencias.NOMES_FRENTE.get(frente) or NOME_RADAR)
     editaveis, ok = _abas_editaveis(caminho, aviso)
     if not ok:
