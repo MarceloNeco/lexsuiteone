@@ -470,7 +470,7 @@ class Tratador(BaseHTTPRequestHandler):
                 "tribunais": [x for x in tribunais.TRIBUNAIS if x["ramo"] in FRENTES], "ramos": [r for r in tribunais.RAMOS if r in FRENTES], "regioes": tribunais.REGIOES, "ufs": tribunais.UFS,
                 "config": {"tribunais": tribunais.validar(r.get("tribunais")), "escritorio": cfg.get("escritorio", ""),
                            "valor_minimo": r.get("valor_minimo"), "dias_na_pagina": r.get("dias_na_pagina"),
-                           "dias_para_tras": int(r.get("dias_para_tras", 1) or 1),
+                           "dias_para_tras": int(r.get("dias_para_tras") if r.get("dias_para_tras") is not None else 1),
                            "teto_capital_gigante": r.get("teto_capital_gigante"),
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),

@@ -1821,7 +1821,8 @@ window.LEXSUITE_RADAR = null;
   Object.assign(T.pt, {
     lic_validade: "Validade", lic_ate: "válida até {d} (inclusive)", lic_sem_venc: "sem data de vencimento",
     rodar_crit_1: "“Ler o Diário agora” lê o Diário de hoje e do último dia útil com publicação em {n} tribunal(is): {l}. Diário já lido não é baixado de novo. Para mudar, use “Tribunais”.",
-    rodar_crit_n: "“Ler o Diário agora” lê os Diários dos últimos {d} dias úteis com publicação em {n} tribunal(is): {l}. Diário já lido não é baixado de novo. Para mudar, use “Tribunais”.",
+    rodar_crit_n: "“Ler o Diário agora” lê o Diário de hoje e dos últimos {d} dias úteis com publicação em {n} tribunal(is): {l}. Diário já lido não é baixado de novo. Para mudar, use “Tribunais”.",
+    rodar_crit_0: "“Ler o Diário agora” lê só o Diário de hoje em {n} tribunal(is): {l}. Para mudar, use “Tribunais”.",
     rodar_crit_nada: "Escolha primeiro os tribunais em “Tribunais”; “Ler o Diário agora” lê só os escolhidos.",
     planilha_ajuda: "A planilha de consulta: a lista das ações novas que o RADAR regrava a cada leitura, na pasta escolhida em Configuração. Abre só para leitura (filtrar e ordenar funcionam). Para anotar, use “Gerar uma cópia” no menu ☰; para mudar as regras do escritório, “Editar Preferências e Exclusões”.",
     usar_onedrive: "Usar o OneDrive", usar_gdrive: "Usar o Google Drive", sem_gdrive: "Não achei o Google Drive para computador neste Windows. Para usar o Google Drive, instale o Google Drive para computador com a conta do escritório e abra o RADAR de novo; uma pasta de rede ou o OneDrive também servem.",
@@ -1873,7 +1874,8 @@ window.LEXSUITE_RADAR = null;
   Object.assign(T.en, {
     lic_validade: "Validity", lic_ate: "valid until {d} (inclusive)", lic_sem_venc: "no expiration date",
     rodar_crit_1: "“Read the gazette now” reads today\u2019s gazette and the last working day with publications in {n} court(s): {l}. A gazette already read is not downloaded again. To change, use “Courts”.",
-    rodar_crit_n: "“Read the gazette now” reads the gazettes of the last {d} working days with publications in {n} court(s): {l}. A gazette already read is not downloaded again. To change, use “Courts”.",
+    rodar_crit_n: "“Read the gazette now” reads today\u2019s gazette and the last {d} working days with publications in {n} court(s): {l}. A gazette already read is not downloaded again. To change, use “Courts”.",
+    rodar_crit_0: "“Read the gazette now” reads only today\u2019s gazette in {n} court(s): {l}. To change, use “Courts”.",
     rodar_crit_nada: "Choose the courts first in “Courts”; “Read the gazette now” reads only those.",
     planilha_ajuda: "The reference spreadsheet: the list of new lawsuits that RADAR rewrites at every reading, in the folder chosen in Settings. It opens read-only (filtering and sorting work). To annotate, use “Make a copy” in the ☰ menu; to change the firm\u2019s rules, “Edit Preferences and Exclusions”.",
     usar_onedrive: "Use OneDrive", usar_gdrive: "Use Google Drive", sem_gdrive: "Google Drive for desktop was not found on this Windows. To use Google Drive, install Google Drive for desktop with the firm\u2019s account and open RADAR again; a network folder or OneDrive also work.",
@@ -3345,9 +3347,10 @@ window.LEXSUITE_RADAR = null;
     desenharMarca($("marca")); $("escritorio-nome").textContent = MODO === "app" ? "" : (D.escritorio || "");
     var temPlanilha = !!(APP && APP.config.planilha);
     var rc_ = $("rodar-criterio"), trs_ = (APP && APP.config && APP.config.tribunais) || [];  // 0.7.21 (dono): o que "Ler o Diário agora" vai ler
-    rc_.hidden = MODO !== "app" || !APP; if (!rc_.hidden) rc_.textContent = trs_.length ? t(((APP.config.dias_para_tras || 1) > 1) ? "rodar_crit_n" : "rodar_crit_1", { d: APP.config.dias_para_tras || 1, n: trs_.length, l: trs_.length > 6 ? trs_.slice(0, 6).join(", ") + " (+" + (trs_.length - 6) + ")" : trs_.join(", ") }) : t("rodar_crit_nada");
+    rc_.hidden = MODO !== "app" || !APP; if (!rc_.hidden) rc_.textContent = trs_.length ? t(((APP.config.dias_para_tras) === 0 ? "rodar_crit_0" : (APP.config.dias_para_tras || 1) > 1 ? "rodar_crit_n" : "rodar_crit_1"), { d: APP.config.dias_para_tras || 1, n: trs_.length, l: trs_.length > 6 ? trs_.slice(0, 6).join(", ") + " (+" + (trs_.length - 6) + ")" : trs_.join(", ") }) : t("rodar_crit_nada");
     $("b-planilha").hidden = MODO !== "app"; $("b-planilha").textContent = t("planilha_abrir");
-    var bpa = $("b-planilha-ajuda"); bpa.textContent = ""; bpa.hidden = MODO !== "app" || $("b-planilha").hidden; if (!bpa.hidden) bpa.appendChild(ajuda(t("planilha_ajuda")));  // 0.7.21 $("b-planilha").title = temPlanilha ? APP.config.planilha : t("planilha_falta");
+    var bpa = $("b-planilha-ajuda"); bpa.textContent = ""; bpa.hidden = MODO !== "app" || $("b-planilha").hidden; if (!bpa.hidden) bpa.appendChild(ajuda(t("planilha_ajuda")));
+    $("b-planilha").title = temPlanilha ? APP.config.planilha : t("planilha_falta");
     $("b-pasta").hidden = true; $("b-pasta").textContent = t("pasta_abrir");  // 0.7.14: no menu ☰
     $("link-manual-topo").hidden = MODO !== "app"; $("link-manual-topo").textContent = t("link_manual");
     $("h1").textContent = t("h1");
