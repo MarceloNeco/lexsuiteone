@@ -150,13 +150,23 @@ Arquitetura (pedido no quadro).
 ## Arquitetura (Fable)
 
 Dona de: desenho da 0.8 (`documentacao/DESENHO-0.8.md`), `documentacao/` (documentos internos novos; os antigos de `docs/`
-migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e a função `lex-conta`, integração com o
-RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `SECURITY.md`, revisões de segurança,
+migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e as funções `lex-conta` e `lex-equipe`,
+**desenho** da integração com o RootifyONE (o código em `rootify-one/` é da conversa do RootifyONE desde 09/Nov), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `SECURITY.md`, revisões de segurança,
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- Nada em andamento. Próximos: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com
-  credencial na `lex-conta`, desenho do site `paginas/app/` para a Produto.
+- **Aceite dos termos** (pedido do dono, 09/Nov): rascunhos prontos, **nada aplicado nem publicado**: SQL
+  `nuvem/supabase/2026-11-09b-sol-aceites.sql` (tabela `sol_aceites` genérica, funções `sol_aceite_registrar`,
+  `sol_aceite_contexto`, `sol_tem_aceite`, `admin_sol_aceites`; verificador de GRANTs ok), página `paginas/aceite.html`
+  (termos de uso com uso exclusivo do escritório, privacidade, tratamento de dados; rolar até o fim, nome completo,
+  e-mail, código, protocolo) e o passo "Antes de instalar, aceite os termos" nos modelos `docs/email/email-boas-vindas.*`
+  com `{{email}}`. Página e e-mail estão só no repositório local da Arquitetura (o cliente veria); entram na `main` com o
+  "pode publicar" do dono depois da revisão do Leandro. Desenho completo: `documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`, seção 5.
+- Próximo SQL (aguarda "pode aplicar"): `admin_lex_listar` único com `email_responsavel`, `boas_vindas` (pedido nº 1 da
+  conversa do RootifyONE, rascunho em `rootify-one/entrega/solverone-app/supabase/2026-11-09-lex-listar-responsavel.sql`)
+  e `aceite`.
+- Depois: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com credencial na `lex-conta`,
+  desenho do site `paginas/app/` para a Produto.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -213,7 +223,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Revisar com o Leandro `documentacao/TERMO-TRATAMENTO-DADOS-RASCUNHO.md` (campos a preencher no fim) e validar com advogado.
+- "Pode aplicar" para `2026-11-09b-sol-aceites.sql` e para o `admin_lex_listar` único (pedido nº 1 do RootifyONE + `aceite`).
+- Revisar com o Leandro o texto dos termos (`paginas/aceite.html`, três partes) e
+  `documentacao/TERMO-TRATAMENTO-DADOS-RASCUNHO.md`; depois o "pode publicar" da página e do e-mail com o passo de aceite.
+  Se não der tempo até quarta 11/Nov, o e-mail de boas-vindas sai sem o passo e o aceite é pedido depois (decisão do dono).
 - Nada mais: as demais perguntas estão respondidas em "Decisões do dono" (09/Nov).
 
 ---
@@ -309,4 +322,5 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 09/Nov | Totais por situação vão para a SolverONE **a cada leitura**, junto da conferência da licença, e a Configuração mostra ao escritório exatamente os números enviados. Rascunho do termo de tratamento de dados com a KR Law: Arquitetura (com a obrigação de informar os totais); dono e Leandro revisam. Ficha da KR Law no RootifyONE (e-mail de boas-vindas e domínio): Operação preenche. **Perguntas ao dono: uma lista só**, na seção "Perguntas ao dono" deste quadro, numeradas; toda conversa confere a lista antes de perguntar e escreve ali o que precisa; **a Produto consolida e leva ao dono**, e devolve um prompt único a cada conversa. |
 | 09/Nov | RootifyONE: (1) botão "Enviar e-mail de boas-vindas" na ficha da licença (Licenças do RADAR), com **prévia** do e-mail já preenchido (nome, código, links) antes de enviar; (2) LexSuiteONE e o RADAR JUDICIAL (e as próximas frentes) aparecem na lista de Apps, separados do RadarONE (político). Arquitetura desenha a função de envio; a Produto faz a prévia e o texto. |
 | 09/Nov | RootifyONE, ficha da licença: campo **e-mail do responsável** pela licença; **cadastro de e-mails em lote** (colar vários, validar formato e domínio, mostrar os inválidos); **Ativar/Pausar** como botão, com registro de quem, quando e motivo (histórico na ficha); **estatísticas da licença** (totais por situação, vistos e não vistos) de forma agnóstica, servindo para qualquer produto da SolverONE; menu: o RADAR sai da raiz e entra numa organização por linha de negócio (B2B → LexSuiteONE → RADAR JUDICIAL e as próximas frentes), regra a registrar nas diretrizes do RootifyONE. O e-mail de boas-vindas **não** vai ao Leandro até o dono dizer "pode enviar". |
+| 09/Nov | **Quem faz o quê entre LexSuiteONE e RootifyONE** (`documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`): tudo em `rootify-one/` é da conversa do RootifyONE, inclusive `rootify-lex.js` e seus testes; o LexSuiteONE não edita mais. LexSuiteONE desenha a tela por escrito e entrega SQL (`lex_*`, `admin_lex_*`, `sol_*` genérico), funções da nuvem e modelos de e-mail já aplicados, com o contrato; RootifyONE implementa e publica. SQL que o RootifyONE precisa: pedido numerado em `rootify-one/entrega/solverone-app/PEDIDOS-LEXSUITEONE.md` (rascunho opcional), LexSuiteONE escreve o definitivo em `nuvem/supabase/`, aplica com o "pode" do dono e avisa "aplicado" no quadro. Genérico para todo B2B: termos e aceite (texto da suíte, registro `sol_aceites`, nome do escritório lido da licença na hora, não no texto), jornada (Licença criada → Boas-vindas → Termos aceitos → Instalado → Em uso/Parado), CRM e estatísticas. Por produto: modelo do e-mail de boas-vindas, com campos iguais. Campo novo no modelo só com pedido ao RootifyONE. |
 | 08/Nov | Auditoria em banco (quem, quando com fuso, antes/depois) para mudanças de configuração e controle, em todos os produtos; a planilha é controle extra. |
