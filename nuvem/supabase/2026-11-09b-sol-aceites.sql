@@ -13,7 +13,7 @@
 --   4. sol_tem_aceite(app, licenca, termo): usada pela lex-conta (service_role) para dizer ao programa se há aceite.
 --   5. sol_aceite_contexto(app, licenca): a página mostra o nome do escritório da licença ("em nome de KR Law…"),
 --      para o aceite dizer por quem é dado. Anon, só o nome, com limite de 30 consultas por hora por licença.
--- NÃO APLICADO AINDA (aguarda "pode aplicar" do dono; ver documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md). Cada bloco tem o DESFAZER em comentário.
+-- APLICADO em 09/Nov/2026 pelo conector, com o "pode aplicar" do dono (conferência toda "true"). Cada bloco tem o DESFAZER em comentário.
 -- =====================================================================================
 
 create table if not exists public.sol_aceites (
@@ -95,7 +95,7 @@ returns jsonb language plpgsql security definer set search_path = '' as $$
 declare v_lic text := pg_catalog.upper(pg_catalog.btrim(coalesce(p_licenca, ''))); v_nome text;
 begin
   if not public.lex_contar_chamada('aceite:ctx:' || v_lic, 30, 3600) then return jsonb_build_object('ok', false); end if;
-  if p_app = 'radar-judicial' then select c.nome into v_nome from public.lex_contas c where c.codigo = v_lic; end if;
+  if p_app = 'radar-judicial' then select c.escritorio into v_nome from public.lex_contas c where c.codigo = v_lic; end if;
   if v_nome is null then return jsonb_build_object('ok', false); end if;
   return jsonb_build_object('ok', true, 'escritorio', v_nome,
     'ja_aceito', exists (select 1 from public.sol_aceites a where a.app = p_app and a.licenca = v_lic and a.termo = 'lexsuiteone-termos'));
