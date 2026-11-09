@@ -49,7 +49,7 @@ def _bloco(cfg):
     return c
 
 
-def verificar(cfg, versao, hoje=None, pedir=None):
+def verificar(cfg, versao, hoje=None, pedir=None, retorno=None):
     """Pergunta à SolverONE e guarda a resposta em cfg['conta']. Devolve o bloco atualizado.
     `pedir` existe para os testes; por padrão é rede.pedir_json."""
     c = _bloco(cfg)
@@ -62,8 +62,10 @@ def verificar(cfg, versao, hoje=None, pedir=None):
         return c
     pedir = pedir or rede.pedir_json
     try:
-        r = pedir(c.get("url") or URL_PADRAO, {"codigo": codigo, "instalacao": c["instalacao"], "versao": versao},
-                  tentativas=2, tempo_limite=20)
+        corpo = {"codigo": codigo, "instalacao": c["instalacao"], "versao": versao}
+        if retorno:  # 0.7.14: só quantidades por situação (sem nome, processo, CNPJ ou contato); a Configuração mostra
+            corpo["retorno"] = list(retorno)[:2000]
+        r = pedir(c.get("url") or URL_PADRAO, corpo, tentativas=2, tempo_limite=20)
     except Exception as e:  # sem internet, serviço fora do ar, resposta estranha: decide pela última resposta boa
         c.update({"resposta": "sem_resposta", "erro": e.__class__.__name__})
         return c
@@ -71,6 +73,9 @@ def verificar(cfg, versao, hoje=None, pedir=None):
         c.update({"resposta": "sem_resposta", "erro": "resposta inválida"})
         return c
     c.pop("erro", None)
+    if retorno and isinstance(r.get("retorno"), dict):
+        c["retorno_resposta"] = {"gravadas": int(r["retorno"].get("gravadas") or 0), "recusadas": int(r["retorno"].get("recusadas") or 0),
+                                 "quando": hoje.isoformat()}
     c["ok"] = bool(r.get("ok"))
     c["resposta"] = "ok" if c["ok"] else str(r.get("motivo") or "desativado")[:40]
     c["escritorio_licenca"] = str(r.get("escritorio") or "")[:80]

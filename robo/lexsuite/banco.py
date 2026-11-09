@@ -11,11 +11,12 @@ import os
 import sqlite3
 
 # 0.7.13: situações do processo para o escritório (decisão do dono, 09/Nov). A chave fica no banco; o texto, na tela.
-SITUACOES = ("novo", "visto", "analise", "contato", "cliente", "descartado", "arquivado")
-_SITUACAO_ANTIGA = {"novo": "novo", "nova": "novo", "visto": "visto", "lido": "visto", "em analise": "analise",
-                    "em análise": "analise", "analise": "analise", "abordado": "contato", "em contato": "contato",
-                    "contato": "contato", "cliente": "cliente", "virou cliente": "cliente", "contratado": "cliente",
-                    "descartado": "descartado", "arquivado": "arquivado", "tratado": "arquivado"}
+SITUACOES = ("novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado")
+_SITUACAO_ANTIGA = {"novo": "novo", "nova": "novo", "visto": "visto", "vista": "visto", "lido": "visto",
+                    "em analise": "em_analise", "em análise": "em_analise", "analise": "em_analise", "em_analise": "em_analise",
+                    "abordado": "em_contato", "em contato": "em_contato", "contato": "em_contato", "em_contato": "em_contato",
+                    "cliente": "virou_cliente", "virou cliente": "virou_cliente", "virou_cliente": "virou_cliente",
+                    "contratado": "virou_cliente", "descartado": "descartado", "arquivado": "arquivado", "tratado": "arquivado"}
 # Faixas de valor das Estatísticas e do filtro (limite superior aberto); "sem" = o Diário não trouxe o valor.
 FAIXAS = ((10000, "ate10k"), (50000, "10k-50k"), (100000, "50k-100k"), (300000, "100k-300k"), (500000, "300k-500k"),
           (1000000, "500k-1mi"), (float("inf"), "1mi+"))
@@ -165,6 +166,42 @@ class Banco:
 
     def totais_por_situacao(self):
         return dict(self.con.execute("SELECT status, count(*) FROM leads GROUP BY status").fetchall())
+
+    def retorno(self, dias=60, limite=2000):
+        """Totais por situação para a SolverONE (só quantidades): [{data, tribunal, frente, faixa_valor, situacao, qtd}]."""
+        desde = (dt.date.today() - dt.timedelta(days=int(dias))).isoformat()
+        linhas = self.con.execute(
+            "SELECT data, coalesce(tribunal,''), coalesce(frente,''), coalesce(faixa_valor,''), status, count(*) FROM leads "
+            "WHERE data >= ? GROUP BY 1,2,3,4,5 ORDER BY 1 DESC LIMIT ?", (desde, int(limite))).fetchall()
+        return [{"data": d, "tribunal": t[:40], "frente": f[:40], "faixa_valor": fx[:40], "situacao": situacao_valida(st) or "novo", "qtd": n}
+                for d, t, f, fx, st, n in linhas]
+
+    # --- Contatos (desenho dos contatos, Arquitetura 08/Nov) ---
+
+    def guardar_contato(self, c, perfil=""):
+        """Um canal de contato da empresa processada (com fonte e data). Devolve True se entrou (False se já existia)."""
+        cur = self.con.execute(
+            "INSERT OR IGNORE INTO contatos (processo, empresa, canal, valor, de_pessoa, fonte, data, confianca, origem, "
+            "observacao, arquivo, criado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            (c["processo"], c.get("empresa", "")[:200], c["canal"], c["valor"][:300], 1 if c.get("de_pessoa") else 0,
+             c.get("fonte", "")[:80], c.get("data", "")[:10], c.get("confianca", "media"), c.get("origem", "digitado"),
+             c.get("observacao", "")[:300], c.get("arquivo", "")[:120], agora_utc_e_fuso()[0]))
+        self.con.commit()
+        return cur.rowcount == 1
+
+    def contatos(self, processo=None):
+        cols = ("id", "processo", "empresa", "canal", "valor", "de_pessoa", "fonte", "data", "confianca", "origem",
+                "observacao", "arquivo", "validacao", "validado_por", "validado_em", "criado_em")
+        sql, args = "SELECT " + ",".join(cols) + " FROM contatos", ()
+        if processo:
+            sql, args = sql + " WHERE processo = ?", (processo,)
+        return [dict(zip(cols, r)) for r in self.con.execute(sql + " ORDER BY processo, canal", args)]
+
+    def registrar_colagem(self, perfil, arquivo, aceitas, recusadas, detalhe=""):
+        quando, fuso = agora_utc_e_fuso()
+        self.con.execute("INSERT INTO contatos_historico VALUES (?,?,?,?,?,?,?)",
+                         (quando, fuso, (perfil or "")[:120], (arquivo or "")[:120], int(aceitas), int(recusadas), (detalhe or "")[:2000]))
+        self.con.commit()
 
     # --- Estatísticas que não se apagam ---
 
