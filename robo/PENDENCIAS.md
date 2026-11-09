@@ -162,7 +162,23 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.13 (09/Nov, correção; pronta para publicar com o "pode")
+## 0.7.14 (09/Nov, pacote; pronta para publicar com o "pode")
+
+Itens 42 a 84 de `documentacao/FEEDBACK-TESTE-2026-11-09.md` (menos 79 e 82, que vão para a 0.7.15) e os contatos
+(itens 40 e 41, desenho da Arquitetura). Tela: menu ☰ (Configuração saiu do alto), abas Painel · Lista · Arquivo ·
+Histórico de leituras, um cartão por linha, ficha sem corte e com endereço, situação no cartão com (?) e "Visto"
+sozinho ao abrir, seleção em lote com a barra "Com os selecionados" (total, confirmação, Desfazer), busca, filtros de
+valor (faixas, outro, sem valor), situação, contato, frente e "Não informado", Limpar filtros, filtros salvos,
+ordenação dupla, selo de contato com o motivo, preparar busca na área logada e colar contatos, aviso antes de abrir a
+planilha, Gerar uma cópia, pasta em cartões, horários com um clique, "O que a SolverONE recebe", letra e gráficos que
+crescem com a tela (teste permanente em 4 larguras: `robo/testes/tela/larguras.js`). Programa: situação no banco do
+computador (migra a do navegador), Arquivo, retorno de totais na conferência da licença, estatísticas diárias, frente,
+endereço completo da Receita, limpeza só do detalhe, planilha só para leitura, regravação sozinha quando o Excel
+fechar, aviso vermelho e proteção sem senha na aba Radar, abas Arquivo, Contatos e "Histórico de leituras", página
+"Retrato da última leitura". Pacote: 43 arquivos no download completo e 42 no de atualização (entram `contatos.py` e
+`frentes.py`).
+
+## 0.7.13 (09/Nov, correção; publicada)
 
 Defeito achado pelo dono às 00:05 de segunda: o DJEN só libera o Diário do dia a partir das 3h e responde HTTP 403 antes
 disso; o programa tratava como erro e parava a leitura inteira, com "RuntimeError" e endereço técnico na tela. Agora:

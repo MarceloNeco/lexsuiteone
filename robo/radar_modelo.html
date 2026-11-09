@@ -23,16 +23,19 @@
 :root[data-theme="dark"] { color-scheme: dark; --papel: #0f1119; --folha: #161b29; --tinta: #e8ecf3; --tinta-2: #c1c8d5; --tinta-3: #8e97a9; --linha: #27304a; --linha-2: #36405c; --marinho: #0a101c; --latao: #c9a063; --latao-texto: #d6b27a; --latao-wash: #2a2416; --erro: #e07b6e; --barra: #5b8fd6; --trilho: #222b40; --papel-2: #1d2436; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 15px/1.5 var(--f); -webkit-font-smoothing: antialiased; }
+/* 0.7.14: a letra cresce com a tela (notebook 16px, monitor 1920 ~19px, 2560 ~21px), regra permanente de uso da tela */
+html { font-size: clamp(16px, 0.4vw + 11px, 21px); }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 0.94rem/1.5 var(--f); -webkit-font-smoothing: antialiased; }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
-.miolo { max-width: 100rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.miolo { max-width: none; width: 100%; margin: 0 auto; padding-left: max(clamp(16px, 2.6vw, 56px), env(safe-area-inset-left, 0px)); padding-right: max(clamp(16px, 2.6vw, 56px), env(safe-area-inset-right, 0px)); }
 :focus-visible { outline: 2px solid var(--latao); outline-offset: 2px; }
 
 .faixa { background: var(--noite); color: #eef1f6; margin-bottom: 18px; }
 .faixa .miolo { padding-block: 14px 22px; display: grid; gap: 6px; }
 header { display: contents; }
 .topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.topo > .b-menu:not([hidden]) + .marca { margin-right: auto; }
 .topo .marca { display: inline-flex; align-items: center; gap: 10px; font-size: 1.05rem; color: #fff; }
 .topo .marca img { width: 28px; height: 28px; }
 .topo .marca .leve { font-weight: 400; } .topo .marca strong { font-weight: 800; } .topo .marca strong b { color: var(--latao-claro); }
@@ -140,6 +143,7 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .estado .erro { color: var(--erro); }
 /* 0.7.13: aviso que não é erro (Diário de hoje só às 3h), detalhe técnico recolhido e histórico de leituras */
 .estado .aviso-leve { color: var(--latao-texto); }
+.estado > span { white-space: normal; overflow-wrap: anywhere; }
 .estado details { font-size: .8rem; color: var(--tinta-3); }
 .estado details summary { cursor: pointer; color: var(--latao-texto); font-weight: 600; width: max-content; }
 .estado details code { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .76rem; margin-top: 4px; }
@@ -202,7 +206,7 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 165px), 1fr)); gap: 12px; }
 .kpi { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
 .kpi .rot { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3); font-weight: 600; }
-.kpi .val { font-size: 1.9rem; line-height: 1.05; font-weight: 700; color: var(--tinta); font-variant-numeric: tabular-nums; }
+.kpi .val { font-size: clamp(1.7rem, 1.2rem + 0.9vw, 2.8rem); line-height: 1.05; font-weight: 700; color: var(--tinta); font-variant-numeric: tabular-nums; }
 .kpi .det { font-size: .78rem; color: var(--tinta-3); }
 .kpi.destaque { border-color: var(--latao); background: var(--latao-wash); }
 .kpi.destaque .val { color: var(--latao-texto); }
@@ -218,16 +222,16 @@ button.barra-l:hover { background: var(--papel-2, #f3f5f8); }
 button.barra-l:focus-visible { outline: 2px solid var(--latao); }
 .barra-l .rot { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--tinta-2); }
 .barra-l .trilho { height: 10px; background: var(--trilho); border-radius: 999px; overflow: hidden; }
-.barra-l .enche { display: block; height: 100%; background: var(--barra); border-radius: 999px; min-width: 2px; }
+.barra-l .enche { display: block; height: 100%; background: var(--barra); border-radius: 999px; min-width: 2px; transition: width .6s cubic-bezier(.2,.7,.2,1); }
 .barra-l.ouro .enche { background: var(--latao); }
 .barra-l.apagada .enche { background: var(--linha-2); }
 .barra-l .n { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 2.5rem; text-align: right; }
 .barra-l .n small { font-weight: 500; color: var(--tinta-3); margin-left: 6px; }
-.colunas { display: flex; align-items: flex-end; gap: 6px; height: 170px; padding-top: 18px; overflow-x: auto; scrollbar-width: thin; }
-.col { all: unset; box-sizing: border-box; flex: 1 0 34px; max-width: 96px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
+.colunas { display: flex; align-items: flex-end; gap: 6px; height: clamp(170px, 18vw, 320px); padding-top: 18px; overflow-x: auto; scrollbar-width: thin; }
+.col { all: unset; box-sizing: border-box; flex: 1 0 34px; max-width: 140px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
 button.col { cursor: pointer; }
 .col .n { font-size: .74rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--tinta-2); }
-.col .pe { width: 100%; background: var(--barra); border-radius: 5px 5px 2px 2px; min-height: 2px; }
+.col .pe { width: 100%; background: var(--barra); border-radius: 5px 5px 2px 2px; min-height: 2px; transition: height .6s cubic-bezier(.2,.7,.2,1); }
 button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .col .d { font-size: .68rem; color: var(--tinta-3); text-align: center; line-height: 1.15; white-space: nowrap; }
 .col .d b { display: block; color: var(--tinta-2); font-weight: 600; }
@@ -244,7 +248,63 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 
 /* 0.7.11: cartões separados, claros e iguais, com uma faixa fina em latão; duas colunas em tela larga. */
 .lista { display: grid; gap: 10px; align-items: start; }
-@media (min-width: 1400px) { .lista { grid-template-columns: 1fr 1fr; } .lista .grupo, .lista .vazio-lista { grid-column: 1 / -1; } }
+/* 0.7.14: um cartão por linha em qualquer largura (o dono quer ler e ordenar de cima para baixo) */
+.item { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+.item > .sel { display: flex; align-items: flex-start; padding: 14px 0 0 12px; }
+.item > .sel input { width: 18px; height: 18px; accent-color: var(--marinho); cursor: pointer; }
+.item > .corpo { min-width: 0; }
+.item.marcado { border-color: var(--latao); background: var(--latao-wash); }
+.faixa-cartao { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 0 16px 10px; font-size: .8rem; }
+.sit { border: 1px solid var(--linha-2); background: var(--folha); color: var(--tinta); border-radius: 999px; padding: 3px 10px; font-size: .78rem; font-weight: 600; min-height: 28px; }
+.sit.st-novo { border-color: #2b62ad; color: #2b62ad; } .sit.st-visto { color: var(--tinta-2); }
+.sit.st-em_analise { border-color: #9a6a12; color: #8a5a0a; } .sit.st-em_contato { border-color: #6b3fa0; color: #6b3fa0; }
+.sit.st-virou_cliente { border-color: #2f6b3a; color: #2f6b3a; background: #eef7ef; } .sit.st-descartado { color: var(--tinta-3); text-decoration: line-through; }
+.sit.st-arquivado { color: var(--tinta-3); background: var(--papel-2, #f3f5f8); }
+.selo { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 3px 10px; font-weight: 600; font-size: .76rem; }
+.selo.tem { background: #eaf5ec; color: #2f6b3a; } .selo.falta { background: #fbecea; color: #a33a2e; }
+.frente-tag { color: var(--tinta-3); font-size: .74rem; letter-spacing: .04em; text-transform: uppercase; }
+.ajuda { all: unset; box-sizing: border-box; cursor: pointer; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--linha-2); color: var(--tinta-2); font-size: .72rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; position: relative; }
+.ajuda:focus-visible { outline: 2px solid var(--latao); }
+.balao { position: absolute; z-index: 40; max-width: min(380px, 86vw); background: var(--folha); color: var(--tinta); border: 1px solid var(--linha-2); border-radius: 10px; box-shadow: 0 8px 28px rgba(15,29,51,.18); padding: 10px 12px; font-size: .82rem; line-height: 1.45; text-align: left; white-space: normal; }
+.balao dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 10px; } .balao dt { font-weight: 700; }
+/* menu ☰ */
+.b-menu { all: unset; cursor: pointer; color: #fff; font-size: 1.4rem; line-height: 1; padding: 6px 10px; border-radius: 8px; margin-right: 6px; }
+.b-menu:hover, .b-menu:focus-visible { background: rgba(255,255,255,.12); }
+.gaveta { position: fixed; inset: 0 auto 0 0; width: min(320px, 86vw); background: var(--folha); z-index: 60; box-shadow: 4px 0 30px rgba(0,0,0,.25); padding: 18px 14px; overflow-y: auto; display: grid; align-content: start; gap: 2px; }
+.gaveta[hidden] { display: none; }
+.gaveta .grupo-menu { font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-3); padding: 12px 10px 4px; }
+.gaveta button { all: unset; cursor: pointer; padding: 10px 12px; border-radius: 8px; color: var(--tinta); font-weight: 500; }
+.gaveta button:hover, .gaveta button:focus-visible { background: var(--papel-2, #f3f5f8); }
+.gaveta button[aria-current="true"] { background: var(--latao-wash); color: var(--latao-texto); font-weight: 700; }
+.veu { position: fixed; inset: 0; background: rgba(10,16,28,.35); z-index: 55; } .veu[hidden] { display: none; }
+/* barra de seleção ("Com os selecionados"): azul-marinho, diferente das pílulas de filtro */
+.lote { position: sticky; bottom: 10px; z-index: 30; margin-top: 10px; background: var(--marinho); color: #fff; border-radius: 14px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; box-shadow: 0 10px 30px rgba(15,29,51,.3); }
+.lote[hidden] { display: none; }
+.lote b { color: var(--latao-claro); }
+.lote button, .lote select { border: 1px solid rgba(255,255,255,.35); background: transparent; color: #fff; border-radius: 999px; padding: 6px 12px; min-height: 34px; font: inherit; font-size: .84rem; cursor: pointer; }
+.lote select option { color: #121a2b; }
+.lote .forte { background: var(--latao); border-color: var(--latao); color: #1a1205; font-weight: 700; }
+.selecionar-todos { font-size: .82rem; color: var(--tinta-2); display: flex; align-items: center; gap: 8px; padding: 0 2px 8px; flex-wrap: wrap; }
+.aviso-desfazer { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; z-index: 70; background: #121a2b; color: #fff; border-radius: 12px; padding: 10px 14px; display: flex; gap: 14px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.3); font-size: .88rem; }
+.aviso-desfazer button { all: unset; cursor: pointer; color: var(--latao-claro); font-weight: 700; }
+/* janela de confirmação */
+.janela { border: 0; border-radius: 14px; padding: 0; max-width: min(520px, 92vw); box-shadow: 0 20px 60px rgba(0,0,0,.35); color: var(--tinta); background: var(--folha); }
+.janela::backdrop { background: rgba(10,16,28,.45); }
+.janela .conteudo { padding: 18px 20px; display: grid; gap: 12px; } .janela h3 { margin: 0; font-size: 1.05rem; }
+.janela .botoes { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.janela textarea { width: 100%; min-height: 200px; font: .82rem/1.4 ui-monospace, Consolas, monospace; border: 1px solid var(--linha-2); border-radius: 8px; padding: 8px; }
+.filtros-extra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-bottom: 10px; }
+.busca { flex: 1 1 280px; min-width: 200px; border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 8px 16px; min-height: 38px; font-size: .9rem; }
+.limpar-filtros { color: var(--erro) !important; }
+.arquivo-info { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: .86rem; color: var(--tinta-2); padding: 0 0 12px; }
+/* cartões de escolha (no lugar da lista que o Windows abre cortada) */
+.opcoes-cartao { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 8px; }
+.opcoes-cartao label { border: 1px solid var(--linha-2); border-radius: 10px; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-start; cursor: pointer; background: var(--folha); }
+.opcoes-cartao label:has(input:checked) { border-color: var(--latao); background: var(--latao-wash); }
+.opcoes-cartao small { display: block; color: var(--tinta-3); }
+.horas-prontas { display: flex; flex-wrap: wrap; gap: 6px; }
+.horas-prontas button { border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 6px 12px; min-height: 34px; font-weight: 600; cursor: pointer; }
+.horas-prontas button[aria-pressed="true"] { background: var(--marinho); color: #fff; border-color: var(--marinho); }
 .grupo { font-size: .76rem; font-weight: 600; letter-spacing: .04em; color: var(--tinta-3); padding: 12px 18px 4px; border-top: 1px solid var(--linha); }
 .grupo:first-child { border-top: 0; }
 .item { background: var(--folha); border: 1px solid var(--linha); border-left: 3px solid var(--latao); border-radius: 10px; overflow: hidden; }
@@ -264,9 +324,10 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .sub .tag { color: var(--latao-texto); font-weight: 600; }
 .sub .cinza { color: var(--tinta-3); }
 
-.ficha { padding: 2px 18px 18px calc(3.6rem + 18px + 14px); display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; }
+.ficha { padding: 2px 18px 18px 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 14px 32px; }
+.ficha > * { min-width: 0; }
 .ficha h3 { margin: 0 0 8px; font-size: .76rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3); }
-.ficha dl { margin: 0; display: grid; grid-template-columns: minmax(9rem, max-content) 1fr; gap: 0 14px; font-size: .9rem; }
+.ficha dl { margin: 0; display: grid; grid-template-columns: minmax(8rem, 34%) minmax(0, 1fr); gap: 0 14px; font-size: .9rem; }
 .ficha dt { color: var(--tinta-3); padding: 5px 0; border-top: 1px solid var(--linha); }
 .ficha dd { margin: 0; min-width: 0; overflow-wrap: anywhere; padding: 5px 0; border-top: 1px solid var(--linha); }
 .ficha dt:first-of-type, .ficha dd:first-of-type { border-top: 0; }
@@ -275,7 +336,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .ficha dd ul { margin: 0; padding-left: 1.1em; }
 .ficha .aviso { grid-column: 1 / -1; font-size: .82rem; color: var(--latao-texto); background: var(--latao-wash); border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
 .ficha .campo-valor { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.ficha .campo-valor input { width: 9rem; border: 1px solid var(--linha-2); background: var(--papel); border-radius: 8px; padding: 5px 10px; min-height: 32px; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.ficha .campo-valor input { width: 9rem; max-width: 100%; border: 1px solid var(--linha-2); background: var(--papel); border-radius: 8px; padding: 5px 10px; min-height: 32px; font-size: .9rem; font-variant-numeric: tabular-nums; }
 .ficha .campo-valor select { border: 1px solid var(--linha-2); background: var(--papel); border-radius: 8px; padding: 5px 10px; min-height: 32px; font-size: .86rem; }
 .acoes { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; padding-top: 8px; border-top: 1px solid var(--linha); }
 .acoes a, .acoes .btn-txt { color: var(--latao-texto); font-weight: 600; font-size: .86rem; text-decoration: none; padding: 4px 0; }
@@ -303,6 +364,7 @@ footer a:hover { text-decoration: underline; }
 <div class="faixa"><div class="miolo">
 <header>
   <div class="topo">
+    <button type="button" class="b-menu" id="b-menu" aria-expanded="false" aria-controls="gaveta" aria-label="Menu" hidden>☰</button>
     <span class="marca"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%230f1d33%22/%3E%0A  %3Cg transform=%22rotate%28-40 30 26%29%22 fill=%22%23d4ab6a%22%3E%0A    %3Crect x=%2217%22 y=%2217%22 width=%2226%22 height=%2212%22 rx=%223%22/%3E%0A    %3Crect x=%2214%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2241%22 y=%2215%22 width=%225%22 height=%2216%22 rx=%222%22/%3E%0A    %3Crect x=%2228%22 y=%2229%22 width=%224.5%22 height=%2224%22 rx=%222%22/%3E%0A  %3C/g%3E%0A  %3Crect x=%2231%22 y=%2247%22 width=%2222%22 height=%226%22 rx=%222%22 fill=%22%23d4ab6a%22/%3E%0A%3C/svg%3E" alt=""><span id="marca"></span><small class="versao-topo" id="versao-topo"></small></span>
     <div class="direita">
       <span class="escritorio-nome" id="escritorio-nome"></span>
@@ -318,6 +380,9 @@ footer a:hover { text-decoration: underline; }
   <p class="resumo" id="resumo"></p>
 </header>
 </div></div>
+<nav class="gaveta" id="gaveta" hidden aria-label="Menu"></nav>
+<div class="veu" id="veu" hidden></div>
+<dialog class="janela" id="janela"><div class="conteudo" id="janela-conteudo"></div></dialog>
 <div class="miolo">
 
 <section class="painel wiz" id="wizard" hidden>
@@ -391,12 +456,14 @@ footer a:hover { text-decoration: underline; }
     <p class="nota-registro" id="c-mira"></p>
     <label class="campo-conf"><span id="c-l-codigo"></span><input id="c-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
     <p class="nota-registro" id="c-codigo-nota" hidden></p>
-    <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta"></select></label>
+    <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta" hidden></select><span class="opcoes-cartao" id="c-pasta-cartoes" role="radiogroup"></span></label>
     <label class="campo-conf" id="c-outra-wrap" hidden><span id="c-l-outra"></span><input id="c-outra" type="text" spellcheck="false"></label>
     <div class="conf-acoes"><button type="button" class="chip" id="c-escolher" hidden></button><button type="button" class="chip" id="c-testar"></button><button type="button" class="chip" id="c-criar" hidden></button><span id="c-teste-txt"></span></div>
     <fieldset class="agenda" id="c-agendar-wrap">
       <legend id="c-l-agenda"></legend>
       <label class="conf-acoes"><input type="checkbox" id="c-agendar"> <span id="c-l-agendar"></span></label>
+      <p class="agenda-info" id="c-horas-expl"></p>
+      <div class="horas-prontas" id="c-horas-prontas" role="group"></div>
       <div class="agenda-horas" id="c-horas" role="list"></div>
       <div class="agenda-nova">
         <label class="conf-acoes"><span id="c-l-hora-nova"></span> <input type="time" id="c-hora-nova" step="300"></label>
@@ -443,10 +510,22 @@ footer a:hover { text-decoration: underline; }
 <div class="visao" id="visao" role="tablist">
   <button type="button" role="tab" id="v-painel" data-visao="painel" aria-selected="false" aria-controls="graficos"></button>
   <button type="button" role="tab" id="v-lista" data-visao="lista" aria-selected="true" aria-controls="lista"></button>
+  <button type="button" role="tab" id="v-arquivo" data-visao="arquivo" aria-selected="false" aria-controls="lista"></button>
+  <button type="button" role="tab" id="v-historico" data-visao="historico" aria-selected="false" aria-controls="historico-aba"></button>
 </div>
 
+<div class="filtros-extra" id="filtros-extra">
+  <input type="search" class="busca" id="f-busca" autocomplete="off" spellcheck="false">
+  <select id="f-salvos" aria-label="Filtros salvos"></select>
+  <button type="button" class="btn-txt" id="b-salvar-filtro"></button>
+  <button type="button" class="btn-txt limpar-filtros" id="b-limpar-filtros" hidden></button>
+</div>
 <div class="controles" id="controles">
-  <button type="button" class="chip" id="f-valor" aria-pressed="false"></button>
+  <select id="f-valor-sel" aria-label="Valor da causa"></select>
+  <select id="f-sit" aria-label="Situação"></select>
+  <select id="f-contato" aria-label="Contato"></select>
+  <select id="f-frente" aria-label="Frente"></select>
+  <button type="button" class="chip" id="f-valor" aria-pressed="false" hidden></button>
   <button type="button" class="chip" id="f-gig" aria-pressed="false"></button>
   <button type="button" class="chip" id="f-exc" aria-pressed="false" hidden></button>
   <button type="button" class="chip" id="f-cnpj" aria-pressed="false"></button>
@@ -458,11 +537,16 @@ footer a:hover { text-decoration: underline; }
   <select id="f-uf" aria-label="UF"></select>
   <span class="espaco"></span>
   <select id="ordem" aria-label="Ordenar"></select>
+  <select id="ordem2" aria-label="Depois por"></select>
   <button type="button" class="btn-txt" id="exportar"></button>
 </div>
 
 <div class="graficos" id="graficos" role="tabpanel" hidden></div>
+<div class="arquivo-info" id="arquivo-info" hidden></div>
+<div class="historico-aba" id="historico-aba" role="tabpanel" hidden></div>
+<div class="selecionar-todos" id="selecionar-todos" hidden></div>
 <div class="lista" id="lista" role="tabpanel"></div>
+<div class="lote" id="lote" hidden></div>
 <div class="mais" id="mais" hidden><span id="mais-txt"></span><button type="button" class="chip" id="b-mais"></button><button type="button" class="chip" id="b-mais50"></button></div>
 
 <footer>
@@ -527,6 +611,42 @@ window.LEXSUITE_RADAR = null;
       st_novo: "Novo", st_visto: "Visto", st_contato: "Em contato", st_descartado: "Descartado",
       nota_valor: "O PJe mostra o valor da causa depois do captcha. Digite aqui; fica guardado neste navegador e sai na planilha.",
       gig: "Jurídico próprio provável", e: "e", mais_n: "e mais {n}",
+      v_arquivo: "Arquivo", v_historico: "Histórico de leituras", nao_informado: "Não informado", f_todas_sit: "Todas as situações", f_todas_frentes: "Todas as frentes",
+      f_contato_todos: "Com e sem contato", f_contato_com: "Só com contato", f_contato_sem: "Só sem contato", f_valor_todos: "Qualquer valor", f_valor_acima: "Acima de {v}", f_valor_sem: "Sem valor informado", f_valor_outro: "Outro valor...",
+      busca_ph: "Buscar por empresa, número do processo, vara, CNPJ ou cidade", salvos_ph: "Filtros salvos", salvar_filtro: "Salvar estes filtros", salvar_filtro_q: "Nome para estes filtros (ex.: TRT15 acima de 300 mil):", limpar_filtros: "Limpar filtros ({n})",
+      valor_outro_q: "Mostrar ações com valor da causa acima de (R$):",
+      ord_vara: "Vara (A a Z)", ord_situacao: "Situação", ord2_nada: "Depois por: nada", ord2_valor: "Depois por: maior valor", ord2_recentes: "Depois por: mais recentes", ord2_porte: "Depois por: maior porte", ord2_empresa: "Depois por: empresa", ord2_vara: "Depois por: vara", ord2_situacao: "Depois por: situação",
+      situacao: "Situação", st_novo: "Novo", st_visto: "Visto", st_em_analise: "Em análise", st_em_contato: "Em contato", st_virou_cliente: "Virou cliente", st_descartado: "Descartado", st_arquivado: "Arquivado",
+      stx_novo: "Ainda não aberto por ninguém.", stx_visto: "A ficha já foi aberta (marca sozinho; dá para voltar a Novo).", stx_em_analise: "Buscando informação, conhecendo os sócios, ou a empresa procurou o escritório, mas ainda sem conversa oficial.",
+      stx_em_contato: "Conversa oficial com a empresa, negociando.", stx_virou_cliente: "A empresa contratou o escritório.", stx_descartado: "Descartado direto ou a negociação não se concluiu. Continua na Lista.", stx_arquivado: "Sai da Lista; fica no Arquivo e na planilha.",
+      fr_trabalhista: "Trabalhista", fr_tributario: "Tributário", fr_civel: "Cível", fr_empresarial: "Empresarial",
+      falta_conferir: "não informado: o CNPJ do Diário é de outro nome", falta_sem_cnpj: "não informado: o Diário não trouxe o CNPJ", endereco: "Endereço", outros_contatos: "Outros contatos", de_socio: "de sócio",
+      canal_telefone: "telefone", canal_email: "e-mail", canal_site: "site", canal_endereco: "endereço", canal_linkedin: "LinkedIn", canal_instagram: "Instagram", canal_outro: "outro",
+      selecionar: "Selecionar", ajuda: "O que é isto?", contato_tem: "Contato", contato_falta: "Sem contato",
+      motivo_sem_cnpj: "O Diário não trouxe o CNPJ desta empresa, então não deu para consultar a Receita. Dá para buscar na área logada do PJe (marque e use \u201cPreparar busca na área logada\u201d).",
+      motivo_receita_sem: "A Receita não tem telefone nem e-mail desta empresa. Dá para buscar na área logada do PJe (petição inicial).",
+      motivo_cnpj_a_conferir: "O CNPJ que veio no Diário é de outro nome na Receita; confira no PJe antes de usar.",
+      feito_n: "{n} processo(s) agora em \u201c{s}\u201d.", conf_titulo_n: "Mudar {n} processos para \u201c{s}\u201d?", conf_titulo_1: "Mudar para \u201c{s}\u201d?",
+      conf_arquivar: "Eles saem da Lista e continuam no Arquivo e na planilha. Dá para desfazer logo depois.", conf_mudar: "A situação de {n} processo(s) muda agora. Dá para desfazer logo depois.",
+      mot_sem_interesse: "sem interesse", mot_ja_cliente: "já é cliente", mot_fora_perfil: "fora do perfil", mot_outro: "outro motivo", motivo: "Motivo", cancelar: "Cancelar",
+      aplicar_n: "Mudar {n} processos", aplicar_1: "Mudar", desfazer: "Desfazer", sel_todos: "Selecionar todos os {n} desta lista", sel_limpar: "Limpar seleção", com_sel: "Com os selecionados:",
+      mudar_sit: "Mudar a situação", arquivar_n: "Arquivar {n}", preparar_busca: "Preparar busca na área logada",
+      preparar_ajuda: "Gera um arquivo com os processos selecionados que ainda não têm contato (no máximo {n} por dia) e as instruções para buscar na área logada do PJe, à mão ou com o Claude in Chrome. Quem abre os processos é o advogado, com a credencial dele. Telefone e e-mail quase nunca estão no processo; o endereço e o valor da causa, sim.",
+      busca_pronta_t: "Arquivo pronto com {n} processo(s)", busca_pronta: "A pasta abriu com o arquivo ({c}). Logado no PJe, abra o Claude in Chrome e arraste o arquivo (ou siga as instruções à mão). Depois cole a resposta em \u201cColar contatos encontrados\u201d.",
+      fechar: "Fechar", colar_contatos: "Colar contatos encontrados", colar_explica: "Cole aqui a tabela que o Claude in Chrome devolveu (8 colunas). O programa confere linha por linha, sem IA, e recusa CPF e dado de reclamante.",
+      ler_resposta: "Ler a resposta", colar_res: "{a} contato(s) entraram; {r} linha(s) recusada(s).", colar_rep: "{n} já estavam guardados.", linha_n: "Linha {n}",
+      aviso_pl_t: "A planilha abre só para leitura", aviso_pl: "Ela é regravada pelo programa a cada leitura. Filtrar e ordenar funciona normalmente. Para anotar ou mexer, use \u201cGerar uma cópia\u201d: a cópia fica na pasta Cópias e o programa nunca mexe nela.",
+      nao_mostrar: "Não mostrar de novo neste computador", gerar_copia: "Gerar uma cópia", entendi_abrir: "Entendi, abrir", copia_ok: "Cópia criada: {c}",
+      menu_ver: "Ver", menu_planilha: "Planilha", menu_contatos: "Contatos", menu_programa: "Programa", config: "Configuração", perfil: "Perfil",
+      arq_info: "{n} ações guardadas desde {d}; o banco ocupa {mb} MB neste computador.", arq_limpar: "Limpar o que tem mais de {m} meses",
+      arq_limpar_x: "Apaga só o detalhe das ações com mais de {m} meses (o trecho do Diário). Ficam o resumo (empresa, tribunal, valor, situação) e as estatísticas.", limpar: "Limpar", arq_limpo: "{n} ação(ões) resumida(s).",
+      arq_ajuda: "O Arquivo guarda tudo o que o programa já leu, de todos os tribunais, inclusive o que foi arquivado. A Lista mostra só o que está em aberto nos tribunais marcados.",
+      hist_explica: "Cada linha é uma tentativa de leitura de um tribunal: quando, de onde veio o pedido, o que o site respondeu e o que o programa fez.",
+      hist_resp_ajuda: "Código que o site do CNJ devolveu: 200 = respondeu normal; 403 antes das 3h = o Diário do dia ainda não foi liberado (não é erro); 404 = ainda não publicado; 429 ou 5xx = site do CNJ sobrecarregado ou fora do ar; \u201c-\u201d = sem resposta.",
+      cod_tecnico: "código {c}", n_tribunais: "{n} tribunais", aviso_3h_tribs: "{t}: o Diário de hoje só sai às 3h da manhã; li até o último dia publicado ({d}). Nada a fazer.",
+      c_pasta_drive: "Google Drive (recomendado)", c_pasta_outra_x: "Escolha outra pasta deste computador ou da rede.", c_pasta_local_x: "Fica só neste computador, na pasta do programa; ninguém mais vê a planilha.",
+      ag_expl: "Clique nos horários em que o programa lê o Diário sozinho. Cada horário é uma leitura (não é início e fim). Para um horário que não está aqui, use \u201cOutro horário\u201d.",
+      ret_titulo: "O que a SolverONE recebe", ret_quando: "Última conferência ({q}): {n} linha(s).", ret_nada: "Nada enviado ainda (vai na próxima leitura).", ret_frase: "Só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou contato.", ret_ver: "Ver a tabela enviada",
       v_painel: "Painel", v_lista: "Lista", k_acoes: "Ações", k_acoes_det: "{d} dia(s) com Diário", k_cnpj: "Com CNPJ confirmado", k_pct: "{p}% das ações",
       k_acima: "Acima de {min}", k_acima_det: "pelo valor da causa", k_soma: "Valor somado", k_soma_det: "{n} ação(ões) com valor", k_empresas: "Empresas",
       k_empresas_det: "{n} com mais de uma ação", k_sem_valor: "Sem valor no Diário", k_sem_valor_det: "o valor aparece no PJe",
@@ -582,6 +702,42 @@ window.LEXSUITE_RADAR = null;
       st_novo: "New", st_visto: "Seen", st_contato: "In contact", st_descartado: "Discarded",
       nota_valor: "PJe shows the claim value after the captcha. Type it here; it stays in this browser and goes to the spreadsheet.",
       gig: "Likely in-house counsel", e: "and", mais_n: "and {n} more",
+      v_arquivo: "Archive", v_historico: "Reading history", nao_informado: "Not informed", f_todas_sit: "All statuses", f_todas_frentes: "All practice areas",
+      f_contato_todos: "With and without contact", f_contato_com: "With contact only", f_contato_sem: "Without contact only", f_valor_todos: "Any value", f_valor_acima: "Above {v}", f_valor_sem: "No value informed", f_valor_outro: "Other value...",
+      busca_ph: "Search by company, case number, court unit, tax ID or city", salvos_ph: "Saved filters", salvar_filtro: "Save these filters", salvar_filtro_q: "Name for these filters (e.g. TRT15 above 300k):", limpar_filtros: "Clear filters ({n})",
+      valor_outro_q: "Show lawsuits with claim value above (R$):",
+      ord_vara: "Court unit (A to Z)", ord_situacao: "Status", ord2_nada: "Then by: nothing", ord2_valor: "Then by: highest value", ord2_recentes: "Then by: most recent", ord2_porte: "Then by: largest", ord2_empresa: "Then by: company", ord2_vara: "Then by: court unit", ord2_situacao: "Then by: status",
+      situacao: "Status", st_novo: "New", st_visto: "Seen", st_em_analise: "Under review", st_em_contato: "In contact", st_virou_cliente: "Became a client", st_descartado: "Discarded", st_arquivado: "Archived",
+      stx_novo: "Not opened by anyone yet.", stx_visto: "The record was opened (set automatically; can go back to New).", stx_em_analise: "Gathering information, getting to know the partners, or the company reached out, but no official conversation yet.",
+      stx_em_contato: "Official conversation with the company, negotiating.", stx_virou_cliente: "The company hired the firm.", stx_descartado: "Discarded right away or the negotiation did not close. Stays in the List.", stx_arquivado: "Leaves the List; stays in the Archive and the spreadsheet.",
+      fr_trabalhista: "Labor", fr_tributario: "Tax", fr_civel: "Civil", fr_empresarial: "Corporate",
+      falta_conferir: "not informed: the gazette tax ID belongs to another name", falta_sem_cnpj: "not informed: the gazette did not bring the tax ID", endereco: "Address", outros_contatos: "Other contacts", de_socio: "partner's",
+      canal_telefone: "phone", canal_email: "e-mail", canal_site: "website", canal_endereco: "address", canal_linkedin: "LinkedIn", canal_instagram: "Instagram", canal_outro: "other",
+      selecionar: "Select", ajuda: "What is this?", contato_tem: "Contact", contato_falta: "No contact",
+      motivo_sem_cnpj: "The gazette did not bring this company's tax ID, so the Federal Revenue could not be checked. It can be searched in the PJe logged-in area (select it and use \u201cPrepare logged-in search\u201d).",
+      motivo_receita_sem: "The Federal Revenue has no phone or e-mail for this company. It can be searched in the PJe logged-in area (initial petition).",
+      motivo_cnpj_a_conferir: "The tax ID in the gazette belongs to another name at the Federal Revenue; check in PJe before using it.",
+      feito_n: "{n} lawsuit(s) now \u201c{s}\u201d.", conf_titulo_n: "Change {n} lawsuits to \u201c{s}\u201d?", conf_titulo_1: "Change to \u201c{s}\u201d?",
+      conf_arquivar: "They leave the List and stay in the Archive and the spreadsheet. You can undo right after.", conf_mudar: "The status of {n} lawsuit(s) changes now. You can undo right after.",
+      mot_sem_interesse: "not interested", mot_ja_cliente: "already a client", mot_fora_perfil: "outside the profile", mot_outro: "other reason", motivo: "Reason", cancelar: "Cancel",
+      aplicar_n: "Change {n} lawsuits", aplicar_1: "Change", desfazer: "Undo", sel_todos: "Select all {n} in this list", sel_limpar: "Clear selection", com_sel: "With the selected:",
+      mudar_sit: "Change status", arquivar_n: "Archive {n}", preparar_busca: "Prepare logged-in search",
+      preparar_ajuda: "Creates a file with the selected lawsuits that still have no contact (at most {n} a day) and instructions to search the PJe logged-in area, by hand or with Claude in Chrome. The lawyer opens the cases with their own credentials. Phone and e-mail are rarely in the case; address and claim value usually are.",
+      busca_pronta_t: "File ready with {n} lawsuit(s)", busca_pronta: "The folder opened with the file ({c}). Logged in to PJe, open Claude in Chrome and drag the file (or follow the instructions by hand). Then paste the answer in \u201cPaste found contacts\u201d.",
+      fechar: "Close", colar_contatos: "Paste found contacts", colar_explica: "Paste here the table Claude in Chrome returned (8 columns). The program checks line by line, without AI, and refuses tax IDs of individuals and claimant data.",
+      ler_resposta: "Read the answer", colar_res: "{a} contact(s) added; {r} line(s) refused.", colar_rep: "{n} were already saved.", linha_n: "Line {n}",
+      aviso_pl_t: "The spreadsheet opens read-only", aviso_pl: "The program rewrites it at every reading. Filtering and sorting work normally. To take notes or edit, use \u201cMake a copy\u201d: the copy goes to the Copies folder and the program never touches it.",
+      nao_mostrar: "Do not show again on this computer", gerar_copia: "Make a copy", entendi_abrir: "Got it, open", copia_ok: "Copy created: {c}",
+      menu_ver: "View", menu_planilha: "Spreadsheet", menu_contatos: "Contacts", menu_programa: "Program", config: "Settings", perfil: "Profile",
+      arq_info: "{n} lawsuits saved since {d}; the database takes {mb} MB on this computer.", arq_limpar: "Clean up what is older than {m} months",
+      arq_limpar_x: "Deletes only the detail of lawsuits older than {m} months (the gazette excerpt). The summary (company, court, value, status) and the statistics stay.", limpar: "Clean up", arq_limpo: "{n} lawsuit(s) summarized.",
+      arq_ajuda: "The Archive keeps everything the program has read, from every court, including archived items. The List shows only open items in the selected courts.",
+      hist_explica: "Each line is one reading attempt for a court: when, where the request came from, what the site answered and what the program did.",
+      hist_resp_ajuda: "Code the CNJ site returned: 200 = normal answer; 403 before 3 a.m. = today\u2019s gazette not released yet (not an error); 404 = not published yet; 429 or 5xx = CNJ site overloaded or down; \u201c-\u201d = no answer.",
+      cod_tecnico: "code {c}", n_tribunais: "{n} courts", aviso_3h_tribs: "{t}: today\u2019s gazette only comes out at 3 a.m.; I read up to the last published day ({d}). Nothing to do.",
+      c_pasta_drive: "Google Drive (recommended)", c_pasta_outra_x: "Choose another folder on this computer or the network.", c_pasta_local_x: "Stays on this computer only, in the program folder; nobody else sees the spreadsheet.",
+      ag_expl: "Click the times when the program reads the gazette by itself. Each time is one reading (not a start and end). For a time not listed, use \u201cAnother time\u201d.",
+      ret_titulo: "What SolverONE receives", ret_quando: "Last check ({q}): {n} row(s).", ret_nada: "Nothing sent yet (goes with the next reading).", ret_frase: "Only counts by status, day, court, practice area and value range; no name, case number or contact.", ret_ver: "See the table sent",
       v_painel: "Dashboard", v_lista: "List", k_acoes: "Lawsuits", k_acoes_det: "{d} day(s) with a gazette", k_cnpj: "Confirmed tax ID", k_pct: "{p}% of lawsuits",
       k_acima: "Above {min}", k_acima_det: "by claim value", k_soma: "Total claim value", k_soma_det: "{n} lawsuit(s) with a value", k_empresas: "Companies",
       k_empresas_det: "{n} with more than one lawsuit", k_sem_valor: "No value in the gazette", k_sem_valor_det: "the value shows in PJe",
@@ -594,7 +750,10 @@ window.LEXSUITE_RADAR = null;
       rodape2: "Individuals in the case never appear. Nothing here uses artificial intelligence. {m}, by LexSuiteONE, a SolverONE product. Version {v}." }
   };
   var visao = "painel"; try { visao = localStorage.getItem("lexsuite:visao") || "painel"; } catch (e) {}
-  var lang = "pt", F = { valor: false, gig: false, exc: false, trib: "", cnpj: false, data: "", vara: "", setor: "", porte: "", uf: "" }, ordem = "valor", aberto = {};
+  var lang = "pt", F = { valor: false, gig: false, exc: false, trib: "", cnpj: false, data: "", vara: "", setor: "", porte: "", uf: "", busca: "", valorSel: "", sit: "", contato: "", frente: "" }, ordem = "valor", ordem2 = "", aberto = {};
+  var DA = null, selecionados = {}, ultimoDesfazer = null, migrou = false;
+  var SITS = ["novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado"];
+  var FILTROS_PADRAO = JSON.stringify({ valor: false, gig: false, exc: false, trib: "", cnpj: false, data: "", vara: "", setor: "", porte: "", uf: "", busca: "", valorSel: "", sit: "", contato: "", frente: "" });
   try { lang = localStorage.getItem("lexsuite:idioma") || "pt"; } catch (e) {}
   function t(k, v) { var s = (T[lang][k] != null ? T[lang][k] : T.pt[k]) || k; if (v) Object.keys(v).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); return s; }
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
@@ -613,7 +772,9 @@ window.LEXSUITE_RADAR = null;
   var cacheValor = null;  // durante o desenho do painel, cada item é lido do navegador uma vez só
   function valorDe(i) { if (cacheValor && cacheValor[i.id]) return cacheValor[i.id]; var r = valorDe_(i); if (cacheValor) cacheValor[i.id] = r; return r; }
   function valorDe_(i) { var m = guardado("valor:" + i.id); if (m) return { v: Number(m), fonte: "manual" }; if (i.valor_causa) return { v: Number(i.valor_causa), fonte: i.valor_fonte || "djen" }; return { v: null, fonte: "" }; }
-  function statusDe(i) { return guardado("status:" + i.id) || "novo"; }
+  function statusDe(i) { return i.situacao || "novo"; }
+  function base() { return visao === "arquivo" ? ((DA && DA.itens) || []) : (D.itens || []); }
+  function semAcento(x) { return String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
   function minimo() { return Number(D.valor_minimo || 100000); }
 
   /* ---------- tela local: dados, tribunais, rodar ---------- */
@@ -629,6 +790,8 @@ window.LEXSUITE_RADAR = null;
       if (APP && (!(APP.conta && APP.conta.codigo) || !APP.config.escritorio || !(APP.usuario && APP.usuario.email)) && !configVista) { configVista = true; abrirWizard(); }
       else if (APP && !APP.config.pasta && !configVista) { configVista = true; abrirConfig(true); }
       if (APP && APP.estado && APP.estado.rodando) vigiar();
+      if (!migrou) { migrou = true; migrarSituacoesDoNavegador(); }
+      if (visao === "arquivo") { DA = null; carregarArquivo(); }
     }).catch(function () { $("estado").textContent = t("falha"); });
   }
   function post(caminho, corpo) {
@@ -658,8 +821,8 @@ window.LEXSUITE_RADAR = null;
       Object.keys(grupos).forEach(function (c) {
         var g = grupos[c], ate = g.map(function (a) { return a.leu_ate; }).filter(Boolean).sort().pop() || "—";
         var msg = c === "ainda_nao_liberado_3h" ? t("aviso_3h", { d: ate }) : (g[0][lang] || g[0].pt).replace(/^[^:]+:\s*/, "");
-        var nomes = g.map(function (a) { return a.tribunal; }).join(", ");
-        box.appendChild(el("span", g[0].aviso ? "aviso-leve" : "erro", (g.length > 1 || c !== "ainda_nao_liberado_3h") ? t("aviso_tribs", { n: g.length > 3 ? num(g.length) : nomes, m: msg }) : msg));
+        var nomesL = g.map(function (a) { return a.tribunal; }), nomes = nomesL.length > 3 ? t("n_tribunais", { n: num(nomesL.length) }) : nomesL.slice(0, -1).join(", ") + (nomesL.length > 1 ? " " + t("e") + " " : "") + nomesL[nomesL.length - 1];
+        box.appendChild(el("span", g[0].aviso ? "aviso-leve" : "erro", c === "ainda_nao_liberado_3h" ? t("aviso_3h_tribs", { t: nomes, d: ate }) : nomes + ": " + msg));
       });
     }
     if (e.situacao) {
@@ -675,29 +838,23 @@ window.LEXSUITE_RADAR = null;
     }
     else if (!e.erro) box.appendChild(el("span", "ok", t("nunca")));
     if (APP && APP.config.proxima) box.appendChild(el("span", "proxima", t("proxima", { q: quandoProxima(APP.config.proxima) })));
-    if (MODO === "app") {
-      var bh = el("button", "btn-txt", historicoAberto ? t("hist_fechar") : t("hist_abrir")); bh.type = "button";
-      bh.addEventListener("click", function () { historicoAberto = !historicoAberto; mostrarEstado(e); });
-      box.appendChild(bh);
-      if (historicoAberto) box.appendChild(historicoDiv);
-      if (historicoAberto) carregarHistorico();
-    }
   }
-  var historicoAberto = false, historicoDiv = document.createElement("div");
+  var historicoDiv = document.createElement("div");
   historicoDiv.className = "historico";
+  function desenharHistorico() { var a = $("historico-aba"); a.textContent = ""; a.appendChild(el("p", "nota", t("hist_explica"))); a.appendChild(historicoDiv); carregarHistorico(); }
   function carregarHistorico() {
     fetch("/historico", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
       var lista = (d.tentativas || []).slice(0, 60); historicoDiv.textContent = "";
       if (!lista.length) { historicoDiv.appendChild(el("p", "nota", t("hist_vazio"))); return; }
       var tb = el("table"), cab = el("tr");
-      ["hist_quando", "hist_origem", "hist_trib", "hist_dias", "hist_resp", "hist_causa", "hist_fez", "hist_dur"].forEach(function (k) { cab.appendChild(el("th", null, t(k))); });
+      ["hist_quando", "hist_origem", "hist_trib", "hist_dias", "hist_causa", "hist_fez", "hist_dur", "hist_resp"].forEach(function (k) { var th_ = el("th", null, t(k)); if (k === "hist_resp") th_.appendChild(ajuda(t("hist_resp_ajuda"))); cab.appendChild(th_); });
       var th = el("thead"); th.appendChild(cab); tb.appendChild(th); var tbody = el("tbody");
       lista.forEach(function (h) {
         var tr = el("tr"), q = String(h.quando_local || h.quando || "");
         var cls = h.causa === "ok" ? "ok" : (h.causa === "ainda_nao_liberado_3h" || h.causa === "nao_publicado") ? "aviso" : "ruim";
-        [q.slice(8, 10) + "/" + q.slice(5, 7) + " " + q.slice(11, 16) + (q.length > 19 ? " (" + q.slice(19) + ")" : ""), (lang === "en" ? ({ "botão": "button", "agendamento": "schedule", "fora do horário": "off schedule" })[h.origem] : "") || h.origem || "", h.tribunal || "", h.dias_pedidos || "", h.http || "",
-         null, (lang === "en" && h.fez_en) || h.fez || "", h.duracao != null ? h.duracao + " s" : ""].forEach(function (v, ix) {
-          var td = ix === 5 ? el("td", cls, t("c_" + (h.causa || "erro_do_programa"))) : el("td", null, v); tr.appendChild(td); });
+        [q.slice(8, 10) + "/" + q.slice(5, 7) + " " + q.slice(11, 16) + (q.length > 19 ? " (" + q.slice(19) + ")" : ""), (lang === "en" ? ({ "botão": "button", "agendamento": "schedule", "fora do horário": "off schedule" })[h.origem] : "") || h.origem || "", h.tribunal || "", h.dias_pedidos || "",
+         null, (lang === "en" && h.fez_en) || h.fez || "", h.duracao != null ? h.duracao + " s" : "", h.http ? t("cod_tecnico", { c: h.http }) : ""].forEach(function (v, ix) {
+          var td = ix === 4 ? el("td", cls, t("c_" + (h.causa || "erro_do_programa"))) : el("td", ix === 7 ? "cinza" : null, v); tr.appendChild(td); });
         tbody.appendChild(tr);
       });
       tb.appendChild(tbody); historicoDiv.appendChild(tb);
@@ -804,10 +961,22 @@ window.LEXSUITE_RADAR = null;
       else if (atual) sp.value = atual;
       else sp.value = (d.candidatas || []).length ? d.candidatas[0] : "";
       $("c-outra-wrap").hidden = sp.value !== "__outra"; $("c-escolher").hidden = sp.value !== "__outra" || !cEscolher; $("c-criar").hidden = true;
+      cartoesPasta(d);
     }).catch(function () {});
     infoConfig();
   }
   var cEscolher = false;
+  function cartoesPasta(d) {  // 0.7.14: as opções da pasta em cartões (a lista do Windows abria cortada na janela do programa)
+    var sp = $("c-pasta"), box = $("c-pasta-cartoes"); box.textContent = "";
+    Array.prototype.forEach.call(sp.options, function (o, ix) {
+      var lb = el("label"), r = el("input"), txt = el("span"); r.type = "radio"; r.name = "c-pasta-r"; r.value = o.value; r.checked = sp.value === o.value;
+      var titulo_ = o.value === "__outra" ? t("c_outra_op") : (d && o.value === d.pasta_programa ? t("c_nenhuma") : t("c_pasta_drive"));
+      txt.appendChild(el("b", null, titulo_));
+      txt.appendChild(el("small", null, o.value === "__outra" ? t("c_pasta_outra_x") : (d && o.value === d.pasta_programa ? t("c_pasta_local_x") : o.textContent)));
+      r.addEventListener("change", function () { sp.value = o.value; sp.dispatchEvent(new Event("change")); });
+      lb.appendChild(r); lb.appendChild(txt); box.appendChild(lb);
+    });
+  }
   function testarPastaC(criar) {
     var p = pastaEscolhida(); if (!p) { $("c-teste-txt").textContent = t("w_pasta_falta"); return; }
     $("c-teste-txt").textContent = t("carregando");
@@ -823,6 +992,19 @@ window.LEXSUITE_RADAR = null;
     par(t("c_controle"), APP.config.planilha || (APP.config.pasta_base ? t("c_controle_falta") : t("c_sem_pasta")));
     par(t("c_chave"), APP.atualizacao && APP.atualizacao.chave ? APP.atualizacao.impressao : t("c_chave_falta"));
     par(t("c_atu_pasta"), (APP.atualizacao && (APP.atualizacao.pasta || APP.atualizacao.url)) || t("c_sem_pasta"));
+    // 0.7.14: o que a SolverONE recebe (só quantidades por situação), exatamente como foi enviado
+    var rt = (D && D.retorno) || {}, linhas = rt.linhas || [], tot = {};
+    linhas.forEach(function (l) { tot[l.situacao] = (tot[l.situacao] || 0) + (l.qtd || 0); });
+    var dd = el("dd"), resumo = SITS.filter(function (k) { return tot[k]; }).map(function (k) { return t("st_" + k) + ": " + num(tot[k]); }).join(" · ");
+    dd.appendChild(document.createTextNode(linhas.length ? t("ret_quando", { q: dataHora(rt.quando_local || rt.quando || ""), n: num(linhas.length) }) + " " + resumo : t("ret_nada")));
+    dd.appendChild(el("br")); dd.appendChild(el("small", null, t("ret_frase")));
+    if (linhas.length) {
+      var det = el("details"); det.appendChild(el("summary", null, t("ret_ver")));
+      var tb = el("table"), hd = el("tr"); ["data", "tribunal", "frente", "faixa_valor", "situacao", "qtd"].forEach(function (k) { hd.appendChild(el("th", null, k)); }); tb.appendChild(hd);
+      linhas.slice(0, 300).forEach(function (l) { var tr = el("tr"); ["data", "tribunal", "frente", "faixa_valor", "situacao", "qtd"].forEach(function (k) { tr.appendChild(el("td", null, String(l[k]))); }); tb.appendChild(tr); });
+      det.appendChild(tb); dd.appendChild(det);
+    }
+    dl.appendChild(el("dt", null, t("ret_titulo"))); dl.appendChild(dd);
   }
   function salvarConfig() {
     var corpo = { pasta: pastaEscolhida(), criar: true };
@@ -981,6 +1163,17 @@ window.LEXSUITE_RADAR = null;
     $("c-l-agenda").textContent = t("ag_titulo"); $("c-l-avisar").textContent = t("ag_avisar"); $("c-l-hora-nova").textContent = t("ag_nova"); $("c-hora-add").textContent = t("ag_add");
     $("c-l-agendar").textContent = $("c-agendar").disabled ? t("c_agendar_nao") : t("c_agendar");
     var sd = $("c-dias"), v = cDias; sd.textContent = ""; [["todos", t("ag_todos")], ["uteis", t("ag_uteis")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; sd.appendChild(op); }); sd.value = v;
+    $("c-horas-expl").textContent = t("ag_expl");
+    var pr = $("c-horas-prontas"); pr.textContent = "";
+    ["06:00", "08:00", "12:00", "14:00", "18:00", "20:00", "22:00"].forEach(function (h) {
+      var b = el("button", null, fmtHora(h)); b.type = "button"; b.setAttribute("aria-pressed", String(cHoras.indexOf(h) >= 0)); b.disabled = !on;
+      b.addEventListener("click", function () {
+        if (cHoras.indexOf(h) >= 0) { if (cHoras.length <= 1) { $("c-msg").textContent = t("ag_um"); return; } cHoras = cHoras.filter(function (y) { return y !== h; }); }
+        else { if (cHoras.length >= 6) { $("c-msg").textContent = t("ag_max"); return; } cHoras.push(h); }
+        $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda();
+      });
+      pr.appendChild(b);
+    });
     var box = $("c-horas"); box.textContent = "";
     cHoras.sort().forEach(function (h) {
       var p = el("span", "hora-pilula", fmtHora(h)); p.setAttribute("role", "listitem");
@@ -1123,7 +1316,7 @@ window.LEXSUITE_RADAR = null;
   function barraApp() {
     var naWizard = !$("wizard").hidden;
     $("app").hidden = MODO !== "app" || naWizard; $("controles").hidden = naWizard; $("lista").hidden = naWizard; if (naWizard) $("mais").hidden = true;
-    $("b-config").hidden = MODO !== "app" || naWizard; $("versao-topo").textContent = D.versao ? "v" + D.versao : "";
+    $("b-config").hidden = true; $("b-menu").hidden = MODO !== "app" || naWizard;  // 0.7.14: Configuração vai para o menu ☰ $("versao-topo").textContent = D.versao ? "v" + D.versao : "";
     $("resumo").hidden = naWizard; if (naWizard) { $("b-planilha").hidden = true; $("b-pasta").hidden = true; $("perfil").hidden = true; }
     botaoPerfil();
     if (MODO !== "app" || naWizard) return;
@@ -1144,19 +1337,29 @@ window.LEXSUITE_RADAR = null;
   function visiveis() {
     var min = minimo();
     var esconder = !D.prefs || D.prefs.esconder_excluidas !== false;
-    var lista = (D.itens || []).filter(function (i) {
-      if (i.excluida && esconder && !F.exc) return false;
+    var q = semAcento(F.busca).replace(/[.\-\/]/g, "").trim();
+    var lista = base().filter(function (i) {
+      if (visao === "lista" && i.situacao === "arquivado") return false;
+      if (i.excluida && esconder && !F.exc && visao !== "arquivo") return false;
+      if (q) { var e_ = i.empresa || {}; var alvo = semAcento([nomeDe(i), (i.empresas || []).join(" "), i.processo, i.vara, i.tribunal, e_.cnpj, e_.municipio, e_.nome_fantasia].join(" ")).replace(/[.\-\/]/g, ""); if (alvo.indexOf(q) < 0) return false; }
+      if (F.valorSel === "sem" && valorDe(i).v != null) return false;
+      if (F.valorSel && F.valorSel !== "sem" && !(valorDe(i).v >= Number(F.valorSel))) return false;
+      if (F.sit && statusDe(i) !== F.sit) return false;
+      if (F.contato === "com" && !(i.contato && i.contato.tem)) return false;
+      if (F.contato === "sem" && (i.contato && i.contato.tem)) return false;
+      if (F.frente && (i.frente || "trabalhista") !== F.frente) return false;
       if (F.trib && i.tribunal !== F.trib) return false;
       if (F.gig && i.gigante) return false;
       if (F.valor && !(valorDe(i).v >= min)) return false;
       if (F.cnpj && !(i.empresa && i.empresa.cnpj)) return false;
       if (F.data && diaDe(i) !== F.data) return false;
       if (F.vara && (i.vara || "") !== F.vara) return false;
-      if (F.setor && (i.setor || "") !== F.setor) return false;
-      if (F.porte && porteCurto(i) !== F.porte) return false;
-      if (F.uf && ((i.empresa || {}).uf || "") !== F.uf) return false;
+      if (F.setor && (i.setor || "__nao__") !== F.setor) return false;
+      if (F.porte && (porteCurto(i) || "__nao__") !== F.porte) return false;
+      if (F.uf && ((i.empresa || {}).uf || "__nao__") !== F.uf) return false;
       return true;
     });
+    if (ordem2) { var cmp2 = comparador(ordem2); var cmp1 = comparador(ordem); lista.sort(function (a, b) { return cmp1(a, b) || cmp2(a, b); }); return lista; }
     var ORDEM_PORTE = { "": 0 }; ORDEM_PORTE[t("porte_micro")] = 1; ORDEM_PORTE[t("porte_peq")] = 2; ORDEM_PORTE[t("porte_grande")] = 3;
     if (ordem === "recentes") { lista.sort(function (a, b) { return diaDe(b).localeCompare(diaDe(a)) || (valorDe(b).v || 0) - (valorDe(a).v || 0); }); return lista; }
     if (ordem === "empresa") { lista.sort(function (a, b) { return nomeDe(a).localeCompare(nomeDe(b), loc()); }); return lista; }
@@ -1164,6 +1367,16 @@ window.LEXSUITE_RADAR = null;
     if (ordem === "valor") lista.sort(function (a, b) { var va = valorDe(a).v, vb = valorDe(b).v; if (a.gigante !== b.gigante) return a.gigante ? 1 : -1; if ((va == null) !== (vb == null)) return va == null ? 1 : -1; return (vb || 0) - (va || 0) || (b.visto_em || "").localeCompare(a.visto_em || ""); });
     else lista.sort(function (a, b) { return (b.visto_em || "").localeCompare(a.visto_em || "") || (valorDe(b).v || 0) - (valorDe(a).v || 0); });
     return lista;
+  }
+  function comparador(o) {
+    var OP = { "": 0 }; OP[t("porte_micro")] = 1; OP[t("porte_peq")] = 2; OP[t("porte_grande")] = 3;
+    if (o === "recentes") return function (a, b) { return diaDe(b).localeCompare(diaDe(a)); };
+    if (o === "empresa") return function (a, b) { return nomeDe(a).localeCompare(nomeDe(b), loc()); };
+    if (o === "porte") return function (a, b) { return (OP[porteCurto(b)] || 0) - (OP[porteCurto(a)] || 0); };
+    if (o === "vara") return function (a, b) { return String(a.vara || "").localeCompare(String(b.vara || ""), loc()); };
+    if (o === "situacao") return function (a, b) { return SITS.indexOf(statusDe(a)) - SITS.indexOf(statusDe(b)); };
+    if (o === "hora") return function (a, b) { return (b.visto_em || "").localeCompare(a.visto_em || ""); };
+    return function (a, b) { var va = valorDe(a).v, vb = valorDe(b).v; if ((va == null) !== (vb == null)) return va == null ? 1 : -1; return (vb || 0) - (va || 0); };
   }
   function diaDe(i) { return String(i.diario_em || i.distribuida_em || i.visto_em || "").slice(0, 10); }
   function nomeDe(i) { var e = i.empresa || {}; return titulo(e.razao_social || (i.empresas || [])[0] || ""); }
@@ -1174,6 +1387,8 @@ window.LEXSUITE_RADAR = null;
     var MS = lang === "pt" ? ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"] : ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     return DS[d.getDay()] + ", " + ("0" + d.getDate()).slice(-2) + " " + MS[d.getMonth()] + " " + d.getFullYear();
   }
+  function filtrosSalvos() { try { return JSON.parse(localStorage.getItem("lexsuite:filtros") || "{}") || {}; } catch (e) { return {}; } }
+  function filtrosLigados() { var p = JSON.parse(FILTROS_PADRAO), n = 0; Object.keys(p).forEach(function (k) { if (F[k] !== p[k] && !(k === "gig" && D.prefs && D.prefs.esconder_gigantes && F.gig)) n++; }); return n; }
   function opcoesFiltro(id, rotuloTodos, valores, atual) {
     var sel_ = $(id); sel_.textContent = ""; var cont = {}; valores.forEach(function (v) { if (v) cont[v[0]] = { r: v[1], n: ((cont[v[0]] || {}).n || 0) + 1 }; });
     var o0 = el("option", null, rotuloTodos); o0.value = ""; sel_.appendChild(o0);
@@ -1191,7 +1406,7 @@ window.LEXSUITE_RADAR = null;
     return dd;
   }
   function linha(i) {
-    var e = i.empresa || {}, temCnpj = !!e.cnpj, box = el("article", "item"), cab = el("button", "cab"); cab.type = "button"; cab.setAttribute("aria-expanded", String(!!aberto[i.id]));
+    var e = i.empresa || {}, temCnpj = !!e.cnpj, box = el("article", "item" + (selecionados[i.id] ? " marcado" : "")), corpo = el("div", "corpo"), cab = el("button", "cab"); cab.type = "button"; cab.setAttribute("aria-expanded", String(!!aberto[i.id]));
     cab.appendChild(el("span", "nome", nomeDe(i)));
     var vd = valorDe(i), val = el("span", "valor" + (vd.v == null ? " vazio" : ""));
     if (vd.v == null) { val.appendChild(document.createTextNode(t("conferir"))); val.appendChild(el("small", null, t("conferir_sub"))); }
@@ -1206,17 +1421,19 @@ window.LEXSUITE_RADAR = null;
     if (pistas.length) sub.appendChild(el("span", null, pistas.join(" · ")));
     if (i.gigante) sub.appendChild(el("span", "tag", t("gig")));
     if (i.excluida) sub.appendChild(el("span", "tag-exc", t("excluida") + ": " + i.excluida));
-    var st = statusDe(i); if (st !== "novo") sub.appendChild(el("span", "cinza", t("st_" + st)));
     if (sub.childNodes.length) cab.appendChild(sub);
     function chaveN(x) { return String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\b(ltda|s ?a|eireli|epp|me)\b/g, "").replace(/[^a-z0-9]/g, ""); }
     var kPrinc = chaveN(nomeDe(i));
     var outrasEmp = (i.empresas || []).filter(function (x) { var k = chaveN(x); return k && kPrinc && k.indexOf(kPrinc) < 0 && kPrinc.indexOf(k) < 0; });
     if (outrasEmp.length) cab.appendChild(el("span", "outras", t("tambem", { e: titulo(outrasEmp[0]) + (outrasEmp.length > 1 ? " " + t("mais_n", { n: outrasEmp.length - 1 }) : "") })));
-    cab.addEventListener("click", function () { aberto[i.id] = !aberto[i.id]; ficha.hidden = !aberto[i.id]; cab.setAttribute("aria-expanded", String(!!aberto[i.id])); });
-    box.appendChild(cab);
+    cab.addEventListener("click", function () {
+      aberto[i.id] = !aberto[i.id]; ficha.hidden = !aberto[i.id]; cab.setAttribute("aria-expanded", String(!!aberto[i.id]));
+      if (aberto[i.id] && statusDe(i) === "novo" && MODO === "app") mudarSituacao([i.id], "visto", "", true);  // abriu: vira Visto
+    });
+    corpo.appendChild(cab); corpo.appendChild(faixaCartao(i));
     var ficha = el("div", "ficha"); ficha.hidden = !aberto[i.id];
     if (!temCnpj) ficha.appendChild(el("div", "aviso", i.cnpj_a_conferir ? t("cnpj_conferir", { c: cnpjFmt(i.cnpj_a_conferir) }) : t("sem_cnpj")));
-    var faltaEmp = temCnpj ? t("nao_inf") : t("nao_cap");
+    var faltaEmp = temCnpj ? t("nao_inf") : (i.cnpj_a_conferir ? t("falta_conferir") : t("falta_sem_cnpj"));
     // Empresa: uma linha por dado, sempre presente
     var c1 = el("div"); c1.appendChild(el("h3", null, t("empresa")));
     var dl = el("dl");
@@ -1231,9 +1448,11 @@ window.LEXSUITE_RADAR = null;
     par(dl, t("simples"), temCnpj && e.simples != null ? (e.simples ? t("sim") : t("nao")) : "", faltaEmp);
     par(dl, t("inicio"), temCnpj ? dataCurta(e.inicio_atividade) : "", faltaEmp);
     par(dl, t("cidade"), temCnpj ? [titulo(e.municipio), e.uf].filter(Boolean).join("/") : "", faltaEmp);
+    par(dl, t("endereco"), temCnpj ? [[e.logradouro, e.numero].filter(Boolean).join(", ") + (e.complemento ? " " + e.complemento : ""), e.bairro, [titulo(e.municipio), e.uf].filter(Boolean).join("/"), e.cep ? "CEP " + e.cep : ""].filter(Boolean).join(" - ") : "", faltaEmp);
     par(dl, t("tel"), temCnpj ? [e.telefone, e.telefone2].filter(Boolean) : [], faltaEmp);
     par(dl, t("email"), temCnpj ? (e.email || "").toLowerCase() : "", faltaEmp);
     par(dl, t("socios"), temCnpj ? (e.socios || []).map(function (s) { return titulo(s.nome) + (s.qualificacao ? " · " + s.qualificacao.toLowerCase() : ""); }) : [], faltaEmp);
+    if ((i.contatos || []).length) par(dl, t("outros_contatos"), i.contatos.map(function (c) { return t("canal_" + c.canal) + ": " + c.valor + " (" + c.fonte + ", " + dataCurta(c.data) + (c.de_pessoa ? ", " + t("de_socio") : "") + ")"; }));
     c1.appendChild(dl); ficha.appendChild(c1);
     // Processo
     var c2 = el("div"); c2.appendChild(el("h3", null, t("processo")));
@@ -1253,8 +1472,8 @@ window.LEXSUITE_RADAR = null;
     par(dl2, t("valor_rotulo"), cv);
     par(dl2, t("outras"), (i.empresas || []).slice(1).map(titulo), t("nenhuma"));
     var cs = el("span", "campo-valor"); var sl = el("select");
-    ["novo", "visto", "contato", "descartado"].forEach(function (k) { var o = el("option", null, t("st_" + k)); o.value = k; sl.appendChild(o); }); sl.value = statusDe(i);
-    sl.addEventListener("change", function () { guardar("status:" + i.id, sl.value === "novo" ? "" : sl.value); desenhar(); }); cs.appendChild(sl);
+    SITS.forEach(function (k) { var o = el("option", null, t("st_" + k)); o.value = k; sl.appendChild(o); }); sl.value = statusDe(i); sl.disabled = MODO !== "app";
+    sl.addEventListener("change", function () { pedirSituacao([i.id], sl.value); }); cs.appendChild(sl); cs.appendChild(ajuda(explicaSituacoes));
     par(dl2, t("status"), cs);
     c2.appendChild(dl2); ficha.appendChild(c2);
     // Ações
@@ -1267,13 +1486,181 @@ window.LEXSUITE_RADAR = null;
     ac.appendChild(bc);
     ficha.appendChild(ac);
     ficha.appendChild(el("div", "nota", t("nota_valor")));
-    box.appendChild(ficha);
+    corpo.appendChild(ficha);
+    if (MODO === "app") {
+      var sc = el("label", "sel"), cb = el("input"); cb.type = "checkbox"; cb.checked = !!selecionados[i.id]; cb.setAttribute("aria-label", t("selecionar") + ": " + nomeDe(i));
+      cb.addEventListener("change", function () { if (cb.checked) selecionados[i.id] = true; else delete selecionados[i.id]; box.classList.toggle("marcado", cb.checked); desenharLote(); });
+      sc.appendChild(cb); box.appendChild(sc);
+    } else box.appendChild(el("span"));
+    box.appendChild(corpo);
     return box;
   }
+  /* ---------- 0.7.14: situação, (?), lote, desfazer, menu, janelas ---------- */
+  var balaoAberto = null;
+  function fecharBalao() { if (balaoAberto) { balaoAberto.remove(); balaoAberto = null; } }
+  document.addEventListener("click", function (ev) { if (balaoAberto && !balaoAberto.contains(ev.target) && !(ev.target.classList && ev.target.classList.contains("ajuda"))) fecharBalao(); });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") { fecharBalao(); fecharMenu(); } });
+  function ajuda(conteudo) {  // botão (?): clicou, abre o quadrinho ali mesmo; clicou fora, fecha
+    var b = el("button", "ajuda", "?"); b.type = "button"; b.setAttribute("aria-label", t("ajuda"));
+    b.addEventListener("click", function (ev) {
+      ev.stopPropagation(); ev.preventDefault();
+      var era = balaoAberto && balaoAberto._dono === b; fecharBalao(); if (era) return;
+      var q = el("div", "balao"); q._dono = b; q.setAttribute("role", "note");
+      var c = typeof conteudo === "function" ? conteudo() : conteudo; if (typeof c === "string") q.textContent = c; else q.appendChild(c);
+      document.body.appendChild(q); balaoAberto = q;
+      var r = b.getBoundingClientRect(), w = q.offsetWidth;
+      q.style.top = (window.scrollY + r.bottom + 6) + "px"; q.style.left = Math.max(8, Math.min(window.scrollX + r.left - 10, window.scrollX + document.documentElement.clientWidth - w - 8)) + "px";
+    });
+    return b;
+  }
+  function explicaSituacoes() { var dl = el("dl"); SITS.forEach(function (k) { dl.appendChild(el("dt", null, t("st_" + k))); dl.appendChild(el("dd", null, t("stx_" + k))); }); return dl; }
+  function faixaCartao(i) {
+    var f = el("div", "faixa-cartao"), st = statusDe(i);
+    if (MODO === "app") {
+      var sl = el("select", "sit st-" + st); sl.setAttribute("aria-label", t("situacao"));
+      SITS.forEach(function (k) { var o = el("option", null, t("st_" + k)); o.value = k; sl.appendChild(o); }); sl.value = st;
+      sl.addEventListener("change", function () { pedirSituacao([i.id], sl.value); });
+      f.appendChild(sl);
+    } else f.appendChild(el("span", "sit st-" + st, t("st_" + st)));
+    f.appendChild(ajuda(explicaSituacoes));
+    if (i.motivo) f.appendChild(el("span", "cinza", i.motivo));
+    var c = i.contato || {};
+    if (c.tem) f.appendChild(el("span", "selo tem", "✓ " + t("contato_tem") + ": " + c.canais.map(function (x) { return t("canal_" + x); }).join(", ")));
+    else { f.appendChild(el("span", "selo falta", "✕ " + t("contato_falta"))); f.appendChild(ajuda(t("motivo_" + (c.motivo || "sem_cnpj")))); }
+    if (i.frente && i.frente !== "trabalhista") f.appendChild(el("span", "frente-tag", t("fr_" + i.frente)));
+    return f;
+  }
+  function acharItem(id) { var achou = null; [(D && D.itens) || [], (DA && DA.itens) || []].forEach(function (l) { l.forEach(function (x) { if (x.id === id) achou = achou || x; }); }); return achou; }
+  function aplicarLocal(antes, nova) { [(D && D.itens) || [], (DA && DA.itens) || []].forEach(function (l) { l.forEach(function (x) { if (x.id in antes) x.situacao = nova === null ? antes[x.id] : nova; }); }); }
+  function mudarSituacao(ids, sit, motivo, silencioso) {
+    return post("/situacao", { processos: ids, situacao: sit, motivo: motivo || "" }).then(function (r) {
+      if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return r; }
+      aplicarLocal(r.antes || {}, sit); if (sit === "arquivado") ids.forEach(function (id) { delete selecionados[id]; });
+      if (!silencioso) { ultimoDesfazer = r.antes; mostrarDesfazer(t("feito_n", { n: num(r.quantos), s: t("st_" + sit) })); }
+      cabecalho(); desenhar(); return r;
+    }).catch(function () { mostrarAviso(t("falha")); });
+  }
+  function pedirSituacao(ids, sit) {  // confirma quando é muita coisa ou quando tira da Lista; pede o motivo ao arquivar/descartar
+    if (!ids.length) return;
+    var precisaMotivo = sit === "arquivado" || sit === "descartado";
+    if (ids.length <= 1 && !precisaMotivo) { mudarSituacao(ids, sit); return; }
+    var c = el("div"), h = el("h3", null, t(ids.length > 1 ? "conf_titulo_n" : "conf_titulo_1", { n: num(ids.length), s: t("st_" + sit) }));
+    c.appendChild(h); c.appendChild(el("p", null, t(sit === "arquivado" ? "conf_arquivar" : "conf_mudar", { n: num(ids.length) })));
+    var mot = null;
+    if (precisaMotivo) {
+      mot = el("select"); ["sem_interesse", "ja_cliente", "fora_perfil", "outro"].forEach(function (k) { var o = el("option", null, t("mot_" + k)); o.value = t("mot_" + k); mot.appendChild(o); });
+      var lb = el("label", "campo-conf"); lb.appendChild(el("span", null, t("motivo"))); lb.appendChild(mot); c.appendChild(lb);
+    }
+    abrirJanela(c, [[t("cancelar"), null], [t(ids.length > 1 ? "aplicar_n" : "aplicar_1", { n: num(ids.length), s: t("st_" + sit) }), function () { mudarSituacao(ids, sit, mot ? mot.value : ""); }, true]]);
+  }
+  function abrirJanela(conteudo, botoes) {
+    var j = $("janela"), box = $("janela-conteudo"); box.textContent = ""; box.appendChild(conteudo);
+    var bb = el("div", "botoes");
+    botoes.forEach(function (b) { var x = el("button", b[2] ? "primario" : "chip", b[0]); x.type = "button"; x.addEventListener("click", function () { j.close(); if (b[1]) b[1](); }); bb.appendChild(x); });
+    box.appendChild(bb);
+    if (j.showModal) j.showModal(); else j.setAttribute("open", "");
+    var ult = bb.lastChild; if (ult) ult.focus();
+  }
+  function mostrarAviso(txt) { var n = el("span", "erro", txt); $("estado").insertBefore(n, $("estado").firstChild); setTimeout(function () { if (n.parentNode) n.remove(); }, 9000); }
+  var avisoDesfazer = null;
+  function mostrarDesfazer(txt) {
+    if (avisoDesfazer) avisoDesfazer.remove();
+    var a = el("div", "aviso-desfazer"); a.setAttribute("role", "status"); a.appendChild(el("span", null, txt));
+    var b = el("button", null, t("desfazer")); b.type = "button"; a.appendChild(b); document.body.appendChild(a); avisoDesfazer = a;
+    var antes = ultimoDesfazer;
+    b.addEventListener("click", function () { a.remove(); post("/desfazer", { antes: antes }).then(function () { aplicarLocal(antes, null); cabecalho(); desenhar(); }); });
+    setTimeout(function () { if (a.parentNode) a.remove(); }, 12000);
+  }
+  function desenharLote() {
+    var ids = Object.keys(selecionados), lote = $("lote"); lote.textContent = "";
+    var tudoSel = $("selecionar-todos"); tudoSel.textContent = "";
+    if (MODO !== "app" || (visao !== "lista" && visao !== "arquivo")) { lote.hidden = true; tudoSel.hidden = true; return; }
+    var vis = visiveis(); tudoSel.hidden = !vis.length;
+    var bt = el("button", "btn-txt", t("sel_todos", { n: num(vis.length) })); bt.type = "button";
+    bt.addEventListener("click", function () { vis.forEach(function (i) { selecionados[i.id] = true; }); desenhar(); });
+    tudoSel.appendChild(bt);
+    if (ids.length) { var bl = el("button", "btn-txt", t("sel_limpar")); bl.type = "button"; bl.addEventListener("click", function () { selecionados = {}; desenhar(); }); tudoSel.appendChild(bl); }
+    lote.hidden = !ids.length; if (!ids.length) return;
+    var tx = el("span"); tx.appendChild(document.createTextNode(t("com_sel") + " ")); tx.appendChild(el("b", null, num(ids.length))); lote.appendChild(tx);
+    var ms = el("select"); ms.setAttribute("aria-label", t("mudar_sit")); var o0 = el("option", null, t("mudar_sit") + "…"); o0.value = ""; ms.appendChild(o0);
+    SITS.forEach(function (k) { var o = el("option", null, t("st_" + k)); o.value = k; ms.appendChild(o); });
+    ms.addEventListener("change", function () { if (ms.value) pedirSituacao(ids, ms.value); ms.value = ""; }); lote.appendChild(ms);
+    var ba = el("button", "forte", t("arquivar_n", { n: num(ids.length) })); ba.type = "button"; ba.addEventListener("click", function () { pedirSituacao(ids, "arquivado"); }); lote.appendChild(ba);
+    var bp = el("button", null, t("preparar_busca")); bp.type = "button"; bp.addEventListener("click", function () { prepararBusca(ids); }); lote.appendChild(bp);
+    lote.appendChild(ajuda(t("preparar_ajuda", { n: (APP && APP.config.area_logada_por_dia) || 30 })));
+    var bx = el("button", null, t("sel_limpar")); bx.type = "button"; bx.addEventListener("click", function () { selecionados = {}; desenhar(); }); lote.appendChild(bx);
+  }
+  function prepararBusca(ids) {
+    post("/contatos/preparar", { processos: ids }).then(function (r) {
+      var c = el("div"); c.appendChild(el("h3", null, t("busca_pronta_t", { n: num(r.quantos || 0) })));
+      c.appendChild(el("p", null, t("busca_pronta", { c: r.caminho || "" })));
+      abrirJanela(c, [[t("fechar"), null], [t("colar_contatos"), colarContatos, true]]);
+    }).catch(function () { mostrarAviso(t("falha")); });
+  }
+  function colarContatos() {
+    var c = el("div"), ta = el("textarea"); ta.setAttribute("aria-label", t("colar_contatos"));
+    c.appendChild(el("h3", null, t("colar_contatos"))); c.appendChild(el("p", null, t("colar_explica"))); c.appendChild(ta);
+    abrirJanela(c, [[t("cancelar"), null], [t("ler_resposta"), function () {
+      post("/contatos/colar", { texto: ta.value }).then(function (r) {
+        var d = el("div"); d.appendChild(el("h3", null, t("colar_res", { a: num(r.aceitas || 0), r: num((r.recusadas || []).length) })));
+        if (r.repetidas) d.appendChild(el("p", null, t("colar_rep", { n: num(r.repetidas) })));
+        (r.recusadas || []).slice(0, 30).forEach(function (x) { d.appendChild(el("p", "nota", t("linha_n", { n: x.linha }) + ": " + x.motivo)); });
+        abrirJanela(d, [[t("fechar"), function () { carregar(); }, true]]);
+      });
+    }, true]]);
+  }
+  function abrirPlanilhaComAviso() {
+    var ok = false; try { ok = localStorage.getItem("lexsuite:aviso-planilha") === "1"; } catch (e) {}
+    if (ok) { abrirPlanilha("planilha"); return; }
+    var c = el("div"); c.appendChild(el("h3", null, t("aviso_pl_t"))); c.appendChild(el("p", null, t("aviso_pl")));
+    var lb = el("label", "conf-acoes"), cb = el("input"); cb.type = "checkbox"; lb.appendChild(cb); lb.appendChild(document.createTextNode(" " + t("nao_mostrar"))); c.appendChild(lb);
+    abrirJanela(c, [[t("gerar_copia"), gerarCopia], [t("entendi_abrir"), function () { if (cb.checked) try { localStorage.setItem("lexsuite:aviso-planilha", "1"); } catch (e) {} abrirPlanilha("planilha"); }, true]]);
+  }
+  function gerarCopia() {
+    post("/copia-planilha", {}).then(function (r) { mostrarAviso(r.ok ? t("copia_ok", { c: r.caminho }) : (r.motivo || t("falha"))); });
+  }
+  function montarMenu() {
+    var g = $("gaveta"); g.textContent = "";
+    var add = function (txt, fn, atual) { var b = el("button", null, txt); b.type = "button"; if (atual) b.setAttribute("aria-current", "true"); b.addEventListener("click", function () { fecharMenu(); fn(); }); g.appendChild(b); };
+    g.appendChild(el("div", "grupo-menu", t("menu_ver")));
+    [["painel", "v_painel"], ["lista", "v_lista"], ["arquivo", "v_arquivo"], ["historico", "v_historico"]].forEach(function (v) { add(t(v[1]), function () { trocarVisao(v[0]); }, visao === v[0]); });
+    g.appendChild(el("div", "grupo-menu", t("menu_planilha")));
+    add(t("planilha_abrir"), abrirPlanilhaComAviso); add(t("gerar_copia"), gerarCopia); add(t("pasta_abrir"), function () { abrirPlanilha("pasta"); });
+    g.appendChild(el("div", "grupo-menu", t("menu_contatos")));
+    add(t("colar_contatos"), colarContatos);
+    g.appendChild(el("div", "grupo-menu", t("menu_programa")));
+    add(t("config"), function () { abrirConfig(false); }); add(t("perfil"), abrirPerfil); add(t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); });
+  }
+  function abrirMenu() { montarMenu(); $("gaveta").hidden = false; $("veu").hidden = false; $("b-menu").setAttribute("aria-expanded", "true"); var p = $("gaveta").querySelector("button"); if (p) p.focus(); }
+  function fecharMenu() { $("gaveta").hidden = true; $("veu").hidden = true; $("b-menu").setAttribute("aria-expanded", "false"); }
+  function desenharArquivoInfo() {
+    var a = $("arquivo-info"); a.textContent = ""; a.hidden = visao !== "arquivo" || MODO !== "app"; if (a.hidden) return;
+    var esp = (DA && DA.espaco) || (D && D.espaco) || {};
+    a.appendChild(el("span", null, t("arq_info", { n: num(esp.acoes || 0), d: dataCurta(esp.desde || ""), mb: (Math.round((esp.bytes || 0) / 104857.6) / 10).toLocaleString(loc()) })));
+    var meses = (APP && APP.config.guardar_meses) || 12, b = el("button", "chip", t("arq_limpar", { m: meses })); b.type = "button";
+    b.addEventListener("click", function () {
+      var c = el("div"); c.appendChild(el("h3", null, t("arq_limpar", { m: meses }))); c.appendChild(el("p", null, t("arq_limpar_x", { m: meses })));
+      abrirJanela(c, [[t("cancelar"), null], [t("limpar"), function () { post("/limpar", { meses: meses }).then(function (r) { mostrarAviso(t("arq_limpo", { n: num(r.resumidas || 0) })); DA = null; desenhar(); }); }, true]]);
+    });
+    a.appendChild(b); a.appendChild(ajuda(t("arq_ajuda")));
+  }
+  function carregarArquivo() {
+    return fetch("/dados?visao=arquivo&dias=" + periodo, { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) { DA = d; cabecalho(); desenhar(); });
+  }
+  function migrarSituacoesDoNavegador() {  // uma vez: o que estava guardado neste navegador (até a 0.7.13) vai para o programa
+    if (MODO !== "app") return;
+    var itens = {}, chaves = [];
+    try { for (var k = 0; k < localStorage.length; k++) { var ch = localStorage.key(k); if (ch && ch.indexOf("lexsuite:radar:status:") === 0) { itens[ch.slice(22)] = localStorage.getItem(ch); chaves.push(ch); } } } catch (e) { return; }
+    if (!chaves.length) return;
+    post("/migrar-situacoes", { itens: itens }).then(function (r) { if (r.ok) { chaves.forEach(function (c) { try { localStorage.removeItem(c); } catch (e) {} }); if (r.levados) carregar(); } });
+  }
+
   /* ---------- 0.7.12: o painel (mesmos itens da lista, com os mesmos filtros) ---------- */
   function trocarVisao(v) {
-    visao = v === "lista" ? "lista" : "painel"; try { localStorage.setItem("lexsuite:visao", visao); } catch (e) {}
-    desenhar();
+    visao = ["painel", "lista", "arquivo", "historico"].indexOf(v) >= 0 ? v : "painel"; try { localStorage.setItem("lexsuite:visao", visao); } catch (e) {}
+    limite = 10; selecionados = {}; fecharBalao();
+    if (visao === "arquivo" && !DA && MODO === "app") { carregarArquivo(); }
+    cabecalho(); desenhar();
   }
   function filtrarPor(campo, valor) {
     if (campo === "trib") { F.trib = valor; }
@@ -1297,7 +1684,7 @@ window.LEXSUITE_RADAR = null;
       var row = el(clicavel ? "button" : "div", "barra-l" + (l.ouro ? " ouro" : "") + (l.apagada ? " apagada" : ""));
       if (clicavel) { row.type = "button"; row.title = t("g_ver", { r: l.r }); row.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
       var r = el("span", "rot", l.r); r.title = l.r; row.appendChild(r);
-      var tr_ = el("span", "trilho"), en = el("span", "enche"); en.style.width = (100 * l.n / max).toFixed(1) + "%"; tr_.appendChild(en); row.appendChild(tr_);
+      var tr_ = el("span", "trilho"), en = el("span", "enche"), alvoW = (100 * l.n / max).toFixed(1) + "%"; en.style.width = "0%"; requestAnimationFrame(function () { requestAnimationFrame(function () { en.style.width = alvoW; }); }); tr_.appendChild(en); row.appendChild(tr_);
       var n = el("span", "n", num(l.n)); if (opc.comValor && l.v) n.appendChild(el("small", null, reaisCurto(l.v))); row.appendChild(n);
       row.setAttribute("aria-label", l.r + ": " + t("g_acoes_n", { n: num(l.n) }) + (opc.comValor && l.v ? ", " + reaisCurto(l.v) : ""));
       b.appendChild(row);
@@ -1315,7 +1702,7 @@ window.LEXSUITE_RADAR = null;
       var rot = porMes ? d.k.slice(5) + "/" + d.k.slice(0, 4) : dataSemana(d.k);
       col.setAttribute("aria-label", rot + ": " + t("g_acoes_n", { n: num(d.n) })); col.title = col.getAttribute("aria-label");
       col.appendChild(el("span", "n", num(d.n)));
-      var pe = el("span", "pe"); pe.style.height = Math.max(2, Math.round(120 * d.n / max)) + "px"; col.appendChild(pe);
+      var pe = el("span", "pe"), alvoH = Math.max(2, Math.round(100 * d.n / max)) + "%"; pe.style.height = "0%"; requestAnimationFrame(function () { requestAnimationFrame(function () { pe.style.height = alvoH; }); }); col.appendChild(pe);
       var lab = el("span", "d"); if (porMes) lab.textContent = rot; else { var p_ = rot.split(", "); lab.appendChild(el("b", null, p_[0])); lab.appendChild(document.createTextNode((p_[1] || "").slice(0, 6))); }
       col.appendChild(lab); c.appendChild(col);
     });
@@ -1360,11 +1747,16 @@ window.LEXSUITE_RADAR = null;
     alvo.appendChild(el("p", "nota-g", t("g_nota")));
   }
   function desenhar() {
-    $("v-painel").textContent = t("v_painel"); $("v-lista").textContent = t("v_lista");
-    $("v-painel").setAttribute("aria-selected", String(visao === "painel")); $("v-lista").setAttribute("aria-selected", String(visao === "lista"));
-    $("graficos").hidden = visao !== "painel"; $("lista").hidden = visao === "painel";
-    var oc = ["ordem", "exportar"]; oc.forEach(function (id) { $(id).style.visibility = visao === "painel" ? "hidden" : ""; });
+    if (MODO !== "app" && (visao === "arquivo" || visao === "historico")) visao = "lista";
+    ["painel", "lista", "arquivo", "historico"].forEach(function (v) { var b = $("v-" + v); b.textContent = t("v_" + v); b.setAttribute("aria-selected", String(visao === v)); b.hidden = MODO !== "app" && (v === "arquivo" || v === "historico"); });
+    $("graficos").hidden = visao !== "painel"; $("lista").hidden = visao === "painel" || visao === "historico";
+    $("historico-aba").hidden = visao !== "historico";
+    $("controles").hidden = visao === "historico"; $("filtros-extra").hidden = visao === "historico";
+    var oc = ["ordem", "ordem2", "exportar"]; oc.forEach(function (id) { $(id).style.visibility = visao === "painel" ? "hidden" : ""; });
+    desenharArquivoInfo(); desenharLote();
+    if (visao === "historico") { $("mais").hidden = true; desenharHistorico(); return; }
     if (visao === "painel") { $("mais").hidden = true; desenharPainel(visiveis()); return; }
+    if (visao === "arquivo" && !DA) { $("lista").textContent = ""; $("lista").appendChild(el("div", "vazio-lista", t("carregando"))); $("mais").hidden = true; return; }
     var alvo = $("lista"); alvo.textContent = "";
     var itens = visiveis(), total = itens.length;
     if (!total) { alvo.appendChild(el("div", "vazio-lista", (D.itens || []).length ? t("vazio") : (MODO === "app" ? t("vazio_app") : t("vazio_arq")))); $("mais").hidden = true; return; }
@@ -1384,7 +1776,7 @@ window.LEXSUITE_RADAR = null;
     desenharMarca($("marca")); $("escritorio-nome").textContent = MODO === "app" ? "" : (D.escritorio || "");
     var temPlanilha = !!(APP && APP.config.planilha);
     $("b-planilha").hidden = MODO !== "app"; $("b-planilha").textContent = t("planilha_abrir"); $("b-planilha").title = temPlanilha ? APP.config.planilha : t("planilha_falta");
-    $("b-pasta").hidden = MODO !== "app" || !temPlanilha; $("b-pasta").textContent = t("pasta_abrir");
+    $("b-pasta").hidden = true; $("b-pasta").textContent = t("pasta_abrir");  // 0.7.14: no menu ☰
     $("link-manual-topo").hidden = MODO !== "app"; $("link-manual-topo").textContent = t("link_manual");
     $("h1").textContent = t("h1");
     var r = $("resumo"); r.textContent = ""; var b = el("b", null, num(itens.length)); r.appendChild(b);
@@ -1393,17 +1785,32 @@ window.LEXSUITE_RADAR = null;
     if (D.excluidas) r.appendChild(document.createTextNode(t("excluidas_resumo", { x: num(D.excluidas) })));
     $("f-valor").textContent = t("f_valor", { min: reaisCurto(min) }); $("f-gig").textContent = t("f_gig"); $("f-gig").setAttribute("aria-pressed", String(F.gig));
     var fe = $("f-exc"); fe.hidden = !(D.excluidas && (!D.prefs || D.prefs.esconder_excluidas !== false)); fe.textContent = F.exc ? t("f_exc_ocultar") : t("f_exc_mostrar", { n: num(D.excluidas || 0) }); fe.setAttribute("aria-pressed", String(F.exc));
-    var ft = $("f-trib"); ft.textContent = ""; var cont = {}; itens.forEach(function (i) { cont[i.tribunal] = (cont[i.tribunal] || 0) + 1; });
-    var o0 = el("option", null, t("trib_todos") + " (" + num(itens.length) + ")"); o0.value = ""; ft.appendChild(o0);
+    var bi = base();
+    var ft = $("f-trib"); ft.textContent = ""; var cont = {}; bi.forEach(function (i) { cont[i.tribunal] = (cont[i.tribunal] || 0) + 1; });
+    var o0 = el("option", null, t("trib_todos") + " (" + num(bi.length) + ")"); o0.value = ""; ft.appendChild(o0);
     Object.keys(cont).sort(function (a, b) { return Number(a.replace(/\D/g, "")) - Number(b.replace(/\D/g, "")); }).forEach(function (s) { var o = el("option", null, s + " (" + num(cont[s]) + ")"); o.value = s; ft.appendChild(o); });
     ft.value = cont[F.trib] ? F.trib : ""; if (!cont[F.trib]) F.trib = "";
-    F.data = opcoesFiltro("f-data", t("f_todas_datas"), itens.map(function (i) { var d = diaDe(i); return d ? [d, dataSemana(d)] : null; }), F.data);
-    F.vara = opcoesFiltro("f-vara", t("f_todas_varas"), itens.map(function (i) { return i.vara ? [i.vara, i.vara] : null; }), F.vara);
-    F.setor = opcoesFiltro("f-setor", t("f_todos_setores"), itens.map(function (i) { return i.setor ? [i.setor, i.setor] : null; }), F.setor);
-    F.porte = opcoesFiltro("f-porte", t("f_todos_portes"), itens.map(function (i) { var p = porteCurto(i); return p ? [p, p] : null; }), F.porte);
-    F.uf = opcoesFiltro("f-uf", t("f_todas_ufs"), itens.map(function (i) { var u = (i.empresa || {}).uf; return u ? [u, u] : null; }), F.uf);
+    var NI = function (v) { return v ? [v, v] : ["__nao__", t("nao_informado")]; };
+    F.data = opcoesFiltro("f-data", t("f_todas_datas"), bi.map(function (i) { var d = diaDe(i); return d ? [d, dataSemana(d)] : null; }), F.data);
+    F.vara = opcoesFiltro("f-vara", t("f_todas_varas"), bi.map(function (i) { return i.vara ? [i.vara, i.vara] : null; }), F.vara);
+    F.setor = opcoesFiltro("f-setor", t("f_todos_setores"), bi.map(function (i) { return NI(i.setor); }), F.setor);
+    F.porte = opcoesFiltro("f-porte", t("f_todos_portes"), bi.map(function (i) { return NI(porteCurto(i)); }), F.porte);
+    F.uf = opcoesFiltro("f-uf", t("f_todas_ufs"), bi.map(function (i) { return NI((i.empresa || {}).uf); }), F.uf);
+    F.sit = opcoesFiltro("f-sit", t("f_todas_sit"), bi.map(function (i) { var x = statusDe(i); return [x, t("st_" + x)]; }), F.sit);
+    F.frente = opcoesFiltro("f-frente", t("f_todas_frentes"), bi.map(function (i) { var x = i.frente || "trabalhista"; return [x, t("fr_" + x)]; }), F.frente);
+    var fc = $("f-contato"); fc.textContent = ""; [["", t("f_contato_todos")], ["com", t("f_contato_com")], ["sem", t("f_contato_sem")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; fc.appendChild(op); }); fc.value = F.contato;
+    var fv = $("f-valor-sel"); fv.textContent = ""; var faixas = [["", t("f_valor_todos")], ["10000", t("f_valor_acima", { v: reaisCurto(10000) })], ["50000", t("f_valor_acima", { v: reaisCurto(50000) })], ["100000", t("f_valor_acima", { v: reaisCurto(100000) })], ["300000", t("f_valor_acima", { v: reaisCurto(300000) })], ["500000", t("f_valor_acima", { v: reaisCurto(500000) })], ["1000000", t("f_valor_acima", { v: reaisCurto(1000000) })], ["sem", t("f_valor_sem")]];
+    if (F.valorSel && F.valorSel !== "sem" && !faixas.some(function (x) { return x[0] === F.valorSel; })) faixas.splice(7, 0, [F.valorSel, t("f_valor_acima", { v: reaisCurto(Number(F.valorSel)) })]);
+    faixas.push(["outro", t("f_valor_outro")]);
+    faixas.forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; fv.appendChild(op); }); fv.value = F.valorSel;
+    $("f-busca").placeholder = t("busca_ph"); $("f-busca").value = F.busca;
+    var fs = $("f-salvos"), salvos = filtrosSalvos(); fs.textContent = ""; var s0 = el("option", null, t("salvos_ph")); s0.value = ""; fs.appendChild(s0);
+    Object.keys(salvos).sort().forEach(function (k) { var op = el("option", null, k); op.value = k; fs.appendChild(op); }); fs.hidden = !Object.keys(salvos).length;
+    $("b-salvar-filtro").textContent = t("salvar_filtro");
+    var nf = filtrosLigados(); $("b-limpar-filtros").hidden = !nf; $("b-limpar-filtros").textContent = t("limpar_filtros", { n: nf });
+    var so2 = $("ordem2"); so2.textContent = ""; [["", t("ord2_nada")], ["valor", t("ord2_valor")], ["recentes", t("ord2_recentes")], ["porte", t("ord2_porte")], ["empresa", t("ord2_empresa")], ["vara", t("ord2_vara")], ["situacao", t("ord2_situacao")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; so2.appendChild(op); }); so2.value = ordem2;
     $("f-cnpj").textContent = t("f_cnpj"); $("f-cnpj").setAttribute("aria-pressed", String(F.cnpj));
-    var so = $("ordem"); so.textContent = ""; [["valor", t("ord_valor")], ["recentes", t("ord_recentes")], ["porte", t("ord_porte")], ["empresa", t("ord_empresa")], ["hora", t("ord_hora")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; so.appendChild(op); }); so.value = ordem;
+    var so = $("ordem"); so.textContent = ""; [["valor", t("ord_valor")], ["recentes", t("ord_recentes")], ["porte", t("ord_porte")], ["empresa", t("ord_empresa")], ["vara", t("ord_vara")], ["situacao", t("ord_situacao")], ["hora", t("ord_hora")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; so.appendChild(op); }); so.value = ordem;
     $("exportar").textContent = t("exportar"); $("exportar").title = t("csv_dica");
     $("rodape1").textContent = t("rodape1", { q: D.gerado_em ? dataHora(D.gerado_em) : "—" }); $("rodape2").textContent = t("rodape2", { v: D.versao || "?", m: marcaNome() });
     $("rodape3").hidden = true;
@@ -1505,9 +1912,29 @@ window.LEXSUITE_RADAR = null;
   $("f-cnpj").addEventListener("click", function () { F.cnpj = !F.cnpj; this.setAttribute("aria-pressed", String(F.cnpj)); limite = 10; desenhar(); });
   ["data", "vara", "setor", "porte", "uf"].forEach(function (k) { $("f-" + k).addEventListener("change", function (e) { F[k] = e.target.value; limite = 10; desenhar(); }); });
   $("exportar").addEventListener("click", exportar);
-  $("v-painel").addEventListener("click", function () { trocarVisao("painel"); });
-  $("v-lista").addEventListener("click", function () { trocarVisao("lista"); });
-  $("b-planilha").addEventListener("click", function () { abrirPlanilha("planilha"); });
+  ["painel", "lista", "arquivo", "historico"].forEach(function (v) { $("v-" + v).addEventListener("click", function () { trocarVisao(v); }); });
+  $("b-menu").addEventListener("click", function () { if ($("gaveta").hidden) abrirMenu(); else fecharMenu(); });
+  $("veu").addEventListener("click", fecharMenu);
+  var buscaTimer = null;
+  $("f-busca").addEventListener("input", function (e) { clearTimeout(buscaTimer); buscaTimer = setTimeout(function () { F.busca = e.target.value; limite = 10; desenhar(); var nf = filtrosLigados(); $("b-limpar-filtros").hidden = !nf; $("b-limpar-filtros").textContent = t("limpar_filtros", { n: nf }); }, 180); });
+  $("f-valor-sel").addEventListener("change", function (e) {
+    var v = e.target.value;
+    if (v === "outro") { var x = window.prompt(t("valor_outro_q"), ""); var n = Number(String(x || "").replace(/[R$\s.]/g, "").replace(",", ".")); v = isFinite(n) && n > 0 ? String(Math.round(n)) : F.valorSel; }
+    F.valorSel = v; limite = 10; cabecalho(); desenhar();
+  });
+  ["sit", "contato", "frente"].forEach(function (k) { $("f-" + k).addEventListener("change", function (e) { F[k] = e.target.value; limite = 10; cabecalho(); desenhar(); }); });
+  $("ordem2").addEventListener("change", function (e) { ordem2 = e.target.value; limite = 10; desenhar(); });
+  $("b-limpar-filtros").addEventListener("click", function () { var p = JSON.parse(FILTROS_PADRAO); Object.keys(p).forEach(function (k) { F[k] = p[k]; }); F.gig = !!(D.prefs && D.prefs.esconder_gigantes); limite = 10; cabecalho(); desenhar(); });
+  $("b-salvar-filtro").addEventListener("click", function () {
+    var nome = window.prompt(t("salvar_filtro_q"), ""); if (!nome) return; nome = nome.slice(0, 60);
+    var sv = filtrosSalvos(); sv[nome] = { F: JSON.parse(JSON.stringify(F)), ordem: ordem, ordem2: ordem2 }; try { localStorage.setItem("lexsuite:filtros", JSON.stringify(sv)); } catch (e) {}
+    cabecalho();
+  });
+  $("f-salvos").addEventListener("change", function (e) {
+    var sv = filtrosSalvos()[e.target.value]; if (!sv) return;
+    Object.keys(sv.F || {}).forEach(function (k) { F[k] = sv.F[k]; }); ordem = sv.ordem || ordem; ordem2 = sv.ordem2 || ""; limite = 10; cabecalho(); desenhar(); e.target.value = "";
+  });
+  $("b-planilha").addEventListener("click", abrirPlanilhaComAviso);
   $("b-pasta").addEventListener("click", function () { abrirPlanilha("pasta"); });
   document.querySelectorAll(".pilula button").forEach(function (b) { b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("lexsuite:idioma", lang); } catch (e) {} tudo();
     if (!$("wizard").hidden) { var pv = $("w-papel").value; preencherPapeis($("w-papel"), "", null); $("w-papel").value = pv; desenharWizard(); } }); });
