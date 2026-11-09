@@ -10,6 +10,9 @@ Seu código de cliente: {{codigo}}
 A tela pede esse código na instalação. Ele identifica o escritório; não é senha.
 
 [CODIGO-FIM]
+Antes de instalar, aceite os termos. Sua licença já está ativa, mas o programa só libera a leitura depois do aceite. Leia os termos de uso, a política de privacidade e o termo de tratamento de dados e confirme (leva 3 minutos; o código e o e-mail já vão preenchidos, e o aceite fica registrado):
+https://judicial.solverone.com.br/aceite.html?codigo={{codigo}}&email={{email}}&nome={{nome}}
+
 Como instalar, em quatro passos
 1. Instale: abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Ele baixa o resto, prepara tudo e abre a tela do programa numa janela própria.
 2. Configure: a tela confere o código e pede o seu nome, e-mail e função, a pasta do Google Drive onde fica a planilha e os tribunais (de início, os 24 TRTs). A primeira leitura começa em seguida.

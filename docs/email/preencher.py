@@ -51,9 +51,10 @@ def main():
     p.add_argument("--contato", default="judicial@solverone.com.br", help="e-mail para dúvidas (contato da suíte LexSuiteONE)")
     p.add_argument("--drive", default="integracao@solverone.com.br", help="conta Google com quem compartilhar a pasta")
     p.add_argument("--codigo", default="", help="código de cliente (LEX-XXXX-XXXX); sem ele o bloco sai")
+    p.add_argument("--email", default="", help="e-mail do responsável pela licença (vai no link do aceite dos termos)")
     a = p.parse_args()
     m, campos = campos_da_marca()
-    campos.update({"nome": a.nome.strip(), "contato": a.contato.strip(), "drive": a.drive.strip()})
+    campos.update({"nome": a.nome.strip(), "contato": a.contato.strip(), "drive": a.drive.strip(), "email": a.email.strip().lower()})
     saida = AQUI / "saida"
     saida.mkdir(exist_ok=True)
     seguro = re.sub(r"[^A-Za-z0-9_-]+", "-", a.nome.strip()).strip("-") or "cliente"
