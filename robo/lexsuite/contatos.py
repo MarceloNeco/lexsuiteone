@@ -153,3 +153,161 @@ def colar(texto, empresas_por_processo, hoje=None):
                         "de_pessoa": reg["de_pessoa"].lower() in ("sim", "s", "yes"), "fonte": reg["fonte"][:80] or "outro",
                         "data": data, "confianca": "media", "origem": "área logada", "observacao": (reg["observacao"] + aviso)[:300]})
     return aceitas, recusadas
+
+
+# --- 0.7.16: "RESPOSTA PARA O RADAR v1" (item 91; formato em docs/VISITA-KR-LAW.md) ----------------------------------
+# A extensão de IA que o escritório usar (qualquer fornecedor) devolve este bloco; o RADAR lê sem IA, linha a linha.
+
+CABECALHO_V1 = "RESPOSTA PARA O RADAR v1"
+DADOS_V1 = ("valor_causa", "data_ajuizamento", "telefone", "email", "site", "endereco", "socio_contato", "outro")
+RESULTADOS_V1 = ("encontrado", "nao_consta", "tentar_depois")
+_CANAL_DO_DADO = {"telefone": "telefone", "email": "email", "site": "site", "endereco": "endereco", "socio_contato": "outro", "outro": "outro"}
+
+PEDIDO_V1 = """# Pedido de dados ao PJe ({data}) · {produto}
+
+Quem abre os processos é o advogado, logado no PJe com a credencial dele (só leitura). Abra no máximo {limite} processos
+por dia. Para cada processo abaixo, procure **só o que está na coluna "falta"**, na petição inicial e na citação.
+
+Nunca anote dado do autor da ação, de testemunha ou de advogado da outra parte. Nunca anote CPF.
+
+Responda **só** com o bloco abaixo, uma linha por dado procurado (copie e cole de volta no {produto}, em "Colar resposta
+da área logada"):
+
+```
+{cabecalho}
+| processo | dado | valor | resultado | fonte | data | observação |
+|---|---|---|---|---|---|---|
+```
+
+- dado: valor_causa, data_ajuizamento, telefone, email, site, endereco, socio_contato, outro
+- resultado: encontrado (com valor e fonte), nao_consta (o processo não traz), tentar_depois (sessão expirou, site fora)
+- fonte: PJe petição inicial, PJe citação, site da empresa ou outro · data: o dia da consulta (aaaa-mm-dd)
+
+## Processos ({n})
+
+| processo | tribunal | empresa ré | CNPJ | falta |
+|---|---|---|---|---|
+{linhas}
+"""
+
+
+def faltando(item):
+    """O que falta num processo da lista, na ordem em que vale procurar."""
+    e = item.get("empresa") or {}
+    falta = []
+    if not item.get("valor_causa"):
+        falta.append("valor_causa")
+    if not item.get("ajuizada_em"):
+        falta.append("data_ajuizamento")
+    canais = set((item.get("contato") or {}).get("canais") or [])
+    for d in ("telefone", "email", "endereco"):
+        if d not in canais and not (d == "endereco" and e.get("logradouro")):
+            falta.append(d)
+    return falta
+
+
+def preparar_v1(itens, pasta, produto="RADAR JUDICIAL", limite=30, hoje=None):
+    """Grava saida/contatos/pedido-pje-AAAA-MM-DD.md com até `limite` processos e, em cada um, só o que falta."""
+    hoje = hoje or dt.date.today()
+    escolhidos = [(i, faltando(i)) for i in itens]
+    escolhidos = [(i, f) for i, f in escolhidos if f][: max(1, int(limite))]
+    linhas = "\n".join(
+        f"| {_cel(i.get('processo'))} | {_cel(i.get('tribunal'))} | "
+        f"{_cel((i.get('empresa') or {}).get('razao_social') or (i.get('empresas') or [''])[0])} | "
+        f"{_cel((i.get('empresa') or {}).get('cnpj') or i.get('cnpj_a_conferir'))} | {', '.join(f)} |" for i, f in escolhidos)
+    texto = PEDIDO_V1.format(data=hoje.strftime("%d/%m/%Y"), produto=produto, limite=int(limite), cabecalho=CABECALHO_V1,
+                             n=len(escolhidos), linhas=linhas or "| (nenhum processo com dado faltando) | | | | |")
+    destino = os.path.join(pasta, "saida", "contatos")
+    os.makedirs(destino, exist_ok=True)
+    caminho = os.path.join(destino, f"pedido-pje-{hoje.isoformat()}.md")
+    with open(caminho, "w", encoding="utf-8") as f:
+        f.write(texto)
+    return caminho, len(escolhidos), texto
+
+
+def _valor_v1(dado, valor):
+    """Valor normalizado do dado, ou None se estiver fora do formato."""
+    v = valor.strip()
+    if dado == "valor_causa":
+        t = re.sub(r"[R$\s]", "", v)
+        if "," in t:
+            t = t.replace(".", "").replace(",", ".")
+        try:
+            n = float(t)
+        except ValueError:
+            return None
+        return n if 0 < n < 1e11 else None
+    if dado == "data_ajuizamento":
+        m = re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})", v) or re.fullmatch(r"(\d{2})/(\d{2})/(\d{4})", v)
+        if not m:
+            return None
+        a, b, c = m.groups()
+        iso = f"{a}-{b}-{c}" if len(a) == 4 else f"{c}-{b}-{a}"
+        try:
+            dt.date.fromisoformat(iso)
+        except ValueError:
+            return None
+        return iso
+    canal = _CANAL_DO_DADO[dado]
+    return v if v and _valor_ok(canal, v) else None
+
+
+def e_resposta_v1(texto):
+    return CABECALHO_V1.lower() in str(texto or "").lower()
+
+
+def colar_v1(texto, empresas_por_processo, hoje=None):
+    """Lê o bloco "RESPOSTA PARA O RADAR v1". Devolve {contatos, completar, nao_consta, tentar_depois, recusadas}:
+    contatos = no formato de colar(); completar = [{processo, campo, valor, fonte, data}] (valor da causa e data de
+    ajuizamento); nao_consta e tentar_depois = [{processo, dado}]; recusadas = [{linha, motivo, texto}]."""
+    hoje = hoje or dt.date.today()
+    saida = {"contatos": [], "completar": [], "nao_consta": [], "tentar_depois": [], "recusadas": []}
+    for n, bruta in enumerate(str(texto or "").splitlines()[:3000], 1):
+        linha = bruta.strip()
+        if not linha.startswith("|"):
+            continue
+        cels = [c.strip() for c in linha.strip("|").split("|")]
+        if len(cels) < 4 or set("".join(cels)) <= set("-: ") or cels[0].lower() == "processo":
+            continue
+        cels = (cels + [""] * 7)[:7]
+        proc, dado, valor, resultado, fonte, data, obs = cels
+        proc = re.sub(r"[^\d.\-]", "", proc)
+        dado = cl_sem_acento(dado).lower().replace("-", "_").replace(" ", "_")
+        resultado = cl_sem_acento(resultado).lower().replace(" ", "_").replace("-", "_")
+        data = data if re.fullmatch(r"\d{4}-\d{2}-\d{2}", data) else hoje.isoformat()
+        junto = " ".join(cels).lower()
+        motivo = ""
+        if proc not in empresas_por_processo:
+            motivo = "processo que não está na sua lista / lawsuit not in your list"
+        elif dado not in DADOS_V1:
+            motivo = f"dado desconhecido / unknown field: {dado[:30]}"
+        elif resultado not in RESULTADOS_V1:
+            motivo = f"resultado desconhecido / unknown result: {resultado[:30]}"
+        elif _CPF.search(" ".join(cels)) or _tem_cpf_valido([proc, "", "", valor if dado != "telefone" else "", fonte, data, obs], "outro"):
+            motivo = "tem CPF (não pode entrar) / contains a personal tax ID"
+        elif any(re.search(r"\b" + re.escape(p) + r"\b", junto) for p in _PROIBIDO):
+            motivo = "parece dado do autor, de testemunha ou de advogado da outra parte / looks like data about the plaintiff or a witness"
+        if not motivo and resultado == "encontrado":
+            normal = _valor_v1(dado, valor)
+            if normal is None:
+                motivo = "valor vazio ou fora do formato / empty or malformed value"
+            elif not fonte:
+                motivo = "falta a fonte / source missing"
+        if motivo:
+            saida["recusadas"].append({"linha": n, "motivo": motivo, "texto": linha[:160]})
+            continue
+        if resultado != "encontrado":
+            saida[resultado].append({"processo": proc, "dado": dado})
+            continue
+        if dado in ("valor_causa", "data_ajuizamento"):
+            saida["completar"].append({"processo": proc, "campo": dado, "valor": normal, "fonte": fonte[:80], "data": data})
+            continue
+        saida["contatos"].append({"processo": proc, "empresa": empresas_por_processo[proc], "canal": _CANAL_DO_DADO[dado],
+                                  "valor": str(normal)[:300], "de_pessoa": dado == "socio_contato", "fonte": fonte[:80],
+                                  "data": data, "confianca": "media", "origem": "área logada", "observacao": obs[:300]})
+    return saida
+
+
+def cl_sem_acento(s):
+    from . import classificar as cl
+    return cl.sem_acento(str(s or ""))

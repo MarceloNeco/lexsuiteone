@@ -418,7 +418,7 @@ class Wizard(AppV07):
         from lexsuite import conta
         chamadas = []
         original = conta.cadastrar
-        def falso(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj"):
+        def falso(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj", aceite_uso=None):
             chamadas.append({"email": email, "nome": nome, "papel": papel})
             cfg["usuario"].update({"email": email, "nome": nome, "papel": papel})
             return True, ""
@@ -594,7 +594,8 @@ class PlanilhaAberta0711(unittest.TestCase):
             raise PermissionError("arquivo em uso")
         compartilhar.gravar_radar = trava
         try:
-            self.assertFalse(radar.gravar_planilha({}, {"itens": []}, banco, "0.7.11", tempfile.mkdtemp(), recados.append))
+            cfg = {"compartilhar": {"pasta": tempfile.mkdtemp()}}  # 0.7.16: sem pasta, nem tenta gravar
+            self.assertFalse(radar.gravar_planilha(cfg, {"itens": []}, banco, "0.7.11", tempfile.mkdtemp(), recados.append))
         finally:
             compartilhar.gravar_radar = orig
         self.assertIn("aberta no Excel", " ".join(recados))
@@ -942,7 +943,10 @@ class V0715(unittest.TestCase):
         self.assertEqual(agendar.horario_perdido(cfg, dt.datetime(2026, 11, 10, 7, 0)), "20:00")  # a de ontem à noite
         from lexsuite import causas
         self.assertTrue(causas.e_aviso("interrompida"))
-        self.assertIn("continua de onde parou", causas.mensagem("interrompida"))
+        self.assertIn("lido na próxima leitura", causas.mensagem("interrompida"))
+        # leitura das 20h já feita às 20h01: abrir às 22h não é "horário perdido"
+        self.assertEqual(agendar.horario_perdido(cfg, dt.datetime(2026, 11, 9, 22, 0), ultima_leitura="2026-11-09T20:01:00"), "")
+        self.assertEqual(agendar.horario_perdido(cfg, dt.datetime(2026, 11, 9, 22, 0), ultima_leitura="2026-11-09T08:02:00"), "20:00")
 
 
 class V0715b(unittest.TestCase):
@@ -976,3 +980,26 @@ class V0715b(unittest.TestCase):
         self.assertEqual(b.execucoes("radar", 1)[0]["resultado"], "interrompida")
         self.assertTrue(b.estatisticas())  # estatísticas atualizadas
         self.assertIsNone(b.versao_caderno("TRT2", "2026-11-09"))  # o Diário não ficou marcado como lido
+
+
+class V0715c(AppV07):
+    """Revisão da 0.7.15: /interromper não deixa o banco travado (outra conexão grava logo depois) e registra a ação."""
+
+    def test_interromper_nao_trava_o_banco(self):
+        from lexsuite import banco as bd
+        bd.Banco(self.servidor.caminho_db).con.close()
+        self.servidor.estado.comecar()
+        status, r = self.pedir("POST", "/interromper", {})
+        self.assertTrue(r["ok"])
+        self.assertTrue(os.path.exists(os.path.join(self.pasta, "saida", "parar.json")))
+        self.assertTrue(self.servidor.estado.parar())
+        import sqlite3
+        con = sqlite3.connect(self.servidor.caminho_db, timeout=0.5)
+        con.execute("INSERT INTO acoes VALUES ('x','x','x','teste','','','',0)")  # daria "database is locked" antes
+        con.commit()
+        acoes = [a["acao"] for a in bd.Banco(self.servidor.caminho_db).acoes(10)]
+        self.assertIn("interromper", acoes)
+        con.close()
+        self.servidor.estado.terminar({"pt": "x"})
+        status, r = self.pedir("POST", "/interromper", {})
+        self.assertFalse(r["ok"])  # sem leitura em andamento

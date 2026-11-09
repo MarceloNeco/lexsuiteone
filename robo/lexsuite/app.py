@@ -1,7 +1,7 @@
 """Tela local do Radar: um servidor pequeno só no próprio computador (127.0.0.1), biblioteca padrão.
 
-A página escolhe os tribunais, manda rodar e mostra a lista. Nada sai do computador além do que o
-robô já fazia (ler o DJEN e a Receita). Só aceita pedidos do navegador desta máquina, vindos da
+A página escolhe os tribunais, manda rodar e mostra a lista. A tela não manda nada para fora; o programa fala
+com o DJEN, a Receita e a SolverONE (licença, cadastro, totais por situação), como está em SEGURANCA.md. Só aceita pedidos do navegador desta máquina, vindos da
 própria página (cabeçalho X-LexSuite); outro site aberto no navegador não consegue mandar rodar.
 """
 
@@ -13,7 +13,8 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from . import VERSAO, agendar, assinatura, atualizar, banco as bd, cnpj, compartilhar, config, conta, preferencias, radar, rede, tribunais
+from . import VERSAO, agendar, armazenamento, assinatura, atualizar, banco as bd, cnpj, compartilhar, config, conta, preferencias, radar, rede, tribunais
+from . import classificar as cl
 
 PORTAS = range(8765, 8776)
 PAPEIS = ("Sócio ou sócia", "Advogado ou advogada", "Estagiário ou estagiária", "Equipe administrativa")
@@ -174,7 +175,8 @@ class Estado:
             self.erro_info = info
         self._gravar_andamento()
         fim = f"  ===== Leitura terminou às {dt.datetime.now():%H:%M}"
-        self._eco(fim + (f" com erro: {erro} =====" if erro else (f": {situacao.get('pt', '')} =====" if situacao else " =====")))
+        interrompida = (info or {}).get("causa") == "interrompida"
+        self._eco(fim + (": interrompida a pedido =====" if interrompida else (f" com erro: {erro} =====" if erro else (f": {situacao.get('pt', '')} =====" if situacao else " ====="))))
 
 
 def processo_vivo(pid):
@@ -238,6 +240,8 @@ class Servidor(ThreadingHTTPServer):
         self.caminho_config = os.path.join(pasta, "config.json")
         self.caminho_db = os.path.join(pasta, "lexsuite.db")
         self.modelo = os.path.join(pasta, "radar_modelo.html")
+        import time as _t
+        self.ultimo_pedido = _t.monotonic()  # 0.7.16: a janela preta fecha sozinha quando a tela some (ver vigiar_tela)
 
     def config(self):
         return config.carregar(self.caminho_config, aviso=lambda *_: None)
@@ -304,11 +308,14 @@ class Servidor(ThreadingHTTPServer):
             except radar.RoboDesligado as e:
                 self.estado.aviso(str(e))
                 self.estado.terminar(erro=str(e), info={"causa": "desligado", "pt": str(e), "en": str(e), "detalhe": ""})
-            except radar.Interrompida:
+            except radar.Interrompida as e:
                 from . import causas
                 self.estado.aviso(causas.mensagem("interrompida"))
-                self.estado.terminar(erro=causas.mensagem("interrompida"), info={"causa": "interrompida", "pt": causas.mensagem("interrompida"),
-                                                                                "en": causas.mensagem("interrompida", "en"), "detalhe": ""})
+                sit = getattr(e, "situacao", None)
+                self.estado.terminar(sit, erro=causas.mensagem("interrompida"), info={"causa": "interrompida", "pt": causas.mensagem("interrompida"),
+                                                                                     "en": causas.mensagem("interrompida", "en"), "detalhe": ""})
+                if sit and sit.get("aviso_planilha"):
+                    self.planilha_depois()
             except Exception as e:  # a tela precisa saber que parou, qualquer que seja o motivo; em palavras claras
                 from . import causas
                 causa = causas.classificar(e)
@@ -356,6 +363,8 @@ class Tratador(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self._host_local():
             return self._responder({"erro": "pedido recusado"}, status=403)
+        import time as _t
+        self.server.ultimo_pedido = _t.monotonic()
         u = urlparse(self.path)
         qs = parse_qs(u.query)
         s = self.server
@@ -372,7 +381,20 @@ class Tratador(BaseHTTPRequestHandler):
             banco = bd.Banco(s.caminho_db)
             visao = "arquivo" if qs.get("visao", [""])[0] == "arquivo" else "lista"
             pagina = radar.montar_radar(cfg, banco, situacao=s.estado.situacao, dias=dias, visao=visao)
+            if visao == "arquivo":  # 0.7.16: com dezenas de milhares de ações, a tela recebe as 5 mil mais recentes; a busca vai ao programa
+                q = cl.sem_acento(str(qs.get("q", [""])[0] or "")).lower().strip()[:80]
+                if q:
+                    pagina["itens"] = [i for i in pagina["itens"] if q in cl.sem_acento(" ".join(str(x) for x in (
+                        i.get("processo"), i.get("vara"), " ".join(i.get("empresas") or []), (i.get("empresa") or {}).get("cnpj"),
+                        (i.get("empresa") or {}).get("razao_social"), (i.get("empresa") or {}).get("municipio")))).lower()]
+                pagina["arquivo_total"], pagina["arquivo_busca"] = len(pagina["itens"]), q
+                pagina["itens"] = pagina["itens"][:ARQUIVO_NA_TELA]
             pagina["versao"] = VERSAO
+            try:
+                sit = armazenamento.situacao(cfg, banco, s.pasta)
+                pagina["armazenamento"] = sit
+            except Exception:  # noqa: BLE001 - o retrato do armazenamento nunca derruba a tela
+                pagina["armazenamento"] = {}
             pagina["espaco"] = banco.espaco()
             ultimo = banco.execucoes("retorno", 1)
             pagina["retorno"] = ultimo[0] if ultimo else {}
@@ -456,6 +478,15 @@ class Tratador(BaseHTTPRequestHandler):
         caminho = urlparse(self.path).path
         if not self._host_local() or not self._da_propria_pagina():
             return self._responder({"erro": "pedido recusado"}, status=403)
+        import time as _t
+        self.server.ultimo_pedido = _t.monotonic()
+        if caminho == "/sair":  # 0.7.16: "Sair do RADAR" fecha a tela e a janela preta (se não houver leitura nesta janela)
+            if self.server.estado.rodando:
+                return self._responder({"ok": False, "motivo": "Há uma leitura em andamento: espere terminar ou clique em Interromper. "
+                                                                "/ A reading is in progress."})
+            self._responder({"ok": True})
+            threading.Timer(0.5, self.server.shutdown).start()
+            return None
         try:
             tamanho = int(self.headers.get("Content-Length") or 0)
             corpo = json.loads(self.rfile.read(tamanho) or b"{}")
@@ -498,7 +529,8 @@ class Tratador(BaseHTTPRequestHandler):
                 ok, motivo = conta.cadastrar(cfg, VERSAO, corpo.get("email"), corpo.get("nome") or cfg["usuario"].get("nome"),
                                              corpo.get("documento") or doc_atual.get("numero"),
                                              papel_valido(corpo) if "papel" in corpo else cfg["usuario"].get("papel"),
-                                             doc_tipo=corpo.get("doc_tipo") or doc_atual.get("tipo") or "cnpj")
+                                             doc_tipo=corpo.get("doc_tipo") or doc_atual.get("tipo") or "cnpj",
+                                             aceite_uso=corpo.get("aceite_uso") if isinstance(corpo.get("aceite_uso"), dict) else None)
                 if not ok:
                     return self._responder({"ok": False, "motivo": motivo, "conta": conta.situacao(cfg)})
             if "horarios" in corpo:
@@ -550,7 +582,15 @@ class Tratador(BaseHTTPRequestHandler):
             os.makedirs(os.path.dirname(s.arquivo_andamento), exist_ok=True)
             with open(os.path.join(os.path.dirname(s.arquivo_andamento), "parar.json"), "w", encoding="utf-8") as f:
                 json.dump({"quando": dt.datetime.now().isoformat(timespec="seconds"), "quem": s.config()["usuario"].get("email", "")}, f)
-            bd.Banco(s.caminho_db).registrar_acao(s.config()["usuario"].get("email", ""), "interromper", "leitura", "", "", 1)
+            try:
+                b = bd.Banco(s.caminho_db)
+                try:
+                    b.registrar_acao(s.config()["usuario"].get("email", ""), "interromper", "leitura", "", "", 1)
+                    b.con.commit()
+                finally:
+                    b.con.close()  # nunca deixar a trava de escrita presa (a leitura em andamento precisa gravar)
+            except Exception:  # noqa: BLE001 - o registro é extra; o pedido de parada já está no parar.json
+                pass
             return self._responder({"ok": True})
         if caminho == "/abrir-em-aba":  # 0.7.14: a mesma tela numa aba comum do navegador (junto das outras abas)
             webbrowser.open(f"http://127.0.0.1:{s.server_address[1]}/")
@@ -589,6 +629,18 @@ class Tratador(BaseHTTPRequestHandler):
             feitas = banco.limpar_detalhe(meses, perfil=s.config()["usuario"].get("email", ""))
             banco.compactar()
             return self._responder({"ok": True, "resumidas": feitas, "espaco": banco.espaco()})
+        if caminho in ("/armazenamento/limpar", "/armazenamento/copia", "/armazenamento/exportar"):  # 0.7.16
+            if s.estado.como_dict()["rodando"] or leitura_em_outro_processo(s.arquivo_andamento):
+                return self._responder({"ok": False, "motivo": "Espere a leitura terminar. / Wait for the reading to finish."})
+            cfg, banco, recados = s.config(), bd.Banco(s.caminho_db), []
+            if caminho.endswith("limpar"):
+                ok, msg = armazenamento.limpar(cfg, banco, s.pasta, VERSAO, recados.append)
+            else:
+                ok, msg = armazenamento.copia_seguranca(cfg, banco, "exportação" if caminho.endswith("exportar") else "feita à mão",
+                                                        recados.append, so_csv=caminho.endswith("exportar"))
+                if ok:
+                    abrir_no_windows(msg)
+            return self._responder({"ok": ok, "mensagem" if ok else "motivo": msg, "armazenamento": armazenamento.situacao(cfg, banco, s.pasta)})
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)
@@ -601,9 +653,27 @@ class Tratador(BaseHTTPRequestHandler):
             pagina = radar.montar_radar(cfg, bd.Banco(s.caminho_db), dias=90)
             quero = {str(x) for x in (corpo.get("processos") or []) if isinstance(x, (str, int))}
             itens = [i for i in pagina["itens"] if not quero or i["processo"] in quero]
-            caminho_md, n = ct.preparar(itens, s.pasta, marca(s.pasta)["nome"], int(cfg["radar"].get("area_logada_por_dia") or 30))
-            abrir_no_windows(os.path.dirname(caminho_md))
-            return self._responder({"ok": True, "caminho": caminho_md, "quantos": n})
+            # 0.7.16: o pedido traz, em cada processo, só o que falta, e pede a "RESPOSTA PARA O RADAR v1" (qualquer extensão de IA)
+            caminho_md, n, texto = ct.preparar_v1(itens, s.pasta, marca(s.pasta)["nome"], int(cfg["radar"].get("area_logada_por_dia") or 30))
+            if corpo.get("abrir_pasta", not quero):
+                abrir_no_windows(os.path.dirname(caminho_md))
+            return self._responder({"ok": True, "caminho": caminho_md, "quantos": n, "texto": texto})
+        if caminho == "/valor":  # 0.7.16: valor da causa digitado no cartão fica no programa (antes, só no navegador)
+            banco = bd.Banco(s.caminho_db)
+            proc = str(corpo.get("processo") or "")[:40]
+            bruto = str(corpo.get("valor") if corpo.get("valor") is not None else "").strip()
+            valor = None
+            if bruto:
+                try:
+                    valor = float(bruto.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")) if "," in bruto else float(bruto)
+                except ValueError:
+                    return self._responder({"ok": False, "motivo": "Valor fora do formato. / Invalid value."}, status=400)
+                if not 0 < valor < 1e11:
+                    return self._responder({"ok": False, "motivo": "Valor fora do formato. / Invalid value."}, status=400)
+            ok = banco.completar(proc, "valor_causa", valor, "digitado", perfil=s.config()["usuario"].get("email", ""))
+            if ok:
+                s.planilha_depois()
+            return self._responder({"ok": ok, "valor": valor})
         if caminho == "/contatos/colar":
             from . import contatos as ct
             banco = bd.Banco(s.caminho_db)
@@ -611,18 +681,31 @@ class Tratador(BaseHTTPRequestHandler):
             for l in banco.todos_leads():
                 emp = (l.get("empresa_receita") or {}).get("razao_social") or (l.get("empresas") or [""])[0]
                 empresas[l["processo"]] = emp
-            aceitas, recusadas = ct.colar(str(corpo.get("texto") or "")[:200000], empresas)
+            texto = str(corpo.get("texto") or "")[:200000]
+            extra = {}
+            if ct.e_resposta_v1(texto):  # 0.7.16: a resposta padronizada da área logada
+                r1 = ct.colar_v1(texto, empresas)
+                aceitas, recusadas = r1["contatos"], r1["recusadas"]
+                perfil = s.config()["usuario"].get("email", "")
+                completados = sum(1 for c in r1["completar"] if banco.completar(c["processo"], c["campo"], c["valor"], c["fonte"], c["data"], perfil))
+                extra = {"completados": completados, "nao_consta": len(r1["nao_consta"]), "tentar_depois": len(r1["tentar_depois"])}
+            else:
+                aceitas, recusadas = ct.colar(texto, empresas)
             novas = sum(1 for c in aceitas if banco.guardar_contato(c))
             banco.registrar_colagem(s.config()["usuario"].get("email", ""), str(corpo.get("arquivo") or "")[:120], novas, len(recusadas),
                                     "; ".join(f"linha {r['linha']}: {r['motivo']}" for r in recusadas)[:2000])
             s.planilha_depois()
-            return self._responder({"ok": True, "aceitas": novas, "repetidas": len(aceitas) - novas, "recusadas": recusadas[:200]})
+            return self._responder(dict({"ok": True, "aceitas": novas, "repetidas": len(aceitas) - novas, "recusadas": recusadas[:200]}, **extra))
         if caminho == "/abrir":
             cfg = s.config()
             base = compartilhar.pasta_base(cfg)
             planilha = preferencias.caminho(base) if base else ""
             if corpo.get("o_que") == "pasta_mae":  # a pasta escolhida, onde aparece a pasta da planilha (para compartilhar)
                 alvo = os.path.dirname(base) if base else ""
+            elif corpo.get("o_que") == "copias":  # 0.7.16: a pasta das cópias de segurança
+                alvo = armazenamento.pasta_copias(base)
+                if alvo:
+                    os.makedirs(alvo, exist_ok=True)
             else:
                 alvo = planilha if corpo.get("o_que") in ("planilha", "editar") else (os.path.dirname(planilha) if planilha else "")
             if corpo.get("o_que") == "editar":  # Preferências e Exclusões: abre normal, para o escritório poder salvar
@@ -675,6 +758,7 @@ class Tratador(BaseHTTPRequestHandler):
 
 # Ramos oferecidos na tela: só a frente trabalhista por enquanto (os TJs e TRFs são de outras frentes).
 FRENTES = ("Trabalhista",)
+ARQUIVO_NA_TELA = 5000  # 0.7.16: quantas ações do Arquivo vão à tela de uma vez (a busca vai ao programa)
 MARCA_PADRAO = {"nome": "RADAR JUDICIAL", "curto": "RADAR", "destaque": "IA"}
 
 
@@ -888,6 +972,31 @@ def _prefere_aba(pasta):
         return False
 
 
+FECHAR_SEM_TELA_S = 180  # 0.7.16: a tela pergunta o estado a cada 30 s; sem pergunta por 3 minutos, ela foi fechada
+
+
+def vigiar_tela(servidor, aviso=print, limite_s=FECHAR_SEM_TELA_S, passo_s=15, relogio=None, dormir=None):
+    """Fecha a janela preta quando a tela foi fechada (nenhum pedido por `limite_s`) e não há leitura nem planilha à
+    espera nesta janela. Se o computador dormiu (o relógio pulou), recomeça a contar."""
+    import time as _t
+    relogio, dormir = relogio or _t.monotonic, dormir or _t.sleep
+    anterior = relogio()
+    while True:
+        dormir(passo_s)
+        agora = relogio()
+        if agora - anterior > max(60, passo_s * 4):  # acordou de repouso: dá tempo de a tela voltar a falar
+            servidor.ultimo_pedido = agora
+        anterior = agora
+        ocupado = servidor.estado.rodando or getattr(servidor, "_planilha_tentando", False)
+        if ocupado:
+            servidor.ultimo_pedido = agora
+            continue
+        if agora - servidor.ultimo_pedido > limite_s:
+            aviso("  A tela foi fechada: encerro o programa (a leitura automática continua marcada no Windows).")
+            servidor.shutdown()
+            return True
+
+
 def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
     if not espera:
         ja = procurar_aberto()
@@ -915,6 +1024,7 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
         except Exception:  # migrar a leitura automática nunca impede a tela de abrir
             pass
     threading.Thread(target=migrar, daemon=True, name="migrar-agenda").start()
+    threading.Thread(target=vigiar_tela, args=(servidor, aviso), daemon=True, name="vigiar-tela").start()
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:

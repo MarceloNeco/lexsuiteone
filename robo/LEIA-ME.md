@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.15 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.16 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -24,7 +24,7 @@ atualiza sem perder configuração nem lista. A fonte é `instalador/INSTALAR.ba
    como compartilhar): seu nome e seu papel no escritório (a tela e o
    manual passam a falar com você), o nome do escritório, a **pasta compartilhada** (a tela lista as pastas do Google
    Drive para computador que achou, ou outra pasta pelo "Escolher pasta…"; "Testar pasta" confirma) e a opção **rodar sozinho todo dia**
-   (de início às 20h e às 8h, já marcada; os horários mudam em Configuração). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE.xlsx` no Drive,
+   (de início às 20h e às 8h, já marcada; os horários mudam em Configuração). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE - Trabalhista.xlsx` na pasta escolhida,
    agenda as rodadas e dispara a primeira. Cada campo do passo a passo fica guardado ao sair dele (fechar a tela no meio
    não perde o que foi digitado). Depois, quem usa (nome, e-mail, função, escritório) muda no **perfil** (as iniciais no
    alto da tela, um lápis ✏️ por dado; trocar o e-mail = outra pessoa usando o computador) e o código, a pasta e as
@@ -32,17 +32,19 @@ atualiza sem perder configuração nem lista. A fonte é `instalador/INSTALAR.ba
 4. **Ler o Diário agora** (até a 0.7.10, "Atualizar agora"): os 24 TRTs já vêm escolhidos (em **Tribunais** dá para mudar: por região, por estado, por
    ramo ou "Selecionar todos"). A primeira rodada baixa o diário do dia de cada tribunal (de 5 a 150 MB cada): os 24
    TRTs levam de 30 a 60 minutos; depois, só o que é novo. O computador precisa estar **no Brasil**.
-5. No Drive, dê acesso de editor à pasta da planilha (`RADAR JUDICIAL - planilha` nas instalações a partir da 0.7.10;
-   `LexSuiteONE` nas anteriores; o fim do assistente mostra o nome e o passo a passo) para `integracao@solverone.com.br`, a conta de sistemas da
-   SolverONE (botão direito, Compartilhar). É a única etapa que o robô não faz sozinho. Dúvidas de pessoas vão para
-   `judicial@solverone.com.br`; `integracao@` não é lido por ninguém.
+5. Não é preciso compartilhar nada com a SolverONE (decisão do dono, 09/Nov; até a 0.7.15 o assistente pedia para
+   compartilhar a pasta com `integracao@`). Dúvidas de pessoas vão para `judicial@solverone.com.br`.
 
 Tribunais estaduais publicam diários muito maiores (o TJSP sozinho pode passar de 1 GB) e a regra de "ação nova"
 ainda não foi calibrada neles.
 
 ## A planilha no Drive
 
-Uma só: `<pasta compartilhada>\LexSuiteONE\LexSuiteONE.xlsx`.
+Uma por frente (0.7.16), na mesma pasta: `<pasta escolhida>\<subpasta>\LexSuiteONE - Trabalhista.xlsx` (a
+`LexSuiteONE.xlsx` antiga vira essa na primeira leitura, com as abas editadas). Ao lado, `Cópias` e `Cópias de segurança`.
+A aba Arquivo mostra os últimos 90 dias e todo processo trabalhado; limite de 60 mil linhas por planilha, com aviso a
+80% e limpeza com cópia sozinha a 100% (6 cópias guardadas). Configuração → Armazenamento mostra planilhas, banco,
+`saida/`, cópias e o espaço livre do disco.
 
 - **Radar** (o robô escreve a cada rodada): a lista do dia, com as mesmas colunas da tela. A partir da 0.7.12, com
   cabeçalho azul-marinho fixo, filtro em todas as colunas, valores em R$ e o valor da causa acima do mínimo em latão
@@ -61,6 +63,14 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.16:** regra de "ação nova" mais estreita (antes, "fica notificado" e "citação" de qualquer processo do ano
+  entravam: dois TRTs davam 20 mil "novos"); uma planilha por frente; cópias de segurança e armazenamento; leitura só
+  das abas editáveis (a planilha grande dava "ValueError"); Configuração em janela própria com ✕ e Salvar; "Buscar na
+  área logada" com a resposta padronizada `RESPOSTA PARA O RADAR v1` (qualquer extensão de IA); valor da causa e data
+  de ajuizamento guardados no programa; ✓ ao salvar; "Sair do RADAR" e janela preta que fecha sozinha 3 minutos depois
+  da tela; carregamento ao atualizar; termos das duas camadas na Configuração; nada é compartilhado com a SolverONE.
+- **0.7.15:** botão **Interromper** durante a leitura (para num ponto seguro; as ações já gravadas ficam) e aviso de
+  "leitura das 08h00 feita agora" quando o computador estava desligado na hora marcada.
 - **0.7.14:** menu ☰ (Configuração, planilha, contatos), abas Painel · Lista · Arquivo · Histórico de leituras, um
   processo por linha com a **situação** (Novo, Visto, Em análise, Em contato, Virou cliente, Descartado, Arquivado) e o
   selo de contato, seleção de vários com "Desfazer", busca, filtros novos e filtros salvos. A planilha abre só para

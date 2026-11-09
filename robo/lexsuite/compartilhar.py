@@ -103,7 +103,7 @@ def _abas_editaveis(caminho, aviso=print):
     if not os.path.exists(caminho):
         return preferencias.abas_padrao(), True
     try:
-        doc = planilha.ler_xlsx(caminho)
+        doc = planilha.ler_xlsx(caminho, so_abas=preferencias.ABAS_EDITAVEIS)
     except Exception as e:
         aviso(f"  Planilha em uso ou ilegível ({e.__class__.__name__}); deixo como está nesta rodada.")
         return [], False
@@ -112,7 +112,11 @@ def _abas_editaveis(caminho, aviso=print):
     for padrao in preferencias.abas_padrao():
         existente = atuais.get(padrao["nome"])
         if existente and existente["linhas"]:
-            abas.append({"nome": padrao["nome"], "linhas": existente["linhas"], "oculta": padrao.get("oculta", False), "larguras": padrao.get("larguras")})
+            linhas = [list(l) for l in existente["linhas"]]
+            if padrao["nome"] == "Preferências":  # 0.7.16: ajustes novos entram no fim, sem mexer no que o escritório editou
+                tem = {str(l[0]).strip() for l in linhas if l}
+                linhas += [list(l) for l in padrao["linhas"][1:] if l[0] not in tem]
+            abas.append({"nome": padrao["nome"], "linhas": linhas, "oculta": padrao.get("oculta", False), "larguras": padrao.get("larguras")})
         else:
             abas.append(padrao)
     return abas, True
@@ -123,10 +127,14 @@ def criar_se_faltar(cfg, versao="", pasta_robo="", aviso=print):
     base = pasta_base(cfg)
     if not base:
         return ""
+    os.makedirs(base, exist_ok=True)
+    preferencias.migrar_nome(base, aviso)
+    os.makedirs(os.path.join(base, "Cópias de segurança"), exist_ok=True)
+    if preferencias.nome_pendente(base):
+        return os.path.join(base, preferencias.NOME_ANTIGO)
     caminho = os.path.join(base, NOME_RADAR)
     if os.path.exists(caminho):
         return caminho
-    os.makedirs(base, exist_ok=True)
     cabecalho = ["Hora", "Tribunal", "Vara", "Processo", "Rito", "Distribuída em", "Empresa(s)", "CNPJ"]
     planilha.escrever_xlsx(caminho, [{"nome": "Radar", "linhas": [cabecalho], "larguras": [8, 9, 34, 26, 12, 12, 40, 18]}]
                            + preferencias.abas_padrao()
@@ -151,19 +159,26 @@ def _destacar(linhas, chaves, minimo):
     return {n for n, l in enumerate(linhas[1:], 1) if isinstance(l[j], (int, float)) and not isinstance(l[j], bool) and l[j] >= minimo}
 
 
-def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao="", pasta_robo="", aviso=print, arquivo=None):
-    """Regrava LexSuiteONE.xlsx: aba Radar (a lista), as abas editáveis preservadas (Preferências, Exclusões,
-    Controle oculta) e as abas ocultas Log, Saúde e Sobre. Também copia a página HTML.
+def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao="", pasta_robo="", aviso=print, arquivo=None,
+                 frente="trabalhista", itens=None, aviso_tamanho="", processos=None):
+    """Regrava a planilha da frente (0.7.16: uma por frente): aba Radar (a lista), Arquivo, Contatos, as abas editáveis
+    preservadas (Preferências, Exclusões, Controle oculta) e as abas Histórico, Saúde e Sobre. Também copia a página HTML.
+    `itens`: as linhas da aba Radar (padrão: as da página). `processos`: só os contatos desses processos.
     Devolve o caminho da planilha, ou '' se não houver pasta ou se a planilha estiver em uso."""
     base = pasta_base(cfg)
     if not base:
         return ""
     os.makedirs(base, exist_ok=True)
-    caminho = os.path.join(base, NOME_RADAR)
+    os.makedirs(os.path.join(base, "Cópias de segurança"), exist_ok=True)
+    preferencias.migrar_nome(base, aviso)
+    if frente == "trabalhista" and preferencias.nome_pendente(base):  # 0.7.16: nunca cria a nova sem as abas editadas
+        aviso(f"  A planilha {preferencias.NOME_ANTIGO} está aberta: feche-a para o RADAR trocar o nome e gravar. A lista está salva.")
+        return ""
+    caminho = os.path.join(base, preferencias.NOMES_FRENTE.get(frente) or NOME_RADAR)
     editaveis, ok = _abas_editaveis(caminho, aviso)
     if not ok:
         return ""
-    linhas = _linhas_lista(pagina.get("itens") or [], colunas, linha_csv)
+    linhas = _linhas_lista(pagina.get("itens") or [] if itens is None else itens, colunas, linha_csv)
     # 0.7.13: a aba Log mostra o histórico de leituras, uma linha por tribunal e por tentativa, visível ao escritório.
     from . import causas
     rotulo = {"ok": "Lido", "ainda_nao_liberado_3h": "Diário de hoje só às 3h (não é erro)", "nao_publicado": "Ainda não publicado",
@@ -191,14 +206,17 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     produto = _nome_produto(pasta_robo)
     larguras = [14, 11, 8, 9, 34, 26, 12, 12, 40, 18, 22, 16, 36, 20, 18, 16, 28, 40, 15, 16, 12, 30, 40, 10, 40, 30, 30, 10]
     abas = [{"nome": "Radar", "linhas": linhas, "visual": True, "filtro": True, "moeda": moeda, "destacar": _destacar(linhas, chaves, minimo),
-             "aviso": AVISO_RADAR.format(produto=produto), "larguras": larguras}]
-    if arquivo is not None:  # 0.7.14: tudo o que o RADAR já leu nos últimos 12 meses, de qualquer tribunal e situação
+             "aviso": ((aviso_tamanho + " ") if aviso_tamanho else "") + AVISO_RADAR.format(produto=produto), "larguras": larguras}]
+    if arquivo is not None:  # 0.7.16: últimos N dias + todo processo trabalhado; o resto fica no programa e nas cópias
         la = _linhas_lista(arquivo, colunas, linha_csv)
         abas.append({"nome": "Arquivo", "linhas": la, "visual": True, "filtro": True, "moeda": moeda, "destacar": _destacar(la, chaves, minimo),
-                     "aviso": "Arquivo: tudo o que o " + produto + " já leu (12 meses), inclusive o que foi arquivado. Só para consulta.",
+                     "aviso": "Arquivo: o que não está na aba Radar, dos últimos dias, e todo processo trabalhado (Em análise, Em contato, "
+                              "Virou cliente), inclusive arquivados. O resto continua no " + produto + " (tela Arquivo) e nas cópias de segurança. Só para consulta.",
                      "larguras": larguras})
     contatos = [["Processo", "Empresa", "Canal", "Contato", "De pessoa (sócio)", "Fonte", "Data", "Confiança", "Origem", "Validação", "Observação"]]
     for c in (banco.contatos() if hasattr(banco, "contatos") else []):
+        if processos is not None and c["processo"] not in processos:
+            continue
         contatos.append([c["processo"], c["empresa"], c["canal"], c["valor"], "sim" if c["de_pessoa"] else "", c["fonte"], c["data"],
                          c["confianca"], c["origem"], c["validacao"], c["observacao"]])
     abas.append({"nome": "Contatos", "linhas": contatos, "visual": True, "filtro": True,
@@ -234,7 +252,7 @@ def gerar_copia(cfg, agora=None):
     import re as _re
     import zipfile as _zip
     base = pasta_base(cfg)
-    origem = os.path.join(base, NOME_RADAR) if base else ""
+    origem = preferencias.caminho(base) if base else ""
     if not origem or not os.path.exists(origem):
         return False, "A planilha ainda não existe: faça uma leitura primeiro."
     agora = agora or _dt.datetime.now()

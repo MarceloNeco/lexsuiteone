@@ -8,6 +8,7 @@ puro, obrigatória para não cair em spam). Campos a preencher:
 | `{{nome}}` | primeiro nome de quem recebe | (obrigatório) |
 | `{{contato}}` | e-mail para dúvidas; o cliente escreve para ele, nunca responde ao e-mail | `judicial@solverone.com.br` (contato de toda a suíte LexSuiteONE; `contato@` é o genérico da SolverONE) |
 | `{{drive}}` | endereço de sistemas da SolverONE, com quem o cliente compartilha a subpasta LexSuiteONE do Drive (não é caixa de atendimento) | `integracao@solverone.com.br` |
+| `{{email}}` | e-mail do responsável pela licença (campo "e-mail do responsável" da ficha no RootifyONE); vai dentro do link do aceite dos termos, fixo na página | (vazio: a página pede o e-mail) |
 | `{{codigo}}` | código de cliente `LEX-XXXX-XXXX`, **obrigatório desde a 0.7.7**: o instalador não instala sem ele. Pegar no RootifyONE (Clientes → Licenças do RADAR); o código real nunca entra no repositório nem no quadro | (sem código, o bloco sai; não mandar o e-mail assim) |
 
 `python preencher.py --nome Leandro` gera os dois arquivos preenchidos em `saida/`. Com `--codigo LEX-...`, inclui o

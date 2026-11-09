@@ -1,11 +1,11 @@
-# Roteiro de instalação no cliente — RADAR JUDICIAL 0.7.14 (LexSuiteONE)
+# Roteiro de instalação no cliente — RADAR JUDICIAL 0.7.16 (LexSuiteONE)
 
 ## Antes de sair de casa
 
 1. **Teste o instalador no seu computador.** Em judicial.solverone.com.br, "Baixar o RADAR JUDICIAL", abra o arquivo
    baixado e dê dois cliques em `INSTALAR.bat`. Confira: o atalho **RADAR JUDICIAL** apareceu na área de trabalho, a
    tela abriu no navegador, a Configuração aceitou a sua pasta do Drive e "Ler o Diário agora" com 2 TRTs criou a planilha
-   `LexSuiteONE.xlsx` na pasta `LexSuiteONE` do Drive.
+   `LexSuiteONE - Trabalhista.xlsx` (e a pasta `Cópias de segurança`) na pasta da planilha, dentro da pasta escolhida.
 2. **Plano B no pen drive:** baixe também o pacote completo (link "Baixe o pacote completo" no fim da página inicial).
    Serve se a rede do cliente bloquear o instalador.
 3. A planilha não precisa ser levada: ela nasce no Drive de quem instala, na primeira leitura.
@@ -24,17 +24,17 @@ Passos:
    cliques em `INSTALAR.bat` ("Executar"; ou "Mais informações" e "Executar assim mesmo"). Ele instala em
    `C:\LexSuiteONE` (ou na pasta do usuário, se o Windows não deixar), cria o atalho e abre a tela.
 2. Na tela (janela própria), o assistente de 4 passos: documento, escritório, nome, e-mail e função; onde fica a
-   planilha (Google Drive recomendado, outra pasta ou só neste computador); frente e tribunais; o resumo mostra onde a
-   planilha ficou.
-3. No Explorador, botão direito na pasta **RADAR JUDICIAL - planilha** (o fim do assistente mostra onde), Compartilhar,
-   `integracao@solverone.com.br` como **Editor**.
+   planilha (Google Drive, outra pasta ou só neste computador); frente e tribunais; o resumo mostra onde a
+   planilha ficou. Instale no computador que fica ligado nos horários das leituras.
+3. Menu ☰, Configuração, **Armazenamento**: anote o espaço livre no disco (o ideal é mais de 10 GB) e confira onde ficam
+   a planilha e a pasta `Cópias de segurança`. Nada é compartilhado com a SolverONE.
 4. "Ler o Diário agora" (os 24 TRTs já vêm escolhidos; em Tribunais dá para reduzir a 2 ou 3 para a primeira leitura ser
    rápida). Enquanto roda, mostre a ficha, os filtros, a exportação e a planilha no Drive.
 5. Se o agendamento automático falhar (a Configuração avisa): em `C:\LexSuiteONE`, `AGENDAR.bat` com botão direito,
    Executar como administrador.
 6. Deixe anotado: abre pelo atalho RADAR JUDICIAL; a janela preta "LexSuiteONE" pode ficar minimizada; as abas
-   Preferências e Exclusões da planilha são do escritório; dúvidas para **judicial@solverone.com.br**
-   (`integracao@` é só a conta de sistemas, ninguém lê).
+   Preferências e Exclusões da planilha são do escritório; "Sair do RADAR" (menu ☰) fecha tudo; se aparecer "a planilha
+   está ficando grande", clique em "Limpar a planilha (com cópia)"; dúvidas para **judicial@solverone.com.br**.
 
 Plano B (o instalador não baixou): descompacte o pacote completo do pen drive em `C:\LexSuiteONE` e dê dois cliques em
 `ABRIR.bat`. Ele prepara o que falta e abre a mesma tela.

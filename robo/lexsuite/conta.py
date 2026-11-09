@@ -44,6 +44,27 @@ def _aceite(a):
 CONTATO = "judicial@solverone.com.br"
 
 
+def _termos(t):
+    """Bloco `termos` da lex-conta (v10+): {escritorio: {...}, pessoa: {...}} com a versão vigente, o link e o aceite.
+    0.7.16: a Configuração mostra as duas camadas. A trava da pessoa ainda não é pedida (`suporta_aceite_uso` não é
+    enviado): liga quando a página dos termos estiver publicada e o dono responder a pergunta 13 do quadro."""
+    if not isinstance(t, dict):
+        return {}
+    saida = {}
+    for camada in ("escritorio", "pessoa"):
+        b = t.get(camada)
+        if not isinstance(b, dict):
+            continue
+        link = str(b.get("link") or "")
+        if not re.match(r"^https://([a-z0-9-]+\.)*solverone\.com\.br/", link):
+            link = ""
+        saida[camada] = {"versao_vigente": str(b.get("versao_vigente") or "")[:20], "link": link[:500],
+                         "aceito": bool(b.get("aceito")), "versao": str(b.get("versao") or "")[:20],
+                         "aceito_em": str(b.get("aceito_em") or "")[:25], "fuso": str(b.get("fuso") or "")[:40],
+                         "nome": str(b.get("nome") or "")[:120], "precisa_aceitar": bool(b.get("precisa_aceitar"))}
+    return saida
+
+
 def normalizar(codigo):
     c = re.sub(r"[^A-Z0-9]", "", str(codigo or "").upper())
     return f"{c[:3]}-{c[3:7]}-{c[7:11]}" if len(c) == 11 and c.startswith("LEX") else str(codigo or "").strip().upper()
@@ -96,6 +117,8 @@ def verificar(cfg, versao, hoje=None, pedir=None, retorno=None):
     c["mensagem"] = str(r.get("mensagem") or "")[:300]
     if "aceite" in r:
         c["aceite"] = _aceite(r.get("aceite"))
+    if "termos" in r:
+        c["termos"] = _termos(r.get("termos"))
     if c["ok"]:
         c["ultima_ok"] = hoje.isoformat()
     return c
@@ -137,11 +160,12 @@ def situacao(cfg):
     if motivo:
         pend = c.get("resposta") == "aceite_pendente"
         return {"codigo": c.get("codigo", ""), "ok": False, "texto": motivo, "aceite": c.get("aceite") or {},
-                "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else ""}
+                "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else "", "termos": c.get("termos") or {}}
     texto = "Licença ativa" + (f" até {c['validade']}" if c.get("validade") else "") + "."
     if c.get("resposta") == "sem_resposta":
         texto = f"Licença confirmada pela última vez em {c.get('ultima_ok')}; sem resposta da SolverONE agora."
-    return {"codigo": c.get("codigo", ""), "ok": True, "texto": texto, "aceite": c.get("aceite") or {}, "aceite_link": ""}
+    return {"codigo": c.get("codigo", ""), "ok": True, "texto": texto, "aceite": c.get("aceite") or {}, "aceite_link": "",
+            "termos": c.get("termos") or {}}
 
 
 # ---------- cadastro de quem usa (nome, e-mail, função) e do escritório (CNPJ) ----------
@@ -205,7 +229,7 @@ def email_valido(email):
     return bool(_EMAIL.match(str(email or "").strip())) and len(str(email).strip()) <= 120
 
 
-def cadastrar(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj"):
+def cadastrar(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj", aceite_uso=None):
     """Registra quem usa esta instalação na licença do escritório. Devolve (ok, motivo)."""
     c = _bloco(cfg)
     email = str(email or "").strip().lower()
@@ -217,6 +241,8 @@ def cadastrar(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnp
     pedir = pedir or rede.pedir_json
     corpo = {"acao": "cadastrar", "codigo": normalizar(c.get("codigo")), "instalacao": c["instalacao"], "versao": versao,
              "email": email, "nome": nome, "papel": str(papel or "")[:40], "doc_tipo": doc_tipo, "documento": doc}
+    if isinstance(aceite_uso, dict) and aceite_uso.get("versao"):  # 0.7.16: a caixa "Li e aceito os termos de uso" marcada
+        corpo["aceite_uso"] = {"versao": str(aceite_uso["versao"])[:20], "fuso": str(aceite_uso.get("fuso") or "")[:40]}
     try:
         r = pedir(c.get("url") or URL_PADRAO, corpo, tentativas=2, tempo_limite=20)
     except Exception:
@@ -227,6 +253,8 @@ def cadastrar(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnp
     cfg.setdefault("usuario", {}).update({"email": email, "nome": nome, "papel": str(papel or "")[:40]})
     cfg["documento_escritorio"] = {"tipo": doc_tipo, "numero": doc}
     c["cadastrado"] = email
+    if "termos" in r:
+        c["termos"] = _termos(r.get("termos"))
     return True, ""
 
 

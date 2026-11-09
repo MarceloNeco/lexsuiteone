@@ -22,7 +22,9 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
 - Nunca reescreva histórico nem force push sem o dono pedir na hora. Nunca commite `config.json`, `*.db`, `saida/`,
   `diagnostico/`, `chave_privada.txt`.
 - O robô é só biblioteca padrão do Python, sem IA no caminho principal, sem contornar captcha, sem dado fictício no
-  produto (só em `exemplos/` e testes, marcados como fictícios). Pessoa física nunca sai do robô.
+  produto (só em `exemplos/` e testes, marcados como fictícios). Pessoa física que não responde pela empresa (autor da ação,
+  testemunhas, quem não tem CNPJ público) nunca sai do robô; quem atua com CNPJ (MEI, empresário individual) e sócios e
+  administradores de cadastro público aparecem, com fonte (decisão do dono, 08/Nov; termos 1.1, seção 4).
 - Contatos pessoais do dono não aparecem em nada que o cliente vê: site, e-mail, repositório, planilha. Antes do
   primeiro commit de qualquer sessão, rode uma vez na pasta do repositório:
   `git config user.name "Marcelo Freitas" && git config user.email "169572628+MarceloNeco@users.noreply.github.com"`
@@ -83,7 +85,7 @@ nunca é delegada a subagente. Resultado de subagente é dado a conferir, não o
 
 ## Como entregar
 
-- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos arquivos (41 no download completo, 40 no de atualização, conferido na 0.7.13) em `releases/LexSuiteONE-RADAR.zip`,
+- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos arquivos (44 no download completo, 43 no de atualização, a partir da 0.7.16 com `lexsuite/armazenamento.py`; a 0.7.15 tinha 43 e 42) em `releases/LexSuiteONE-RADAR.zip`,
   `releases/LexSuiteONE-RADAR-<versão>.zip` e `docs/downloads/LexSuiteONE-RADAR.zip` (o pacote de atualização é
   `LexSuiteONE-RADAR-atualizacao-<versão>.zip`; o botão do site baixa o instalador `Instalar-LexSuiteONE.zip`). Atualize `robo/LEIA-ME.md`,
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.
