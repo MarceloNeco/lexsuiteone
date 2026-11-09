@@ -196,7 +196,9 @@ async function enviarAviso(sb: ReturnType<typeof createClient>, pode: (c: string
   const oque = tipo === "pessoa_nova"
     ? `uma pessoa nova se cadastrou no RADAR JUDICIAL${ref.nome ? ` (${ref.nome}, e-mail @${ref.dominio})` : ""}`
     : `um computador novo começou a usar o RADAR JUDICIAL${ref.nome_pc ? ` (${ref.nome_pc})` : ""}`;
-  const chave = Deno.env.get("RESEND_API_KEY");
+  // RESEND_API_KEY_LEX é a chave só de envio desta função (criada em 08/Nov); RESEND_API_KEY já existia no projeto para
+  // outra função e não deve ser substituída. Fica como reserva.
+  const chave = Deno.env.get("RESEND_API_KEY_LEX") || Deno.env.get("RESEND_API_KEY");
   for (const d of destinos) {
     const assunto = tipo === "pessoa_nova" ? `RADAR JUDICIAL · pessoa nova em ${escritorio}` : `RADAR JUDICIAL · computador novo em ${escritorio}`;
     const corpo = d.interno
@@ -205,7 +207,7 @@ async function enviarAviso(sb: ReturnType<typeof createClient>, pode: (c: string
     const { data: aviso } = await sb.from("lex_avisos").insert({ codigo, tipo, para: d.para, assunto,
       ref: d.interno ? { dominio: ref.dominio ?? "", nome_pc: ref.nome_pc ?? "" } : ref }).select("id").single();
     if (!aviso) continue;
-    if (!chave) { await sb.from("lex_avisos").update({ estado: "pendente", erro: "sem RESEND_API_KEY nos Secrets" }).eq("id", aviso.id); continue; }
+    if (!chave) { await sb.from("lex_avisos").update({ estado: "pendente", erro: "sem RESEND_API_KEY_LEX nos Secrets" }).eq("id", aviso.id); continue; }
     try {
       const r = await fetch("https://api.resend.com/emails", { method: "POST",
         headers: { Authorization: `Bearer ${chave}`, "Content-Type": "application/json" },

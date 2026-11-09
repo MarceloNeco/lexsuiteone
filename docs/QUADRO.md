@@ -22,17 +22,23 @@ Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
 - Drive: esperando o dono restringir "Estudos de Casos Juridicos" e avisar "feito"; então confiro e atualizo a pasta.
-- E-mail de boas-vindas ao Leandro: pronto, fora do repositório (o código não entra no repositório, no quadro nem em
-  conversa). Falta o endereço dele e o "pode" do dono para enviar.
+- E-mail de boas-vindas ao Leandro: **em espera**. O dono ainda está testando e só envio com o "pode enviar" dele. O
+  texto novo do passo 3 já está na `main`: quando for enviar, refazer o e-mail com o modelo atual (o código não entra no
+  repositório, no quadro nem em conversa).
+- Botão no RootifyONE para enviar os e-mails de boas-vindas: requisito novo do dono, registrado como pedido à
+  Arquitetura (abaixo). Nada implementado.
 
 ### Arquivos em uso
 - (nenhum)
 
 ### Feito (mais recente primeiro)
-- 08/Nov: **0.7.12 na `main`, pronta para publicar** (itens 38 e 39): Painel com números e gráficos ao lado da Lista;
-  planilha com cabeçalho azul-marinho, filtro, R$, destaque e aba "Como usar". 101 testes, revisor sem bloqueio.
-  **Decisão do dono (08/Nov): pular a publicação da 0.7.11 e publicar direto a 0.7.12**, que contém tudo da 0.7.11.
-  Falta a Operação publicar com o "publica a versão 0.7.12" do dono.
+- 08/Nov: **0.7.12 publicada** (20:43 UTC) com o "publica a versão 0.7.12" do dono, pulando a 0.7.11 (a 0.7.12 contém tudo
+  dela): Painel com números e gráficos ao lado da Lista; planilha com cabeçalho azul-marinho, filtro, R$, destaque e aba
+  "Como usar". Revisor aprovou sem bloqueio (101 testes, Bandit limpo); automação da `main` verde em `8759f27`; versão no
+  commit `68e2679` (tag `v0.7.12`; sobre o `8759f27` só acrescentou documentos), publicada pela automação em `a593a95`. Conferido por fora:
+  hash e assinatura batem com a chave do download; **40 arquivos no download completo e 39 no pacote de atualização**;
+  versão dentro dos dois é 0.7.12; nenhum arquivo proibido nem código de cliente real; o site serve `versao.json`, o
+  instalador e o pacote (mesmo hash do repositório). Ressalvas do revisor viram pedido à Produto.
 - 08/Nov: **0.7.10 publicada** (16:39 UTC) com o "pode" do dono: revisor aprovou, automação da `main` verde, versão no commit `dc609bc` (tag
   `v0.7.10`), publicada pela automação em `eef4306`. Conferido por fora: hash e assinatura do pacote batem com a chave que vai no download, a versão dentro dos dois
   pacotes é 0.7.10, nenhum arquivo proibido nem código de cliente real, o site serve `versao.json` e os downloads.
@@ -53,8 +59,8 @@ Cloudflare, Resend, publicação de versões.
 - 08/Nov: conferência de Resend e Drive (relatório ao dono).
 
 ### Preciso do dono
-- E-mail corporativo do Leandro, até quarta (11/Nov): o e-mail de boas-vindas fica pronto; falta o endereço e o "pode"
-  do dono para enviar.
+- E-mail ao Leandro: o dono já passou o endereço (não gravado aqui) e ainda está testando. Só envio quando ele escrever
+  "pode enviar" (o roteiro da visita supõe o e-mail enviado até quarta, 11/Nov). Diga também se o envio passa a ser pelo botão do RootifyONE, depois do desenho da Arquitetura.
 - Drive: o dono restringe "Estudos de Casos Juridicos" (o conector não altera compartilhamento) e avisa "feito"; eu
   confiro as permissões e atualizo a pasta do Drive para a versão atual (0.7.9, pacote RADAR).
 
@@ -120,8 +126,11 @@ RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `S
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- Nada em andamento. Próximos (depois dos dois passos do dono): SQL da 0.8 (lex_batimentos, lex_listas, lex_itens,
-  funções do site), pareamento com credencial na `lex-conta`, site `paginas/app/` (desenho para a Produto).
+- **Publicar a `lex-conta` com a leitura de `RESEND_API_KEY_LEX`** (código já na `main`, commit b8d6c1f): o conector do
+  Supabase caiu nesta sessão; publicar na próxima sessão da Arquitetura (ou qualquer sessão com o conector), com
+  `deploy_edge_function` a partir de `nuvem/supabase/functions/lex-conta/index.ts`, `verify_jwt = false`. Enquanto isso a
+  versão no ar (v5) envia os avisos com o segredo `RESEND_API_KEY` que já existia no projeto: funciona.
+- Depois: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com credencial, site `paginas/app/`.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -129,6 +138,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 08/Nov (noite): regra de tipos de `lex_eventos` aplicada (dono confirmou no computador): nuvem completa. Prompts do
+  Claude in Chrome para a chave do Resend em `documentacao/PROMPTS-CHROME-RESEND-SUPABASE.md`. Desenho curto dos contatos
+  (itens 40 e 41) em `documentacao/DESENHO-CONTATOS.md`, aguardando as 5 respostas do dono.
 - 08/Nov (noite): **RootifyONE 0.18.15 publicado** (PR #98 do rootify-one): Licenças do RADAR com aprovar/recusar pessoa,
   Esquecer computador, domínios, e-mail de boas-vindas, modalidade Instalado/Nuvem, avisos da nuvem e busca por domínio.
   Teste `teste/licencas.js` com 26 verificações verdes. Item F (modalidade) aplicado no banco (SQL `2026-11-08c`) e na
@@ -156,8 +168,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Chave do Resend nos Secrets do Supabase como `RESEND_API_KEY` (passo a passo em `documentacao/DESENHO-LICENCA-EM-USO.md`);
-  sem ela os avisos ficam "pendente", nada quebra. Na ficha da KR Law: e-mail de boas-vindas e domínio.
+- Nada pendente da nuvem: chave `RESEND_API_KEY_LEX` criada por ele em 08/Nov. Na ficha da KR Law (Clientes → Licenças do
+  RADAR): preencher e-mail de boas-vindas e domínio do escritório quando tiver o e-mail do Leandro.
+- Respostas às 5 perguntas de `documentacao/DESENHO-CONTATOS.md`.
 - Termo de tratamento de dados com a KR Law (bloqueante para a 0.8 entrar no ar).
 
 ---
@@ -171,7 +184,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | SQL das licenças | Aplicado em 08/Nov pela Produto com aprovação do dono pelo aplicativo, sem leitura do texto. Não é violação a registrar. Daqui em diante: SQL vai para arquivo, anotado no quadro, e o dono roda depois de revisar. Segurança do que foi aplicado (cinco pontos, função sem JWT, limite de chamadas): pendência da Arquitetura. | Arquitetura |
 | Instalador | Exige código de cliente válido antes de baixar. O e-mail de boas-vindas ao Leandro precisa levar o código. | Produto, Operação |
 | Site | Carrossel novo publicado em 08/Nov com o "pode" do dono. Falta teste no iPhone (o dono). | Produto |
-| Versão publicada | 0.7.10, publicada pela Operação em 08/Nov (16:39 UTC) com o "pode" do dono; hash e assinatura conferidos, site e downloads servem a 0.7.10, tag `v0.7.10`. Quem já tem a 0.7.9 recebe pela atualização assinada. | Operação |
+| Versão publicada | 0.7.12, publicada pela Operação em 08/Nov (20:43 UTC) com o "pode" do dono (a 0.7.11 foi pulada e está dentro dela); hash e assinatura conferidos, 40 e 39 arquivos nos pacotes, site e downloads servem a 0.7.12, tag `v0.7.12`. Quem já tem a 0.7.10 recebe pela atualização assinada. | Operação |
 | Worker `integracao-resposta` | Correção do segundo bounce aplicada e testada em 08/Nov (15:18 UTC): serviço de envio é só encaminhado; pessoa recebe a resposta. Versão anterior guardada na Cloudflare. | Operação |
 | Documentos internos em `docs/` | Ficam públicos no site. Mudança para `documentacao/` aprovada pelo dono **para depois de quinta 12/Nov** (Arquitetura faz e ajusta os caminhos). Documentos internos novos já nascem em `documentacao/`. | Arquitetura |
 | Desenho da 0.8 | Na branch `claude/friendly-einstein-li603e` (Arquitetura), seções 3 a 7 sendo reescritas em cima do que a Produto construiu. Entra na `main` em `documentacao/` quando ficar coerente. | Arquitetura |
@@ -192,13 +205,14 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 08/Nov | Operação | Produto | Ressalvas da revisão da 0.7.10 (só texto desatualizado, nada quebra o programa). (a) Nome da pasta: na instalação nova a pasta da planilha é `<produto> - planilha`, mas `docs/email/email-boas-vindas.txt` (linha 16) e `paginas/index.html` (linha 310) mandam compartilhar a "pasta LexSuiteONE"; o cliente lê isso na quinta (o assistente do programa mostra o nome certo). (b) Vão no pacote: `robo/LEIA-ME.md` (linhas 26, 35, 44 e 54: OneDrive, nome da pasta e da página do celular), `robo/radar_modelo.html` (textos `c_dica`, linhas 427 e 474) e `robo/ABRIR.bat` (linha 21 fala em abrir no navegador e na janela "LexSuiteONE", e a 0.7.10 abre a tela em janela própria; manter CRLF); só saem numa 0.7.11, quando o dono pedir. (c) `robo/ROTEIRO-INSTALACAO.md` (linhas 1 e 27, roteiro de quinta) e `robo/ARQUITETURA.md` (linha 91). Nada foi alterado | (a) e-mail: sim; site: publicado com o "pode" do dono; (b) e (c): na 0.7.11, quando o dono pedir |
 | 08/Nov | Operação | Arquitetura | O `CLAUDE.md` diz que o pacote tem 38 arquivos; a 0.7.10 tem 40 no download completo (39 mais a chave pública) e 39 no pacote de atualização (conferido). Atualizar o número | sim (Arquitetura, 08/Nov): CLAUDE.md fala em 40 no download e 39 na atualização |
 | 08/Nov | Produto | Arquitetura | Licença em uso (o dono aprovou a ideia): identificação estável do computador ao reinstalar, aviso de código já em uso no passo 1, domínio do e-mail com aprovação, avisos de pessoa/computador novo; junto com o item 4. Prompt pronto em `documentacao/PEDIDO-ARQUITETURA-LICENCA-EM-USO.md`. Desenho antes de código | sim (Arquitetura, 08/Nov): desenho em `documentacao/DESENHO-LICENCA-EM-USO.md` (A a E, quem faz o quê, plano de teste); perguntas ao dono na seção da Arquitetura; implementação depois do "pode" |
-
 | 08/Nov | Arquitetura | Produto | Licença em uso, parte do programa (versão 0.7.11, depois de a `lex-conta` v4 estar publicada; o programa antigo continua funcionando): (1) id da instalação guardado também em `%LOCALAPPDATA%\LexSuiteONE\instalacao.json` e lido antes de gerar (`conta.py`, `config.py`, `instalador/INSTALAR.bat`); mandar `nome_pc` (`COMPUTERNAME`, até 60) nas chamadas; (2) passo 1: se a resposta trouxer `em_uso` ({pessoas, computadores, desde}), mostrar "Este código já está em uso no escritório X (N pessoas, M computadores). Você é deste escritório?" com "Sou" / "Não sou" (apaga o código); (3) se trouxer `email_sugerido`, preencher o e-mail (editável); (4) `aprovacao: "aguardando"` → selo "Seu cadastro está aguardando a confirmação da SolverONE" (o programa lê normalmente); `motivo: "email_recusado"` → "Este e-mail não foi aceito; use outro ou fale com judicial@"; `motivo: "limite_de_computadores"` → mensagem com judicial@; (5) HTTP 429 já cai em "sem resposta" (nada a fazer). Detalhe em `documentacao/DESENHO-LICENCA-EM-USO.md` | não |
 | 08/Nov | Arquitetura | Operação | Texto dos e-mails de aviso (pessoa nova, computador novo) está dentro de `lex-conta/index.ts` (PT e EN, remetente `SolverONE <nao-responda@>`, Reply-To `judicial@`); revisar o texto com o dono e, se mudar, pedir à Arquitetura. Ao criar a chave do Resend para os Secrets (o dono cola), conferir no painel do Resend que ela é só de envio | não |
 | 08/Nov | Produto | Arquitetura | Tipo de acesso do cliente (dono, 08/Nov): modalidade Instalado ou Nuvem na licença, migração entre elas com histórico, e busca por domínio do e-mail no RootifyONE. Entra como item F do desenho da licença em uso; texto no fim de `documentacao/PEDIDO-ARQUITETURA-LICENCA-EM-USO.md`. A busca por escritório, código e CNPJ/CPF a Produto já fez (RootifyONE 0.18.14, sem banco) | sim (Arquitetura, 08/Nov): item F do desenho; SQL `2026-11-08c-lex-modalidade.sql` aplicado; `lex-conta` devolve `modalidade`; tela do RootifyONE no PR da Arquitetura |
 | 08/Nov | Produto | Arquitetura | **Ideia para depois de quinta (não é prioridade):** planilha numa pasta de rede ou Drive compartilhado, usada por várias pessoas (trava do Excel, vários computadores, edição das abas do escritório). Prompt em `documentacao/IDEIA-PLANILHA-EM-REDE.md` | não |
 | 08/Nov | Produto | Arquitetura | (1) Ajustar a regra "Pessoa física nunca sai do robô" do `CLAUDE.md` à decisão do dono de 08/Nov (tabela de decisões abaixo): parte com CNPJ em cadastro público (MEI, empresário individual) aparece; reclamante e quem não tem CNPJ público continuam fora. (2) **Trilha de auditoria** para todos os produtos: cada mudança de configuração e de controle (ativo, valor mínimo, preferências, exclusões, tribunais, horários, licença) registrada com quem, quando (data e hora com fuso) e o antes/depois, num banco e não só na planilha (a planilha é controle extra). Desenhar onde fica (banco local do programa e/ou nuvem, ex.: `lex_eventos`), o que é dado pessoal e por quanto tempo guarda | não |
-| 08/Nov | Produto | Arquitetura | Contatos (itens 40 e 41 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`): o dono quer todos os contatos disponíveis da empresa e dos sócios e, quando faltarem, um fluxo para completá-los pela área logada do PJe com o Claude in Chrome (o RADAR gera o arquivo de busca; a resposta em Markdown volta colada no RADAR e completa tela e planilha). Desenhar: o que pode ser guardado (dado pessoal de sócio só se publicado como contato comercial, com fonte e data), formato do arquivo e da resposta, onde fica o histórico (quem colou, quando, fuso), e o que o compliance valida. A Produto implementa a tela e a planilha depois do desenho | não |
+| 08/Nov | Produto | Arquitetura | Contatos (itens 40 e 41 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`): o dono quer todos os contatos disponíveis da empresa e dos sócios e, quando faltarem, um fluxo para completá-los pela área logada do PJe com o Claude in Chrome (o RADAR gera o arquivo de busca; a resposta em Markdown volta colada no RADAR e completa tela e planilha). Desenhar: o que pode ser guardado (dado pessoal de sócio só se publicado como contato comercial, com fonte e data), formato do arquivo e da resposta, onde fica o histórico (quem colou, quando, fuso), e o que o compliance valida. A Produto implementa a tela e a planilha depois do desenho | sim (Arquitetura, 08/Nov): desenho curto em `documentacao/DESENHO-CONTATOS.md`, com 5 perguntas ao dono; implementação pela Produto depois do "pode" |
+| 08/Nov | Operação | Produto | Ressalvas da revisão da 0.7.12 (publicada; nada bloqueou). (1) Vão no pacote: `robo/ROTEIRO-INSTALACAO.md` linha 1 diz 0.7.11 e `robo/SEGURANCA.md` linha 1 diz v0.7.1. (2) `robo/lexsuite/radar.py` linhas 248 a 250: `gravar_planilha` ignora o retorno de `gravar_radar` e responde sucesso mesmo com a planilha ilegível ou em uso (o botão "Gravar a planilha agora" diz "Planilha atualizada" sem gravar); sugestão do revisor: devolver `bool` do retorno. (3) `robo/lexsuite/app.py` linha 410: `/reiniciar` não recusa durante uma leitura, ao contrário de `/atualizar`. (4) Cosmético: a janela preta pode mostrar "Receita: 50 de 40" (`radar.py` 194 a 211) e a consulta de versão sem internet fica em cache por 30 minutos (`app.py` 278 a 283). (5) Texto: `robo/PENDENCIAS.md` linha 174 (0.7.11 "publicada ou a publicar"), `robo/ARQUITETURA.md` sem os itens da 0.7.11 (`/versao-nova`, `/reiniciar`, `/gravar-planilha`, `--espera`, `procurar_aberto`, dias com Diário) e `paginas/manual.html` linhas 161 a 165 sem a aba "Como usar" e o Painel. Para quem atualiza da 0.7.10 pela tela: ela diz "feche a janela e abra de novo"; quem não fechar a janela preta continua na versão antiga. Nada foi alterado | não |
+| 08/Nov | Operação | Arquitetura | Requisito novo do dono: botão no RootifyONE (Clientes, Licenças do RADAR) para enviar o e-mail de boas-vindas, no lugar de a Operação enviar pelo conector. Pedido de desenho curto, para o "pode" do dono; nada foi implementado. Pontos: (1) usar o e-mail de boas-vindas que a ficha da licença já guarda (`email_boas_vindas`), sem pedir de novo, e decidir de onde vem o primeiro nome de quem recebe, porque a ficha não o guarda (a `lex_usuarios` só tem nome depois do cadastro); (2) o envio sai no servidor, por função da nuvem só para administradores, com a chave do Resend na função (o código da `lex-conta` já lê `RESEND_API_KEY_LEX` para os avisos; a publicação dessa versão está pendente); a chave nunca vai para o navegador; (3) o texto é o modelo `docs/email/email-boas-vindas.txt` e `.html` (conteúdo da Produto; nome do produto vindo de `docs/marca.json`, o logo de `ferramentas/marca.py` e o assunto de `docs/email/preencher.py`), preenchido com o código da licença, `judicial@` e `integracao@`: decidir de onde a função lê o modelo (embutido ou lido do site) e como acompanha mudanças dele; (4) mostrar assunto e destinatário e só enviar depois de uma confirmação do administrador; (5) travas: remetente fixo `nao-responda@`, um envio por licença e e-mail com aviso se já foi enviado ("reenviar" como ação à parte), só para o e-mail gravado na ficha; (6) registrar o envio em `lex_eventos` (quando, para qual e-mail, quem clicou), sem guardar o texto nem o código: a regra de tipos de `lex_eventos` não tem um tipo para "boas-vindas enviado", então o desenho prevê um SQL novo (aplicado pela Arquitetura); (7) o código de cliente nunca vai para repositório, quadro ou conversa. Enquanto isso, nada é enviado ao Leandro: o dono ainda está testando | não |
 
 ## Decisões do dono registradas aqui
 

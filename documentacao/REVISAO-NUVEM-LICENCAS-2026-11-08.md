@@ -64,3 +64,10 @@ O que **não** faz: não mexe em dado, não altera `lex-conta`, não cria acesso
 4. Depois: Advisors → Security → "Rerun linter"; me dizer se apareceu algo novo.
 
 Testado em 08/Nov num Postgres 16 local com o `stub-supabase.sql` do rootify-one (resultado na conversa da Arquitetura).
+
+## Lição registrada (08/Nov, noite)
+
+Pedi ao dono uma chave do Resend com o nome `RESEND_API_KEY`, que já existia nos Secrets do projeto desde 23/Out para
+outra função da plataforma. Substituir teria trocado a chave daquela função. Regra daqui em diante: **antes de pedir
+segredo novo, ler o código das Edge Functions do projeto e listar os nomes de segredo que elas já usam**; segredo de uma
+função nova leva o sufixo da função (`RESEND_API_KEY_LEX`). O dono percebeu o aviso do painel e criou o nome novo.
