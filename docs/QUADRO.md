@@ -27,11 +27,17 @@ Cloudflare, Resend, publicação de versões.
   repositório, no quadro nem em conversa).
 - Botão no RootifyONE para enviar os e-mails de boas-vindas: requisito novo do dono, registrado como pedido à
   Arquitetura (abaixo). Nada implementado.
+- Ficha da KR Law no RootifyONE (e-mail de boas-vindas e domínio): pela decisão de 09/Nov é da Operação, mas esta conversa
+  não tem conta da equipe do RootifyONE nem conector do banco, então não consigo preencher. O dono recebeu um prompt para o
+  Claude in Chrome e preenche; ele avisa "feito".
 
 ### Arquivos em uso
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 09/Nov: o dono repetiu o pedido de publicar a 0.7.12, que **já estava publicada** desde 08/Nov (20:43 UTC): tag `v0.7.12` e
+  `versao.json` do site conferidos de novo. Não disparei a automação outra vez: a `main` já tem a 0.7.13 em andamento com o
+  número ainda em 0.7.12, e republicar levaria código não revisado sob o mesmo número.
 - 08/Nov: **0.7.12 publicada** (20:43 UTC) com o "publica a versão 0.7.12" do dono, pulando a 0.7.11 (a 0.7.12 contém tudo
   dela): Painel com números e gráficos ao lado da Lista; planilha com cabeçalho azul-marinho, filtro, R$, destaque e aba
   "Como usar". Revisor aprovou sem bloqueio (101 testes, Bandit limpo); automação da `main` verde em `8759f27`; versão no
@@ -61,8 +67,11 @@ Cloudflare, Resend, publicação de versões.
 ### Preciso do dono
 - E-mail ao Leandro: o dono já passou o endereço (não gravado aqui) e ainda está testando. Só envio quando ele escrever
   "pode enviar" (o roteiro da visita supõe o e-mail enviado até quarta, 11/Nov). Diga também se o envio passa a ser pelo botão do RootifyONE, depois do desenho da Arquitetura.
+- Ficha da KR Law no RootifyONE (Clientes e CRM, Licenças do RADAR): preencher o e-mail de boas-vindas e o domínio do
+  e-mail do escritório (`krlaw.com.br`, tirado do endereço do Leandro; confirmar se há outro) com o prompt que a Operação
+  entregou, e avisar "feito". Preencher a ficha não envia e-mail.
 - Drive: o dono restringe "Estudos de Casos Juridicos" (o conector não altera compartilhamento) e avisa "feito"; eu
-  confiro as permissões e atualizo a pasta do Drive para a versão atual (0.7.9, pacote RADAR).
+  confiro as permissões e atualizo a pasta do Drive para a versão atual (0.7.12, pacote RADAR).
 
 ---
 
