@@ -13,7 +13,8 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from . import VERSAO, agendar, assinatura, atualizar, banco as bd, cnpj, compartilhar, config, conta, preferencias, radar, rede, tribunais
+from . import VERSAO, agendar, armazenamento, assinatura, atualizar, banco as bd, cnpj, compartilhar, config, conta, preferencias, radar, rede, tribunais
+from . import classificar as cl
 
 PORTAS = range(8765, 8776)
 PAPEIS = ("Sócio ou sócia", "Advogado ou advogada", "Estagiário ou estagiária", "Equipe administrativa")
@@ -376,7 +377,20 @@ class Tratador(BaseHTTPRequestHandler):
             banco = bd.Banco(s.caminho_db)
             visao = "arquivo" if qs.get("visao", [""])[0] == "arquivo" else "lista"
             pagina = radar.montar_radar(cfg, banco, situacao=s.estado.situacao, dias=dias, visao=visao)
+            if visao == "arquivo":  # 0.7.16: com dezenas de milhares de ações, a tela recebe as 5 mil mais recentes; a busca vai ao programa
+                q = cl.sem_acento(str(qs.get("q", [""])[0] or "")).lower().strip()[:80]
+                if q:
+                    pagina["itens"] = [i for i in pagina["itens"] if q in cl.sem_acento(" ".join(str(x) for x in (
+                        i.get("processo"), i.get("vara"), " ".join(i.get("empresas") or []), (i.get("empresa") or {}).get("cnpj"),
+                        (i.get("empresa") or {}).get("razao_social"), (i.get("empresa") or {}).get("municipio")))).lower()]
+                pagina["arquivo_total"], pagina["arquivo_busca"] = len(pagina["itens"]), q
+                pagina["itens"] = pagina["itens"][:ARQUIVO_NA_TELA]
             pagina["versao"] = VERSAO
+            try:
+                sit = armazenamento.situacao(cfg, banco, s.pasta)
+                pagina["armazenamento"] = sit
+            except Exception:  # noqa: BLE001 - o retrato do armazenamento nunca derruba a tela
+                pagina["armazenamento"] = {}
             pagina["espaco"] = banco.espaco()
             ultimo = banco.execucoes("retorno", 1)
             pagina["retorno"] = ultimo[0] if ultimo else {}
@@ -502,7 +516,8 @@ class Tratador(BaseHTTPRequestHandler):
                 ok, motivo = conta.cadastrar(cfg, VERSAO, corpo.get("email"), corpo.get("nome") or cfg["usuario"].get("nome"),
                                              corpo.get("documento") or doc_atual.get("numero"),
                                              papel_valido(corpo) if "papel" in corpo else cfg["usuario"].get("papel"),
-                                             doc_tipo=corpo.get("doc_tipo") or doc_atual.get("tipo") or "cnpj")
+                                             doc_tipo=corpo.get("doc_tipo") or doc_atual.get("tipo") or "cnpj",
+                                             aceite_uso=corpo.get("aceite_uso") if isinstance(corpo.get("aceite_uso"), dict) else None)
                 if not ok:
                     return self._responder({"ok": False, "motivo": motivo, "conta": conta.situacao(cfg)})
             if "horarios" in corpo:
@@ -601,6 +616,18 @@ class Tratador(BaseHTTPRequestHandler):
             feitas = banco.limpar_detalhe(meses, perfil=s.config()["usuario"].get("email", ""))
             banco.compactar()
             return self._responder({"ok": True, "resumidas": feitas, "espaco": banco.espaco()})
+        if caminho in ("/armazenamento/limpar", "/armazenamento/copia", "/armazenamento/exportar"):  # 0.7.16
+            if s.estado.como_dict()["rodando"] or leitura_em_outro_processo(s.arquivo_andamento):
+                return self._responder({"ok": False, "motivo": "Espere a leitura terminar. / Wait for the reading to finish."})
+            cfg, banco, recados = s.config(), bd.Banco(s.caminho_db), []
+            if caminho.endswith("limpar"):
+                ok, msg = armazenamento.limpar(cfg, banco, s.pasta, VERSAO, recados.append)
+            else:
+                ok, msg = armazenamento.copia_seguranca(cfg, banco, "exportação" if caminho.endswith("exportar") else "feita à mão",
+                                                        recados.append, so_csv=caminho.endswith("exportar"))
+                if ok:
+                    abrir_no_windows(msg)
+            return self._responder({"ok": ok, "mensagem" if ok else "motivo": msg, "armazenamento": armazenamento.situacao(cfg, banco, s.pasta)})
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)
@@ -635,6 +662,10 @@ class Tratador(BaseHTTPRequestHandler):
             planilha = preferencias.caminho(base) if base else ""
             if corpo.get("o_que") == "pasta_mae":  # a pasta escolhida, onde aparece a pasta da planilha (para compartilhar)
                 alvo = os.path.dirname(base) if base else ""
+            elif corpo.get("o_que") == "copias":  # 0.7.16: a pasta das cópias de segurança
+                alvo = armazenamento.pasta_copias(base)
+                if alvo:
+                    os.makedirs(alvo, exist_ok=True)
             else:
                 alvo = planilha if corpo.get("o_que") in ("planilha", "editar") else (os.path.dirname(planilha) if planilha else "")
             if corpo.get("o_que") == "editar":  # Preferências e Exclusões: abre normal, para o escritório poder salvar
@@ -687,6 +718,7 @@ class Tratador(BaseHTTPRequestHandler):
 
 # Ramos oferecidos na tela: só a frente trabalhista por enquanto (os TJs e TRFs são de outras frentes).
 FRENTES = ("Trabalhista",)
+ARQUIVO_NA_TELA = 5000  # 0.7.16: quantas ações do Arquivo vão à tela de uma vez (a busca vai ao programa)
 MARCA_PADRAO = {"nome": "RADAR JUDICIAL", "curto": "RADAR", "destaque": "IA"}
 
 

@@ -418,7 +418,7 @@ class Wizard(AppV07):
         from lexsuite import conta
         chamadas = []
         original = conta.cadastrar
-        def falso(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj"):
+        def falso(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj", aceite_uso=None):
             chamadas.append({"email": email, "nome": nome, "papel": papel})
             cfg["usuario"].update({"email": email, "nome": nome, "papel": papel})
             return True, ""
