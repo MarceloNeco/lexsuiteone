@@ -224,6 +224,18 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 | 08/Nov | Arquitetura | Produto | **Contatos aprovados pelo dono** (`documentacao/DESENHO-CONTATOS.md`, seções 1 a 4 e 8): implementar na próxima versão do programa (1) colunas de contato com fonte, data, confiança e validação na tela e na planilha (aba Radar em grupo recolhível + aba Contatos editável e preservada), endereço completo da Receita, canal "Outros"; MEI e empresário individual com todos os contatos; (2) vermelho "Contato a buscar na área logada" quando falta; (3) botões "Preparar busca de contatos" (gera `saida/contatos/buscar-contatos-<data>.md`) e "Colar contatos encontrados" (tabela Markdown de 8 colunas, validação linha a linha, recusa reclamante e CPF); (4) tabelas `contatos`, `contatos_historico` e `acoes` no `lexsuite.db` e a função única `pode(acao)` (hoje sempre sim) por onde passa toda ação que muda dado, inclusive em lote. Texto das instruções do arquivo: a Arquitetura escreve quando a Produto pedir | não |
 
+## Perguntas ao dono (uma lista só; a Produto consolida e leva ao dono)
+
+Antes de perguntar ao dono, confira esta lista: se a pergunta já está aqui ou já foi respondida em "Decisões", não
+pergunte de novo. Pergunta nova: acrescente uma linha (número seguinte, quem pergunta, pergunta, recomendação). A Produto
+leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
+
+| # | Quem pergunta | Pergunta | Recomendação | Situação |
+|---|---|---|---|---|
+| 1 a 6 | Arquitetura | As 6 de `documentacao/DESENHO-ARQUIVO-ESTATISTICAS.md` (situações, Lista, limpeza, encerradas, frente, área logada) | — | respondidas em 09/Nov (ver Decisões) |
+| 7 | Arquitetura | Quem preenche a ficha da KR Law no RootifyONE | Operação | respondida em 09/Nov: Operação |
+| 8 | Arquitetura | Termo de tratamento de dados com a KR Law | rascunho da Arquitetura | respondida em 09/Nov: Arquitetura faz o rascunho |
+
 ## Decisões do dono registradas aqui
 
 | Data | Decisão |
@@ -243,4 +255,5 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 08/Nov | Partes com CNPJ em cadastro público (MEI, empresário individual, mesmo com nome de pessoa) aparecem no RADAR: é informação pública e identifica quem responde ao processo. Reclamante e pessoa sem CNPJ público continuam fora. Dado privado fica para a investigação dos prompts da visita. |
 | 09/Nov | **Situações do processo** (substitui Novo, Visto, Em contato, Descartado e a proposta Novo/Lido/Em tratamento/Tratado): **Novo** (ainda não aberto) · **Visto** (ficha aberta; marca sozinho, pode voltar a Novo) · **Em análise** (buscando informação, conhecendo sócios, a empresa procurou o escritório, sem conversa oficial) · **Em contato** (conversa oficial, negociando) · **Virou cliente** (contratou o escritório) · **Descartado** (direto ou negociação não concluída; continua na Lista) · **Arquivado** (sai da Lista; fica no Arquivo e na planilha). Masculino: fala do processo. Ícone (?) no cartão explica cada uma. Ações em lote com janela de confirmação, o total de processos afetados e "Desfazer" logo depois. Os **totais por situação** (sem dado pessoal nem número de processo) vão para a SolverONE: o escritório tem a obrigação de informar; desenho com a Arquitetura. |
 | 09/Nov | Lista = tudo menos Arquivado. Dado completo guardado 12 meses (ajustável), resumo e estatísticas para sempre. "Encerradas" pelo DataJud numa versão seguinte, com o aviso do atraso de ~7 semanas. Frente por regra escrita, com "a conferir". Área logada: no máximo 30 processos por dia (ajustável). "Lista para abrir no celular" passa a se chamar "Retrato da última leitura". MEI e empresário individual com todos os dados (confirmado de novo; só advogados acessam, alinhado com o Leandro). Próxima versão do programa sai como um pacote só com tudo isso. |
+| 09/Nov | Totais por situação vão para a SolverONE **a cada leitura**, junto da conferência da licença, e a Configuração mostra ao escritório exatamente os números enviados. Rascunho do termo de tratamento de dados com a KR Law: Arquitetura (com a obrigação de informar os totais); dono e Leandro revisam. Ficha da KR Law no RootifyONE (e-mail de boas-vindas e domínio): Operação preenche. **Perguntas ao dono: uma lista só**, na seção "Perguntas ao dono" deste quadro, numeradas; toda conversa confere a lista antes de perguntar e escreve ali o que precisa; **a Produto consolida e leva ao dono**, e devolve um prompt único a cada conversa. |
 | 08/Nov | Auditoria em banco (quem, quando com fuso, antes/depois) para mudanças de configuração e controle, em todos os produtos; a planilha é controle extra. |
