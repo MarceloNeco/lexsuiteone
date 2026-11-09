@@ -42,7 +42,7 @@ class Licenca(unittest.TestCase):
         self.assertEqual(conta.bloqueio(cfg, HOJE), "")
         self.assertEqual(set(enviado), {"codigo", "instalacao", "versao"})  # nada pessoal sai daqui
         self.assertEqual(len(cfg["conta"]["instalacao"]), 16)
-        self.assertIn("até 2027-01-31", conta.situacao(cfg)["texto"])
+        self.assertEqual(conta.situacao(cfg)["validade"], "2027-01-31")  # 0.7.21: a validade vai em linha própria na tela
 
     def test_desativada_bloqueia_com_contato(self):
         cfg = {"conta": {"codigo": CODIGO}}

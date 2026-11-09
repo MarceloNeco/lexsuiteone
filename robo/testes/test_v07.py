@@ -801,6 +801,12 @@ class V0714(unittest.TestCase):
         self.assertNotIn("readOnlyRecommended", z.read("xl/workbook.xml").decode())
         self.assertIn("Cópia de trabalho gerada em 09/11/2026 às 10:30", z.read("xl/worksheets/sheet1.xml").decode())  # 0.7.18: texto e faixa verde
         self.assertIn("Cópias", copia)
+        import stat
+        self.assertIn("Este arquivo é do escritório Escritório Teste", z.read("xl/worksheets/sheet1.xml").decode())  # 0.7.21
+        self.assertFalse(os.stat(caminho).st_mode & stat.S_IWRITE)  # 0.7.21: a de consulta fica marcada "somente leitura"
+        self.assertTrue(os.stat(copia).st_mode & stat.S_IWRITE)  # a cópia de trabalho, não
+        compartilhar.gravar_radar(cfg, pagina, b, "0.7.14", radar.COLUNAS_RADAR, radar.linha_csv, "", "", lambda *_: None, arquivo=[])  # regrava
+        self.assertFalse(os.stat(caminho).st_mode & stat.S_IWRITE)
 
     def test_frente_pela_regra(self):
         from lexsuite import frentes

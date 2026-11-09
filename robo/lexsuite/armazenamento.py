@@ -207,7 +207,7 @@ def copia_seguranca(cfg, banco, motivo="", aviso=print, agora=None, so_csv=False
         copiadas = 0
         if not so_csv:
             for _frente, origem in preferencias.planilhas_existentes(base):
-                shutil.copy2(origem, os.path.join(destino, os.path.basename(origem)))
+                shutil.copyfile(origem, os.path.join(destino, os.path.basename(origem)))  # 0.7.21: sem a marca "somente leitura" (a poda apaga)
                 copiadas += 1
         n = _csv_arquivo(os.path.join(destino, "Arquivo completo (todas as ações guardadas no programa).csv"), cfg, banco)
     except Exception as e:  # noqa: BLE001 - revisão da 0.7.18: qualquer falha (disco, banco) apaga a cópia pela metade

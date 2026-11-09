@@ -1,7 +1,8 @@
-# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.20)
+# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.21)
 
 Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
-licença (código, versão e só quantidades por situação), o cadastro de quem usa (nome, e-mail, função e documento do
+licença (código, versão e só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou
+contato), o cadastro de quem usa (nome, e-mail, função e documento do
 escritório), o aceite dos termos (versão, data e fuso horário), avisos técnicos de erro (sem conteúdo de processos) e a
 procura de versão nova; ver "Rede". A relação de ações, as fichas, os contatos, as anotações e as estatísticas dos meses
 anteriores (totais e, só no computador, o número dos processos já contados) não saem do computador e da pasta do escritório.
@@ -24,7 +25,7 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
   técnicos de erro (etapa, versão, Windows e mensagem sem caminhos pessoais); a procura de versão nova no site; DataJud
   (consulta pública do CNJ, quando ligada) e, só se o escritório configurar, e-mail (SMTP) e Telegram para avisos. Com intervalo mínimo entre pedidos,
   poucas tentativas e teto de 2 GB por download (lido em pedaços; caderno descompactado também limitado). Nada de burlar
-  captcha, trocar IP ou abrir várias cópias. A tela não faz nenhum pedido externo (fontes do sistema); desde a 0.7.20 o programa manda ao navegador uma regra de segurança (Content-Security-Policy) que proíbe a página de falar com qualquer endereço fora deste computador. O AssistONE embutido é só ajuda, sem IA; os erros técnicos das estatísticas antigas vão à SolverONE como os das leituras (etapa, versão, Windows, mensagem sem caminhos pessoais).
+  captcha, trocar IP ou abrir várias cópias. A tela não faz nenhum pedido externo (fontes do sistema); desde a 0.7.20 o programa manda ao navegador uma regra de segurança (Content-Security-Policy) que proíbe a página de carregar script, imagem ou fonte, abrir conexão ou enviar formulário para endereço de fora deste computador; os links que a pessoa clica (PJe, termos, manual) continuam abrindo no navegador. O AssistONE embutido é só ajuda, sem IA; os erros técnicos das estatísticas antigas vão à SolverONE como os das leituras (etapa, versão, Windows, mensagem sem caminhos pessoais).
 - **Tela só local.** Além de escutar em 127.0.0.1, recusa qualquer pedido cujo cabeçalho Host não seja 127.0.0.1 ou
   localhost na porta do robô (contra DNS rebinding).
 - **Planilhas e CSV.** O `.xlsx` é texto puro (nunca fórmula). No CSV exportado, célula que começa com `=`, `+`, `-` ou

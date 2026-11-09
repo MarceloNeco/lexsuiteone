@@ -15,6 +15,7 @@ from urllib.parse import parse_qs, urlparse
 
 from . import VERSAO, agendar, armazenamento, assinatura, atualizar, banco as bd, cnpj, compartilhar, config, conta, preferencias, radar, rede, tribunais
 from . import classificar as cl
+from . import planilha as planilha_mod
 
 PORTAS = range(8765, 8776)
 PAPEIS = ("Sócio ou sócia", "Advogado ou advogada", "Estagiário ou estagiária", "Equipe administrativa")
@@ -268,6 +269,7 @@ class Servidor(ThreadingHTTPServer):
     def ultima_do_banco(self):
         """0.7.19: depois de reiniciar (atualização), a última leitura vem do banco, não "Ainda não leu". Consulta só
         leitura, guardada até o banco mudar (a tela pergunta o estado a cada poucos segundos)."""
+        import pathlib
         import sqlite3
         try:
             marca_ = os.path.getmtime(self.caminho_db)
@@ -275,22 +277,33 @@ class Servidor(ThreadingHTTPServer):
             return None
         if self._ultima_cache and self._ultima_cache[0] == marca_:
             return self._ultima_cache[1]
-        achou = None
-        try:
-            import pathlib  # M2 da revisão: caminho com # ou ? precisa ir codificado na URI
-            con = sqlite3.connect(pathlib.Path(self.caminho_db).resolve().as_uri() + "?mode=ro", uri=True, timeout=1)
+        sql = "SELECT quando, resumo FROM execucoes WHERE tipo = 'radar' ORDER BY quando DESC LIMIT 10"
+        linhas = None
+        # 1º só leitura pela URI (caminho com # ou ? vai codificado); 0.7.21: pasta em rede (\\servidor\...) não vira URI
+        # que o SQLite aceite, então tenta o jeito comum (o arquivo já existe, nada é criado)
+        for abrir in (lambda: sqlite3.connect(pathlib.Path(self.caminho_db).resolve().as_uri() + "?mode=ro", uri=True, timeout=1),
+                      lambda: sqlite3.connect(self.caminho_db, timeout=1)):
             try:
-                linhas = con.execute("SELECT quando, resumo FROM execucoes WHERE tipo = 'radar' ORDER BY quando DESC LIMIT 10").fetchall()
-            finally:
-                con.close()
-            for quando, dados in linhas:
-                e = json.loads(dados or "{}")
-                if e.get("resultado") == "ok" or e.get("lidas"):
-                    achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} ações novas contra empresas.",
-                             "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new lawsuits against companies."}
-                    break
-        except (sqlite3.Error, ValueError):
+                con = abrir()
+                try:
+                    linhas = con.execute(sql).fetchall()
+                finally:
+                    con.close()
+                break
+            except (sqlite3.Error, ValueError, OSError):
+                continue
+        if linhas is None:
             return None
+        achou = None
+        for quando, dados in linhas:
+            try:
+                e = json.loads(dados or "{}")
+            except ValueError:
+                continue
+            if e.get("resultado") == "ok" or e.get("lidas"):
+                achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} ações novas contra empresas.",
+                         "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new lawsuits against companies."}
+                break
         self._ultima_cache = (marca_, achou)
         return achou
 
@@ -384,7 +397,8 @@ class Tratador(BaseHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         if tipo.startswith("text/html"):  # 0.7.20 (sugestão da revisão): o navegador impõe "nenhum pedido externo"
             self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; "
-                             "img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'")
+                             "img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; "
+                             "form-action 'self'; frame-ancestors 'none'")
         self.end_headers()
         self.wfile.write(corpo)
 
@@ -456,6 +470,7 @@ class Tratador(BaseHTTPRequestHandler):
                 "tribunais": [x for x in tribunais.TRIBUNAIS if x["ramo"] in FRENTES], "ramos": [r for r in tribunais.RAMOS if r in FRENTES], "regioes": tribunais.REGIOES, "ufs": tribunais.UFS,
                 "config": {"tribunais": tribunais.validar(r.get("tribunais")), "escritorio": cfg.get("escritorio", ""),
                            "valor_minimo": r.get("valor_minimo"), "dias_na_pagina": r.get("dias_na_pagina"),
+                           "dias_para_tras": int(r.get("dias_para_tras") if r.get("dias_para_tras") is not None else 1),
                            "teto_capital_gigante": r.get("teto_capital_gigante"),
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
@@ -526,7 +541,7 @@ class Tratador(BaseHTTPRequestHandler):
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
-            return self._responder({"candidatas": cand, "atual": cfg["compartilhar"].get("pasta", ""), "drive": bool(cand),
+            return self._responder({"candidatas": cand, "nuvens": compartilhar.nuvens(), "atual": cfg["compartilhar"].get("pasta", ""), "drive": bool(cand),
                                     "pasta_programa": s.pasta, "subpasta": compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"]),
                                     "escolher": os.name == "nt"})
         return self._responder({"erro": "não existe"}, status=404)
@@ -715,7 +730,8 @@ class Tratador(BaseHTTPRequestHandler):
                     if s.hist.get("rodando"):
                         return self._responder({"ok": False, "motivo": "Espere a leitura em andamento terminar. / Wait for the reading in progress."})
                     s.hist.clear()
-                    s.hist.update({"rodando": True, "k": 0, "total": 0, "tribunal": "", "data": ""})
+                    s.hist_n = getattr(s, "hist_n", 0) + 1  # 0.7.21: cada leitura tem número; a antiga não mexe na nova
+                    s.hist.update({"rodando": True, "k": 0, "total": 0, "tribunal": "", "data": "", "n": s.hist_n})
             if caminho.endswith("pedir"):
                 try:
                     meses = max(1, min(24, int(corpo.get("meses") or _hist.MESES_PADRAO)))
@@ -724,23 +740,43 @@ class Tratador(BaseHTTPRequestHandler):
                 n = _hist.pedir(banco, meses, tribunais.validar(cfg["radar"].get("tribunais")), perfil=cfg["usuario"].get("email", ""))
                 return self._responder({"ok": True, "na_fila": n, "historico": _hist.situacao(banco)})
 
+            meu_n = s.hist.get("n")
+
+            def minha():  # esta leitura ainda é a da tela? (um envio de erro lento não pode sujar a leitura seguinte)
+                return s.hist.get("n") == meu_n
+
             def ler():
                 try:
                     b2 = bd.Banco(s.caminho_db)
                     def andamento(k, total, trib, data):
-                        s.hist.update({"k": k, "total": total, "tribunal": trib, "data": data})
+                        if minha():
+                            s.hist.update({"k": k, "total": total, "tribunal": trib, "data": data})
                     por_vez = int((cfg.get("radar") or {}).get("estatisticas_por_vez") or _hist.POR_VEZ)
-                    r_ = _hist.processar(b2, limite=por_vez, aviso=print, parar=lambda: bool(s.hist.get("parar")), andamento=andamento)
-                    s.hist.update({"ultimo": r_})
+                    r_ = _hist.processar(b2, limite=por_vez, aviso=print, parar=lambda: bool(minha() and s.hist.get("parar")), andamento=andamento)
+                    if minha():
+                        s.hist.update({"ultimo": r_})
                 except Exception as e:  # noqa: BLE001 - a tela mostra a mensagem certa, no idioma dela (4.1)
                     causa_, msg = _hist._causa(e)
-                    if causa_ == "erro_do_programa":  # B1 da revisão da 0.7.19: a mensagem diz que a SolverONE foi avisada; avisa de fato
+                    if causa_ == "erro_do_programa":
+                        # 0.7.21 (revisão da 0.7.20): a tela recebe na hora um texto sem promessa; só depois de o aviso
+                        # técnico chegar à SolverONE o texto passa a dizer que ela foi avisada (sem internet, não diz)
                         import traceback
-                        conta.registrar_erro(cfg, VERSAO, "estatisticas antigas", traceback.format_exc()[-1800:])
-                    s.hist.update({"erro": msg})
+                        detalhe = traceback.format_exc()[-1800:]
+                        with s.hist_trava:
+                            if minha():
+                                s.hist.update({"erro": dict(_ERRO_HIST_NEUTRO), "rodando": False})
+                                s.hist.pop("parar", None)
+                        enviado = conta.registrar_erro(cfg, VERSAO, "estatisticas antigas", detalhe)
+                        with s.hist_trava:
+                            if enviado and minha():
+                                s.hist.update({"erro": msg})
+                    elif minha():
+                        s.hist.update({"erro": msg})
                 finally:
-                    s.hist["rodando"] = False
-                    s.hist.pop("parar", None)
+                    with s.hist_trava:
+                        if minha():
+                            s.hist["rodando"] = False
+                            s.hist.pop("parar", None)
             threading.Thread(target=ler, daemon=True, name="estatisticas-antigas").start()
             return self._responder({"ok": True})
         if caminho == "/copia-planilha":
@@ -818,6 +854,7 @@ class Tratador(BaseHTTPRequestHandler):
                 alvo = planilha if corpo.get("o_que") in ("planilha", "editar") else (os.path.dirname(planilha) if planilha else "")
             if corpo.get("o_que") == "editar":  # Preferências e Exclusões: abre normal, para o escritório poder salvar
                 alvo = planilha
+                planilha_mod.liberar_escrita(alvo)  # 0.7.21: a marca "somente leitura" volta na próxima gravação
             elif corpo.get("o_que") == "planilha" and abrir_so_leitura(alvo):
                 return self._responder({"ok": True, "so_leitura": True})
             if abrir_no_windows(alvo):
@@ -942,6 +979,12 @@ def personalizar_manual(html, cfg):
         bloco = f"<div class=\"caixa\"><b>Para você, {h.escape(papel.lower())}</b><ul>{itens}</ul></div>"
     return html.replace("<!--OLA-->", ola, 1).replace("<!--PARA_VOCE-->", bloco, 1)
 
+
+# 0.7.21: texto do erro das estatísticas antigas antes de o aviso técnico chegar à SolverONE (sem promessa de aviso)
+_ERRO_HIST_NEUTRO = {"pt": "As estatísticas dos meses anteriores pararam por um problema no programa. O que já foi lido ficou guardado; "
+                           "tente de novo mais tarde e, se continuar, fale com judicial@solverone.com.br.",
+                     "en": "Previous months statistics stopped because of a program problem. What was already read is saved; "
+                           "try again later and, if it persists, contact judicial@solverone.com.br."}
 
 _ESCOLHER_PS = ("Add-Type -AssemblyName System.Windows.Forms; [Console]::OutputEncoding = [Text.Encoding]::UTF8; "
                 "$f = New-Object System.Windows.Forms.Form; $f.TopMost = $true; $f.ShowInTaskbar = $true; $f.Opacity = 0; "

@@ -3,7 +3,7 @@
 Complementa `robo/ROTEIRO-INSTALACAO.md` (instalação do robô). Aqui ficam os prompts para usar no **Claude in Chrome**
 no computador do Leandro, com o consentimento dele, para aprender como os sistemas funcionam e planejar as integrações.
 Nada aqui produz efeito nos sistemas: é leitura e anotação. **Atualizado em 09/Nov/2026 (noite)**: programa na versão 0.7.16
-(tudo o que a visita precisa: planilha por frente, cópias de segurança, armazenamento, "Colar resposta da área logada"), termos de uso 1.1 com aceite, autorização do Leandro antes de qualquer prompt na área logada e
+(tudo o que a visita precisa: planilha por frente, cópias de segurança, armazenamento, "Trazer dados da área logada"), termos de uso 1.1 com aceite, autorização do Leandro antes de qualquer prompt na área logada e
 formato padronizado de resposta que o RADAR lê (seção "Resposta para o RADAR"). Os prompts foram escritos para o Claude
 in Chrome, mas servem em qualquer extensão de IA de navegador. Versão anterior: 08/Nov/2026 (foco na ficha de canais; prompts
 escritos para rodar **sozinhos**, no Sonnet, na conta do escritório, sem ninguém acompanhando; o relatório volta para a
@@ -46,7 +46,7 @@ Se ele não autorizar algum ponto, aquele prompt não roda.
 ## Resposta para o RADAR (formato padronizado, versão 1)
 
 Além do `RELATÓRIO FINAL` (que é para a SolverONE), os prompts que olham processos devolvem um bloco que o advogado copia e
-cola no RADAR ("Colar resposta da área logada", na versão 0.7.16). O RADAR lê esse bloco sem IA, confere linha por linha
+cola no RADAR ("Trazer dados da área logada", grupo "Área logada", desde a 0.7.21). O RADAR lê esse bloco sem IA, confere linha por linha
 e preenche a ficha e a planilha. Formato:
 
 ```
@@ -124,7 +124,7 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
 4. **Depois: Prompt 1, PJe.** O Leandro faz o login no PJe do TRT2 com o certificado, na janela da extensão, cola o
    Prompt 1 com o número do processo de referência e deixa sozinha. Quando o PJe pedir token ou certificado, ela escreve
    `BLOQUEIO` e espera o Leandro. Depois o TRT15. **No fim, feche o ciclo dentro do RADAR:** copie o bloco
-   `RESPOSTA PARA O RADAR v1` que a extensão devolveu e cole no RADAR (menu ☰, "Colar resposta da área logada"); confira
+   `RESPOSTA PARA O RADAR v1` que a extensão devolveu e cole no RADAR (menu ☰, "Área logada" → "Trazer dados da área logada"); confira
    no cartão do processo se o valor, a data e os contatos apareceram, com a fonte. Depois teste o caminho do próprio
    programa: num cartão de um processo novo da lista, clique em "Buscar na área logada" (o pedido vai copiado, só com o
    que falta), cole na extensão, e cole a resposta de volta. Anote o que deu certo e o que travou: é a base da próxima

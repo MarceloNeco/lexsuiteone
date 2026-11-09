@@ -132,7 +132,27 @@ def _xml_aba(aba):
     return "".join(p)
 
 
-def escrever_xlsx(caminho, abas, so_leitura_recomendado=False):
+def liberar_escrita(caminho):
+    """0.7.21: tira a marca "somente leitura" do Windows (a planilha de consulta fica marcada entre uma gravação e outra)."""
+    import stat
+    try:
+        if os.path.exists(caminho) and not os.access(caminho, os.W_OK):
+            os.chmod(caminho, stat.S_IREAD | stat.S_IWRITE)
+    except OSError:
+        pass
+
+
+def marcar_so_leitura(caminho):
+    """0.7.21 (decisão do dono): a planilha de consulta abre só para leitura para todo mundo, inclusive com dois cliques no
+    Explorer ou no Drive. O RADAR tira a marca no instante de regravar e põe de volta."""
+    import stat
+    try:
+        os.chmod(caminho, stat.S_IREAD)
+    except OSError:
+        pass
+
+
+def escrever_xlsx(caminho, abas, so_leitura_recomendado=False, marcar=False):
     """Grava um .xlsx de forma atômica. Levanta ValueError se as abas forem inválidas."""
     if not abas:
         raise ValueError("É preciso ao menos uma aba.")
@@ -244,7 +264,10 @@ def escrever_xlsx(caminho, abas, so_leitura_recomendado=False):
             z.writestr("xl/styles.xml", estilos)
             for i, a in enumerate(abas, 1):
                 z.writestr(f"xl/worksheets/sheet{i}.xml", _xml_aba(a))
+        liberar_escrita(caminho)  # no Windows, trocar um arquivo marcado "somente leitura" falha
         os.replace(tmp, caminho)
+        if marcar:
+            marcar_so_leitura(caminho)
     except BaseException:
         if os.path.exists(tmp):
             os.remove(tmp)

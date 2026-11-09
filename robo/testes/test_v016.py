@@ -572,13 +572,28 @@ class V0720(unittest.TestCase):
                 c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
                 c.request("POST", "/estatisticas/ler", body="{}", headers={"X-LexSuite": "1", "Content-Type": "application/json"})
                 c.getresponse().read(); c.close()
-                for _ in range(50):
-                    if not srv.hist.get("rodando"):
+                for _ in range(100):
+                    if reg.called and srv.hist.get("erro"):
                         break
                     time.sleep(0.05)
-                self.assertTrue(srv.hist.get("erro"))
+                time.sleep(0.1)
                 self.assertEqual(reg.call_count, 1)
                 self.assertEqual(reg.call_args[0][2], "estatisticas antigas")
+                self.assertTrue(srv.hist.get("erro"))
+            # 0.7.21: sem internet (aviso não chegou), o texto não promete que a SolverONE foi avisada
+            srv.hist.clear()
+            with mock.patch.object(_h, "processar", side_effect=sqlite3.OperationalError("database is locked")), \
+                    mock.patch.object(_conta, "registrar_erro", return_value=False):
+                c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+                c.request("POST", "/estatisticas/ler", body="{}", headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+                c.getresponse().read(); c.close()
+                for _ in range(100):
+                    if srv.hist.get("erro"):
+                        break
+                    time.sleep(0.05)
+                time.sleep(0.1)
+                self.assertNotIn("avisad", srv.hist["erro"]["pt"])
+                self.assertNotIn("notified", srv.hist["erro"]["en"])
         finally:
             srv.shutdown(); srv.server_close()
 
@@ -602,7 +617,52 @@ class V0720(unittest.TestCase):
         try:
             c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
             c.request("GET", "/"); r = c.getresponse(); r.read(); c.close()
-            self.assertIn("connect-src 'self'", r.getheader("Content-Security-Policy") or "")
+            csp = r.getheader("Content-Security-Policy") or ""
+            for regra in ("connect-src 'self'", "form-action 'self'", "frame-ancestors 'none'", "img-src 'self' data:"):
+                self.assertIn(regra, csp)
+        finally:
+            srv.shutdown(); srv.server_close()
+
+
+    def test_envio_lento_nao_suja_a_leitura_seguinte(self):
+        """0.7.21 (revisão): o aviso de erro de uma leitura antiga, demorado, não muda a leitura nova."""
+        import threading, time, http.client, sqlite3
+        from unittest import mock
+        from lexsuite import app, conta as _conta, historico as _h
+        pasta = tempfile.mkdtemp()
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+
+        def pedir_ler():
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+            c.request("POST", "/estatisticas/ler", body="{}", headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+            r = c.getresponse().read(); c.close()
+            return r
+        chamadas = []
+
+        def processar(*a, **k):
+            chamadas.append(1)
+            if len(chamadas) == 1:
+                raise sqlite3.OperationalError("database is locked")
+            time.sleep(1.0)
+            return {"lidos": 0}
+        try:
+            with mock.patch.object(_h, "processar", side_effect=processar), \
+                    mock.patch.object(_conta, "registrar_erro", side_effect=lambda *a, **k: (time.sleep(0.5), True)[1]):
+                pedir_ler()
+                for _ in range(100):
+                    if not srv.hist.get("rodando"):
+                        break
+                    time.sleep(0.02)
+                pedir_ler()  # leitura nova enquanto o aviso da antiga ainda está sendo enviado
+                time.sleep(0.7)  # o envio antigo terminou
+                self.assertTrue(srv.hist.get("rodando"))
+                self.assertNotIn("erro", srv.hist)
+                for _ in range(100):
+                    if not srv.hist.get("rodando"):
+                        break
+                    time.sleep(0.05)
+                self.assertEqual(srv.hist.get("ultimo"), {"lidos": 0})
         finally:
             srv.shutdown(); srv.server_close()
 
