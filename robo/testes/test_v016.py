@@ -471,9 +471,11 @@ class V0718Revisao(unittest.TestCase):
             r = h.processar(b, limite=5, aviso=lambda *_: None, pausa=0)
         finally:
             djen.meta_caderno = orig
-        self.assertIn("parou", r)
-        self.assertEqual(h.situacao(b)["erros"], 0)
-        self.assertEqual(h.situacao(b)["na_fila"], 20)
+        self.assertIn("parou", r)  # 0.7.19: para depois de 3 Diários diferentes seguidos com o site fora
+        self.assertEqual((h.situacao(b)["erros"], h.situacao(b)["na_fila"]), (3, 17))
+        self.assertEqual(set(r["parou"]), {"pt", "en"})
+        h.tentar_de_novo_os_erros(b)
+        self.assertEqual(h.situacao(b)["na_fila"], 20)  # os erros voltam para a fila na próxima rodada
 
     def test_estatistica_antiga_de_outro_tribunal_fica(self):
         from lexsuite import banco as bd
@@ -482,6 +484,33 @@ class V0718Revisao(unittest.TestCase):
         b.guardar_lead({"processo": "1", "tribunal": "TRT2", "vara": "1ª Vara", "empresas": ["X Fictícia Ltda"], "data_publicacao": "2026-11-06"}, "2026-11-06")
         b.atualizar_estatisticas()
         self.assertEqual(sum(e["novas"] for e in b.estatisticas() if e["tribunal"] == "TRT3"), 7)
+
+
+class V0719(unittest.TestCase):
+    """0.7.19: banco que passou pela 0.7.18 antes da correção devolve a turma trabalhada; cópia do banco com data."""
+
+    def test_banco_718_devolve_trabalhada_e_copia_com_data(self):
+        from lexsuite import banco as bd
+        pasta = tempfile.mkdtemp()
+        caminho = os.path.join(pasta, "lexsuite.db")
+        b = bd.Banco(caminho)
+        b.guardar_lead({"processo": "t1", "tribunal": "TRT2", "vara": "10ª Turma", "empresas": ["Empresa Fictícia Ltda"]}, "2026-11-06")
+        b.mudar_situacao(["t1"], "virou_cliente")
+        b.con.execute("UPDATE leads SET fora_criterio = 1")
+        b.con.execute("PRAGMA user_version = 718")
+        b.con.commit(); b.con.close()
+        b2 = bd.Banco(caminho)
+        self.assertEqual([l["processo"] for l in b2.todos_leads()], ["t1"])
+        self.assertEqual(b2.con.execute("PRAGMA user_version").fetchone()[0], 719)
+        # banco antigo (antes da 0.7.18) ganha cópia com data no nome, sem arquivo temporário sobrando
+        c2 = os.path.join(pasta, "outro.db")
+        b3 = bd.Banco(c2)
+        b3.guardar_lead({"processo": "x", "tribunal": "TRT2", "vara": "1ª Vara", "empresas": ["X Fictícia Ltda"]}, "2026-11-06")
+        b3.con.execute("PRAGMA user_version = 714"); b3.con.commit(); b3.con.close()
+        bd.Banco(c2)
+        copias = [n for n in os.listdir(pasta) if n.startswith("outro.db.antes-0.7.18-")]
+        self.assertEqual(len(copias), 1)
+        self.assertFalse([n for n in os.listdir(pasta) if n.endswith(".tmp")])
 
 
 if __name__ == "__main__":

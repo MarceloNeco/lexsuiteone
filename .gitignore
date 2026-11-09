@@ -1,6 +1,6 @@
 # Dados de cada instalação: nunca entram no repositório
 robo/config.json
-robo/*.db
+robo/*.db*
 robo/saida/
 robo/diagnostico/
 robo/python/

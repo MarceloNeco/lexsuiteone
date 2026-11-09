@@ -887,7 +887,7 @@ class V0714b(unittest.TestCase):
         st = {l[0]: l[1] for l in b.con.execute("SELECT processo, status FROM leads")}
         self.assertEqual([st[str(k)] for k in range(5)], ["novo", "em_contato", "descartado", "novo", "visto"])
         self.assertEqual(b.con.execute("SELECT faixa_valor FROM leads WHERE processo = '0'").fetchone()[0], "100k-300k")
-        self.assertEqual(b.con.execute("PRAGMA user_version").fetchone()[0], 718)  # 0.7.18: reclassificação feita junto
+        self.assertEqual(b.con.execute("PRAGMA user_version").fetchone()[0], 719)  # 0.7.19: reclassificação (corrigida) feita junto
         bd.Banco(caminho)  # abrir de novo não refaz nada nem dá erro
 
     def test_retorno_corta_em_2000(self):

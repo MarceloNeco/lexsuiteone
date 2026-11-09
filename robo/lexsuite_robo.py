@@ -427,10 +427,12 @@ def cmd_radar(a):
             try:  # antes de terminar o estado: a tela vê a leitura "rodando" e não inicia outra ao mesmo tempo (revisão)
                 from lexsuite import historico
                 hora = dt.datetime.now().hour
-                if (hora >= 18 or hora < 7) and historico.situacao(banco)["na_fila"]:
-                    historico.processar(banco, aviso=lambda m: print(m, flush=True), parar=estado.parar)
+                sit_h = historico.situacao(banco)
+                if (hora >= 18 or hora < 7) and (sit_h["na_fila"] or sit_h["erros"]):
+                    historico.processar(banco, limite=int(cfg["radar"].get("estatisticas_por_vez") or historico.POR_VEZ),
+                                        aviso=estado.aviso, parar=estado.parar)  # estado.aviso mantém a batida de leitura.json
             except Exception as e:  # noqa: BLE001 - as estatísticas antigas nunca atrapalham a leitura
-                print(f"  Estatísticas antigas: não deu certo agora ({e.__class__.__name__}); tento na próxima noite.", flush=True)
+                print(f"  Estatísticas antigas: não deu certo agora ({e.__class__.__name__}); tento na próxima noite. / Will retry next night.", flush=True)
         estado.terminar(situacao)
         if cfg["radar"].get("avisar_ao_terminar", True):
             from lexsuite import agendar, app

@@ -669,10 +669,16 @@ class Tratador(BaseHTTPRequestHandler):
             with s.hist_trava:  # 0.7.18 (revisão): dois cliques não abrem duas leituras de estatísticas
                 if s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento) or s.hist.get("rodando"):
                     return self._responder({"ok": False, "motivo": "Espere a leitura em andamento terminar. / Wait for the reading in progress."})
-                if caminho.endswith("ler"):
+            try:
+                cfg, banco = s.config(), bd.Banco(s.caminho_db)
+            except Exception as e:  # noqa: BLE001 - revisão da 0.7.18 (4.4): nunca deixa a marca "rodando" presa
+                return self._responder({"ok": False, "motivo": f"Não consegui abrir os dados do programa ({e.__class__.__name__})."})
+            if caminho.endswith("ler"):
+                with s.hist_trava:
+                    if s.hist.get("rodando"):
+                        return self._responder({"ok": False, "motivo": "Espere a leitura em andamento terminar. / Wait for the reading in progress."})
                     s.hist.clear()
                     s.hist.update({"rodando": True, "k": 0, "total": 0, "tribunal": "", "data": ""})
-            cfg, banco = s.config(), bd.Banco(s.caminho_db)
             if caminho.endswith("pedir"):
                 try:
                     meses = max(1, min(24, int(corpo.get("meses") or _hist.MESES_PADRAO)))
@@ -686,10 +692,12 @@ class Tratador(BaseHTTPRequestHandler):
                     b2 = bd.Banco(s.caminho_db)
                     def andamento(k, total, trib, data):
                         s.hist.update({"k": k, "total": total, "tribunal": trib, "data": data})
-                    r_ = _hist.processar(b2, aviso=print, parar=lambda: bool(s.hist.get("parar")), andamento=andamento)
+                    por_vez = int((cfg.get("radar") or {}).get("estatisticas_por_vez") or _hist.POR_VEZ)
+                    r_ = _hist.processar(b2, limite=por_vez, aviso=print, parar=lambda: bool(s.hist.get("parar")), andamento=andamento)
                     s.hist.update({"ultimo": r_})
-                except Exception as e:  # noqa: BLE001
-                    s.hist.update({"erro": e.__class__.__name__})
+                except Exception as e:  # noqa: BLE001 - a tela mostra a mensagem certa, no idioma dela (4.1)
+                    _c, msg = _hist._causa(e)
+                    s.hist.update({"erro": msg})
                 finally:
                     s.hist["rodando"] = False
                     s.hist.pop("parar", None)

@@ -54,7 +54,7 @@ def situacao(banco):
     novas = banco.con.execute("SELECT coalesce(sum(novas), 0) FROM historico").fetchone()[0]
     faixa = banco.con.execute("SELECT min(data), max(data) FROM historico WHERE situacao = 'lido'").fetchone()
     ped = banco.execucoes("historico_pedido", 1)
-    return {"na_fila": r.get("fila", 0), "lidos": r.get("lido", 0), "sem_diario": r.get("sem_diario", 0),
+    return {"na_fila": r.get("fila", 0) + r.get("lendo", 0), "lidos": r.get("lido", 0), "sem_diario": r.get("sem_diario", 0),
             "erros": r.get("erro", 0), "novas": int(novas or 0), "desde": faixa[0] or "", "ate": faixa[1] or "",
             "pedido": ped[0] if ped else {}}
 
@@ -78,20 +78,42 @@ def _somar(banco, tribunal, data, novos):
                           chave + (qtd, quando))
 
 
-def processar(banco, limite=POR_VEZ, aviso=print, parar=None, pausa=PAUSA_S, andamento=None):
-    """Lê até `limite` Diários da fila (do mais novo para o mais antigo). Devolve {lidos, sem_diario, erros, novas}."""
+def _causa(e):
+    """(causa, {pt, en}) de uma falha ao baixar um Diário antigo. 403 que não é o das 3h vale como site fora (0.7.19)."""
+    from . import causas
+    causa = causas.classificar(e)
+    if causa == "erro_do_programa" and any(c in str(e) for c in ("HTTP 403", "HTTP 429", "HTTP 5")):
+        causa = "governo_fora"
+    return causa, {"pt": causas.mensagem(causa), "en": causas.mensagem(causa, "en")}
+
+
+def processar(banco, limite=None, aviso=print, parar=None, pausa=PAUSA_S, andamento=None):
+    """Lê até `limite` Diários da fila (do mais novo para o mais antigo). Devolve {lidos, sem_diario, erros, novas, parou?}.
+    0.7.19 (revisão da Operação): cada Diário é reservado ("lendo") antes de ler, para dois leitores nunca contarem o
+    mesmo Diário; reservas com mais de 1 hora voltam para a fila; site fora do ar para a fila só depois de 3 Diários
+    diferentes seguidos falharem (o que falhou vai para "erro" e volta na próxima rodada)."""
+    limite = int(limite or POR_VEZ)
     feitos = {"lidos": 0, "sem_diario": 0, "erros": 0, "novas": 0}
-    tentar_de_novo_os_erros(banco)  # revisão da 0.7.18: o que deu erro volta para a fila a cada nova rodada
+    agora_ = dt.datetime.now()
+    banco.con.execute("UPDATE historico SET situacao = 'fila' WHERE situacao = 'lendo' AND (quando IS NULL OR quando < ?)",
+                      ((agora_ - dt.timedelta(hours=1)).isoformat(timespec="seconds"),))
+    tentar_de_novo_os_erros(banco)  # o que deu erro volta para a fila a cada nova rodada
     fila = banco.con.execute("SELECT tribunal, data FROM historico WHERE situacao = 'fila' ORDER BY data DESC, tribunal LIMIT ?",
-                             (int(limite),)).fetchall()
+                             (limite,)).fetchall()
     vistos = banco.processos_vistos() | {p for (p,) in banco.con.execute("SELECT processo FROM historico_processos")}
+    falhas_seguidas = 0
     for k, (trib, data) in enumerate(fila, 1):
         if parar and parar():
-            aviso("  Estatísticas antigas: parada a pedido; o resto fica na fila.")
+            aviso("  Estatísticas antigas: parada a pedido; o resto fica na fila. / Stopped on request; the rest stays queued.")
             break
+        quando = dt.datetime.now().isoformat(timespec="seconds")
+        r = banco.con.execute("UPDATE historico SET situacao = 'lendo', quando = ? WHERE tribunal = ? AND data = ? AND situacao = 'fila'",
+                              (quando, trib, data))
+        banco.con.commit()
+        if r.rowcount == 0:  # outro leitor já pegou este Diário
+            continue
         if andamento:
             andamento(k, len(fila), trib, data)
-        quando = dt.datetime.now().isoformat(timespec="seconds")
         try:
             meta = djen.meta_caderno(trib, data, lambda *_: None)
             if meta is None:
@@ -109,26 +131,29 @@ def processar(banco, limite=POR_VEZ, aviso=print, parar=None, pausa=PAUSA_S, and
                                   (len(novos), quando, trib, data))
                 feitos["lidos"] += 1
                 feitos["novas"] += len(novos)
+            falhas_seguidas = 0
         except Exception as e:  # noqa: BLE001 - um Diário com problema não para a fila
             if e.__class__.__name__ == "BloqueadoForaDoBrasil":
-                raise
-            from . import causas
-            causa = causas.classificar(e)
-            if causa in ("governo_fora", "sem_internet", "ainda_nao_liberado_3h") or any(c in str(e) for c in ("HTTP 429", "HTTP 403", "HTTP 5")):
-                feitos["parou"] = causas.mensagem(causa)  # site fora, limite ou sem internet: para a fila e tenta depois
-                aviso(f"  Estatísticas antigas: parei ({causas.mensagem(causa)}). O resto fica na fila para a próxima vez. "
-                      f"/ Stopped; the rest stays queued.")
+                banco.con.execute("UPDATE historico SET situacao = 'fila' WHERE tribunal = ? AND data = ?", (trib, data))
                 banco.con.commit()
-                break
+                raise
+            causa, msg = _causa(e)
             banco.con.execute("UPDATE historico SET situacao = 'erro', quando = ? WHERE tribunal = ? AND data = ?", (quando, trib, data))
             feitos["erros"] += 1
-            aviso(f"  Estatísticas antigas: {trib} {data} não deu certo ({e.__class__.__name__}); tento de novo na próxima vez.")
+            falhas_seguidas += 1
+            if causa in ("governo_fora", "sem_internet", "ainda_nao_liberado_3h") and falhas_seguidas >= 3:
+                feitos["parou"] = msg
+                aviso(f"  Estatísticas antigas: parei ({msg['pt']}). O resto fica na fila para a próxima vez. / Stopped ({msg['en']}).")
+                banco.con.commit()
+                break
+            aviso(f"  Estatísticas antigas: {trib} {data} não deu certo ({e.__class__.__name__}); tento de novo na próxima vez. "
+                  f"/ Will retry next time.")
         banco.con.commit()
         if pausa and k < len(fila):
             time.sleep(pausa)
     if fila:
         aviso(f"  Estatísticas antigas: {feitos['lidos']} Diário(s) lido(s), {feitos['sem_diario']} sem Diário, "
-              f"{feitos['novas']} ações novas contadas.")
+              f"{feitos['novas']} ações novas contadas. / {feitos['lidos']} gazette(s) read, {feitos['novas']} new lawsuits counted.")
     return feitos
 
 

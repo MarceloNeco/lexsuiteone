@@ -105,17 +105,35 @@ class Banco:
             self.con.commit()
         if (self.con.execute("PRAGMA user_version").fetchone() or [0])[0] < 718:
             if caminho and os.path.exists(caminho) and self.con.execute("SELECT count(*) FROM leads").fetchone()[0]:
-                try:  # cópia do banco antes da limpeza única (revisão da 0.7.18), ao lado dele
-                    import shutil
-                    self.con.commit()
-                    if not os.path.exists(caminho + ".antes-0.7.18"):
-                        shutil.copy2(caminho, caminho + ".antes-0.7.18")
-                except OSError:
-                    pass
+                self._copia_antes(caminho, "0.7.18")
             self._reclassificar_0718()
-            self.con.execute("PRAGMA user_version = 718")
+            self.con.execute("PRAGMA user_version = 719")
+            self.con.commit()
+        elif (self.con.execute("PRAGMA user_version").fetchone()[0] or 0) == 718:
+            # 0.7.19: quem rodou a 0.7.18 antes da correção tinha turma trabalhada escondida; volta para a lista
+            self.con.execute("UPDATE leads SET fora_criterio = 0 WHERE fora_criterio = 1 AND (coalesce(status, 'novo') <> 'novo' "
+                             "OR dados LIKE '%\"manual\"%' OR processo IN (SELECT DISTINCT processo FROM contatos))")
+            self.con.execute("PRAGMA user_version = 719")
             self.con.commit()
         self.caminho = caminho
+
+    def _copia_antes(self, caminho, versao):
+        """Cópia do banco antes de uma mudança única, ao lado dele, com data no nome (lexsuite.db.antes-0.7.18-AAAA-MM-DD).
+        Grava num arquivo temporário e só então dá o nome final: cópia pela metade (disco cheio) nunca passa por boa."""
+        import shutil
+        destino = f"{caminho}.antes-{versao}-{dt.date.today().isoformat()}"
+        if any(n.startswith(os.path.basename(caminho) + f".antes-{versao}") for n in os.listdir(os.path.dirname(caminho) or ".")):
+            return
+        tmp = destino + ".tmp"
+        try:
+            self.con.commit()
+            shutil.copyfile(caminho, tmp)
+            os.replace(tmp, destino)
+        except OSError:
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
 
     def _reclassificar_0718(self):
         """0.7.18, uma vez: o que foi guardado pela regra antiga e não é ação nova sai da Lista, do Arquivo, da planilha e
