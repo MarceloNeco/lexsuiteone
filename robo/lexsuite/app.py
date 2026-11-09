@@ -277,7 +277,8 @@ class Servidor(ThreadingHTTPServer):
             return self._ultima_cache[1]
         achou = None
         try:
-            con = sqlite3.connect(f"file:{self.caminho_db}?mode=ro", uri=True, timeout=1)
+            import pathlib  # M2 da revisão: caminho com # ou ? precisa ir codificado na URI
+            con = sqlite3.connect(pathlib.Path(self.caminho_db).resolve().as_uri() + "?mode=ro", uri=True, timeout=1)
             try:
                 linhas = con.execute("SELECT quando, resumo FROM execucoes WHERE tipo = 'radar' ORDER BY quando DESC LIMIT 10").fetchall()
             finally:
@@ -381,6 +382,9 @@ class Tratador(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(corpo)))
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
+        if tipo.startswith("text/html"):  # 0.7.20 (sugestão da revisão): o navegador impõe "nenhum pedido externo"
+            self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; "
+                             "img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'")
         self.end_headers()
         self.wfile.write(corpo)
 
@@ -705,7 +709,7 @@ class Tratador(BaseHTTPRequestHandler):
             try:
                 cfg, banco = s.config(), bd.Banco(s.caminho_db)
             except Exception as e:  # noqa: BLE001 - revisão da 0.7.18 (4.4): nunca deixa a marca "rodando" presa
-                return self._responder({"ok": False, "motivo": f"Não consegui abrir os dados do programa ({e.__class__.__name__})."})
+                return self._responder({"ok": False, "motivo": f"Não consegui abrir os dados do programa ({e.__class__.__name__}). / Could not open the program data."})
             if caminho.endswith("ler"):
                 with s.hist_trava:
                     if s.hist.get("rodando"):
@@ -729,7 +733,10 @@ class Tratador(BaseHTTPRequestHandler):
                     r_ = _hist.processar(b2, limite=por_vez, aviso=print, parar=lambda: bool(s.hist.get("parar")), andamento=andamento)
                     s.hist.update({"ultimo": r_})
                 except Exception as e:  # noqa: BLE001 - a tela mostra a mensagem certa, no idioma dela (4.1)
-                    _c, msg = _hist._causa(e)
+                    causa_, msg = _hist._causa(e)
+                    if causa_ == "erro_do_programa":  # B1 da revisão da 0.7.19: a mensagem diz que a SolverONE foi avisada; avisa de fato
+                        import traceback
+                        conta.registrar_erro(cfg, VERSAO, "estatisticas antigas", traceback.format_exc()[-1800:])
                     s.hist.update({"erro": msg})
                 finally:
                     s.hist["rodando"] = False

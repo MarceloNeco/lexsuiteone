@@ -122,10 +122,12 @@ class Banco:
         Grava num arquivo temporário e só então dá o nome final: cópia pela metade (disco cheio) nunca passa por boa."""
         import shutil
         destino = f"{caminho}.antes-{versao}-{dt.date.today().isoformat()}"
-        if any(n.startswith(os.path.basename(caminho) + f".antes-{versao}") for n in os.listdir(os.path.dirname(caminho) or ".")):
-            return
         tmp = destino + ".tmp"
         try:
+            # revisão da 0.7.19: cópia pela metade (.tmp de uma queda de energia) não conta como pronta
+            if any(n.startswith(os.path.basename(caminho) + f".antes-{versao}") and not n.endswith(".tmp")
+                   for n in os.listdir(os.path.dirname(caminho) or ".")):
+                return
             self.con.commit()
             shutil.copyfile(caminho, tmp)
             os.replace(tmp, destino)

@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.19 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.20 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,10 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.20:** a SolverONE pode desligar o AssistONE pelo RootifyONE (Controle dos apps): o aviso chega na conferência
+  da licença, sem a tela fazer pedido à internet; desligado assim, o cartão da Configuração diz "Desligado pela
+  administração da SolverONE". O link "Aceitar em nome do escritório" leva código, e-mail e nome depois do `#`, que não
+  vai ao servidor nem fica em registro dele.
 - **0.7.19:** menu ☰ em gaveta que desliza, com cabeçalhos de grupo (não clicáveis), itens recuados com seta e "Sair"
   separado em vermelho; **lupa** ao lado da engrenagem, que procura empresa, processo, CNPJ, cidade, opção do programa
   e assunto do manual; engrenagem centrada; "Interromper" virou botão vermelho; depois de reiniciar, a tela mostra a

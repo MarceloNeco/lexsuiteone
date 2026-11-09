@@ -540,5 +540,72 @@ class V0719Tela(unittest.TestCase):
         self.assertFalse(compartilhar.testar(os.path.join(pasta, "nao-existe"), "x", leve=True)[0])
 
 
+class V0720(unittest.TestCase):
+    """0.7.20: interruptores do RootifyONE chegam pela conferência da licença (lex-conta v12) e ficam guardados."""
+
+    def test_recursos_da_lex_conta(self):
+        import datetime as dt
+        from lexsuite import conta
+        cfg = {"conta": {"codigo": "LEX-ABCD-EFGH", "instalacao": "teste"}}
+        conta.verificar(cfg, "0.7.20", dt.date(2026, 11, 10), pedir=lambda *a, **k: {"ok": True, "recursos": {"assistone": False, "x" * 99: True, "lixo": "sim"}})
+        self.assertEqual(cfg["conta"]["recursos"]["assistone"], False)
+        self.assertNotIn("lixo", cfg["conta"]["recursos"])
+        self.assertTrue(all(len(k) <= 60 for k in cfg["conta"]["recursos"]))
+        self.assertEqual(conta.situacao(cfg)["recursos"]["assistone"], False)
+        # sem o campo, mantém o último
+        conta.verificar(cfg, "0.7.20", dt.date(2026, 11, 11), pedir=lambda *a, **k: {"ok": True})
+        self.assertEqual(cfg["conta"]["recursos"]["assistone"], False)
+
+
+    def test_erro_das_estatisticas_avisa_a_solverone(self):
+        """B1 da revisão da 0.7.19: a mensagem diz "a SolverONE foi avisada"; então o registro técnico é enviado."""
+        import json as _json, threading, time, http.client
+        from unittest import mock
+        from lexsuite import app, conta as _conta, historico as _h
+        pasta = tempfile.mkdtemp()
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            import sqlite3
+            with mock.patch.object(_h, "processar", side_effect=sqlite3.OperationalError("database is locked")), \
+                    mock.patch.object(_conta, "registrar_erro") as reg:
+                c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+                c.request("POST", "/estatisticas/ler", body="{}", headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+                c.getresponse().read(); c.close()
+                for _ in range(50):
+                    if not srv.hist.get("rodando"):
+                        break
+                    time.sleep(0.05)
+                self.assertTrue(srv.hist.get("erro"))
+                self.assertEqual(reg.call_count, 1)
+                self.assertEqual(reg.call_args[0][2], "estatisticas antigas")
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_copia_tmp_pela_metade_nao_conta(self):
+        from lexsuite import banco as bd
+        pasta = tempfile.mkdtemp()
+        caminho = os.path.join(pasta, "lexsuite.db")
+        bd.Banco(caminho).con.close()
+        open(caminho + ".antes-9.9.9-2026-11-09.tmp", "w").close()
+        b = bd.Banco(caminho)
+        b._copia_antes(caminho, "9.9.9")
+        self.assertTrue([n for n in os.listdir(pasta) if n.startswith("lexsuite.db.antes-9.9.9-") and not n.endswith(".tmp")])
+
+    def test_pagina_com_regra_de_seguranca(self):
+        import threading, http.client
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        shutil.copy(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "radar_modelo.html"), pasta)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+            c.request("GET", "/"); r = c.getresponse(); r.read(); c.close()
+            self.assertIn("connect-src 'self'", r.getheader("Content-Security-Policy") or "")
+        finally:
+            srv.shutdown(); srv.server_close()
+
+
 if __name__ == "__main__":
     unittest.main()
