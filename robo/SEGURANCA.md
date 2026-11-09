@@ -1,7 +1,9 @@
-# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.14)
+# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.15)
 
-Resumo para quem audita. O robô roda no computador do escritório. A única troca com a SolverONE é a conferência da
-licença (código, versão e só quantidades por situação; ver "Rede").
+Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
+licença (código, versão e só quantidades por situação), o cadastro de quem usa (nome, e-mail, função e documento do
+escritório), avisos técnicos de erro (sem conteúdo de processos) e a procura de versão nova; ver "Rede". A relação de
+ações, as fichas, os contatos e as anotações não saem do computador e da pasta do escritório.
 
 - **Sem segredos no código ou no pacote.** Nenhuma senha, chave de API ou certificado. A chave privada que assina
   atualizações nasce no computador do suporte e nunca sai dele; o pacote leva só a chave pública.
@@ -26,8 +28,9 @@ licença (código, versão e só quantidades por situação; ver "Rede").
 - **Dados pessoais.** Pessoas físicas das publicações são descartadas antes de gravar. Os contatos de empresa vêm do
   cadastro público da Receita; o uso é decisão do compliance do escritório, e os nomes de sócios podem ser desligados
   na aba Preferências. O relatório de diagnóstico mascara nomes e CPFs. O banco local guarda as ações com um trecho
-  curto do texto; depois de 12 meses (`radar.guardar_dias`) o trecho é apagado e fica só um resumo sem pessoa física
-  do processo, e os totais diários (estatísticas) ficam para sempre. Contatos de sócios só com fonte e data
+  curto do texto; depois de 12 meses (`radar.guardar_dias`) o trecho do Diário é apagado e fica um resumo (número do
+  processo, tribunal, vara, classe, data, link, valor, empresas, CNPJ e, da Receita, porte, atividade, cidade, endereço,
+  telefone, e-mail e nomes de sócios, sem o autor da ação), e os totais diários (estatísticas) ficam para sempre. Contatos de sócios só com fonte e data
   (decisão do dono); CPF e dado de reclamante são recusados na colagem. Revisão completa em
   `SEGURANCA-REVISAO-2026-11-07.md`.
 - **O que não é.** O "desligar pelo suporte" é cortesia, não trava: quem controla o computador controla o robô.

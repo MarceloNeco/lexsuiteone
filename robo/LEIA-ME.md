@@ -61,6 +61,8 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.15:** botão **Interromper** durante a leitura (para num ponto seguro; as ações já gravadas ficam) e aviso de
+  "leitura das 08h00 feita agora" quando o computador estava desligado na hora marcada.
 - **0.7.14:** menu ☰ (Configuração, planilha, contatos), abas Painel · Lista · Arquivo · Histórico de leituras, um
   processo por linha com a **situação** (Novo, Visto, Em análise, Em contato, Virou cliente, Descartado, Arquivado) e o
   selo de contato, seleção de vários com "Desfazer", busca, filtros novos e filtros salvos. A planilha abre só para

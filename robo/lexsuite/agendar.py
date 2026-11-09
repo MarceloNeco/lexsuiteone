@@ -71,7 +71,7 @@ def origem_da_leitura(cfg, agora=None, tolerancia_min=15):
     return "fora do horário"
 
 
-def horario_perdido(cfg, agora=None, tolerancia_min=15):
+def horario_perdido(cfg, agora=None, tolerancia_min=15, ultima_leitura=""):
     """0.7.15: se a leitura começou mais de 15 minutos depois de um horário marcado (computador desligado ou em repouso
     na hora), devolve esse horário ("08:00"); senão "". Olha o último horário marcado antes de agora (hoje ou ontem)."""
     agora = agora or dt.datetime.now()
@@ -87,6 +87,8 @@ def horario_perdido(cfg, agora=None, tolerancia_min=15):
                 ultimo = marcado
     if ultimo is None or agora - ultimo <= dt.timedelta(minutes=tolerancia_min) or agora - ultimo > dt.timedelta(hours=20):
         return ""
+    if ultima_leitura and str(ultima_leitura)[:19] >= ultimo.isoformat(timespec="seconds"):
+        return ""  # já houve leitura depois do horário marcado: não é atraso
     return ultimo.strftime("%H:%M")
 
 

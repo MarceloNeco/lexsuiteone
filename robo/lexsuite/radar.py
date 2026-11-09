@@ -277,8 +277,11 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
             detalhes.setdefault(n.get("tribunal") or "?", {"processos": 0, "acoes": 0})["acoes"] += 1
         banco.registrar_rodada({"id": rodada_id, "quando": agora.isoformat(timespec="minutes"), "modo": "caderno",
                                 "conferidas": len(pubs), "novas_processos": 0, "novas_acoes": len(novos), "detalhes": detalhes})
-        saude.registrar(banco, saude.avaliar(pubs, novos, feitas, falhas, agora.date()), aviso)
+        if not interrompida:  # contagem parcial não serve para avaliar a saúde das fontes (daria falso alarme)
+            saude.registrar(banco, saude.avaliar(pubs, novos, feitas, falhas, agora.date()), aviso)
         registro.update({"lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj, "resultado": "interrompida" if interrompida else "ok"})
+        if interrompida:
+            registro["causa"] = "interrompida"
     except Exception as e:
         from . import causas
         registro.update({"resultado": "interrompida" if isinstance(e, Interrompida) else "erro", "erro": f"{e.__class__.__name__}: {e}"[:300], "causa": causas.classificar(e),
@@ -311,7 +314,9 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
             if not gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso):
                 situacao["aviso_planilha"] = True
     if interrompida:  # tudo já foi fechado (contagem, estatísticas, planilha); avisa quem chamou que foi a pedido
-        raise Interrompida("interrompida")
+        e = Interrompida("interrompida")
+        e.situacao = situacao
+        raise e
     return situacao
 
 

@@ -656,7 +656,7 @@ window.LEXSUITE_RADAR = null;
       rodando_auto: "Leitura automática em andamento (começou às {h}).", c_tela: "Onde a tela abre", c_aba: "Abrir pelo atalho numa aba do navegador (junto das outras abas), em vez de uma janela própria", abrir_aba: "Abrir numa aba do navegador",
       aceite_abrir: "Abrir a página de aceite dos termos", termos: "Termos de uso", termos_ok: "aceitos por {n} em {d} (versão {v})", termos_falta: "falta o aceite do responsável do escritório (link no e-mail de boas-vindas)",
       atrasada: "Fazendo agora a leitura das {h}, que não rodou na hora porque o computador estava desligado ou em repouso.", interromper: "Interromper", interromper_q: "Interromper a leitura?",
-      interromper_x: "A leitura para no próximo ponto seguro (pode levar até um minuto). O que já foi lido fica salvo, nada fica pela metade e a próxima leitura continua de onde parou.", continuar_lendo: "Continuar lendo", parando: "Parando no próximo ponto seguro...",
+      interromper_x: "A leitura para no próximo ponto seguro: entre um Diário e outro ou entre uma consulta à Receita e outra (se estiver baixando um Diário grande, pode levar alguns minutos). Nada fica pela metade: as ações já gravadas ficam, e o resto é lido na próxima leitura.", continuar_lendo: "Continuar lendo", parando: "Parando no próximo ponto seguro...",
       c_interrompida: "Interrompida",
       v_painel: "Painel", v_lista: "Lista", k_acoes: "Ações", k_acoes_det: "{d} dia(s) com Diário", k_cnpj: "Com CNPJ confirmado", k_pct: "{p}% das ações",
       k_acima: "Acima de {min}", k_acima_det: "pelo valor da causa", k_soma: "Valor somado", k_soma_det: "{n} ação(ões) com valor", k_empresas: "Empresas",
@@ -753,7 +753,7 @@ window.LEXSUITE_RADAR = null;
       rodando_auto: "Automatic reading in progress (started at {h}).", c_tela: "Where the screen opens", c_aba: "Open from the shortcut in a browser tab (next to the other tabs), instead of its own window", abrir_aba: "Open in a browser tab",
       aceite_abrir: "Open the terms acceptance page", termos: "Terms of use", termos_ok: "accepted by {n} on {d} (version {v})", termos_falta: "the firm\u2019s responsible person has not accepted yet (link in the welcome e-mail)",
       atrasada: "Running now the {h} reading, which did not run on time because the computer was off or asleep.", interromper: "Stop", interromper_q: "Stop the reading?",
-      interromper_x: "The reading stops at the next safe point (it may take up to a minute). What was already read stays saved, nothing is left half-done and the next reading picks up where it stopped.", continuar_lendo: "Keep reading", parando: "Stopping at the next safe point...",
+      interromper_x: "The reading stops at the next safe point: between two gazettes or between two Federal Revenue lookups (if a large gazette is downloading, it may take a few minutes). Nothing is left half-done: lawsuits already saved stay, and the rest is read in the next reading.", continuar_lendo: "Keep reading", parando: "Stopping at the next safe point...",
       c_interrompida: "Stopped",
       v_painel: "Dashboard", v_lista: "List", k_acoes: "Lawsuits", k_acoes_det: "{d} day(s) with a gazette", k_cnpj: "Confirmed tax ID", k_pct: "{p}% of lawsuits",
       k_acima: "Above {min}", k_acima_det: "by claim value", k_soma: "Total claim value", k_soma_det: "{n} lawsuit(s) with a value", k_empresas: "Companies",
@@ -830,7 +830,7 @@ window.LEXSUITE_RADAR = null;
           var bi = el("button", "btn-txt", t("interromper")); bi.type = "button";
           bi.addEventListener("click", function () {
             var c = el("div"); c.appendChild(el("h3", null, t("interromper_q"))); c.appendChild(el("p", null, t("interromper_x")));
-            abrirJanela(c, [[t("continuar_lendo"), null], [t("interromper"), function () { post("/interromper", {}).then(function () { vigiar(); }); }, true]]);
+            abrirJanela(c, [[t("continuar_lendo"), null], [t("interromper"), function () { post("/interromper", {}).then(function () { vigiar(); }).catch(function () { mostrarAviso(t("falha")); }); }, true]]);
           });
           box.appendChild(bi);
         }
@@ -881,7 +881,7 @@ window.LEXSUITE_RADAR = null;
       lista.forEach(function (h) {
         var tr = el("tr"), q = String(h.quando_local || h.quando || "");
         var cls = h.causa === "ok" ? "ok" : (h.causa === "ainda_nao_liberado_3h" || h.causa === "nao_publicado" || h.causa === "interrompida") ? "aviso" : "ruim";
-        [q.slice(8, 10) + "/" + q.slice(5, 7) + " " + q.slice(11, 16) + (q.length > 19 ? " (" + q.slice(19) + ")" : ""), (lang === "en" ? ({ "botão": "button", "agendamento": "schedule", "fora do horário": "off schedule" })[h.origem] : "") || h.origem || "", h.tribunal || "", h.dias_pedidos || "",
+        [q.slice(8, 10) + "/" + q.slice(5, 7) + " " + q.slice(11, 16) + (q.length > 19 ? " (" + q.slice(19) + ")" : ""), (lang === "en" ? ({ "botão": "button", "agendamento": "schedule", "fora do horário": "off schedule", "à mão (RODAR.bat)": "by hand (RODAR.bat)" })[h.origem] : "") || h.origem || "", h.tribunal || "", h.dias_pedidos || "",
          null, (lang === "en" && h.fez_en) || h.fez || "", h.duracao != null ? h.duracao + " s" : "", h.http ? t("cod_tecnico", { c: h.http }) : ""].forEach(function (v, ix) {
           var td = ix === 4 ? el("td", cls, t("c_" + (h.causa || "erro_do_programa"))) : el("td", ix === 7 ? "cinza" : null, v); tr.appendChild(td); });
         tbody.appendChild(tr);
