@@ -252,6 +252,16 @@ def _valor_v1(dado, valor):
     return v if v and _valor_ok(canal, v) else None
 
 
+_UFS = ("AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ",
+        "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO")
+
+
+def uf_do_endereco(endereco):
+    """0.7.18: a UF no fim de um endereço ("... São Paulo/SP", "... - SP, 01001-000", "..., SP"), ou ''."""
+    achadas = re.findall(r"(?:^|[\s/,\-–(])(" + "|".join(_UFS) + r")(?=$|[\s,.;)\-–/]|\d)", str(endereco or "").upper())
+    return achadas[-1] if achadas else ""
+
+
 def e_resposta_v1(texto):
     return CABECALHO_V1.lower() in str(texto or "").lower()
 
@@ -302,6 +312,8 @@ def colar_v1(texto, empresas_por_processo, hoje=None):
         if dado in ("valor_causa", "data_ajuizamento"):
             saida["completar"].append({"processo": proc, "campo": dado, "valor": normal, "fonte": fonte[:80], "data": data})
             continue
+        if dado == "endereco" and uf_do_endereco(normal):  # o painel e os filtros passam a ter o estado da empresa
+            saida["completar"].append({"processo": proc, "campo": "uf", "valor": uf_do_endereco(normal), "fonte": fonte[:80], "data": data})
         saida["contatos"].append({"processo": proc, "empresa": empresas_por_processo[proc], "canal": _CANAL_DO_DADO[dado],
                                   "valor": str(normal)[:300], "de_pessoa": dado == "socio_contato", "fonte": fonte[:80],
                                   "data": data, "confianca": "media", "origem": "área logada", "observacao": obs[:300]})

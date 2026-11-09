@@ -162,6 +162,16 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.18 (09/Nov, noite; antes da visita, depois da 0.7.17)
+
+Feedback do dono (prints da 0.7.16): estatísticas dos meses anteriores para levar ao Leandro (sazonalidade e picos) —
+feitas com as decisões 10 a 14 (30 Diários por vez, padrão 3 meses e configurável, só totais, à noite ou "Ler agora");
+engrenagem ⚙ ao lado do perfil; perfil com o mesmo visual da Configuração e com a licença; e-mail e escritório fixos
+(segurança: quem sai do escritório não leva a licença trocando o e-mail); pelo menu ☰, página própria com "Voltar";
+cópia com links; o que vem da área logada atualiza o painel (valor, contato e agora o estado). Os 20.699 do dono eram
+da regra antiga: limpeza única, sem apagar. **Pacote: 45 arquivos no download completo e 44 na atualização** (novo
+`lexsuite/historico.py`). Se o CNJ não entregar Diário antigo (pergunta 12), a fila marca "sem Diário" e segue.
+
 ## 0.7.17 (09/Nov, noite; para publicar antes da visita, depois da 0.7.16)
 
 Feedback do dono sobre os filtros (print da 0.7.15): "Limpar filtros" não aparecia ao escolher numa lista (defeito da

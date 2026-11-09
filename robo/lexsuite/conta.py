@@ -160,12 +160,13 @@ def situacao(cfg):
     if motivo:
         pend = c.get("resposta") == "aceite_pendente"
         return {"codigo": c.get("codigo", ""), "ok": False, "texto": motivo, "aceite": c.get("aceite") or {},
-                "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else "", "termos": c.get("termos") or {}}
+                "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else "", "termos": c.get("termos") or {},
+                "escritorio": c.get("escritorio_licenca", ""), "validade": c.get("validade", "")}
     texto = "Licença ativa" + (f" até {c['validade']}" if c.get("validade") else "") + "."
     if c.get("resposta") == "sem_resposta":
         texto = f"Licença confirmada pela última vez em {c.get('ultima_ok')}; sem resposta da SolverONE agora."
     return {"codigo": c.get("codigo", ""), "ok": True, "texto": texto, "aceite": c.get("aceite") or {}, "aceite_link": "",
-            "termos": c.get("termos") or {}}
+            "termos": c.get("termos") or {}, "escritorio": c.get("escritorio_licenca", ""), "validade": c.get("validade", "")}
 
 
 # ---------- cadastro de quem usa (nome, e-mail, função) e do escritório (CNPJ) ----------

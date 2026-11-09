@@ -694,7 +694,9 @@ class Tratador(BaseHTTPRequestHandler):
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)
-            if ok and corpo.get("abrir", True):
+            if ok:
+                s.ultima_copia = resultado  # 0.7.18: a tela oferece "Abrir a cópia" e "Abrir a pasta"
+            if ok and corpo.get("abrir", False):
                 abrir_no_windows(resultado)
             return self._responder({"ok": ok, "caminho" if ok else "motivo": resultado})
         if caminho == "/contatos/preparar":
@@ -752,6 +754,10 @@ class Tratador(BaseHTTPRequestHandler):
             planilha = preferencias.caminho(base) if base else ""
             if corpo.get("o_que") == "pasta_mae":  # a pasta escolhida, onde aparece a pasta da planilha (para compartilhar)
                 alvo = os.path.dirname(base) if base else ""
+            elif corpo.get("o_que") == "ultima_copia":  # 0.7.18: a cópia que acabou de ser gerada (só ela)
+                alvo = getattr(s, "ultima_copia", "") or ""
+            elif corpo.get("o_que") == "pasta_copias":
+                alvo = os.path.dirname(getattr(s, "ultima_copia", "") or "") or (os.path.join(base, "Cópias") if base else "")
             elif corpo.get("o_que") == "copias":  # 0.7.16: a pasta das cópias de segurança
                 alvo = armazenamento.pasta_copias(base)
                 if alvo:
