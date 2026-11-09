@@ -173,7 +173,6 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 ### Preciso do dono
 - Nada pendente da nuvem: chave `RESEND_API_KEY_LEX` criada por ele em 08/Nov. Na ficha da KR Law (Clientes → Licenças do
   RADAR): preencher e-mail de boas-vindas e domínio do escritório quando tiver o e-mail do Leandro.
-- Respostas às 5 perguntas de `documentacao/DESENHO-CONTATOS.md`.
 - Termo de tratamento de dados com a KR Law (bloqueante para a 0.8 entrar no ar).
 
 ---
@@ -219,6 +218,8 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 09/Nov | Produto | Arquitetura | Feedback de 09/Nov, itens 42 a 45 e 51 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`: **Arquivo** (tudo o que foi lido, acumulado, pesquisável; a Lista fica só com o que é novo), **status em lote** guardado no banco do computador (hoje fica no navegador), **retenção** (limpar o dado bruto velho mostrando o espaço) sem perder as **Estatísticas** (totais diários por tribunal, vara, porte e faixa de valor, guardados para sempre), **frente** em cada ação (trabalhista, tributário, cível, empresarial) e fonte para "encerradas" (o Diário de distribuição não informa). Pede desenho curto em linguagem simples, com as perguntas ao dono; a Produto faz a tela e a planilha depois | não |
 
 
+| 08/Nov | Arquitetura | Produto | **Contatos aprovados pelo dono** (`documentacao/DESENHO-CONTATOS.md`, seções 1 a 4 e 8): implementar na próxima versão do programa (1) colunas de contato com fonte, data, confiança e validação na tela e na planilha (aba Radar em grupo recolhível + aba Contatos editável e preservada), endereço completo da Receita, canal "Outros"; MEI e empresário individual com todos os contatos; (2) vermelho "Contato a buscar na área logada" quando falta; (3) botões "Preparar busca de contatos" (gera `saida/contatos/buscar-contatos-<data>.md`) e "Colar contatos encontrados" (tabela Markdown de 8 colunas, validação linha a linha, recusa reclamante e CPF); (4) tabelas `contatos`, `contatos_historico` e `acoes` no `lexsuite.db` e a função única `pode(acao)` (hoje sempre sim) por onde passa toda ação que muda dado, inclusive em lote. Texto das instruções do arquivo: a Arquitetura escreve quando a Produto pedir | não |
+
 ## Decisões do dono registradas aqui
 
 | Data | Decisão |
@@ -233,6 +234,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 08/Nov | Documentos internos saem de `docs/` para `documentacao/` só depois de quinta 12/Nov (Arquitetura faz). Novos já nascem em `documentacao/`. |
 | 08/Nov | SQL das licenças: aprovado pelo dono pelo aplicativo, sem leitura. Não é violação. Daqui em diante SQL em arquivo, dono roda após revisar; Arquitetura revisa a segurança do que foi aplicado. |
 | 08/Nov | Worker `integracao-resposta`: Operação aplica a correção e testa. |
+| 08/Nov (noite) | **Contatos**: MEI e empresário individual com todos os contatos; todo contato encontrado entra, com fonte (inclusive de sócio; "Outros" para o que não tem campo); só advogados usam o RADAR hoje, mas a arquitetura já prevê níveis de acesso (ler, operar, administrar; lote restrito); independência de IA (busca de site e redes sem IA no roadmap; Claude in Chrome é opção); planilha é o espelho detalhado, pode ter mais colunas. |
 | 08/Nov (noite) | Desenhos da 0.8 e da licença em uso aprovados ("Pode"): pessoa aguardando aprovação lê normalmente; avisos enviados pela função da nuvem com a chave do Resend nos Secrets do Supabase (só o dono cola); e-mail de boas-vindas devolvido só até a primeira pessoa se cadastrar. |
 | 08/Nov | Partes com CNPJ em cadastro público (MEI, empresário individual, mesmo com nome de pessoa) aparecem no RADAR: é informação pública e identifica quem responde ao processo. Reclamante e pessoa sem CNPJ público continuam fora. Dado privado fica para a investigação dos prompts da visita. |
 | 08/Nov | Auditoria em banco (quem, quando com fuso, antes/depois) para mudanças de configuração e controle, em todos os produtos; a planilha é controle extra. |
