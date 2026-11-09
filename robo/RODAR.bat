@@ -4,7 +4,7 @@ cd /d "%~dp0"
 set "PY=python"
 if exist "python\python.exe" set "PY=python\python.exe"
 if "%~1"=="--agendado" (
-  "%PY%" lexsuite_robo.py radar
+  "%PY%" lexsuite_robo.py radar --agendado
   exit /b %errorlevel%
 )
 if "%~1"=="" (

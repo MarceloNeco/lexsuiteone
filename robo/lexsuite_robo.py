@@ -411,9 +411,11 @@ def cmd_radar(a):
     if _app.leitura_em_outro_processo(arquivo):  # 0.7.14: não roda duas leituras ao mesmo tempo
         print("  Já há uma leitura em andamento neste computador (pela tela ou agendada). Esta não roda.", flush=True)
         return
-    estado = _app.Estado(eco=lambda linha: print(linha, flush=True), arquivo=arquivo, origem=_ag.origem_da_leitura(cfg))
+    origem = _ag.origem_da_leitura(cfg) if getattr(a, "agendado", False) else "à mão (RODAR.bat)"
+    estado = _app.Estado(eco=lambda linha: print(linha, flush=True), arquivo=arquivo, origem=origem)
     if estado.origem == "fora do horário":  # 0.7.15: qual horário foi perdido (computador desligado ou em repouso)
-        estado.atrasada = _ag.horario_perdido(cfg)
+        ultimas = banco.execucoes("radar", 1)
+        estado.atrasada = _ag.horario_perdido(cfg, ultima_leitura=ultimas[0]["quando"] if ultimas else "")
         if estado.atrasada:
             print(f"  Fazendo agora a leitura das {estado.atrasada}, que não rodou na hora (computador desligado ou em repouso).", flush=True)
     estado.comecar()
@@ -429,9 +431,9 @@ def cmd_radar(a):
     except radar.RoboDesligado as e:
         estado.terminar(erro=str(e))
         raise SystemExit("  " + str(e))
-    except radar.Interrompida:
+    except radar.Interrompida as e:
         from lexsuite import causas
-        estado.terminar(erro=causas.mensagem("interrompida"), info={"causa": "interrompida", "pt": causas.mensagem("interrompida"),
+        estado.terminar(getattr(e, "situacao", None), erro=causas.mensagem("interrompida"), info={"causa": "interrompida", "pt": causas.mensagem("interrompida"),
                                                                     "en": causas.mensagem("interrompida", "en"), "detalhe": ""})
         print("  " + causas.mensagem("interrompida"), flush=True)
         return
@@ -559,7 +561,9 @@ def main(argv=None):
     s.add_argument("--config", default=os.path.join(AQUI, "config.json"))
     s.add_argument("--dias", type=int, help="dias úteis para trás (padrão: o do config.json)")
     s.add_argument("--sem-cnpj", action="store_true", help="não consultar a Receita")
-    s.add_argument("--diagnostico", action="store_true"); s.set_defaults(f=cmd_radar)
+    s.add_argument("--diagnostico", action="store_true")
+    s.add_argument("--agendado", action="store_true", help="leitura disparada pela tarefa do Windows (mostra o aviso de horário perdido)")
+    s.set_defaults(f=cmd_radar)
     s = sub.add_parser("app", help="abre a tela do Radar no navegador (escolher tribunais, rodar, ver a lista)")
     s.add_argument("--porta", type=int, help="porta local (padrão: a do config.json ou 8765)")
     s.add_argument("--sem-navegador", action="store_true", help="não abrir o navegador sozinho")

@@ -174,7 +174,8 @@ class Estado:
             self.erro_info = info
         self._gravar_andamento()
         fim = f"  ===== Leitura terminou às {dt.datetime.now():%H:%M}"
-        self._eco(fim + (f" com erro: {erro} =====" if erro else (f": {situacao.get('pt', '')} =====" if situacao else " =====")))
+        interrompida = (info or {}).get("causa") == "interrompida"
+        self._eco(fim + (": interrompida a pedido =====" if interrompida else (f" com erro: {erro} =====" if erro else (f": {situacao.get('pt', '')} =====" if situacao else " ====="))))
 
 
 def processo_vivo(pid):
@@ -304,11 +305,14 @@ class Servidor(ThreadingHTTPServer):
             except radar.RoboDesligado as e:
                 self.estado.aviso(str(e))
                 self.estado.terminar(erro=str(e), info={"causa": "desligado", "pt": str(e), "en": str(e), "detalhe": ""})
-            except radar.Interrompida:
+            except radar.Interrompida as e:
                 from . import causas
                 self.estado.aviso(causas.mensagem("interrompida"))
-                self.estado.terminar(erro=causas.mensagem("interrompida"), info={"causa": "interrompida", "pt": causas.mensagem("interrompida"),
-                                                                                "en": causas.mensagem("interrompida", "en"), "detalhe": ""})
+                sit = getattr(e, "situacao", None)
+                self.estado.terminar(sit, erro=causas.mensagem("interrompida"), info={"causa": "interrompida", "pt": causas.mensagem("interrompida"),
+                                                                                     "en": causas.mensagem("interrompida", "en"), "detalhe": ""})
+                if sit and sit.get("aviso_planilha"):
+                    self.planilha_depois()
             except Exception as e:  # a tela precisa saber que parou, qualquer que seja o motivo; em palavras claras
                 from . import causas
                 causa = causas.classificar(e)
@@ -550,7 +554,15 @@ class Tratador(BaseHTTPRequestHandler):
             os.makedirs(os.path.dirname(s.arquivo_andamento), exist_ok=True)
             with open(os.path.join(os.path.dirname(s.arquivo_andamento), "parar.json"), "w", encoding="utf-8") as f:
                 json.dump({"quando": dt.datetime.now().isoformat(timespec="seconds"), "quem": s.config()["usuario"].get("email", "")}, f)
-            bd.Banco(s.caminho_db).registrar_acao(s.config()["usuario"].get("email", ""), "interromper", "leitura", "", "", 1)
+            try:
+                b = bd.Banco(s.caminho_db)
+                try:
+                    b.registrar_acao(s.config()["usuario"].get("email", ""), "interromper", "leitura", "", "", 1)
+                    b.con.commit()
+                finally:
+                    b.con.close()  # nunca deixar a trava de escrita presa (a leitura em andamento precisa gravar)
+            except Exception:  # noqa: BLE001 - o registro é extra; o pedido de parada já está no parar.json
+                pass
             return self._responder({"ok": True})
         if caminho == "/abrir-em-aba":  # 0.7.14: a mesma tela numa aba comum do navegador (junto das outras abas)
             webbrowser.open(f"http://127.0.0.1:{s.server_address[1]}/")

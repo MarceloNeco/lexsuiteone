@@ -162,7 +162,7 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.15 (09/Nov, em andamento no ramo da Produto; vai à `main` depois de a 0.7.14 ser publicada)
+## 0.7.15 (09/Nov; pronta de novo depois da revisão da Operação: banco não trava ao interromper, textos honestos, aviso de atraso só na leitura agendada)
 
 Itens 85 a 88 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`: botão **Interromper** (a leitura para no próximo ponto
 seguro: entre um Diário e outro ou entre uma consulta à Receita e outra; o que já foi gravado fica, o Diário
