@@ -5,7 +5,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 
 ## O que já existe e funciona
 
-- Robô v0.7.15 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 126 testes verdes,
+- Robô v0.7.16 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 145 testes verdes,
   pacote em `releases/` e `docs/downloads/`. Tela local em 127.0.0.1, planilha `LexSuiteONE.xlsx` no Drive do escritório,
   atualização assinada (chave só na nuvem), manual personalizado, revisão de segurança (risco baixo). Na 0.7.9: horários
   de leitura escolhidos pelo escritório e leitura perdida compensada. Na 0.7.10 (publicada em 08/Nov, 16:39 UTC): domingo e
@@ -22,7 +22,10 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   programa e no instalador (só vale com `exigir_aceite` ligado na licença) e leitura agendada visível. A 0.7.15 (publicada
   em 09/Nov, 14:55 UTC) traz o botão Interromper (para num ponto seguro, também na leitura agendada), o aviso da leitura
   de horário perdido e a "próxima leitura" que se atualiza sozinha, mais os textos corrigidos sobre o que vai à
-  SolverONE e o que fica guardado.
+  SolverONE e o que fica guardado. A 0.7.16 (publicada em 09/Nov, 16:11 UTC) traz uma planilha por frente na mesma pasta
+  (a `LexSuiteONE.xlsx` antiga vira `LexSuiteONE - Trabalhista.xlsx`, com as abas Preferências e Exclusões preservadas), a pasta
+  `Cópias de segurança`, aviso e limite de armazenamento, regra de ação nova mais estreita e a Configuração reorganizada;
+  o escritório não precisa mais compartilhar a pasta com a SolverONE.
 - Site https://judicial.solverone.com.br **no ar** (GitHub Pages, pasta `docs/`, HTTPS forçado). É gerado de `paginas/`
   por `python ferramentas/marca.py`: nunca edite `docs/index.html` nem `docs/404.html` à mão. Tem página inicial PT/EN
   com o carrossel "Como funciona" (quatro passos, passa com o dedo no celular; falta o dono confirmar num iPhone de
@@ -61,13 +64,13 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   código de cliente `LEX-XXXX-XXXX`. Desenho detalhado em `robo/PENDENCIAS.md`; o desenho próprio
   (`docs/DESENHO-0.8.md`) ainda não existe e a Arquitetura o escreve em cima do que já está no ar.
 - Nada de contato pessoal do dono em nada que o cliente vê. Caixas: `judicial@` (contato de toda a suíte LexSuiteONE; no
-  futuro `moneytrio@` etc. para outras suítes), `contato@` (genérico), `integracao@` (só sistemas: compartilhar Drive;
-  responde sozinho, sem citar outro e-mail por ora), `nao-responda@` (só envia). `integracao@` é também uma Conta Google
+  futuro `moneytrio@` etc. para outras suítes), `contato@` (genérico), `integracao@` (só sistemas; era a conta com quem o escritório
+  compartilhava a pasta do Drive, o que a 0.7.16 dispensa; responde sozinho, sem citar outro e-mail por ora), `nao-responda@` (só envia). `integracao@` é também uma Conta Google
   sem Gmail. ImprovMX fica de reserva até ser cancelado (~2 semanas).
 - Repositório segue no GitHub pessoal até depois da visita; migração para a organização `solverone` sem impacto para o
   cliente (tudo que ele vê aponta para `judicial.solverone.com.br`). Roteiro em `robo/PENDENCIAS.md`.
 - Instalação no cliente (KR Law) na quinta-feira 12/Nov, na casa do Leandro, pelo dono. O pacote de quinta é a última
-  versão publicada (0.7.15 em 09/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
+  versão publicada (0.7.16 em 09/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
   em `docs/VISITA-KR-LAW.md`: rodam sozinhos, no Sonnet, na conta do escritório; param em login, token, certificado ou
   captcha e escrevem BLOQUEIO; o relatório final volta à sessão de Produto.
 - Publicação de versão (08/Nov): só a Operação publica, e só depois do dono escrever "publica a versão X" na conversa da
