@@ -122,9 +122,8 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.16 pronta no ramo e revisada** (revisor: 1 bloqueio, a planilha antiga aberta no Excel perdia as abas
-  editadas na troca de nome; corrigido e aprovado na segunda revisão, 145 testes). **Esperando o "pode" do dono para ir à
-  `main`** (muda o texto do site e do manual). Depois, a
+- (nada) **0.7.16 na `main`, pronta para publicar** (com o "pode" do dono, 09/Nov noite; revisada: 1 bloqueio corrigido
+  e aprovado na segunda revisão, 145 testes). A Operação revisa e publica com "publica a versão 0.7.16". Depois, a
   Operação revisa e publica com "publica a versão 0.7.16".
 
 ### Arquivos em uso
