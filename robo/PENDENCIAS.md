@@ -162,6 +162,16 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.15 (09/Nov, em andamento no ramo da Produto; vai à `main` depois de a 0.7.14 ser publicada)
+
+Itens 85 a 88 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`: botão **Interromper** (a leitura para no próximo ponto
+seguro: entre um Diário e outro ou entre uma consulta à Receita e outra; o que já foi gravado fica, o Diário
+interrompido não é marcado como lido e a próxima leitura continua de onde parou; vale para a leitura agendada, pelo
+`saida/parar.json`; registrado em `acoes` e no histórico); aviso **"Fazendo agora a leitura das 08h00, que não rodou na
+hora porque o computador estava desligado ou em repouso"** (`agendar.horario_perdido`); a "próxima leitura" da tela se
+atualiza sozinha quando o horário passa. A seguir, com o desenho da Arquitetura: termos por pessoa e "Atualizar
+estatísticas" (itens 79 e 82).
+
 ## 0.7.14 (09/Nov, pacote; pronta para publicar com o "pode")
 
 Itens 42 a 84 de `documentacao/FEEDBACK-TESTE-2026-11-09.md` (menos 79 e 82, que vão para a 0.7.15) e os contatos

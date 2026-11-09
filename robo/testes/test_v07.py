@@ -897,3 +897,49 @@ class V0714b(unittest.TestCase):
             d = (hoje - dt.timedelta(days=k % 50)).isoformat()
             b.guardar_lead({"processo": f"p{k}", "tribunal": f"TRT{k % 24 + 1}", "data_publicacao": d, "valor_causa": (k % 7) * 60000}, d)
         self.assertLessEqual(len(b.retorno(dias=60)), 2000)
+
+
+class V0715(unittest.TestCase):
+    """0.7.15: "Interromper" para num ponto seguro sem deixar nada pela metade; aviso do horário perdido."""
+
+    def test_interromper_para_no_ponto_seguro(self):
+        from lexsuite import monitor, djen, radar, banco as bd
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        chamadas = []
+        orig_meta, orig_baixar = djen.meta_caderno, djen.baixar_caderno
+        djen.meta_caderno = lambda sigla, data, aviso=print, motivos=None: (chamadas.append((sigla, data)) or {"versao": "1"})
+        djen.baixar_caderno = lambda *a, **k: [{"processo": a[0] + a[1]}]
+        tent, lidos = [], []
+        try:
+            with self.assertRaises(radar.Interrompida):
+                monitor.coletar_caderno(["TRT2", "TRT15"], 1, b, aviso=lambda *_: None, hoje=dt.date(2026, 11, 10),
+                                        lidos=lidos, tentativas=tent, parar=lambda: len(chamadas) >= 2)
+        finally:
+            djen.meta_caderno, djen.baixar_caderno = orig_meta, orig_baixar
+        self.assertEqual(len(chamadas), 2)  # parou antes do terceiro Diário
+        self.assertEqual(tent[-1]["causa"], "interrompida")
+        self.assertIsNone(b.versao_caderno("TRT2", "2026-11-10"))  # nada marcado como lido: a próxima leitura continua
+
+    def test_estado_parar_vale_so_para_a_leitura_atual(self):
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        e = app.Estado(eco=None, arquivo=os.path.join(pasta, "saida", "leitura.json"))
+        self.assertFalse(e.parar())
+        e.comecar()
+        self.assertFalse(e.parar())
+        with open(e.arquivo_parar(), "w", encoding="utf-8") as f:
+            json.dump({"quando": dt.datetime.now().isoformat(timespec="seconds"), "quem": "ana@example.com"}, f)
+        self.assertTrue(e.parar())
+        e.terminar({"pt": "x"})
+        e.comecar()  # leitura nova: o pedido antigo some
+        self.assertFalse(e.parar())
+
+    def test_horario_perdido(self):
+        from lexsuite import agendar
+        cfg = {"radar": {"horarios": ["08:00", "20:00"]}}
+        self.assertEqual(agendar.horario_perdido(cfg, dt.datetime(2026, 11, 9, 9, 17)), "08:00")
+        self.assertEqual(agendar.horario_perdido(cfg, dt.datetime(2026, 11, 9, 8, 5)), "")  # na hora: não é atraso
+        self.assertEqual(agendar.horario_perdido(cfg, dt.datetime(2026, 11, 10, 7, 0)), "20:00")  # a de ontem à noite
+        from lexsuite import causas
+        self.assertTrue(causas.e_aviso("interrompida"))
+        self.assertIn("continua de onde parou", causas.mensagem("interrompida"))

@@ -10,7 +10,7 @@ import json
 from . import rede
 
 CAUSAS = ("ok", "ainda_nao_liberado_3h", "nao_publicado", "governo_fora", "bloqueio_fora_do_brasil", "sem_internet",
-          "erro_do_programa")
+          "erro_do_programa", "interrompida")
 
 # Texto que o DJEN devolve com o HTTP 403 entre 00:00 e 03:00 (o JSON vem com "ó": compara o texto já decodificado).
 _LIBERA_3H = "podem ser acessados a partir das"
@@ -35,6 +35,8 @@ def ainda_nao_liberado(erro):
 def classificar(erro):
     if erro is None:
         return "ok"
+    if erro.__class__.__name__ == "Interrompida":
+        return "interrompida"
     if isinstance(erro, rede.BloqueadoForaDoBrasil):
         return "bloqueio_fora_do_brasil"
     if ainda_nao_liberado(erro):
@@ -70,6 +72,9 @@ MENSAGENS = {
     "sem_internet": {
         "pt": "Este computador está sem internet (ou a rede bloqueou o acesso). Confira a conexão e tente de novo.",
         "en": "This computer has no internet (or the network blocked access). Check the connection and try again."},
+    "interrompida": {
+        "pt": "Leitura interrompida a pedido. O que já foi lido está salvo; a próxima leitura continua de onde parou.",
+        "en": "Reading stopped on request. What was already read is saved; the next reading picks up where it stopped."},
     "erro_do_programa": {
         "pt": "O programa encontrou um problema e parou esta leitura. A SolverONE já foi avisada. Tente de novo; se repetir, fale com judicial@solverone.com.br.",
         "en": "The program hit a problem and stopped this reading. SolverONE has been notified. Try again; if it repeats, write to judicial@solverone.com.br."},
@@ -83,4 +88,4 @@ def mensagem(causa, lang="pt"):
 
 def e_aviso(causa):
     """Causas que não são erro (a leitura seguiu normalmente)."""
-    return causa in ("ok", "ainda_nao_liberado_3h", "nao_publicado")
+    return causa in ("ok", "ainda_nao_liberado_3h", "nao_publicado", "interrompida")

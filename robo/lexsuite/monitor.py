@@ -223,7 +223,7 @@ def dias_uteis(hoje, dias):
     return sorted(datas)
 
 
-def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=None, lidos=None, tentativas=None):
+def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=None, lidos=None, tentativas=None, parar=None):
     """Cadernos dos últimos dias úteis. Só baixa de novo se o CNJ reprocessou (versão mudou).
     Os cadernos lidos vão para `lidos`; quem marca como conferido é `guardar`, no fim da rodada.
     0.7.13: cada tribunal é uma tentativa à parte (vai para `tentativas`, com a causa); um tribunal com problema não
@@ -241,6 +241,9 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
         pedidas, http, erro = [], "200", None
         try:
             for d in candidatas:
+                if parar and parar():  # 0.7.15: "Interromper" pedido: para antes do próximo Diário (ponto seguro)
+                    from .radar import Interrompida
+                    raise Interrompida("interrompida")
                 if d != hoje and contados >= max(0, int(dias)):
                     break
                 pedidas.append(d.isoformat())
@@ -265,6 +268,11 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
         except rede.BloqueadoForaDoBrasil:
             raise
         except Exception as e:  # um tribunal com problema não derruba os outros
+            if e.__class__.__name__ == "Interrompida":  # 0.7.15: parada pedida; registra e sobe (não é erro do tribunal)
+                tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": "-", "causa": "interrompida",
+                                   "fez": "interrompida a pedido; o que já foi lido está salvo", "fez_en": "stopped on request; what was read is saved",
+                                   "duracao": round(time.perf_counter() - inicio, 1), "leu_ate": "", "detalhe": ""})
+                raise
             erro = e
             primeiro_erro = primeiro_erro or e
             http = str(getattr(e, "codigo", "") or "-")
