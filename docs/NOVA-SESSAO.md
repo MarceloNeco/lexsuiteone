@@ -1,11 +1,11 @@
-# Retomar o projeto numa sessão nova (estado em 09/Nov/2026, tarde)
+# Retomar o projeto numa sessão nova (estado em 09/Nov/2026, noite)
 
 Este arquivo existe para uma conversa nova do Claude Code começar sem reler o histórico. Leia junto `CLAUDE.md`,
 `robo/PENDENCIAS.md`, `docs/DNS-SOLVERONE.md`, `docs/PUBLICAR.md` e `docs/VISITA-KR-LAW.md`. Confirme o estado por fora antes de agir: nada aqui substitui conferir. **Antes de qualquer tarefa, rode `git pull` e leia `docs/QUADRO.md`**: é onde as três sessões anotam o que estão fazendo.
 
 ## O que já existe e funciona
 
-- Robô v0.7.16 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 145 testes verdes,
+- Robô v0.7.18 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 154 testes verdes,
   pacote em `releases/` e `docs/downloads/`. Tela local em 127.0.0.1, planilha `LexSuiteONE.xlsx` no Drive do escritório,
   atualização assinada (chave só na nuvem), manual personalizado, revisão de segurança (risco baixo). Na 0.7.9: horários
   de leitura escolhidos pelo escritório e leitura perdida compensada. Na 0.7.10 (publicada em 08/Nov, 16:39 UTC): domingo e
@@ -25,7 +25,11 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   SolverONE e o que fica guardado. A 0.7.16 (publicada em 09/Nov, 16:11 UTC) traz uma planilha por frente na mesma pasta
   (a `LexSuiteONE.xlsx` antiga vira `LexSuiteONE - Trabalhista.xlsx`, com as abas Preferências e Exclusões preservadas), a pasta
   `Cópias de segurança`, aviso e limite de armazenamento, regra de ação nova mais estreita e a Configuração reorganizada;
-  o escritório não precisa mais compartilhar a pasta com a SolverONE.
+  o escritório não precisa mais compartilhar a pasta com a SolverONE. A 0.7.18 (publicada em 09/Nov, 19:11 UTC; a 0.7.17 não
+  foi publicada e está dentro dela) traz filtros com várias opções, turmas de 2º grau fora da lista (ação já trabalhada fica),
+  estatísticas dos meses anteriores no Painel (30 Diários por vez, só totais e, só no computador, o número dos processos já
+  contados), engrenagem e perfil em janela, cópia do banco antes da reclassificação única e textos corrigidos sobre o que
+  vai à SolverONE.
 - Site https://judicial.solverone.com.br **no ar** (GitHub Pages, pasta `docs/`, HTTPS forçado). É gerado de `paginas/`
   por `python ferramentas/marca.py`: nunca edite `docs/index.html` nem `docs/404.html` à mão. Tem página inicial PT/EN
   com o carrossel "Como funciona" (quatro passos, passa com o dedo no celular; falta o dono confirmar num iPhone de
@@ -42,8 +46,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 - Assinatura das versões na nuvem: serviço `assinatura.solverone.com.br` (Cloudflare Worker); a automação `publicar.yml`
   assina e publica. Ninguém tem a chave privada: nem o dono, nem o PC dele. Roteiro em `docs/PUBLICAR.md`.
 - E-mail de boas-vindas (`docs/email/`, lê o nome de `docs/marca.json` ao ser preenchido), remetente
-  `LexSuiteONE <nao-responda@solverone.com.br>` pelo Resend, domínio já verificado. Teste entregue ao dono. Falta só o
-  e-mail corporativo do Leandro para o envio real.
+  `LexSuiteONE <nao-responda@solverone.com.br>` pelo Resend, domínio já verificado. Teste entregue ao dono.
 - Repositório `MarceloNeco/lexsuiteone` (público, MIT, CI com testes, Bandit, Gitleaks, Dependabot, ações fixadas por SHA,
   automação de publicação assinada). Os 12 primeiros commits da `main` têm o e-mail pessoal do dono como autor; a branch
   `limpo` é a mesma história com autoria anônima, congelada em 08/Nov/2026. **Trabalhe só na `main`.** Na mudança para a
@@ -70,7 +73,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 - Repositório segue no GitHub pessoal até depois da visita; migração para a organização `solverone` sem impacto para o
   cliente (tudo que ele vê aponta para `judicial.solverone.com.br`). Roteiro em `robo/PENDENCIAS.md`.
 - Instalação no cliente (KR Law) na quinta-feira 12/Nov, na casa do Leandro, pelo dono. O pacote de quinta é a última
-  versão publicada (0.7.16 em 09/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
+  versão publicada (0.7.18 em 09/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
   em `docs/VISITA-KR-LAW.md`: rodam sozinhos, no Sonnet, na conta do escritório; param em login, token, certificado ou
   captcha e escrevem BLOQUEIO; o relatório final volta à sessão de Produto.
 - Publicação de versão (08/Nov): só a Operação publica, e só depois do dono escrever "publica a versão X" na conversa da
@@ -118,23 +121,20 @@ anterior fica guardada na Cloudflare para voltar.
 
 ## O que falta, na ordem (estado em 08/Nov à noite)
 
+Regra do dono (09/Nov, `CLAUDE.md`): o envio do e-mail de boas-vindas é do dono, pelo botão do RootifyONE; nenhuma conversa o
+lembra, pergunta ou comenta.
+
 A infraestrutura está no ar. Falta:
 
-1. **E-mail de boas-vindas ao Leandro** (sessão de operação), pelo Resend. A licença da KR Law já existe e está ativa
-   (a Produto a criou). O instalador não instala sem o código de cliente, então o e-mail leva o código. O e-mail já está
-   preenchido, fora do repositório; o código nunca entra no repositório, no quadro nem em conversa (se o arquivo
-   temporário se perder, refazer com `python docs/email/preencher.py --nome "Leandro" --codigo <código> ...`, lendo o
-   código no RootifyONE, "Licenças do RADAR", ou no banco, só leitura). Um teste com a licença de teste do dono foi
-   enviado em 08/Nov. Falta o endereço corporativo do Leandro (até quarta, 11/Nov) e o "pode" do dono para enviar.
-2. **Drive**: o dono fecha o link aberto da pasta-mãe (ou autoriza mover só a pasta do projeto); depois a Operação
+1. **Drive**: o dono fecha o link aberto da pasta-mãe (ou autoriza mover só a pasta do projeto); depois a Operação
    atualiza a pasta "LEXSUITE-ONE-ROBO" para a versão atual e coloca as cópias de referência.
-3. **Antes de quinta, no PC do dono**: ensaio da instalação com a segunda conta Google, `DIAGNOSTICO.bat`, rodada real
+2. **Antes de quinta, no PC do dono**: ensaio da instalação com a segunda conta Google, `DIAGNOSTICO.bat`, rodada real
    nos 24 TRTs, e testar o instalador no Windows (falta, ver `robo/PENDENCIAS.md`). Roteiro em `robo/ROTEIRO-INSTALACAO.md`.
-4. **Quinta (12/Nov)**: instalação na KR Law e os prompts de `docs/VISITA-KR-LAW.md` (relatórios vão para a sessão de
+3. **Quinta (12/Nov)**: instalação na KR Law e os prompts de `docs/VISITA-KR-LAW.md` (relatórios vão para a sessão de
    Produto).
-5. **Documentos internos abertos no site** (pedido à Arquitetura no quadro): os `.md` de `docs/` respondem em
+4. **Documentos internos abertos no site** (pedido à Arquitetura no quadro): os `.md` de `docs/` respondem em
    `judicial.solverone.com.br/NOME.md`. O dono decide se saem de `docs/`.
-6. **Depois de quinta**: organização `solverone` no GitHub (refazer `limpo` como nova `main`, Pages, CNAME para
+5. **Depois de quinta**: organização `solverone` no GitHub (refazer `limpo` como nova `main`, Pages, CNAME para
    `solverone.github.io`), triagem de e-mail por Worker, calibração da regra com o diagnóstico, desenho da 0.8 e da
    frente tributária, ficha de canais da empresa, cancelar ImprovMX.
 
