@@ -123,7 +123,12 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
    "continue".
 4. **Depois: Prompt 1, PJe.** O Leandro faz o login no PJe do TRT2 com o certificado, na janela da extensão, cola o
    Prompt 1 com o número do processo de referência e deixa sozinha. Quando o PJe pedir token ou certificado, ela escreve
-   `BLOQUEIO` e espera o Leandro. Depois o TRT15.
+   `BLOQUEIO` e espera o Leandro. Depois o TRT15. **No fim, feche o ciclo dentro do RADAR:** copie o bloco
+   `RESPOSTA PARA O RADAR v1` que a extensão devolveu e cole no RADAR (menu ☰, "Colar resposta da área logada"); confira
+   no cartão do processo se o valor, a data e os contatos apareceram, com a fonte. Depois teste o caminho do próprio
+   programa: num cartão de um processo novo da lista, clique em "Buscar na área logada" (o pedido vai copiado, só com o
+   que falta), cole na extensão, e cole a resposta de volta. Anote o que deu certo e o que travou: é a base da próxima
+   versão da área logada.
 5. **Se der tempo: Prompt 4, e-SAJ e DJE do TJSP.** Parte pública sem login; parte logada só se o Leandro quiser.
    Serve para as frentes tributária e cível.
 6. **Lista do dia pronta.** Mostrar na tela local e na planilha; validar 3 ou 4 itens com o Leandro (é ação nova? é
