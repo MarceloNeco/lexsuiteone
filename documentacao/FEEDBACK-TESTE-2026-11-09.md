@@ -96,3 +96,10 @@ O Arquivo resolve.
 | # | O que o dono pediu | Proposta | Quem | Pacote |
 |---|---|---|---|---|
 | 82 | Botão **"Atualizar estatísticas"** no Painel: escolher frente (trabalhista, tributário...), tribunais e varas (as marcadas ou todas) e quanto tempo para trás (1, 3, 6 ou 12 meses); roda em paralelo com barra de andamento que vai enchendo; de noite, aos poucos, para não pesar; e um agendamento para atualizar de tempos em tempos e mostrar sazonalidade e picos | Guarda **só totais** (data, tribunal, vara, frente; porte e valor só quando já se sabem), nunca enche a Lista nem o Arquivo. Fila de Diários a ler, um por vez, com limite por noite (ex.: 30 Diários por noite, ajustável) dentro da janela da leitura noturna; retoma de onde parou; barra "N de M Diários". O agendamento usa a mesma tarefa do Windows. Antes de implementar: a Arquitetura confirma até quando o CNJ guarda os Diários antigos, o volume (o do TRT2 é grande) e um limite seguro de consultas | A (limites e desenho), P (tela e programa) | 0.7.15 |
+
+## Sétima rodada: preparo do Painel e uso da tela
+
+| # | O que o dono pediu | Proposta | Quem | Pacote |
+|---|---|---|---|---|
+| 83 | Na 0.7.14, o Painel já preparado para receber os gráficos novos da 0.7.15 (estatísticas no tempo), sem refazer o desenho | O Painel vira uma grade de blocos: cada gráfico é um bloco com título, (?) e os mesmos filtros; a 0.7.15 só acrescenta blocos. Nada é específico da frente trabalhista | P | 0.7.14 |
+| 84 | **Regra permanente**: a tela usa toda a largura disponível. No notebook ocupa a tela inteira; arrastada para um monitor maior, estica e aproveita o espaço (gráficos e números maiores); no celular, uma coluna legível. Não pode piorar de uma versão para outra | Largura fluida (sem teto fixo de largura no conteúdo), grade de blocos que ganha colunas conforme a tela, números e gráficos que crescem com a largura. Teste automático a cada versão em 4 larguras (celular 390, notebook 1366, monitor 1920 e 2560) que falha se sobrar faixa vazia nas laterais, se algo sair da tela ou se o texto cortar; prints das 4 larguras para o dono antes de publicar | P | 0.7.14 (e toda versão) |
