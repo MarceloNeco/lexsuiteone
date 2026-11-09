@@ -2,7 +2,10 @@
 
 Complementa `robo/ROTEIRO-INSTALACAO.md` (instalação do robô). Aqui ficam os prompts para usar no **Claude in Chrome**
 no computador do Leandro, com o consentimento dele, para aprender como os sistemas funcionam e planejar as integrações.
-Nada aqui produz efeito nos sistemas: é leitura e anotação. Versão de 08/Nov/2026 (foco na ficha de canais; prompts
+Nada aqui produz efeito nos sistemas: é leitura e anotação. **Atualizado em 09/Nov/2026**: programa na versão 0.7.15
+(0.7.16 em preparo), termos de uso 1.1 com aceite, autorização do Leandro antes de qualquer prompt na área logada e
+formato padronizado de resposta que o RADAR lê (seção "Resposta para o RADAR"). Os prompts foram escritos para o Claude
+in Chrome, mas servem em qualquer extensão de IA de navegador. Versão anterior: 08/Nov/2026 (foco na ficha de canais; prompts
 escritos para rodar **sozinhos**, no Sonnet, na conta do escritório, sem ninguém acompanhando; o relatório volta para a
 SolverONE pela conversa compartilhada). Cópia para o celular: Google Doc na pasta "VISITA KR LAW (quinta 12-Nov)" do
 Drive do dono. O GitHub é a fonte.
@@ -26,6 +29,41 @@ O que pode entrar na ficha e o que nunca entra:
 | Pode | Só com condição | Nunca |
 |---|---|---|
 | Dados da empresa: telefone geral, e-mail comercial, formulário de contato, site, LinkedIn e Instagram **da empresa**, endereço, e nomes e cargos públicos de sócios e administradores, sempre com a fonte | Celular ou e-mail de uma pessoa, **só se a própria empresa o publica como contato comercial** (no site, na página ou no perfil da empresa), anotando onde | Qualquer dado do reclamante e de outras pessoas físicas (testemunhas, advogados da parte contrária, familiares): no relatório, escrever "pessoa física" no lugar |
+
+## Antes de começar: autorização do Leandro (obrigatório)
+
+Os prompts 1, 3 e 4 rodam na área logada do Leandro, com a credencial dele. Antes do primeiro, ele confirma, em voz alta
+e por escrito na primeira mensagem da conversa da extensão ("Autorizo esta extensão a navegar, só lendo, na minha
+sessão do PJe/Astrea, para mapear o sistema, conforme o roteiro da SolverONE"), que:
+1. o login é feito por ele, e a extensão nunca vê senha, token ou certificado;
+2. a extensão só lê: não peticiona, não assina, não marca ciência, não altera nada;
+3. são poucos processos (o de referência e, no máximo, os 3 do Prompt 2; nunca mais de 30 por dia), porque há tribunal
+   que bloqueia quem abre muitos processos de terceiros;
+4. dados de pessoas físicas (autor da ação, testemunhas) não são copiados;
+5. a escolha da extensão e o uso da credencial são do escritório (termos de uso 1.1, seção 5).
+Se ele não autorizar algum ponto, aquele prompt não roda.
+
+## Resposta para o RADAR (formato padronizado, versão 1)
+
+Além do `RELATÓRIO FINAL` (que é para a SolverONE), os prompts que olham processos devolvem um bloco que o advogado copia e
+cola no RADAR ("Colar resposta da área logada", na versão 0.7.16). O RADAR lê esse bloco sem IA, confere linha por linha
+e preenche a ficha e a planilha. Formato:
+
+```
+RESPOSTA PARA O RADAR v1
+| processo | dado | valor | resultado | fonte | data | observação |
+|---|---|---|---|---|---|---|
+| 0000000-00.0000.5.02.0000 | valor_causa | 150000,00 | encontrado | PJe petição inicial | 2026-11-12 | |
+| 0000000-00.0000.5.02.0000 | telefone | (11) 0000-0000 | encontrado | PJe petição inicial | 2026-11-12 | da empresa |
+| 0000000-00.0000.5.02.0000 | email | | nao_consta | PJe petição inicial | 2026-11-12 | |
+| 0000000-00.0000.5.02.0000 | endereco | | tentar_depois | | 2026-11-12 | a sessão expirou |
+```
+
+- `dado`: valor_causa, data_ajuizamento, telefone, email, site, endereco, socio_contato, outro.
+- `resultado`: `encontrado` (com valor e fonte), `nao_consta` (o processo não traz), `tentar_depois` (problema técnico,
+  sessão expirada, site fora do ar: o RADAR marca para buscar de novo).
+- Nunca: dado do autor da ação, de testemunha ou de advogado da outra parte, nem CPF. O RADAR recusa essas linhas.
+- O exemplo acima é fictício.
 
 ## Como os prompts rodam na visita (leia antes)
 
@@ -61,8 +99,9 @@ manual em https://judicial.solverone.com.br/manual.html; pacote em https://judic
 No computador do Leandro, abrir os prompts por este arquivo no GitHub (sem login) e copiar pelo botão de copiar do bloco.
 
 **Antes, em casa (até quarta).** Ensaio da instalação no PC do dono com a segunda conta Google, `DIAGNOSTICO.bat` e uma
-rodada real; e-mail de boas-vindas já enviado ao Leandro (sessão de operação). Confirmar com o Leandro: certificado digital
-em mãos para o PJe; qual conta Google do escritório recebe a planilha; se a conta Claude do escritório tem a extensão
+rodada real; e-mail de boas-vindas já enviado ao Leandro (pelo dono, no botão "Preparar e-mail de boas-vindas" do
+RootifyONE, com prévia). Confirmar com o Leandro: certificado digital em mãos para o PJe; em que pasta fica a planilha
+(no computador ou numa pasta do Google Drive; não é preciso compartilhar com a SolverONE); o texto dos termos 1.1; se a conta Claude do escritório tem a extensão
 Claude in Chrome (plano pago). Se não tiver, a extensão roda num perfil novo do Chrome dele ("Visita SolverONE") com a
 conta do dono, e o perfil é apagado no fim. O notebook do dono não recebe login nem certificado de ninguém. Combinar um
 processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se houver, um no TJSP.
@@ -160,6 +199,12 @@ RELATÓRIO FINAL, neste formato:
 - Dificuldades que você teve navegando (o que não achou, o que demorou).
 - Sugestão: em 5 linhas, qual seria o caminho mais curto para um robô fazer o mesmo com o advogado logado, e o que teria de ficar com a pessoa.
 - Lista das telas registradas: número, nome curto e o que mostra.
+
+Depois do RELATÓRIO FINAL, escreva também, num bloco separado, a RESPOSTA PARA O RADAR v1 do processo de referência, exatamente neste formato (uma linha por dado; use "encontrado", "nao_consta" ou "tentar_depois"; nunca dados do reclamante nem CPF):
+RESPOSTA PARA O RADAR v1
+| processo | dado | valor | resultado | fonte | data | observação |
+|---|---|---|---|---|---|---|
+Os dados a buscar são: valor_causa, data_ajuizamento, telefone, email, site e endereco da empresa ré, e socio_contato se a petição trouxer contato de sócio ou administrador da ré.
 
 Se, depois do relatório, alguém escrever "TRT15" e colar outro número de processo, repita o mesmo roteiro em https://pje.trt15.jus.br e diga o que é diferente entre os dois.
 ```
