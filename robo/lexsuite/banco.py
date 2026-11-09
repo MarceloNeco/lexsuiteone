@@ -104,6 +104,14 @@ class Banco:
             self.con.execute("PRAGMA user_version = 714")
             self.con.commit()
         if (self.con.execute("PRAGMA user_version").fetchone() or [0])[0] < 718:
+            if caminho and os.path.exists(caminho) and self.con.execute("SELECT count(*) FROM leads").fetchone()[0]:
+                try:  # cópia do banco antes da limpeza única (revisão da 0.7.18), ao lado dele
+                    import shutil
+                    self.con.commit()
+                    if not os.path.exists(caminho + ".antes-0.7.18"):
+                        shutil.copy2(caminho, caminho + ".antes-0.7.18")
+                except OSError:
+                    pass
             self._reclassificar_0718()
             self.con.execute("PRAGMA user_version = 718")
             self.con.commit()
@@ -121,10 +129,12 @@ class Banco:
                 d = json.loads(dados or "{}")
             except ValueError:
                 continue
+            if (status or "novo") != "novo" or d.get("manual") or proc in com_contato:
+                continue  # trabalhado, completado ou com contato: fica sempre (revisão da 0.7.18)
             if cl.segundo_grau(vara or d.get("vara")):
                 marcar.append((proc,))
                 continue
-            if (status or "novo") != "novo" or d.get("manual") or proc in com_contato or "texto_curto" not in d or d.get("sinal"):
+            if "texto_curto" not in d or d.get("sinal"):
                 continue  # trabalhado, completado, com contato, sem texto para conferir, ou já guardado pela regra nova
             texto = cl.sem_acento(" ".join(str(d.get(k) or "") for k in ("tipo", "texto_curto"))).lower()
             if "distribu" in texto or cl.parece_inicio(d.get("texto_curto") or ""):
@@ -282,9 +292,9 @@ class Banco:
         linhas = self.con.execute(
             "SELECT data, coalesce(tribunal,''), coalesce(vara,''), coalesce(frente,''), coalesce(porte,''), "
             "coalesce(faixa_valor,''), count(*) FROM leads WHERE data <> '' AND coalesce(fora_criterio, 0) = 0 GROUP BY 1,2,3,4,5,6").fetchall()
-        dias = sorted({l[0] for l in linhas})
-        for d in dias:
-            self.con.execute("DELETE FROM estatisticas_diarias WHERE data = ?", (d,))
+        pares = sorted({(l[0], l[1]) for l in linhas})  # 0.7.18 (revisão): só o par dia+tribunal que tem ação guardada
+        for d, trib in pares:
+            self.con.execute("DELETE FROM estatisticas_diarias WHERE data = ? AND tribunal = ?", (d, trib))
         self.con.executemany("INSERT OR REPLACE INTO estatisticas_diarias VALUES (?,?,?,?,?,?,?,0,?)",
                              [l + (quando,) for l in linhas])
         self.con.commit()

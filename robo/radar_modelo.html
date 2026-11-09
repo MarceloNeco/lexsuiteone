@@ -838,14 +838,14 @@ window.LEXSUITE_RADAR = null;
     pf_fixo: "Fixo: identifica você na licença do escritório.", pf_outra_pessoa: "Outra pessoa vai usar este computador",
     pf_outra_pessoa_x: "O e-mail e o escritório não se editam: são a sua identificação na licença. Se outra pessoa do escritório vai usar este computador, ela se cadastra com o e-mail dela, e a SolverONE confere se o domínio do e-mail é do escritório.",
     copia_t: "Cópia criada", abrir_copia: "Abrir a cópia", abrir_pasta_copia: "Abrir a pasta",
-    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" e depois em \"Ler agora\" (30 Diários por vez) ou deixe para a leitura automática da noite. Guarda só os totais: nada entra na Lista, no Arquivo nem na planilha, e nada vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
+    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" e depois em \"Ler agora\" (30 Diários por vez) ou deixe para a leitura automática da noite. Guarda os totais e, só neste computador, o número dos processos já contados (para não contar duas vezes): nada entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
     saz_vazio: "Ainda não há meses suficientes. Escolha quantos meses buscar e clique em \"Buscar estatísticas\".", saz_semana: "Por dia da semana:", saz_pico: "Mês com mais ações: {m} ({n}).",
     saz_estado: "Diários antigos lidos: {l}; na fila: {f}; sem Diário: {s}; com erro: {e}.", saz_de_ate: "De {d} a {a}.", saz_meses_rot: "Meses para trás", saz_meses: "{m} mês(es) para trás",
     saz_pedir: "Buscar estatísticas", saz_ler: "Ler agora (30 Diários)", saz_parar: "Parar", saz_na_fila: "{n} Diário(s) na fila. Clique em \"Ler agora\" ou deixe para a leitura da noite.",
     saz_lendo: "Lendo o Diário {k} de {n}: {tr} {d}…",
     m_sit: "{n} situações", m_frente: "{n} frentes", m_trib: "{n} tribunais", m_data: "{n} datas", m_vara: "{n} varas", m_setor: "{n} setores", m_porte: "{n} portes", m_uf: "{n} estados",
     m_buscar: "Procurar na lista", m_limpar: "Limpar",
-    criterio_nota: "Desde {d}, \"ação nova\" conta só a lista de distribuição, a audiência inicial e a notificação inicial em varas de 1º grau (antes entravam intimações comuns e recursos). Números de antes e de depois não se comparam.",
+    criterio_nota: "Desde {d}, \"ação nova\" conta só a lista de distribuição, a audiência inicial, una ou de conciliação, a notificação inicial (ou \"notifique-se a reclamada\") e a citação inicial, em varas de 1º grau (antes entravam intimações comuns e recursos). Números de antes e de depois não se comparam.",
     sair: "Sair do RADAR", sair_t: "Sair do RADAR?", sair_x: "Fecha esta tela e a janela preta. As leituras automáticas continuam marcadas no Windows.",
     sair_ok: "Pode fechar esta janela. O RADAR foi encerrado.", sair_rodando: "Há uma leitura em andamento: espere terminar ou clique em Interromper.",
     fechado_t: "O RADAR foi fechado", fechado_x: "A tela ficou fechada ou escondida por alguns minutos e o programa se encerrou para não ficar aberto à toa. Abra de novo pelo atalho da área de trabalho.",
@@ -877,14 +877,14 @@ window.LEXSUITE_RADAR = null;
     pf_fixo: "Fixed: identifies you on the firm's licence.", pf_outra_pessoa: "Someone else will use this computer",
     pf_outra_pessoa_x: "E-mail and firm cannot be edited: they identify you on the licence. If someone else from the firm will use this computer, they sign up with their own e-mail, and SolverONE checks that the e-mail domain belongs to the firm.",
     copia_t: "Copy created", abrir_copia: "Open the copy", abrir_pasta_copia: "Open the folder",
-    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" and then \"Read now\" (30 gazettes at a time) or leave it for the night reading. Only totals are kept: nothing goes to the List, the Archive or the spreadsheet, and nothing goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
+    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" and then \"Read now\" (30 gazettes at a time) or leave it for the night reading. It keeps the totals and, only on this computer, the numbers of lawsuits already counted (so none is counted twice): nothing goes to the List, the Archive or the spreadsheet, and none of it goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
     saz_vazio: "Not enough months yet. Choose how many months to fetch and click \"Fetch statistics\".", saz_semana: "By weekday:", saz_pico: "Busiest month: {m} ({n}).",
     saz_estado: "Old gazettes read: {l}; queued: {f}; no gazette: {s}; with error: {e}.", saz_de_ate: "From {d} to {a}.", saz_meses_rot: "Months back", saz_meses: "{m} month(s) back",
     saz_pedir: "Fetch statistics", saz_ler: "Read now (30 gazettes)", saz_parar: "Stop", saz_na_fila: "{n} gazette(s) queued. Click \"Read now\" or leave it for the night reading.",
     saz_lendo: "Reading gazette {k} of {n}: {tr} {d}…",
     m_sit: "{n} statuses", m_frente: "{n} practice areas", m_trib: "{n} courts", m_data: "{n} dates", m_vara: "{n} court units", m_setor: "{n} sectors", m_porte: "{n} sizes", m_uf: "{n} states",
     m_buscar: "Search the list", m_limpar: "Clear",
-    criterio_nota: "Since {d}, a \"new lawsuit\" counts only the distribution list, the first hearing and the first notice in first-instance courts (ordinary notices and appeals used to count). Numbers before and after are not comparable.",
+    criterio_nota: "Since {d}, a \"new lawsuit\" counts only the distribution list, the first (or single, or conciliation) hearing, the first notice and the first summons, in first-instance courts (ordinary notices and appeals used to count). Numbers before and after are not comparable.",
     sair: "Exit RADAR", sair_t: "Exit RADAR?", sair_x: "Closes this screen and the black window. Automatic readings stay scheduled in Windows.",
     sair_ok: "You can close this window. RADAR has exited.", sair_rodando: "A reading is in progress: wait for it to finish or click Stop.",
     fechado_t: "RADAR was closed", fechado_x: "The screen was closed or hidden for a few minutes and the program exited so it does not stay open for nothing. Open it again from the desktop shortcut.",
@@ -2148,7 +2148,7 @@ window.LEXSUITE_RADAR = null;
         fetch("/estatisticas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (e) {
           var rd = e.rodando || {};
           if (rd.rodando) { bi_.style.width = Math.round(100 * (rd.k || 0) / Math.max(1, rd.total || 1)) + "%"; st.textContent = t("saz_lendo", { k: rd.k || 0, n: rd.total || 0, tr: rd.tribunal || "", d: dataCurta(rd.data || "") }); return; }
-          clearInterval(vigiaHist); vigiaHist = null; carregar();
+          clearInterval(vigiaHist); vigiaHist = null; if (e.ultimo && e.ultimo.parou) mostrarAviso(e.ultimo.parou); if (e.erro) mostrarAviso(t("falha") + " (" + e.erro + ")"); carregar();
         }).catch(function () {});
       }, 2000);
     };

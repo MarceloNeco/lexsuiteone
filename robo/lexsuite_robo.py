@@ -423,15 +423,15 @@ def cmd_radar(a):
         com_hora = estado.aviso  # janela preta com a hora e andamento para a tela (barra de progresso)
         situacao = radar.executar(cfg, banco, com_hora, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
                                   caminho_config=a.config, origem=estado.origem, parar=estado.parar)
-        estado.terminar(situacao)
         if getattr(a, "agendado", False):  # 0.7.18: à noite, depois da leitura agendada, até 30 Diários antigos (só totais)
-            try:
+            try:  # antes de terminar o estado: a tela vê a leitura "rodando" e não inicia outra ao mesmo tempo (revisão)
                 from lexsuite import historico
                 hora = dt.datetime.now().hour
                 if (hora >= 18 or hora < 7) and historico.situacao(banco)["na_fila"]:
                     historico.processar(banco, aviso=lambda m: print(m, flush=True), parar=estado.parar)
             except Exception as e:  # noqa: BLE001 - as estatísticas antigas nunca atrapalham a leitura
                 print(f"  Estatísticas antigas: não deu certo agora ({e.__class__.__name__}); tento na próxima noite.", flush=True)
+        estado.terminar(situacao)
         if cfg["radar"].get("avisar_ao_terminar", True):
             from lexsuite import agendar, app
             m = app.marca(AQUI)

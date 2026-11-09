@@ -1,9 +1,10 @@
-# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.16)
+# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.18)
 
 Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
 licença (código, versão e só quantidades por situação), o cadastro de quem usa (nome, e-mail, função e documento do
-escritório), avisos técnicos de erro (sem conteúdo de processos) e a procura de versão nova; ver "Rede". A relação de
-ações, as fichas, os contatos e as anotações não saem do computador e da pasta do escritório.
+escritório), o aceite dos termos (versão, data e fuso horário), avisos técnicos de erro (sem conteúdo de processos) e a
+procura de versão nova; ver "Rede". A relação de ações, as fichas, os contatos, as anotações e as estatísticas dos meses
+anteriores (totais e, só no computador, o número dos processos já contados) não saem do computador e da pasta do escritório.
 
 - **Sem segredos no código ou no pacote.** Nenhuma senha, chave de API ou certificado. A chave privada que assina
   atualizações existe só dentro do serviço de assinatura da SolverONE (ninguém a tem); o pacote leva só a chave pública.
@@ -18,7 +19,8 @@ ações, as fichas, os contatos e as anotações não saem do computador e da pa
 - **Rede.** Só HTTPS para DJEN, PJe (consulta pública), BrasilAPI, Minha Receita e a conferência da licença na SolverONE
   (Supabase, função `lex-conta`: código de cliente, identificação da instalação, versão e, desde a 0.7.14, a tabela de
   totais por situação, dia, tribunal, frente e faixa de valor, sem nome, processo, CNPJ ou contato; a tela mostra a tabela
-  enviada); o cadastro de quem usa (nome, e-mail, função e documento do escritório: CNPJ, CPF ou passaporte); avisos
+  enviada); o cadastro de quem usa (nome, e-mail, função e documento do escritório: CNPJ, CPF ou passaporte) e o aceite
+  dos termos de uso (versão e fuso horário); avisos
   técnicos de erro (etapa, versão, Windows e mensagem sem caminhos pessoais); a procura de versão nova no site; DataJud
   (consulta pública do CNJ, quando ligada) e, só se o escritório configurar, e-mail (SMTP) e Telegram para avisos. Com intervalo mínimo entre pedidos,
   poucas tentativas e teto de 2 GB por download (lido em pedaços; caderno descompactado também limitado). Nada de burlar

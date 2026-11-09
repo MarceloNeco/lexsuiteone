@@ -1,6 +1,6 @@
 Olá, {{nome}}. Seu {{marca.nome}} está pronto.
 
-O {{marca.nome}} acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) nos tribunais que você escolher e relaciona os novos processos ajuizados em face de pessoas jurídicas, com a ficha cadastral de cada empresa. A relação aparece na tela do {{marca.curto}} e numa planilha na sua pasta do Google Drive.
+O {{marca.nome}} acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) nos tribunais que você escolher e relaciona os novos processos ajuizados em face de empresas e empreendedores com CNPJ, com a ficha cadastral de cada empresa. A relação aparece na tela do {{marca.curto}} e numa planilha na pasta que o escritório escolher (no computador ou no Google Drive).
 
 Baixar o {{marca.nome}} (instalador de 3 KB, Windows 10 ou 11):
 https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip

@@ -210,7 +210,7 @@ def copia_seguranca(cfg, banco, motivo="", aviso=print, agora=None, so_csv=False
                 shutil.copy2(origem, os.path.join(destino, os.path.basename(origem)))
                 copiadas += 1
         n = _csv_arquivo(os.path.join(destino, "Arquivo completo (todas as ações guardadas no programa).csv"), cfg, banco)
-    except OSError as e:
+    except Exception as e:  # noqa: BLE001 - revisão da 0.7.18: qualquer falha (disco, banco) apaga a cópia pela metade
         shutil.rmtree(destino, ignore_errors=True)  # cópia pela metade não fica contando entre as guardadas
         return False, f"Não consegui gravar a cópia de segurança ({e.__class__.__name__})."
     banco.registrar("copia_seguranca", {"pasta": nome, "motivo": motivo, "planilhas": copiadas, "linhas_csv": n,

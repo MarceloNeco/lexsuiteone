@@ -464,6 +464,7 @@ class Tratador(BaseHTTPRequestHandler):
                 sit = {}
             sit["rodando"] = dict(s.hist) if s.hist.get("rodando") else {}
             sit["ultimo"] = s.hist.get("ultimo") or {}
+            sit["erro"] = s.hist.get("erro", "")
             return self._responder(sit)
         if u.path == "/estado":
             return self._responder(s.estado_atual())

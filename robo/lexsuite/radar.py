@@ -143,7 +143,8 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     for lead in banco.todos_leads(desde=None if arquivo else desde):
         if lead.get("fonte", "DJEN") != "DJEN":
             continue
-        if cl.segundo_grau(lead.get("vara")):  # 0.7.17: guardados antes, quando turma ainda entrava (não é ação nova)
+        if cl.segundo_grau(lead.get("vara")) and (lead.get("status") or "novo") == "novo" and not lead.get("manual") \
+                and not por_processo.get(lead.get("processo")):  # 0.7.17: turma (não é ação nova); trabalhado fica (revisão da 0.7.18)
             continue
         if not arquivo and ((lead.get("tribunal") or "").upper() not in escolhidos or lead.get("status") == "arquivado"):
             continue
@@ -236,8 +237,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
                 aviso(f"  Não consegui gravar o histórico de leituras ({e.__class__.__name__}).")
         ano_min = agora.year - 1 if agora.month <= 2 else agora.year
         if not banco.execucoes("criterio", 1):  # 0.7.17: data em que o critério de "ação nova" mudou (estatísticas antes e depois não se comparam)
-            banco.registrar("criterio", {"desde": agora.date().isoformat(), "versao": versao or _versao(),
-                                         "regra": "ação nova = lista de distribuição, audiência inicial/una/de conciliação ou notificação inicial, só 1º grau"})
+            banco.registrar("criterio", {"desde": CRITERIO_DESDE, "versao": versao or _versao(), "regra": CRITERIO_REGRA})
         novos = acoes_do_dia(pubs, ano_min, banco.processos_vistos())
         if novos:  # 0.7.16: quantas entraram por cada sinal, para conferir a regra de "ação nova" com o escritório
             por_sinal = {}
@@ -435,6 +435,11 @@ def gravar_saida(cfg, banco, pasta, agora, situacao, aviso=print, versao="", pre
 def _versao():
     from . import VERSAO
     return VERSAO
+
+
+CRITERIO_DESDE = "2026-11-09"  # a regra mais estreita entrou na 0.7.16 (publicada em 09/11/2026)
+CRITERIO_REGRA = ("ação nova = lista de distribuição, audiência inicial, una ou de conciliação, notificação inicial, "
+                  "\"notifique-se a reclamada\" ou citação inicial, só em varas de 1º grau")
 
 
 def acoes_do_dia(pubs, ano_minimo, ja_vistos):
