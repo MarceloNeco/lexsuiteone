@@ -162,6 +162,10 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.22 (09/Nov, noite)
+
+AssistONE 1.1.0 do RootifyONE embutido (pedido do dono: balão que "voa" no tour, personagem que fica). Pacote 45/44. Correção local de estilo: no modo sem o módulo comum, os botões do tour saíam do balão (`.dgo-aone-solo .dgo-b` com largura 100%); pedido ao RootifyONE para corrigir no master.
+
 ## 0.7.21 (09/Nov, noite; no ramo)
 
 Teste do dono no Windows (0.7.20) e decisões dele em 09/Nov (pastas em duas opções, planilha forçada a só leitura,

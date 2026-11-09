@@ -387,7 +387,9 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .pasta-cam { display: block; font-size: .78rem; color: #3b4a5c; background: #f1f4f8; border-radius: 6px; padding: 3px 7px; margin-top: 4px; word-break: break-all; font-family: Consolas, "Courier New", monospace; }
 #c-teste-txt .pasta-cam { display: inline-block; margin-top: 2px; }
 .pasta-ok { color: #1e6b45; font-weight: 600; } .pasta-erro { color: #a3261b; font-weight: 600; }
-.dgo-aone-tour button { white-space: nowrap; }  /* 0.7.21: "Próximo ›" numa linha só (o resto do AssistONE é o master) */
+/* 0.7.22: no AssistONE 1.1.0 sem o módulo comum, ".dgo-aone-solo .dgo-b" (largura 100%) vence a regra do tour e o botão
+   "Próximo" sai do balão; correção local até o master corrigir (pedido ao RootifyONE) */
+.dgo-aone-tour.dgo-aone-solo .dgo-b { width: auto; min-height: 36px; padding: 8px 14px; }
 .saz-recado { color: #a3261b; font-weight: 600; }
 @media (max-width: 1240px) { body:has(#config:not([hidden])) #dgo-aone, body:has(#perfil:not([hidden])) #dgo-aone { --dgo-aone-sobe: 76px; --dgo-aone-sobe-pc: 76px; } }
 .nuvens { align-items: center; } .nuvem-nota { color: var(--tinta-3); font-size: .82rem; flex-basis: 100%; }
@@ -684,7 +686,7 @@ footer a:hover { text-decoration: underline; }
 <script>
 window.LEXSUITE_RADAR = null;
 </script>
-<!-- 0.7.19: AssistONE (pedido do dono, 09/Nov). Cópia FIEL de rootify-one/assistone.js 1.0.0, o master de todos os apps
+<!-- 0.7.19: AssistONE (pedido do dono, 09/Nov). Cópia FIEL de rootify-one/assistone.js 1.1.0, o master de todos os apps
      da SolverONE; não edite aqui: troque o bloco inteiro pela versão nova do master. Embutido (não é arquivo à parte)
      porque o atualizador já instalado só aceita os arquivos que conhece. Sem IA e sem nenhum pedido externo: só ajuda. -->
 <script id="assistone-master">
@@ -769,7 +771,7 @@ window.LEXSUITE_RADAR = null;
   'use strict';
   if (raiz.AssistONE) return;          /* carregado duas vezes: fica o primeiro */
 
-  var VERSAO = '1.0.0';
+  var VERSAO = '1.1.0';
   var d = document;
   var eu = d.currentScript;
   var proprio = null;                   /* config dado por AssistONE.configurar (app sem o módulo) */
@@ -947,7 +949,8 @@ window.LEXSUITE_RADAR = null;
       '#dgo-aone.dgo-falando .dgo-aone-bt{width:116px;height:116px;animation:none;}',
       '@keyframes dgo-aone-flutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}',
       '@keyframes dgo-aone-pop{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}',
-      '@media (prefers-reduced-motion:reduce){.dgo-aone-bt{animation:none;transition:none}.dgo-aone-bolha{animation:none}}',
+      '@media (prefers-reduced-motion:reduce){.dgo-aone-bt{animation:none;transition:none}.dgo-aone-bolha{animation:none}' +
+        '.dgo-aone-foco,.dgo-aone-tour,#dgo-aone.dgo-aone-sai{transition:none !important}}',
       '.dgo-aone-bolha{width:min(340px,calc(100vw - 24px));max-height:min(70vh,560px);overflow:auto;position:relative;',
       'background:#111a2e;color:#e8eef8;border:1px solid rgba(255,255,255,.14);border-radius:18px 18px 6px 18px;',
       'box-shadow:0 14px 40px rgba(0,0,0,.35);padding:14px 14px 12px;font-size:14px;line-height:1.45;animation:dgo-aone-pop .2s ease;}',
@@ -984,8 +987,20 @@ window.LEXSUITE_RADAR = null;
       '.dgo-aone-tour{position:fixed;z-index:2147483270;width:min(320px,calc(100vw - 24px));background:#111a2e;color:#e8eef8;',
       'border:1px solid rgba(255,255,255,.14);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.35);padding:12px 14px;font-size:14px;',
       'font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}',
-      '.dgo-aone-tour .dgo-aone-linha{justify-content:space-between;margin-top:0;}',
-      '.dgo-aone-tour .dgo-b{width:auto;padding:8px 14px;min-height:36px;font-size:13px;}',
+      '.dgo-aone-tour .dgo-aone-linha{justify-content:space-between;margin-top:0;flex-wrap:nowrap;}',
+      /* 1.1.0: "Próximo ›" nunca quebra em duas linhas (o contador encolhe antes) */
+      '.dgo-aone-tour .dgo-b{width:auto;padding:8px 14px;min-height:36px;font-size:13px;white-space:nowrap;flex:0 0 auto;}',
+      '.dgo-aone-tour .dgo-aone-bts{display:flex;gap:6px;flex:0 0 auto;}',
+      '.dgo-aone-tour .dgo-mini{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      /* 1.1.0: o balão e o destaque "voam" de um passo ao outro (só a posição muda; nada é recriado) */
+      '.dgo-aone-foco{transition:left .25s ease,top .25s ease,width .25s ease,height .25s ease;}',
+      '.dgo-aone-tour{transition:left .25s ease,top .25s ease;}',
+      '.dgo-aone-foco.dgo-aone-ja,.dgo-aone-tour.dgo-aone-ja{transition:none;}',
+      /* no tour o personagem fica à vista, por cima do escurecido (abaixo do balão), parado para o destaque acertar;
+         só sai (sem perder o lugar) no passo em que cobriria o que está destacado */
+      '#dgo-aone.dgo-aone-no-tour{z-index:2147483265;}',
+      '#dgo-aone.dgo-aone-no-tour .dgo-aone-bt{animation:none;}',
+      '#dgo-aone.dgo-aone-sai{opacity:0;pointer-events:none;transition:opacity .15s;}',
       '.dgo-aone-toggle{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:14px;cursor:pointer;',
       'border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#e8eef8;font:800 13px/1.2 system-ui,sans-serif;letter-spacing:.04em;}',
       '.dgo-aone-toggle img{width:34px;height:34px;object-fit:contain;}',
@@ -1017,6 +1032,10 @@ window.LEXSUITE_RADAR = null;
     (d.head || d.documentElement).appendChild(st);
   }
   function solo() { return dgo() ? '' : ' dgo-aone-solo'; }
+  /* o retângulo a (personagem) encosta no b (destaque), com folga? */
+  function cobre(a, b, folga) {
+    return a.width > 0 && !(a.right < b.left - folga || a.left > b.right + folga || a.bottom < b.top - folga || a.top > b.bottom + folga);
+  }
   /* app sem o módulo: a cor de destaque vem do configurar({ cor }) */
   function corPropria(no) { if (!dgo() && proprio && proprio.cor) no.style.setProperty('--dgo-cor', proprio.cor); return no; }
 
@@ -1098,6 +1117,8 @@ window.LEXSUITE_RADAR = null;
     /* aparece só com o app livre: sem janela, menu ou tela cheia por cima */
     sincronizar: function () {
       if (!Assistente.el) return;
+      /* 1.1.0: durante o tour o personagem fica (só sai, com .dgo-aone-sai, no passo em que cobriria o destaque) */
+      if (Assistente._tour) { Assistente.el.classList.remove('dgo-oculto'); d.body.classList.add('dgo-aone-on'); return; }
       /* com o balão aberto ele não some no meio de um comando (só uma janela do módulo o esconde) */
       var mostrar = Assistente.ligado() && !Assistente._tour && (!Assistente.escondido() || (Assistente.vista && !modalAberto()));
       Assistente.el.classList.toggle('dgo-oculto', !mostrar);
@@ -1321,47 +1342,57 @@ window.LEXSUITE_RADAR = null;
       var r = e2.getBoundingClientRect();
       return (r.width > 0 && r.height > 0 && raiz.getComputedStyle(e2).visibility !== 'hidden') ? e2 : null;
     },
+    /* 1.1.0: um balão e um destaque só para o tour inteiro; a cada passo muda o conteúdo e a posição, e o CSS faz os
+       dois "voarem" até o próximo (0,25 s; sem animação com "reduzir movimento"). O personagem fica à vista. */
     tour: function (i) {
       if (!Assistente.ligado()) return;
       if (!Assistente.el) Assistente.montar();
       var T = Assistente.passosTour();
       i = i || 0;
-      Assistente.tourFim(true);
-      Assistente._tour = true; Assistente.sincronizar();
-      /* o próprio personagem precisa estar visível para ser o último passo */
-      if (Assistente.el) Assistente.el.classList.remove('dgo-oculto');
+      if (Assistente.vista) Assistente.fechar();
+      Assistente._tour = true;
+      Assistente.el.classList.add('dgo-aone-no-tour');
+      Assistente.sincronizar();
       while (i < T.length && !Assistente.visivel(T[i].seletor)) i++;
       if (i >= T.length) { prefGravar('aone:tour', true); Assistente.tourFim(); avisoRapido('✓ ' + t('aoneFimTour'), 3500); return; }
       var alvo = Assistente.visivel(T[i].seletor);
       alvo.scrollIntoView({ block: 'nearest' });
       var r = alvo.getBoundingClientRect(), pad = 6;
-      var foco = corPropria(el('div', { class: 'dgo-aone-foco', 'data-dgo-ui': '1', style: {
-        left: (r.left - pad) + 'px', top: (r.top - pad) + 'px', width: (r.width + pad * 2) + 'px', height: (r.height + pad * 2) + 'px' } }));
+      /* o personagem só sai do caminho se cobrir o destaque (e nunca no passo dele, o "Sou eu!") */
+      var ehEle = Assistente.el.contains(alvo), rb = Assistente.botao.getBoundingClientRect();
+      Assistente.el.classList.toggle('dgo-aone-sai', !ehEle && cobre(rb, r, pad + 4));
+      var els = Assistente._tourEls, primeiro = !els;
+      var foco = primeiro ? corPropria(el('div', { class: 'dgo-aone-foco dgo-aone-ja', 'data-dgo-ui': '1' })) : els[0];
+      var caixa = primeiro ? corPropria(el('div', { class: 'dgo-aone-tour dgo-aone-ja' + solo(), 'data-dgo-ui': '1', role: 'dialog' })) : els[1];
+      foco.style.left = (r.left - pad) + 'px'; foco.style.top = (r.top - pad) + 'px';
+      foco.style.width = (r.width + pad * 2) + 'px'; foco.style.height = (r.height + pad * 2) + 'px';
       var ultimo = i === T.length - 1;
-      var caixa = corPropria(el('div', { class: 'dgo-aone-tour' + solo(), 'data-dgo-ui': '1', role: 'dialog', 'aria-label': Assistente.tx(T[i].titulo) }, [
-        Assistente.cabecalho(Assistente.tx(T[i].titulo)),
+      while (caixa.firstChild) caixa.removeChild(caixa.firstChild);
+      caixa.setAttribute('aria-label', Assistente.tx(T[i].titulo));
+      [Assistente.cabecalho(Assistente.tx(T[i].titulo)),
         el('p', { texto: Assistente.tx(T[i].texto) }),
         el('div', { class: 'dgo-aone-linha' }, [
           el('span', { class: 'dgo-mini', texto: (i + 1) + ' / ' + T.length }),
-          el('span', { style: { display: 'flex', gap: '6px' } }, [
+          el('span', { class: 'dgo-aone-bts' }, [
             el('button', { type: 'button', class: 'dgo-b dgo-b2', texto: t('aoneSair'), onclick: function () { Assistente.tourFim(); } }),
             el('button', { type: 'button', class: 'dgo-b', texto: ultimo ? t('aoneConcluir') : (t('aoneProximo') + ' ›'), onclick: function () { Assistente.tour(i + 1); } })
           ])
-        ])
-      ]));
-      d.body.appendChild(foco); d.body.appendChild(caixa);
+        ])].forEach(function (f) { caixa.appendChild(f); });
+      if (primeiro) { d.body.appendChild(foco); d.body.appendChild(caixa); }
       var W = caixa.offsetWidth, H = caixa.offsetHeight, vw = raiz.innerWidth, vh = raiz.innerHeight;
       var topo = r.bottom + 14; if (topo + H > vh - 8) topo = Math.max(8, r.top - H - 14);
       var esq = Math.min(Math.max(8, r.left + r.width / 2 - W / 2), vw - W - 8);
       caixa.style.top = topo + 'px'; caixa.style.left = esq + 'px';
       Assistente._tourEls = [foco, caixa];
-      setTimeout(function () { var b = caixa.querySelector('.dgo-b:not(.dgo-b2)'); if (b) try { b.focus(); } catch (e) {} }, 40);
+      /* no primeiro passo eles aparecem no lugar; daí em diante, voam */
+      if (primeiro) setTimeout(function () { foco.classList.remove('dgo-aone-ja'); caixa.classList.remove('dgo-aone-ja'); }, 30);
+      setTimeout(function () { var b = caixa.querySelector('.dgo-b:not(.dgo-b2)'); if (b) try { b.focus({ preventScroll: true }); } catch (e) {} }, 40);
     },
-    tourFim: function (soLimpar) {
+    tourFim: function () {
       (Assistente._tourEls || []).forEach(function (x) { if (x.parentNode) x.parentNode.removeChild(x); });
       Assistente._tourEls = null;
-      if (soLimpar) return;
       Assistente._tour = false;
+      if (Assistente.el) { Assistente.el.classList.remove('dgo-aone-no-tour'); Assistente.el.classList.remove('dgo-aone-sai'); }
       Assistente.sincronizar();
     },
 
