@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.18 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.19 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,16 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.19:** menu ☰ em gaveta que desliza, com cabeçalhos de grupo (não clicáveis), itens recuados com seta e "Sair"
+  separado em vermelho; **lupa** ao lado da engrenagem, que procura empresa, processo, CNPJ, cidade, opção do programa
+  e assunto do manual; engrenagem centrada; "Interromper" virou botão vermelho; depois de reiniciar, a tela mostra a
+  última leitura guardada (não "Ainda não leu"); Configuração → pasta com três opções explicadas (Google Drive,
+  só neste computador, outra pasta), o caminho inteiro e o teste automático (sem botão "Testar"); a janela de pastas
+  do Windows abre na frente; termos com um link só para ler e, se faltar, "Aceitar em nome do escritório" já com
+  código, nome e e-mail; código de cliente mascarado no perfil e na Configuração; motivo da parada das estatísticas
+  fica na tela, em PT ou EN; gráfico "Como a ação nova foi reconhecida". Antes de mudar o banco, a atualização guarda
+  uma cópia `lexsuite.db.antes-<versão>-<data>` na pasta do programa (fica só neste computador; o
+  `PREPARAR-PARA-CLIENTE.bat` a apaga).
 - **0.7.18:** **estatísticas dos meses anteriores** no Painel ("Sazonalidade": ações novas por mês e por dia da
   semana, mês de pico): o escritório escolhe quantos meses (padrão 3), o RADAR lê os Diários antigos 30 por vez, à
   noite depois da leitura agendada ou com "Ler agora", e guarda os totais e, só neste computador, o número dos processos já contados; engrenagem ⚙ ao lado do perfil (abre a

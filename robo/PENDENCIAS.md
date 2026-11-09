@@ -162,6 +162,16 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.19 (09/Nov, noite; ressalvas da 0.7.18 e feedback do dono, antes da visita)
+
+Ressalvas da Operação (revisão da 0.7.18): reserva de cada Diário antigo, fila só depois de 3 falhas, mensagens em PT e
+EN que ficam na tela, "Ler agora" também com erros, marca "rodando" nunca presa, cópia do banco com data e sem
+arquivo pela metade, turma trabalhada de volta, código mascarado. Feedback do dono (prints): "Ainda não leu" depois de
+reiniciar; Interromper como botão vermelho; termos com um link só e aceite já preenchido; pastas explicadas, caminho
+inteiro, teste automático e janela do Windows na frente; menu em gaveta com hierarquia; lupa de busca; engrenagem
+centrada; gráfico do sinal para calibrar a regra com o Leandro. **Pedido ao Fable:** página do aceite na largura toda.
+**Falta decidir (dono):** AssistONE no RADAR (ver "Perguntas ao dono" no quadro). Pacote continua com 45/44 arquivos.
+
 ## 0.7.18 (09/Nov, noite; antes da visita, depois da 0.7.17)
 
 Feedback do dono (prints da 0.7.16): estatísticas dos meses anteriores para levar ao Leandro (sazonalidade e picos) —

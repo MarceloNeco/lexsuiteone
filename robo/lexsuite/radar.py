@@ -91,6 +91,7 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         "visto_em": lead.get("visto_em") or "",
         "tribunal": lead.get("tribunal"),
         "vara": lead.get("vara"),
+        "sinal": lead.get("sinal") or "",  # 0.7.19: como a ação nova foi reconhecida (gráfico para calibrar a regra com o escritório)
         "processo": lead.get("processo"),
         "classe": (lead.get("classe") or "").upper(),  # 0.7.16: o Diário às vezes traz "AçãO ... ORDINáRIO"
         "rito": lead.get("rito"),

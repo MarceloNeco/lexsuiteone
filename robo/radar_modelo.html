@@ -287,13 +287,46 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 /* menu ☰ */
 .b-menu { all: unset; cursor: pointer; color: #fff; font-size: 1.4rem; line-height: 1; padding: 6px 10px; border-radius: 8px; margin-right: 6px; }
 .b-menu:hover, .b-menu:focus-visible { background: rgba(255,255,255,.12); }
-.gaveta { position: fixed; inset: 0 auto 0 0; width: min(320px, 86vw); background: var(--folha); z-index: 60; box-shadow: 4px 0 30px rgba(0,0,0,.25); padding: 18px 14px; overflow-y: auto; display: grid; align-content: start; gap: 2px; }
+/* 0.7.19: gaveta que desliza (240 ms), cabeçalhos de grupo que não se clicam, itens recuados com seta, Sair separado */
+.gaveta { position: fixed; inset: 0 auto 0 0; width: min(320px, 86vw); background: var(--folha); z-index: 60; box-shadow: 4px 0 30px rgba(0,0,0,.25); padding: 0 0 18px; overflow-y: auto; display: flex; flex-direction: column;
+  transform: translateX(-104%); transition: transform .24s cubic-bezier(.2,.8,.2,1); }
+.gaveta.aberta { transform: none; }
 .gaveta[hidden] { display: none; }
-.gaveta .grupo-menu { font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-3); padding: 12px 10px 4px; }
-.gaveta button { all: unset; cursor: pointer; padding: 10px 12px; border-radius: 8px; color: var(--tinta); font-weight: 500; }
-.gaveta button:hover, .gaveta button:focus-visible { background: var(--papel-2, #f3f5f8); }
-.gaveta button[aria-current="true"] { background: var(--latao-wash); color: var(--latao-texto); font-weight: 700; }
-.veu { position: fixed; inset: 0; background: rgba(10,16,28,.35); z-index: 55; } .veu[hidden] { display: none; }
+.gaveta .gv-topo { display: flex; align-items: center; justify-content: space-between; background: var(--noite); color: #fff; padding: 14px 14px 14px 20px; position: sticky; top: 0; z-index: 1; }
+.gaveta .gv-topo b { font-size: 1rem; letter-spacing: .02em; } .gaveta .gv-topo small { display: block; color: var(--latao-claro); font-size: .72rem; font-weight: 600; }
+.gaveta .gv-x { all: unset; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #d6dbe6; font-size: 1rem; }
+.gaveta .gv-x:hover, .gaveta .gv-x:focus-visible { background: rgba(255,255,255,.14); color: #fff; }
+.gaveta .grupo-menu { font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--latao-texto, #7a5a1e); padding: 18px 20px 6px; margin-top: 6px; border-top: 1px solid var(--linha, #e3e7ee); cursor: default; user-select: none; }
+.gaveta .grupo-menu:first-of-type { border-top: 0; margin-top: 0; }
+.gaveta button.gv-item { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 1px 10px 1px 14px; padding: 9px 12px 9px 18px; border-radius: 8px; color: var(--noite, #0f1d33); font-weight: 500; font-size: .95rem; border-left: 3px solid transparent; }
+.gaveta button.gv-item::after { content: "›"; color: var(--tinta-3); font-size: 1.1rem; line-height: 1; }
+.gaveta button.gv-item:hover, .gaveta button.gv-item:focus-visible { background: var(--papel-2, #f1f4f8); }
+.gaveta button.gv-item:focus-visible { outline: 2px solid var(--latao, #b8893a); outline-offset: -2px; }
+.gaveta button.gv-item[aria-current="true"] { background: var(--latao-wash); color: var(--latao-texto); font-weight: 700; border-left-color: var(--latao, #b8893a); }
+.gaveta button.gv-item[aria-current="true"]::after { content: "•"; color: var(--latao, #b8893a); }
+.gaveta button.gv-sair { color: #a3261b; margin-top: 14px; }
+.gaveta .gv-linha { border-top: 1px solid var(--linha, #e3e7ee); margin: 12px 0 0; }
+.veu { position: fixed; inset: 0; background: rgba(10,16,28,.35); z-index: 55; opacity: 0; transition: opacity .24s ease; } .veu.aberta { opacity: 1; } .veu[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .gaveta, .veu { transition: none; } }
+/* 0.7.19: busca geral (lupa) */
+.b-redondo, .engrenagem.so-icone { width: 40px; height: 40px; min-height: 0; padding: 0; border-radius: 50%; border: 1px solid rgba(255,255,255,.35); background: transparent; color: #e6eaf2; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; gap: 0; }
+.b-redondo[hidden] { display: none; }
+.b-redondo:hover, .b-redondo:focus-visible, .engrenagem.so-icone:hover, .engrenagem.so-icone[aria-expanded="true"] { background: #fff; color: var(--noite); }
+.b-redondo svg, .engrenagem svg { display: block; flex: none; }
+.busca-global { position: fixed; inset: 0; z-index: 70; background: rgba(10,16,28,.45); display: flex; justify-content: center; align-items: flex-start; padding: 8vh 16px 16px; }
+.busca-global[hidden] { display: none; }
+.bg-caixa { background: var(--folha, #fff); width: min(680px, 100%); max-height: 80vh; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.3); display: flex; flex-direction: column; overflow: hidden; }
+.bg-topo { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 6px 20px; } .bg-topo h2 { margin: 0; font-size: 1rem; color: var(--noite); }
+.bg-x { all: unset; cursor: pointer; width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: var(--tinta-3); }
+.bg-x:hover, .bg-x:focus-visible { background: var(--papel-2, #f1f4f8); color: var(--noite); }
+#bg-q { margin: 4px 16px 10px; padding: 11px 14px; font-size: 1rem; border: 1px solid var(--linha, #d5dbe5); border-radius: 10px; }
+#bg-q:focus { outline: 2px solid var(--latao, #b8893a); outline-offset: 0; }
+.bg-res { overflow-y: auto; padding: 0 8px 14px; }
+.bg-res h3 { font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--latao-texto, #7a5a1e); margin: 12px 12px 4px; }
+.bg-res button { all: unset; box-sizing: border-box; cursor: pointer; display: block; width: 100%; padding: 8px 12px 8px 20px; border-radius: 8px; color: var(--noite); }
+.bg-res button small { display: block; color: var(--tinta-3); font-size: .78rem; }
+.bg-res button:hover, .bg-res button:focus-visible { background: var(--papel-2, #f1f4f8); }
+.bg-res .bg-nada { padding: 10px 20px; color: var(--tinta-3); }
 /* barra de seleção ("Com os selecionados"): azul-marinho, diferente das pílulas de filtro */
 .lote { position: sticky; bottom: 10px; z-index: 30; margin-top: 10px; background: var(--marinho); color: #fff; border-radius: 14px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; box-shadow: 0 10px 30px rgba(15,29,51,.3); }
 .lote[hidden] { display: none; }
@@ -330,7 +363,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 body.modo-pagina .miolo > :not(#app):not(footer), body.modo-pagina #app > :not(.pagina) { display: none !important; }
 body.modo-pagina #config.pagina:not([hidden]), body.modo-pagina #perfil.pagina:not([hidden]) { position: static; transform: none; width: auto; max-height: none; box-shadow: none; margin-top: 8px; }
 body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
-.engrenagem.so-icone { padding: 6px 10px; font-size: 1.15rem; }
+
 .perfil-licenca { background: var(--papel-2); border-radius: 10px; padding: 10px 14px; display: grid; gap: 4px; font-size: .9rem; }
 .perfil-licenca b { color: var(--tinta); }
 .conf-cab { position: sticky; top: 0; z-index: 2; margin: 0 -22px 4px; padding: 14px 22px; background: var(--marinho); color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -344,12 +377,19 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .opcoes-cartao.compacta label { padding: 6px 14px; align-items: center; border-radius: 999px; display: inline-flex; gap: 8px; white-space: nowrap; }
 .opcoes-cartao input[type="radio"] { width: 16px; height: 16px; min-height: 0; padding: 0; margin: 0; flex: none; accent-color: var(--marinho); }
 .opcoes-cartao.compacta small { display: none; }
+.opcoes-cartao.pasta-cartoes { grid-template-columns: 1fr; } .pasta-cartoes label > span { min-width: 0; } .pasta-cartoes input[type="radio"] { margin-top: 3px; }
 .arm-tabela { width: 100%; border-collapse: collapse; font-size: .9rem; }
 .arm-tabela td, .arm-tabela th { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--linha); }
 .arm-barra { display: inline-block; width: 120px; height: 8px; border-radius: 999px; background: var(--linha); overflow: hidden; vertical-align: middle; }
 .arm-barra i { display: block; height: 100%; background: var(--latao); } .arm-barra.cheia i { background: var(--erro); }
 .banner.arm { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: var(--latao-wash); color: var(--latao-texto); border-color: var(--latao); }
 .banner.arm.critico { background: #fbe9e7; color: var(--erro); border-color: var(--erro); }
+.pasta-cam { display: block; font-size: .78rem; color: #3b4a5c; background: #f1f4f8; border-radius: 6px; padding: 3px 7px; margin-top: 4px; word-break: break-all; font-family: Consolas, "Courier New", monospace; }
+#c-teste-txt .pasta-cam { display: inline-block; margin-top: 2px; }
+.pasta-ok { color: #1e6b45; font-weight: 600; } .pasta-erro { color: #a3261b; font-weight: 600; }
+.saz-recado { color: #a3261b; font-weight: 600; }
+.perigo { border: 1px solid #c4473a; background: #fdecea; color: #a3261b; border-radius: 999px; padding: 6px 16px; font-weight: 700; font-size: .86rem; cursor: pointer; box-shadow: 0 1px 3px rgba(163,38,27,.25); }
+.perigo:hover, .perigo:focus-visible { background: #f9d6d2; outline: 2px solid #c4473a; outline-offset: 1px; }
 .salvo-ok { color: #1e7d3c; font-weight: 700; margin-left: 6px; }
 .carregando { position: fixed; inset: 0; z-index: 95; background: rgba(15,29,51,.9); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; font-size: 1.1rem; text-align: center; padding: 20px; }
 .carregando[hidden] { display: none; }
@@ -425,7 +465,9 @@ footer a:hover { text-decoration: underline; }
       <button type="button" class="planilha-btn" id="b-planilha" hidden></button>
       <button type="button" class="link" id="b-pasta" hidden></button>
       <a id="link-manual-topo" href="/manual" target="_blank" rel="noopener" hidden></a>
-      <button type="button" class="engrenagem" id="b-config" aria-expanded="false" aria-controls="config" hidden><span aria-hidden="true">⚙</span> <span id="b-config-txt"></span></button>
+      <!-- 0.7.19: lupa e engrenagem em traço fino, centradas em círculos do mesmo tamanho do perfil (desenhos do conjunto Feather, licença MIT) -->
+      <button type="button" class="b-redondo" id="b-busca" aria-haspopup="dialog" aria-controls="busca-global" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></button>
+      <button type="button" class="engrenagem" id="b-config" aria-expanded="false" aria-controls="config" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span id="b-config-txt"></span></button>
       <div class="pilula" role="group" aria-label="Idioma / Language"><button type="button" id="b-pt" data-lang="pt">PT</button><button type="button" id="b-en" data-lang="en">EN</button></div>
       <button type="button" class="perfil-btn" id="b-perfil" aria-expanded="false" aria-controls="perfil" hidden></button>
     </div>
@@ -435,6 +477,10 @@ footer a:hover { text-decoration: underline; }
 </header>
 </div></div>
 <nav class="gaveta" id="gaveta" hidden aria-label="Menu"></nav>
+<div class="busca-global" id="busca-global" role="dialog" aria-modal="true" aria-labelledby="bg-titulo" hidden>
+  <div class="bg-caixa"><div class="bg-topo"><h2 id="bg-titulo"></h2><button type="button" class="bg-x" id="bg-x">✕</button></div>
+  <input type="search" id="bg-q" autocomplete="off" spellcheck="false"><div class="bg-res" id="bg-res" aria-live="polite"></div></div>
+</div>
 <div class="veu" id="veu" hidden></div>
 <div class="carregando" id="carregando" hidden role="status" aria-live="polite"><div class="roda" aria-hidden="true"></div><p id="carregando-txt"></p></div>
 <dialog class="janela" id="janela"><div class="conteudo" id="janela-conteudo"></div></dialog>
@@ -516,10 +562,10 @@ footer a:hover { text-decoration: underline; }
     <label class="campo-conf"><span id="c-l-codigo"></span><input id="c-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
     <p class="nota-registro" id="c-codigo-nota" hidden></p>
     <h4 class="conf-sec" id="c-s-pasta"></h4>
-    <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta" hidden></select><span class="opcoes-cartao compacta" id="c-pasta-cartoes" role="radiogroup"></span></label>
+    <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta" hidden></select><span class="opcoes-cartao pasta-cartoes" id="c-pasta-cartoes" role="radiogroup"></span></label>
     <p class="agenda-info" id="c-pasta-nota"></p>
     <label class="campo-conf" id="c-outra-wrap" hidden><span id="c-l-outra"></span><input id="c-outra" type="text" spellcheck="false"></label>
-    <div class="conf-acoes"><button type="button" class="chip" id="c-escolher" hidden></button><button type="button" class="chip" id="c-testar"></button><button type="button" class="chip" id="c-criar" hidden></button><span id="c-teste-txt"></span></div>
+    <div class="conf-acoes"><button type="button" class="chip" id="c-escolher" hidden></button><button type="button" class="chip" id="c-testar" hidden></button><button type="button" class="chip" id="c-criar" hidden></button><span id="c-teste-txt"></span></div>
     <fieldset class="agenda" id="c-agendar-wrap">
       <legend id="c-l-agenda"></legend>
       <label class="conf-acoes"><input type="checkbox" id="c-agendar"> <span id="c-l-agendar"></span></label>
@@ -834,6 +880,11 @@ window.LEXSUITE_RADAR = null;
   };
   // 0.7.16: textos novos (PT e EN)
   Object.assign(T.pt, {
+    bg_titulo: "Procurar", bg_ph: "Empresa, processo, CNPJ, cidade, opção do programa ou assunto do manual", bg_opcoes: "Telas e opções", bg_acoes: "Ações", bg_manual: "No manual", bg_nada: "Nada encontrado. Tente outra palavra.",
+    termos_ler_todos: "Ler os termos (abre no navegador)", termos_aceitar_esc: "Aceitar em nome do escritório", termos_aceitar_esc_x: "Só o responsável pela licença aceita em nome do escritório. A página abre no navegador com o código, o seu nome e o seu e-mail já preenchidos; confira e confirme.",
+    pasta_fica: "As planilhas ficam em:", pasta_drive_x: "Sincroniza com a nuvem pelo Google Drive para computador: dá para abrir no celular e com a equipe.", pasta_local_x: "Fica só neste computador, sem nuvem: ninguém mais vê.", pasta_outra_x: "Você escolhe a pasta (pode ser de rede ou do Drive).",
+    escolhendo: "A janela de pastas do Windows abriu. Se não aparecer, procure atrás desta tela ou na barra de tarefas.",
+    g_sinal: "Como a ação nova foi reconhecida", sinal_antigo: "Guardada antes da 0.7.16 (regra antiga)",
     voltar: "Voltar", pf_licenca: "Licença do escritório", pf_codigo: "Código:", pf_escritorio_lic: "Escritório:", pf_situacao: "Situação:", pf_validade: "(até {d})",
     pf_fixo: "Fixo: identifica você na licença do escritório.", pf_outra_pessoa: "Outra pessoa vai usar este computador",
     pf_outra_pessoa_x: "O e-mail e o escritório não se editam: são a sua identificação na licença. Se outra pessoa do escritório vai usar este computador, ela se cadastra com o e-mail dela, e a SolverONE confere se o domínio do e-mail é do escritório.",
@@ -873,6 +924,11 @@ window.LEXSUITE_RADAR = null;
     valor_salvo: "✓ salvo", sit_salva: "✓"
   });
   Object.assign(T.en, {
+    bg_titulo: "Search", bg_ph: "Company, case number, CNPJ, city, program option or manual topic", bg_opcoes: "Screens and options", bg_acoes: "Lawsuits", bg_manual: "In the manual", bg_nada: "Nothing found. Try another word.",
+    termos_ler_todos: "Read the terms (opens in the browser)", termos_aceitar_esc: "Accept on behalf of the firm", termos_aceitar_esc_x: "Only the licence holder accepts on behalf of the firm. The page opens in the browser with the code, your name and your e-mail filled in; check and confirm.",
+    pasta_fica: "The spreadsheets live in:", pasta_drive_x: "Syncs to the cloud through Google Drive for desktop: open it on the phone and with the team.", pasta_local_x: "Stays on this computer only, no cloud: nobody else sees it.", pasta_outra_x: "You choose the folder (network or Drive folders work too).",
+    escolhendo: "The Windows folder picker opened. If you do not see it, look behind this screen or on the taskbar.",
+    g_sinal: "How the new lawsuit was recognised", sinal_antigo: "Saved before 0.7.16 (old rule)",
     voltar: "Back", pf_licenca: "Firm licence", pf_codigo: "Code:", pf_escritorio_lic: "Firm:", pf_situacao: "Status:", pf_validade: "(until {d})",
     pf_fixo: "Fixed: identifies you on the firm's licence.", pf_outra_pessoa: "Someone else will use this computer",
     pf_outra_pessoa_x: "E-mail and firm cannot be edited: they identify you on the licence. If someone else from the firm will use this computer, they sign up with their own e-mail, and SolverONE checks that the e-mail domain belongs to the firm.",
@@ -982,7 +1038,7 @@ window.LEXSUITE_RADAR = null;
       if (MODO === "app") {
         if (e.parando) box.appendChild(el("span", "aviso-leve", t("parando")));
         else {
-          var bi = el("button", "btn-txt", t("interromper")); bi.type = "button";
+          var bi = el("button", "perigo", "■ " + t("interromper")); bi.type = "button";
           bi.addEventListener("click", function () {
             var c = el("div"); c.appendChild(el("h3", null, t("interromper_q"))); c.appendChild(el("p", null, t("interromper_x")));
             abrirJanela(c, [[t("continuar_lendo"), null], [t("interromper"), function () { post("/interromper", {}).then(function () { vigiar(); }).catch(function () { var cf = el("div"); cf.appendChild(el("p", null, t("falha"))); abrirJanela(cf, [[t("fechar"), null, true]]); }); }, true]]);
@@ -1211,19 +1267,29 @@ window.LEXSUITE_RADAR = null;
       var txt = b && b.aceito ? (b.versao && b.versao_vigente && b.versao !== b.versao_vigente ? t("termos_antiga", { v: b.versao, w: b.versao_vigente }) : t("termos_aceito", { d: dataHora(b.aceito_em) || b.aceito_em || "—", n: b.nome || "—", v: b.versao || "—" }))
         : (velho && velho.aceito ? t("termos_aceito", { d: dataHora(velho.aceito_em) || velho.aceito_em || "—", n: velho.nome || "—", v: velho.versao || "—" }) : t("termos_nao"));
       dd.appendChild(document.createTextNode(txt + (b && b.versao_vigente ? " · " + t("termos_vigente", { v: b.versao_vigente }) : "") + " "));
-      var link = (b && b.link) || (velho && velho.link) || "";
-      if (link) { var a = el("a", null, t("termos_ler")); a.href = link; a.target = "_blank"; a.rel = "noopener noreferrer"; dd.appendChild(a); }
+
       dl.appendChild(dd);
     };
     camada(t("termos_esc"), tm.escritorio, ac); camada(t("termos_pes"), tm.pessoa, null);
     box.appendChild(dl); if (!tm.escritorio && !tm.pessoa) box.appendChild(el("p", "agenda-info", t("termos_sem")));
+    // 0.7.19: um documento só (os termos completos, com índice); o aceite em nome do escritório só aparece se faltar
+    var base_ = ((tm.escritorio && tm.escritorio.link) || ac.link || "https://judicial.solverone.com.br/aceite.html").split("?")[0];
+    var acoes_ = el("div", "conf-acoes"), ler = el("a", "chip", t("termos_ler_todos")); ler.href = base_ + "?ler=1"; ler.target = "_blank"; ler.rel = "noopener noreferrer"; acoes_.appendChild(ler);
+    var escOk = (tm.escritorio && tm.escritorio.aceito) || ac.aceito;
+    if (!escOk) {
+      var u_ = (APP && APP.usuario) || {}, ct_ = (APP && APP.conta) || {};
+      var q_ = "?codigo=" + encodeURIComponent(ct_.codigo || "") + "&email=" + encodeURIComponent(u_.email || "") + "&nome=" + encodeURIComponent(u_.nome || "");
+      var acc = el("a", "primario", t("termos_aceitar_esc")); acc.href = base_ + q_; acc.target = "_blank"; acc.rel = "noopener noreferrer"; acoes_.appendChild(acc);
+      acoes_.appendChild(ajuda(t("termos_aceitar_esc_x")));
+    }
+    box.appendChild(acoes_);
   }
   function abrirConfig(forcar, rolarPara, comoPagina) {
     var p = $("config"), abrir = forcar || p.hidden;
     if (!abrir) { fecharConfig(false); return; }
     fecharPerfil(); modoPagina(comoPagina ? "config" : null);
-    $("c-codigo").value = (APP && APP.conta && APP.conta.codigo) || "";
     var fixo = !!(APP && APP.conta && APP.conta.codigo && APP.conta.ok);  // código válido e salvo: só para ler
+    $("c-codigo").value = fixo ? mascaraCodigo(APP.conta.codigo) : ((APP && APP.conta && APP.conta.codigo) || "");  // 0.7.19: confirmado aparece mascarado
     $("c-codigo").readOnly = fixo; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
     p.hidden = !abrir; $("b-config").setAttribute("aria-expanded", String(abrir));
     if (!abrir) return;
@@ -1237,15 +1303,15 @@ window.LEXSUITE_RADAR = null;
     fetch("/pastas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
       var sp = $("c-pasta"); sp.textContent = "";
       (d.candidatas || []).forEach(function (c) { var o = el("option", null, c); o.value = c; sp.appendChild(o); });
-      var oo = el("option", null, t("c_outra_op")); oo.value = "__outra"; sp.appendChild(oo);
       var on = el("option", null, t("c_nenhuma")); on.value = d.pasta_programa || ""; sp.appendChild(on);
+      var oo = el("option", null, t("c_outra_op")); oo.value = "__outra"; sp.appendChild(oo);
       var atual = d.atual || ""; cEscolher = !!d.escolher;
       if (atual && atual === d.pasta_programa) sp.value = atual;
       else if (atual && (d.candidatas || []).indexOf(atual) < 0) { sp.value = "__outra"; $("c-outra").value = atual; }
       else if (atual) sp.value = atual;
       else sp.value = (d.candidatas || []).length ? d.candidatas[0] : "";
       $("c-outra-wrap").hidden = sp.value !== "__outra"; $("c-escolher").hidden = sp.value !== "__outra" || !cEscolher; $("c-criar").hidden = true;
-      cartoesPasta(d); snapC = estadoConfig(); marcarSalvarC();
+      cartoesPasta(d); snapC = estadoConfig(); marcarSalvarC(); if (pastaEscolhida()) testarPastaC(false);
     }).catch(function () {});
     infoConfig();
     $("c-s-licenca").textContent = t("c_s_licenca"); $("c-s-pasta").textContent = t("c_s_pasta"); $("c-s-sobre").textContent = t("c_s_sobre");
@@ -1261,19 +1327,26 @@ window.LEXSUITE_RADAR = null;
     var sp = $("c-pasta"), box = $("c-pasta-cartoes"); box.textContent = "";
     Array.prototype.forEach.call(sp.options, function (o, ix) {
       var lb = el("label"), r = el("input"), txt = el("span"); r.type = "radio"; r.name = "c-pasta-r"; r.value = o.value; r.checked = sp.value === o.value;
-      var titulo_ = o.value === "__outra" ? t("c_outra_op") : (d && o.value === d.pasta_programa ? t("c_nenhuma") : t("c_pasta_drive"));
-      txt.appendChild(el("b", null, titulo_));
-      txt.appendChild(el("small", null, o.value === "__outra" ? t("c_pasta_outra_x") : (d && o.value === d.pasta_programa ? t("c_pasta_local_x") : o.textContent)));
+      // 0.7.19: o que cada opção quer dizer, em uma linha, e o caminho inteiro embaixo (o dono não entendia a diferença)
+      var local_ = d && o.value === d.pasta_programa, outra_ = o.value === "__outra";
+      txt.appendChild(el("b", null, outra_ ? t("c_outra_op") : (local_ ? t("c_nenhuma") : t("c_pasta_drive"))));
+      txt.appendChild(el("small", null, outra_ ? t("pasta_outra_x") : (local_ ? t("pasta_local_x") : t("pasta_drive_x"))));
+      var cam_ = outra_ ? ($("c-outra").value || "") : o.value;
+      if (cam_) { var cc_ = el("code", "pasta-cam", cam_); txt.appendChild(cc_); }
       r.addEventListener("change", function () { sp.value = o.value; sp.dispatchEvent(new Event("change")); });
       lb.appendChild(r); lb.appendChild(txt); box.appendChild(lb);
     });
   }
-  function testarPastaC(criar) {
-    var p = pastaEscolhida(); if (!p) { $("c-teste-txt").textContent = t("w_pasta_falta"); return; }
-    $("c-teste-txt").textContent = t("carregando");
+  function testarPastaC(criar) {  // 0.7.19: roda sozinho ao escolher a opção; mostra onde as planilhas ficam, com o caminho inteiro
+    var p = pastaEscolhida(), tx = $("c-teste-txt"); if (!p) { tx.textContent = t("w_pasta_falta"); return; }
+    tx.textContent = t("carregando");
     post("/testar-pasta", { pasta: p, criar: !!criar }).then(function (r) {
-      $("c-criar").hidden = !r.nao_existe; $("c-teste-txt").textContent = r.nao_existe ? t("pasta_nao_existe", { c: marcaCurto() }) : ((criar ? t("pasta_criada") + " " : "") + (r.mensagem || ""));
-    }).catch(function () { $("c-teste-txt").textContent = t("falha"); });
+      $("c-criar").hidden = !r.nao_existe; tx.textContent = "";
+      if (r.nao_existe) { tx.textContent = t("pasta_nao_existe", { c: marcaCurto() }); return; }
+      tx.appendChild(el("span", r.ok ? "pasta-ok" : "pasta-erro", r.ok ? "✓ " + t("pasta_fica") + " " : "✗ " + (r.mensagem || t("falha"))));
+      if (r.ok && r.alvo) tx.appendChild(el("code", "pasta-cam", r.alvo));
+      if (criar && r.ok) tx.appendChild(el("span", null, " " + t("pasta_criada")));
+    }).catch(function () { tx.textContent = t("falha"); });
   }
   function pastaEscolhida() { var v = $("c-pasta").value; return v === "__outra" ? $("c-outra").value.trim() : v; }
   function infoConfig() {
@@ -1532,7 +1605,7 @@ window.LEXSUITE_RADAR = null;
     var dl = $("pf-lista"); dl.textContent = "";
     var ct = (APP && APP.conta) || {}, lic = el("div", "perfil-licenca"); $("pf-licenca").textContent = "";
     lic.appendChild(el("b", null, t("pf_licenca")));
-    lic.appendChild(el("span", null, t("pf_codigo") + " " + (ct.codigo || "—")));
+    lic.appendChild(el("span", null, t("pf_codigo") + " " + (ct.codigo ? mascaraCodigo(ct.codigo) : "—")));
     lic.appendChild(el("span", null, t("pf_escritorio_lic") + " " + (ct.escritorio || (APP && APP.config.escritorio) || "—")));
     lic.appendChild(el("span", null, t("pf_situacao") + " " + (ct.texto || "—") + (ct.validade ? " " + t("pf_validade", { d: dataCurta(ct.validade) }) : "")));
     $("pf-licenca").appendChild(lic);
@@ -1634,7 +1707,7 @@ window.LEXSUITE_RADAR = null;
   function barraApp() {
     var naWizard = !$("wizard").hidden;
     $("app").hidden = MODO !== "app" || naWizard; $("controles").hidden = naWizard; $("lista").hidden = naWizard; if (naWizard) $("mais").hidden = true;
-    $("b-config").hidden = MODO !== "app" || naWizard; $("b-config").classList.add("so-icone"); $("b-config-txt").textContent = ""; $("b-config").setAttribute("aria-label", t("config")); $("b-config").title = t("config");  // 0.7.18: engrenagem ao lado do perfil
+    $("b-config").hidden = MODO !== "app" || naWizard; $("b-busca").hidden = naWizard; $("b-busca").setAttribute("aria-label", t("bg_titulo")); $("b-busca").title = t("bg_titulo"); $("b-config").classList.add("so-icone"); $("b-config-txt").textContent = ""; $("b-config").setAttribute("aria-label", t("config")); $("b-config").title = t("config");  // 0.7.18: engrenagem ao lado do perfil
     $("b-menu").hidden = MODO !== "app" || naWizard;
     if ($("versao-topo")) $("versao-topo").textContent = D.versao ? "v" + D.versao : "";
     $("resumo").hidden = naWizard; if (naWizard) { $("b-planilha").hidden = true; $("b-pasta").hidden = true; $("perfil").hidden = true; }
@@ -1879,7 +1952,7 @@ window.LEXSUITE_RADAR = null;
   var balaoAberto = null;
   function fecharBalao() { if (balaoAberto) { balaoAberto.remove(); balaoAberto = null; } }
   document.addEventListener("click", function (ev) { if (balaoAberto && !balaoAberto.contains(ev.target) && !(ev.target.classList && ev.target.classList.contains("ajuda"))) fecharBalao(); });
-  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") { fecharBalao(); fecharMenu(); if (multiAberto) { multiAberto = ""; cabecalho(); } } });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") { fecharBalao(); fecharMenu(); if (!$("busca-global").hidden) fecharBusca(); if (multiAberto) { multiAberto = ""; cabecalho(); } } });
   function ajuda(conteudo) {  // botão (?): clicou, abre o quadrinho ali mesmo; clicou fora, fecha
     var b = el("button", "ajuda", "?"); b.type = "button"; b.setAttribute("aria-label", t("ajuda"));
     b.addEventListener("click", function (ev) {
@@ -2014,21 +2087,66 @@ window.LEXSUITE_RADAR = null;
       abrirJanela(c, [[t("fechar"), null], [t("abrir_pasta_copia"), function () { post("/abrir", { o_que: "pasta_copias" }); }], [t("abrir_copia"), function () { post("/abrir", { o_que: "ultima_copia" }); }, true]]);
     });
   }
+  function gruposMenu() {  // 0.7.19: a mesma lista serve o menu ☰ e a busca geral (lupa)
+    return [
+      [t("menu_ver"), [["painel", "v_painel"], ["lista", "v_lista"], ["arquivo", "v_arquivo"], ["historico", "v_historico"]].map(function (v) { return [t(v[1]), function () { trocarVisao(v[0]); }, visao === v[0]]; })],
+      [t("menu_planilha"), [[t("planilha_abrir"), abrirPlanilhaComAviso], [t("gerar_copia"), gerarCopia], [t("editar_prefs"), editarPreferencias], [t("pasta_abrir"), function () { abrirPlanilha("pasta"); }]]],
+      [t("menu_contatos"), [[t("colar_logada"), colarContatos]]],
+      [t("menu_programa"), [[t("config"), function () { abrirConfig(true, null, true); }], [t("perfil"), function () { abrirPerfil(true); }], [t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }],
+        [t("termos_t"), function () { abrirConfig(true, "c-termos-wrap"); }], [t("abrir_aba"), function () { post("/abrir-em-aba", {}); }], [t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); }]]]
+    ];
+  }
   function montarMenu() {
     var g = $("gaveta"); g.textContent = "";
-    var add = function (txt, fn, atual) { var b = el("button", null, txt); b.type = "button"; if (atual) b.setAttribute("aria-current", "true"); b.addEventListener("click", function () { fecharMenu(); fn(); }); g.appendChild(b); };
-    g.appendChild(el("div", "grupo-menu", t("menu_ver")));
-    [["painel", "v_painel"], ["lista", "v_lista"], ["arquivo", "v_arquivo"], ["historico", "v_historico"]].forEach(function (v) { add(t(v[1]), function () { trocarVisao(v[0]); }, visao === v[0]); });
-    g.appendChild(el("div", "grupo-menu", t("menu_planilha")));
-    add(t("planilha_abrir"), abrirPlanilhaComAviso); add(t("gerar_copia"), gerarCopia); add(t("editar_prefs"), editarPreferencias); add(t("pasta_abrir"), function () { abrirPlanilha("pasta"); });
-    g.appendChild(el("div", "grupo-menu", t("menu_contatos")));
-    add(t("colar_logada"), colarContatos);
-    g.appendChild(el("div", "grupo-menu", t("menu_programa")));
-    add(t("config"), function () { abrirConfig(true, null, true); }); add(t("perfil"), function () { abrirPerfil(true); }); add(t("abrir_aba"), function () { post("/abrir-em-aba", {}); }); add(t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); });
-    add(t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }); add(t("sair"), sairDoRadar);
+    var topo = el("div", "gv-topo"), nm = el("div"); nm.appendChild(el("b", null, marcaNome())); nm.appendChild(el("small", null, "Menu"));
+    var x = el("button", "gv-x", "✕"); x.type = "button"; x.setAttribute("aria-label", t("fechar")); x.addEventListener("click", fecharMenu);
+    topo.appendChild(nm); topo.appendChild(x); g.appendChild(topo);
+    var add = function (txt, fn, atual, cls) { var b = el("button", "gv-item" + (cls ? " " + cls : ""), txt); b.type = "button"; if (atual) b.setAttribute("aria-current", "true"); b.addEventListener("click", function () { fecharMenu(); setTimeout(fn, 200); }); g.appendChild(b); };
+    gruposMenu().forEach(function (gr) { g.appendChild(el("div", "grupo-menu", gr[0])); gr[1].forEach(function (it) { add(it[0], it[1], it[2]); }); });
+    g.appendChild(el("div", "gv-linha")); add(t("sair"), sairDoRadar, false, "gv-sair");
   }
-  function abrirMenu() { montarMenu(); $("gaveta").hidden = false; $("veu").hidden = false; $("b-menu").setAttribute("aria-expanded", "true"); var p = $("gaveta").querySelector("button"); if (p) p.focus(); }
-  function fecharMenu() { $("gaveta").hidden = true; $("veu").hidden = true; $("b-menu").setAttribute("aria-expanded", "false"); }
+  var menuTimer = null;
+  function abrirMenu() {
+    clearTimeout(menuTimer); montarMenu(); var g = $("gaveta"), v = $("veu"); g.hidden = false; v.hidden = false;
+    void g.offsetWidth; g.classList.add("aberta"); v.classList.add("aberta");
+    $("b-menu").setAttribute("aria-expanded", "true"); var p = g.querySelector("button.gv-item"); if (p) p.focus();
+  }
+  function fecharMenu() {
+    var g = $("gaveta"), v = $("veu"); if (g.hidden) return;
+    g.classList.remove("aberta"); v.classList.remove("aberta"); $("b-menu").setAttribute("aria-expanded", "false");
+    clearTimeout(menuTimer); menuTimer = setTimeout(function () { g.hidden = true; v.hidden = true; }, 250);
+  }
+  // 0.7.19: busca geral (lupa no topo): telas e opções do menu, ações da Lista e do Arquivo carregado, e títulos do manual
+  var manualTitulos = null;
+  function abrirBusca() {
+    fecharMenu(); var b = $("busca-global"); b.hidden = false; $("bg-titulo").textContent = t("bg_titulo"); $("bg-q").placeholder = t("bg_ph");
+    $("bg-x").setAttribute("aria-label", t("fechar")); $("b-busca").setAttribute("aria-expanded", "true");
+    $("bg-q").value = ""; resultadosBusca(); $("bg-q").focus();
+    if (manualTitulos === null) { manualTitulos = []; fetch("/manual").then(function (r) { return r.text(); }).then(function (h) {
+      var dom = new DOMParser().parseFromString(h, "text/html"); manualTitulos = Array.prototype.map.call(dom.querySelectorAll("h2, h3"), function (x) { return x.textContent.trim(); }).filter(Boolean);
+      resultadosBusca(); }).catch(function () {}); }
+  }
+  function fecharBusca() { $("busca-global").hidden = true; $("b-busca").setAttribute("aria-expanded", "false"); $("b-busca").focus(); }
+  function resultadosBusca() {
+    var q = semAcento($("bg-q").value.trim()), box = $("bg-res"); box.textContent = "";
+    var bloco = function (titulo_, lista) { if (!lista.length) return; box.appendChild(el("h3", null, titulo_)); lista.forEach(function (r) {
+      var b = el("button"); b.type = "button"; b.appendChild(document.createTextNode(r[0])); if (r[1]) b.appendChild(el("small", null, r[1]));
+      b.addEventListener("click", function () { fecharBusca(); r[2](); }); box.appendChild(b); }); };
+    var opc = []; gruposMenu().forEach(function (gr) { gr[1].forEach(function (it) { if (!q || semAcento(it[0] + " " + gr[0]).indexOf(q) >= 0) opc.push([it[0], gr[0], it[1]]); }); });
+    bloco(t("bg_opcoes"), opc);
+    if (q.length >= 2) {
+      var qn = q.replace(/[.\-\/]/g, ""), acoes = [];
+      [(D && D.itens) || [], (DA && DA.itens) || []].forEach(function (l, ix) { l.forEach(function (i) {
+        if (acoes.length >= 12) return; var e_ = i.empresa || {};
+        var alvo = semAcento([nomeDe(i), (i.empresas || []).join(" "), i.processo, i.vara, i.tribunal, e_.cnpj, e_.municipio, e_.nome_fantasia].join(" ")).replace(/[.\-\/]/g, "");
+        if (alvo.indexOf(qn) >= 0) acoes.push([nomeDe(i) || i.processo, [i.processo, i.tribunal, ix ? t("v_arquivo") : t("v_lista")].filter(Boolean).join(" · "), function () { trocarVisao(ix ? "arquivo" : "lista"); $("f-busca").value = i.processo; F.busca = i.processo; limite = 10; cabecalho(); desenhar(); }]);
+      }); });
+      bloco(t("bg_acoes"), acoes);
+      bloco(t("bg_manual"), (manualTitulos || []).filter(function (x) { return semAcento(x).indexOf(q) >= 0; }).slice(0, 8).map(function (x) {
+        return [x, t("link_manual"), function () { window.open("/manual#:~:text=" + encodeURIComponent(x), "_blank", "noopener"); }]; }));
+    }
+    if (!box.childNodes.length) box.appendChild(el("p", "bg-nada", t("bg_nada")));
+  }
   function desenharArquivoInfo() {
     var a = $("arquivo-info"); a.textContent = ""; a.hidden = visao !== "arquivo" || MODO !== "app"; if (a.hidden) return;
     var esp = (DA && DA.espaco) || (D && D.espaco) || {};
@@ -2115,6 +2233,9 @@ window.LEXSUITE_RADAR = null;
   }
   /* 0.7.18: estatísticas dos meses anteriores (sazonalidade e picos), só totais, lidas aos poucos */
   var vigiaHist = null;
+  function mascaraCodigo(c) { var p_ = String(c || "").split("-"); return p_.length === 3 ? p_[0] + "-••••-" + p_[2] : String(c || "").slice(0, 4) + "••••"; }
+  var histRecado = null;
+  function textoLang(x) { return typeof x === "string" ? x : ((x && (x[lang] || x.pt)) || ""); }
   function grafSazonal() {
     var h = (D && D.historico) || {}, g = el("div", "graf largo"), cab = el("div", "saz-cab");
     cab.appendChild(el("h3", null, t("saz_t"))); cab.appendChild(ajuda(t("saz_ajuda"))); g.appendChild(cab);
@@ -2136,23 +2257,25 @@ window.LEXSUITE_RADAR = null;
     var st = el("p", "nota-g");
     st.textContent = t("saz_estado", { l: num(h.lidos || 0), f: num(h.na_fila || 0), s: num(h.sem_diario || 0), e: num(h.erros || 0) }) + (h.desde ? " " + t("saz_de_ate", { d: dataCurta(h.desde), a: dataCurta(h.ate) }) : "");
     g.appendChild(st);
+    // 0.7.19 (ressalva 4.1 da Operação): o motivo da parada ou do erro fica na tela, no idioma escolhido, até a próxima tentativa
+    if (histRecado) g.appendChild(el("p", "nota-g saz-recado", textoLang(histRecado)));
     var bar = el("div", "progresso"), bi_ = el("i"); bar.appendChild(bi_); bar.hidden = true; g.appendChild(bar);
     var ac = el("div", "conf-acoes"), sel_ = el("select"); sel_.setAttribute("aria-label", t("saz_meses_rot"));
     [1, 3, 6, 12].forEach(function (m) { var o = el("option", null, t("saz_meses", { m: m })); o.value = String(m); sel_.appendChild(o); }); sel_.value = String((h.pedido && h.pedido.meses) || 3);
     var bp = el("button", "chip", t("saz_pedir")), bl = el("button", "primario", t("saz_ler")), bx = el("button", "chip", t("saz_parar")); bp.type = bl.type = bx.type = "button";
-    bl.hidden = !(h.na_fila > 0); bx.hidden = true;
-    bp.addEventListener("click", function () { post("/estatisticas/pedir", { meses: sel_.value }).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } mostrarAviso(t("saz_na_fila", { n: num(r.na_fila || 0) })); carregar(); }); });
+    bl.hidden = !(h.na_fila > 0 || h.erros > 0); bx.hidden = true;  // 0.7.19 (4.6): com erros também dá para tentar de novo
+    bp.addEventListener("click", function () { histRecado = null; post("/estatisticas/pedir", { meses: sel_.value }).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } mostrarAviso(t("saz_na_fila", { n: num(r.na_fila || 0) })); carregar(); }); });
     var acompanhar = function () {
       bar.hidden = false; bx.hidden = false; bl.disabled = true; bp.disabled = true; clearInterval(vigiaHist);
       vigiaHist = setInterval(function () {
         fetch("/estatisticas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (e) {
           var rd = e.rodando || {};
           if (rd.rodando) { bi_.style.width = Math.round(100 * (rd.k || 0) / Math.max(1, rd.total || 1)) + "%"; st.textContent = t("saz_lendo", { k: rd.k || 0, n: rd.total || 0, tr: rd.tribunal || "", d: dataCurta(rd.data || "") }); return; }
-          clearInterval(vigiaHist); vigiaHist = null; if (e.ultimo && e.ultimo.parou) mostrarAviso(e.ultimo.parou); if (e.erro) mostrarAviso(t("falha") + " (" + e.erro + ")"); carregar();
+          clearInterval(vigiaHist); vigiaHist = null; histRecado = (e.ultimo && e.ultimo.parou) || e.erro || null; if (histRecado) mostrarAviso(textoLang(histRecado)); carregar();
         }).catch(function () {});
       }, 2000);
     };
-    bl.addEventListener("click", function () { post("/estatisticas/ler", {}).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } acompanhar(); }); });
+    bl.addEventListener("click", function () { histRecado = null; post("/estatisticas/ler", {}).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } acompanhar(); }); });
     bx.addEventListener("click", function () { post("/estatisticas/parar", {}); bx.disabled = true; });
     ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); g.appendChild(ac);
     if (h.rodando && h.rodando.rodando) setTimeout(acompanhar, 0);
@@ -2193,6 +2316,7 @@ window.LEXSUITE_RADAR = null;
     var tribs = contar(itens, function (i) { return i.tribunal ? [i.tribunal, i.tribunal] : null; });
     if (tribs.length > 1) grade.appendChild(grafBarras(t("g_trib"), tribs, { campo: "trib", comValor: true, max: 24 }));
     else grade.appendChild(grafBarras(t("g_vara"), contar(itens, function (i) { return i.vara ? [i.vara, i.vara] : null; }), { campo: "vara" }));
+    grade.appendChild(grafBarras(t("g_sinal"), contar(itens, function (i) { return i.sinal ? [i.sinal, i.sinal] : ["", t("sinal_antigo")]; }), { max: 8 }));
     grade.appendChild(grafBarras(t("g_uf"), contar(itens, function (i) { var u = (i.empresa || {}).uf; return u ? [u, u] : ["", t("sem_uf")]; }), { campo: "uf" }));
     alvo.appendChild(grade);
     alvo.appendChild(el("p", "nota-g", t("g_nota")));
@@ -2360,7 +2484,11 @@ window.LEXSUITE_RADAR = null;
 
   $("exportar").addEventListener("click", exportar);
   ["painel", "lista", "arquivo", "historico"].forEach(function (v) { $("v-" + v).addEventListener("click", function () { trocarVisao(v); }); });
-  $("b-menu").addEventListener("click", function () { if ($("gaveta").hidden) abrirMenu(); else fecharMenu(); });
+  $("b-menu").addEventListener("click", function () { if ($("gaveta").hidden || !$("gaveta").classList.contains("aberta")) abrirMenu(); else fecharMenu(); });
+  $("b-busca").addEventListener("click", abrirBusca); $("bg-x").addEventListener("click", fecharBusca);
+  $("busca-global").addEventListener("click", function (ev) { if (ev.target === this) fecharBusca(); });
+  var bgTimer = null; $("bg-q").addEventListener("input", function () { clearTimeout(bgTimer); bgTimer = setTimeout(resultadosBusca, 150); });
+  $("bg-q").addEventListener("keydown", function (ev) { if (ev.key === "Enter") { var p = $("bg-res").querySelector("button"); if (p) p.click(); } });
   $("veu").addEventListener("click", fecharMenu);
   var buscaTimer = null;
   var buscaArqTimer = null;
@@ -2428,8 +2556,9 @@ window.LEXSUITE_RADAR = null;
   $("b-perfil").addEventListener("click", function () { abrirPerfil(false); });
   $("pf-fechar").addEventListener("click", fecharPerfil);
   ["w-codigo", "w-escritorio", "w-cnpj", "w-nome", "w-email"].forEach(function (id) { $(id).addEventListener("keydown", function (ev) { if (ev.key === "Enter") wizardAvancar(); }); });
-  $("c-pasta").addEventListener("change", function () { $("c-outra-wrap").hidden = this.value !== "__outra"; $("c-escolher").hidden = this.value !== "__outra" || !cEscolher; $("c-teste-txt").textContent = ""; $("c-criar").hidden = true; });
-  $("c-escolher").addEventListener("click", function () { $("c-teste-txt").textContent = t("carregando"); post("/escolher-pasta", { inicio: $("c-outra").value }).then(function (r) { $("c-teste-txt").textContent = ""; if (r.ok) { $("c-outra").value = r.pasta; testarPastaC(false); } }).catch(function () { $("c-teste-txt").textContent = t("falha"); }); });
+  $("c-pasta").addEventListener("change", function () { $("c-outra-wrap").hidden = this.value !== "__outra"; $("c-escolher").hidden = this.value !== "__outra" || !cEscolher; $("c-teste-txt").textContent = ""; $("c-criar").hidden = true; if (pastaEscolhida()) testarPastaC(false); });
+  $("c-outra").addEventListener("change", function () { if (pastaEscolhida()) testarPastaC(false); });
+  $("c-escolher").addEventListener("click", function () { $("c-teste-txt").textContent = t("escolhendo"); post("/escolher-pasta", { inicio: $("c-outra").value }).then(function (r) { $("c-teste-txt").textContent = ""; if (r.ok) { $("c-outra").value = r.pasta; testarPastaC(false); } }).catch(function () { $("c-teste-txt").textContent = t("falha"); }); });
   $("c-criar").addEventListener("click", function () { testarPastaC(true); });
   $("c-testar").addEventListener("click", function () { testarPastaC(false); });
   $("c-salvar").addEventListener("click", salvarConfig);

@@ -258,6 +258,15 @@ class Servidor(ThreadingHTTPServer):
                 d.update({"rodando": True, "externa": True, "origem": fora.get("origem", ""), "inicio": fora.get("inicio"),
                           "atrasada": fora.get("atrasada", ""), "parando": os.path.exists(os.path.join(os.path.dirname(self.arquivo_andamento), "parar.json")),
                           "progresso": min(99, int(fora.get("progresso") or 1)), "mensagens": fora.get("mensagens") or []})
+        if not d["rodando"] and not d.get("situacao") and not d.get("erro"):
+            try:  # 0.7.19: depois de reiniciar (atualização), a última leitura vem do banco, não "Ainda não leu"
+                for e in bd.Banco(self.caminho_db).execucoes("radar", 10):
+                    if e.get("resultado") == "ok" or e.get("lidas"):
+                        d["situacao"] = {"quando": e.get("quando", ""), "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} ações novas contra empresas.",
+                                         "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new lawsuits against companies."}
+                        break
+            except Exception:  # noqa: BLE001 - sem banco, fica o "Ainda não leu"
+                pass
         return d
 
     def planilha_depois(self, intervalo=120, limite_s=7200, primeira=5):
@@ -787,8 +796,10 @@ class Tratador(BaseHTTPRequestHandler):
         if caminho == "/testar-pasta":
             cfg = s.config()
             pasta = str(corpo.get("pasta") or "").strip()
-            ok, msg = compartilhar.testar(pasta, compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"]), criar=bool(corpo.get("criar")))
+            sub_ = compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"])
+            ok, msg = compartilhar.testar(pasta, sub_, criar=bool(corpo.get("criar")))
             return self._responder({"ok": ok, "mensagem": msg, "nao_existe": bool(pasta) and not os.path.isdir(pasta),
+                                    "alvo": os.path.join(pasta, sub_) if pasta else "",
                                     "no_drive": compartilhar.no_google_drive(pasta)})
         if caminho == "/gravar-planilha":
             if not compartilhar.pasta_base(s.config()):
@@ -902,10 +913,11 @@ def personalizar_manual(html, cfg):
 
 
 _ESCOLHER_PS = ("Add-Type -AssemblyName System.Windows.Forms; [Console]::OutputEncoding = [Text.Encoding]::UTF8; "
-                "$f = New-Object System.Windows.Forms.Form; $f.TopMost = $true; "
+                "$f = New-Object System.Windows.Forms.Form; $f.TopMost = $true; $f.ShowInTaskbar = $true; $f.Opacity = 0; "
+                "$f.StartPosition = 'CenterScreen'; $f.Text = $env:LEXSUITE_TITULO; $f.Show(); $f.Activate(); $f.BringToFront(); "
                 "$d = New-Object System.Windows.Forms.FolderBrowserDialog; $d.Description = $env:LEXSUITE_TITULO; "
                 "$d.ShowNewFolderButton = $true; if ($env:LEXSUITE_INICIO) { $d.SelectedPath = $env:LEXSUITE_INICIO }; "
-                "if ($d.ShowDialog($f) -eq 'OK') { [Console]::Out.Write($d.SelectedPath) }")
+                "if ($d.ShowDialog($f) -eq 'OK') { [Console]::Out.Write($d.SelectedPath) }; $f.Close()")
 
 
 def escolher_pasta(inicio=""):

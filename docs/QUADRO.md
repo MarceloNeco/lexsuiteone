@@ -123,7 +123,14 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- (nada) **0.7.16 na `main`, pronta para publicar** (com o "pode" do dono, 09/Nov noite; revisada: 1 bloqueio corrigido
+- **0.7.19 no ramo `claude/lexsuiteone-judicial-product-22f871`** (vai à `main` com o "pode a 0.7.19" do dono):
+  ressalvas da revisão da 0.7.18 (reserva de cada Diário, fila só depois de 3 falhas, mensagens PT/EN que ficam na
+  tela, "Ler agora" com erros, cópia do banco com data, turma trabalhada de volta, código mascarado) e o feedback do
+  dono: última leitura depois de reiniciar, Interromper vermelho, termos com um link só e aceite preenchido, pastas
+  explicadas com caminho e teste automático, janela de pastas na frente, menu em gaveta com hierarquia, lupa de busca,
+  engrenagem centrada, gráfico do sinal. Pacote continua 45/44. Arquivos: `robo/radar_modelo.html`,
+  `robo/lexsuite/{app,radar,historico,banco}.py`, `paginas/manual.html`, documentos do robô.
+- (antes) **0.7.16 na `main`, pronta para publicar** (com o "pode" do dono, 09/Nov noite; revisada: 1 bloqueio corrigido
   e aprovado na segunda revisão, 145 testes). A Operação revisa e publica com "publica a versão 0.7.16".
 - **0.7.18 inclui tudo da 0.7.17** (que não foi publicada) e o bloqueio da revisão da Operação: textos do e-mail e do
   site sobre o que vai à SolverONE corrigidos, Bandit verde (B608 em `banco.limpar_detalhe`), painel dos filtros que não
@@ -412,6 +419,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 09/Nov | Produto | Operação | **0.7.16** (quando o dono escrever "publica a versão 0.7.16"): **44 arquivos no download completo e 43 na atualização** (novo `lexsuite/armazenamento.py`). Conferir na revisão: a `LexSuiteONE.xlsx` antiga vira `LexSuiteONE - Trabalhista.xlsx` com as abas editadas; a pasta `Cópias de segurança` nasce; o `atualizar.py` da 0.7.15 instala sem tocar em `config.json`, `lexsuite.db` e `saida/`. O site e o manual mudam junto (sem "compartilhar com a SolverONE") | sim (Operação, 09/Nov): 0.7.16 publicada às 16:11 UTC, 44 e 43 arquivos conferidos, migração da planilha e atualização provadas pelo revisor; teste no Windows com o dono (roteiro em "Preciso do dono") |
 | 09/Nov | Produto | Arquitetura | `CLAUDE.md` ("Como entregar"): pacote com 44 e 43 arquivos na 0.7.16 (novo `armazenamento.py`) | sim (Arquitetura, 09/Nov noite) |
 | 09/Nov | Produto | Arquitetura | `CLAUDE.md` ("Como entregar"): pacote com **45 e 44** arquivos a partir da 0.7.18 (novo `lexsuite/historico.py`) | sim (Arquitetura, 09/Nov noite) |
+| 09/Nov | Produto | Arquitetura | **`paginas/aceite.html` na largura toda** (feedback do dono, print da 0.7.18): no computador a página do aceite fica estreita no meio da tela; usar a largura útil (como a tela do programa, com margem) e manter a leitura confortável (colunas de texto até ~80 caracteres, índice ao lado quando couber). A 0.7.19 abre `aceite.html?ler=1` para ler e `aceite.html?codigo=…&email=…&nome=…` para aceitar em nome do escritório: conferir que a página preenche código, e-mail e nome com esses parâmetros | não |
 | 09/Nov | Produto | Arquitetura | `CLAUDE.md`, regras: acrescentar "O e-mail de boas-vindas aos clientes é enviado pelo dono, pelo botão do RootifyONE; nenhuma conversa lembra, pergunta ou comenta esse envio" (decisão do dono, 09/Nov noite) | sim (Arquitetura, 09/Nov noite): regra em \"Regras que não se negociam\" |
 
 ## Perguntas ao dono (uma lista só; a Produto consolida e leva ao dono)
@@ -425,6 +433,7 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 1 a 6 | Arquitetura | As 6 de `documentacao/DESENHO-ARQUIVO-ESTATISTICAS.md` (situações, Lista, limpeza, encerradas, frente, área logada) | — | respondidas em 09/Nov (ver Decisões) |
 | 7 | Arquitetura | Quem preenche a ficha da KR Law no RootifyONE | Operação | respondida em 09/Nov: Operação |
 | 8 | Arquitetura | Termo de tratamento de dados com a KR Law | rascunho da Arquitetura | respondida em 09/Nov: Arquitetura faz o rascunho |
+| 15 | Produto | **AssistONE no RADAR** (pedido do dono, 09/Nov noite). Proposta: o mesmo personagem (`ajuda-botao.png`, canto inferior direito) e o mesmo `assistone.js` do RootifyONE, **sem IA e sem nenhum pedido externo** (regras do produto): explica a tela onde a pessoa está (Painel, Lista, Arquivo, Histórico, Configuração, Perfil), tour de 6 passos na primeira abertura, dica uma vez por tela, e a busca da lupa dentro dele. Pacote passa a 46/45 arquivos (a imagem). Entra na 0.7.19 (antes da visita) ou na 0.7.20? | Na 0.7.20, logo depois da visita: a 0.7.19 já está pronta e testada, e o AssistONE pede textos por tela que valem conferir com o Leandro | aberta |
 | 9 | Operação | A revisão da 0.7.14 não aprovou: o manual, o `SEGURANCA.md` e o e-mail de boas-vindas dizem que nada vai à SolverONE e que se apaga em 365 dias, e a 0.7.14 manda totais por situação e guarda as estatísticas. Publico agora assim mesmo (e a Produto corrige na 0.7.15) ou espero a Produto corrigir os textos? | Esperar: a correção é só de texto e o cliente é um escritório de advocacia com o termo ainda em rascunho. Com a Produto pronta de novo, publico a 0.7.14 sem novo "publica"; o manual do site e o e-mail de boas-vindas só mudam com o seu "pode" aos textos corrigidos | respondida em 09/Nov: o dono escolheu "pode corrigir e incluir": a Produto corrigiu os textos e incluiu o aceite e a leitura agendada visível; a Operação publica sem novo "publica" |
 | 10 | Arquitetura | Item 82, ritmo da leitura histórica: 30 Diários por noite com 2 s de pausa entre eles, ou mais lento (15)? | 30, ajustável em Configuração | respondida em 09/Nov (ver Decisões) |
 | 11 | Arquitetura | Item 82, carga padrão: 3 meses e só os tribunais marcados pelo escritório, ou 12 meses para a KR Law na primeira carga (≈ 200 noites a 30 por noite se forem os 24 TRTs)? | 3 meses, tribunais marcados | respondida em 09/Nov (ver Decisões) |

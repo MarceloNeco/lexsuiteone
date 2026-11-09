@@ -513,5 +513,22 @@ class V0719(unittest.TestCase):
         self.assertFalse([n for n in os.listdir(pasta) if n.endswith(".tmp")])
 
 
+class V0719Tela(unittest.TestCase):
+    """0.7.19: depois de reiniciar, a tela mostra a última leitura do banco (não "Ainda não leu neste computador")."""
+
+    def test_ultima_leitura_vem_do_banco(self):
+        from lexsuite import app, banco as bd
+        pasta = tempfile.mkdtemp()
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        try:
+            self.assertFalse(srv.estado_atual().get("situacao"))
+            bd.Banco(srv.caminho_db).registrar("radar", {"versao": "0.7.18", "tribunais": ["TRT2"], "lidas": 120, "novas": 7,
+                                                         "com_cnpj": 3, "duracao": 9, "resultado": "ok", "erro": ""})
+            sit = srv.estado_atual()["situacao"]
+            self.assertIn("120", sit["pt"]); self.assertIn("7", sit["en"]); self.assertTrue(sit["quando"])
+        finally:
+            srv.server_close()
+
+
 if __name__ == "__main__":
     unittest.main()
