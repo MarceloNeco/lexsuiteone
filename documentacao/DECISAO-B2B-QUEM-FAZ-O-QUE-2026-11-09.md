@@ -134,6 +134,26 @@ a ser só do RootifyONE.
   instalador (`INSTALAR.bat`) tratando `aceite_pendente` (hoje cairia em "sem internet").
 - Arquivos: `nuvem/supabase/2026-11-09d-lex-exigir-aceite.sql` (aplicado), `lex-conta` v8 (código "v7", publicada).
 
+### 5b. Acréscimo do dono (09/Nov, noite): liberação manual e segurança do caminho do aceite
+
+- **Liberação manual pela equipe** (risco assumido pela SolverONE): `admin_lex_dispensar_aceite(codigo, dispensar, motivo)`
+  liga ou desliga a trava com motivo obrigatório; grava `lex_eventos` (quem = `equipe:<uuid>`, motivo) e o log da
+  plataforma. O RootifyONE mostra como interruptor com confirmação e motivo. A liberação automática continua sendo o aceite
+  do cliente, que a `lex-conta` lê de `sol_aceites` a cada conferência.
+- **Quem grava o aceite**: só a `lex-conta` (ação `aceite`, service_role). A função `sol_aceite_registrar` deixou de ser
+  executável pela chave publicável (teste: chamada direta responde 401). Nenhuma função que escreve fica pública.
+- **Quem pode aceitar**: só com um e-mail da licença (responsável, boas-vindas ou pessoa cadastrada), conferido no banco;
+  o link do e-mail traz código e e-mail fixos. A consulta pública pelo código devolve o e-mail do responsável **mascarado**.
+- **Prova**: registro imutável (trigger), hash SHA-256 do texto lido, versão, data/hora, IP resumido, navegador, protocolo;
+  **e-mail de confirmação** ao responsável (com "se não foi você, responda agora") e cópia à SolverONE; evento no histórico
+  da licença (`quem = cliente:<e-mail>`). Limites: 30 aceites por dia por licença, 5 por hora por e-mail.
+- **LGPD**: base legal = execução de contrato (art. 7º, V) e obrigação legal de guarda; dados mínimos (nome, e-mail
+  profissional, IP resumido); finalidade declarada no próprio texto; o registro é a prova do consentimento aos termos e
+  não precisa de CPF nem de certificado digital para valer entre empresas. CPF ou assinatura qualificada ficam como
+  evolução, se um cliente exigir. Texto a validar com o Leandro antes de publicar.
+- Pendente para sessão no desktop: ampliar o check de `lex_eventos` com `termos_aceitos`, `aceite_dispensado`,
+  `aceite_exigido` (hoje tudo entra como `licenca_alterada` com detalhe próprio, porque o DROP CONSTRAINT pede confirmação).
+
 ## 6. Ordem de entrega
 
 1. **Dono**: dá o "pode aplicar" para o SQL único de `admin_lex_listar` (pedido nº 1 do RootifyONE + campo `aceite`) e para
