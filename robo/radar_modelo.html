@@ -1943,7 +1943,7 @@ window.LEXSUITE_RADAR = null;
   function carregar() {
     $("estado").textContent = t("carregando");
     return fetch("/dados?dias=" + periodo, { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
-      D = d; APP = d.app || null; var noAssistente = !$("wizard").hidden;  // no assistente, a escolha ainda não salva fica
+      D = d; APP = d.app || null; if (typeof avisarRecursos === "function") setTimeout(avisarRecursos, 0); var noAssistente = !$("wizard").hidden;  // no assistente, a escolha ainda não salva fica
       if (!noAssistente) sel = {};
       if (APP) { if (!noAssistente) (APP.config.tribunais || []).forEach(function (s) { sel[s] = true; }); periodo = Number(APP.config.dias_na_pagina || periodo) || 1; }
       F.gig = !!(D.prefs && D.prefs.esconder_gigantes);
@@ -2211,7 +2211,8 @@ window.LEXSUITE_RADAR = null;
     var escOk = (tm.escritorio && tm.escritorio.aceito) || ac.aceito;
     if (!escOk) {
       var u_ = (APP && APP.usuario) || {}, ct_ = (APP && APP.conta) || {};
-      var q_ = "?codigo=" + encodeURIComponent(ct_.codigo || "") + "&email=" + encodeURIComponent(u_.email || "") + "&nome=" + encodeURIComponent(u_.nome || "");
+      // 0.7.20: fragmento (#) não vai ao servidor nem a logs; a página do aceite lê e apaga da barra
+      var q_ = "#codigo=" + encodeURIComponent(ct_.codigo || "") + "&email=" + encodeURIComponent(u_.email || "") + "&nome=" + encodeURIComponent(u_.nome || "");
       var acc = el("a", "primario", t("termos_aceitar_esc")); acc.href = base_ + q_; acc.target = "_blank"; acc.rel = "noopener noreferrer"; acoes_.appendChild(acc);
       acoes_.appendChild(ajuda(t("termos_aceitar_esc_x")));
     }
@@ -3529,6 +3530,15 @@ window.LEXSUITE_RADAR = null;
     return visao;
   }
   function irPara(seletor) { return function () { var x = document.querySelector(seletor); if (x) { x.scrollIntoView({ behavior: "smooth", block: "center" }); try { x.focus({ preventScroll: true }); } catch (e) {} } }; }
+  // 0.7.20: interruptores do RootifyONE (Controle dos apps) chegam pela conferência da licença (lex-conta v12, campo
+  // recursos) e ficam no config.json; aqui viram o SolverRecursos que o AssistONE já sabe ler. Sem pedido externo.
+  var recursosOuvintes = [];
+  window.SolverRecursos = {
+    ligado: function (id, padrao) { var r = (APP && APP.conta && APP.conta.recursos) || {}; return Object.prototype.hasOwnProperty.call(r, id) ? r[id] !== false : padrao; },
+    valor: function (id, padrao) { return window.SolverRecursos.ligado(id, padrao); },
+    aoMudar: function (fn) { recursosOuvintes.push(fn); }
+  };
+  function avisarRecursos() { recursosOuvintes.forEach(function (fn) { try { fn(); } catch (e) {} }); }
   if (window.AssistONE && MODO !== "app") AssistONE.configurar({ app: "radar-judicial", assistente: { ativo: false } });  // retrato salvo: sem assistente
   if (window.AssistONE && MODO === "app") {
     var LER = { pt: "Ler o Diário agora", en: "Read the gazette now" };

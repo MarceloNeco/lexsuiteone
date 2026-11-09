@@ -119,6 +119,8 @@ def verificar(cfg, versao, hoje=None, pedir=None, retorno=None):
         c["aceite"] = _aceite(r.get("aceite"))
     if "termos" in r:
         c["termos"] = _termos(r.get("termos"))
+    if isinstance(r.get("recursos"), dict):  # 0.7.20: interruptores do RootifyONE (Controle dos apps), pela lex-conta v12
+        c["recursos"] = {str(k)[:60]: bool(v) for k, v in list(r["recursos"].items())[:50] if isinstance(v, (bool, int))}
     if c["ok"]:
         c["ultima_ok"] = hoje.isoformat()
     return c
@@ -161,12 +163,13 @@ def situacao(cfg):
         pend = c.get("resposta") == "aceite_pendente"
         return {"codigo": c.get("codigo", ""), "ok": False, "texto": motivo, "aceite": c.get("aceite") or {},
                 "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else "", "termos": c.get("termos") or {},
-                "escritorio": c.get("escritorio_licenca", ""), "validade": c.get("validade", "")}
+                "escritorio": c.get("escritorio_licenca", ""), "validade": c.get("validade", ""), "recursos": c.get("recursos") or {}}
     texto = "Licença ativa" + (f" até {c['validade']}" if c.get("validade") else "") + "."
     if c.get("resposta") == "sem_resposta":
         texto = f"Licença confirmada pela última vez em {c.get('ultima_ok')}; sem resposta da SolverONE agora."
     return {"codigo": c.get("codigo", ""), "ok": True, "texto": texto, "aceite": c.get("aceite") or {}, "aceite_link": "",
-            "termos": c.get("termos") or {}, "escritorio": c.get("escritorio_licenca", ""), "validade": c.get("validade", "")}
+            "termos": c.get("termos") or {}, "escritorio": c.get("escritorio_licenca", ""), "validade": c.get("validade", ""),
+            "recursos": c.get("recursos") or {}}
 
 
 # ---------- cadastro de quem usa (nome, e-mail, função) e do escritório (CNPJ) ----------

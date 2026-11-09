@@ -540,5 +540,22 @@ class V0719Tela(unittest.TestCase):
         self.assertFalse(compartilhar.testar(os.path.join(pasta, "nao-existe"), "x", leve=True)[0])
 
 
+class V0720(unittest.TestCase):
+    """0.7.20: interruptores do RootifyONE chegam pela conferência da licença (lex-conta v12) e ficam guardados."""
+
+    def test_recursos_da_lex_conta(self):
+        import datetime as dt
+        from lexsuite import conta
+        cfg = {"conta": {"codigo": "LEX-ABCD-EFGH", "instalacao": "teste"}}
+        conta.verificar(cfg, "0.7.20", dt.date(2026, 11, 10), pedir=lambda *a, **k: {"ok": True, "recursos": {"assistone": False, "x" * 99: True, "lixo": "sim"}})
+        self.assertEqual(cfg["conta"]["recursos"]["assistone"], False)
+        self.assertNotIn("lixo", cfg["conta"]["recursos"])
+        self.assertTrue(all(len(k) <= 60 for k in cfg["conta"]["recursos"]))
+        self.assertEqual(conta.situacao(cfg)["recursos"]["assistone"], False)
+        # sem o campo, mantém o último
+        conta.verificar(cfg, "0.7.20", dt.date(2026, 11, 11), pedir=lambda *a, **k: {"ok": True})
+        self.assertEqual(cfg["conta"]["recursos"]["assistone"], False)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -162,6 +162,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.20 (09/Nov, noite; no ramo, depois da 0.7.19 publicada)
+
+Interruptor do AssistONE pelo RootifyONE (lex-conta v12, campo `recursos`) e link do aceite com `#` (Fable já publicou a
+página e a função). Falta do lado do RootifyONE: item 3d do prompt (ler `recursos-do-app.json` do site do produto e
+publicar `recursos/radar-judicial.json`); até lá vale o interruptor global.
+
 ## 0.7.19 (09/Nov, noite; ressalvas da 0.7.18 e feedback do dono, antes da visita)
 
 Ressalvas da Operação (revisão da 0.7.18): reserva de cada Diário antigo, fila só depois de 3 falhas, mensagens em PT e
