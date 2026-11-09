@@ -92,18 +92,20 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.14 (pacote)**: situações no banco local (chaves da Arquitetura) com lote, desfazer e (?); Arquivo; abas Painel ·
-  Lista · Arquivo · Histórico; menu ☰ com Configuração; uma coluna; filtros novos (limpar, salvos, não informado, valor
-  com faixas, contato, situação, frente), busca, ordenação dupla; selo de contato; endereço; contatos (preparar busca e
-  colar resposta); planilha com aviso, proteção sem senha, abrir só para leitura, gravar ao fechar, cópia, abas Arquivo,
-  Contatos e Histórico de leituras; retorno de totais à SolverONE; tela na largura toda com teste em 4 tamanhos. Itens
-  42 a 84 de `documentacao/FEEDBACK-TESTE-2026-11-09.md` (menos 79 e 82, que são da 0.7.15).
+- (nada) Próximo: 0.7.15 (estatísticas no tempo e "Atualizar estatísticas", depois do desenho da Arquitetura do item 82).
 
 ### Arquivos em uso
-- `robo/lexsuite/` (banco, radar, compartilhar, planilha, app, cnpj, conta, frentes), `robo/radar_modelo.html`,
-  `robo/testes/`, `robo/LEIA-ME.md`, `robo/ARQUITETURA.md`, `robo/PENDENCIAS.md` (seção Produto), `paginas/manual.html`.
+- (nenhum)
 
 ### Feito (mais recente primeiro)
+- 09/Nov: **0.7.14 na `main`, pronta para publicar**, com o "pode" do dono (pacote dos itens 40 a 84, menos 79 e 82):
+  menu ☰, abas Painel · Lista · Arquivo · Histórico, situação no banco com lote e Desfazer, busca e filtros novos,
+  contatos (preparar busca e colar resposta), endereço, planilha com aviso, proteção, abrir só para leitura, "Editar
+  Preferências e Exclusões", cópia e regravação sozinha, retorno de totais à SolverONE, letra e gráficos que crescem com
+  a tela, teste permanente de larguras (`robo/testes/tela/`). 114 testes de unidade e 28 verificações de tela; revisor
+  sem bloqueio depois dos ajustes. **Pacote: 43 arquivos no download completo e 42 no de atualização** (novos
+  `lexsuite/contatos.py` e `lexsuite/frentes.py`). O manual do site já descreve a 0.7.14. Falta o "publica a versão
+  0.7.14" do dono na Operação e o teste no Windows do "Abrir a planilha" só para leitura.
 - 09/Nov: **incidente**: o banco do pacote 0.7.14 (commit 0835aac: situações, ações, contatos, estatísticas, frente)
   foi à `main` sem querer, junto de um envio do quadro feito a partir do ramo. Revertido na `main` com commit de reversão
   (sem reescrever histórico) antes de qualquer publicação; a 0.7.13 sai só com a correção do erro das 3h, revisada. A
@@ -153,13 +155,17 @@ Arquitetura (pedido no quadro).
 ## Arquitetura (Fable)
 
 Dona de: desenho da 0.8 (`documentacao/DESENHO-0.8.md`), `documentacao/` (documentos internos novos; os antigos de `docs/`
-migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e a função `lex-conta`, integração com o
-RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `SECURITY.md`, revisões de segurança,
+migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e as funções `lex-conta` e `lex-equipe`,
+**desenho** da integração com o RootifyONE (o código em `rootify-one/` é da conversa do RootifyONE desde 09/Nov), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `SECURITY.md`, revisões de segurança,
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- Nada em andamento. Próximos: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com
-  credencial na `lex-conta`, desenho do site `paginas/app/` para a Produto.
+- **Aceite dos termos**: SQL aplicado (abaixo). Página `paginas/aceite.html` e o passo "Antes de instalar, aceite os
+  termos" nos modelos `docs/email/email-boas-vindas.*` (com `{{email}}`) estão prontos **só na branch
+  `claude/friendly-einstein-li603e`** (o cliente veria): entram na `main` com o "pode publicar" do dono depois da revisão
+  do Leandro. Desenho: `documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`, seção 5.
+- Depois: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com credencial na `lex-conta`,
+  desenho do site `paginas/app/` para a Produto, `aceite` na resposta da `lex-conta`.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -167,6 +173,13 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 09/Nov: **SQL aplicados com o "pode aplicar" do dono** (conferência toda "true"): `2026-11-09b-sol-aceites.sql`
+  (tabela genérica `sol_aceites`, imutável; `sol_aceite_registrar` e `sol_aceite_contexto` públicas de propósito, com
+  limite de chamadas; `sol_tem_aceite`; `admin_sol_aceites`) e `2026-11-09c-lex-listar-responsavel-aceite.sql`
+  (`admin_lex_listar` único: atende o pedido nº 1 da conversa do RootifyONE e acrescenta `aceite`). Advisor de
+  segurança: só os avisos esperados de função pública (`sol_aceite_*`, por desenho) e de função para `authenticated`
+  (padrão de todas as `admin_*`).
+- 09/Nov: decisão **quem faz o quê entre LexSuiteONE e RootifyONE** (`documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`).
 - 09/Nov (madrugada): **nuvem aplicada e publicada** (o conector voltou depois que o dono religou os conectores da conta):
   SQL `2026-11-09-sol-retorno-e-lex-auditoria.sql` (conferência toda "true"; `sol_apps` tem `radar-judicial`, suíte
   `lexsuiteone`, acesso `instalado`), `lex-conta` v7 (código v6, com `retorno` e `RESEND_API_KEY_LEX`) e `lex-equipe` v1
@@ -216,7 +229,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Revisar com o Leandro `documentacao/TERMO-TRATAMENTO-DADOS-RASCUNHO.md` (campos a preencher no fim) e validar com advogado.
+- Colar na conversa do RootifyONE o aviso "aplicado" (linha de 09/Nov em "Pedidos entre sessões (continuação)").
+- Revisar com o Leandro o texto dos termos (`paginas/aceite.html`, três partes) e
+  `documentacao/TERMO-TRATAMENTO-DADOS-RASCUNHO.md`; depois o "pode publicar" da página e do e-mail com o passo de aceite.
+  Se não der tempo até quarta 11/Nov, o e-mail de boas-vindas sai sem o passo e o aceite é pedido depois (decisão do dono).
 - Nada mais: as demais perguntas estão respondidas em "Decisões do dono" (09/Nov).
 
 ---
@@ -276,7 +292,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 09/Nov | Operação | Produto | **Ressalvas da revisão da 0.7.13** (publicada; nada bloqueou), para a 0.7.14: (1) `monitor.py` ~289-290: se todos os tribunais falham, o que já foi lido é descartado e o histórico diz "leu até 06/11"; ou salvar antes de levantar o erro, ou não prometer "o que foi lido é salvo" em `PENDENCIAS.md`. (2) `radar_modelo.html` ~659: o "li até" ordena texto dd/mm e erra na virada de mês. (3) `causas.py` ~74: "A SolverONE já foi avisada" é dito mesmo quando `conta.registrar_erro` falha em silêncio; suavizar. (4) bloqueio de fora do Brasil e as rodadas do monitor e da contingência (`monitor.py` ~265, 337, 351) não deixam linha no "Histórico de leituras". (5) `app.py` ~631: a janela preta ainda diz "LexSuiteONE aberto em ..." (item 4 do pedido de 09/Nov). (6) `import rede` sem uso em `app.py` ~16. (7) aba Saúde marca "atenção: nenhuma publicação lida" logo depois do aviso das 3h. (8) faltam testes da rota `/historico`, de `agendar.origem_da_leitura`, das linhas de tentativa na aba Log e da leitura parcial. (9) `robo/painel_modelo.html` e `monitor_modelo.html` (fora do pacote) ainda pedem fontes do Google e `monitor_modelo.html` faz `fetch` direto ao DJEN; ferem "sem pedido externo". (10) Na seção Produto deste quadro, "Fazendo agora" e a entrada "0.7.13 na `main`, pronta para publicar" ainda dizem que a 0.7.13 espera publicação; ela saiu em 09/Nov (04:39 UTC) só com a correção das 3h, então o que era "só tela e planilha" passa para a 0.7.14. | pendente (Produto, 0.7.14) |
 
 | 09/Nov | Arquitetura | Produto | Situações do processo no programa com estas chaves internas (decisão do dono): `novo, visto, em_analise, em_contato, virou_cliente, descartado, arquivado`; são as que a `lex-conta` aceita no `retorno` e que o RootifyONE mostra. Texto e prévia do e-mail de boas-vindas: o RootifyONE 0.18.16 já monta a prévia a partir de `docs/email/email-boas-vindas.html|txt` e `docs/marca.json` publicados no site; basta a Produto manter esses arquivos (texto final hoje) | não |
+| 09/Nov | Arquitetura | conversa do RootifyONE (via dono) | **APLICADO** (09/Nov) o pedido nº 1 (`RASCUNHO-2026-11-09-lex-listar-responsavel.sql`) junto com o aceite. `admin_lex_listar()` agora devolve, além do que já devolvia: `email_responsavel` (texto ou null); `boas_vindas` (`{ok, para, em}` do último envio pela `lex-equipe`, ou null); `aceite` (`{aceito:true, versao, aceito_em, nome, email, protocolo}` ou `{aceito:false}`). Novas funções para a tela: `admin_sol_aceites(p_app, p_licenca default null)` (lista até 200 aceites: id, app, licenca, termo, versao, hash, nome, email, aceito_em, ip_resumo, navegador, origem). Para a prévia do e-mail: o modelo vai ganhar `{{email}}` (e-mail do responsável) no link do aceite quando a página for publicada; até lá, pode preencher em branco. Arquivos definitivos: `lexsuiteone/nuvem/supabase/2026-11-09b-sol-aceites.sql` e `2026-11-09c-lex-listar-responsavel-aceite.sql`. O RootifyONE pode renomear o rascunho para `APLICADO-…` e seguir com selo, etapa "Termos aceitos" e bloco Termos em Configuração | sim (Arquitetura) |
 | 09/Nov | Produto | Arquitetura | Item 82 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`: **"Atualizar estatísticas"** (só totais, sem Lista nem Arquivo) de 1, 3, 6 ou 12 meses para trás, por frente, tribunal e vara, em fila noturna aos poucos e com agendamento periódico. Pede desenho curto: até quando o DJEN guarda os cadernos antigos (a API de caderno aceita datas passadas?), volume e tempo (TRT2 é grande; 1 ano dos 24 TRTs ≈ 6 mil cadernos), limite seguro de pedidos por noite sem incomodar os sistemas do CNJ, e se a fonte melhor para série longa é o DataJud (que já traz encerramento). Produto implementa na 0.7.15 depois do desenho | não |
+| 09/Nov | Produto | Operação | 0.7.14 pronta na `main`. Ao publicar: **43 arquivos no download completo e 42 no de atualização** (novos `lexsuite/contatos.py` e `lexsuite/frentes.py`). Depois, teste no Windows (ou peça ao dono): "Abrir a planilha" abre o Excel em somente leitura; com ela aberta, "Ler o Diário agora" mostra o aviso de planilha aberta e grava sozinho alguns minutos depois de fechar o Excel; "Editar Preferências e Exclusões" abre para editar | não |
+| 09/Nov | Produto | Arquitetura | `CLAUDE.md` ("Como entregar"): a contagem do pacote passa a 43 e 42 arquivos na 0.7.14 (novos `contatos.py` e `frentes.py`) | não |
 
 ## Perguntas ao dono (uma lista só; a Produto consolida e leva ao dono)
 
@@ -312,4 +331,5 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 09/Nov | Totais por situação vão para a SolverONE **a cada leitura**, junto da conferência da licença, e a Configuração mostra ao escritório exatamente os números enviados. Rascunho do termo de tratamento de dados com a KR Law: Arquitetura (com a obrigação de informar os totais); dono e Leandro revisam. Ficha da KR Law no RootifyONE (e-mail de boas-vindas e domínio): Operação preenche. **Perguntas ao dono: uma lista só**, na seção "Perguntas ao dono" deste quadro, numeradas; toda conversa confere a lista antes de perguntar e escreve ali o que precisa; **a Produto consolida e leva ao dono**, e devolve um prompt único a cada conversa. |
 | 09/Nov | RootifyONE: (1) botão "Enviar e-mail de boas-vindas" na ficha da licença (Licenças do RADAR), com **prévia** do e-mail já preenchido (nome, código, links) antes de enviar; (2) LexSuiteONE e o RADAR JUDICIAL (e as próximas frentes) aparecem na lista de Apps, separados do RadarONE (político). Arquitetura desenha a função de envio; a Produto faz a prévia e o texto. |
 | 09/Nov | RootifyONE, ficha da licença: campo **e-mail do responsável** pela licença; **cadastro de e-mails em lote** (colar vários, validar formato e domínio, mostrar os inválidos); **Ativar/Pausar** como botão, com registro de quem, quando e motivo (histórico na ficha); **estatísticas da licença** (totais por situação, vistos e não vistos) de forma agnóstica, servindo para qualquer produto da SolverONE; menu: o RADAR sai da raiz e entra numa organização por linha de negócio (B2B → LexSuiteONE → RADAR JUDICIAL e as próximas frentes), regra a registrar nas diretrizes do RootifyONE. O e-mail de boas-vindas **não** vai ao Leandro até o dono dizer "pode enviar". |
+| 09/Nov | **Quem faz o quê entre LexSuiteONE e RootifyONE** (`documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`): tudo em `rootify-one/` é da conversa do RootifyONE, inclusive `rootify-lex.js` e seus testes; o LexSuiteONE não edita mais. LexSuiteONE desenha a tela por escrito e entrega SQL (`lex_*`, `admin_lex_*`, `sol_*` genérico), funções da nuvem e modelos de e-mail já aplicados, com o contrato; RootifyONE implementa e publica. SQL que o RootifyONE precisa: pedido numerado em `rootify-one/entrega/solverone-app/PEDIDOS-LEXSUITEONE.md` (rascunho opcional), LexSuiteONE escreve o definitivo em `nuvem/supabase/`, aplica com o "pode" do dono e avisa "aplicado" no quadro. Genérico para todo B2B: termos e aceite (texto da suíte, registro `sol_aceites`, nome do escritório lido da licença na hora, não no texto), jornada (Licença criada → Boas-vindas → Termos aceitos → Instalado → Em uso/Parado), CRM e estatísticas. Por produto: modelo do e-mail de boas-vindas, com campos iguais. Campo novo no modelo só com pedido ao RootifyONE. |
 | 08/Nov | Auditoria em banco (quem, quando com fuso, antes/depois) para mudanças de configuração e controle, em todos os produtos; a planilha é controle extra. |
