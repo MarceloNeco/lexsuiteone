@@ -80,6 +80,25 @@ class TestPlanilha(unittest.TestCase):
         with self.assertRaises(ValueError):
             ler_xlsx(p)
 
+    def test_le_so_as_abas_pedidas_mesmo_com_aba_enorme(self):
+        """0.7.16: a aba Radar com 20 mil processos passava de 50 MB e o robô ignorava as Preferências."""
+        p = self.caminho()
+        escrever_xlsx(p, [{"nome": "Radar", "linhas": [["x"]]},
+                          {"nome": "Preferências", "linhas": [["Ajuste", "Valor"], ["Valor mínimo da causa (R$)", 5]]}])
+        grande = self.caminho("grande.xlsx")
+        with zipfile.ZipFile(p) as zi, zipfile.ZipFile(grande, "w", zipfile.ZIP_DEFLATED) as zo:
+            for i in zi.infolist():
+                dados = zi.read(i.filename)
+                if i.filename == "xl/worksheets/sheet1.xml":
+                    dados = dados + b" " * (51 * 1024 * 1024)
+                zo.writestr(i, dados)
+        with self.assertRaises(ValueError):
+            ler_xlsx(grande)
+        r = ler_xlsx(grande, so_abas=("Preferencias", "Exclusões"))
+        abas = {a["nome"]: a["linhas"] for a in r["abas"]}
+        self.assertEqual(abas["Radar"], [])
+        self.assertEqual(abas["Preferências"][1], ["Valor mínimo da causa (R$)", 5])
+
     @unittest.skipUnless(openpyxl, "openpyxl não disponível")
     def test_openpyxl_le_o_que_escrevemos(self):
         escrever_xlsx(self.caminho(), self.abas())

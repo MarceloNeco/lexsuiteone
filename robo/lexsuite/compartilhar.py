@@ -103,7 +103,7 @@ def _abas_editaveis(caminho, aviso=print):
     if not os.path.exists(caminho):
         return preferencias.abas_padrao(), True
     try:
-        doc = planilha.ler_xlsx(caminho)
+        doc = planilha.ler_xlsx(caminho, so_abas=preferencias.ABAS_EDITAVEIS)
     except Exception as e:
         aviso(f"  Planilha em uso ou ilegível ({e.__class__.__name__}); deixo como está nesta rodada.")
         return [], False

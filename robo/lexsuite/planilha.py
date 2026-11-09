@@ -4,6 +4,7 @@ import datetime as dt
 import os
 import re
 import tempfile
+import unicodedata
 import zipfile
 import xml.etree.ElementTree as ET
 from xml.sax.saxutils import escape
@@ -11,7 +12,8 @@ from xml.sax.saxutils import escape
 NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 NS_R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 NS_PKG_REL = "http://schemas.openxmlformats.org/package/2006/relationships"
-LIMITE_BYTES = 50 * 1024 * 1024
+LIMITE_BYTES = 50 * 1024 * 1024  # por parte lida
+LIMITE_TOTAL = 1024 * 1024 * 1024  # do arquivo inteiro
 
 # Caracteres inválidos em XML 1.0
 _INVALIDOS = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f￾￿\ud800-\udfff]")
@@ -311,6 +313,9 @@ def _caminho_parte(destino):
 
 
 def _ler_xml(z, nome):
+    # Cada parte lida tem teto (protege contra arquivo zip que se expande demais); as abas não lidas não contam.
+    if z.getinfo(nome).file_size > LIMITE_BYTES:
+        raise ValueError(f"Parte grande demais (acima de 50 MB descompactado): {nome}")
     dados = z.read(nome)
     # Planilha é entrada não confiável: nenhuma DTD ou entidade é aceita (evita XML bomb e entidade externa).
     if b"<!DOCTYPE" in dados or b"<!ENTITY" in dados:
@@ -339,12 +344,20 @@ def _valor(c, compart):
     return _num(txt)
 
 
-def ler_xlsx(caminho):
-    """Lê um .xlsx e devolve {"abas": [{"nome", "oculta", "linhas"}]}."""
+def _nome_aba(n):
+    return unicodedata.normalize("NFKD", str(n or "")).encode("ascii", "ignore").decode().strip().lower()
+
+
+def ler_xlsx(caminho, so_abas=None):
+    """Lê um .xlsx e devolve {"abas": [{"nome", "oculta", "linhas"}]}.
+    `so_abas`: nomes das abas a ler (as outras vêm com linhas vazias, sem abrir o XML delas). Com a lista de processos
+    grande (20 mil linhas no TRT2), ler só as abas editáveis é rápido e não esbarra no limite de tamanho (0.7.16)."""
+    quero = {_nome_aba(n) for n in so_abas} if so_abas else None
     with zipfile.ZipFile(caminho) as z:
-        if sum(i.file_size for i in z.infolist()) > LIMITE_BYTES:
-            raise ValueError("Arquivo grande demais (acima de 50 MB descompactado).")
-        nomes = set(z.namelist())
+        infos = {i.filename: i.file_size for i in z.infolist()}
+        if sum(infos.values()) > LIMITE_TOTAL:
+            raise ValueError("Arquivo grande demais (acima de 1 GB descompactado).")
+        nomes = set(infos)
         wb = _ler_xml(z, "xl/workbook.xml")
         alvos = {}
         if "xl/_rels/workbook.xml.rels" in nomes:
@@ -360,7 +373,7 @@ def ler_xlsx(caminho):
             rid = s.get(f"{{{NS_R}}}id")
             parte = alvos.get(rid) or f"xl/worksheets/sheet{n}.xml"
             linhas = []
-            if parte in nomes:
+            if parte in nomes and (quero is None or _nome_aba(s.get("name")) in quero):
                 dados = _ler_xml(z, parte).find(_q("sheetData"))
                 for row in (dados if dados is not None else []):
                     atual = []

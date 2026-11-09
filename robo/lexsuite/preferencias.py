@@ -110,9 +110,11 @@ def carregar(pasta_base, doc=None):
         if not c or not os.path.exists(c):
             return prefs
         try:
-            doc = planilha.ler_xlsx(c)
+            doc = planilha.ler_xlsx(c, so_abas=ABAS_EDITAVEIS)
         except Exception as e:  # planilha corrompida ou em uso: o robô segue com o padrão e avisa
-            prefs["erro"] = f"Não consegui ler {NOME_ARQUIVO} ({e.__class__.__name__}). Usando o padrão."
+            prefs["erro"] = (f"Não consegui ler as abas Preferências e Exclusões de {NOME_ARQUIVO} (arquivo corrompido ou bloqueado). "
+                             "Nesta leitura valem as preferências padrão. / Could not read the Preferences and Exclusions tabs; "
+                             f"default preferences apply this time. ({e.__class__.__name__})")
             return prefs
     abas = {cl.sem_acento(a["nome"]).strip().lower(): a["linhas"] for a in doc["abas"]}
     for linha in abas.get("preferencias", [])[1:]:
