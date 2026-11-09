@@ -123,7 +123,9 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.19 no ramo `claude/lexsuiteone-judicial-product-22f871`** (vai à `main` com o "pode a 0.7.19" do dono):
+- **0.7.19 na `main`, pronta para publicar** (com o "pode" do dono, 09/Nov noite; revisada e aprovada, 157 testes;
+  inclui o AssistONE, decisão 15). A Operação revisa e publica com "publica a versão 0.7.19". Pacote 45/44.
+- (o que entrou na 0.7.19):
   ressalvas da revisão da 0.7.18 (reserva de cada Diário, fila só depois de 3 falhas, mensagens PT/EN que ficam na
   tela, "Ler agora" com erros, cópia do banco com data, turma trabalhada de volta, código mascarado) e o feedback do
   dono: última leitura depois de reiniciar, Interromper vermelho, termos com um link só e aceite preenchido, pastas
@@ -420,6 +422,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 09/Nov | Produto | Arquitetura | `CLAUDE.md` ("Como entregar"): pacote com 44 e 43 arquivos na 0.7.16 (novo `armazenamento.py`) | sim (Arquitetura, 09/Nov noite) |
 | 09/Nov | Produto | Arquitetura | `CLAUDE.md` ("Como entregar"): pacote com **45 e 44** arquivos a partir da 0.7.18 (novo `lexsuite/historico.py`) | sim (Arquitetura, 09/Nov noite) |
 | 09/Nov | Produto | Arquitetura | **`paginas/aceite.html` na largura toda** (feedback do dono, print da 0.7.18): no computador a página do aceite fica estreita no meio da tela; usar a largura útil (como a tela do programa, com margem) e manter a leitura confortável (colunas de texto até ~80 caracteres, índice ao lado quando couber). A 0.7.19 abre `aceite.html?ler=1` para ler e `aceite.html?codigo=…&email=…&nome=…` para aceitar em nome do escritório: conferir que a página preenche código, e-mail e nome com esses parâmetros. **Ressalva do revisor da Produto:** parâmetros na query string ficam no histórico do navegador e em logs do servidor; sugiro a página ler também `location.hash` (`#codigo=…&email=…&nome=…`), que não sai do navegador; quando estiver no ar, a Produto troca o link do programa (e o e-mail de boas-vindas pode seguir o mesmo) | não |
+| 09/Nov | Produto | Arquitetura | **Interruptor do AssistONE no RootifyONE valer também no RADAR** (pedido do dono, 09/Nov noite: "no RootifyONE eu também consiga desligar"). Hoje o RADAR não lê os interruptores (não tem `recursos.js` nem o módulo comum, e a página não faz pedido externo). Proposta da Produto: a resposta da `lex-conta` (`verificar`, que o programa já chama) traz `recursos: {assistone: true/false}` lido do Controle dos apps; o programa guarda em `config.json` e a tela passa a `AssistONE` como `SolverRecursos` local. Pede desenho curto e a parte da nuvem; a Produto faz a tela na 0.7.20 | não |
 | 09/Nov | Produto | Arquitetura | `CLAUDE.md`, regras: acrescentar "O e-mail de boas-vindas aos clientes é enviado pelo dono, pelo botão do RootifyONE; nenhuma conversa lembra, pergunta ou comenta esse envio" (decisão do dono, 09/Nov noite) | sim (Arquitetura, 09/Nov noite): regra em \"Regras que não se negociam\" |
 
 ## Perguntas ao dono (uma lista só; a Produto consolida e leva ao dono)
