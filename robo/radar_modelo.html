@@ -1744,7 +1744,13 @@ window.LEXSUITE_RADAR = null;
     bf.addEventListener("click", function () { multiAberto = ""; cabecalho(); b.focus(); });
     rod.appendChild(bl); rod.appendChild(bf); pn.appendChild(rod);
     box.appendChild(pn);
-    var posicionar = function () { var r = b.getBoundingClientRect(); pn.style.top = Math.min(r.bottom + 4, window.innerHeight - 120) + "px"; pn.style.left = Math.max(8, Math.min(r.left, window.innerWidth - pn.offsetWidth - 8)) + "px"; };
+    var posicionar = function () {  // 0.7.18 (revisão): nunca sai da tela; sem espaço embaixo, abre para cima
+      var r = b.getBoundingClientRect(), alt = window.innerHeight, abaixo = alt - r.bottom - 12, acima = r.top - 12;
+      var w = Math.min(380, window.innerWidth - 16); pn.style.width = w + "px";
+      pn.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+      if (abaixo >= 220 || abaixo >= acima) { pn.style.top = (r.bottom + 4) + "px"; pn.style.bottom = "auto"; pn.style.maxHeight = Math.max(160, abaixo) + "px"; }
+      else { pn.style.top = "auto"; pn.style.bottom = (alt - r.top + 4) + "px"; pn.style.maxHeight = Math.max(160, acima) + "px"; }
+    };
     if (!pn.hidden) setTimeout(posicionar, 0);
     b.addEventListener("click", function () { multiAberto = multiAberto === k ? "" : k; cabecalho(); });
   }

@@ -318,7 +318,8 @@ class Banco:
         self.atualizar_estatisticas()
         limite = (dt.date.today() - dt.timedelta(days=round(meses * 30.44))).isoformat()
         feitas = 0
-        sql = "SELECT processo, dados FROM leads WHERE bruto_limpo = 0 AND primeira_vez < ?" + (" AND status = 'novo'" if so_nunca_abertos else "")
+        sql = ("SELECT processo, dados FROM leads WHERE bruto_limpo = 0 AND primeira_vez < ? AND status = 'novo'" if so_nunca_abertos
+               else "SELECT processo, dados FROM leads WHERE bruto_limpo = 0 AND primeira_vez < ?")
         for proc, dados in self.con.execute(sql, (limite,)).fetchall():
             try:
                 d = json.loads(dados or "{}")

@@ -262,6 +262,9 @@ def situacao(cfg, banco, pasta_robo):
     d = disco(base or pasta_robo)
     nivel = "critico" if d["nivel"] == "critico" else "atencao" if (d["nivel"] == "baixo" or any(p["nivel"] != "ok" for p in planilhas)) else "ok"
     mensagens = [aviso_tamanho(p["frente"], p["linhas"], p["limite"]) for p in planilhas if p["nivel"] != "ok"] + [texto_disco(d)]
+    if esp.get("bytes", 0) > 1024 ** 3:  # 0.7.18 (revisão): o aviso do banco grande também aparece na tela, não só na janela preta
+        mensagens.append("O banco do programa passou de 1 GB: os processos nunca abertos com mais de 6 meses ficam só com o resumo. "
+                         "/ The program database is over 1 GB: never-opened lawsuits older than 6 months keep only the summary.")
     return {"planilhas": planilhas, "banco": {"bytes": esp.get("bytes", 0), "acoes": esp.get("acoes", 0)},
             "saida": {"bytes": _tamanho(os.path.join(pasta_robo, "saida")) if pasta_robo else 0},
             "copias": {"n": len(lista_copias), "bytes": sum(c["bytes"] for c in lista_copias), "guardadas": COPIAS_GUARDADAS,

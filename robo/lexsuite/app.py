@@ -760,7 +760,7 @@ class Tratador(BaseHTTPRequestHandler):
             elif corpo.get("o_que") == "ultima_copia":  # 0.7.18: a cópia que acabou de ser gerada (só ela)
                 alvo = getattr(s, "ultima_copia", "") or ""
             elif corpo.get("o_que") == "pasta_copias":
-                alvo = os.path.dirname(getattr(s, "ultima_copia", "") or "") or (os.path.join(base, "Cópias") if base else "")
+                alvo = os.path.dirname(getattr(s, "ultima_copia", "") or "") or (os.path.join(base, compartilhar.PASTA_COPIAS_TRABALHO) if base else "")
             elif corpo.get("o_que") == "copias":  # 0.7.16: a pasta das cópias de segurança
                 alvo = armazenamento.pasta_copias(base)
                 if alvo:
