@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Termos do RADAR JUDICIAL · proposta da versão 1.1</title>
+<style>
+:root { --marinho: #0f1d33; --latao: #a87a2e; --latao-texto: #8a6222; --wash: #f7f0e1; --tinta: #121a2b; --tinta2: #4a5468; --linha: #e1e5ec; --papel: #f3f5f8; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+body { margin: 0; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--tinta); background: var(--papel); }
+.faixa { background: var(--marinho); color: #fff; padding: 18px 20px; }
+.faixa h1 { margin: 0; font-size: 1.4rem; } .faixa p { margin: 4px 0 0; color: #c8cfdc; font-size: .9rem; }
+.proposta { background: #fff4d6; color: #6b4a10; padding: 10px 20px; font-size: .88rem; border-bottom: 1px solid #ecd9a8; }
+.topo-fixo { position: sticky; top: 0; z-index: 5; background: #fff; border-bottom: 1px solid var(--linha); padding: 10px 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.topo-fixo input { flex: 1 1 260px; border: 1px solid #c9d0db; border-radius: 999px; padding: 8px 16px; font-size: .95rem; }
+.topo-fixo span { color: var(--tinta2); font-size: .85rem; }
+.miolo { max-width: 1100px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; }
+@media (max-width: 820px) { .miolo { grid-template-columns: 1fr; } nav.indice { position: static !important; } }
+nav.indice { position: sticky; top: 76px; align-self: start; background: #fff; border: 1px solid var(--linha); border-radius: 12px; padding: 12px 14px; font-size: .9rem; }
+nav.indice b { display: block; margin-bottom: 6px; color: var(--marinho); }
+nav.indice ol { margin: 0; padding-left: 1.2em; } nav.indice li { margin: 4px 0; }
+nav.indice a { color: var(--latao-texto); text-decoration: none; } nav.indice a:hover { text-decoration: underline; }
+article { background: #fff; border: 1px solid var(--linha); border-radius: 12px; padding: 8px 26px 26px; }
+section { border-top: 1px solid var(--linha); padding-top: 6px; } section:first-of-type { border-top: 0; }
+h2 { font-size: 1.15rem; color: var(--marinho); margin: 18px 0 8px; } h3 { font-size: 1rem; margin: 14px 0 4px; }
+p, li { margin: 6px 0; }
+mark { background: #ffe58a; }
+.escondida { display: none; }
+.aceite { margin-top: 20px; background: var(--wash); border: 1px solid #e3cfa3; border-radius: 12px; padding: 16px 18px; }
+.aceite h2 { margin-top: 0; }
+.aceite label { display: block; margin: 8px 0; }
+.aceite input[type=text] { width: 100%; max-width: 420px; border: 1px solid #c9d0db; border-radius: 8px; padding: 7px 10px; font: inherit; }
+.botao { background: var(--marinho); color: #fff; border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 700; cursor: pointer; }
+.botao[disabled] { background: #9aa3b2; cursor: not-allowed; }
+.aceito { background: #eaf5ec; border: 1px solid #b9dcc0; border-radius: 12px; padding: 14px 18px; }
+.aceito b { color: #2f6b3a; }
+.exemplo { color: var(--tinta2); font-size: .82rem; }
+.demo { margin-top: 10px; font-size: .82rem; } .demo button { border: 1px solid #c9d0db; background: #fff; border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="faixa"><h1>Termos do RADAR JUDICIAL</h1><p>LexSuiteONE · SolverONE · versão 1.1 · (data da publicação)</p></div>
+<div class="proposta"><b>Proposta para revisão</b> (Produto, 09/Nov/2026): texto novo com as decisões do dono; ainda não publicado. Os dados de aceite no fim da página são de exemplo (fictícios).</div>
+<div class="topo-fixo"><input id="busca" type="search" placeholder="Procurar nos termos (ex.: sócios, planilha, prazo)" aria-label="Procurar nos termos"><span id="achados"></span></div>
+<div class="miolo">
+<nav class="indice" aria-label="Índice">
+  <b>Índice</b>
+  <ol>
+    <li><a href="#s1">O que é o RADAR JUDICIAL</a></li>
+    <li><a href="#s2">Duas aceitações: escritório e pessoa</a></li>
+    <li><a href="#s3">Termos de uso</a></li>
+    <li><a href="#s4">Dados das partes e dos sócios</a></li>
+    <li><a href="#s5">Informações da área logada e ferramentas de terceiros</a></li>
+    <li><a href="#s6">Política de privacidade</a></li>
+    <li><a href="#s7">Indicadores de resultado (anônimos)</a></li>
+    <li><a href="#s8">Termo de tratamento de dados</a></li>
+    <li><a href="#s9">Licença, prazo e fim</a></li>
+    <li><a href="#s10">Registro do aceite</a></li>
+    <li><a href="#s11">Contato</a></li>
+  </ol>
+</nav>
+<article id="texto">
+
+<section id="s1"><h2>1. O que é o RADAR JUDICIAL</h2>
+<p>O RADAR JUDICIAL é um programa da suíte LexSuiteONE, da SolverONE, licenciado a escritórios de advocacia e departamentos jurídicos. Ele lê fontes públicas da Justiça (o Diário de Justiça Eletrônico Nacional e os cadastros públicos de empresas) e organiza, para o escritório, a relação de ações novas ajuizadas contra pessoas jurídicas, com a ficha cadastral de cada empresa.</p>
+<p>Nesta versão, o programa é instalado no computador do escritório (modalidade instalada) e grava a relação numa planilha em uma pasta escolhida pelo escritório, no próprio computador ou numa pasta sincronizada, como o Google Drive. Uma futura modalidade em nuvem terá condições próprias, descritas numa versão nova destes termos.</p>
+<p>O RADAR JUDICIAL funciona sem inteligência artificial.</p>
+</section>
+
+<section id="s2"><h2>2. Duas aceitações: escritório e pessoa</h2>
+<p><b>Escritório.</b> O responsável indicado pelo escritório aceita, uma vez e em nome do escritório, todos os documentos desta página. Esse aceite libera a licença.</p>
+<p><b>Pessoa.</b> Cada pessoa que usa o programa aceita, com o próprio nome e e-mail, os Termos de uso (seções 3 a 5) na primeira vez que o usa. Sem esse aceite, a pessoa não lê o Diário, mesmo com a licença liberada.</p>
+<p>Quando estes termos mudarem, a versão nova é publicada nesta página e o programa pede um aceite novo, do escritório e de cada pessoa, conforme o que mudou.</p>
+</section>
+
+<section id="s3"><h2>3. Termos de uso</h2>
+<h3>3.1 Quem pode usar</h3>
+<p>Advogados e pessoas autorizadas pelo escritório licenciado, cada uma com o próprio nome e e-mail. O código de cliente identifica o escritório e não deve ser repassado a terceiros.</p>
+<h3>3.2 Uso exclusivo do escritório</h3>
+<p>As informações organizadas pelo RADAR JUDICIAL (relação de ações, fichas de empresas, sócios, administradores e contatos) são para uso interno e exclusivo do escritório licenciado, no exercício da advocacia. É vedado repassar, vender, ceder, publicar ou compartilhar essas informações com terceiros, inclusive outros escritórios, ou usá-las fora da atividade jurídica do próprio escritório.</p>
+<h3>3.3 Compromissos do escritório</h3>
+<p>Usar as informações conforme a lei, o Estatuto da Advocacia, o Código de Ética e Disciplina da OAB e os provimentos aplicáveis, inclusive quanto à publicidade e à captação de clientela (Provimento 205/2021 do Conselho Federal da OAB). O RADAR JUDICIAL organiza informação; a decisão sobre como usá-la, e a responsabilidade por esse uso, é do escritório e dos seus advogados.</p>
+<h3>3.4 Compromissos da SolverONE</h3>
+<p>Manter o programa funcionando e atualizado (as atualizações são assinadas digitalmente), responder a dúvidas por judicial@solverone.com.br, não acessar o computador do escritório e não receber a relação de ações, as fichas, os contatos nem as anotações do escritório.</p>
+<h3>3.5 Limites</h3>
+<p>As fontes públicas podem mudar, atrasar ou ficar fora do ar; o programa avisa quando isso acontece. A SolverONE não garante que toda ação nova apareça, nem a exatidão dos cadastros públicos ou das informações incluídas pelo escritório.</p>
+</section>
+
+<section id="s4"><h2>4. Dados das partes e dos sócios</h2>
+<p>O RADAR JUDICIAL organiza dados da empresa processada e, quando constam em cadastro público ou são incluídos pelo escritório, dos seus sócios e administradores e do empresário individual (inclusive o microempreendedor individual), com a fonte e a data de cada informação. O programa não organiza dados do autor da ação nem de testemunhas.</p>
+<p>Esses dados ficam no computador e na pasta do escritório, sob o seu controle. O escritório é o controlador desses dados (Lei 13.709/2018) e responde pela sua segurança, pela sua guarda e por não compartilhá-los, usando-os apenas no exercício da advocacia, para o qual os advogados já têm acesso às mesmas informações pelos meios próprios da profissão.</p>
+</section>
+
+<section id="s5"><h2>5. Informações da área logada e ferramentas de terceiros</h2>
+<p>O RADAR JUDICIAL não acessa, por conta própria, áreas logadas dos tribunais. O escritório pode incluir no programa informações que os seus advogados obtiverem com a própria credencial, como o valor da causa, a data de ajuizamento, o endereço ou os contatos que constarem do processo, sem limitação de tipo, desde que respeitado o sigilo processual e a seção 4.</p>
+<p>Para isso, o advogado pode copiar e colar as informações à mão ou usar, a seu critério, uma ferramenta de terceiros, como uma extensão de inteligência artificial de qualquer fornecedor instalada no navegador. A escolha da ferramenta, o uso da credencial e o tratamento feito por essa ferramenta são de responsabilidade do escritório; o RADAR JUDICIAL apenas recebe e organiza o que for colado nele.</p>
+<p>Se no futuro o RADAR JUDICIAL oferecer uma conexão autorizada com a credencial do advogado, ela será opcional e descrita numa versão nova destes termos.</p>
+</section>
+
+<section id="s6"><h2>6. Política de privacidade</h2>
+<h3>6.1 O que fica com o escritório</h3>
+<p>A relação de ações, as fichas das empresas, os dados de sócios e administradores, os contatos, as anotações, as situações marcadas e a planilha ficam no computador e na pasta do escritório e não são enviados à SolverONE. O funcionamento normal não exige compartilhar a pasta da planilha com a SolverONE. Se o escritório quiser, pode compartilhá-la temporariamente para suporte; o acesso é concedido e retirado pelo próprio escritório, e a SolverONE não copia nem usa esses dados.</p>
+<h3>6.2 O que a SolverONE recebe e guarda</h3>
+<p>No banco de dados da SolverONE (Supabase, hospedado em São Paulo): (a) dados da licença: nome e documento do escritório, código de cliente, validade e modalidade; (b) nome, e-mail profissional e função de cada pessoa que usa o programa, e uma identificação aleatória de cada computador; (c) registros técnicos de erro, sem conteúdo de processos; (d) os indicadores anônimos da seção 7; (e) os registros de aceite da seção 10.</p>
+<h3>6.3 Para quê</h3>
+<p>Prestar o serviço, conferir a licença, dar suporte, avisar o responsável do escritório quando entra pessoa ou computador novo, medir o resultado do serviço e cumprir obrigações legais. Nenhum dado é vendido nem usado para publicidade.</p>
+<h3>6.4 Por quanto tempo</h3>
+<p>Registros técnicos: 90 dias. Dados das pessoas: enquanto usarem o programa e por até 12 meses depois. Indicadores anônimos: sem limite, por não identificarem ninguém. Dados da licença e registros de aceite: enquanto houver contrato e pelo prazo legal de guarda.</p>
+<h3>6.5 Com quem</h3>
+<p>Supabase (hospedagem do banco, em São Paulo) e Resend (entrega de e-mails automáticos). Nenhuma transferência internacional pela SolverONE.</p>
+<h3>6.6 Seus direitos</h3>
+<p>Acesso, correção, exclusão e portabilidade dos seus dados pessoais, e informação sobre o uso: privacidade@solverone.com.br. Resposta em até 15 dias.</p>
+</section>
+
+<section id="s7"><h2>7. Indicadores de resultado (anônimos)</h2>
+<p>A cada leitura, o programa envia à SolverONE apenas quantidades: quantos processos estão em cada situação (novo, visto, em análise, em contato, virou cliente, descartado, arquivado), por dia, tribunal, frente (trabalhista, tributário, cível, empresarial) e faixa de valor. Não vai nome de empresa, número de processo, CNPJ, pessoa nem contato.</p>
+<p>Esses indicadores servem para medir o resultado do serviço para o escritório e melhorar o produto. O escritório vê a tabela exata enviada em Configuração, em "O que a SolverONE recebe". O envio faz parte do serviço contratado.</p>
+</section>
+
+<section id="s8"><h2>8. Termo de tratamento de dados</h2>
+<p>Quanto aos dados da seção 6.2, o escritório é o controlador e a SolverONE é a operadora, que os trata só para as finalidades da seção 6.3 e conforme as instruções do escritório (Lei 13.709/2018, art. 39). Os dados da seção 4 ficam só com o escritório.</p>
+<p><b>A SolverONE se obriga a:</b> adotar medidas de segurança (acesso ao banco com permissão mínima, regras por linha, segredos fora do código, registro de acessos da equipe); manter sigilo; não usar os dados para outra finalidade; comunicar incidente de segurança que afete dados do escritório em até 48 horas do conhecimento; ao fim do contrato, exportar os dados do escritório a pedido e, em até 30 dias, anonimizar as pessoas e encerrar a licença; avisar com 30 dias de antecedência a troca de suboperador.</p>
+<p><b>O escritório se obriga a:</b> responder pelo uso que faz das informações da seção 4 e das incluídas na forma da seção 5, inclusive perante a OAB; garantir que só pessoas autorizadas usem o programa e informar a saída delas; manter o computador e a pasta da planilha com os cuidados usuais; aceitar o envio dos indicadores da seção 7 como parte do serviço.</p>
+</section>
+
+<section id="s9"><h2>9. Licença, prazo e fim</h2>
+<p>A licença é do escritório, pelo prazo e condições combinados à parte. Qualquer das partes pode encerrar com aviso de 30 dias. Ao encerrar, o escritório desinstala o programa; a planilha e os dados do computador são do escritório e ficam com ele.</p>
+</section>
+
+<section id="s10"><h2>10. Registro do aceite</h2>
+<p>O aceite é registrado com o nome, o e-mail, a data e a hora completas (com o fuso horário), a versão destes termos, um protocolo e o início do endereço de rede e o navegador usados. O registro vale como assinatura eletrônica simples entre particulares (MP 2.200-2/2001, art. 10, § 2º; Código Civil, art. 107) e é a prova do consentimento.</p>
+<p>Um aceite registrado não pode ser desfeito por esta página. Para deixar de usar o programa, vale a seção 9. Quem aceita pelo escritório declara ter poderes para representá-lo nesta contratação.</p>
+</section>
+
+<section id="s11"><h2>11. Contato</h2>
+<p>Dúvidas sobre o serviço: judicial@solverone.com.br. Privacidade e dados pessoais: privacidade@solverone.com.br.</p>
+</section>
+
+<div class="aceite" id="bloco-aceite">
+  <h2>Aceite</h2>
+  <label>Nome completo<br><input type="text" value="Fulano de Tal (exemplo)"></label>
+  <label>E-mail<br><input type="text" value="responsavel@exemplo.com.br" readonly></label>
+  <label><input type="checkbox" id="li"> Li os termos até o fim e aceito, em nome do escritório.</label>
+  <button class="botao" id="aceitar" disabled>Confirmar o aceite</button>
+  <p class="exemplo">A caixa só libera depois de rolar o texto até o fim.</p>
+</div>
+<div class="aceito escondida" id="bloco-aceito">
+  <p><b>✓ Termos aceitos.</b> Aceito por <b>Fulano de Tal</b> (responsavel@exemplo.com.br), em nome do escritório Exemplo Advocacia, em <b>09/11/2026 às 14:32:05</b> (horário de Brasília, UTC−03:00). Versão 1.1. Protocolo <b>LEX-2026-0001-EXEMPLO</b>.</p>
+  <p class="exemplo">Um aceite registrado não pode ser desfeito por esta página. Dados fictícios, só para mostrar como fica.</p>
+</div>
+<div class="demo">Demonstração: <button type="button" id="ver-aceito">ver como fica depois de aceito</button></div>
+</article>
+</div>
+<script>
+(function () {
+  var busca = document.getElementById("busca"), texto = document.getElementById("texto"), achados = document.getElementById("achados");
+  var secoes = Array.prototype.slice.call(texto.querySelectorAll("section"));
+  var originais = secoes.map(function (s) { return s.innerHTML; });
+  function sem(x) { return x.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+  busca.addEventListener("input", function () {
+    var q = busca.value.trim(), n = 0;
+    secoes.forEach(function (s, i) {
+      s.innerHTML = originais[i];
+      if (!q) { s.classList.remove("escondida"); return; }
+      var tem = sem(s.textContent).indexOf(sem(q)) >= 0;
+      s.classList.toggle("escondida", !tem);
+      if (tem) {
+        n++;
+        var w = document.createTreeWalker(s, NodeFilter.SHOW_TEXT), nos = [];
+        while (w.nextNode()) nos.push(w.currentNode);
+        nos.forEach(function (no) {
+          var t = no.nodeValue, k = sem(t).indexOf(sem(q));
+          if (k < 0) return;
+          var m = document.createElement("mark"); m.textContent = t.substr(k, q.length);
+          var depois = no.splitText(k); depois.nodeValue = depois.nodeValue.substr(q.length);
+          no.parentNode.insertBefore(m, depois);
+        });
+      }
+    });
+    achados.textContent = q ? (n ? n + " seção(ões) com “" + q + "”" : "nada encontrado") : "";
+  });
+  var li = document.getElementById("li"), bt = document.getElementById("aceitar");
+  li.addEventListener("change", function () { bt.disabled = !li.checked; });
+  function mostrarAceito() { document.getElementById("bloco-aceite").classList.add("escondida"); document.getElementById("bloco-aceito").classList.remove("escondida"); }
+  bt.addEventListener("click", mostrarAceito);
+  document.getElementById("ver-aceito").addEventListener("click", mostrarAceito);
+})();
+</script>
+</body>
+</html>
