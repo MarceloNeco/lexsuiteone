@@ -39,7 +39,9 @@ _PASSIVO = re.compile(_ROT_PASSIVO + r"\s*:\s*(.{3,160}?)" + _FIM_NOME)
 # "distribuído" e "citação", que aparecem em quase toda intimação de processo do ano: dois TRTs davam 20 mil "novos".
 # Agora só o que marca o começo da ação: audiência inicial ou una e notificação inicial (a lista de distribuição, o
 # sinal mais forte, é conferida pelo tipo da comunicação em djen.leads).
-_INICIO = re.compile(r"audi[eê]ncia\s+(inicial|una)\b|notifica[cç][aã]o\s+inicial|cita[cç][aã]o\s+inicial", re.I)
+# Alinhado à regra estrita do diagnóstico (diagnostico.ESTRITA), menos "designada audiência", que vale para qualquer audiência.
+_INICIO = re.compile(r"audi[eê]ncia\s+(inicial|una)\b|audi[eê]ncia\s+de\s+concilia[cç][aã]o|notifica[cç][aã]o\s+inicial|"
+                     r"notifique-se\s+a\s+reclamad|cita[cç][aã]o\s+inicial", re.I)
 
 # Assuntos que costumam pesar no valor da condenação (pista, não regra jurídica).
 ASSUNTOS_PESO = {
@@ -122,7 +124,7 @@ def sinal_inicio(texto):
     if not m:
         return ""
     t = sem_acento(m.group(0)).lower()
-    return "audiência inicial" if t.startswith("audi") else "notificação inicial" if t.startswith("notif") else "citação inicial"
+    return "audiência inicial" if t.startswith("audi") else "notificação inicial" if t.startswith(("notif", "notifique")) else "citação inicial"
 
 
 def nota(lead, rito_ordinario_desde=40):

@@ -921,7 +921,7 @@ window.LEXSUITE_RADAR = null;
           var bi = el("button", "btn-txt", t("interromper")); bi.type = "button";
           bi.addEventListener("click", function () {
             var c = el("div"); c.appendChild(el("h3", null, t("interromper_q"))); c.appendChild(el("p", null, t("interromper_x")));
-            abrirJanela(c, [[t("continuar_lendo"), null], [t("interromper"), function () { post("/interromper", {}).then(function () { vigiar(); }).catch(function () { var cf = el("div"); cf.appendChild(el("p", null, t("falha"))); abrirJanela(cf, [[t("fechar"), null, true]]); });  // 0.7.16: o aviso não some no próximo ciclo }, true]]);
+            abrirJanela(c, [[t("continuar_lendo"), null], [t("interromper"), function () { post("/interromper", {}).then(function () { vigiar(); }).catch(function () { var cf = el("div"); cf.appendChild(el("p", null, t("falha"))); abrirJanela(cf, [[t("fechar"), null, true]]); }); }, true]]);
           });
           box.appendChild(bi);
         }

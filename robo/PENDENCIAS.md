@@ -162,6 +162,24 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.16 (09/Nov, noite; tudo antes da visita de quinta, decisão do dono)
+
+Itens 89 a 101 de `documentacao/FEEDBACK-TESTE-2026-11-09.md` e as ressalvas da terceira revisão da Operação. **Planilha
+grande** (`documentacao/DESENHO-PLANILHA-GRANDE.md`, decisões 1 a 9, tomadas pela Produto por delegação do dono): uma
+planilha por frente na mesma pasta (`LexSuiteONE - Trabalhista.xlsx`; a antiga muda de nome sozinha), leitura só das
+abas editáveis (a planilha de 20 mil linhas dava "ValueError"), aba Arquivo com 90 dias + trabalhados, limite de 60 mil
+linhas com aviso a 80% e limpeza com cópia a 100%, `Cópias de segurança` (6), Configuração → Armazenamento com o espaço
+livre do disco. **Ação nova** mais estreita (lista de distribuição, audiência inicial, una ou de conciliação,
+notificação inicial; saem "fica notificado", "designada audiência" e "citação" soltos), com a contagem por sinal na
+janela preta para conferir com o Leandro. **Tela**: Configuração em janela própria (✕, Salvar só com mudança, pergunta ao
+fechar), "Buscar na área logada" com `RESPOSTA PARA O RADAR v1` (qualquer extensão de IA), valor da causa e data de
+ajuizamento no programa, ✓ ao salvar, "Sair do RADAR", janela preta que fecha 3 minutos depois da tela, carregamento ao
+atualizar, termos das duas camadas na Configuração e caixa "Li e aceito os termos de uso" no cadastro (a trava da
+pessoa, `suporta_aceite_uso`, **ainda não** é pedida: liga quando a página dos termos for publicada e o dono responder a
+pergunta 13), nada compartilhado com a SolverONE. Pacote: **44 arquivos no download completo e 43 na atualização**
+(novo `lexsuite/armazenamento.py`). Para a 0.7.17: atualizar dados que mudaram (item 92), "Atualizar estatísticas"
+(itens 79 e 82, depois das perguntas 10 a 12), `pode(acao)`.
+
 ## 0.7.15 (09/Nov; pronta de novo depois da revisão da Operação: banco não trava ao interromper, textos honestos, aviso de atraso só na leitura agendada)
 
 Itens 85 a 88 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`: botão **Interromper** (a leitura para no próximo ponto

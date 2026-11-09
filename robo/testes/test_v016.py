@@ -102,8 +102,10 @@ class TestPlanilhaPorFrente(unittest.TestCase):
         self.assertTrue(os.path.exists(caminho))
         self.assertTrue(os.path.isdir(os.path.join(self.base, "Cópias de segurança")))
         doc = planilha.ler_xlsx(caminho)
-        arquivo = [a for a in doc["abas"] if a["nome"] == "Arquivo"][0]["linhas"]
-        self.assertEqual(len(arquivo) - 2, 5)  # aviso + cabeçalho + 5 ações
+        abas = {a["nome"]: a["linhas"] for a in doc["abas"]}
+        procs = lambda linhas: {l[5] for l in linhas[2:]}  # aviso + cabeçalho; a coluna 6 é o processo
+        self.assertEqual(len(procs(abas["Radar"]) | procs(abas["Arquivo"])), 5)
+        self.assertFalse(procs(abas["Radar"]) & procs(abas["Arquivo"]))  # o que está na Radar não se repete no Arquivo
         self.assertEqual(b.execucoes("planilha", 1)[0]["frente"], "trabalhista")
 
 

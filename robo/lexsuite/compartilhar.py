@@ -205,8 +205,8 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     if arquivo is not None:  # 0.7.16: últimos N dias + todo processo trabalhado; o resto fica no programa e nas cópias
         la = _linhas_lista(arquivo, colunas, linha_csv)
         abas.append({"nome": "Arquivo", "linhas": la, "visual": True, "filtro": True, "moeda": moeda, "destacar": _destacar(la, chaves, minimo),
-                     "aviso": "Arquivo: o que o " + produto + " leu nos últimos dias e todo processo trabalhado (Em análise, Em contato, "
-                              "Virou cliente), inclusive arquivados. O resto continua no programa (tela Arquivo) e nas cópias de segurança. Só para consulta.",
+                     "aviso": "Arquivo: o que não está na aba Radar, dos últimos dias, e todo processo trabalhado (Em análise, Em contato, "
+                              "Virou cliente), inclusive arquivados. O resto continua no " + produto + " (tela Arquivo) e nas cópias de segurança. Só para consulta.",
                      "larguras": larguras})
     contatos = [["Processo", "Empresa", "Canal", "Contato", "De pessoa (sócio)", "Fonte", "Data", "Confiança", "Origem", "Validação", "Observação"]]
     for c in (banco.contatos() if hasattr(banco, "contatos") else []):
