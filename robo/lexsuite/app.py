@@ -640,9 +640,27 @@ class Tratador(BaseHTTPRequestHandler):
             pagina = radar.montar_radar(cfg, bd.Banco(s.caminho_db), dias=90)
             quero = {str(x) for x in (corpo.get("processos") or []) if isinstance(x, (str, int))}
             itens = [i for i in pagina["itens"] if not quero or i["processo"] in quero]
-            caminho_md, n = ct.preparar(itens, s.pasta, marca(s.pasta)["nome"], int(cfg["radar"].get("area_logada_por_dia") or 30))
-            abrir_no_windows(os.path.dirname(caminho_md))
-            return self._responder({"ok": True, "caminho": caminho_md, "quantos": n})
+            # 0.7.16: o pedido traz, em cada processo, só o que falta, e pede a "RESPOSTA PARA O RADAR v1" (qualquer extensão de IA)
+            caminho_md, n, texto = ct.preparar_v1(itens, s.pasta, marca(s.pasta)["nome"], int(cfg["radar"].get("area_logada_por_dia") or 30))
+            if corpo.get("abrir_pasta", not quero):
+                abrir_no_windows(os.path.dirname(caminho_md))
+            return self._responder({"ok": True, "caminho": caminho_md, "quantos": n, "texto": texto})
+        if caminho == "/valor":  # 0.7.16: valor da causa digitado no cartão fica no programa (antes, só no navegador)
+            banco = bd.Banco(s.caminho_db)
+            proc = str(corpo.get("processo") or "")[:40]
+            bruto = str(corpo.get("valor") if corpo.get("valor") is not None else "").strip()
+            valor = None
+            if bruto:
+                try:
+                    valor = float(bruto.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")) if "," in bruto else float(bruto)
+                except ValueError:
+                    return self._responder({"ok": False, "motivo": "Valor fora do formato. / Invalid value."}, status=400)
+                if not 0 < valor < 1e11:
+                    return self._responder({"ok": False, "motivo": "Valor fora do formato. / Invalid value."}, status=400)
+            ok = banco.completar(proc, "valor_causa", valor, "digitado", perfil=s.config()["usuario"].get("email", ""))
+            if ok:
+                s.planilha_depois()
+            return self._responder({"ok": ok, "valor": valor})
         if caminho == "/contatos/colar":
             from . import contatos as ct
             banco = bd.Banco(s.caminho_db)
@@ -650,12 +668,21 @@ class Tratador(BaseHTTPRequestHandler):
             for l in banco.todos_leads():
                 emp = (l.get("empresa_receita") or {}).get("razao_social") or (l.get("empresas") or [""])[0]
                 empresas[l["processo"]] = emp
-            aceitas, recusadas = ct.colar(str(corpo.get("texto") or "")[:200000], empresas)
+            texto = str(corpo.get("texto") or "")[:200000]
+            extra = {}
+            if ct.e_resposta_v1(texto):  # 0.7.16: a resposta padronizada da área logada
+                r1 = ct.colar_v1(texto, empresas)
+                aceitas, recusadas = r1["contatos"], r1["recusadas"]
+                perfil = s.config()["usuario"].get("email", "")
+                completados = sum(1 for c in r1["completar"] if banco.completar(c["processo"], c["campo"], c["valor"], c["fonte"], c["data"], perfil))
+                extra = {"completados": completados, "nao_consta": len(r1["nao_consta"]), "tentar_depois": len(r1["tentar_depois"])}
+            else:
+                aceitas, recusadas = ct.colar(texto, empresas)
             novas = sum(1 for c in aceitas if banco.guardar_contato(c))
             banco.registrar_colagem(s.config()["usuario"].get("email", ""), str(corpo.get("arquivo") or "")[:120], novas, len(recusadas),
                                     "; ".join(f"linha {r['linha']}: {r['motivo']}" for r in recusadas)[:2000])
             s.planilha_depois()
-            return self._responder({"ok": True, "aceitas": novas, "repetidas": len(aceitas) - novas, "recusadas": recusadas[:200]})
+            return self._responder(dict({"ok": True, "aceitas": novas, "repetidas": len(aceitas) - novas, "recusadas": recusadas[:200]}, **extra))
         if caminho == "/abrir":
             cfg = s.config()
             base = compartilhar.pasta_base(cfg)

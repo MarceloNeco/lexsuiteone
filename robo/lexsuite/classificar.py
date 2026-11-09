@@ -174,9 +174,14 @@ _RABO = re.compile(r"(?:\s+(?:intima[cç][aã]o|notifica[cç][aã]o|cita[cç][a�
                    r"ac[oó]rd[aã]o|ata de audi[eê]ncia|pauta))+\s*$", re.I)
 
 
+_E_OUTROS = re.compile(r"\s+e\s+outr[oa]s?\s*(\(\s*\d+\s*\))?\s*$", re.I)
+
+
 def limpar_nome(nome):
-    """Tira do fim do nome as palavras de cabeçalho do Diário ("... Ltda Intimação" vira "... Ltda")."""
-    return _RABO.sub("", re.sub(r"\s+", " ", nome or "").strip()).strip(" -–,:;")
+    """Tira do fim do nome as palavras de cabeçalho do Diário ("... Ltda Intimação" vira "... Ltda") e, desde a 0.7.16,
+    o "e Outros (1)" que o Diário acrescenta quando há mais de uma ré (as outras já aparecem em "Outras empresas")."""
+    n = _RABO.sub("", re.sub(r"\s+", " ", nome or "").strip()).strip(" -–,:;")
+    return _E_OUTROS.sub("", n).strip(" -–,:;")
 
 
 _LIGACOES = {"DE", "DA", "DO", "DAS", "DOS", "E", "EM", "A", "O", "S"}

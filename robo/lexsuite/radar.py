@@ -92,11 +92,11 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         "tribunal": lead.get("tribunal"),
         "vara": lead.get("vara"),
         "processo": lead.get("processo"),
-        "classe": lead.get("classe"),
+        "classe": (lead.get("classe") or "").upper(),  # 0.7.16: o Diário às vezes traz "AçãO ... ORDINáRIO"
         "rito": lead.get("rito"),
         "distribuida_em": lead.get("ajuizada_em") or lead.get("data_publicacao") or "",
         "diario_em": lead.get("data_publicacao") or "",
-        "ajuizada_em": lead.get("ajuizada_em") or "",
+        "ajuizada_em": ((lead.get("manual") or {}).get("data_ajuizamento") or {}).get("valor") or lead.get("ajuizada_em") or "",
         "empresas": nomes,
         "empresa": {
             "cnpj": emp.get("cnpj") or "",
@@ -115,8 +115,9 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         },
         "setor": cl.setor(nomes if not emp.get("atividade") else [emp.get("atividade", "")] + nomes),
         "gigante": gigante(emp, nomes, teto),
-        "valor_causa": lead.get("valor_causa"),
-        "valor_fonte": "djen" if lead.get("valor_causa") else "",
+        # 0.7.16: valor digitado no cartão ou trazido da área logada fica no programa (vale em outra tela e na planilha)
+        "valor_causa": ((lead.get("manual") or {}).get("valor_causa") or {}).get("valor") or lead.get("valor_causa"),
+        "valor_fonte": ((lead.get("manual") or {}).get("valor_causa") or {}).get("fonte") or ("djen" if lead.get("valor_causa") else ""),
         "link_djen": lead.get("link") or "",
         "link_pje": link_pje(lead.get("tribunal")),
     }
