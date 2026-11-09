@@ -214,13 +214,13 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section id="seguranca">
   <h2>Segurança e privacidade</h2>
   <div class="caixa"><ul>
-    <li><b>Tudo roda no computador do escritório.</b> Não existe servidor da SolverONE recebendo os dados. A tela só responde a este computador e recusa pedidos vindos de qualquer site.</li>
-    <li><b>O que sai do computador:</b> pedidos de leitura ao Diário (do CNJ) e ao cadastro público da Receita, sempre por conexão segura; e a planilha, que vai para o Google Drive do próprio escritório e só é vista pela SolverONE se o escritório der acesso.</li>
+    <li><b>Tudo roda no computador do escritório.</b> A lista, as fichas das empresas, os contatos e as anotações ficam neste computador e na planilha do escritório; a SolverONE não recebe nenhum deles. A tela só responde a este computador e recusa pedidos vindos de qualquer site.</li>
+    <li><b>O que sai do computador:</b> pedidos de leitura ao Diário (do CNJ) e ao cadastro público da Receita, sempre por conexão segura; a planilha, que vai para o Google Drive do próprio escritório e só é vista pela SolverONE se o escritório der acesso; e, a cada leitura, a conferência da licença com a SolverONE, que leva o código de cliente, a versão do programa e <b>só quantidades</b> de processos por situação (por exemplo, quantos viraram cliente), por dia, tribunal, frente e faixa de valor. Nenhum nome, número de processo, CNPJ ou contato vai junto. A tabela exata enviada aparece em Configuração, em "O que a SolverONE recebe".</li>
     <li><b>Nenhuma senha.</b> O RADAR não pede, não guarda e não usa senha, certificado digital ou chave de nenhum sistema. Captcha nunca é contornado.</li>
     <li><b>Pessoas físicas não aparecem.</b> Os contatos de empresa e os nomes de sócios e administradores vêm do cadastro público da Receita; a decisão de usar esses dados é do escritório e do seu compliance, dentro da LGPD.</li>
     <li><b>Licença e cadastro.</b> O código de cliente é conferido com a SolverONE ao abrir a tela e antes de cada leitura: vão só o código, a versão e uma identificação aleatória do computador. No primeiro uso, o nome e o e-mail de quem usa e o CNPJ do escritório ficam registrados na licença, para a SolverONE falar sobre o serviço. Se a SolverONE ficar fora do ar, o RADAR segue lendo por até 15 dias.</li>
     <li><b>Avisos de erro.</b> Quando a instalação ou uma leitura falha, vai para a SolverONE um aviso técnico (a etapa, a versão do programa e do Windows e a mensagem do erro, sem o nome da pasta do usuário), para corrigirmos o problema. Nenhum dado de processo ou de pessoa vai junto.</li>
-    <li><b>Guarda por tempo limitado.</b> O RADAR apaga sozinho o que tem mais de 365 dias.</li>
+    <li><b>Guarda o detalhe por tempo limitado.</b> Depois de 12 meses (ajustável), o RADAR apaga sozinho o detalhe de cada ação (o trecho do Diário) e guarda só um resumo (empresa, tribunal, vara, valor, situação) e os totais por dia, que alimentam as estatísticas. No Arquivo, "Limpar o que tem mais de N meses" faz o mesmo na hora.</li>
     <li><b>Atualizações assinadas.</b> Uma versão nova só é instalada se a assinatura digital conferir. O computador do escritório nunca recebe comando de fora: a SolverONE só pode pausar, avisar ou publicar versão, pela planilha.</li>
     <li><b>Limite honesto.</b> A pausa pela SolverONE é uma cortesia de serviço, não uma trava: quem controla o computador controla o RADAR.</li>
   </ul></div>
@@ -230,7 +230,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section id="perguntas" class="faq">
   <h2>Perguntas frequentes</h2>
   <p><b>Preciso deixar o computador ligado?</b> Só nos horários das leituras automáticas. Se estiver desligado, a próxima leitura recupera os dias que faltaram.</p>
-  <p><b>Posso usar no celular?</b> A tela é do computador. No celular, abra <code>Lista para abrir no celular.html</code> na pasta da planilha, no Drive: é a mesma lista, só para consulta.</p>
+  <p><b>Posso usar no celular?</b> A tela é do computador. No celular, abra <code>Retrato da última leitura.html</code> na pasta da planilha, no Drive: é a lista como estava na última leitura, só para consulta (não se atualiza sozinha).</p>
   <p><b>Quais tribunais escolher?</b> Os que o escritório atende. Os tribunais estaduais (TJs) publicam diários muito maiores e a regra de "ação nova" ainda não foi ajustada para eles.</p>
   <p><b>Como faço um cliente não aparecer?</b> Na aba Exclusões da planilha: nome (como está no Diário) ou CNPJ, e o motivo. Vale a partir da próxima leitura.</p>
   <p><b>Por que algumas linhas dizem "valor a conferir"?</b> Nem sempre o Diário informa o valor da causa. Ele está na consulta pública do tribunal, atrás de um captcha que uma pessoa resolve em segundos: use "Abrir consulta no PJe" e digite o valor na ficha.</p>

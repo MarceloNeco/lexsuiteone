@@ -406,22 +406,31 @@ def cmd_radar(a):
     cfg = carregar_config(a.config)
     banco = bd.Banco(os.path.join(AQUI, "lexsuite.db"))
     pasta_diag = os.path.join(AQUI, "diagnostico") if a.diagnostico else None
+    from lexsuite import agendar as _ag, app as _app
+    arquivo = os.path.join(AQUI, "saida", "leitura.json")
+    if _app.leitura_em_outro_processo(arquivo):  # 0.7.14: não roda duas leituras ao mesmo tempo
+        print("  Já há uma leitura em andamento neste computador (pela tela ou agendada). Esta não roda.", flush=True)
+        return
+    estado = _app.Estado(eco=lambda linha: print(linha, flush=True), arquivo=arquivo, origem=_ag.origem_da_leitura(cfg))
+    estado.comecar()
     try:
-        def com_hora(msg):  # janela preta da leitura automática: cada passo com a hora
-            print(f"  {dt.datetime.now():%H:%M:%S}  {str(msg).strip()}", flush=True)
-        from lexsuite import agendar as _ag
+        com_hora = estado.aviso  # janela preta com a hora e andamento para a tela (barra de progresso)
         situacao = radar.executar(cfg, banco, com_hora, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
-                                  caminho_config=a.config, origem=_ag.origem_da_leitura(cfg))
+                                  caminho_config=a.config, origem=estado.origem)
+        estado.terminar(situacao)
         if cfg["radar"].get("avisar_ao_terminar", True):
             from lexsuite import agendar, app
             m = app.marca(AQUI)
             agendar.notificar(m.get("nome", "RADAR JUDICIAL"), agendar.texto_aviso(situacao, m.get("curto", "RADAR")))
     except radar.RoboDesligado as e:
+        estado.terminar(erro=str(e))
         raise SystemExit("  " + str(e))
     except Exception as e:  # leitura agendada: mensagem clara; avisa a SolverONE só quando é defeito do programa
         import traceback
         from lexsuite import causas, conta
         causa = causas.classificar(e)
+        estado.terminar(erro=causas.mensagem(causa), info={"causa": causa, "pt": causas.mensagem(causa), "en": causas.mensagem(causa, "en"),
+                                                          "detalhe": f"{e.__class__.__name__}: {e}"[:600]})
         if causa in ("erro_do_programa", "bloqueio_fora_do_brasil"):
             conta.registrar_erro(cfg, VERSAO, "leitura agendada", traceback.format_exc()[-1800:])
         raise SystemExit("  " + causas.mensagem(causa) + "\n  (detalhe: " + f"{e.__class__.__name__}: {e}"[:300] + ")")

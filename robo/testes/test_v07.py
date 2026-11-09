@@ -207,11 +207,11 @@ class Compartilhada(unittest.TestCase):
         self.assertIn("_xlnm._FilterDatabase", wb)
         self.assertIn(f"'Radar'!$A$2:${ult}$5", wb)
         self.assertIn('<fileSharing readOnlyRecommended="1"/>', wb)
-        self.assertIn('<sheetProtection sheet="1"', folha)
-        self.assertIn('autoFilter="0"', folha)
+        self.assertNotIn("<sheetProtection", folha)  # sem proteção: o Excel não deixaria ordenar
         self.assertIn('<mergeCell ref="A1:', folha)
-        self.assertLess(folha.index("<sheetProtection"), folha.index("<autoFilter"))
         self.assertLess(folha.index("<autoFilter"), folha.index("<mergeCells"))
+        protegida = planilha._xml_aba({"nome": "P", "linhas": [["a"], ["b"]], "proteger": True, "filtro": True})  # a opção continua no gerador
+        self.assertLess(protegida.index("<sheetProtection"), protegida.index("<autoFilter"))
         self.assertIn('FF0F1D33', estilos)
         self.assertIn('numFmtId="164"', estilos)
         self.assertIn('<cellXfs count="8">', estilos)
@@ -808,3 +808,92 @@ class V0714(unittest.TestCase):
         self.assertEqual(frentes.frente({"tribunal": "TJSP", "classe": "Recuperação Judicial"}), "empresarial")
         self.assertEqual(frentes.frente({"tribunal": "TJSP", "classe": "Procedimento Comum Cível"}), "civel")
         self.assertTrue(frentes.a_conferir({"tribunal": "TJSP", "classe": "Procedimento Comum Cível"}))
+
+
+class V0714b(unittest.TestCase):
+    """0.7.14 (ajustes da revisão da Operação): aceite dos termos, leitura agendada visível na tela, CPF sem pontuação,
+    desfazer limpa o motivo, migração de um banco da 0.7.13, corte de 2.000 linhas no retorno. Dados fictícios."""
+
+    def test_aceite_pendente(self):
+        from lexsuite import conta
+        cfg = {"conta": {"codigo": "LEX-7K4M-2PQ9", "instalacao": "0123456789abcdef"}}
+        resp = {"ok": False, "motivo": "aceite_pendente", "mensagem": "Antes do primeiro uso, o responsável precisa aceitar os termos.",
+                "aceite": {"aceito": False, "link": "https://judicial.solverone.com.br/aceite.html?codigo=LEX-7K4M-2PQ9"}}
+        conta.verificar(cfg, "0.7.14", dt.date(2026, 11, 9), pedir=lambda u, c, **k: resp)
+        sit = conta.situacao(cfg)
+        self.assertFalse(sit["ok"])
+        self.assertIn("aceite dos termos", sit["texto"])
+        self.assertTrue(sit["aceite_link"].startswith("https://judicial.solverone.com.br/"))
+        resp["aceite"]["link"] = "https://exemplo-ruim.example/aceite"  # link de fora do site da SolverONE não vale
+        conta.verificar(cfg, "0.7.14", dt.date(2026, 11, 9), pedir=lambda u, c, **k: resp)
+        self.assertEqual(conta.situacao(cfg)["aceite_link"], "")
+        ok = {"ok": True, "aceite": {"aceito": True, "versao": "1", "aceito_em": "2026-11-09T10:00:00Z", "nome": "Responsável Fictício"}}
+        conta.verificar(cfg, "0.7.14", dt.date(2026, 11, 9), pedir=lambda u, c, **k: ok)
+        self.assertTrue(conta.situacao(cfg)["ok"])
+        self.assertTrue(conta.situacao(cfg)["aceite"]["aceito"])
+
+    def test_leitura_em_outro_processo(self):
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        arq = os.path.join(pasta, "saida", "leitura.json")
+        e = app.Estado(eco=None, arquivo=arq, origem="agendamento")
+        e.comecar()
+        e.aviso("Radar: lista de distribuição de TRT2, TRT15 (últimos 1 dia(s) úteis)")
+        d = json.load(open(arq, encoding="utf-8"))
+        self.assertTrue(d["rodando"] and d["origem"] == "agendamento" and d["progresso"] >= 5)
+        self.assertIsNone(app.leitura_em_outro_processo(arq))  # o próprio processo não conta
+        d["pid"] = os.getppid()  # outro processo vivo (o pai deste teste)
+        json.dump(d, open(arq, "w", encoding="utf-8"))
+        self.assertIsNotNone(app.leitura_em_outro_processo(arq))
+        d["pid"] = 999999999  # processo que não existe: leitura abandonada
+        json.dump(d, open(arq, "w", encoding="utf-8"))
+        self.assertIsNone(app.leitura_em_outro_processo(arq))
+        e.terminar({"pt": "ok"})
+        self.assertFalse(json.load(open(arq, encoding="utf-8"))["rodando"])
+
+    def test_cpf_sem_pontuacao_recusado(self):
+        from lexsuite import contatos
+        emp = {"0001-11.2026.5.02.0001": "Empresa Fictícia 1 Ltda"}
+        base = "| 0001-11.2026.5.02.0001 | Empresa Fictícia 1 Ltda | {c} | {v} | sim | PJe petição inicial | 2026-11-09 | {o} |"
+        _, rec = contatos.colar(base.format(c="outro", v="documento 12345678909", o=""), emp)
+        self.assertEqual(len(rec), 1)  # 123.456.789-09 sem pontuação é CPF válido: recusa
+        ac, rec = contatos.colar(base.format(c="telefone", v="11987654321", o=""), emp)
+        self.assertEqual((len(ac), len(rec)), (1, 0))  # celular com DDD no canal telefone passa
+        ac, _ = contatos.colar(base.format(c="email", v="contato@ficticia.example", o="autorizada pela diretoria"), emp)
+        self.assertEqual(len(ac), 1)  # "autorizada" não é "autor"
+
+    def test_desfazer_limpa_motivo(self):
+        from lexsuite import banco as bd
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        b.guardar_lead({"processo": "1", "tribunal": "TRT2", "empresas": ["X Fictícia"]}, "2026-11-06")
+        r = b.mudar_situacao(["1"], "descartado", motivo="sem interesse")
+        b.desfazer_situacao(r["antes"])
+        lead = b.todos_leads()[0]
+        self.assertEqual((lead["status"], lead["motivo"]), ("novo", ""))
+
+    def test_migracao_de_banco_da_0713(self):
+        import sqlite3
+        from lexsuite import banco as bd
+        caminho = os.path.join(tempfile.mkdtemp(), "antigo.db")
+        con = sqlite3.connect(caminho)
+        con.execute("CREATE TABLE leads (processo TEXT PRIMARY KEY, primeira_vez TEXT, tribunal TEXT, vara TEXT, dados TEXT, status TEXT DEFAULT 'Novo')")
+        for k, st in enumerate(["Novo", "Em contato", "Descartado", None, "visto"]):
+            con.execute("INSERT INTO leads VALUES (?,?,?,?,?,?)", (str(k), "2026-11-0%d" % (k + 1), "TRT2", "V",
+                        json.dumps({"processo": str(k), "data_publicacao": "2026-11-0%d" % (k + 1), "valor_causa": 150000}), st))
+        con.execute("INSERT INTO leads VALUES ('quebrado', '2026-11-01', 'TRT2', 'V', 'não é json', 'Novo')")
+        con.commit(); con.close()
+        b = bd.Banco(caminho)
+        st = {l[0]: l[1] for l in b.con.execute("SELECT processo, status FROM leads")}
+        self.assertEqual([st[str(k)] for k in range(5)], ["novo", "em_contato", "descartado", "novo", "visto"])
+        self.assertEqual(b.con.execute("SELECT faixa_valor FROM leads WHERE processo = '0'").fetchone()[0], "100k-300k")
+        self.assertEqual(b.con.execute("PRAGMA user_version").fetchone()[0], 714)
+        bd.Banco(caminho)  # abrir de novo não refaz nada nem dá erro
+
+    def test_retorno_corta_em_2000(self):
+        from lexsuite import banco as bd
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        hoje = dt.date.today()
+        for k in range(2100):
+            d = (hoje - dt.timedelta(days=k % 50)).isoformat()
+            b.guardar_lead({"processo": f"p{k}", "tribunal": f"TRT{k % 24 + 1}", "data_publicacao": d, "valor_causa": (k % 7) * 60000}, d)
+        self.assertLessEqual(len(b.retorno(dias=60)), 2000)
