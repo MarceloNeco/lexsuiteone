@@ -1719,7 +1719,7 @@ window.LEXSUITE_RADAR = null;
       aplicar_n: "Mudar {n} processos", aplicar_1: "Mudar", desfazer: "Desfazer", sel_todos: "Selecionar todos os {n} desta lista", sel_limpar: "Limpar seleção", com_sel: "Com os selecionados:",
       mudar_sit: "Mudar a situação", arquivar_n: "Arquivar {n}", preparar_busca: "Preparar busca na área logada",
       preparar_ajuda: "Gera um arquivo com os processos selecionados que ainda não têm contato (no máximo {n} por dia) e as instruções para buscar na área logada do PJe, à mão ou com o Claude in Chrome. Quem abre os processos é o advogado, com a credencial dele. Telefone e e-mail quase nunca estão no processo; o endereço e o valor da causa, sim.",
-      busca_pronta_t: "Arquivo pronto com {n} processo(s)", busca_pronta: "A pasta abriu com o arquivo ({c}). Logado no PJe, abra o Claude in Chrome e arraste o arquivo (ou siga as instruções à mão). Depois cole a resposta em \u201cColar contatos encontrados\u201d.",
+      busca_pronta_t: "Arquivo pronto com {n} processo(s)", busca_pronta: "A pasta abriu com o arquivo ({c}). Logado no PJe, abra o Claude in Chrome e arraste o arquivo (ou siga as instruções à mão). Depois cole a resposta no menu ☰, \u201cÁrea logada\u201d \u2192 \u201cTrazer dados da área logada\u201d.",
       fechar: "Fechar", colar_contatos: "Trazer dados da área logada", colar_explica: "Cole aqui a tabela que o Claude in Chrome devolveu (8 colunas). O programa confere linha por linha, sem IA, e recusa CPF e dado de reclamante.",
       ler_resposta: "Ler a resposta", colar_res: "{a} contato(s) entraram; {r} linha(s) recusada(s).", colar_rep: "{n} já estavam guardados.", linha_n: "Linha {n}",
       aviso_pl_t: "A planilha abre só para leitura", aviso_pl: "Ela é regravada pelo programa a cada leitura. Filtrar e ordenar funciona normalmente. Para anotar ou mexer, use \u201cGerar uma cópia\u201d: a cópia fica na pasta Cópias e o programa nunca mexe nela.",
@@ -1816,7 +1816,7 @@ window.LEXSUITE_RADAR = null;
       aplicar_n: "Change {n} lawsuits", aplicar_1: "Change", desfazer: "Undo", sel_todos: "Select all {n} in this list", sel_limpar: "Clear selection", com_sel: "With the selected:",
       mudar_sit: "Change status", arquivar_n: "Archive {n}", preparar_busca: "Prepare logged-in search",
       preparar_ajuda: "Creates a file with the selected lawsuits that still have no contact (at most {n} a day) and instructions to search the PJe logged-in area, by hand or with Claude in Chrome. The lawyer opens the cases with their own credentials. Phone and e-mail are rarely in the case; address and claim value usually are.",
-      busca_pronta_t: "File ready with {n} lawsuit(s)", busca_pronta: "The folder opened with the file ({c}). Logged in to PJe, open Claude in Chrome and drag the file (or follow the instructions by hand). Then paste the answer in \u201cPaste found contacts\u201d.",
+      busca_pronta_t: "File ready with {n} lawsuit(s)", busca_pronta: "The folder opened with the file ({c}). Logged in to PJe, open Claude in Chrome and drag the file (or follow the instructions by hand). Then paste the answer in the ☰ menu, \u201cLogged-in area\u201d \u2192 \u201cBring in logged-in area data\u201d.",
       fechar: "Close", colar_contatos: "Bring in logged-in area data", colar_explica: "Paste here the table Claude in Chrome returned (8 columns). The program checks line by line, without AI, and refuses tax IDs of individuals and claimant data.",
       ler_resposta: "Read the answer", colar_res: "{a} contact(s) added; {r} line(s) refused.", colar_rep: "{n} were already saved.", linha_n: "Line {n}",
       aviso_pl_t: "The spreadsheet opens read-only", aviso_pl: "The program rewrites it at every reading. Filtering and sorting work normally. To take notes or edit, use \u201cMake a copy\u201d: the copy goes to the Copies folder and the program never touches it.",
@@ -1850,7 +1850,7 @@ window.LEXSUITE_RADAR = null;
   };
   // 0.7.16: textos novos (PT e EN)
   Object.assign(T.pt, {
-    lic_validade: "Validade", lic_ate: "válida até {d} (inclusive)", lic_sem_venc: "sem data de vencimento",
+    lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento",
     rodar_crit_1: "“Ler o Diário agora” lê o Diário de hoje e do último dia útil com publicação em {n} tribunal(is): {l}. Diário já lido não é baixado de novo. Para mudar, use “Tribunais”.",
     rodar_crit_n: "“Ler o Diário agora” lê o Diário de hoje e dos últimos {d} dias úteis com publicação em {n} tribunal(is): {l}. Diário já lido não é baixado de novo. Para mudar, use “Tribunais”.",
     rodar_crit_0: "“Ler o Diário agora” lê só o Diário de hoje em {n} tribunal(is): {l}. Para mudar, use “Tribunais”.",
@@ -1858,7 +1858,7 @@ window.LEXSUITE_RADAR = null;
     planilha_ajuda: "A planilha de consulta: a lista das ações novas que o RADAR regrava a cada leitura, na pasta escolhida em Configuração. Abre só para leitura (filtrar e ordenar funcionam). Para anotar, use “Gerar uma cópia” no menu ☰; para mudar as regras do escritório, “Editar Preferências e Exclusões”.",
     usar_onedrive: "Usar o OneDrive", usar_gdrive: "Usar o Google Drive", sem_gdrive: "Não achei o Google Drive para computador neste Windows. Para usar o Google Drive, instale o Google Drive para computador com a conta do escritório e abra o RADAR de novo; uma pasta de rede ou o OneDrive também servem.",
     mudar_pasta_t: "Mudar a pasta das planilhas?", mudar_pasta_ok: "Mudar a pasta",
-    mudar_pasta_x: "A partir da próxima leitura, a planilha de consulta, as cópias de trabalho e as cópias de segurança vão para {para}. O que já existe em {de} fica lá (nada é movido nem apagado); se quiser, copie à mão. O programa continua na pasta dele.",
+    mudar_pasta_x: "A partir da próxima leitura, a planilha de consulta, as cópias de trabalho e as cópias de segurança vão para {para}. O que já existe em {de} fica lá (nada é movido nem apagado), inclusive as abas Preferências e Exclusões do escritório: a planilha nova começa com as regras padrão; para manter as do escritório, copie essas abas da planilha antiga para a nova. O programa continua na pasta dele.",
     bg_titulo: "Procurar", bg_ph: "Empresa, processo, CNPJ, cidade, opção do programa ou assunto do manual", bg_opcoes: "Telas e opções", bg_acoes: "Ações", bg_manual: "No manual", bg_nada: "Nada encontrado. Tente outra palavra.",
     termos_ler_todos: "Ler os termos (abre no navegador)", termos_aceitar_esc: "Aceitar em nome do escritório", termos_aceitar_esc_x: "Só o responsável pela licença aceita em nome do escritório. A página abre no navegador com o código, o seu nome e o seu e-mail já preenchidos; confira e confirme.",
     pasta_fica: "As planilhas ficam em:", pasta_drive_x: "Sincroniza com a nuvem pelo Google Drive para computador: dá para abrir no celular e com a equipe.", pasta_local_x: "Fica só neste computador; ninguém mais vê. Bom para começar.", pasta_outra_x: "Para a equipe abrir de outros computadores: escolha uma pasta de rede, do OneDrive ou do Google Drive para computador.",
@@ -1896,14 +1896,14 @@ window.LEXSUITE_RADAR = null;
     w_termos: "Li e aceito os termos de uso", w_termos_falta: "Para continuar, marque que leu e aceita os termos de uso.",
     arq_parcial: "Mostrando as {m} ações mais recentes de {n}. Para achar uma mais antiga, use a busca (ela procura em tudo o que o programa guarda).",
     arq_busca: "Busca no programa: {n} ação(ões) com \"{q}\".",
-    buscar_logada: "Buscar na área logada", buscar_logada_t: "Pedido pronto e copiado", buscar_logada_x: "O texto já está copiado. 1) Abra o PJe com o seu login, na janela da extensão de IA que o escritório usa. 2) Cole o texto na extensão e espere a resposta. 3) Copie o bloco \"RESPOSTA PARA O RADAR v1\" e cole aqui em \"Colar resposta da área logada\". O texto pede só o que falta neste processo.",
+    buscar_logada: "Buscar na área logada", buscar_logada_t: "Pedido pronto e copiado", buscar_logada_x: "O texto já está copiado. 1) Abra o PJe com o seu login, na janela da extensão de IA que o escritório usa. 2) Cole o texto na extensão e espere a resposta. 3) Copie o bloco \"RESPOSTA PARA O RADAR v1\" e cole aqui em \"Trazer dados da área logada\". O texto pede só o que falta neste processo.",
     buscar_logada_ajuda: "Só o advogado, com o login dele, abre o processo. O RADAR prepara o pedido (só o que falta) e lê a resposta padronizada; funciona com qualquer extensão de IA ou à mão. Até {n} processos por dia.",
     buscar_logada_nada: "Este processo já tem valor, data e contatos: nada a pedir.", colar_logada: "Trazer dados da área logada",
     colar_v1_res: "{c} dado(s) do processo completados; {n} não consta(m) no processo; {d} para tentar depois.",
     valor_salvo: "✓ salvo", sit_salva: "✓"
   });
   Object.assign(T.en, {
-    lic_validade: "Validity", lic_ate: "valid until {d} (inclusive)", lic_sem_venc: "no expiration date",
+    lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date",
     rodar_crit_1: "“Read the gazette now” reads today\u2019s gazette and the last working day with publications in {n} court(s): {l}. A gazette already read is not downloaded again. To change, use “Courts”.",
     rodar_crit_n: "“Read the gazette now” reads today\u2019s gazette and the last {d} working days with publications in {n} court(s): {l}. A gazette already read is not downloaded again. To change, use “Courts”.",
     rodar_crit_0: "“Read the gazette now” reads only today\u2019s gazette in {n} court(s): {l}. To change, use “Courts”.",
@@ -1911,7 +1911,7 @@ window.LEXSUITE_RADAR = null;
     planilha_ajuda: "The reference spreadsheet: the list of new lawsuits that RADAR rewrites at every reading, in the folder chosen in Settings. It opens read-only (filtering and sorting work). To annotate, use “Make a copy” in the ☰ menu; to change the firm\u2019s rules, “Edit Preferences and Exclusions”.",
     usar_onedrive: "Use OneDrive", usar_gdrive: "Use Google Drive", sem_gdrive: "Google Drive for desktop was not found on this Windows. To use Google Drive, install Google Drive for desktop with the firm\u2019s account and open RADAR again; a network folder or OneDrive also work.",
     mudar_pasta_t: "Change the spreadsheet folder?", mudar_pasta_ok: "Change folder",
-    mudar_pasta_x: "From the next reading on, the reference spreadsheet, the working copies and the backups go to {para}. What already exists in {de} stays there (nothing is moved or deleted); copy it by hand if you wish. The program stays in its own folder.",
+    mudar_pasta_x: "From the next reading on, the reference spreadsheet, the working copies and the backups go to {para}. What already exists in {de} stays there (nothing is moved or deleted), including the firm\u2019s Preferences and Exclusions tabs: the new spreadsheet starts with the default rules; to keep the firm\u2019s, copy those tabs from the old spreadsheet to the new one. The program stays in its own folder.",
     bg_titulo: "Search", bg_ph: "Company, case number, CNPJ, city, program option or manual topic", bg_opcoes: "Screens and options", bg_acoes: "Lawsuits", bg_manual: "In the manual", bg_nada: "Nothing found. Try another word.",
     termos_ler_todos: "Read the terms (opens in the browser)", termos_aceitar_esc: "Accept on behalf of the firm", termos_aceitar_esc_x: "Only the licence holder accepts on behalf of the firm. The page opens in the browser with the code, your name and your e-mail filled in; check and confirm.",
     pasta_fica: "The spreadsheets live in:", pasta_drive_x: "Syncs to the cloud through Google Drive for desktop: open it on the phone and with the team.", pasta_local_x: "Stays on this computer only; nobody else sees it. Good to start with.", pasta_outra_x: "So the team can open it from other computers: choose a network, OneDrive or Google Drive for desktop folder.",
@@ -1949,7 +1949,7 @@ window.LEXSUITE_RADAR = null;
     w_termos: "I have read and accept the terms of use", w_termos_falta: "To continue, tick that you have read and accept the terms of use.",
     arq_parcial: "Showing the {m} most recent lawsuits out of {n}. To find an older one, use the search (it searches everything the program keeps).",
     arq_busca: "Program search: {n} lawsuit(s) with \"{q}\".",
-    buscar_logada: "Search the logged-in area", buscar_logada_t: "Request ready and copied", buscar_logada_x: "The text is already copied. 1) Open PJe with your login, in the window of the AI extension the firm uses. 2) Paste the text into the extension and wait for the answer. 3) Copy the \"RESPOSTA PARA O RADAR v1\" block and paste it here in \"Paste logged-in answer\". The text asks only for what is missing in this lawsuit.",
+    buscar_logada: "Search the logged-in area", buscar_logada_t: "Request ready and copied", buscar_logada_x: "The text is already copied. 1) Open PJe with your login, in the window of the AI extension the firm uses. 2) Paste the text into the extension and wait for the answer. 3) Copy the \"RESPOSTA PARA O RADAR v1\" block and paste it here in \"Bring in logged-in area data\". The text asks only for what is missing in this lawsuit.",
     buscar_logada_ajuda: "Only the lawyer, with their own login, opens the lawsuit. RADAR prepares the request (only what is missing) and reads the standard answer; works with any AI extension or by hand. Up to {n} lawsuits a day.",
     buscar_logada_nada: "This lawsuit already has value, date and contacts: nothing to ask.", colar_logada: "Bring in logged-in area data",
     colar_v1_res: "{c} lawsuit field(s) completed; {n} not in the lawsuit; {d} to try later.",
@@ -2128,7 +2128,7 @@ window.LEXSUITE_RADAR = null;
   }
   function rodar() {
     if (!Object.keys(sel).length) { $("painel").hidden = false; $("b-trib").setAttribute("aria-expanded", "true"); painel(); mostrarEstado({ erro: t("sem_trib") }); return; }
-    if (APP && APP.conta && !APP.conta.ok) { mostrarEstado({ erro: APP.conta.texto }); abrirConfig(false); return; }
+    if (APP && APP.conta && !APP.conta.ok) { mostrarEstado({ erro: textoConta() }); abrirConfig(false); return; }
     $("estado").textContent = t("carregando");
     post("/rodar", { dias: null }).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo || t("falha") }); }).catch(function () { $("estado").textContent = t("falha"); });
   }
@@ -2320,7 +2320,8 @@ window.LEXSUITE_RADAR = null;
     if (!box) return; box.textContent = "";
     var nv = (d && d.nuvens) || [];
     nv.forEach(function (n) {
-      var b = el("button", "chip", t(n.tipo === "onedrive" ? "usar_onedrive" : "usar_gdrive")); b.type = "button"; b.title = n.caminho;
+      var nm_ = String(n.caminho || "").replace(/[\\/]+$/, "").split(/[\\/]/).pop();
+      var b = el("button", "chip", t(n.tipo === "onedrive" ? "usar_onedrive" : "usar_gdrive") + (nm_ ? " (" + nm_ + ")" : "")); b.type = "button"; b.title = n.caminho;
       b.addEventListener("click", function () { usar(n.caminho); }); box.appendChild(b);
     });
     if (!nv.some(function (n) { return n.tipo === "gdrive"; })) box.appendChild(el("small", "nuvem-nota", t("sem_gdrive")));
@@ -2357,7 +2358,7 @@ window.LEXSUITE_RADAR = null;
   function infoConfig() {
     var dl = $("c-info"); dl.textContent = ""; if (!APP) return;
     function par(k, v) { dl.appendChild(el("dt", null, k)); dl.appendChild(el("dd", null, v || "—")); }
-    par(t("licenca"), (APP.conta && APP.conta.texto) || "—");
+    par(t("licenca"), textoConta() || "—");
     if (APP.conta && APP.conta.ok) par(t("lic_validade"), validadeTexto(APP.conta.validade));
     var ac = (APP.conta && APP.conta.aceite) || {};
     if (ac.aceito) par(t("termos"), t("termos_ok", { n: ac.nome || "—", d: dataHora(ac.aceito_em) || ac.aceito_em || "—", v: ac.versao || "—" }));
@@ -2619,7 +2620,7 @@ window.LEXSUITE_RADAR = null;
     lic.appendChild(el("b", null, t("pf_licenca")));
     lic.appendChild(el("span", null, t("pf_codigo") + " " + (ct.codigo ? mascaraCodigo(ct.codigo) : "—")));
     lic.appendChild(el("span", null, t("pf_escritorio_lic") + " " + (ct.escritorio || (APP && APP.config.escritorio) || "—")));
-    lic.appendChild(el("span", null, t("pf_situacao") + " " + (ct.texto || "—")));
+    lic.appendChild(el("span", null, t("pf_situacao") + " " + (textoConta() || "—")));
     if (ct.ok) lic.appendChild(el("span", null, t("lic_validade") + ": " + validadeTexto(ct.validade)));  // 0.7.21 (dono)
     $("pf-licenca").appendChild(lic);
     camposPerfil().forEach(function (c) {
@@ -2708,7 +2709,7 @@ window.LEXSUITE_RADAR = null;
   function bannerControle() {
     var b = $("banner"), p = (D.prefs || {}), c = p.controle || {}, txt = "";
     if (APP && APP.conta && APP.conta.codigo && !APP.conta.ok) {
-      b.hidden = false; b.textContent = APP.conta.texto; b.className = "banner erro";
+      b.hidden = false; b.textContent = textoConta(); b.className = "banner erro";
       if (APP.conta.aceite_link) { var la = el("a", null, t("aceite_abrir")); la.href = APP.conta.aceite_link; la.target = "_blank"; la.rel = "noopener noreferrer"; b.appendChild(document.createTextNode(" ")); b.appendChild(la); }
       return;
     }
@@ -3084,7 +3085,9 @@ window.LEXSUITE_RADAR = null;
   }
   function abrirPlanilhaComAviso() {
     // 0.7.21 (dono): o "não mostrar de novo" vale para esta versão, esta licença e esta pessoa; mudou algo, o aviso volta
-    var chave_ = "lexsuite:aviso-planilha:" + [(APP && APP.versao) || "", (APP && APP.conta && APP.conta.codigo) || "", (APP && APP.usuario && APP.usuario.email) || ""].join("|");
+    var quem_ = ((APP && APP.conta && APP.conta.codigo) || "") + "|" + ((APP && APP.usuario && APP.usuario.email) || ""), h_ = 5381;
+    for (var i_ = 0; i_ < quem_.length; i_++) h_ = ((h_ * 33) ^ quem_.charCodeAt(i_)) >>> 0;  // resumo: nem código nem e-mail em claro
+    var chave_ = "lexsuite:aviso-planilha:" + ((APP && APP.versao) || "") + ":" + h_.toString(36);
     var ok = false; try { ok = localStorage.getItem(chave_) === "1"; } catch (e) {}
     if (ok) { abrirPlanilha("planilha"); return; }
     var c = el("div"); c.appendChild(el("h3", null, t("aviso_pl_t"))); c.appendChild(el("p", null, t("aviso_pl")));
@@ -3250,6 +3253,7 @@ window.LEXSUITE_RADAR = null;
   }
   /* 0.7.18: estatísticas dos meses anteriores (sazonalidade e picos), só totais, lidas aos poucos */
   var vigiaHist = null;
+  function textoConta() { var c_ = (APP && APP.conta) || {}; return (lang === "en" && c_.texto_en) || c_.texto || ""; }
   function validadeTexto(v) {  // 0.7.21: "Válida até 31 de dezembro de 2026" / "Valid until 31 December 2026"; sem data, "Sem vencimento"
     var m_ = /^(\d{4})-(\d{2})-(\d{2})/.exec(v || ""); if (!m_) return t("lic_sem_venc");
     var meses_ = lang === "pt" ? ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]

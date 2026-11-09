@@ -470,7 +470,7 @@ class Tratador(BaseHTTPRequestHandler):
                 "tribunais": [x for x in tribunais.TRIBUNAIS if x["ramo"] in FRENTES], "ramos": [r for r in tribunais.RAMOS if r in FRENTES], "regioes": tribunais.REGIOES, "ufs": tribunais.UFS,
                 "config": {"tribunais": tribunais.validar(r.get("tribunais")), "escritorio": cfg.get("escritorio", ""),
                            "valor_minimo": r.get("valor_minimo"), "dias_na_pagina": r.get("dias_na_pagina"),
-                           "dias_para_tras": int(r.get("dias_para_tras") if r.get("dias_para_tras") is not None else 1),
+                           "dias_para_tras": _dias_para_tras(r),
                            "teto_capital_gigante": r.get("teto_capital_gigante"),
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
@@ -541,7 +541,7 @@ class Tratador(BaseHTTPRequestHandler):
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
-            return self._responder({"candidatas": cand, "nuvens": compartilhar.nuvens(), "atual": cfg["compartilhar"].get("pasta", ""), "drive": bool(cand),
+            return self._responder({"candidatas": cand, "nuvens": compartilhar.nuvens(cand), "atual": cfg["compartilhar"].get("pasta", ""), "drive": bool(cand),
                                     "pasta_programa": s.pasta, "subpasta": compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"]),
                                     "escolher": os.name == "nt"})
         return self._responder({"erro": "não existe"}, status=404)
@@ -859,7 +859,7 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": True, "so_leitura": True})
             if abrir_no_windows(alvo):
                 return self._responder({"ok": True})
-            return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Escolha a pasta do Google Drive em Configuração e faça uma leitura.",
+            return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Confira a pasta das planilhas em Configuração e faça uma leitura. / The spreadsheet does not exist yet.",
                                     "caminho": planilha})
         if caminho == "/testar-pasta":
             cfg = s.config()
@@ -978,6 +978,14 @@ def personalizar_manual(html, cfg):
         itens = "".join(f"<li>{h.escape(t)}</li>" for t in PARA_VOCE[papel])
         bloco = f"<div class=\"caixa\"><b>Para você, {h.escape(papel.lower())}</b><ul>{itens}</ul></div>"
     return html.replace("<!--OLA-->", ola, 1).replace("<!--PARA_VOCE-->", bloco, 1)
+
+
+def _dias_para_tras(r):
+    """0.7.21 (revisão): o mesmo limite do POST /config (0 a 10); texto ou lista no config.json não derruba a tela."""
+    try:
+        return max(0, min(10, int(r.get("dias_para_tras", 1))))
+    except (TypeError, ValueError):
+        return 1
 
 
 # 0.7.21: texto do erro das estatísticas antigas antes de o aviso técnico chegar à SolverONE (sem promessa de aviso)
