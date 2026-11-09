@@ -103,9 +103,19 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
   "use strict";
   // Só o endereço exato do projeto e a chave publicável (pública por desenho). Quem protege é o banco (função com limites).
   var NUVEM = "https://qvdvkqydhnadhewcidia.supabase.co", CHAVE = "sb_publishable_oRJmeUwlBbOP_HoOXf0xLw_4O8v43EA";
-  var APP = "radar-judicial", TERMO = "lexsuiteone-termos", VERSAO = document.getElementById("versao").textContent.trim();
+  var APP = "radar-judicial", TERMO = "lexsuiteone-termos", VERSAO = document.getElementById("versao").textContent.trim();   // sol_termos: escritório = lexsuiteone-termos; pessoa = lexsuiteone-uso
   var termos = document.getElementById("termos"), li = document.getElementById("li"), botao = document.getElementById("botao"), dica = document.getElementById("dica"), msg = document.getElementById("msg");
   var q = new URLSearchParams(location.search);
+  var FUSO = ""; try { FUSO = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
+  // Modo leitura (?ler=uso, ?ler=1): só o texto. É o link que o programa mostra na caixa "li e aceito" do cadastro de cada pessoa.
+  if (q.get("ler")) {
+    document.getElementById("form").hidden = true; termos.style.height = "auto"; termos.style.overflow = "visible";
+    var av = document.getElementById("quem"); av.textContent = q.get("ler") === "uso" ? "Leitura dos termos de uso. Cada pessoa aceita na primeira vez que usa o programa, na tela de cadastro." : "Leitura dos termos. O aceite do escritório é feito pelo link do e-mail de boas-vindas."; av.hidden = false;
+    if (q.get("ler") === "uso") { var s1 = termos.querySelector("h2"); if (s1) s1.scrollIntoView(); }
+  }
+  // Versão vigente vem do banco (sol_termos); o texto desta página tem de ser o da versão vigente.
+  fetch(NUVEM + "/rest/v1/rpc/sol_termo_vigente", { method: "POST", headers: { apikey: CHAVE, Authorization: "Bearer " + CHAVE, "Content-Type": "application/json" }, body: JSON.stringify({ p_termo: TERMO }) })
+    .then(function (r) { return r.ok ? r.json() : null; }).then(function (t) { if (t && t.versao && t.versao !== VERSAO) { VERSAO = t.versao; document.getElementById("versao").textContent = t.versao; } }).catch(function () {});
   function normCodigo(c) { c = String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); return c.length === 11 && c.indexOf("LEX") === 0 ? c.slice(0, 3) + "-" + c.slice(3, 7) + "-" + c.slice(7, 11) : String(c || "").toUpperCase(); }
   var campoCodigo = document.getElementById("codigo"), campoEmail = document.getElementById("email"), campoNome = document.getElementById("nome");
   function fixar(campo) { campo.readOnly = true; campo.setAttribute("aria-readonly", "true"); campo.classList.add("fixo"); campo.title = "Veio do e-mail de boas-vindas; não se altera aqui."; }
@@ -146,12 +156,12 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
       var hash = await sha256(termos.innerText.replace(/\s+/g, " ").trim());
       // Grava pela função da nuvem lex-conta (ação "aceite"): a chave publicável não executa a função de escrita.
       var r = await fetch(NUVEM + "/functions/v1/lex-conta", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ acao: "aceite", codigo: codigo, termo: TERMO, versao: VERSAO, hash: hash, nome: nome, email: email, navegador: navigator.userAgent.slice(0, 120), origem: q.get("codigo") ? "email" : "site" }) });
+        body: JSON.stringify({ acao: "aceite", codigo: codigo, termo: TERMO, versao: VERSAO, hash: hash, nome: nome, email: email, navegador: navigator.userAgent.slice(0, 120), origem: q.get("codigo") ? "email" : "site", fuso: FUSO }) });
       var j = null; try { j = await r.json(); } catch (e) {}
       if (!r.ok || !j || !j.ok) {
         var MOTIVOS = { codigo_desconhecido: "Código de cliente não encontrado. Confira no e-mail de boas-vindas.", codigo_invalido: "O código de cliente tem o formato LEX-XXXX-XXXX.",
           limite: "Muitas tentativas. Espere um pouco e tente de novo.", email_nao_e_do_responsavel: "O aceite é feito com o e-mail do responsável pela licença. Abra o link que veio no e-mail de boas-vindas.",
-          nome_incompleto: "Escreva o nome completo: nome e sobrenome.", email_invalido: "Confira o e-mail.", dados_invalidos: "Dados dos termos inválidos; recarregue a página e tente de novo." };
+          nome_incompleto: "Escreva o nome completo: nome e sobrenome.", email_invalido: "Confira o e-mail.", dados_invalidos: "Dados dos termos inválidos; recarregue a página e tente de novo.", versao_antiga: "Os termos mudaram de versão. Recarregue a página e leia a versão atual." };
         var m = MOTIVOS[(j && j.motivo) || ""] || "Não consegui registrar agora. Confira a internet e tente de novo; se continuar, escreva para judicial@solverone.com.br.";
         botao.disabled = false; return mostrar(m, "erro");
       }
