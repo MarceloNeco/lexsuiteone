@@ -13,7 +13,9 @@
 --   4. sol_tem_aceite(app, licenca, termo): usada pela lex-conta (service_role) para dizer ao programa se há aceite.
 --   5. sol_aceite_contexto(app, licenca): a página mostra o nome do escritório da licença ("em nome de KR Law…"),
 --      para o aceite dizer por quem é dado. Anon, só o nome, com limite de 30 consultas por hora por licença.
--- APLICADO em 09/Nov/2026 pelo conector, com o "pode aplicar" do dono (conferência toda "true"). Cada bloco tem o DESFAZER em comentário.
+-- APLICADO em 09/Nov/2026 pelo conector, com o "pode aplicar" do dono (conferência toda "true"). O advisor do Supabase
+-- avisa "anon pode executar função security definer" para sol_aceite_registrar e sol_aceite_contexto: é por desenho
+-- (página pública), com validação de licença e limite de chamadas dentro da função. Cada bloco tem o DESFAZER em comentário.
 -- =====================================================================================
 
 create table if not exists public.sol_aceites (

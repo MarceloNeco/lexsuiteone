@@ -158,18 +158,12 @@ migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e as f
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- **Aceite dos termos** (pedido do dono, 09/Nov): rascunhos prontos, **nada aplicado nem publicado**: SQL
-  `nuvem/supabase/2026-11-09b-sol-aceites.sql` (tabela `sol_aceites` genérica, funções `sol_aceite_registrar`,
-  `sol_aceite_contexto`, `sol_tem_aceite`, `admin_sol_aceites`; verificador de GRANTs ok), página `paginas/aceite.html`
-  (termos de uso com uso exclusivo do escritório, privacidade, tratamento de dados; rolar até o fim, nome completo,
-  e-mail, código, protocolo) e o passo "Antes de instalar, aceite os termos" nos modelos `docs/email/email-boas-vindas.*`
-  com `{{email}}`. Página e e-mail estão só no repositório local da Arquitetura (o cliente veria); entram na `main` com o
-  "pode publicar" do dono depois da revisão do Leandro. Desenho completo: `documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`, seção 5.
-- Próximo SQL (aguarda "pode aplicar"): `admin_lex_listar` único com `email_responsavel`, `boas_vindas` (pedido nº 1 da
-  conversa do RootifyONE, rascunho em `rootify-one/entrega/solverone-app/supabase/2026-11-09-lex-listar-responsavel.sql`)
-  e `aceite`.
+- **Aceite dos termos**: SQL aplicado (abaixo). Página `paginas/aceite.html` e o passo "Antes de instalar, aceite os
+  termos" nos modelos `docs/email/email-boas-vindas.*` (com `{{email}}`) estão prontos **só na branch
+  `claude/friendly-einstein-li603e`** (o cliente veria): entram na `main` com o "pode publicar" do dono depois da revisão
+  do Leandro. Desenho: `documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`, seção 5.
 - Depois: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com credencial na `lex-conta`,
-  desenho do site `paginas/app/` para a Produto.
+  desenho do site `paginas/app/` para a Produto, `aceite` na resposta da `lex-conta`.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -177,6 +171,13 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 09/Nov: **SQL aplicados com o "pode aplicar" do dono** (conferência toda "true"): `2026-11-09b-sol-aceites.sql`
+  (tabela genérica `sol_aceites`, imutável; `sol_aceite_registrar` e `sol_aceite_contexto` públicas de propósito, com
+  limite de chamadas; `sol_tem_aceite`; `admin_sol_aceites`) e `2026-11-09c-lex-listar-responsavel-aceite.sql`
+  (`admin_lex_listar` único: atende o pedido nº 1 da conversa do RootifyONE e acrescenta `aceite`). Advisor de
+  segurança: só os avisos esperados de função pública (`sol_aceite_*`, por desenho) e de função para `authenticated`
+  (padrão de todas as `admin_*`).
+- 09/Nov: decisão **quem faz o quê entre LexSuiteONE e RootifyONE** (`documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`).
 - 09/Nov (madrugada): **nuvem aplicada e publicada** (o conector voltou depois que o dono religou os conectores da conta):
   SQL `2026-11-09-sol-retorno-e-lex-auditoria.sql` (conferência toda "true"; `sol_apps` tem `radar-judicial`, suíte
   `lexsuiteone`, acesso `instalado`), `lex-conta` v7 (código v6, com `retorno` e `RESEND_API_KEY_LEX`) e `lex-equipe` v1
@@ -226,7 +227,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- "Pode aplicar" para `2026-11-09b-sol-aceites.sql` e para o `admin_lex_listar` único (pedido nº 1 do RootifyONE + `aceite`).
+- Colar na conversa do RootifyONE o aviso "aplicado" (linha de 09/Nov em "Pedidos entre sessões (continuação)").
 - Revisar com o Leandro o texto dos termos (`paginas/aceite.html`, três partes) e
   `documentacao/TERMO-TRATAMENTO-DADOS-RASCUNHO.md`; depois o "pode publicar" da página e do e-mail com o passo de aceite.
   Se não der tempo até quarta 11/Nov, o e-mail de boas-vindas sai sem o passo e o aceite é pedido depois (decisão do dono).
@@ -289,6 +290,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 09/Nov | Operação | Produto | **Ressalvas da revisão da 0.7.13** (publicada; nada bloqueou), para a 0.7.14: (1) `monitor.py` ~289-290: se todos os tribunais falham, o que já foi lido é descartado e o histórico diz "leu até 06/11"; ou salvar antes de levantar o erro, ou não prometer "o que foi lido é salvo" em `PENDENCIAS.md`. (2) `radar_modelo.html` ~659: o "li até" ordena texto dd/mm e erra na virada de mês. (3) `causas.py` ~74: "A SolverONE já foi avisada" é dito mesmo quando `conta.registrar_erro` falha em silêncio; suavizar. (4) bloqueio de fora do Brasil e as rodadas do monitor e da contingência (`monitor.py` ~265, 337, 351) não deixam linha no "Histórico de leituras". (5) `app.py` ~631: a janela preta ainda diz "LexSuiteONE aberto em ..." (item 4 do pedido de 09/Nov). (6) `import rede` sem uso em `app.py` ~16. (7) aba Saúde marca "atenção: nenhuma publicação lida" logo depois do aviso das 3h. (8) faltam testes da rota `/historico`, de `agendar.origem_da_leitura`, das linhas de tentativa na aba Log e da leitura parcial. (9) `robo/painel_modelo.html` e `monitor_modelo.html` (fora do pacote) ainda pedem fontes do Google e `monitor_modelo.html` faz `fetch` direto ao DJEN; ferem "sem pedido externo". (10) Na seção Produto deste quadro, "Fazendo agora" e a entrada "0.7.13 na `main`, pronta para publicar" ainda dizem que a 0.7.13 espera publicação; ela saiu em 09/Nov (04:39 UTC) só com a correção das 3h, então o que era "só tela e planilha" passa para a 0.7.14. | pendente (Produto, 0.7.14) |
 
 | 09/Nov | Arquitetura | Produto | Situações do processo no programa com estas chaves internas (decisão do dono): `novo, visto, em_analise, em_contato, virou_cliente, descartado, arquivado`; são as que a `lex-conta` aceita no `retorno` e que o RootifyONE mostra. Texto e prévia do e-mail de boas-vindas: o RootifyONE 0.18.16 já monta a prévia a partir de `docs/email/email-boas-vindas.html|txt` e `docs/marca.json` publicados no site; basta a Produto manter esses arquivos (texto final hoje) | não |
+| 09/Nov | Arquitetura | conversa do RootifyONE (via dono) | **APLICADO** (09/Nov) o pedido nº 1 (`RASCUNHO-2026-11-09-lex-listar-responsavel.sql`) junto com o aceite. `admin_lex_listar()` agora devolve, além do que já devolvia: `email_responsavel` (texto ou null); `boas_vindas` (`{ok, para, em}` do último envio pela `lex-equipe`, ou null); `aceite` (`{aceito:true, versao, aceito_em, nome, email, protocolo}` ou `{aceito:false}`). Novas funções para a tela: `admin_sol_aceites(p_app, p_licenca default null)` (lista até 200 aceites: id, app, licenca, termo, versao, hash, nome, email, aceito_em, ip_resumo, navegador, origem). Para a prévia do e-mail: o modelo vai ganhar `{{email}}` (e-mail do responsável) no link do aceite quando a página for publicada; até lá, pode preencher em branco. Arquivos definitivos: `lexsuiteone/nuvem/supabase/2026-11-09b-sol-aceites.sql` e `2026-11-09c-lex-listar-responsavel-aceite.sql`. O RootifyONE pode renomear o rascunho para `APLICADO-…` e seguir com selo, etapa "Termos aceitos" e bloco Termos em Configuração | sim (Arquitetura) |
 | 09/Nov | Produto | Arquitetura | Item 82 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`: **"Atualizar estatísticas"** (só totais, sem Lista nem Arquivo) de 1, 3, 6 ou 12 meses para trás, por frente, tribunal e vara, em fila noturna aos poucos e com agendamento periódico. Pede desenho curto: até quando o DJEN guarda os cadernos antigos (a API de caderno aceita datas passadas?), volume e tempo (TRT2 é grande; 1 ano dos 24 TRTs ≈ 6 mil cadernos), limite seguro de pedidos por noite sem incomodar os sistemas do CNJ, e se a fonte melhor para série longa é o DataJud (que já traz encerramento). Produto implementa na 0.7.15 depois do desenho | não |
 
 ## Perguntas ao dono (uma lista só; a Produto consolida e leva ao dono)
