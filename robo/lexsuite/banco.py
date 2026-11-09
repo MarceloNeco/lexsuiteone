@@ -9,6 +9,7 @@ o mesmo CNPJ toda hora.
 import datetime as dt
 import json
 import os
+import re
 import sqlite3
 
 # 0.7.13: situações do processo para o escritório (decisão do dono, 09/Nov). A chave fica no banco; o texto, na tela.
@@ -22,6 +23,9 @@ _SITUACAO_ANTIGA = {"novo": "novo", "nova": "novo", "visto": "visto", "vista": "
 FAIXAS = ((10000, "ate10k"), (50000, "10k-50k"), (100000, "50k-100k"), (300000, "100k-300k"), (500000, "300k-500k"),
           (1000000, "500k-1mi"), (float("inf"), "1mi+"))
 # O que fica de cada ação depois que o dado completo é limpo (sem o trecho do Diário, onde aparece o reclamante).
+# 0.7.18: frases de intimação comum que a regra de "ação nova" até a 0.7.15 aceitava (ver classificar._INICIO)
+_INTIMACAO_COMUM = re.compile(r"fica\s+.{0,40}notificad|designad[ao]\s+audiencia|citacao|intimad|intimacao", re.I)
+
 _RESUMO = ("processo", "tribunal", "vara", "classe", "rito", "data_publicacao", "ajuizada_em", "empresas", "cnpjs",
            "valor_causa", "fonte", "link", "visto_em", "rodada", "cnpj_a_conferir", "manual", "sinal")
 _RESUMO_RECEITA = ("cnpj", "razao_social", "nome_fantasia", "porte", "capital_social", "cnae", "atividade", "municipio",
@@ -120,10 +124,13 @@ class Banco:
             if cl.segundo_grau(vara or d.get("vara")):
                 marcar.append((proc,))
                 continue
-            if (status or "novo") != "novo" or d.get("manual") or proc in com_contato or "texto_curto" not in d:
-                continue
+            if (status or "novo") != "novo" or d.get("manual") or proc in com_contato or "texto_curto" not in d or d.get("sinal"):
+                continue  # trabalhado, completado, com contato, sem texto para conferir, ou já guardado pela regra nova
             texto = cl.sem_acento(" ".join(str(d.get(k) or "") for k in ("tipo", "texto_curto"))).lower()
             if "distribu" in texto or cl.parece_inicio(d.get("texto_curto") or ""):
+                continue
+            # Só sai o que mostra sinal de intimação comum (a regra antiga aceitava); sem esse sinal, fica (na dúvida, fica)
+            if not _INTIMACAO_COMUM.search(cl.sem_acento(d.get("texto_curto") or "")):
                 continue
             marcar.append((proc,))
         self.con.executemany("UPDATE leads SET fora_criterio = 1 WHERE processo = ?", marcar)

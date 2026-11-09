@@ -241,6 +241,7 @@ class Servidor(ThreadingHTTPServer):
         self.caminho_db = os.path.join(pasta, "lexsuite.db")
         self.modelo = os.path.join(pasta, "radar_modelo.html")
         self.hist = {}  # 0.7.18: andamento das estatísticas dos meses anteriores
+        self.hist_trava = threading.Lock()
         import time as _t
         self.ultimo_pedido = _t.monotonic()  # 0.7.16: a janela preta fecha sozinha quando a tela some (ver vigiar_tela)
 
@@ -499,7 +500,7 @@ class Tratador(BaseHTTPRequestHandler):
         import time as _t
         self.server.ultimo_pedido = _t.monotonic()
         if caminho == "/sair":  # 0.7.16: "Sair do RADAR" fecha a tela e a janela preta (se não houver leitura nesta janela)
-            if self.server.estado.rodando:
+            if self.server.estado.rodando or self.server.hist.get("rodando"):
                 return self._responder({"ok": False, "motivo": "Há uma leitura em andamento: espere terminar ou clique em Interromper. "
                                                                 "/ A reading is in progress."})
             self._responder({"ok": True})
@@ -664,8 +665,12 @@ class Tratador(BaseHTTPRequestHandler):
             if caminho.endswith("parar"):
                 s.hist["parar"] = True
                 return self._responder({"ok": True})
-            if s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento) or s.hist.get("rodando"):
-                return self._responder({"ok": False, "motivo": "Espere a leitura em andamento terminar. / Wait for the reading in progress."})
+            with s.hist_trava:  # 0.7.18 (revisão): dois cliques não abrem duas leituras de estatísticas
+                if s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento) or s.hist.get("rodando"):
+                    return self._responder({"ok": False, "motivo": "Espere a leitura em andamento terminar. / Wait for the reading in progress."})
+                if caminho.endswith("ler"):
+                    s.hist.clear()
+                    s.hist.update({"rodando": True, "k": 0, "total": 0, "tribunal": "", "data": ""})
             cfg, banco = s.config(), bd.Banco(s.caminho_db)
             if caminho.endswith("pedir"):
                 try:
@@ -674,8 +679,6 @@ class Tratador(BaseHTTPRequestHandler):
                     return self._responder({"ok": False, "motivo": "meses inválido"}, status=400)
                 n = _hist.pedir(banco, meses, tribunais.validar(cfg["radar"].get("tribunais")), perfil=cfg["usuario"].get("email", ""))
                 return self._responder({"ok": True, "na_fila": n, "historico": _hist.situacao(banco)})
-            s.hist.clear()
-            s.hist.update({"rodando": True, "k": 0, "total": 0, "tribunal": "", "data": ""})
 
             def ler():
                 try:
@@ -801,6 +804,9 @@ class Tratador(BaseHTTPRequestHandler):
             resultado["recados"] = recados
             return self._responder(resultado)
         if caminho == "/rodar":
+            if s.hist.get("rodando"):  # 0.7.18 (revisão): não lê o Diário de hoje com as estatísticas antigas baixando
+                return self._responder({"ok": False, "motivo": "As estatísticas dos meses anteriores estão sendo lidas: clique em Parar no Painel "
+                                                                "ou espere terminar. / Previous months' statistics are being read: stop them or wait."})
             if not tribunais.validar(s.config()["radar"].get("tribunais")):
                 return self._responder({"ok": False, "motivo": "nenhum tribunal escolhido"})
             try:

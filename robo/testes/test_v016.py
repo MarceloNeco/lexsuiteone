@@ -435,13 +435,14 @@ class V0718(unittest.TestCase):
         dados = lambda proc, txt, vara="1ª Vara do Trabalho de São Paulo": {"processo": proc, "tribunal": "TRT2", "vara": vara,
                                                                             "empresas": ["Empresa Fictícia Ltda"], "texto_curto": txt, "tipo": "Intimação"}
         for proc, txt, vara in (("a", "Fica V. Sa. notificado para pagar custas.", None), ("b", "Notificação inicial da reclamada.", None),
-                                ("c", "Processo distribuído por sorteio.", None), ("d", "Lista", "10ª Turma - Cadeira 3")):
+                                ("c", "Processo distribuído por sorteio.", None), ("d", "Lista", "10ª Turma - Cadeira 3"),
+                                ("e", "Reclamante: pessoa física. Reclamada: Empresa Fictícia Ltda.", None)):
             b.guardar_lead(dados(proc, txt, vara or "1ª Vara do Trabalho de São Paulo"), "2026-11-06")
         b.con.execute("UPDATE leads SET fora_criterio = 0, vara = CASE processo WHEN 'd' THEN '10ª Turma - Cadeira 3' ELSE vara END")
         b.con.commit(); b.con.close()
         b2 = bd.Banco(caminho)
-        self.assertEqual(sorted(l["processo"] for l in b2.todos_leads()), ["b", "c"])
-        self.assertEqual(len(sqlite3.connect(caminho).execute("SELECT * FROM leads").fetchall()), 4)  # nada é apagado
+        self.assertEqual(sorted(l["processo"] for l in b2.todos_leads()), ["b", "c", "e"])  # sem sinal de intimação comum, fica
+        self.assertEqual(len(sqlite3.connect(caminho).execute("SELECT * FROM leads").fetchall()), 5)  # nada é apagado
         _ = json
 
 
