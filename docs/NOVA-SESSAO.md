@@ -55,8 +55,8 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   `limpo` é a mesma história com autoria anônima, congelada em 08/Nov/2026. **Trabalhe só na `main`.** Na mudança para a
   organização `solverone` (depois de 12/Nov), `limpo` será refeita com os commits novos da `main` e passará a ser a `main`
   do repositório novo. Decisão do dono: o piloto do Leandro sai do repositório pessoal mesmo.
-- Documentos de referência também na pasta do Drive do dono (cópia de consulta; o GitHub é a fonte). A cópia do Drive está
-  desatualizada (programa 0.7.1); atualizá-la espera o dono fechar o link aberto da pasta-mãe (ver o quadro).
+- Documentos de referência também na pasta do Drive do dono (cópia de consulta; o GitHub é a fonte). A cópia do Drive só se
+  atualiza quando o dono pedir (decisão de 09/Nov noite, em `docs/QUADRO.md`).
 
 ## Decisões do dono que valem
 
@@ -87,9 +87,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 ## O que só o dono faz (sem conector)
 
 Registro.br, GitHub (organização, transferência, Pages, configurações de conta), ImprovMX (cancelar), Conta Google do
-`integracao@`, DIAGNOSTICO.bat e testes no PC dele, visita à KR Law, **compartilhamento do Drive** (o conector não
-altera: o link aberto da pasta-mãe "Estudos de Casos Juridicos" só o dono fecha, ou autoriza mover só a pasta do
-projeto), conferir o carrossel num iPhone de verdade. Para esses passos ele usa a extensão Claude in Chrome (Sonnet para o
+`integracao@`, DIAGNOSTICO.bat e testes no PC dele, visita à KR Law, conferir o carrossel num iPhone de verdade. Para esses passos ele usa a extensão Claude in Chrome (Sonnet para o
 rotineiro): escreva o prompt completo, sem campo em aberto, dizendo site, modelo e o que confirmar.
 
 ## Estado do Cloudflare (08/Nov, noite)
@@ -129,15 +127,13 @@ lembra, pergunta ou comenta.
 
 A infraestrutura está no ar. Falta:
 
-1. **Drive**: o dono fecha o link aberto da pasta-mãe (ou autoriza mover só a pasta do projeto); depois a Operação
-   atualiza a pasta "LEXSUITE-ONE-ROBO" para a versão atual e coloca as cópias de referência.
-2. **Antes de quinta, no PC do dono**: ensaio da instalação com a segunda conta Google, `DIAGNOSTICO.bat`, rodada real
+1. **Antes de quinta, no PC do dono**: ensaio da instalação com a segunda conta Google, `DIAGNOSTICO.bat`, rodada real
    nos 24 TRTs, e testar o instalador no Windows (falta, ver `robo/PENDENCIAS.md`). Roteiro em `robo/ROTEIRO-INSTALACAO.md`.
-3. **Quinta (12/Nov)**: instalação na KR Law e os prompts de `docs/VISITA-KR-LAW.md` (relatórios vão para a sessão de
+2. **Quinta (12/Nov)**: instalação na KR Law e os prompts de `docs/VISITA-KR-LAW.md` (relatórios vão para a sessão de
    Produto).
-4. **Documentos internos abertos no site** (pedido à Arquitetura no quadro): os `.md` de `docs/` respondem em
+3. **Documentos internos abertos no site** (pedido à Arquitetura no quadro): os `.md` de `docs/` respondem em
    `judicial.solverone.com.br/NOME.md`. O dono decide se saem de `docs/`.
-5. **Depois de quinta**: organização `solverone` no GitHub (refazer `limpo` como nova `main`, Pages, CNAME para
+4. **Depois de quinta**: organização `solverone` no GitHub (refazer `limpo` como nova `main`, Pages, CNAME para
    `solverone.github.io`), triagem de e-mail por Worker, calibração da regra com o diagnóstico, desenho da 0.8 e da
    frente tributária, ficha de canais da empresa, cancelar ImprovMX.
 

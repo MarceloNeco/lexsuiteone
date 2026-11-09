@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- Drive: esperando o dono restringir "Estudos de Casos Juridicos" e avisar "feito"; então confiro e atualizo a pasta.
+- (nada)
 
 ### Arquivos em uso
 - (nenhum)
@@ -111,8 +111,6 @@ Cloudflare, Resend, publicação de versões.
   agora" e teste "Interromper" (agora em vermelho): termina com aviso suave, sem erro vermelho; (7) Painel, estatísticas dos meses
   anteriores: **não rode perto das 20h**, quando roda a leitura agendada; (8) se algo falhar, não corrija nada: anote o que viu (e a
   hora) e leve à Produto.
-- Drive: o dono restringe "Estudos de Casos Juridicos" (o conector não altera compartilhamento) e avisa "feito"; eu
-  confiro as permissões e atualizo a pasta do Drive para a versão atual (0.7.20, pacote RADAR).
 
 ---
 
