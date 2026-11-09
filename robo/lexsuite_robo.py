@@ -414,7 +414,7 @@ def cmd_radar(a):
     origem = _ag.origem_da_leitura(cfg) if getattr(a, "agendado", False) else "à mão (RODAR.bat)"
     estado = _app.Estado(eco=lambda linha: print(linha, flush=True), arquivo=arquivo, origem=origem)
     if estado.origem == "fora do horário":  # 0.7.15: qual horário foi perdido (computador desligado ou em repouso)
-        ultimas = banco.execucoes("radar", 1)
+        ultimas = [x for x in banco.execucoes("radar", 20) if x.get("resultado") != "não rodou"]  # tentativa barrada não conta
         estado.atrasada = _ag.horario_perdido(cfg, ultima_leitura=ultimas[0]["quando"] if ultimas else "")
         if estado.atrasada:
             print(f"  Fazendo agora a leitura das {estado.atrasada}, que não rodou na hora (computador desligado ou em repouso).", flush=True)

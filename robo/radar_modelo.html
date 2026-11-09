@@ -881,7 +881,7 @@ window.LEXSUITE_RADAR = null;
       lista.forEach(function (h) {
         var tr = el("tr"), q = String(h.quando_local || h.quando || "");
         var cls = h.causa === "ok" ? "ok" : (h.causa === "ainda_nao_liberado_3h" || h.causa === "nao_publicado" || h.causa === "interrompida") ? "aviso" : "ruim";
-        [q.slice(8, 10) + "/" + q.slice(5, 7) + " " + q.slice(11, 16) + (q.length > 19 ? " (" + q.slice(19) + ")" : ""), (lang === "en" ? ({ "botão": "button", "agendamento": "schedule", "fora do horário": "off schedule" })[h.origem] : "") || h.origem || "", h.tribunal || "", h.dias_pedidos || "",
+        [q.slice(8, 10) + "/" + q.slice(5, 7) + " " + q.slice(11, 16) + (q.length > 19 ? " (" + q.slice(19) + ")" : ""), (lang === "en" ? ({ "botão": "button", "agendamento": "schedule", "fora do horário": "off schedule", "à mão (RODAR.bat)": "by hand (RODAR.bat)" })[h.origem] : "") || h.origem || "", h.tribunal || "", h.dias_pedidos || "",
          null, (lang === "en" && h.fez_en) || h.fez || "", h.duracao != null ? h.duracao + " s" : "", h.http ? t("cod_tecnico", { c: h.http }) : ""].forEach(function (v, ix) {
           var td = ix === 4 ? el("td", cls, t("c_" + (h.causa || "erro_do_programa"))) : el("td", ix === 7 ? "cinza" : null, v); tr.appendChild(td); });
         tbody.appendChild(tr);
