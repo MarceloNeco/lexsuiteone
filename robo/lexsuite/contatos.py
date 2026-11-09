@@ -14,8 +14,7 @@ import re
 CANAIS = ("telefone", "email", "site", "endereco", "linkedin", "instagram", "outro")
 FONTES = ("Receita", "PJe petição inicial", "PJe citação", "site da empresa", "outro")
 COLUNAS = ("processo", "empresa", "canal", "valor", "de_pessoa", "fonte", "data", "observacao")
-_CPF = re.compile(r"\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b")
-_CNPJ = re.compile(r"\b\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}\b")
+_CPF = re.compile(r"\b\d{3}\.\d{3}\.\d{3}-\d{2}\b|\bcpf\b", re.I)
 _PROIBIDO = ("reclamante", "autor", "autora", "testemunha", "preposto", "advogado da parte", "advogada da parte")
 _ALIAS_CANAL = {"e-mail": "email", "mail": "email", "fone": "telefone", "tel": "telefone", "celular": "telefone",
                 "whatsapp": "telefone", "endereço": "endereco", "outros": "outro", "web": "site", "linkedIn": "linkedin"}
@@ -111,9 +110,9 @@ def colar(texto, empresas_por_processo, hoje=None):
         junto = " ".join(cels).lower()
         if proc not in empresas_por_processo:
             motivo = "processo que não está na sua lista"
-        elif _CPF.search(" ".join(cels)) and not _CNPJ.search(" ".join(cels)):
+        elif _CPF.search(" ".join(cels)):
             motivo = "tem CPF (não pode entrar)"
-        elif any(p in junto for p in _PROIBIDO):
+        elif any(re.search(r"\b" + re.escape(p) + r"\b", junto) for p in _PROIBIDO):
             motivo = "parece dado de reclamante, testemunha, preposto ou advogado da outra parte"
         elif canal not in CANAIS:
             motivo = f"canal desconhecido: {reg['canal'][:30]}"

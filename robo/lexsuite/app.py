@@ -446,16 +446,23 @@ class Tratador(BaseHTTPRequestHandler):
         if caminho == "/migrar-situacoes":  # uma vez: o que estava guardado no navegador vai para o banco do computador
             banco = bd.Banco(s.caminho_db)
             atuais = {l["processo"]: l["status"] for l in banco.todos_leads()}
-            levados = 0
-            for proc, st in list((corpo.get("itens") or {}).items())[:20000]:
+            grupos = {}
+            itens = corpo.get("itens") if isinstance(corpo.get("itens"), dict) else {}
+            for proc, st in list(itens.items())[:20000]:
                 st = bd.situacao_valida(st)
                 if st and atuais.get(proc) == "novo" and st != "novo":
-                    banco.mudar_situacao([proc], st, perfil="migração do navegador")
-                    levados += 1
+                    grupos.setdefault(st, []).append(proc)
+            levados = 0
+            for st, procs in grupos.items():  # uma mudança (e um registro) por situação, não por processo
+                levados += banco.mudar_situacao(procs, st, perfil="migração do navegador")["quantos"]
             return self._responder({"ok": True, "levados": levados})
         if caminho == "/limpar":
             banco = bd.Banco(s.caminho_db)
-            feitas = banco.limpar_detalhe(int(corpo.get("meses") or 12), perfil=s.config()["usuario"].get("email", ""))
+            try:
+                meses = max(1, min(120, int(corpo.get("meses") or 12)))
+            except (TypeError, ValueError):
+                return self._responder({"ok": False, "motivo": "meses inválido"}, status=400)
+            feitas = banco.limpar_detalhe(meses, perfil=s.config()["usuario"].get("email", ""))
             banco.compactar()
             return self._responder({"ok": True, "resumidas": feitas, "espaco": banco.espaco()})
         if caminho == "/copia-planilha":
@@ -468,7 +475,7 @@ class Tratador(BaseHTTPRequestHandler):
             from . import contatos as ct
             cfg = s.config()
             pagina = radar.montar_radar(cfg, bd.Banco(s.caminho_db), dias=90)
-            quero = set(corpo.get("processos") or [])
+            quero = {str(x) for x in (corpo.get("processos") or []) if isinstance(x, (str, int))}
             itens = [i for i in pagina["itens"] if not quero or i["processo"] in quero]
             caminho_md, n = ct.preparar(itens, s.pasta, marca(s.pasta)["nome"], int(cfg["radar"].get("area_logada_por_dia") or 30))
             abrir_no_windows(os.path.dirname(caminho_md))
@@ -493,8 +500,10 @@ class Tratador(BaseHTTPRequestHandler):
             if corpo.get("o_que") == "pasta_mae":  # a pasta escolhida, onde aparece a pasta da planilha (para compartilhar)
                 alvo = os.path.dirname(base) if base else ""
             else:
-                alvo = planilha if corpo.get("o_que") == "planilha" else (os.path.dirname(planilha) if planilha else "")
-            if corpo.get("o_que") == "planilha" and abrir_so_leitura(alvo):
+                alvo = planilha if corpo.get("o_que") in ("planilha", "editar") else (os.path.dirname(planilha) if planilha else "")
+            if corpo.get("o_que") == "editar":  # Preferências e Exclusões: abre normal, para o escritório poder salvar
+                alvo = planilha
+            elif corpo.get("o_que") == "planilha" and abrir_so_leitura(alvo):
                 return self._responder({"ok": True, "so_leitura": True})
             if abrir_no_windows(alvo):
                 return self._responder({"ok": True})

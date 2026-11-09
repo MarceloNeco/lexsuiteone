@@ -87,12 +87,14 @@ class Banco:
                            ("faixa_valor", "TEXT DEFAULT ''")):
             if nome not in colunas:
                 self.con.execute(f"ALTER TABLE leads ADD COLUMN {nome} {tipo}")  # nosec B608 - nomes fixos acima
-        # Situações antigas (Novo, Visto, Em contato, Descartado) passam para as chaves novas, uma vez.
-        for antigo, novo in _SITUACAO_ANTIGA.items():
-            self.con.execute("UPDATE leads SET status = ? WHERE lower(status) = ? AND status <> ?", (novo, antigo, novo))
-        self.con.execute("UPDATE leads SET status = 'novo' WHERE status IS NULL OR status = ''")
-        self._preencher_resumo()
-        self.con.commit()
+        # Situações antigas (Novo, Visto, Em contato, Descartado) passam para as chaves novas, uma vez (versão do esquema).
+        if (self.con.execute("PRAGMA user_version").fetchone() or [0])[0] < 714:
+            for antigo, novo in _SITUACAO_ANTIGA.items():
+                self.con.execute("UPDATE leads SET status = ? WHERE lower(status) = ? AND status <> ?", (novo, antigo, novo))
+            self.con.execute("UPDATE leads SET status = 'novo' WHERE status IS NULL OR status = ''")
+            self._preencher_resumo()
+            self.con.execute("PRAGMA user_version = 714")
+            self.con.commit()
         self.caminho = caminho
 
     def _preencher_resumo(self):
@@ -192,7 +194,7 @@ class Banco:
     def contatos(self, processo=None):
         cols = ("id", "processo", "empresa", "canal", "valor", "de_pessoa", "fonte", "data", "confianca", "origem",
                 "observacao", "arquivo", "validacao", "validado_por", "validado_em", "criado_em")
-        sql, args = "SELECT " + ",".join(cols) + " FROM contatos", ()
+        sql, args = "SELECT " + ",".join(cols) + " FROM contatos", ()  # nosec B608 - colunas fixas acima
         if processo:
             sql, args = sql + " WHERE processo = ?", (processo,)
         return [dict(zip(cols, r)) for r in self.con.execute(sql + " ORDER BY processo, canal", args)]

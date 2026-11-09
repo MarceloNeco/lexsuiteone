@@ -647,6 +647,7 @@ window.LEXSUITE_RADAR = null;
       c_pasta_drive: "Google Drive (recomendado)", c_pasta_outra_x: "Escolha outra pasta deste computador ou da rede.", c_pasta_local_x: "Fica só neste computador, na pasta do programa; ninguém mais vê a planilha.",
       ag_expl: "Clique nos horários em que o programa lê o Diário sozinho. Cada horário é uma leitura (não é início e fim). Para um horário que não está aqui, use \u201cOutro horário\u201d.",
       ret_titulo: "O que a SolverONE recebe", ret_quando: "Última conferência ({q}): {n} linha(s).", ret_nada: "Nada enviado ainda (vai na próxima leitura).", ret_frase: "Só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou contato.", ret_ver: "Ver a tabela enviada",
+      editar_prefs: "Editar Preferências e Exclusões", editar_prefs_x: "Abre a planilha para editar as abas Preferências e Exclusões (as únicas que o programa lê). Salve e feche o Excel quando terminar: com a planilha aberta, o programa espera para gravar a lista.", abrir_para_editar: "Abrir para editar",
       v_painel: "Painel", v_lista: "Lista", k_acoes: "Ações", k_acoes_det: "{d} dia(s) com Diário", k_cnpj: "Com CNPJ confirmado", k_pct: "{p}% das ações",
       k_acima: "Acima de {min}", k_acima_det: "pelo valor da causa", k_soma: "Valor somado", k_soma_det: "{n} ação(ões) com valor", k_empresas: "Empresas",
       k_empresas_det: "{n} com mais de uma ação", k_sem_valor: "Sem valor no Diário", k_sem_valor_det: "o valor aparece no PJe",
@@ -738,6 +739,7 @@ window.LEXSUITE_RADAR = null;
       c_pasta_drive: "Google Drive (recommended)", c_pasta_outra_x: "Choose another folder on this computer or the network.", c_pasta_local_x: "Stays on this computer only, in the program folder; nobody else sees the spreadsheet.",
       ag_expl: "Click the times when the program reads the gazette by itself. Each time is one reading (not a start and end). For a time not listed, use \u201cAnother time\u201d.",
       ret_titulo: "What SolverONE receives", ret_quando: "Last check ({q}): {n} row(s).", ret_nada: "Nothing sent yet (goes with the next reading).", ret_frase: "Only counts by status, day, court, practice area and value range; no name, case number or contact.", ret_ver: "See the table sent",
+      editar_prefs: "Edit Preferences and Exclusions", editar_prefs_x: "Opens the spreadsheet to edit the Preferences and Exclusions tabs (the only ones the program reads). Save and close Excel when done: while it is open, the program waits to write the list.", abrir_para_editar: "Open to edit",
       v_painel: "Dashboard", v_lista: "List", k_acoes: "Lawsuits", k_acoes_det: "{d} day(s) with a gazette", k_cnpj: "Confirmed tax ID", k_pct: "{p}% of lawsuits",
       k_acima: "Above {min}", k_acima_det: "by claim value", k_soma: "Total claim value", k_soma_det: "{n} lawsuit(s) with a value", k_empresas: "Companies",
       k_empresas_det: "{n} with more than one lawsuit", k_sem_valor: "No value in the gazette", k_sem_valor_det: "the value shows in PJe",
@@ -1572,6 +1574,8 @@ window.LEXSUITE_RADAR = null;
     setTimeout(function () { if (a.parentNode) a.remove(); }, 12000);
   }
   function desenharLote() {
+    var visIds = {}; visiveis().forEach(function (i) { visIds[i.id] = true; });
+    Object.keys(selecionados).forEach(function (k) { if (!visIds[k]) delete selecionados[k]; });  // só vale o que está na tela
     var ids = Object.keys(selecionados), lote = $("lote"); lote.textContent = "";
     var tudoSel = $("selecionar-todos"); tudoSel.textContent = "";
     if (MODO !== "app" || (visao !== "lista" && visao !== "arquivo")) { lote.hidden = true; tudoSel.hidden = true; return; }
@@ -1616,6 +1620,10 @@ window.LEXSUITE_RADAR = null;
     var lb = el("label", "conf-acoes"), cb = el("input"); cb.type = "checkbox"; lb.appendChild(cb); lb.appendChild(document.createTextNode(" " + t("nao_mostrar"))); c.appendChild(lb);
     abrirJanela(c, [[t("gerar_copia"), gerarCopia], [t("entendi_abrir"), function () { if (cb.checked) try { localStorage.setItem("lexsuite:aviso-planilha", "1"); } catch (e) {} abrirPlanilha("planilha"); }, true]]);
   }
+  function editarPreferencias() {
+    var c = el("div"); c.appendChild(el("h3", null, t("editar_prefs"))); c.appendChild(el("p", null, t("editar_prefs_x")));
+    abrirJanela(c, [[t("cancelar"), null], [t("abrir_para_editar"), function () { abrirPlanilha("editar"); }, true]]);
+  }
   function gerarCopia() {
     post("/copia-planilha", {}).then(function (r) { mostrarAviso(r.ok ? t("copia_ok", { c: r.caminho }) : (r.motivo || t("falha"))); });
   }
@@ -1625,7 +1633,7 @@ window.LEXSUITE_RADAR = null;
     g.appendChild(el("div", "grupo-menu", t("menu_ver")));
     [["painel", "v_painel"], ["lista", "v_lista"], ["arquivo", "v_arquivo"], ["historico", "v_historico"]].forEach(function (v) { add(t(v[1]), function () { trocarVisao(v[0]); }, visao === v[0]); });
     g.appendChild(el("div", "grupo-menu", t("menu_planilha")));
-    add(t("planilha_abrir"), abrirPlanilhaComAviso); add(t("gerar_copia"), gerarCopia); add(t("pasta_abrir"), function () { abrirPlanilha("pasta"); });
+    add(t("planilha_abrir"), abrirPlanilhaComAviso); add(t("gerar_copia"), gerarCopia); add(t("editar_prefs"), editarPreferencias); add(t("pasta_abrir"), function () { abrirPlanilha("pasta"); });
     g.appendChild(el("div", "grupo-menu", t("menu_contatos")));
     add(t("colar_contatos"), colarContatos);
     g.appendChild(el("div", "grupo-menu", t("menu_programa")));

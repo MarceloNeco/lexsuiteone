@@ -11,7 +11,7 @@ FRENTES = ("trabalhista", "tributario", "civel", "empresarial")
 
 # Palavras (sem acento, em maiúsculas) procuradas na classe e no assunto. A ordem importa: a primeira que bate vale.
 PALAVRAS = (
-    ("tributario", ("EXECUCAO FISCAL", "EMBARGOS A EXECUCAO FISCAL", "TRIBUT", "ICMS", "ISS ", "IPTU", "PIS", "COFINS",
+    ("tributario", ("EXECUCAO FISCAL", "EMBARGOS A EXECUCAO FISCAL", "TRIBUT", "ICMS", " ISS ", "IPTU", " PIS ", " PIS/", "COFINS",
                     "IMPOSTO", "CREDITO TRIBUTARIO", "DIVIDA ATIVA", "ANULATORIA DE DEBITO FISCAL")),
     ("empresarial", ("RECUPERACAO JUDICIAL", "RECUPERACAO EXTRAJUDICIAL", "FALENCIA", "DISSOLUCAO DE SOCIEDADE",
                      "DISSOLUCAO PARCIAL", "APURACAO DE HAVERES", "SOCIETAR", "RECUPERACAO DE EMPRESA")),

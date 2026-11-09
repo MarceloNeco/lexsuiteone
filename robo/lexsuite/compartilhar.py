@@ -240,7 +240,7 @@ def gerar_copia(cfg, agora=None):
     agora = agora or _dt.datetime.now()
     destino_pasta = os.path.join(base, "Cópias")
     os.makedirs(destino_pasta, exist_ok=True)
-    destino = os.path.join(destino_pasta, f"{os.path.splitext(NOME_RADAR)[0]} - cópia {agora:%Y-%m-%d %Hh%M}.xlsx")
+    destino = os.path.join(destino_pasta, f"{os.path.splitext(NOME_RADAR)[0]} - cópia {agora:%Y-%m-%d %Hh%Mm%S}.xlsx")
     marca_copia = f"Cópia de {agora:%d/%m/%Y %H:%M}: pode anotar e mexer à vontade. O RADAR não altera as cópias."
     try:
         with _zip.ZipFile(origem) as zin, _zip.ZipFile(destino, "w", _zip.ZIP_DEFLATED) as zout:
