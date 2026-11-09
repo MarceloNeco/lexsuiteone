@@ -1,8 +1,9 @@
 """Memória do robô (SQLite, um arquivo só: lexsuite.db).
 
-Serve para: não avisar duas vezes o mesmo processo, guardar o andamento do
-lead (novo, em análise, abordado, descartado) e não consultar o mesmo CNPJ
-toda hora. Na fase SaaS, as mesmas tabelas vão para o banco da plataforma.
+Serve para: não avisar duas vezes o mesmo processo, guardar a situação de cada
+ação (novo, visto, em análise, em contato, virou cliente, descartado, arquivado),
+os contatos, o registro de quem fez o quê, as estatísticas diárias e não consultar
+o mesmo CNPJ toda hora.
 """
 
 import datetime as dt
@@ -152,7 +153,8 @@ class Banco:
         """Volta cada processo para a situação que tinha (o 'antes' devolvido por mudar_situacao)."""
         quando, fuso = agora_utc_e_fuso()
         pares = [(situacao_valida(st) or "novo", quando, str(p)) for p, st in (antes or {}).items()][:20000]
-        self.con.executemany("UPDATE leads SET status = ?, status_em = ? WHERE processo = ?", pares)
+        self.con.executemany("UPDATE leads SET status = ?, status_em = ?, motivo = CASE WHEN ? IN ('descartado','arquivado') THEN motivo ELSE '' END "
+                             "WHERE processo = ?", [(st, q, st, p) for st, q, p in pares])
         self.registrar_acao(perfil, "desfazer", "", "", json.dumps(_contar(st for st, _, _ in pares)), len(pares))
         self.con.commit()
         return len(pares)

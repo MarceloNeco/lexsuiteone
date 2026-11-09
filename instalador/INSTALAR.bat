@@ -46,6 +46,7 @@ echo(%CODIGO%| findstr /r /i /x /c:"LEX-[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]-[A-Z0-9
 set "CODIGO_OK=%CODIGO%"
 curl.exe -s -m 20 -o "%T%\conta.txt" -X POST "%REGISTRO%" -H "Content-Type: application/json" -d "{\"codigo\":\"%CODIGO_OK%\",\"instalacao\":\"%INST%\",\"versao\":\"instalador\"}" || goto sem_internet
 findstr /r /c:"ok.:true" "%T%\conta.txt" >nul && goto codigo_ok
+findstr /c:"aceite_pendente" "%T%\conta.txt" >nul && goto aceite_pendente
 findstr /c:"codigo_desconhecido" "%T%\conta.txt" >nul && goto codigo_desconhecido
 findstr /c:"desativado" "%T%\conta.txt" >nul && goto licenca_inativa
 findstr /c:"vencido" "%T%\conta.txt" >nul && goto licenca_inativa
@@ -59,10 +60,17 @@ echo  Este codigo nao existe. Confira no e-mail de boas-vindas e tente de novo.
 set /a TENTATIVAS+=1
 if %TENTATIVAS% GEQ 3 goto codigo_esgotado
 goto pedir_codigo
+:aceite_pendente
+echo  Codigo confirmado. Falta o aceite dos termos pelo responsavel do escritorio:
+echo  abra o link "Aceitar os termos" do e-mail de boas-vindas. A instalacao continua;
+echo  o programa so le o Diario depois do aceite (a tela mostra o link).
+echo.
+goto destino_inicio
 :codigo_ok
 echo  Codigo confirmado.
 echo.
 
+:destino_inicio
 rem Pasta de destino: C:\LexSuiteONE; se o Windows nao deixar, a pasta do usuario.
 set "DEST=C:\LexSuiteONE"
 if exist "%LOCALAPPDATA%\LexSuiteONE\lexsuite_robo.py" if not exist "C:\LexSuiteONE\lexsuite_robo.py" set "DEST=%LOCALAPPDATA%\LexSuiteONE"

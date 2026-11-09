@@ -474,6 +474,10 @@ footer a:hover { text-decoration: underline; }
       <p class="agenda-info alerta" id="c-agenda-alerta" hidden></p>
       <label class="conf-acoes"><input type="checkbox" id="c-avisar"> <span id="c-l-avisar"></span></label>
     </fieldset>
+    <fieldset class="agenda">
+      <legend id="c-l-tela"></legend>
+      <label class="conf-acoes"><input type="checkbox" id="c-aba"> <span id="c-l-aba"></span></label>
+    </fieldset>
     <dl class="conf-info" id="c-info"></dl>
     <div class="painel-rodape">
       <span class="cont" id="c-msg"></span>
@@ -648,6 +652,8 @@ window.LEXSUITE_RADAR = null;
       ag_expl: "Clique nos horários em que o programa lê o Diário sozinho. Cada horário é uma leitura (não é início e fim). Para um horário que não está aqui, use \u201cOutro horário\u201d.",
       ret_titulo: "O que a SolverONE recebe", ret_quando: "Última conferência ({q}): {n} linha(s).", ret_nada: "Nada enviado ainda (vai na próxima leitura).", ret_frase: "Só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou contato.", ret_ver: "Ver a tabela enviada",
       editar_prefs: "Editar Preferências e Exclusões", editar_prefs_x: "Abre a planilha para editar as abas Preferências e Exclusões (as únicas que o programa lê). Salve e feche o Excel quando terminar: com a planilha aberta, o programa espera para gravar a lista.", abrir_para_editar: "Abrir para editar",
+      rodando_auto: "Leitura automática em andamento (começou às {h}).", c_tela: "Onde a tela abre", c_aba: "Abrir pelo atalho numa aba do navegador (junto das outras abas), em vez de uma janela própria", abrir_aba: "Abrir numa aba do navegador",
+      aceite_abrir: "Abrir a página de aceite dos termos", termos: "Termos de uso", termos_ok: "aceitos por {n} em {d} (versão {v})", termos_falta: "falta o aceite do responsável do escritório (link no e-mail de boas-vindas)",
       v_painel: "Painel", v_lista: "Lista", k_acoes: "Ações", k_acoes_det: "{d} dia(s) com Diário", k_cnpj: "Com CNPJ confirmado", k_pct: "{p}% das ações",
       k_acima: "Acima de {min}", k_acima_det: "pelo valor da causa", k_soma: "Valor somado", k_soma_det: "{n} ação(ões) com valor", k_empresas: "Empresas",
       k_empresas_det: "{n} com mais de uma ação", k_sem_valor: "Sem valor no Diário", k_sem_valor_det: "o valor aparece no PJe",
@@ -740,6 +746,8 @@ window.LEXSUITE_RADAR = null;
       ag_expl: "Click the times when the program reads the gazette by itself. Each time is one reading (not a start and end). For a time not listed, use \u201cAnother time\u201d.",
       ret_titulo: "What SolverONE receives", ret_quando: "Last check ({q}): {n} row(s).", ret_nada: "Nothing sent yet (goes with the next reading).", ret_frase: "Only counts by status, day, court, practice area and value range; no name, case number or contact.", ret_ver: "See the table sent",
       editar_prefs: "Edit Preferences and Exclusions", editar_prefs_x: "Opens the spreadsheet to edit the Preferences and Exclusions tabs (the only ones the program reads). Save and close Excel when done: while it is open, the program waits to write the list.", abrir_para_editar: "Open to edit",
+      rodando_auto: "Automatic reading in progress (started at {h}).", c_tela: "Where the screen opens", c_aba: "Open from the shortcut in a browser tab (next to the other tabs), instead of its own window", abrir_aba: "Open in a browser tab",
+      aceite_abrir: "Open the terms acceptance page", termos: "Terms of use", termos_ok: "accepted by {n} on {d} (version {v})", termos_falta: "the firm\u2019s responsible person has not accepted yet (link in the welcome e-mail)",
       v_painel: "Dashboard", v_lista: "List", k_acoes: "Lawsuits", k_acoes_det: "{d} day(s) with a gazette", k_cnpj: "Confirmed tax ID", k_pct: "{p}% of lawsuits",
       k_acima: "Above {min}", k_acima_det: "by claim value", k_soma: "Total claim value", k_soma_det: "{n} lawsuit(s) with a value", k_empresas: "Companies",
       k_empresas_det: "{n} with more than one lawsuit", k_sem_valor: "No value in the gazette", k_sem_valor_det: "the value shows in PJe",
@@ -807,7 +815,7 @@ window.LEXSUITE_RADAR = null;
       var pct = Math.max(1, Math.min(99, Number(e.progresso) || 1)), barra = el("div", "progresso"), cheio = el("i");
       cheio.style.width = pct + "%"; barra.appendChild(cheio); barra.setAttribute("role", "progressbar"); barra.setAttribute("aria-valuemin", "0"); barra.setAttribute("aria-valuemax", "100"); barra.setAttribute("aria-valuenow", String(pct)); barra.setAttribute("aria-label", t("rodando"));
       box.appendChild(barra);
-      box.appendChild(el("span", "andando", t("rodando") + " " + pct + "%" + (ultima ? " · " + ultima : "")));
+      box.appendChild(el("span", "andando", (e.externa ? t("rodando_auto", { h: String(e.inicio || "").slice(11, 16) }) : t("rodando")) + " " + pct + "%" + (ultima ? " · " + ultima : "")));
       (e.mensagens || []).slice(-4, -1).forEach(function (m) { box.appendChild(el("span", "log", m.hora + "  " + m.texto)); });
       return;
     }
@@ -862,6 +870,11 @@ window.LEXSUITE_RADAR = null;
       tb.appendChild(tbody); historicoDiv.appendChild(tb);
     }).catch(function () { historicoDiv.textContent = t("falha"); });
   }
+  // 0.7.14: de minuto em minuto, confere se começou uma leitura agendada (a agenda do Windows roda noutra janela)
+  setInterval(function () {
+    if (MODO !== "app" || vigia || document.hidden) return;
+    fetch("/estado", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (e) { if (e.rodando) { mostrarEstado(e); vigiar(); } }).catch(function () {});
+  }, 60000);
   function vigiar() {
     if (vigia) return;
     $("b-rodar").disabled = true; $("b-salvar-rodar").disabled = true;
@@ -950,7 +963,8 @@ window.LEXSUITE_RADAR = null;
     $("c-msg").textContent = ""; $("c-teste-txt").textContent = "";
     var ag = APP && APP.config.agendavel; $("c-agendar").disabled = !ag; $("c-agendar").checked = !!(APP && APP.config.agendado) || (ag && !(APP && APP.config.pasta));
     cHoras = ((APP && APP.config.horarios) || ["20:00", "08:00"]).slice(); cDias = (APP && APP.config.dias) || "todos";
-    $("c-avisar").checked = !(APP && APP.config.avisar_ao_terminar === false); $("c-hora-nova").value = "";
+    $("c-avisar").checked = !(APP && APP.config.avisar_ao_terminar === false); $("c-aba").checked = !!(APP && APP.config.abrir_em_aba);
+    $("c-l-tela").textContent = t("c_tela"); $("c-l-aba").textContent = t("c_aba"); $("c-hora-nova").value = "";
     desenharAgenda();
     fetch("/pastas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
       var sp = $("c-pasta"); sp.textContent = "";
@@ -990,7 +1004,11 @@ window.LEXSUITE_RADAR = null;
   function infoConfig() {
     var dl = $("c-info"); dl.textContent = ""; if (!APP) return;
     function par(k, v) { dl.appendChild(el("dt", null, k)); dl.appendChild(el("dd", null, v || "—")); }
-    par(t("licenca"), (APP.conta && APP.conta.texto) || "—"); par(t("c_versao"), APP.versao); par(t("c_pasta_robo"), APP.pasta_robo);
+    par(t("licenca"), (APP.conta && APP.conta.texto) || "—");
+    var ac = (APP.conta && APP.conta.aceite) || {};
+    if (ac.aceito) par(t("termos"), t("termos_ok", { n: ac.nome || "—", d: dataHora(ac.aceito_em) || ac.aceito_em || "—", v: ac.versao || "—" }));
+    else if (ac.link) par(t("termos"), t("termos_falta"));
+    par(t("c_versao"), APP.versao); par(t("c_pasta_robo"), APP.pasta_robo);
     par(t("c_controle"), APP.config.planilha || (APP.config.pasta_base ? t("c_controle_falta") : t("c_sem_pasta")));
     par(t("c_chave"), APP.atualizacao && APP.atualizacao.chave ? APP.atualizacao.impressao : t("c_chave_falta"));
     par(t("c_atu_pasta"), (APP.atualizacao && (APP.atualizacao.pasta || APP.atualizacao.url)) || t("c_sem_pasta"));
@@ -1013,7 +1031,7 @@ window.LEXSUITE_RADAR = null;
     var cod = $("c-codigo").value.trim().toUpperCase(); if (!$("c-codigo").readOnly && cod && !(APP && APP.conta && APP.conta.codigo === cod)) corpo.codigo = cod;
     if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
     if ($("c-agendar").checked && !cHoras.length) { $("c-msg").textContent = t("ag_um"); return; }
-    corpo.horarios = cHoras.slice(); corpo.dias = $("c-dias").value; corpo.avisar_ao_terminar = $("c-avisar").checked;
+    corpo.horarios = cHoras.slice(); corpo.dias = $("c-dias").value; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
     post("/config", corpo).then(function (r) {
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
       $("c-msg").textContent = t("c_salvo") + (r.agendar_msg ? " " + r.agendar_msg : ""); $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); carregar();
@@ -1309,7 +1327,11 @@ window.LEXSUITE_RADAR = null;
   }
   function bannerControle() {
     var b = $("banner"), p = (D.prefs || {}), c = p.controle || {}, txt = "";
-    if (APP && APP.conta && APP.conta.codigo && !APP.conta.ok) { b.hidden = false; b.textContent = APP.conta.texto; b.className = "banner erro"; return; }
+    if (APP && APP.conta && APP.conta.codigo && !APP.conta.ok) {
+      b.hidden = false; b.textContent = APP.conta.texto; b.className = "banner erro";
+      if (APP.conta.aceite_link) { var la = el("a", null, t("aceite_abrir")); la.href = APP.conta.aceite_link; la.target = "_blank"; la.rel = "noopener noreferrer"; b.appendChild(document.createTextNode(" ")); b.appendChild(la); }
+      return;
+    }
     if (c.mensagem) txt = c.mensagem;
     if (p.erro) txt = (txt ? txt + " " : "") + p.erro;
     b.hidden = !txt; b.textContent = txt; b.className = "banner" + (p.erro ? " erro" : "");
@@ -1637,7 +1659,7 @@ window.LEXSUITE_RADAR = null;
     g.appendChild(el("div", "grupo-menu", t("menu_contatos")));
     add(t("colar_contatos"), colarContatos);
     g.appendChild(el("div", "grupo-menu", t("menu_programa")));
-    add(t("config"), function () { abrirConfig(false); }); add(t("perfil"), abrirPerfil); add(t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); });
+    add(t("config"), function () { abrirConfig(false); }); add(t("perfil"), abrirPerfil); add(t("abrir_aba"), function () { post("/abrir-em-aba", {}); }); add(t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); });
   }
   function abrirMenu() { montarMenu(); $("gaveta").hidden = false; $("veu").hidden = false; $("b-menu").setAttribute("aria-expanded", "true"); var p = $("gaveta").querySelector("button"); if (p) p.focus(); }
   function fecharMenu() { $("gaveta").hidden = true; $("veu").hidden = true; $("b-menu").setAttribute("aria-expanded", "false"); }

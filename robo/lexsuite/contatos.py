@@ -56,6 +56,29 @@ Responda **só** com uma tabela Markdown com estas 8 colunas, uma linha por cana
 """
 
 
+def _cpf_valido(d):
+    if len(d) != 11 or d == d[0] * 11:
+        return False
+    for n in (9, 10):
+        soma = sum(int(d[i]) * (n + 1 - i) for i in range(n))
+        if (soma * 10 % 11) % 10 != int(d[n]):
+            return False
+    return True
+
+
+def _tem_cpf_valido(cels, canal):
+    """Sequência de 11 dígitos (com ou sem pontuação) que é um CPF válido. No canal telefone, o valor (celular com DDD
+    também tem 11 dígitos) não é conferido; as outras colunas são."""
+    for k, cel in enumerate(cels):
+        if k == 3 and canal == "telefone":
+            continue
+        for m in re.finditer(r"\d[\d.\-\s]{9,16}\d", cel):
+            d = re.sub(r"\D", "", m.group(0))
+            if _cpf_valido(d):
+                return True
+    return False
+
+
 def _cel(x):
     return str(x or "").replace("|", "/").replace("\n", " ").strip()
 
@@ -110,7 +133,7 @@ def colar(texto, empresas_por_processo, hoje=None):
         junto = " ".join(cels).lower()
         if proc not in empresas_por_processo:
             motivo = "processo que não está na sua lista"
-        elif _CPF.search(" ".join(cels)):
+        elif _CPF.search(" ".join(cels)) or _tem_cpf_valido(cels, canal):
             motivo = "tem CPF (não pode entrar)"
         elif any(re.search(r"\b" + re.escape(p) + r"\b", junto) for p in _PROIBIDO):
             motivo = "parece dado de reclamante, testemunha, preposto ou advogado da outra parte"
