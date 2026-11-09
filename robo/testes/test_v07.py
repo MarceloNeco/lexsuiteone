@@ -897,3 +897,82 @@ class V0714b(unittest.TestCase):
             d = (hoje - dt.timedelta(days=k % 50)).isoformat()
             b.guardar_lead({"processo": f"p{k}", "tribunal": f"TRT{k % 24 + 1}", "data_publicacao": d, "valor_causa": (k % 7) * 60000}, d)
         self.assertLessEqual(len(b.retorno(dias=60)), 2000)
+
+
+class V0715(unittest.TestCase):
+    """0.7.15: "Interromper" para num ponto seguro sem deixar nada pela metade; aviso do horário perdido."""
+
+    def test_interromper_para_no_ponto_seguro(self):
+        from lexsuite import monitor, djen, radar, banco as bd
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        chamadas = []
+        orig_meta, orig_baixar = djen.meta_caderno, djen.baixar_caderno
+        djen.meta_caderno = lambda sigla, data, aviso=print, motivos=None: (chamadas.append((sigla, data)) or {"versao": "1"})
+        djen.baixar_caderno = lambda *a, **k: [{"processo": a[0] + a[1]}]
+        tent, lidos = [], []
+        try:
+            with self.assertRaises(radar.Interrompida):
+                monitor.coletar_caderno(["TRT2", "TRT15"], 1, b, aviso=lambda *_: None, hoje=dt.date(2026, 11, 10),
+                                        lidos=lidos, tentativas=tent, parar=lambda: len(chamadas) >= 2)
+        finally:
+            djen.meta_caderno, djen.baixar_caderno = orig_meta, orig_baixar
+        self.assertEqual(len(chamadas), 2)  # parou antes do terceiro Diário
+        self.assertEqual(tent[-1]["causa"], "interrompida")
+        self.assertIsNone(b.versao_caderno("TRT2", "2026-11-10"))  # nada marcado como lido: a próxima leitura continua
+
+    def test_estado_parar_vale_so_para_a_leitura_atual(self):
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        e = app.Estado(eco=None, arquivo=os.path.join(pasta, "saida", "leitura.json"))
+        self.assertFalse(e.parar())
+        e.comecar()
+        self.assertFalse(e.parar())
+        with open(e.arquivo_parar(), "w", encoding="utf-8") as f:
+            json.dump({"quando": dt.datetime.now().isoformat(timespec="seconds"), "quem": "ana@example.com"}, f)
+        self.assertTrue(e.parar())
+        e.terminar({"pt": "x"})
+        e.comecar()  # leitura nova: o pedido antigo some
+        self.assertFalse(e.parar())
+
+    def test_horario_perdido(self):
+        from lexsuite import agendar
+        cfg = {"radar": {"horarios": ["08:00", "20:00"]}}
+        self.assertEqual(agendar.horario_perdido(cfg, dt.datetime(2026, 11, 9, 9, 17)), "08:00")
+        self.assertEqual(agendar.horario_perdido(cfg, dt.datetime(2026, 11, 9, 8, 5)), "")  # na hora: não é atraso
+        self.assertEqual(agendar.horario_perdido(cfg, dt.datetime(2026, 11, 10, 7, 0)), "20:00")  # a de ontem à noite
+        from lexsuite import causas
+        self.assertTrue(causas.e_aviso("interrompida"))
+        self.assertIn("continua de onde parou", causas.mensagem("interrompida"))
+
+
+class V0715b(unittest.TestCase):
+    def test_interromper_no_laco_da_receita_fecha_a_rodada(self):
+        """Parada durante as consultas à Receita: o que já foi gravado entra na rodada, nas estatísticas e na planilha;
+        os Diários não são marcados como lidos (a próxima leitura continua)."""
+        from lexsuite import radar, monitor, conta, cnpj, banco as bd
+        pasta = tempfile.mkdtemp()
+        b = bd.Banco(os.path.join(pasta, "t.db"))
+        novos = [{"processo": f"000{k}-11.2026.5.02.0001", "tribunal": "TRT2", "vara": "V", "empresas": [f"Empresa Fictícia {k} Ltda"],
+                  "cnpjs": [], "data_publicacao": "2026-11-09", "fonte": "DJEN"} for k in range(5)]
+        orig = (monitor.coletar_caderno, radar.acoes_do_dia, conta.verificar)
+        def coletar(*a, **k):
+            k["lidos"].append(("TRT2", "2026-11-09", "1"))
+            return [{"x": 1}]
+        monitor.coletar_caderno = coletar
+        radar.acoes_do_dia = lambda pubs, ano, vistos: [dict(n) for n in novos]
+        conta.verificar = lambda cfg, versao, hoje=None, pedir=None, retorno=None: cfg.setdefault("conta", {}).update({"ok": True, "resposta": "ok", "ultima_ok": hoje.isoformat(), "codigo": "LEX-7K4M-2PQ9"})
+        cont = {"n": 0}
+        def parar():
+            cont["n"] += 1
+            return cont["n"] > 3  # deixa gravar 3 ações e pede para parar
+        try:
+            with self.assertRaises(radar.Interrompida):
+                radar.executar({"radar": {"tribunais": ["TRT2"]}, "conta": {"codigo": "LEX-7K4M-2PQ9"}}, b, lambda *_: None, pasta,
+                               agora=dt.datetime(2026, 11, 9, 20, 0), parar=parar)
+        finally:
+            monitor.coletar_caderno, radar.acoes_do_dia, conta.verificar = orig
+        self.assertEqual(len(b.todos_leads()), 3)
+        self.assertEqual(b.rodadas()[0]["novas_acoes"], 3)  # a rodada parcial conta as 3 gravadas
+        self.assertEqual(b.execucoes("radar", 1)[0]["resultado"], "interrompida")
+        self.assertTrue(b.estatisticas())  # estatísticas atualizadas
+        self.assertIsNone(b.versao_caderno("TRT2", "2026-11-09"))  # o Diário não ficou marcado como lido

@@ -17,6 +17,11 @@ from . import cnpj as receita
 from . import compartilhar, config, conta, djen, monitor, preferencias, saidas, saude, tribunais
 
 
+class Interrompida(Exception):
+    """Alguém clicou em "Interromper": a leitura parou num ponto seguro (0.7.15). O que já foi gravado fica; o Diário
+    interrompido não é marcado como lido, e a próxima leitura continua de onde parou."""
+
+
 class RoboDesligado(Exception):
     """O suporte desligou o robô, a validade acabou ou a versão instalada é velha demais (aba Controle)."""
 GRANDES_GRUPOS = [  # nomes que quase sempre têm jurídico próprio (ficam no fim da lista, não somem)
@@ -175,7 +180,7 @@ def registrar_tentativas(banco, tentativas, origem, versao, quando=None):
 
 
 def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False, pasta_diag=None, agora=None, versao="",
-             caminho_config=None, origem="botão"):
+             caminho_config=None, origem="botão", parar=None):
     """Uma rodada do radar: confere o controle do escritório, baixa o caderno de cada tribunal escolhido, separa as
     ações novas contra empresa, consulta a Receita quando há CNPJ, guarda, avalia a saúde, registra no log e grava
     a saída local e a planilha compartilhada. Devolve a situação. Pode levantar RoboDesligado e rede.BloqueadoForaDoBrasil."""
@@ -219,7 +224,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     try:
         lidos = []
         try:
-            pubs = monitor.coletar_caderno(escolhidos, dias, banco, pasta_diag, aviso, lidos=lidos, tentativas=tentativas)
+            pubs = monitor.coletar_caderno(escolhidos, dias, banco, pasta_diag, aviso, lidos=lidos, tentativas=tentativas, parar=parar)
         finally:
             try:
                 registrar_tentativas(banco, tentativas, origem, versao)
@@ -232,7 +237,14 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         if consultar and com_cnpj:
             aviso(f"  Consultando a Receita para {com_cnpj} empresa(s) com CNPJ no Diário...")
         feitas = falhas = 0
-        for n in novos:
+        interrompida = False
+        todos_novos, novos_feitos = novos, []
+        for n in todos_novos:
+            if parar and parar():  # 0.7.15: para aqui; o que já foi gravado entra na contagem, nas estatísticas e na planilha
+                interrompida = True
+                aviso("  Leitura interrompida a pedido: fecho a rodada com o que já foi gravado.")
+                break
+            novos_feitos.append(n)
             n["rodada"], n["visto_em"] = rodada_id, agora.isoformat(timespec="seconds")
             if consultar and n.get("cnpjs"):
                 # 0.7.11: o CNPJ só vale para a ficha se o nome na Receita bater com o da empresa processada (o texto
@@ -257,17 +269,19 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
                 if feitas % 25 == 0:
                     aviso(f"  Receita: {feitas} de {com_cnpj}")
             banco.guardar_lead(n, agora.date().isoformat())
-        monitor.guardar([], banco, lidos)
+        novos = novos_feitos
+        if not interrompida:  # Diário interrompido não fica marcado como lido: a próxima leitura continua de onde parou
+            monitor.guardar([], banco, lidos)
         detalhes = {}
         for n in novos:
             detalhes.setdefault(n.get("tribunal") or "?", {"processos": 0, "acoes": 0})["acoes"] += 1
         banco.registrar_rodada({"id": rodada_id, "quando": agora.isoformat(timespec="minutes"), "modo": "caderno",
                                 "conferidas": len(pubs), "novas_processos": 0, "novas_acoes": len(novos), "detalhes": detalhes})
         saude.registrar(banco, saude.avaliar(pubs, novos, feitas, falhas, agora.date()), aviso)
-        registro.update({"lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj, "resultado": "ok"})
+        registro.update({"lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj, "resultado": "interrompida" if interrompida else "ok"})
     except Exception as e:
         from . import causas
-        registro.update({"resultado": "erro", "erro": f"{e.__class__.__name__}: {e}"[:300], "causa": causas.classificar(e),
+        registro.update({"resultado": "interrompida" if isinstance(e, Interrompida) else "erro", "erro": f"{e.__class__.__name__}: {e}"[:300], "causa": causas.classificar(e),
                          "duracao": round(time.perf_counter() - inicio)})
         banco.registrar("radar", registro)
         raise
@@ -296,6 +310,8 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         if base_compartilhada and (cfg.get("compartilhar") or {}).get("planilha", True):
             if not gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso):
                 situacao["aviso_planilha"] = True
+    if interrompida:  # tudo já foi fechado (contagem, estatísticas, planilha); avisa quem chamou que foi a pedido
+        raise Interrompida("interrompida")
     return situacao
 
 
