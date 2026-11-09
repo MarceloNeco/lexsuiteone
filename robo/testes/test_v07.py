@@ -943,3 +943,36 @@ class V0715(unittest.TestCase):
         from lexsuite import causas
         self.assertTrue(causas.e_aviso("interrompida"))
         self.assertIn("continua de onde parou", causas.mensagem("interrompida"))
+
+
+class V0715b(unittest.TestCase):
+    def test_interromper_no_laco_da_receita_fecha_a_rodada(self):
+        """Parada durante as consultas à Receita: o que já foi gravado entra na rodada, nas estatísticas e na planilha;
+        os Diários não são marcados como lidos (a próxima leitura continua)."""
+        from lexsuite import radar, monitor, conta, cnpj, banco as bd
+        pasta = tempfile.mkdtemp()
+        b = bd.Banco(os.path.join(pasta, "t.db"))
+        novos = [{"processo": f"000{k}-11.2026.5.02.0001", "tribunal": "TRT2", "vara": "V", "empresas": [f"Empresa Fictícia {k} Ltda"],
+                  "cnpjs": [], "data_publicacao": "2026-11-09", "fonte": "DJEN"} for k in range(5)]
+        orig = (monitor.coletar_caderno, radar.acoes_do_dia, conta.verificar)
+        def coletar(*a, **k):
+            k["lidos"].append(("TRT2", "2026-11-09", "1"))
+            return [{"x": 1}]
+        monitor.coletar_caderno = coletar
+        radar.acoes_do_dia = lambda pubs, ano, vistos: [dict(n) for n in novos]
+        conta.verificar = lambda cfg, versao, hoje=None, pedir=None, retorno=None: cfg.setdefault("conta", {}).update({"ok": True, "resposta": "ok", "ultima_ok": hoje.isoformat(), "codigo": "LEX-7K4M-2PQ9"})
+        cont = {"n": 0}
+        def parar():
+            cont["n"] += 1
+            return cont["n"] > 3  # deixa gravar 3 ações e pede para parar
+        try:
+            with self.assertRaises(radar.Interrompida):
+                radar.executar({"radar": {"tribunais": ["TRT2"]}, "conta": {"codigo": "LEX-7K4M-2PQ9"}}, b, lambda *_: None, pasta,
+                               agora=dt.datetime(2026, 11, 9, 20, 0), parar=parar)
+        finally:
+            monitor.coletar_caderno, radar.acoes_do_dia, conta.verificar = orig
+        self.assertEqual(len(b.todos_leads()), 3)
+        self.assertEqual(b.rodadas()[0]["novas_acoes"], 3)  # a rodada parcial conta as 3 gravadas
+        self.assertEqual(b.execucoes("radar", 1)[0]["resultado"], "interrompida")
+        self.assertTrue(b.estatisticas())  # estatísticas atualizadas
+        self.assertIsNone(b.versao_caderno("TRT2", "2026-11-09"))  # o Diário não ficou marcado como lido
