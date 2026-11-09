@@ -27,7 +27,10 @@ article { background: #fff; border: 1px solid var(--linha); border-radius: 12px;
 section { border-top: 1px solid var(--linha); padding-top: 6px; } section:first-of-type { border-top: 0; }
 h2 { font-size: 1.15rem; color: var(--marinho); margin: 18px 0 8px; } h3 { font-size: 1rem; margin: 14px 0 4px; }
 p, li { margin: 6px 0; }
-mark { background: #ffe58a; }
+mark { background: #ffe58a; border-radius: 3px; }
+mark.atual { background: #f2a23a; color: #1a1205; box-shadow: 0 0 0 2px #f2a23a; }
+.busca button { border: 1px solid #c9d0db; background: #fff; border-radius: 50%; width: 34px; height: 34px; font-size: 1rem; cursor: pointer; color: var(--marinho); }
+.busca button[disabled] { opacity: .4; cursor: default; }
 .escondida { display: none; }
 .aceite { margin-top: 20px; background: var(--wash); border: 1px solid #e3cfa3; border-radius: 12px; padding: 16px 18px; }
 .aceite h2 { margin-top: 0; }
@@ -44,7 +47,7 @@ mark { background: #ffe58a; }
 <body>
 <div class="faixa">
   <div class="tit"><h1>Termos do RADAR JUDICIAL</h1><p>LexSuiteONE · SolverONE · versão 1.1 · (data da publicação)</p></div>
-  <label class="busca"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#4a5468" stroke-width="2.2"/><path d="M15.5 15.5 21 21" stroke="#4a5468" stroke-width="2.2" stroke-linecap="round"/></svg><input id="busca" type="search" placeholder="Procurar nos termos (ex.: sócios, planilha, prazo)" aria-label="Procurar nos termos"><span id="achados"></span></label>
+  <label class="busca"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#4a5468" stroke-width="2.2"/><path d="M15.5 15.5 21 21" stroke="#4a5468" stroke-width="2.2" stroke-linecap="round"/></svg><input id="busca" type="search" placeholder="Procurar nos termos (ex.: sócios, planilha, prazo)" aria-label="Procurar nos termos"><span id="achados"></span><button type="button" id="anterior" aria-label="Resultado anterior" title="Anterior (Shift+Enter)" disabled>▲</button><button type="button" id="proximo" aria-label="Próximo resultado" title="Próximo (Enter)" disabled>▼</button></label>
 </div>
 <div class="proposta"><b>Proposta para revisão</b> (Produto, 09/Nov/2026): esta faixa e o botão "ver como fica depois de aceito" existem só nesta revisão.</div>
 <div class="miolo">
@@ -182,8 +185,22 @@ mark { background: #ffe58a; }
         });
       }
     });
-    achados.textContent = q ? (n ? n + " seção(ões) com “" + q + "”" : "nada encontrado") : "";
+    marcas = Array.prototype.slice.call(texto.querySelectorAll("mark")); atual = -1;
+    if (marcas.length) ir(0); else achados.textContent = q ? "nada encontrado" : "";
+    document.getElementById("anterior").disabled = document.getElementById("proximo").disabled = marcas.length < 2;
   });
+  var marcas = [], atual = -1;
+  function ir(i) {  // vai até o resultado i, destaca e mostra "3 de 7"
+    if (!marcas.length) return;
+    if (atual >= 0 && marcas[atual]) marcas[atual].classList.remove("atual");
+    atual = (i + marcas.length) % marcas.length;
+    marcas[atual].classList.add("atual");
+    marcas[atual].scrollIntoView({ behavior: "smooth", block: "center" });
+    achados.textContent = (atual + 1) + " de " + marcas.length;
+  }
+  document.getElementById("proximo").addEventListener("click", function () { ir(atual + 1); });
+  document.getElementById("anterior").addEventListener("click", function () { ir(atual - 1); });
+  busca.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); ir(atual + (ev.shiftKey ? -1 : 1)); } });
   var li = document.getElementById("li"), bt = document.getElementById("aceitar"), nome = document.getElementById("nome");
   function conferir() { bt.disabled = !(li.checked && nome.value.trim().split(/\s+/).filter(function (p) { return p.length > 1; }).length >= 2); }
   li.addEventListener("change", conferir); nome.addEventListener("input", conferir);
