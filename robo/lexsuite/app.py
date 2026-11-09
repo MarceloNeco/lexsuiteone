@@ -240,6 +240,8 @@ class Servidor(ThreadingHTTPServer):
         self.caminho_config = os.path.join(pasta, "config.json")
         self.caminho_db = os.path.join(pasta, "lexsuite.db")
         self.modelo = os.path.join(pasta, "radar_modelo.html")
+        import time as _t
+        self.ultimo_pedido = _t.monotonic()  # 0.7.16: a janela preta fecha sozinha quando a tela some (ver vigiar_tela)
 
     def config(self):
         return config.carregar(self.caminho_config, aviso=lambda *_: None)
@@ -361,6 +363,8 @@ class Tratador(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self._host_local():
             return self._responder({"erro": "pedido recusado"}, status=403)
+        import time as _t
+        self.server.ultimo_pedido = _t.monotonic()
         u = urlparse(self.path)
         qs = parse_qs(u.query)
         s = self.server
@@ -474,6 +478,15 @@ class Tratador(BaseHTTPRequestHandler):
         caminho = urlparse(self.path).path
         if not self._host_local() or not self._da_propria_pagina():
             return self._responder({"erro": "pedido recusado"}, status=403)
+        import time as _t
+        self.server.ultimo_pedido = _t.monotonic()
+        if caminho == "/sair":  # 0.7.16: "Sair do RADAR" fecha a tela e a janela preta (se não houver leitura nesta janela)
+            if self.server.estado.rodando:
+                return self._responder({"ok": False, "motivo": "Há uma leitura em andamento: espere terminar ou clique em Interromper. "
+                                                                "/ A reading is in progress."})
+            self._responder({"ok": True})
+            threading.Timer(0.5, self.server.shutdown).start()
+            return None
         try:
             tamanho = int(self.headers.get("Content-Length") or 0)
             corpo = json.loads(self.rfile.read(tamanho) or b"{}")
@@ -959,6 +972,31 @@ def _prefere_aba(pasta):
         return False
 
 
+FECHAR_SEM_TELA_S = 180  # 0.7.16: a tela pergunta o estado a cada 30 s; sem pergunta por 3 minutos, ela foi fechada
+
+
+def vigiar_tela(servidor, aviso=print, limite_s=FECHAR_SEM_TELA_S, passo_s=15, relogio=None, dormir=None):
+    """Fecha a janela preta quando a tela foi fechada (nenhum pedido por `limite_s`) e não há leitura nem planilha à
+    espera nesta janela. Se o computador dormiu (o relógio pulou), recomeça a contar."""
+    import time as _t
+    relogio, dormir = relogio or _t.monotonic, dormir or _t.sleep
+    anterior = relogio()
+    while True:
+        dormir(passo_s)
+        agora = relogio()
+        if agora - anterior > max(60, passo_s * 4):  # acordou de repouso: dá tempo de a tela voltar a falar
+            servidor.ultimo_pedido = agora
+        anterior = agora
+        ocupado = servidor.estado.rodando or getattr(servidor, "_planilha_tentando", False)
+        if ocupado:
+            servidor.ultimo_pedido = agora
+            continue
+        if agora - servidor.ultimo_pedido > limite_s:
+            aviso("  A tela foi fechada: encerro o programa (a leitura automática continua marcada no Windows).")
+            servidor.shutdown()
+            return True
+
+
 def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
     if not espera:
         ja = procurar_aberto()
@@ -986,6 +1024,7 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
         except Exception:  # migrar a leitura automática nunca impede a tela de abrir
             pass
     threading.Thread(target=migrar, daemon=True, name="migrar-agenda").start()
+    threading.Thread(target=vigiar_tela, args=(servidor, aviso), daemon=True, name="vigiar-tela").start()
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:
