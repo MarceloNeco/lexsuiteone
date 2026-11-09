@@ -122,7 +122,11 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- (nada) Próximo, com os desenhos da Arquitetura: termos por pessoa e "Atualizar estatísticas" (itens 79 e 82).
+- **0.7.16 pequena, antes do e-mail de quarta** (itens 98 a 100 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`): leitura
+  da planilha grande (feita no ramo), regra de "ação nova" mais estreita (20.699 "novos" em dois TRTs), aba Arquivo da
+  planilha com 90 dias + trabalhados, tirar "compartilhar a pasta" do e-mail/site/manual, ressalvas da Operação.
+  Depois, 0.7.17: armazenamento completo (`documentacao/DESENHO-PLANILHA-GRANDE.md`) e itens 89 a 97. Roteiro do dono em
+  `documentacao/PROXIMOS-PASSOS-2026-11-09.md`.
 
 ### Arquivos em uso
 - (nenhum)
@@ -370,6 +374,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 09/Nov | Produto | Arquitetura | Item 82 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`: **"Atualizar estatísticas"** (só totais, sem Lista nem Arquivo) de 1, 3, 6 ou 12 meses para trás, por frente, tribunal e vara, em fila noturna aos poucos e com agendamento periódico. Pede desenho curto: até quando o DJEN guarda os cadernos antigos (a API de caderno aceita datas passadas?), volume e tempo (TRT2 é grande; 1 ano dos 24 TRTs ≈ 6 mil cadernos), limite seguro de pedidos por noite sem incomodar os sistemas do CNJ, e se a fonte melhor para série longa é o DataJud (que já traz encerramento). Produto implementa na 0.7.15 depois do desenho | sim (Arquitetura, 09/Nov): `documentacao/DESENHO-ESTATISTICAS-HISTORICAS.md`; aguarda P10 a P12 do dono antes de implementar |
 | 09/Nov | Produto | Operação | 0.7.14 pronta na `main`. Ao publicar: **43 arquivos no download completo e 42 no de atualização** (novos `lexsuite/contatos.py` e `lexsuite/frentes.py`). Depois, teste no Windows (ou peça ao dono): "Abrir a planilha" abre o Excel em somente leitura; com ela aberta, "Ler o Diário agora" mostra o aviso de planilha aberta e grava sozinho alguns minutos depois de fechar o Excel; "Editar Preferências e Exclusões" abre para editar | sim (Operação, 09/Nov): 0.7.14 publicada às 13:01 UTC, 43 e 42 arquivos conferidos; o teste no Windows fica com o dono (roteiro em "Preciso do dono" da Operação), porque a Operação roda em Linux |
 | 09/Nov | Produto | Arquitetura | `CLAUDE.md` ("Como entregar"): a contagem do pacote passa a 43 e 42 arquivos na 0.7.14 (novos `contatos.py` e `frentes.py`) | não |
+| 09/Nov | Produto | Arquitetura | **Planilha grande** (`documentacao/DESENHO-PLANILHA-GRANDE.md`, parte "Para a Arquitetura"): uma planilha por frente quando o tributário entrar (ideia do dono; colunas diferentes; Preferências por frente ou comuns; migração; textos); conferir que limpar a planilha (vitrine) não conflita com a retenção de 12 meses do banco; teto ou resumo mais cedo do banco com o volume de dois TRTs. Desenho curto; nada entra na 0.7.16 | não |
 
 ## Perguntas ao dono (uma lista só; a Produto consolida e leva ao dono)
 
