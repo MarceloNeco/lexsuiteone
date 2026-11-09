@@ -51,6 +51,19 @@ pendente que a versão já supõe atendido.
   é ele que pode aceitar os termos").
 - Nada de regra nova além destas. Nenhuma consulta direta a `lex_*`/`sol_*`: só as funções `admin_*`.
 
+**3b. Acréscimo (09/Nov, noite, decisão do dono): termos em duas camadas.** Além do aceite do escritório, cada pessoa que
+usa o programa aceita os termos de uso no cadastro (por versão). Já aplicado no banco: tabela `sol_termos` (versões
+vigentes), `admin_sol_termos()` (lista: `termo, suite, alcance escritorio|pessoa, titulo, versao, vigente_desde, link`),
+`admin_sol_termo_publicar(p_termo, p_versao, p_link, p_hash_texto, p_motivo)` (muda a versão vigente, motivo obrigatório,
+registrado) e `sol_aceite_situacao(p_app, p_licenca, p_termo, p_email)` (situação de um aceite: `aceito, versao,
+aceito_em, fuso, nome, email, protocolo, versao_vigente, link, precisa_aceitar`). `admin_sol_aceites` passou a devolver
+`fuso`. Na ficha da licença, bloco **"Termos"** com duas partes: (a) escritório, como já descrito; (b) **pessoas**: para
+cada pessoa da licença, o último aceite do termo `lexsuiteone-uso` (de `admin_sol_aceites(app, codigo)` filtrado por
+`termo`), mostrando nome, e-mail, versão, data/hora com o `fuso` informado e protocolo; se a versão for diferente da
+vigente em `admin_sol_termos`, marcar "versão antiga: precisa aceitar de novo"; sem aceite, "ainda não aceitou". Na aba
+Configuração do produto, a lista de `admin_sol_termos` (termo, alcance, versão, desde, link) e, por enquanto só leitura,
+sem botão de publicar versão (fica para depois, com desenho).
+
 **4. O que esperar (vem do LexSuiteONE, colado por mim).** O "publicado" da página de aceite e do e-mail com `{{email}}`
 e `&nome=`; o aviso de que a trava da KR Law foi ligada; a ampliação do check de `lex_eventos` com tipos próprios
 (`termos_aceitos`, `aceite_dispensado`, `aceite_exigido`) numa sessão em que eu esteja no desktop (até lá, tudo é

@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v8 (v7 + ação 'aceite': a página pública de termos grava por aqui, com e-mail de confirmação): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v9 (v8 + termos em duas camadas: escritório e pessoa; 'cadastrar' aceita aceite_uso; 'verificar' trava sem aceite da pessoa quando o programa declara suporte): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -21,6 +21,8 @@ const PUBLICOS = new Set(["gmail.com", "googlemail.com", "outlook.com", "outlook
   "globo.com", "ig.com.br", "zipmail.com.br", "proton.me", "protonmail.com", "pm.me", "tutanota.com", "gmx.com", "mail.com"]);
 const CONTATO = "judicial@solverone.com.br";
 const LINK_ACEITE = "https://judicial.solverone.com.br/aceite.html";
+const TERMO_ESCRITORIO = "lexsuiteone-termos";   // contrato + tratamento de dados: o responsável aceita uma vez (libera a licença)
+const TERMO_PESSOA = "lexsuiteone-uso";          // termos de uso: cada pessoa aceita no cadastro do programa, por versão
 const REMETENTE = "SolverONE <nao-responda@solverone.com.br>";
 const AVISOS_POR_DIA = 20;
 // Retorno dos processos à SolverONE (decisão do dono, 09/Nov): só contagens por situação. Situações do programa:
@@ -34,6 +36,14 @@ const dominioDe = (email: string) => email.split("@")[1] ?? "";
 // Tira do texto de erro a pasta do usuário do Windows (traz o nome da pessoa) e e-mails.
 function semDadoPessoal(t: string) {
   return t.replace(/([a-z]:[\\/]+users[\\/]+)[^\\/"'\s]+/gi, "$1~").replace(/[^\s@"']+@[^\s@"']+\.[^\s@"']+/g, "[e-mail]");
+}
+
+// Traduz o erro da função do banco num motivo curto para a tela.
+function motivoAceite(m: unknown) {
+  const t = String(m ?? "");
+  return /desconhecido/i.test(t) ? "codigo_desconhecido" : /tentativas/i.test(t) ? "limite" : /responsável/i.test(t) ? "email_nao_e_do_responsavel"
+    : /não cadastrada/i.test(t) ? "pessoa_nao_cadastrada" : /mudaram de versão/i.test(t) ? "versao_antiga" : /nome completo/i.test(t) ? "nome_incompleto"
+    : /nome/i.test(t) ? "nome_incompleto" : /e-mail/i.test(t) ? "email_invalido" : /termo/i.test(t) ? "dados_invalidos" : "erro";
 }
 
 Deno.serve(async (req) => {
@@ -72,13 +82,8 @@ Deno.serve(async (req) => {
     const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim();
     const { data: r, error: erro } = await sb.rpc("sol_aceite_registrar", { p: {
       app: "radar-judicial", licenca: codigo, termo: texto(e.termo, 60), versao: texto(e.versao, 20), hash: texto(e.hash, 64).toLowerCase(),
-      nome: texto(e.nome, 120), email, navegador: texto(e.navegador, 120), origem: e.origem === "site" ? "site" : "email", ip } });
-    if (erro || !r || typeof r !== "object") {
-      const m = String(erro?.message ?? "");
-      const motivo = /desconhecido/i.test(m) ? "codigo_desconhecido" : /tentativas/i.test(m) ? "limite" : /responsável/i.test(m) ? "email_nao_e_do_responsavel"
-        : /nome completo/i.test(m) ? "nome_incompleto" : /e-mail/i.test(m) ? "email_invalido" : /termo/i.test(m) ? "dados_invalidos" : "erro";
-      return json({ ok: false, motivo }, motivo === "erro" ? 500 : 200);
-    }
+      nome: texto(e.nome, 120), email, navegador: texto(e.navegador, 120), origem: e.origem === "site" ? "site" : "email", ip, fuso: texto(e.fuso, 60) } });
+    if (erro || !r || typeof r !== "object") return json({ ok: false, motivo: motivoAceite(erro?.message) }, 200);
     const a = r as Record<string, unknown>;
     const quando = new Date(String(a.aceito_em)).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
     await sb.from("lex_eventos").insert({ codigo, email, tipo: "licenca_alterada", quem: `cliente:${email}`,
@@ -141,6 +146,7 @@ Deno.serve(async (req) => {
 
   let email: string | null = (instAntes && instAntes.codigo === codigo) ? instAntes.email : null;
   const avisos: Array<{ tipo: string; ref: Record<string, string> }> = [];
+  let aceiteUsoErro = "";
 
   if (acao === "cadastrar") {
     const novo = texto(e.email, 120).toLowerCase();
@@ -173,6 +179,15 @@ Deno.serve(async (req) => {
     if (!conta.documento) { ajuste.doc_tipo = docTipo; ajuste.documento = documento; }
     if (Object.keys(ajuste).length) await sb.from("lex_contas").update(ajuste).eq("codigo", codigo);
 
+    // Aceite dos termos de uso pela pessoa (camada 2): o programa manda aceite_uso {versao, fuso} marcado na caixa do cadastro.
+    const au = (e.aceite_uso && typeof e.aceite_uso === "object") ? e.aceite_uso as Record<string, unknown> : null;
+    if (au && aprovacao !== "recusado") {
+      const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim();
+      const { data: ra, error: ea } = await sb.rpc("sol_aceite_registrar", { p: { app: "radar-judicial", licenca: codigo, termo: TERMO_PESSOA, versao: texto(au.versao, 20),
+        hash: texto(au.hash, 64).toLowerCase(), nome, email: novo, navegador: `RADAR ${versao}`.slice(0, 120), origem: "programa", ip, fuso: texto(au.fuso, 60) } });
+      if (ea || !ra) aceiteUsoErro = motivoAceite(ea?.message);
+      else { const a = ra as Record<string, unknown>; await evento("licenca_alterada", novo, `termos de uso aceitos pela pessoa: versão ${a.versao}, protocolo ${a.protocolo}, por ${nome}`); }
+    }
     if (!ja) { await evento("cadastro", novo, nome); avisos.push({ tipo: "pessoa_nova", ref: { nome, dominio } }); }
     else if (email && email !== novo) await evento("troca_de_pessoa", novo, `antes: ${email}`);
     else if (ja.nome !== nome || ja.papel !== papel) await evento("alteracao_de_dados", novo, `nome: ${ja.nome} -> ${nome}; função: ${ja.papel} -> ${papel}`);
@@ -245,8 +260,22 @@ Deno.serve(async (req) => {
     mensagem = `Antes do primeiro uso, o responsável do escritório precisa aceitar os termos (leva 3 minutos): ${link}`;
     (aceiteInfo as Record<string, unknown>).link = link;
   }
+  // Termos em duas camadas (decisão do dono, 09/Nov): escritório (contrato, uma vez) e pessoa (termos de uso, por versão).
+  const { data: tEsc } = await sb.rpc("sol_aceite_situacao", { p_app: "radar-judicial", p_licenca: codigo, p_termo: TERMO_ESCRITORIO, p_email: null });
+  const { data: tPes } = email ? await sb.rpc("sol_aceite_situacao", { p_app: "radar-judicial", p_licenca: codigo, p_termo: TERMO_PESSOA, p_email: email }) : { data: null };
+  const termos: Record<string, unknown> = {
+    escritorio: { ...(tEsc as Record<string, unknown> ?? {}), exigido: !!conta.exigir_aceite },
+    pessoa: tPes ? { ...(tPes as Record<string, unknown>) } : { termo: TERMO_PESSOA, aceito: false, precisa_aceitar: true },
+  };
+  if (aceiteUsoErro) (termos.pessoa as Record<string, unknown>).erro_aceite = aceiteUsoErro;
+  // A pessoa deste computador ainda não aceitou a versão vigente dos termos de uso: trava só quando o programa declara que
+  // sabe pedir o aceite (suporta_aceite_uso: true, a partir da versão que a Produto fizer); programa antigo só recebe o aviso.
+  if (ok && acao === "verificar" && e.suporta_aceite_uso === true && email && (termos.pessoa as Record<string, unknown>).precisa_aceitar) {
+    ok = false; motivo = "aceite_uso_pendente";
+    mensagem = `Antes de usar, aceite os termos de uso (versão ${(termos.pessoa as Record<string, unknown>).versao_vigente ?? ""}) na tela de cadastro. Texto: ${(termos.pessoa as Record<string, unknown>).link ?? LINK_ACEITE}`;
+  }
   const resposta: Record<string, unknown> = { ok, motivo, escritorio: conta.escritorio, validade: conta.validade ?? "", mensagem,
-    modalidade: conta.modalidade ?? "instalado", aceite: aceiteInfo };   // item F: "nuvem" = a tela avisa e continua lendo
+    modalidade: conta.modalidade ?? "instalado", aceite: aceiteInfo, termos };   // item F: "nuvem" = a tela avisa e continua lendo
   if (aprovacaoPessoa) resposta.aprovacao = aprovacaoPessoa;
   if (emUso) resposta.em_uso = emUso;
   if (retorno) resposta.retorno = retorno;
