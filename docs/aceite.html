@@ -94,7 +94,7 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
       <h2>Aceite registrado</h2>
       <p>Protocolo: <span class="protocolo" id="protocolo"></span></p>
       <p id="quando" class="mudo"></p>
-      <p>Guarde este protocolo (ou imprima esta página). Uma cópia dos termos fica sempre em <a href="aceite.html">judicial.solverone.com.br/aceite.html</a>. Agora você pode seguir com a instalação pelo e-mail de boas-vindas.</p>
+      <p>Você vai receber um e-mail de confirmação com este protocolo. Guarde-o (ou imprima esta página). Uma cópia dos termos fica sempre em <a href="aceite.html">judicial.solverone.com.br/aceite.html</a>. Agora você pode seguir com a instalação pelo e-mail de boas-vindas.</p>
     </div>
   </div>
 </div></main>
@@ -123,7 +123,7 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
       var j = r.ok ? await r.json() : null;
       if (j && j.ok) {
         quem.textContent = "Este aceite é dado em nome de " + j.escritorio + " (código " + c + ")." + (j.ja_aceito ? " Já existe um aceite registrado para este escritório; um novo aceite não faz mal." : ""); quem.hidden = false;
-        if (j.email && !campoEmail.value) { campoEmail.value = String(j.email).toLowerCase(); fixar(campoEmail); }   // e-mail do responsável cadastrado na licença
+        if (j.email_mascarado && !campoEmail.value) campoEmail.placeholder = j.email_mascarado + " (o e-mail do responsável, como no e-mail de boas-vindas)";
       }
       else quem.hidden = true;
     } catch (e) { quem.hidden = true; }
@@ -145,15 +145,15 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
     botao.disabled = true; mostrar("Registrando…", "info");
     try {
       var hash = await sha256(termos.innerText.replace(/\s+/g, " ").trim());
-      var r = await fetch(NUVEM + "/rest/v1/rpc/sol_aceite_registrar", { method: "POST", headers: { apikey: CHAVE, Authorization: "Bearer " + CHAVE, "Content-Type": "application/json" },
-        body: JSON.stringify({ p: { app: APP, licenca: codigo, termo: TERMO, versao: VERSAO, hash: hash, nome: nome, email: email, navegador: navigator.userAgent.slice(0, 120), origem: q.get("codigo") ? "email" : "site" } }) });
+      // Grava pela função da nuvem lex-conta (ação "aceite"): a chave publicável não executa a função de escrita.
+      var r = await fetch(NUVEM + "/functions/v1/lex-conta", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acao: "aceite", codigo: codigo, termo: TERMO, versao: VERSAO, hash: hash, nome: nome, email: email, navegador: navigator.userAgent.slice(0, 120), origem: q.get("codigo") ? "email" : "site" }) });
       var j = null; try { j = await r.json(); } catch (e) {}
       if (!r.ok || !j || !j.ok) {
-        var m = (j && (j.message || j.hint)) || "";
-        if (/desconhecido/i.test(m)) m = "Código de cliente não encontrado. Confira no e-mail de boas-vindas.";
-        else if (/tentativas/i.test(m)) m = "Muitas tentativas. Espere um pouco e tente de novo.";
-        else if (/responsável/i.test(m)) m = "O aceite é feito com o e-mail do responsável pela licença. Abra o link que veio no e-mail de boas-vindas.";
-        else if (!m) m = "Não consegui registrar agora. Confira a internet e tente de novo; se continuar, escreva para judicial@solverone.com.br.";
+        var MOTIVOS = { codigo_desconhecido: "Código de cliente não encontrado. Confira no e-mail de boas-vindas.", codigo_invalido: "O código de cliente tem o formato LEX-XXXX-XXXX.",
+          limite: "Muitas tentativas. Espere um pouco e tente de novo.", email_nao_e_do_responsavel: "O aceite é feito com o e-mail do responsável pela licença. Abra o link que veio no e-mail de boas-vindas.",
+          nome_incompleto: "Escreva o nome completo: nome e sobrenome.", email_invalido: "Confira o e-mail.", dados_invalidos: "Dados dos termos inválidos; recarregue a página e tente de novo." };
+        var m = MOTIVOS[(j && j.motivo) || ""] || "Não consegui registrar agora. Confira a internet e tente de novo; se continuar, escreva para judicial@solverone.com.br.";
         botao.disabled = false; return mostrar(m, "erro");
       }
       msg.hidden = true; document.getElementById("form").hidden = true;
