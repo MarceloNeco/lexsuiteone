@@ -2,8 +2,9 @@
 
 O escritório pede "estatísticas de N meses para trás" (padrão 3, ajustável) nos tribunais marcados. O RADAR lê os
 Diários antigos aos poucos (30 por vez, com pausa entre eles), à noite depois da leitura agendada ou quando o escritório
-clica em "Ler agora", e guarda **só os totais** por dia, tribunal, vara, frente e faixa de valor em
-`estatisticas_diarias`. Não entra nada na Lista, no Arquivo nem na planilha, e nada vai à SolverONE além do que já ia.
+clica em "Ler agora", e guarda os totais por dia, tribunal, vara, frente e faixa de valor em `estatisticas_diarias` e,
+só neste computador, o número dos processos já contados (`historico_processos`, para não contar duas vezes). Não entra
+nada na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE.
 Se o CNJ não entregar um Diário antigo, o dia fica marcado "sem Diário" e a fila segue.
 """
 
@@ -64,7 +65,7 @@ def _ano_minimo(data):
 
 
 def _somar(banco, tribunal, data, novos):
-    """Soma as ações novas do dia em estatisticas_diarias (sem guardar processo nenhum)."""
+    """Soma as ações novas do dia em estatisticas_diarias (o número dos processos fica só em historico_processos)."""
     from .banco import faixa_valor
     contagem = {}
     for n in novos:
@@ -80,6 +81,7 @@ def _somar(banco, tribunal, data, novos):
 def processar(banco, limite=POR_VEZ, aviso=print, parar=None, pausa=PAUSA_S, andamento=None):
     """Lê até `limite` Diários da fila (do mais novo para o mais antigo). Devolve {lidos, sem_diario, erros, novas}."""
     feitos = {"lidos": 0, "sem_diario": 0, "erros": 0, "novas": 0}
+    tentar_de_novo_os_erros(banco)  # revisão da 0.7.18: o que deu erro volta para a fila a cada nova rodada
     fila = banco.con.execute("SELECT tribunal, data FROM historico WHERE situacao = 'fila' ORDER BY data DESC, tribunal LIMIT ?",
                              (int(limite),)).fetchall()
     vistos = banco.processos_vistos() | {p for (p,) in banco.con.execute("SELECT processo FROM historico_processos")}
@@ -110,9 +112,17 @@ def processar(banco, limite=POR_VEZ, aviso=print, parar=None, pausa=PAUSA_S, and
         except Exception as e:  # noqa: BLE001 - um Diário com problema não para a fila
             if e.__class__.__name__ == "BloqueadoForaDoBrasil":
                 raise
+            from . import causas
+            causa = causas.classificar(e)
+            if causa in ("governo_fora", "sem_internet", "ainda_nao_liberado_3h") or any(c in str(e) for c in ("HTTP 429", "HTTP 403", "HTTP 5")):
+                feitos["parou"] = causas.mensagem(causa)  # site fora, limite ou sem internet: para a fila e tenta depois
+                aviso(f"  Estatísticas antigas: parei ({causas.mensagem(causa)}). O resto fica na fila para a próxima vez. "
+                      f"/ Stopped; the rest stays queued.")
+                banco.con.commit()
+                break
             banco.con.execute("UPDATE historico SET situacao = 'erro', quando = ? WHERE tribunal = ? AND data = ?", (quando, trib, data))
             feitos["erros"] += 1
-            aviso(f"  Estatísticas antigas: {trib} {data} não deu certo ({e.__class__.__name__}); fica marcado e a fila segue.")
+            aviso(f"  Estatísticas antigas: {trib} {data} não deu certo ({e.__class__.__name__}); tento de novo na próxima vez.")
         banco.con.commit()
         if pausa and k < len(fila):
             time.sleep(pausa)

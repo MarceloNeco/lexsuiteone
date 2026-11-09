@@ -446,5 +446,43 @@ class V0718(unittest.TestCase):
         _ = json
 
 
+class V0718Revisao(unittest.TestCase):
+    """Revisão da 0.7.18 (Operação): turma trabalhada fica; CNJ fora do ar para a fila sem marcar erro; dia de outro
+    tribunal não perde a estatística antiga."""
+
+    def test_turma_trabalhada_fica_na_lista(self):
+        from lexsuite import radar
+        b = _banco_com(1)
+        b.guardar_lead({"processo": "8888888-11.2026.5.02.0001", "tribunal": "TRT2", "vara": "10ª Turma - Cadeira 3",
+                        "empresas": ["Empresa Fictícia Cliente Ltda"]}, dt.date.today().isoformat())
+        b.mudar_situacao(["8888888-11.2026.5.02.0001"], "em_contato")
+        itens = radar.montar_radar({"radar": {"tribunais": ["TRT2"], "dias_na_pagina": 5}}, b)["itens"]
+        self.assertIn("8888888-11.2026.5.02.0001", [i["processo"] for i in itens])
+
+    def test_cnj_fora_do_ar_para_a_fila(self):
+        from lexsuite import banco as bd, historico as h
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        h.pedir(b, 1, ["TRT2"], hoje=dt.date(2026, 11, 9))
+        orig = djen.meta_caderno
+        def fora(*a, **k):
+            raise RuntimeError("HTTP 503 em comunicaapi (fictício)")
+        djen.meta_caderno = fora
+        try:
+            r = h.processar(b, limite=5, aviso=lambda *_: None, pausa=0)
+        finally:
+            djen.meta_caderno = orig
+        self.assertIn("parou", r)
+        self.assertEqual(h.situacao(b)["erros"], 0)
+        self.assertEqual(h.situacao(b)["na_fila"], 20)
+
+    def test_estatistica_antiga_de_outro_tribunal_fica(self):
+        from lexsuite import banco as bd
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        b.con.execute("INSERT INTO estatisticas_diarias VALUES ('2026-11-06','TRT3','1ª Vara','trabalhista','','',7,0,'x')")
+        b.guardar_lead({"processo": "1", "tribunal": "TRT2", "vara": "1ª Vara", "empresas": ["X Fictícia Ltda"], "data_publicacao": "2026-11-06"}, "2026-11-06")
+        b.atualizar_estatisticas()
+        self.assertEqual(sum(e["novas"] for e in b.estatisticas() if e["tribunal"] == "TRT3"), 7)
+
+
 if __name__ == "__main__":
     unittest.main()
