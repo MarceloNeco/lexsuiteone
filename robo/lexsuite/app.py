@@ -268,6 +268,7 @@ class Servidor(ThreadingHTTPServer):
     def ultima_do_banco(self):
         """0.7.19: depois de reiniciar (atualização), a última leitura vem do banco, não "Ainda não leu". Consulta só
         leitura, guardada até o banco mudar (a tela pergunta o estado a cada poucos segundos)."""
+        import pathlib
         import sqlite3
         try:
             marca_ = os.path.getmtime(self.caminho_db)
@@ -275,22 +276,33 @@ class Servidor(ThreadingHTTPServer):
             return None
         if self._ultima_cache and self._ultima_cache[0] == marca_:
             return self._ultima_cache[1]
-        achou = None
-        try:
-            import pathlib  # M2 da revisão: caminho com # ou ? precisa ir codificado na URI
-            con = sqlite3.connect(pathlib.Path(self.caminho_db).resolve().as_uri() + "?mode=ro", uri=True, timeout=1)
+        sql = "SELECT quando, resumo FROM execucoes WHERE tipo = 'radar' ORDER BY quando DESC LIMIT 10"
+        linhas = None
+        # 1º só leitura pela URI (caminho com # ou ? vai codificado); 0.7.21: pasta em rede (\\servidor\...) não vira URI
+        # que o SQLite aceite, então tenta o jeito comum (o arquivo já existe, nada é criado)
+        for abrir in (lambda: sqlite3.connect(pathlib.Path(self.caminho_db).resolve().as_uri() + "?mode=ro", uri=True, timeout=1),
+                      lambda: sqlite3.connect(self.caminho_db, timeout=1)):
             try:
-                linhas = con.execute("SELECT quando, resumo FROM execucoes WHERE tipo = 'radar' ORDER BY quando DESC LIMIT 10").fetchall()
-            finally:
-                con.close()
-            for quando, dados in linhas:
-                e = json.loads(dados or "{}")
-                if e.get("resultado") == "ok" or e.get("lidas"):
-                    achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} ações novas contra empresas.",
-                             "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new lawsuits against companies."}
-                    break
-        except (sqlite3.Error, ValueError):
+                con = abrir()
+                try:
+                    linhas = con.execute(sql).fetchall()
+                finally:
+                    con.close()
+                break
+            except (sqlite3.Error, ValueError, OSError):
+                continue
+        if linhas is None:
             return None
+        achou = None
+        for quando, dados in linhas:
+            try:
+                e = json.loads(dados or "{}")
+            except ValueError:
+                continue
+            if e.get("resultado") == "ok" or e.get("lidas"):
+                achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} ações novas contra empresas.",
+                         "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new lawsuits against companies."}
+                break
         self._ultima_cache = (marca_, achou)
         return achou
 
@@ -384,7 +396,8 @@ class Tratador(BaseHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         if tipo.startswith("text/html"):  # 0.7.20 (sugestão da revisão): o navegador impõe "nenhum pedido externo"
             self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; "
-                             "img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'")
+                             "img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; "
+                             "form-action 'self'; frame-ancestors 'none'")
         self.end_headers()
         self.wfile.write(corpo)
 
@@ -734,10 +747,17 @@ class Tratador(BaseHTTPRequestHandler):
                     s.hist.update({"ultimo": r_})
                 except Exception as e:  # noqa: BLE001 - a tela mostra a mensagem certa, no idioma dela (4.1)
                     causa_, msg = _hist._causa(e)
-                    if causa_ == "erro_do_programa":  # B1 da revisão da 0.7.19: a mensagem diz que a SolverONE foi avisada; avisa de fato
+                    if causa_ == "erro_do_programa":
+                        # 0.7.21 (revisão da 0.7.20): a tela recebe na hora um texto sem promessa; só depois de o aviso
+                        # técnico chegar à SolverONE o texto passa a dizer que ela foi avisada (sem internet, não diz)
                         import traceback
-                        conta.registrar_erro(cfg, VERSAO, "estatisticas antigas", traceback.format_exc()[-1800:])
-                    s.hist.update({"erro": msg})
+                        detalhe = traceback.format_exc()[-1800:]
+                        s.hist.update({"erro": dict(_ERRO_HIST_NEUTRO)})
+                        s.hist["rodando"] = False
+                        if conta.registrar_erro(cfg, VERSAO, "estatisticas antigas", detalhe):
+                            s.hist.update({"erro": msg})
+                    else:
+                        s.hist.update({"erro": msg})
                 finally:
                     s.hist["rodando"] = False
                     s.hist.pop("parar", None)
@@ -942,6 +962,12 @@ def personalizar_manual(html, cfg):
         bloco = f"<div class=\"caixa\"><b>Para você, {h.escape(papel.lower())}</b><ul>{itens}</ul></div>"
     return html.replace("<!--OLA-->", ola, 1).replace("<!--PARA_VOCE-->", bloco, 1)
 
+
+# 0.7.21: texto do erro das estatísticas antigas antes de o aviso técnico chegar à SolverONE (sem promessa de aviso)
+_ERRO_HIST_NEUTRO = {"pt": "As estatísticas dos meses anteriores pararam por um problema no programa. O que já foi lido ficou guardado; "
+                           "tente de novo mais tarde e, se continuar, fale com judicial@solverone.com.br.",
+                     "en": "Previous months statistics stopped because of a program problem. What was already read is saved; "
+                           "try again later and, if it persists, contact judicial@solverone.com.br."}
 
 _ESCOLHER_PS = ("Add-Type -AssemblyName System.Windows.Forms; [Console]::OutputEncoding = [Text.Encoding]::UTF8; "
                 "$f = New-Object System.Windows.Forms.Form; $f.TopMost = $true; $f.ShowInTaskbar = $true; $f.Opacity = 0; "

@@ -387,6 +387,7 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .pasta-cam { display: block; font-size: .78rem; color: #3b4a5c; background: #f1f4f8; border-radius: 6px; padding: 3px 7px; margin-top: 4px; word-break: break-all; font-family: Consolas, "Courier New", monospace; }
 #c-teste-txt .pasta-cam { display: inline-block; margin-top: 2px; }
 .pasta-ok { color: #1e6b45; font-weight: 600; } .pasta-erro { color: #a3261b; font-weight: 600; }
+.dgo-aone-tour button { white-space: nowrap; }  /* 0.7.21: "Próximo ›" numa linha só (o resto do AssistONE é o master) */
 .saz-recado { color: #a3261b; font-weight: 600; }
 @media (max-width: 1240px) { body:has(#config:not([hidden])) #dgo-aone, body:has(#perfil:not([hidden])) #dgo-aone { --dgo-aone-sobe: 76px; --dgo-aone-sobe-pc: 76px; } }
 .perigo { border: 1px solid #c4473a; background: #fdecea; color: #a3261b; border-radius: 999px; padding: 6px 16px; font-weight: 700; font-size: .86rem; cursor: pointer; box-shadow: 0 1px 3px rgba(163,38,27,.25); }
@@ -3569,16 +3570,16 @@ window.LEXSUITE_RADAR = null;
                      en: "Each gazette reading, per court: when it ran, what was requested and the result. If something failed, the cause shows here in plain words." },
             atalhos: [{ rotulo: LER, acao: "#b-rodar", principal: true }] },
           configuracao: { titulo: { pt: "Configuração", en: "Settings" },
-            frase: { pt: "Código de cliente, onde ficam as planilhas, horários da leitura automática, armazenamento, termos e versão deste computador. O botão Salvar só acende quando algo mudou.",
-                     en: "Client code, where the spreadsheets live, automatic reading times, storage, terms and version of this computer. Save lights up only when something changed." },
+            frase: { pt: "Código de cliente, onde ficam as planilhas, horários da leitura automática, armazenamento, termos e versão deste computador. O botão Salvar só acende quando algo mudou. Da lista, à SolverONE vão só quantidades (por situação, dia, tribunal, frente e faixa de valor); nenhum nome, processo ou contato.",
+                     en: "Client code, where the spreadsheets live, automatic reading times, storage, terms and version of this computer. Save lights up only when something changed. From the list, only counts go to SolverONE (by status, day, court, practice and value range); no names, case numbers or contacts." },
             atalhos: [{ rotulo: { pt: "Onde ficam as planilhas", en: "Where spreadsheets live" }, acao: irPara("#c-pasta-cartoes"), principal: true }, { rotulo: { pt: "Leitura automática", en: "Automatic reading" }, acao: irPara("#c-agendar-wrap") },
                       { rotulo: { pt: "Armazenamento", en: "Storage" }, acao: irPara("#c-arm-wrap") }, { rotulo: { pt: "Termos", en: "Terms" }, acao: irPara("#c-termos-wrap") }] },
           perfil: { titulo: { pt: "Perfil", en: "Profile" },
             frase: { pt: "Quem usa este computador: nome, cargo e a licença do escritório. E-mail e escritório ficam fixos, por segurança.",
                      en: "Who uses this computer: name, role and the firm's licence. E-mail and firm are fixed, for security." } },
           cadastro: { titulo: { pt: "Primeiro acesso", en: "First access" },
-            frase: { pt: "Preencha o código de cliente, seu nome e e-mail e escolha a pasta das planilhas. Depois, o RADAR lê o Diário sozinho nos horários marcados.",
-                     en: "Fill in the client code, your name and e-mail, and choose the spreadsheet folder. Then RADAR reads the gazette by itself at the set times." } }
+            frase: { pt: "Preencha o código de cliente, seu nome e e-mail e escolha a pasta das planilhas. Depois, o RADAR lê o Diário sozinho nos horários marcados. Seu nome e e-mail ficam na licença do escritório; da lista, só quantidades vão à SolverONE.",
+                     en: "Fill in the client code, your name and e-mail, and choose the spreadsheet folder. Then RADAR reads the gazette by itself at the set times. Your name and e-mail are kept on the firm\u2019s licence; from the list, only counts go to SolverONE." } }
         },
         tour: [
           { seletor: "#b-menu", titulo: { pt: "Menu", en: "Menu" }, texto: { pt: "Todas as telas e funções, por grupo: Ver, Planilha, Contatos e Programa.", en: "Every screen and feature, by group: View, Spreadsheet, Contacts and Program." } },
