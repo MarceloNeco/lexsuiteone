@@ -407,7 +407,8 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
                                          "nome": os.path.basename(caminho)})
         return tudo_ok
     except PermissionError:
-        aviso("  A planilha está aberta no Excel (ou em outro programa): feche-a para ela ser atualizada. A lista está salva.")
+        aviso("  A planilha está aberta no Excel (ou em outro programa), ou falta permissão para gravar nesta pasta ou arquivo: "
+              "feche-a ou confira a pasta para ela ser atualizada. A lista está salva. / The spreadsheet is open or the folder is not writable; the list is saved.")
         banco.registrar("saude", {"fonte": "Pasta compartilhada", "situacao": "atenção", "detalhe": "planilha aberta em outro programa"})
     except Exception as e:  # a pasta pode estar fora do ar (Drive pausado); a rodada em si deu certo
         aviso(f"  Não consegui gravar a planilha compartilhada ({e.__class__.__name__}: {e}).")

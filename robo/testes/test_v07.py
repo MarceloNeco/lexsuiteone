@@ -179,6 +179,7 @@ class Compartilhada(unittest.TestCase):
         self.assertEqual(doc2["abas"][3]["linhas"][1][0], "Cliente Preservado Ltda")
         self.assertEqual(preferencias.carregar(os.path.dirname(caminho))["exclusoes"][0]["nome"], "Cliente Preservado Ltda")
         # planilha corrompida (em uso): não regrava, não perde nada
+        planilha.liberar_escrita(caminho)  # 0.7.21: a de consulta fica marcada somente leitura (usuário comum não grava)
         with open(caminho, "wb") as f:
             f.write(b"nao e um zip")
         self.assertEqual(compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "", "", lambda *_: None), "")
@@ -803,6 +804,11 @@ class V0714(unittest.TestCase):
         self.assertIn("Cópias", copia)
         import stat
         self.assertIn("Este arquivo é do escritório Escritório Teste", z.read("xl/worksheets/sheet1.xml").decode())  # 0.7.21
+        cfg_ruim = dict(cfg, escritorio="Escritório\x0b Ruim\x00 & Cia <Ltda>")  # 0.7.21 (revisão): controle some, XML válido
+        ok2, copia2 = compartilhar.gerar_copia(cfg_ruim, agora=dt.datetime(2026, 11, 9, 10, 31))
+        self.assertTrue(ok2, copia2)
+        import xml.dom.minidom
+        xml.dom.minidom.parseString(zipfile.ZipFile(copia2).read("xl/worksheets/sheet1.xml"))
         self.assertFalse(os.stat(caminho).st_mode & stat.S_IWRITE)  # 0.7.21: a de consulta fica marcada "somente leitura"
         self.assertTrue(os.stat(copia).st_mode & stat.S_IWRITE)  # a cópia de trabalho, não
         compartilhar.gravar_radar(cfg, pagina, b, "0.7.14", radar.COLUNAS_RADAR, radar.linha_csv, "", "", lambda *_: None, arquivo=[])  # regrava

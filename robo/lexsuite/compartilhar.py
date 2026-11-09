@@ -37,10 +37,10 @@ def candidatas():
     return achadas
 
 
-def nuvens():
+def nuvens(gdrive=None):
     """0.7.21 (decisão do dono): pastas de nuvem sincronizadas que existem neste Windows, para a tela oferecer como atalho
     da "pasta compartilhada": Google Drive para computador (Meu Drive / My Drive) e OneDrive. [{tipo, caminho}]."""
-    achadas = [{"tipo": "gdrive", "caminho": p} for p in candidatas()]
+    achadas = [{"tipo": "gdrive", "caminho": p} for p in (candidatas() if gdrive is None else gdrive)]
     home = os.path.expanduser("~")
     opcoes = [os.environ.get(v, "") for v in ("OneDriveCommercial", "OneDriveConsumer", "OneDrive")]
     try:
@@ -161,7 +161,8 @@ def criar_se_faltar(cfg, versao="", pasta_robo="", aviso=print):
     cabecalho = ["Hora", "Tribunal", "Vara", "Processo", "Rito", "Distribuída em", "Empresa(s)", "CNPJ"]
     planilha.escrever_xlsx(caminho, [{"nome": "Radar", "linhas": [cabecalho], "larguras": [8, 9, 34, 26, 12, 12, 40, 18]}]
                            + preferencias.abas_padrao()
-                           + [{"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo), versao, "", ""), "oculta": True, "larguras": [30, 80]}])
+                           + [{"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo), versao, "", ""), "oculta": True, "larguras": [30, 80]}],
+                           so_leitura_recomendado=True, marcar=True)  # 0.7.21 (revisão): já nasce só para leitura
     aviso(f"  Criei a planilha: {caminho}")
     return caminho
 
@@ -283,7 +284,7 @@ def gerar_copia(cfg, agora=None):
     os.makedirs(destino_pasta, exist_ok=True)
     destino = os.path.join(destino_pasta, f"{os.path.splitext(NOME_RADAR)[0]} - cópia {agora:%Y-%m-%d %Hh%Mm%S}.xlsx")
     from xml.sax.saxutils import escape as _esc
-    nome_esc = ((cfg.get("conta") or {}).get("escritorio_licenca") or cfg.get("escritorio") or "").strip()[:80]
+    nome_esc = _re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", ((cfg.get("conta") or {}).get("escritorio_licenca") or cfg.get("escritorio") or "")).strip()[:80]
     dono = f"do escritório {nome_esc}" if nome_esc else "do escritório"  # 0.7.21 (dono): o nome do escritório na faixa
     marca_copia = _esc(f"Cópia de trabalho gerada em {agora:%d/%m/%Y às %H:%M}. Este arquivo é {dono}: pode ser editado "
                        f"livremente e não é alterado pelo RADAR. Para os dados mais recentes, gere uma nova cópia.")

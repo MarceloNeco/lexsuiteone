@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.21 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.22 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,8 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.22:** AssistONE 1.1.0 (master do RootifyONE): no tour, o balão desliza de um passo ao outro, o personagem não
+  some (só se cobrir o que está sendo mostrado) e o "Próximo ›" cabe numa linha.
 - **0.7.21 (teste do dono no Windows):** pastas em duas opções (Neste computador, padrão, ou Pasta compartilhada:
   rede, OneDrive ou Google Drive para computador, com atalho quando estão instalados) e explicação antes de mudar;
   planilha de consulta marcada "somente leitura" no Windows (abre só para leitura até com dois cliques; "Editar

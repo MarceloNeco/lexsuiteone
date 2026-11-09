@@ -136,7 +136,7 @@ def liberar_escrita(caminho):
     """0.7.21: tira a marca "somente leitura" do Windows (a planilha de consulta fica marcada entre uma gravação e outra)."""
     import stat
     try:
-        if os.path.exists(caminho) and not os.access(caminho, os.W_OK):
+        if os.path.exists(caminho) and not (os.stat(caminho).st_mode & stat.S_IWRITE):  # bit, não os.access (root)
             os.chmod(caminho, stat.S_IREAD | stat.S_IWRITE)
     except OSError:
         pass
@@ -271,6 +271,8 @@ def escrever_xlsx(caminho, abas, so_leitura_recomendado=False, marcar=False):
     except BaseException:
         if os.path.exists(tmp):
             os.remove(tmp)
+        if marcar and os.path.exists(caminho):
+            marcar_so_leitura(caminho)  # 0.7.21 (revisão): troca falhou, a planilha antiga volta a ficar só para leitura
         raise
 
 

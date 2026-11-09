@@ -3,7 +3,7 @@
 1. "Preparar busca de contatos" gera um arquivo Markdown com as instruções e a tabela dos processos sem contato (no
    máximo N por dia, padrão 30: há tribunal que bloqueia quem abre muitos processos de terceiros).
 2. O advogado, logado no PJe, entrega o arquivo ao Claude in Chrome (opcional: dá para preencher à mão).
-3. "Colar contatos encontrados" lê a tabela Markdown de 8 colunas, sem IA, linha a linha, e recusa o que não pode
+3. "Trazer dados da área logada" (antes "Colar contatos encontrados") lê a tabela Markdown de 8 colunas, sem IA, linha a linha, e recusa o que não pode
    entrar (CPF, reclamante, canal desconhecido, processo que não está na lista).
 """
 
@@ -34,7 +34,7 @@ Para cada processo da tabela abaixo, na aba do PJe já logada:
 4. **Nunca** anote dado do reclamante, de testemunha, de preposto ou de advogado da outra parte. **Nunca** anote CPF.
 5. Só leitura: não clique em nada que peticione, assine ou altere o processo.
 
-## Formato da resposta (copie e cole de volta no {produto}, em "Colar contatos encontrados")
+## Formato da resposta (copie e cole de volta no {produto}: menu ☰, "Área logada" → "Trazer dados da área logada")
 
 Responda **só** com uma tabela Markdown com estas 8 colunas, uma linha por canal encontrado:
 
@@ -170,8 +170,8 @@ por dia. Para cada processo abaixo, procure **só o que está na coluna "falta"*
 
 Nunca anote dado do autor da ação, de testemunha ou de advogado da outra parte. Nunca anote CPF.
 
-Responda **só** com o bloco abaixo, uma linha por dado procurado (copie e cole de volta no {produto}, em "Colar resposta
-da área logada"):
+Responda **só** com o bloco abaixo, uma linha por dado procurado (copie e cole de volta no {produto}: menu ☰,
+"Área logada" → "Trazer dados da área logada"):
 
 ```
 {cabecalho}
