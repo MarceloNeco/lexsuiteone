@@ -728,7 +728,8 @@ class Tratador(BaseHTTPRequestHandler):
                     if s.hist.get("rodando"):
                         return self._responder({"ok": False, "motivo": "Espere a leitura em andamento terminar. / Wait for the reading in progress."})
                     s.hist.clear()
-                    s.hist.update({"rodando": True, "k": 0, "total": 0, "tribunal": "", "data": ""})
+                    s.hist_n = getattr(s, "hist_n", 0) + 1  # 0.7.21: cada leitura tem número; a antiga não mexe na nova
+                    s.hist.update({"rodando": True, "k": 0, "total": 0, "tribunal": "", "data": "", "n": s.hist_n})
             if caminho.endswith("pedir"):
                 try:
                     meses = max(1, min(24, int(corpo.get("meses") or _hist.MESES_PADRAO)))
@@ -737,14 +738,21 @@ class Tratador(BaseHTTPRequestHandler):
                 n = _hist.pedir(banco, meses, tribunais.validar(cfg["radar"].get("tribunais")), perfil=cfg["usuario"].get("email", ""))
                 return self._responder({"ok": True, "na_fila": n, "historico": _hist.situacao(banco)})
 
+            meu_n = s.hist.get("n")
+
+            def minha():  # esta leitura ainda é a da tela? (um envio de erro lento não pode sujar a leitura seguinte)
+                return s.hist.get("n") == meu_n
+
             def ler():
                 try:
                     b2 = bd.Banco(s.caminho_db)
                     def andamento(k, total, trib, data):
-                        s.hist.update({"k": k, "total": total, "tribunal": trib, "data": data})
+                        if minha():
+                            s.hist.update({"k": k, "total": total, "tribunal": trib, "data": data})
                     por_vez = int((cfg.get("radar") or {}).get("estatisticas_por_vez") or _hist.POR_VEZ)
-                    r_ = _hist.processar(b2, limite=por_vez, aviso=print, parar=lambda: bool(s.hist.get("parar")), andamento=andamento)
-                    s.hist.update({"ultimo": r_})
+                    r_ = _hist.processar(b2, limite=por_vez, aviso=print, parar=lambda: bool(minha() and s.hist.get("parar")), andamento=andamento)
+                    if minha():
+                        s.hist.update({"ultimo": r_})
                 except Exception as e:  # noqa: BLE001 - a tela mostra a mensagem certa, no idioma dela (4.1)
                     causa_, msg = _hist._causa(e)
                     if causa_ == "erro_do_programa":
@@ -752,15 +760,21 @@ class Tratador(BaseHTTPRequestHandler):
                         # técnico chegar à SolverONE o texto passa a dizer que ela foi avisada (sem internet, não diz)
                         import traceback
                         detalhe = traceback.format_exc()[-1800:]
-                        s.hist.update({"erro": dict(_ERRO_HIST_NEUTRO)})
-                        s.hist["rodando"] = False
-                        if conta.registrar_erro(cfg, VERSAO, "estatisticas antigas", detalhe):
-                            s.hist.update({"erro": msg})
-                    else:
+                        with s.hist_trava:
+                            if minha():
+                                s.hist.update({"erro": dict(_ERRO_HIST_NEUTRO), "rodando": False})
+                                s.hist.pop("parar", None)
+                        enviado = conta.registrar_erro(cfg, VERSAO, "estatisticas antigas", detalhe)
+                        with s.hist_trava:
+                            if enviado and minha():
+                                s.hist.update({"erro": msg})
+                    elif minha():
                         s.hist.update({"erro": msg})
                 finally:
-                    s.hist["rodando"] = False
-                    s.hist.pop("parar", None)
+                    with s.hist_trava:
+                        if minha():
+                            s.hist["rodando"] = False
+                            s.hist.pop("parar", None)
             threading.Thread(target=ler, daemon=True, name="estatisticas-antigas").start()
             return self._responder({"ok": True})
         if caminho == "/copia-planilha":

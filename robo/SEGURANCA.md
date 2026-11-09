@@ -1,7 +1,8 @@
 # Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.21)
 
 Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
-licença (código, versão e só quantidades por situação), o cadastro de quem usa (nome, e-mail, função e documento do
+licença (código, versão e só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou
+contato), o cadastro de quem usa (nome, e-mail, função e documento do
 escritório), o aceite dos termos (versão, data e fuso horário), avisos técnicos de erro (sem conteúdo de processos) e a
 procura de versão nova; ver "Rede". A relação de ações, as fichas, os contatos, as anotações e as estatísticas dos meses
 anteriores (totais e, só no computador, o número dos processos já contados) não saem do computador e da pasta do escritório.
