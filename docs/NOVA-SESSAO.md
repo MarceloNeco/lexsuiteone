@@ -1,11 +1,11 @@
-# Retomar o projeto numa sessão nova (estado em 08/Nov/2026, noite)
+# Retomar o projeto numa sessão nova (estado em 09/Nov/2026, manhã)
 
 Este arquivo existe para uma conversa nova do Claude Code começar sem reler o histórico. Leia junto `CLAUDE.md`,
 `robo/PENDENCIAS.md`, `docs/DNS-SOLVERONE.md`, `docs/PUBLICAR.md` e `docs/VISITA-KR-LAW.md`. Confirme o estado por fora antes de agir: nada aqui substitui conferir. **Antes de qualquer tarefa, rode `git pull` e leia `docs/QUADRO.md`**: é onde as três sessões anotam o que estão fazendo.
 
 ## O que já existe e funciona
 
-- Robô v0.7.12 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 101 testes verdes,
+- Robô v0.7.13 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 106 testes verdes,
   pacote em `releases/` e `docs/downloads/`. Tela local em 127.0.0.1, planilha `LexSuiteONE.xlsx` no Drive do escritório,
   atualização assinada (chave só na nuvem), manual personalizado, revisão de segurança (risco baixo). Na 0.7.9: horários
   de leitura escolhidos pelo escritório e leitura perdida compensada. Na 0.7.10 (publicada em 08/Nov, 16:39 UTC): domingo e
@@ -14,7 +14,9 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   a 0.7.12 (publicada em 08/Nov, 20:43 UTC) contém tudo dela (dias com Diário, aviso de versão nova com reinício sozinho,
   uma tela só, Configuração na engrenagem, barra de progresso, CNPJ ligado ao nome da empresa, lista de 10 em 10 com
   filtros e cartões, aviso de planilha aberta), mais o Painel com números e gráficos e a planilha nova (cabeçalho
-  azul-marinho, filtro, R$, destaque acima do mínimo e aba Como usar).
+  azul-marinho, filtro, R$, destaque acima do mínimo e aba Como usar). A 0.7.13 (publicada em 09/Nov, 04:39 UTC) corrige
+  o erro das 00h às 3h: o Diário de hoje ainda não liberado vira aviso e a leitura segue com os dias anteriores, cada
+  tribunal à parte, mensagens claras em PT e EN, "Histórico de leituras" na tela e aba Log visível.
 - Site https://judicial.solverone.com.br **no ar** (GitHub Pages, pasta `docs/`, HTTPS forçado). É gerado de `paginas/`
   por `python ferramentas/marca.py`: nunca edite `docs/index.html` nem `docs/404.html` à mão. Tem página inicial PT/EN
   com o carrossel "Como funciona" (quatro passos, passa com o dedo no celular; falta o dono confirmar num iPhone de
@@ -59,7 +61,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 - Repositório segue no GitHub pessoal até depois da visita; migração para a organização `solverone` sem impacto para o
   cliente (tudo que ele vê aponta para `judicial.solverone.com.br`). Roteiro em `robo/PENDENCIAS.md`.
 - Instalação no cliente (KR Law) na quinta-feira 12/Nov, na casa do Leandro, pelo dono. O pacote de quinta é a última
-  versão publicada (0.7.12 em 08/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
+  versão publicada (0.7.13 em 09/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
   em `docs/VISITA-KR-LAW.md`: rodam sozinhos, no Sonnet, na conta do escritório; param em login, token, certificado ou
   captcha e escrevem BLOQUEIO; o relatório final volta à sessão de Produto.
 - Publicação de versão (08/Nov): só a Operação publica, e só depois do dono escrever "publica a versão X" na conversa da

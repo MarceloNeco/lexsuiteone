@@ -47,7 +47,17 @@ serve a qualquer app da SolverONE que mande totais).
 Ordem: SQL (aplicar) → `lex-conta` v6 → RootifyONE 0.18.16 (ficha, lote, ativar/pausar, retorno, menu B2B, apps) →
 função `lex-equipe` + botão de boas-vindas (depois do texto e da prévia da Produto) → programa (Produto) manda o retorno.
 
-## 3. O que a Operação faz
+## 3. Acréscimos do dono (09/Nov, tarde) e estado
 
-Preencher a ficha da KR Law (responsável, e-mail de boas-vindas, domínio) quando a tela estiver no ar. **O e-mail de
-boas-vindas ao Leandro não sai até o dono dizer "pode enviar"**, e sai pelo botão com prévia, não à mão.
+- **Autorização do e-mail de boas-vindas = o clique do dono no botão do RootifyONE**, depois da prévia (destinatário,
+  assunto e texto preenchidos) e de uma confirmação. Não existe "pode enviar" em conversa. Prazo: sair até quarta, 11/Nov.
+  A Operação preenche a ficha da KR Law (responsável, e-mail de boas-vindas, domínio) quando a 0.18.16 estiver no ar.
+- **Botões (?)** em todo campo não óbvio do RootifyONE (começando pela ficha de licenças) e na diretriz geral: quadrinho
+  ali mesmo, sem escurecer a tela; clicou fora, fecha. Feito na 0.18.16 (`RF.ui.ajuda`, `RF.ui.campoAjuda`).
+- **Situações do processo** no programa usam as chaves `novo, visto, em_analise, em_contato, virou_cliente, descartado,
+  arquivado` (a Produto alinha); são as mesmas que a `lex-conta` aceita no `retorno` e que o RootifyONE mostra.
+- Estado em 09/Nov: código pronto e testado (RootifyONE 0.18.16, `lex-conta` v6, `lex-equipe` v1, SQL 2026-11-09);
+  **falta aplicar o SQL e publicar as duas funções no Supabase**, que depende do conector voltar numa sessão da
+  Arquitetura. Sem isso o botão de boas-vindas mostra "a função lex-equipe ainda não foi publicada". Plano B para
+  quarta, se o conector não voltar: o dono envia o e-mail pelo próprio Resend ou Gmail, com o texto da prévia copiado
+  (o RootifyONE monta a prévia mesmo sem a função).
