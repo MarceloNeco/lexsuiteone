@@ -114,6 +114,17 @@ def reclamadas_no_texto(texto):
     return nomes
 
 
+# 0.7.17: órgãos de 2º grau (turmas, gabinetes, seções especializadas) recebem recursos de processos que já existiam:
+# a lista de distribuição deles não é ação nova. Só varas e postos de 1º grau entram no RADAR.
+_SEGUNDO_GRAU = re.compile(r"\bturma\b|\bgabinete\b|desembargador|\bse[cç][aã]o\s+(especializada|de\s+diss[ií]dios)|\bSDI\b|\bSDC\b|"
+                           r"[oó]rg[aã]o\s+especial|tribunal\s+pleno|\bpleno\b|\bcadeira\b|vice-?presid|\bpresid[eê]ncia\b|corregedoria", re.I)
+
+
+def segundo_grau(vara):
+    """True para órgão de 2º grau (turma, gabinete, seção especializada, pleno, presidência)."""
+    return bool(_SEGUNDO_GRAU.search(vara or ""))
+
+
 def parece_inicio(texto):
     return bool(_INICIO.search(texto or ""))
 
@@ -124,7 +135,9 @@ def sinal_inicio(texto):
     if not m:
         return ""
     t = sem_acento(m.group(0)).lower()
-    return "audiência inicial" if t.startswith("audi") else "notificação inicial" if t.startswith(("notif", "notifique")) else "citação inicial"
+    if t.startswith("notifique"):
+        return "notifique-se a reclamada"  # da regra estrita do diagnóstico (diagnostico.ESTRITA), com rótulo próprio
+    return "audiência inicial" if t.startswith("audi") else "notificação inicial" if t.startswith("notif") else "citação inicial"
 
 
 def nota(lead, rito_ordinario_desde=40):

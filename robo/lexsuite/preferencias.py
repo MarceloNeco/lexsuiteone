@@ -84,6 +84,14 @@ def migrar_nome(pasta_base, aviso=None):
     antigo, novo = os.path.join(pasta_base, NOME_ANTIGO), os.path.join(pasta_base, NOME_ARQUIVO)
     if not os.path.exists(antigo) or os.path.exists(novo):
         return False
+    try:  # 0.7.17: antes de trocar o nome, guarda uma cópia da antiga em "Cópias de segurança" (uma vez só)
+        import shutil
+        pasta_c = os.path.join(pasta_base, "Cópias de segurança", "antes da troca de nome")
+        os.makedirs(pasta_c, exist_ok=True)
+        if not os.path.exists(os.path.join(pasta_c, NOME_ANTIGO)):
+            shutil.copy2(antigo, os.path.join(pasta_c, NOME_ANTIGO))
+    except OSError:
+        pass
     try:
         os.replace(antigo, novo)
     except OSError:

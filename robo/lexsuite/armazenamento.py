@@ -79,9 +79,21 @@ def aviso_tamanho(frente, linhas, limite):
     if nivel == "ok":
         return ""
     nome = FRENTE_LEGIVEL.get(frente, frente)
-    return (f"PLANILHA {nome.upper()} GRANDE: {linhas:,} de {int(limite):,} linhas ({pct}%). Recomendamos \"Limpar a planilha "
+    n1, n2 = f"{linhas:,}".replace(",", "."), f"{int(limite):,}".replace(",", ".")
+    return (f"PLANILHA {nome.upper()} GRANDE: {n1} de {n2} linhas ({pct}%). Recomendamos \"Limpar a planilha "
             f"(com cópia)\" no programa: antes, o RADAR guarda uma cópia completa. / Spreadsheet is getting large: use "
-            f"\"Clean up (with backup)\".").replace(",", ".")
+            f"\"Clean up (with backup)\".")
+
+
+def limpeza_recente(banco, horas=24):
+    """True se houve limpeza da planilha nas últimas `horas` (0.7.17: a limpeza automática não se repete a cada gravação)."""
+    for e in banco.execucoes("limpeza_planilha", 1):
+        try:
+            quando = dt.datetime.fromisoformat(str(e.get("quando", ""))[:19])
+        except ValueError:
+            return False
+        return dt.datetime.now() - quando < dt.timedelta(hours=horas)
+    return False
 
 
 # --- Disco ---------------------------------------------------------------------------------------------------------
@@ -148,9 +160,11 @@ def copias(base):
 
 
 def _podar(base, aviso):
-    """Deixa as COPIAS_GUARDADAS mais novas; apaga só pastas com o nome das cópias do RADAR."""
+    """Deixa as COPIAS_GUARDADAS mais novas entre as que o RADAR fez sozinho ou antes de limpar; as feitas à mão e as
+    exportações nunca são apagadas pelo programa (0.7.17). Só apaga pastas com o nome das cópias do RADAR."""
     apagadas = []
-    for c in copias(base)[COPIAS_GUARDADAS:]:
+    automaticas = [c for c in copias(base) if not c["nome"].endswith((" - feita à mão", " - exportação"))]
+    for c in automaticas[COPIAS_GUARDADAS:]:
         try:
             shutil.rmtree(c["caminho"])
             apagadas.append(c["nome"])
@@ -197,6 +211,7 @@ def copia_seguranca(cfg, banco, motivo="", aviso=print, agora=None, so_csv=False
                 copiadas += 1
         n = _csv_arquivo(os.path.join(destino, "Arquivo completo (todas as ações guardadas no programa).csv"), cfg, banco)
     except OSError as e:
+        shutil.rmtree(destino, ignore_errors=True)  # cópia pela metade não fica contando entre as guardadas
         return False, f"Não consegui gravar a cópia de segurança ({e.__class__.__name__})."
     banco.registrar("copia_seguranca", {"pasta": nome, "motivo": motivo, "planilhas": copiadas, "linhas_csv": n,
                                         "bytes": _tamanho(destino)})
@@ -211,16 +226,16 @@ def limpar(cfg, banco, pasta_robo, versao, aviso=print, automatico=False, hoje=N
     from . import radar
     hoje = hoje or dt.date.today()
     ok, onde = copia_seguranca(cfg, banco, "limpeza automática" if automatico else "antes de limpar", aviso)
-    if not ok and not automatico:
+    if not ok:  # 0.7.17 (revisão da Arquitetura): sem cópia bem-sucedida, não enxuga
+        if automatico:
+            aviso(f"  Sem cópia de segurança ({onde}): a aba Arquivo não foi enxugada; a planilha fica só com as linhas mais recentes até o limite.")
         return False, onde + " A limpeza não foi feita."
-    if not ok:
-        aviso(f"  Sem cópia de segurança: {onde} A aba Arquivo é enxugada mesmo assim (nada sai do programa).")
     corte_data = (hoje - dt.timedelta(days=DIAS_DEPOIS_DE_LIMPAR)).isoformat()
     banco.registrar("limpeza_planilha", {"corte": corte_data, "automatica": bool(automatico), "copia": onde if ok else "",
                                          "frentes": list(preferencias.NOMES_FRENTE)})
     if not automatico:  # na automática, quem chamou já está gravando a planilha
         radar.regravar_planilha(cfg, banco, pasta_robo, versao, aviso)
-    return True, ("Planilha limpa. Cópia completa em: " + onde) if ok else "Planilha enxugada sem cópia (pouco espaço no disco)."
+    return True, "Planilha limpa. Cópia completa em: " + onde
 
 
 # --- Retrato para a Configuração -----------------------------------------------------------------------------------
