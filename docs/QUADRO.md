@@ -93,6 +93,10 @@ Arquitetura (pedido no quadro).
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 09/Nov: **incidente**: o banco do pacote 0.7.14 (commit 0835aac: situações, ações, contatos, estatísticas, frente)
+  foi à `main` sem querer, junto de um envio do quadro feito a partir do ramo. Revertido na `main` com commit de reversão
+  (sem reescrever histórico) antes de qualquer publicação; a 0.7.13 sai só com a correção do erro das 3h, revisada. A
+  regra de enviar à `main` só por cópia limpa vale também para o quadro.
 - 09/Nov: **0.7.13 na `main`, pronta para publicar** (correção do erro das 00h às 3h, pedido da Operação): o Diário do
   dia ainda não liberado vira aviso e a leitura segue com os dias anteriores; um tribunal com problema não derruba os
   outros; mensagens claras em PT e EN; "Histórico de leituras" na tela e aba Log visível na planilha. O pacote grande
