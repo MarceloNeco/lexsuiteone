@@ -173,7 +173,7 @@ def leads(publicacoes, vara=None, ano_minimo=None, ja_vistos=()):
     for processo, pubs in por_processo.items():
         if processo in ja_vistos:
             continue
-        empresas, cnpjs, valor, inicio = [], [], None, False
+        empresas, cnpjs, valor, inicio, sinal = [], [], None, False, ""
         for p in pubs:
             candidatos = [d["nome"] for d in p["destinatarios"] if d["polo"] == "P"]
             candidatos += cl.reclamadas_no_texto(p["texto"])
@@ -186,7 +186,10 @@ def leads(publicacoes, vara=None, ano_minimo=None, ja_vistos=()):
                     cnpjs.append(c)
             valor = valor or cl.extrair_valor_causa(p["texto"])
             # "Lista de distribuição" é o próprio aviso de ação nova (Ato Conjunto CSJT 77/2023).
-            inicio = inicio or "distribui" in cl.sem_acento(p["tipo_comunicacao"]).lower() or cl.parece_inicio(p["texto"])
+            if "distribui" in cl.sem_acento(p["tipo_comunicacao"]).lower():
+                inicio, sinal = True, "lista de distribuição"
+            elif not inicio and cl.parece_inicio(p["texto"]):
+                inicio, sinal = True, cl.sinal_inicio(p["texto"])
         if not empresas:
             continue
         primeira = min(pubs, key=lambda x: x["data"])
@@ -202,6 +205,7 @@ def leads(publicacoes, vara=None, ano_minimo=None, ja_vistos=()):
             "cnpjs": cnpjs,
             "valor_causa": valor,
             "sinal_de_acao_nova": inicio,
+            "sinal": sinal,
             "tipo": primeira["tipo_documento"] or primeira["tipo_comunicacao"],
             "fonte": "DJEN",
             "id_orgao": primeira.get("id_orgao", ""),

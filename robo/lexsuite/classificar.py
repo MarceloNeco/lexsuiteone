@@ -35,9 +35,13 @@ _FIM_NOME = (r"(?=\s+(?:" + _ROT_PASSIVO + r"|" + _ROT_ATIVO + r"|ADVOGAD|PERIT|
 _PASSIVO = re.compile(_ROT_PASSIVO + r"\s*:\s*(.{3,160}?)" + _FIM_NOME)
 
 # Pistas de que a publicação é do começo do processo (ação recém-distribuída).
-_INICIO = re.compile(
-    r"audi[eê]ncia\s+(inicial|una|de\s+concilia)|notifica[cç][aã]o\s+inicial|"
-    r"designad[ao]\s+audi[eê]ncia|fica\s+.{0,40}notificad|distribu[ií]d[ao]|cita[cç][aã]o", re.I)
+# Sinal de ação nova no texto (0.7.16: mais estreito). Antes também valiam "fica ... notificado", "designada audiência",
+# "distribuído" e "citação", que aparecem em quase toda intimação de processo do ano: dois TRTs davam 20 mil "novos".
+# Agora só o que marca o começo da ação: audiência inicial ou una e notificação inicial (a lista de distribuição, o
+# sinal mais forte, é conferida pelo tipo da comunicação em djen.leads).
+# Alinhado à regra estrita do diagnóstico (diagnostico.ESTRITA), menos "designada audiência", que vale para qualquer audiência.
+_INICIO = re.compile(r"audi[eê]ncia\s+(inicial|una)\b|audi[eê]ncia\s+de\s+concilia[cç][aã]o|notifica[cç][aã]o\s+inicial|"
+                     r"notifique-se\s+a\s+reclamad|cita[cç][aã]o\s+inicial", re.I)
 
 # Assuntos que costumam pesar no valor da condenação (pista, não regra jurídica).
 ASSUNTOS_PESO = {
@@ -114,6 +118,15 @@ def parece_inicio(texto):
     return bool(_INICIO.search(texto or ""))
 
 
+def sinal_inicio(texto):
+    """Qual sinal de ação nova o texto traz ('audiência inicial', 'notificação inicial', 'citação inicial') ou ''."""
+    m = _INICIO.search(texto or "")
+    if not m:
+        return ""
+    t = sem_acento(m.group(0)).lower()
+    return "audiência inicial" if t.startswith("audi") else "notificação inicial" if t.startswith(("notif", "notifique")) else "citação inicial"
+
+
 def nota(lead, rito_ordinario_desde=40):
     """Nota de 0 a 100 com os motivos. Pesos são ponto de partida: o escritório ajusta."""
     pontos, motivos = 0, []
@@ -163,9 +176,14 @@ _RABO = re.compile(r"(?:\s+(?:intima[cç][aã]o|notifica[cç][aã]o|cita[cç][a�
                    r"ac[oó]rd[aã]o|ata de audi[eê]ncia|pauta))+\s*$", re.I)
 
 
+_E_OUTROS = re.compile(r"\s+e\s+outr[oa]s?\s*(\(\s*\d+\s*\))?\s*$", re.I)
+
+
 def limpar_nome(nome):
-    """Tira do fim do nome as palavras de cabeçalho do Diário ("... Ltda Intimação" vira "... Ltda")."""
-    return _RABO.sub("", re.sub(r"\s+", " ", nome or "").strip()).strip(" -–,:;")
+    """Tira do fim do nome as palavras de cabeçalho do Diário ("... Ltda Intimação" vira "... Ltda") e, desde a 0.7.16,
+    o "e Outros (1)" que o Diário acrescenta quando há mais de uma ré (as outras já aparecem em "Outras empresas")."""
+    n = _RABO.sub("", re.sub(r"\s+", " ", nome or "").strip()).strip(" -–,:;")
+    return _E_OUTROS.sub("", n).strip(" -–,:;")
 
 
 _LIGACOES = {"DE", "DA", "DO", "DAS", "DOS", "E", "EM", "A", "O", "S"}

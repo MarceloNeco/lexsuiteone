@@ -73,8 +73,8 @@ MENSAGENS = {
         "pt": "Este computador está sem internet (ou a rede bloqueou o acesso). Confira a conexão e tente de novo.",
         "en": "This computer has no internet (or the network blocked access). Check the connection and try again."},
     "interrompida": {
-        "pt": "Leitura interrompida a pedido. As ações já gravadas ficam; o resto é lido na próxima leitura (o Diário em que parou é baixado de novo).",
-        "en": "Reading stopped on request. Lawsuits already saved stay; the rest is read in the next reading (the gazette where it stopped is downloaded again)."},
+        "pt": "Leitura interrompida a pedido. As ações já gravadas ficam; o resto é lido na próxima leitura (os Diários desta leitura são baixados de novo).",
+        "en": "Reading stopped on request. Lawsuits already saved stay; the rest is read in the next reading (this reading's gazettes are downloaded again)."},
     "erro_do_programa": {
         "pt": "O programa encontrou um problema e parou esta leitura. A SolverONE já foi avisada. Tente de novo; se repetir, fale com judicial@solverone.com.br.",
         "en": "The program hit a problem and stopped this reading. SolverONE has been notified. Try again; if it repeats, write to judicial@solverone.com.br."},

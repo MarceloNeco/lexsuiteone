@@ -122,15 +122,22 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.16 completa, antes da visita de quinta** (decisão do dono, 09/Nov noite: tudo nesta versão; itens 89 a 101 de
-  `documentacao/FEEDBACK-TESTE-2026-11-09.md`): planilha por frente, cópias de segurança, limite com aviso,
-  armazenamento e disco, "ação nova" mais estreita (`documentacao/DESENHO-PLANILHA-GRANDE.md`), e os itens 89 a 97.
-  Prompts do dono em `documentacao/PROXIMOS-PASSOS-2026-11-09.md`.
+- (nada) **0.7.16 na `main`, pronta para publicar** (com o "pode" do dono, 09/Nov noite; revisada: 1 bloqueio corrigido
+  e aprovado na segunda revisão, 145 testes). A Operação revisa e publica com "publica a versão 0.7.16". Depois, a
+  Operação revisa e publica com "publica a versão 0.7.16".
 
 ### Arquivos em uso
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 09/Nov (noite): **0.7.16 completa** (itens 89 a 101, `documentacao/DESENHO-PLANILHA-GRANDE.md`): planilha por frente
+  (`LexSuiteONE - Trabalhista.xlsx`, migração do nome), leitura só das abas editáveis, Arquivo da planilha com 90 dias +
+  trabalhados sem repetir a aba Radar, limite de 60 mil linhas (aviso a 80%, limpeza com cópia a 100%), `Cópias de
+  segurança` (6), Configuração → Armazenamento com o disco, "ação nova" mais estreita com contagem por sinal, Configuração
+  em janela (✕, Salvar só com mudança), "Buscar na área logada" com `RESPOSTA PARA O RADAR v1`, valor e data no programa,
+  ✓, "Sair do RADAR", janela preta que fecha 3 min depois da tela, carregamento ao atualizar, termos das duas camadas
+  (trava da pessoa ainda desligada), site e manual sem "compartilhar com a SolverONE"; ressalvas da terceira revisão.
+  144 testes, 28 verificações de tela; 20.700 processos gravam a planilha em 3 s (3,8 MB). Pacote: 44 e 43 arquivos.
 - 09/Nov: **0.7.15 na `main`, pronta para publicar** (itens 85 a 88): botão **Interromper** que para num ponto seguro
   (entre Diários ou entre consultas à Receita; o que já foi gravado entra na rodada, nas estatísticas e na planilha; o
   Diário interrompido não fica marcado como lido; vale para a leitura agendada), aviso "fazendo agora a leitura das
@@ -380,6 +387,8 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 09/Nov | Produto | Operação | 0.7.14 pronta na `main`. Ao publicar: **43 arquivos no download completo e 42 no de atualização** (novos `lexsuite/contatos.py` e `lexsuite/frentes.py`). Depois, teste no Windows (ou peça ao dono): "Abrir a planilha" abre o Excel em somente leitura; com ela aberta, "Ler o Diário agora" mostra o aviso de planilha aberta e grava sozinho alguns minutos depois de fechar o Excel; "Editar Preferências e Exclusões" abre para editar | sim (Operação, 09/Nov): 0.7.14 publicada às 13:01 UTC, 43 e 42 arquivos conferidos; o teste no Windows fica com o dono (roteiro em "Preciso do dono" da Operação), porque a Operação roda em Linux |
 | 09/Nov | Produto | Arquitetura | `CLAUDE.md` ("Como entregar"): a contagem do pacote passa a 43 e 42 arquivos na 0.7.14 (novos `contatos.py` e `frentes.py`) | sim (Arquitetura, 09/Nov noite): já com 44/43 da 0.7.16 (`armazenamento.py`), pedido do dono |
 | 09/Nov | Produto | Arquitetura | **Planilha grande** (`documentacao/DESENHO-PLANILHA-GRANDE.md`): o dono delegou à Produto a estrutura e mandou pôr tudo na 0.7.16 (decisões 1 a 9: planilha por frente na mesma pasta, cópias de segurança, limite com aviso, armazenamento e disco, "ação nova" mais estreita). Revisar a parte "Para a Arquitetura" **sem bloquear**; se algo ferir regra de negócio ou de nuvem, pedido à Produto no mesmo dia | sim (Arquitetura, 09/Nov noite), **nada bloqueia**: as decisões 1 a 9 não mudam o que vai à SolverONE (só totais por situação; frentes somadas no retorno, e `dim2 = frente` já separa quando quiser) e batem com os termos 1.1 (seção 1: "planilhas, uma por área, e cópias de segurança, numa pasta escolhida pelo escritório"; seção 8: espaço em disco e cópias). Quatro observações: (1) **cópias de segurança em CSV** levam contatos, sócios e anotações para arquivos soltos: se a pasta estiver compartilhada com `integracao@`, a SolverONE teria acesso a elas; os termos cobrem (6.1: só para suporte, não copia), mas recomendo gravar `Cópias de segurança/` **fora** da subpasta compartilhada quando houver compartilhamento, ou avisar no manual; (2) **decisão 9 ("ação nova" mais estreita) é mudança de regra de negócio**: muda o que conta como processo novo, logo os totais do retorno e as estatísticas antes/depois da 0.7.16 não são comparáveis; registrar a data da mudança no Histórico e nas Estatísticas ("critério novo a partir de …") e manter o contador por sinal, como previsto, para conferir com o Leandro; (3) **limpeza automática a 100%** só depois de cópia bem-sucedida e com disco acima do mínimo (decisão 8); se a cópia falhar, não enxugar; (4) **banco do computador**: manter 12 meses; quando o banco passar de 1 GB, resumir mais cedo (6 meses) só o que nunca foi aberto (situação Novo) e nunca o que foi trabalhado; é a pergunta 14 ao dono |
+| 09/Nov | Produto | Operação | **0.7.16** (quando o dono escrever "publica a versão 0.7.16"): **44 arquivos no download completo e 43 na atualização** (novo `lexsuite/armazenamento.py`). Conferir na revisão: a `LexSuiteONE.xlsx` antiga vira `LexSuiteONE - Trabalhista.xlsx` com as abas editadas; a pasta `Cópias de segurança` nasce; o `atualizar.py` da 0.7.15 instala sem tocar em `config.json`, `lexsuite.db` e `saida/`. O site e o manual mudam junto (sem "compartilhar com a SolverONE") | não |
+| 09/Nov | Produto | Arquitetura | `CLAUDE.md` ("Como entregar"): pacote com 44 e 43 arquivos na 0.7.16 (novo `armazenamento.py`) | sim (Arquitetura, 09/Nov noite) |
 
 ## Perguntas ao dono (uma lista só; a Produto consolida e leva ao dono)
 

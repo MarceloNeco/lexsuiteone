@@ -10,7 +10,7 @@ def verificar(cfg, versao, hoje=None, pedir=None, retorno=None):
     c.update({"resposta": "ok", "ok": True, "ultima_ok": "2026-11-08", "validade": "", "mensagem": "", "escritorio_licenca": "Escritório Fictício"})
     return c
 
-def cadastrar(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj"):
+def cadastrar(cfg, versao, email, nome, doc, papel="", pedir=None, doc_tipo="cnpj", aceite_uso=None):
     cfg["usuario"].update({"email": email, "nome": nome, "papel": papel})
     return True, ""
 
