@@ -123,7 +123,10 @@ Arquitetura (pedido no quadro).
 
 ### Fazendo agora
 - (nada) **0.7.16 na `main`, pronta para publicar** (com o "pode" do dono, 09/Nov noite; revisada: 1 bloqueio corrigido
-  e aprovado na segunda revisão, 145 testes). A Operação revisa e publica com "publica a versão 0.7.16". Depois, a
+  e aprovado na segunda revisão, 145 testes). A Operação revisa e publica com "publica a versão 0.7.16".
+- Próximo (0.7.17, depois da visita): as quatro observações da Arquitetura sobre a planilha grande (cópias fora da pasta
+  quando ela estiver compartilhada, ou aviso; data da mudança da regra de "ação nova" no Histórico e nas Estatísticas;
+  limpeza automática só enxuga com cópia bem-sucedida; pergunta 14), item 92, itens 79 e 82, e o que vier da visita. Depois, a
   Operação revisa e publica com "publica a versão 0.7.16".
 
 ### Arquivos em uso
