@@ -11,14 +11,14 @@ A tela pede esse código na instalação. Ele identifica o escritório; não é 
 
 [CODIGO-FIM]
 Como instalar, em quatro passos
-1. Instale: abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Ele baixa o resto, prepara tudo e abre a tela no navegador.
-2. Configure: informe o escritório, quem vai usar e a pasta do Google Drive. A primeira leitura começa em seguida, nos 24 TRTs.
+1. Instale: abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Ele baixa o resto, prepara tudo e abre a tela do programa numa janela própria.
+2. Configure: a tela confere o código e pede o seu nome, e-mail e função, a pasta do Google Drive onde fica a planilha e os tribunais (de início, os 24 TRTs). A primeira leitura começa em seguida.
 3. No Google Drive, dê acesso de editor à pasta "{{marca.nome}} - planilha" para {{drive}}, a conta de sistemas da SolverONE (o fim da instalação mostra onde ela ficou e o passo a passo). É o único passo à mão: por ela acompanhamos o {{marca.curto}} sem acessar o seu computador.
 4. Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho.
 
 Onde roda: no seu computador, que lê o DJEN nos horários que o escritório escolher (de início, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
 
-Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual do escritório".
+Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual", no alto da tela.
 
 Segurança, em uma linha: o {{marca.curto}} não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive.
 
@@ -27,4 +27,4 @@ Dúvidas? Escreva para {{contato}}. Este e-mail saiu de um endereço automático
 Marcelo Freitas
 SolverONE
 
-{{marca.nome}} é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque pediu o pacote de instalação.
+{{marca.nome}} é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque o seu escritório vai usar o {{marca.nome}}.
