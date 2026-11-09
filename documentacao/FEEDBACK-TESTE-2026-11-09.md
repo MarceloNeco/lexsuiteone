@@ -81,3 +81,12 @@ O Arquivo resolve.
 | 75 | Log e Exclusões "estranhos" na planilha | Exclusões é a lista de empresas que o escritório não quer ver (clientes, por exemplo), não o Arquivo; ganha a explicação na primeira linha. A aba Log passa a se chamar "Histórico de leituras" e vai para o fim. O Arquivo vira aba própria na 0.7.14 | P | 0.7.14 |
 | 76 | Aviso estranho "TRT2, TRT15 tribunal(is): O Diário de hoje..." e cortado | Texto novo: "TRT2 e TRT15: o Diário de hoje só sai às 3h; li até 06/11." em linha que quebra, sem cortar | P | 0.7.14 |
 | 77 | Situação (Novo, Visto...) aparecer na página e na planilha | Hoje fica escondida dentro da ficha e só neste navegador. Na 0.7.14: etiqueta no cartão, filtro, mudança em lote, coluna "Situação" na planilha | P | 0.7.14 |
+
+## Quinta rodada (gráficos no tempo e abas)
+
+| # | O que o dono pediu | Proposta | Quem | Pacote |
+|---|---|---|---|---|
+| 78 | Gráfico ao longo do tempo (ações novas por dia, depois as encerradas), alimentado pelas estatísticas que vão se acumulando, no Painel | Gráfico de linha "ações novas por dia" (por mês acima de 60 dias) lendo a tabela de estatísticas que nunca se apaga; muda com os filtros (tribunal, vara, porte, faixa de valor), com movimento suave. A linha "encerradas" entra quando houver a fonte (DataJud, decisão de 09/Nov) | P | 0.7.14 |
+| 79 | Botão para coletar só as estatísticas do último mês (sem puxar tudo), para ver os picos de volume | "Montar as estatísticas do último mês": lê os Diários dos últimos ~22 dias úteis dos tribunais marcados e guarda **só os totais** (data, tribunal, vara, frente; porte e valor só quando já se sabem, sem consultar a Receita de novo). Não entra na Lista nem no Arquivo. Roda em segundo plano, com barra de andamento; os Diários grandes (TRT2) podem levar dezenas de minutos | P | 0.7.15 |
+| 80 | Histórico de leituras como aba, ao lado de Painel e Lista; e uma aba Arquivo | Abas no alto: **Painel · Lista · Arquivo · Histórico de leituras** (no lugar do link que abre e fecha) | P | 0.7.14 |
+| 81 | O código 403 não diz nada ao advogado | Coluna principal em palavras ("Diário de hoje só às 3h"); o código técnico vai para uma coluna discreta no fim, com o botão (?) que abre a explicação simples ao clicar e fecha ao clicar fora | P | 0.7.14 |
