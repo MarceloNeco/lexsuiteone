@@ -140,7 +140,7 @@ Arquitetura (pedido no quadro).
 - **0.7.18 inclui tudo da 0.7.17** (que não foi publicada) e o bloqueio da revisão da Operação: textos do e-mail e do
   site sobre o que vai à SolverONE corrigidos, Bandit verde (B608 em `banco.limpar_detalhe`), painel dos filtros que não
   sai da tela no celular e no notebook, aviso do banco acima de 1 GB também na Configuração, cópia de trabalho com
-  faixa verde e texto profissional na pasta `Cópias da planilha`. **Publicar a 0.7.18 direto** (a 0.7.17 fica sem tag).
+  faixa verde e texto profissional na pasta `Cópias da planilha`. **0.7.18 na `main`, pronta para publicar** (com o "pode a 0.7.18" do dono, 09/Nov noite; a 0.7.17 fica sem tag).
 - **0.7.18 pronta no ramo e revisada** (bloqueio da revisão corrigido: a limpeza da lista antiga só tira o que mostra
   intimação comum): estatísticas dos meses anteriores (sazonalidade no Painel, 30 Diários por vez, à noite ou "Ler
   agora", só totais), engrenagem e perfil em janela, páginas pelo menu, licença no perfil com e-mail e escritório
