@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v10 (v9 + versão nova dos termos: escritório volta a travar só se reaceite_obrigatorio; pessoa sempre): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v11 (v10 + interruptores do RootifyONE na resposta: recursos {assistone…} lidos de solverone-dados; link do aceite por fragmento): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -21,6 +21,10 @@ const PUBLICOS = new Set(["gmail.com", "googlemail.com", "outlook.com", "outlook
   "globo.com", "ig.com.br", "zipmail.com.br", "proton.me", "protonmail.com", "pm.me", "tutanota.com", "gmx.com", "mail.com"]);
 const CONTATO = "judicial@solverone.com.br";
 const LINK_ACEITE = "https://judicial.solverone.com.br/aceite.html";
+// Interruptores do RootifyONE (Controle dos apps): arquivos master publicados em solverone-dados. O programa instalado
+// não faz pedido externo; a lex-conta lê aqui, guarda 5 minutos e devolve só {id: ligado} na ação verificar.
+const DADOS = "https://solverone.com.br/solverone-dados/recursos/";
+const APP_ID = "radar-judicial";
 const TERMO_ESCRITORIO = "lexsuiteone-termos";   // contrato + tratamento de dados: o responsável aceita uma vez (libera a licença)
 const TERMO_PESSOA = "lexsuiteone-uso";          // termos de uso: cada pessoa aceita no cadastro do programa, por versão
 const REMETENTE = "SolverONE <nao-responda@solverone.com.br>";
@@ -36,6 +40,26 @@ const dominioDe = (email: string) => email.split("@")[1] ?? "";
 // Tira do texto de erro a pasta do usuário do Windows (traz o nome da pessoa) e e-mails.
 function semDadoPessoal(t: string) {
   return t.replace(/([a-z]:[\\/]+users[\\/]+)[^\\/"'\s]+/gi, "$1~").replace(/[^\s@"']+@[^\s@"']+\.[^\s@"']+/g, "[e-mail]");
+}
+
+// Interruptores: global.json e radar-judicial.json (o do app vence). Cache em memória por 5 min; falha = sem o campo.
+let recursosCache: { em: number; valor: Record<string, boolean> | null } = { em: 0, valor: null };
+async function recursosDoRootify(): Promise<Record<string, boolean> | null> {
+  if (Date.now() - recursosCache.em < 300_000) return recursosCache.valor;
+  const ler = async (nome: string) => {
+    try {
+      const r = await fetch(DADOS + nome, { signal: AbortSignal.timeout(4000), headers: { "Cache-Control": "no-cache" } });
+      if (!r.ok) return null;
+      const j = await r.json();
+      return (j && typeof j === "object" && j.recursos && typeof j.recursos === "object") ? j.recursos as Record<string, { ligado?: unknown }> : null;
+    } catch { return null; }
+  };
+  const [g, a] = await Promise.all([ler("global.json"), ler(`${APP_ID}.json`)]);
+  if (!g && !a) { recursosCache = { em: Date.now(), valor: null }; return null; }
+  const saida: Record<string, boolean> = {};
+  for (const fonte of [g ?? {}, a ?? {}]) for (const [id, r] of Object.entries(fonte)) if (r && typeof r.ligado === "boolean" && /^[a-z0-9.-]{1,40}$/.test(id)) saida[id] = r.ligado;
+  recursosCache = { em: Date.now(), valor: saida };
+  return saida;
 }
 
 // Traduz o erro da função do banco num motivo curto para a tela.
@@ -261,7 +285,7 @@ Deno.serve(async (req) => {
   const escPendente = !esc.aceito || (esc.reaceite_obrigatorio === true && esc.precisa_aceitar === true);
   if (ok && conta.exigir_aceite && acao === "verificar" && escPendente) {
     ok = false; motivo = "aceite_pendente";
-    const link = `${LINK_ACEITE}?codigo=${codigo}` + (conta.email_responsavel || conta.email_boas_vindas ? `&email=${encodeURIComponent(String(conta.email_responsavel || conta.email_boas_vindas))}` : "");
+    const link = `${LINK_ACEITE}#codigo=${codigo}` + (conta.email_responsavel || conta.email_boas_vindas ? `&email=${encodeURIComponent(String(conta.email_responsavel || conta.email_boas_vindas))}` : "");
     mensagem = esc.aceito
       ? `Os termos mudaram (versão ${esc.versao_vigente ?? ""}): o responsável do escritório precisa aceitar a versão nova (leva 3 minutos): ${link}`
       : `Antes do primeiro uso, o responsável do escritório precisa aceitar os termos (leva 3 minutos): ${link}`;
@@ -281,6 +305,7 @@ Deno.serve(async (req) => {
   }
   const resposta: Record<string, unknown> = { ok, motivo, escritorio: conta.escritorio, validade: conta.validade ?? "", mensagem,
     modalidade: conta.modalidade ?? "instalado", aceite: aceiteInfo, termos };   // item F: "nuvem" = a tela avisa e continua lendo
+  if (acao === "verificar") { const rec = await recursosDoRootify(); if (rec) resposta.recursos = rec; }   // interruptores do RootifyONE (ex.: assistone)
   if (aprovacaoPessoa) resposta.aprovacao = aprovacaoPessoa;
   if (emUso) resposta.em_uso = emUso;
   if (retorno) resposta.retorno = retorno;

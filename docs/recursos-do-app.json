@@ -1,0 +1,23 @@
+{
+  "formato": 1,
+  "app": "radar-judicial",
+  "suite": "lexsuiteone",
+  "versao": "0.7.19",
+  "nota": {
+    "pt": "O RADAR JUDICIAL é instalado e não faz pedido externo: ele recebe estes interruptores pela resposta da função lex-conta (campo recursos), que lê recursos/global.json e recursos/radar-judicial.json em solverone-dados a cada 5 minutos.",
+    "en": "RADAR JUDICIAL is installed software and makes no external requests: it receives these switches in the lex-conta response (recursos field), which reads recursos/global.json and recursos/radar-judicial.json from solverone-dados every 5 minutes."
+  },
+  "recursos": [
+    {
+      "id": "assistone",
+      "nome": {
+        "pt": "AssistONE (assistente)",
+        "en": "AssistONE (assistant)"
+      },
+      "onde": {
+        "pt": "Tela do programa → canto inferior direito (ajuda por tela, tour, dicas e busca)",
+        "en": "Program screen → bottom right corner (help per screen, tour, tips and search)"
+      }
+    }
+  ]
+}

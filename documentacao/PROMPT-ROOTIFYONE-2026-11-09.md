@@ -80,6 +80,17 @@ licença e na jornada, marcar "versão antiga" quando `versao` do aceite for dif
 estiver ligado ou nunca houver aceite. Para a pessoa, versão nova = aceita de novo, sempre. Não copie o texto dos termos
 para dentro do RootifyONE nem para `termos.json`: a fonte é uma só, a página do produto.
 
+**3d. Interruptores (Controle dos apps) valendo no RADAR JUDICIAL (pedido do dono, 09/Nov noite).** O RADAR é programa
+instalado e não faz pedido externo: quem lê os interruptores é a função da nuvem `lex-conta`, em
+`https://solverone.com.br/solverone-dados/recursos/global.json` e `recursos/radar-judicial.json` (o do app vence), e
+devolve `recursos: {id: ligado}` ao programa. O que falta do seu lado: (1) o Controle dos apps precisa enxergar o app
+`radar-judicial` (id de `sol_apps` e do catálogo B2B) e ler a lista do que ele obedece em
+`https://judicial.solverone.com.br/recursos-do-app.json` (já publicado: declara `assistone`), porque o site do produto não
+fica em `solverone.com.br/<repo>/`; (2) ao salvar, publicar `recursos/radar-judicial.json` no solverone-dados, no mesmo
+formato dos outros apps (`{"app": "radar-judicial", "recursos": {"assistone": {"ligado": false, …}}}`); (3) o `global.json`
+já vale para o RADAR hoje (desligar `assistone` em `*` desliga lá também, em até 5 minutos mais a próxima conferência do
+programa). Nada de SQL.
+
 **4. O que esperar (vem do LexSuiteONE, colado por mim).** O "publicado" da página de aceite e do e-mail com `{{email}}`
 e `&nome=`; o aviso de que a trava da KR Law foi ligada; a ampliação do check de `lex_eventos` com tipos próprios
 (`termos_aceitos`, `aceite_dispensado`, `aceite_exigido`) numa sessão em que eu esteja no desktop (até lá, tudo é
