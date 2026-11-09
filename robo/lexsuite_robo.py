@@ -412,11 +412,15 @@ def cmd_radar(a):
         print("  Já há uma leitura em andamento neste computador (pela tela ou agendada). Esta não roda.", flush=True)
         return
     estado = _app.Estado(eco=lambda linha: print(linha, flush=True), arquivo=arquivo, origem=_ag.origem_da_leitura(cfg))
+    if estado.origem == "fora do horário":  # 0.7.15: qual horário foi perdido (computador desligado ou em repouso)
+        estado.atrasada = _ag.horario_perdido(cfg)
+        if estado.atrasada:
+            print(f"  Fazendo agora a leitura das {estado.atrasada}, que não rodou na hora (computador desligado ou em repouso).", flush=True)
     estado.comecar()
     try:
         com_hora = estado.aviso  # janela preta com a hora e andamento para a tela (barra de progresso)
         situacao = radar.executar(cfg, banco, com_hora, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
-                                  caminho_config=a.config, origem=estado.origem)
+                                  caminho_config=a.config, origem=estado.origem, parar=estado.parar)
         estado.terminar(situacao)
         if cfg["radar"].get("avisar_ao_terminar", True):
             from lexsuite import agendar, app
@@ -425,6 +429,12 @@ def cmd_radar(a):
     except radar.RoboDesligado as e:
         estado.terminar(erro=str(e))
         raise SystemExit("  " + str(e))
+    except radar.Interrompida:
+        from lexsuite import causas
+        estado.terminar(erro=causas.mensagem("interrompida"), info={"causa": "interrompida", "pt": causas.mensagem("interrompida"),
+                                                                    "en": causas.mensagem("interrompida", "en"), "detalhe": ""})
+        print("  " + causas.mensagem("interrompida"), flush=True)
+        return
     except Exception as e:  # leitura agendada: mensagem clara; avisa a SolverONE só quando é defeito do programa
         import traceback
         from lexsuite import causas, conta

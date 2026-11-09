@@ -71,6 +71,25 @@ def origem_da_leitura(cfg, agora=None, tolerancia_min=15):
     return "fora do horário"
 
 
+def horario_perdido(cfg, agora=None, tolerancia_min=15):
+    """0.7.15: se a leitura começou mais de 15 minutos depois de um horário marcado (computador desligado ou em repouso
+    na hora), devolve esse horário ("08:00"); senão "". Olha o último horário marcado antes de agora (hoje ou ontem)."""
+    agora = agora or dt.datetime.now()
+    horarios, dias = do_config(cfg)
+    ultimo = None
+    for dia in (agora.date(), agora.date() - dt.timedelta(days=1)):
+        if dias == "uteis" and dia.weekday() >= 5:
+            continue
+        for h in horarios:
+            hh, mm = (int(x) for x in h.split(":"))
+            marcado = dt.datetime.combine(dia, dt.time(hh, mm))
+            if marcado <= agora and (ultimo is None or marcado > ultimo):
+                ultimo = marcado
+    if ultimo is None or agora - ultimo <= dt.timedelta(minutes=tolerancia_min) or agora - ultimo > dt.timedelta(hours=20):
+        return ""
+    return ultimo.strftime("%H:%M")
+
+
 def proxima(horarios, dias="todos", agora=None):
     """Data e hora da próxima leitura automática (datetime local), ou None se não houver horário."""
     agora = agora or dt.datetime.now()

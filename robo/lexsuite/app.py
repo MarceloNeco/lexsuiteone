@@ -58,6 +58,8 @@ class Estado:
         self.lock = threading.Lock()
         self.eco = eco  # janela preta: cada passo da leitura aparece também ali, com a hora
         self.arquivo, self.origem = arquivo, origem  # 0.7.14: andamento em arquivo, para a tela ver a leitura agendada
+        self.atrasada = ""  # 0.7.15: o horário perdido ("08:00") quando a leitura agendada roda depois da hora
+
         self.rodando = False
         self.progresso, self.total_trib, self.tribs_vistos = 0, 0, set()
         self.mensagens = []
@@ -65,6 +67,21 @@ class Estado:
         self.situacao = None
         self.erro = None
         self.erro_info = None  # 0.7.13: {causa, pt, en, detalhe}: a tela mostra o texto claro e esconde o técnico
+
+    def arquivo_parar(self):
+        return os.path.join(os.path.dirname(self.arquivo), "parar.json") if self.arquivo else ""
+
+    def parar(self):
+        """True se alguém pediu "Interromper" depois que esta leitura começou (vale para a tela e para a agendada)."""
+        caminho = self.arquivo_parar()
+        if not caminho or not self.rodando:
+            return False
+        try:
+            with open(caminho, encoding="utf-8") as f:
+                pedido = json.load(f)
+            return str(pedido.get("quando") or "") >= str(self.inicio or "")
+        except (OSError, ValueError, AttributeError):
+            return False
 
     def aviso(self, msg):
         hora, texto = dt.datetime.now().strftime("%H:%M:%S"), str(msg).strip()
@@ -82,7 +99,7 @@ class Estado:
         try:
             with self.lock:
                 d = {"rodando": self.rodando, "progresso": self.progresso, "inicio": self.inicio, "fim": self.fim,
-                     "mensagens": self.mensagens[-6:], "pid": os.getpid(), "origem": self.origem,
+                     "mensagens": self.mensagens[-6:], "pid": os.getpid(), "origem": self.origem, "atrasada": self.atrasada,
                      "batida": dt.datetime.now().isoformat(timespec="seconds")}
             os.makedirs(os.path.dirname(self.arquivo), exist_ok=True)
             tmp = self.arquivo + ".tmp"
@@ -127,7 +144,8 @@ class Estado:
         with self.lock:
             return {"rodando": self.rodando, "progresso": min(99, self.progresso) if self.rodando else (100 if self.fim else 0),
                     "mensagens": list(self.mensagens[-15:]), "inicio": self.inicio,
-                    "fim": self.fim, "situacao": self.situacao, "erro": self.erro, "erro_info": self.erro_info}
+                    "fim": self.fim, "situacao": self.situacao, "erro": self.erro, "erro_info": self.erro_info,
+                    "origem": self.origem, "atrasada": self.atrasada, "parando": self.parar() if self.rodando else False}
 
     def comecar(self):
         with self.lock:
@@ -136,6 +154,11 @@ class Estado:
             self.rodando, self.mensagens, self.erro, self.erro_info = True, [], None, None
             self.progresso, self.total_trib, self.tribs_vistos = 1, 0, set()
             self.inicio, self.fim = dt.datetime.now().isoformat(timespec="seconds"), None
+        try:  # um pedido de parada antigo não vale para esta leitura
+            if self.arquivo_parar() and os.path.exists(self.arquivo_parar()):
+                os.remove(self.arquivo_parar())
+        except OSError:
+            pass
         self._eco("")
         self._eco(f"  ===== Leitura começou às {dt.datetime.now():%H:%M} (não feche esta janela) =====")
         self._gravar_andamento()
@@ -227,6 +250,7 @@ class Servidor(ThreadingHTTPServer):
             fora = leitura_em_outro_processo(self.arquivo_andamento)
             if fora:
                 d.update({"rodando": True, "externa": True, "origem": fora.get("origem", ""), "inicio": fora.get("inicio"),
+                          "atrasada": fora.get("atrasada", ""), "parando": os.path.exists(os.path.join(os.path.dirname(self.arquivo_andamento), "parar.json")),
                           "progresso": min(99, int(fora.get("progresso") or 1)), "mensagens": fora.get("mensagens") or []})
         return d
 
@@ -271,7 +295,7 @@ class Servidor(ThreadingHTTPServer):
                 cfg = self.config()
                 banco = bd.Banco(self.caminho_db)
                 situacao = radar.executar(cfg, banco, self.estado.aviso, self.pasta, dias=dias, versao=VERSAO,
-                                          caminho_config=self.caminho_config)
+                                          caminho_config=self.caminho_config, parar=self.estado.parar)
                 self.estado.terminar(situacao)
                 if situacao.get("aviso_planilha"):
                     self.planilha_depois()
@@ -280,6 +304,11 @@ class Servidor(ThreadingHTTPServer):
             except radar.RoboDesligado as e:
                 self.estado.aviso(str(e))
                 self.estado.terminar(erro=str(e), info={"causa": "desligado", "pt": str(e), "en": str(e), "detalhe": ""})
+            except radar.Interrompida:
+                from . import causas
+                self.estado.aviso(causas.mensagem("interrompida"))
+                self.estado.terminar(erro=causas.mensagem("interrompida"), info={"causa": "interrompida", "pt": causas.mensagem("interrompida"),
+                                                                                "en": causas.mensagem("interrompida", "en"), "detalhe": ""})
             except Exception as e:  # a tela precisa saber que parou, qualquer que seja o motivo; em palavras claras
                 from . import causas
                 causa = causas.classificar(e)
@@ -515,6 +544,14 @@ class Tratador(BaseHTTPRequestHandler):
                 ok, msg = agendar.agendar(s.pasta, *agendar.do_config(cfg)) if ligar else agendar.desagendar()
                 resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg})
             return self._responder(resposta)
+        if caminho == "/interromper":  # 0.7.15: pede para a leitura (desta tela ou a agendada) parar no próximo ponto seguro
+            if not (s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento)):
+                return self._responder({"ok": False, "motivo": "Nenhuma leitura em andamento."})
+            os.makedirs(os.path.dirname(s.arquivo_andamento), exist_ok=True)
+            with open(os.path.join(os.path.dirname(s.arquivo_andamento), "parar.json"), "w", encoding="utf-8") as f:
+                json.dump({"quando": dt.datetime.now().isoformat(timespec="seconds"), "quem": s.config()["usuario"].get("email", "")}, f)
+            bd.Banco(s.caminho_db).registrar_acao(s.config()["usuario"].get("email", ""), "interromper", "leitura", "", "", 1)
+            return self._responder({"ok": True})
         if caminho == "/abrir-em-aba":  # 0.7.14: a mesma tela numa aba comum do navegador (junto das outras abas)
             webbrowser.open(f"http://127.0.0.1:{s.server_address[1]}/")
             return self._responder({"ok": True})

@@ -168,7 +168,7 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     from . import causas
     rotulo = {"ok": "Lido", "ainda_nao_liberado_3h": "Diário de hoje só às 3h (não é erro)", "nao_publicado": "Ainda não publicado",
               "governo_fora": "Site do CNJ fora do ar", "bloqueio_fora_do_brasil": "Fora do Brasil", "sem_internet": "Sem internet",
-              "erro_do_programa": "Erro do programa"}
+              "erro_do_programa": "Erro do programa", "interrompida": "Interrompida a pedido"}
     log = [["Quando (hora local e fuso)", "Origem", "Tribunal", "Dias pedidos", "Resposta do site", "Situação", "O que o programa fez",
             "Duração (s)", "Versão", "Explicação"]]
     for e in banco.execucoes("tentativa", 1000):
