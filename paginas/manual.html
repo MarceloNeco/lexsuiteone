@@ -131,17 +131,22 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <li><b>Ler o Diário agora</b> faz uma leitura na hora. A leitura conta só os dias que tiveram Diário: no fim de semana, num feriado ou num recesso do tribunal, ela pega o último dia publicado. Os 24 TRTs já vêm escolhidos; em <b>Tribunais</b> dá para mudar por região, por estado ou por ramo. A primeira leitura dos 24 leva de 30 a 60 minutos; as seguintes, bem menos.</li>
     <li><b>Período</b> mostra o último dia, ou 3, 7, 15 ou 30 dias.</li>
     <li><b>As suas iniciais</b>, no alto à direita, abrem o perfil de quem usa este computador: nome, e-mail, função e nome do escritório. Toque no lápis ✏️ ao lado do dado para mudar. Trocar o e-mail quer dizer que outra pessoa passa a usar este computador: a anterior deixa de ocupar vaga na licença.</li>
-    <li><b>⚙ Configuração</b>, no alto à direita, guarda o código de cliente (só para ler depois de confirmado), a pasta da planilha, as leituras automáticas e mostra a versão. A versão também aparece ao lado do nome, no alto.</li>
+    <li><b>Menu ☰</b>, no alto à esquerda: Painel, Lista, Arquivo, Histórico de leituras, a planilha (abrir, gerar uma cópia, abrir a pasta), colar contatos, Configuração, perfil e este manual.</li>
+    <li><b>Configuração</b> (no menu ☰) guarda o código de cliente (só para ler depois de confirmado), a pasta da planilha, as leituras automáticas e mostra a versão. A versão também aparece ao lado do nome, no alto.</li>
     <li><b>Versão nova:</b> ao abrir, se houver versão nova no site, aparece uma faixa com "Atualizar agora". Seus dados, a lista e a configuração continuam; o {{marca.curto}} reinicia sozinho (a janela preta fecha e reabre) e a tela recarrega.</li>
     <li>Clicar de novo no atalho com o {{marca.curto}} já aberto só traz a tela de volta: não abre uma segunda janela preta.</li>
   </ol>
   <div class="dica">A tela é do próprio programa, neste computador: o navegador mostra um endereço como <code>127.0.0.1:8765</code>. Ela não é o site judicial.solverone.com.br, que serve só para baixar o {{marca.curto}} e ler este manual.</div>
   <h3>A lista e a ficha</h3>
   <ul>
-    <li>Cada linha: tribunal, empresa, setor, porte, cidade, vara e o valor da causa (ou "valor a conferir").</li>
-    <li>Clique na linha e a ficha abre. O que falta aparece como <b>"não informado no cadastro"</b> (a Receita não tem) ou <b>"não capturado"</b> (está no tribunal, atrás do captcha).</li>
-    <li>Na ficha: <b>Abrir consulta no PJe</b> (abre a consulta pública do tribunal; cole o número, resolva o captcha e veja o valor), <b>Copiar número</b>, o campo <b>Valor da causa</b> (digite e salve) e o <b>Status</b> (novo, visto, em contato, descartado).</li>
-    <li>Filtros: <b>Acima de R$ 100 mil</b> (ou o valor das Preferências), <b>Sem jurídico próprio provável</b> (esconde empresas muito grandes, que costumam ter advogado interno), <b>Mostrar excluídas</b> e um tribunal ou todos.</li>
+    <li><b>Abas:</b> <b>Painel</b> (números e gráficos), <b>Lista</b> (o que está em aberto, um processo por linha), <b>Arquivo</b> (tudo o que o {{marca.curto}} já leu, de todos os tribunais, inclusive o arquivado) e <b>Histórico de leituras</b> (cada tentativa de leitura e o que aconteceu).</li>
+    <li>Cada linha: empresa, data, tribunal, vara, setor, porte, cidade e o valor da causa (ou "valor a conferir"); embaixo, a <b>situação</b> e o selo de contato (verde: há telefone ou e-mail; vermelho: falta, com o motivo no botão <b>?</b>).</li>
+    <li><b>Situação</b> de cada processo: Novo, Visto (marca sozinho ao abrir a ficha), Em análise, Em contato, Virou cliente, Descartado e Arquivado (sai da Lista e fica no Arquivo). O botão <b>?</b> ao lado explica cada uma. A situação fica guardada no programa e vai para a planilha.</li>
+    <li><b>Vários de uma vez:</b> marque a caixa de cada linha (ou "Selecionar todos os N desta lista"); a barra azul "Com os selecionados" muda a situação, arquiva ou prepara a busca na área logada. Ela mostra quantos processos serão afetados, pede confirmação e oferece <b>Desfazer</b> logo depois.</li>
+    <li>Clique na linha e a ficha abre, com o endereço da empresa. O que falta aparece com o motivo: <b>"o Diário não trouxe o CNPJ"</b>, <b>"não informado no cadastro"</b> (a Receita não tem) ou <b>"não capturado"</b> (está no tribunal, atrás do captcha).</li>
+    <li>Na ficha: <b>Abrir consulta no PJe</b> (abre a consulta pública do tribunal; cole o número, resolva o captcha e veja o valor), <b>Copiar número</b>, o campo <b>Valor da causa</b> (digite e salve) e a <b>Situação</b>.</li>
+    <li><b>Busca</b> por empresa, número do processo, vara, CNPJ ou cidade. Filtros: valor da causa (faixas, outro valor ou "sem valor informado"), situação, contato, frente, tribunal, data, vara, setor, porte e estado (com "Não informado"); <b>Limpar filtros</b> desliga todos; <b>Salvar estes filtros</b> guarda a combinação com um nome. Ordem: escolha o primeiro e o segundo critério.</li>
+    <li><b>Contatos pela área logada (opcional):</b> marque os processos sem contato e use "Preparar busca na área logada": o {{marca.curto}} gera um arquivo com as instruções (no máximo 30 processos por dia, porque há tribunal que bloqueia quem abre muitos processos de terceiros). Logado no PJe, entregue o arquivo ao Claude in Chrome (ou siga à mão) e cole a resposta em "Colar contatos encontrados" (menu ☰). O programa confere cada linha e recusa CPF e dado de reclamante. Telefone e e-mail quase nunca estão no processo.</li>
     <li><b>Baixar a lista (.csv)</b> gera um arquivo simples com o que está na tela, inclusive os valores digitados, para importar em outros sistemas (por exemplo, o Astrea). A planilha completa fica no Google Drive; <b>Abrir a planilha</b>, no alto, abre o arquivo.</li>
   </ul>
 </section>
@@ -154,15 +159,20 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <li><b>Outra pasta:</b> o botão "Escolher pasta…" abre a janela de pastas do Windows; se a pasta não existir, o {{marca.curto}} cria.</li>
     <li><b>Só neste computador, por enquanto:</b> a planilha fica na pasta do programa; dá para mudar para o Drive depois, em Configuração.</li>
   </ul>
-  <p><b>Planilha aberta na hora da leitura:</b> o Excel trava o arquivo e o {{marca.curto}} não consegue atualizá-lo. Nada se perde: a lista fica salva e aparece na tela, com o aviso "A planilha estava aberta". Feche a planilha e clique em <b>"Gravar a planilha agora"</b> (ou espere a próxima leitura).</p>
+  <p><b>Só para leitura:</b> "Abrir a planilha" abre o Excel em modo somente leitura (filtrar e ordenar funcionam), porque o {{marca.curto}} regrava a planilha a cada leitura. A primeira linha, em vermelho, lembra isso. Para anotar ou mexer, use <b>"Gerar uma cópia"</b> (menu ☰): a cópia vai para a pasta <code>Cópias</code> e o {{marca.curto}} nunca mexe nela. Para mudar as abas <b>Preferências</b> e <b>Exclusões</b> (as únicas que o {{marca.curto}} lê), use <b>"Editar Preferências e Exclusões"</b> no menu ☰: a planilha abre para editar; salve e feche o Excel ao terminar. Na cópia, essas abas não têm efeito.</p>
+  <p><b>Planilha aberta na hora da leitura:</b> o Excel trava o arquivo e o {{marca.curto}} não consegue atualizá-lo. Nada se perde: a lista fica salva e aparece na tela, com o aviso "A planilha estava aberta". O {{marca.curto}} tenta de novo a cada 2 minutos e grava sozinho quando a planilha for fechada (ou clique em <b>"Gravar a planilha agora"</b>).</p>
   <p><b>Sem o Excel:</b> a planilha é um arquivo <code>.xlsx</code> comum e abre no <b>Google Planilhas</b> (no Drive, dois cliques no arquivo) e no Excel online. No Google Planilhas, edite o próprio arquivo (ele aparece com a marca ".XLSX" ao lado do nome) e <b>não</b> use "Salvar como Planilhas Google": isso cria uma cópia que o {{marca.curto}} não lê.</p>
   <p><b>Compartilhar com a SolverONE (uma vez):</b> no Explorador, botão direito na pasta <code>{{marca.nome}} - planilha</code>, Compartilhar (ícone do Google Drive), <code>integracao@solverone.com.br</code> como Editor, Enviar. Sem isso o {{marca.curto}} funciona normalmente; a SolverONE só não vê o registro das leituras para ajudar quando algo der errado. Instalações anteriores à 0.7.10 continuam com a pasta antiga, <code>LexSuiteONE</code>.</p>
   <div class="tabela"><table>
     <tr><th>Aba</th><th>Quem escreve</th><th>Para quê</th></tr>
-    <tr><td>Radar</td><td>o {{marca.curto}}, a cada leitura</td><td>a lista, com as mesmas colunas da tela</td></tr>
+    <tr><td>Radar</td><td>o {{marca.curto}}, a cada leitura</td><td>a lista em aberto, com a situação, o endereço e os contatos</td></tr>
+    <tr><td>Arquivo</td><td>o {{marca.curto}}</td><td>tudo o que já foi lido nos últimos 12 meses, inclusive o arquivado</td></tr>
+    <tr><td>Contatos</td><td>o {{marca.curto}}</td><td>cada contato encontrado, com a fonte e a data</td></tr>
+    <tr><td>Como usar</td><td>o {{marca.curto}}</td><td>o passo a passo da planilha, em português e inglês</td></tr>
+    <tr><td>Histórico de leituras</td><td>o {{marca.curto}}</td><td>cada tentativa de leitura, com o que o site respondeu e o que o programa fez</td></tr>
     <tr><td>Preferências</td><td>o escritório</td><td>os ajustes da lista (abaixo)</td></tr>
-    <tr><td>Exclusões</td><td>o escritório</td><td>clientes e empresas que não devem aparecer: nome ou CNPJ e o motivo</td></tr>
-    <tr><td>abas ocultas</td><td>a SolverONE</td><td>registro de cada leitura e avisos de funcionamento; não precisam ser abertas</td></tr>
+    <tr><td>Exclusões</td><td>o escritório</td><td>clientes e empresas que não devem aparecer na lista: nome ou CNPJ e o motivo (não é o Arquivo)</td></tr>
+    <tr><td>abas ocultas</td><td>a SolverONE</td><td>avisos de funcionamento e dados da instalação; não precisam ser abertas</td></tr>
   </table></div>
   <h3>Os ajustes da aba Preferências</h3>
   <div class="tabela"><table>

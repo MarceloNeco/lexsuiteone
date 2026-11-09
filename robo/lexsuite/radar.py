@@ -52,7 +52,16 @@ def porte_legivel(porte):
     return ""
 
 
-def item_de_lead(lead, cfg_radar):
+def _contato_resumo(emp, extras, temcnpj, a_conferir):
+    """Selo de contato do cartão: {tem, canais, motivo}. Motivo quando falta: sem_cnpj (o Diário não trouxe o CNPJ),
+    cnpj_a_conferir, receita_sem (a Receita não tem telefone nem e-mail) ."""
+    canais = sorted({c["canal"] for c in extras} | ({"telefone"} if emp.get("telefone") else set()) | ({"email"} if emp.get("email") else set()))
+    if canais:
+        return {"tem": True, "canais": canais, "motivo": ""}
+    return {"tem": False, "canais": [], "motivo": "cnpj_a_conferir" if a_conferir and not temcnpj else ("receita_sem" if temcnpj else "sem_cnpj")}
+
+
+def item_de_lead(lead, cfg_radar, contatos=None):
     """Uma linha da lista do dia a partir de um lead do DJEN (só o que pode sair; nenhuma pessoa física do processo)."""
     emp = lead.get("empresa_receita") or {}
     nomes = [cl.limpar_nome(x) for x in (lead.get("empresas") or [])]  # 0.7.11: sem "Intimação" no fim (vale para o já guardado)
@@ -63,7 +72,14 @@ def item_de_lead(lead, cfg_radar):
     if not emp and not a_conferir:
         a_conferir = (lead.get("cnpjs") or [""])[0]
     teto = float(cfg_radar.get("teto_capital_gigante") or 0)
+    from . import banco as _bd
+    extras = [c for c in (contatos or {}).get(lead.get("processo"), []) if c.get("validacao") != "descartado"]
     return {
+        "situacao": _bd.situacao_valida(lead.get("status")) or "novo", "motivo": lead.get("motivo") or "",
+        "situacao_em": lead.get("status_em") or "", "frente": lead.get("frente") or "trabalhista",
+        "resumido": bool(lead.get("resumido")), "primeira_vez": lead.get("primeira_vez") or "",
+        "contato": _contato_resumo(emp, extras, bool(emp.get("cnpj")), a_conferir),
+        "contatos": [{k: c[k] for k in ("canal", "valor", "fonte", "data", "confianca", "origem", "de_pessoa", "validacao")} for c in extras],
         "cnpj_a_conferir": a_conferir,
         "id": lead.get("processo"),
         "hora": (lead.get("visto_em") or "")[11:16],
@@ -89,6 +105,8 @@ def item_de_lead(lead, cfg_radar):
             "telefone": emp.get("telefone") or "", "telefone2": emp.get("telefone2") or "", "email": emp.get("email") or "",
             "socios": emp.get("socios") or [], "simples": emp.get("simples"),
             "inicio_atividade": emp.get("inicio_atividade") or "",
+            "logradouro": emp.get("logradouro") or "", "numero": emp.get("numero") or "", "complemento": emp.get("complemento") or "",
+            "bairro": emp.get("bairro") or "", "cep": emp.get("cep") or "",
         },
         "setor": cl.setor(nomes if not emp.get("atividade") else [emp.get("atividade", "")] + nomes),
         "gigante": gigante(emp, nomes, teto),
@@ -99,9 +117,10 @@ def item_de_lead(lead, cfg_radar):
     }
 
 
-def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None, prefs=None):
+def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None, prefs=None, visao="lista"):
     """Os dados da página: as ações guardadas nos últimos `dias` dias, dos tribunais escolhidos no config,
-    com as preferências do escritório aplicadas (exclusões e mínimo de ações marcam, não apagam)."""
+    com as preferências do escritório aplicadas (exclusões e mínimo de ações marcam, não apagam).
+    0.7.14: visao="lista" esconde as arquivadas; visao="arquivo" traz tudo o que o RADAR já leu, de qualquer tribunal."""
     r = cfg.get("radar") or {}
     agora = agora or dt.datetime.now()
     dias = int(dias if dias is not None else (r.get("dias_na_pagina") or 1))
@@ -110,10 +129,16 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     prefs = prefs or preferencias.carregar(compartilhar.pasta_base(cfg))
     r = dict(r, teto_capital_gigante=prefs.get("teto_capital_gigante") or r.get("teto_capital_gigante"))
     itens = []
-    for lead in banco.todos_leads(desde=desde):
-        if lead.get("fonte", "DJEN") != "DJEN" or (lead.get("tribunal") or "").upper() not in escolhidos:
+    arquivo = visao == "arquivo"
+    por_processo = {}
+    for c in banco.contatos():
+        por_processo.setdefault(c["processo"], []).append(c)
+    for lead in banco.todos_leads(desde=None if arquivo else desde):
+        if lead.get("fonte", "DJEN") != "DJEN":
             continue
-        item = item_de_lead(lead, r)
+        if not arquivo and ((lead.get("tribunal") or "").upper() not in escolhidos or lead.get("status") == "arquivado"):
+            continue
+        item = item_de_lead(lead, r, por_processo)
         if not prefs.get("mostrar_socios", True):
             item["empresa"]["socios"] = []  # minimização: nomes de pessoas só se o escritório pedir
         itens.append(item)
@@ -131,7 +156,7 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     dia = max([i["distribuida_em"][:10] for i in itens if i["distribuida_em"]] or [agora.date().isoformat()])
     return {
         "dia": dia, "gerado_em": agora.strftime("%Y-%m-%d %H:%M"), "exemplo": bool(exemplo), "dias": dias,
-        "escritorio": cfg.get("escritorio", ""), "tribunais": escolhidos,
+        "escritorio": cfg.get("escritorio", ""), "tribunais": escolhidos, "visao": visao,
         "valor_minimo": float(prefs.get("valor_minimo") or r.get("valor_minimo") or 100000),
         "situacao": situacao or {}, "itens": itens,
         "excluidas": sum(1 for i in itens if i.get("excluida")),
@@ -170,7 +195,14 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     if prefs.get("erro"):
         aviso("  " + prefs["erro"])
     # Licença: pergunta à SolverONE e guarda a resposta; depois, o controle da planilha (aba Controle).
-    conta.verificar(cfg, versao, agora.date())
+    try:
+        tabela_retorno = banco.retorno()
+    except Exception:  # noqa: BLE001 - o retorno nunca impede a leitura
+        tabela_retorno = []
+    conta.verificar(cfg, versao, agora.date(), retorno=tabela_retorno)
+    if tabela_retorno:
+        banco.registrar("retorno", {"quando_local": agora.astimezone().isoformat(timespec="seconds"), "linhas": tabela_retorno,
+                                    "resposta": (cfg.get("conta") or {}).get("retorno_resposta") or {}})
     if caminho_config:
         try:
             config.salvar(caminho_config, cfg)
@@ -241,6 +273,10 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         raise
     registro["duracao"] = round(time.perf_counter() - inicio)
     banco.registrar("radar", registro)
+    try:
+        banco.atualizar_estatisticas()  # 0.7.14: totais diários que nunca se apagam
+    except Exception as e:  # noqa: BLE001 - estatística nunca derruba a leitura
+        aviso(f"  Não consegui atualizar as estatísticas ({e.__class__.__name__}).")
     apagados = banco.limpar_antigos(int(r.get("guardar_dias") or 365))
     if apagados:
         aviso(f"  Retenção: {apagados} registro(s) com mais de {int(r.get('guardar_dias') or 365)} dias apagados.")
@@ -269,8 +305,12 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
     try:
         from . import atualizar, assinatura
         chave = atualizar.chave_publica(pasta_base)
-        compartilhar.gravar_radar(cfg, pagina, banco, versao, COLUNAS_RADAR, linha_csv,
-                                  assinatura.impressao(chave) if chave else "", pasta_base, aviso)
+        doze = (dt.date.today() - dt.timedelta(days=366)).isoformat()
+        arquivo = [i for i in montar_radar(cfg, banco, visao="arquivo")["itens"] if (i.get("primeira_vez") or "9") >= doze]
+        caminho = compartilhar.gravar_radar(cfg, pagina, banco, versao, COLUNAS_RADAR, linha_csv,
+                                            assinatura.impressao(chave) if chave else "", pasta_base, aviso, arquivo=arquivo)
+        if not caminho:  # planilha em uso ou ilegível: gravar_radar já avisou e não regravou nada
+            return False
         return True
     except PermissionError:
         aviso("  A planilha está aberta no Excel (ou em outro programa): feche-a para ela ser atualizada. A lista está salva.")
@@ -310,10 +350,10 @@ def acoes_do_dia(pubs, ano_minimo, ja_vistos):
 
 
 COLUNAS_RADAR = [
-    ("Hora", "hora"), ("Tribunal", "tribunal"), ("Vara", "vara"), ("Processo", "processo"), ("Rito", "rito"),
+    ("Situação", "situacao_legivel"), ("Frente", "frente_legivel"), ("Hora", "hora"), ("Tribunal", "tribunal"), ("Vara", "vara"), ("Processo", "processo"), ("Rito", "rito"),
     ("Distribuída em", "distribuida_em"), ("Empresa(s)", "empresas"), ("CNPJ", "cnpj"), ("Porte", "porte_legivel"),
     ("Capital social", "capital_social"), ("CNAE", "atividade"), ("Setor", "setor"), ("Cidade/UF", "cidade_uf"),
-    ("Telefone", "telefone"), ("E-mail", "email"), ("Sócios/administradores", "socios"), ("Provável jurídico próprio", "gigante"),
+    ("Telefone", "telefone"), ("E-mail", "email"), ("Endereço", "endereco"), ("CEP", "cep"), ("Outros contatos", "outros_contatos"), ("Sócios/administradores", "socios"), ("Provável jurídico próprio", "gigante"),
     ("Valor da causa", "valor_causa"), ("Origem do valor", "valor_fonte"), ("Link DJEN", "link_djen"), ("Consulta PJe", "link_pje"),
 ]
 
@@ -325,4 +365,20 @@ def linha_csv(item):
         "atividade": e["atividade"], "cidade_uf": f"{e['municipio']}/{e['uf']}" if e["municipio"] else "",
         "telefone": e["telefone"], "email": e["email"], "socios": [s.get("nome", "") for s in e["socios"]],
         "gigante": "sim" if item["gigante"] else "",
+        "situacao_legivel": SITUACAO_LEGIVEL.get(item.get("situacao"), "Novo") + (f" ({item['motivo']})" if item.get("motivo") else ""),
+        "frente_legivel": FRENTE_LEGIVEL.get(item.get("frente"), ""),
+        "endereco": endereco(e), "cep": e.get("cep", ""),
+        "outros_contatos": [f"{c['canal']}: {c['valor']} ({c['fonte']}, {c['data']})" for c in item.get("contatos") or []],
     }
+
+
+SITUACAO_LEGIVEL = {"novo": "Novo", "visto": "Visto", "em_analise": "Em análise", "em_contato": "Em contato",
+                    "virou_cliente": "Virou cliente", "descartado": "Descartado", "arquivado": "Arquivado"}
+FRENTE_LEGIVEL = {"trabalhista": "Trabalhista", "tributario": "Tributário", "civel": "Cível", "empresarial": "Empresarial"}
+
+
+def endereco(e):
+    rua = ", ".join(x for x in (e.get("logradouro", ""), e.get("numero", "")) if x)
+    partes = [rua + (f" {e['complemento']}" if e.get("complemento") else ""), e.get("bairro", ""),
+              "/".join(x for x in (e.get("municipio", ""), e.get("uf", "")) if x)]
+    return " - ".join(x for x in partes if x)

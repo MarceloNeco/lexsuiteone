@@ -7,7 +7,50 @@ toda hora. Na fase SaaS, as mesmas tabelas vão para o banco da plataforma.
 
 import datetime as dt
 import json
+import os
 import sqlite3
+
+# 0.7.13: situações do processo para o escritório (decisão do dono, 09/Nov). A chave fica no banco; o texto, na tela.
+SITUACOES = ("novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado")
+_SITUACAO_ANTIGA = {"novo": "novo", "nova": "novo", "visto": "visto", "vista": "visto", "lido": "visto",
+                    "em analise": "em_analise", "em análise": "em_analise", "analise": "em_analise", "em_analise": "em_analise",
+                    "abordado": "em_contato", "em contato": "em_contato", "contato": "em_contato", "em_contato": "em_contato",
+                    "cliente": "virou_cliente", "virou cliente": "virou_cliente", "virou_cliente": "virou_cliente",
+                    "contratado": "virou_cliente", "descartado": "descartado", "arquivado": "arquivado", "tratado": "arquivado"}
+# Faixas de valor das Estatísticas e do filtro (limite superior aberto); "sem" = o Diário não trouxe o valor.
+FAIXAS = ((10000, "ate10k"), (50000, "10k-50k"), (100000, "50k-100k"), (300000, "100k-300k"), (500000, "300k-500k"),
+          (1000000, "500k-1mi"), (float("inf"), "1mi+"))
+# O que fica de cada ação depois que o dado completo é limpo (sem o trecho do Diário, onde aparece o reclamante).
+_RESUMO = ("processo", "tribunal", "vara", "classe", "rito", "data_publicacao", "ajuizada_em", "empresas", "cnpjs",
+           "valor_causa", "fonte", "link", "visto_em", "rodada", "cnpj_a_conferir")
+_RESUMO_RECEITA = ("cnpj", "razao_social", "nome_fantasia", "porte", "capital_social", "cnae", "atividade", "municipio",
+                   "uf", "telefone", "telefone2", "email", "logradouro", "numero", "complemento", "bairro", "cep",
+                   "situacao", "inicio_atividade", "simples", "socios", "consultado_em")
+
+
+def situacao_valida(s):
+    return _SITUACAO_ANTIGA.get(str(s or "").strip().lower(), "")
+
+
+def faixa_valor(v):
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return "sem"
+    if v <= 0:
+        return "sem"
+    for teto, nome in FAIXAS:
+        if v < teto:
+            return nome
+    return "1mi+"
+
+
+def agora_utc_e_fuso():
+    """(quando em UTC, fuso do computador como '-03:00') para o registro de quem fez o quê."""
+    agora = dt.datetime.now(dt.timezone.utc)
+    off = dt.datetime.now().astimezone().utcoffset() or dt.timedelta(0)
+    m = int(off.total_seconds() // 60)
+    return agora.isoformat(timespec="seconds"), f"{'+' if m >= 0 else '-'}{abs(m) // 60:02d}:{abs(m) % 60:02d}"
 
 
 class Banco:
@@ -26,28 +69,216 @@ class Banco:
                 PRIMARY KEY (tribunal, data));
             CREATE TABLE IF NOT EXISTS rodadas (id TEXT PRIMARY KEY, quando TEXT, modo TEXT,
                 conferidas INTEGER, novas_processos INTEGER, novas_acoes INTEGER, detalhes TEXT);
+            CREATE TABLE IF NOT EXISTS acoes (quando_utc TEXT, fuso TEXT, perfil TEXT, acao TEXT, alvo TEXT,
+                antes TEXT, depois TEXT, quantos INTEGER);
+            CREATE TABLE IF NOT EXISTS contatos (id INTEGER PRIMARY KEY AUTOINCREMENT, processo TEXT, empresa TEXT,
+                canal TEXT, valor TEXT, de_pessoa INTEGER DEFAULT 0, fonte TEXT, data TEXT, confianca TEXT, origem TEXT,
+                observacao TEXT, arquivo TEXT, validacao TEXT DEFAULT '', validado_por TEXT DEFAULT '',
+                validado_em TEXT DEFAULT '', criado_em TEXT, UNIQUE (processo, canal, valor));
+            CREATE TABLE IF NOT EXISTS contatos_historico (quando_utc TEXT, fuso TEXT, perfil TEXT, arquivo TEXT,
+                aceitas INTEGER, recusadas INTEGER, detalhe TEXT);
+            CREATE TABLE IF NOT EXISTS estatisticas_diarias (data TEXT, tribunal TEXT, vara TEXT, frente TEXT,
+                porte TEXT, faixa_valor TEXT, novas INTEGER DEFAULT 0, encerradas INTEGER DEFAULT 0, atualizado_em TEXT,
+                PRIMARY KEY (data, tribunal, vara, frente, porte, faixa_valor));
         """)
+        colunas = {r[1] for r in self.con.execute("PRAGMA table_info(leads)")}
+        for nome, tipo in (("frente", "TEXT DEFAULT ''"), ("motivo", "TEXT DEFAULT ''"), ("status_em", "TEXT DEFAULT ''"),
+                           ("bruto_limpo", "INTEGER DEFAULT 0"), ("data", "TEXT DEFAULT ''"), ("porte", "TEXT DEFAULT ''"),
+                           ("faixa_valor", "TEXT DEFAULT ''")):
+            if nome not in colunas:
+                self.con.execute(f"ALTER TABLE leads ADD COLUMN {nome} {tipo}")  # nosec B608 - nomes fixos acima
+        # Situações antigas (Novo, Visto, Em contato, Descartado) passam para as chaves novas, uma vez (versão do esquema).
+        if (self.con.execute("PRAGMA user_version").fetchone() or [0])[0] < 714:
+            for antigo, novo in _SITUACAO_ANTIGA.items():
+                self.con.execute("UPDATE leads SET status = ? WHERE lower(status) = ? AND status <> ?", (novo, antigo, novo))
+            self.con.execute("UPDATE leads SET status = 'novo' WHERE status IS NULL OR status = ''")
+            self._preencher_resumo()
+            self.con.execute("PRAGMA user_version = 714")
+            self.con.commit()
+        self.caminho = caminho
+
+    def _preencher_resumo(self):
+        """Ações guardadas antes da 0.7.13: preenche data, frente, porte e faixa de valor (uma vez)."""
+        from . import frentes
+        faltam = self.con.execute("SELECT processo, dados, primeira_vez FROM leads WHERE data = '' OR data IS NULL").fetchall()
+        for proc, dados, quando in faltam:
+            try:
+                d = json.loads(dados or "{}")
+            except ValueError:
+                d = {}
+            emp = d.get("empresa_receita") or {}
+            self.con.execute("UPDATE leads SET data = ?, frente = ?, porte = ?, faixa_valor = ? WHERE processo = ?",
+                             ((d.get("data_publicacao") or quando or "")[:10], frentes.frente(d), emp.get("porte") or "",
+                              faixa_valor(d.get("valor_causa")), proc))
 
     def processos_vistos(self):
         return {r[0] for r in self.con.execute("SELECT processo FROM leads")}
 
     def guardar_lead(self, lead, primeira_vez=None):
+        from . import frentes
+        quando = primeira_vez or dt.date.today().isoformat()
+        emp = lead.get("empresa_receita") or {}
         self.con.execute(
-            "INSERT OR IGNORE INTO leads (processo, primeira_vez, tribunal, vara, dados) VALUES (?,?,?,?,?)",
-            (lead["processo"], primeira_vez or dt.date.today().isoformat(), lead.get("tribunal"), lead.get("vara"),
-             json.dumps(lead, ensure_ascii=False)))
+            "INSERT OR IGNORE INTO leads (processo, primeira_vez, tribunal, vara, dados, status, frente, data, porte, faixa_valor) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (lead["processo"], quando, lead.get("tribunal"), lead.get("vara"), json.dumps(lead, ensure_ascii=False), "novo",
+             frentes.frente(lead), (lead.get("data_publicacao") or quando)[:10], emp.get("porte") or "",
+             faixa_valor(lead.get("valor_causa"))))
         self.con.commit()
 
+    # --- Situação do processo (0.7.13) ---
+
+    def mudar_situacao(self, processos, situacao, perfil="", motivo=""):
+        """Muda a situação de um ou muitos processos. Devolve {quantos, antes: {processo: situação}} (para desfazer).
+        Registra quem, quando (UTC e fuso), o quê e quantos na tabela `acoes`."""
+        situacao = situacao_valida(situacao)
+        if not situacao:
+            raise ValueError("Situação desconhecida.")
+        processos = [str(p) for p in (processos or []) if p][:20000]
+        antes = {}
+        for i in range(0, len(processos), 500):
+            parte = processos[i:i + 500]
+            marcas = ",".join("?" * len(parte))
+            for proc, st in self.con.execute(f"SELECT processo, status FROM leads WHERE processo IN ({marcas})", parte):  # nosec B608
+                antes[proc] = st or "novo"
+        quando, fuso = agora_utc_e_fuso()
+        self.con.executemany("UPDATE leads SET status = ?, motivo = ?, status_em = ? WHERE processo = ?",
+                             [(situacao, (motivo or "")[:80] if situacao in ("descartado", "arquivado") else "", quando, p) for p in antes])
+        self.registrar_acao(perfil, "situacao", ",".join(list(antes)[:50]), json.dumps(_contar(antes.values())), situacao, len(antes))
+        self.con.commit()
+        return {"quantos": len(antes), "antes": antes}
+
+    def desfazer_situacao(self, antes, perfil=""):
+        """Volta cada processo para a situação que tinha (o 'antes' devolvido por mudar_situacao)."""
+        quando, fuso = agora_utc_e_fuso()
+        pares = [(situacao_valida(st) or "novo", quando, str(p)) for p, st in (antes or {}).items()][:20000]
+        self.con.executemany("UPDATE leads SET status = ?, status_em = ? WHERE processo = ?", pares)
+        self.registrar_acao(perfil, "desfazer", "", "", json.dumps(_contar(st for st, _, _ in pares)), len(pares))
+        self.con.commit()
+        return len(pares)
+
+    def registrar_acao(self, perfil, acao, alvo, antes, depois, quantos):
+        quando, fuso = agora_utc_e_fuso()
+        self.con.execute("INSERT INTO acoes VALUES (?,?,?,?,?,?,?,?)",
+                         (quando, fuso, (perfil or "")[:120], acao, (alvo or "")[:2000], antes or "", depois or "", int(quantos or 0)))
+
+    def acoes(self, limite=500):
+        cols = ("quando_utc", "fuso", "perfil", "acao", "alvo", "antes", "depois", "quantos")
+        return [dict(zip(cols, r)) for r in self.con.execute("SELECT * FROM acoes ORDER BY quando_utc DESC LIMIT ?", (int(limite),))]
+
+    def totais_por_situacao(self):
+        return dict(self.con.execute("SELECT status, count(*) FROM leads GROUP BY status").fetchall())
+
+    def retorno(self, dias=60, limite=2000):
+        """Totais por situação para a SolverONE (só quantidades): [{data, tribunal, frente, faixa_valor, situacao, qtd}]."""
+        desde = (dt.date.today() - dt.timedelta(days=int(dias))).isoformat()
+        linhas = self.con.execute(
+            "SELECT data, coalesce(tribunal,''), coalesce(frente,''), coalesce(faixa_valor,''), status, count(*) FROM leads "
+            "WHERE data >= ? GROUP BY 1,2,3,4,5 ORDER BY 1 DESC LIMIT ?", (desde, int(limite))).fetchall()
+        return [{"data": d, "tribunal": t[:40], "frente": f[:40], "faixa_valor": fx[:40], "situacao": situacao_valida(st) or "novo", "qtd": n}
+                for d, t, f, fx, st, n in linhas]
+
+    # --- Contatos (desenho dos contatos, Arquitetura 08/Nov) ---
+
+    def guardar_contato(self, c, perfil=""):
+        """Um canal de contato da empresa processada (com fonte e data). Devolve True se entrou (False se já existia)."""
+        cur = self.con.execute(
+            "INSERT OR IGNORE INTO contatos (processo, empresa, canal, valor, de_pessoa, fonte, data, confianca, origem, "
+            "observacao, arquivo, criado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            (c["processo"], c.get("empresa", "")[:200], c["canal"], c["valor"][:300], 1 if c.get("de_pessoa") else 0,
+             c.get("fonte", "")[:80], c.get("data", "")[:10], c.get("confianca", "media"), c.get("origem", "digitado"),
+             c.get("observacao", "")[:300], c.get("arquivo", "")[:120], agora_utc_e_fuso()[0]))
+        self.con.commit()
+        return cur.rowcount == 1
+
+    def contatos(self, processo=None):
+        cols = ("id", "processo", "empresa", "canal", "valor", "de_pessoa", "fonte", "data", "confianca", "origem",
+                "observacao", "arquivo", "validacao", "validado_por", "validado_em", "criado_em")
+        sql, args = "SELECT " + ",".join(cols) + " FROM contatos", ()  # nosec B608 - colunas fixas acima
+        if processo:
+            sql, args = sql + " WHERE processo = ?", (processo,)
+        return [dict(zip(cols, r)) for r in self.con.execute(sql + " ORDER BY processo, canal", args)]
+
+    def registrar_colagem(self, perfil, arquivo, aceitas, recusadas, detalhe=""):
+        quando, fuso = agora_utc_e_fuso()
+        self.con.execute("INSERT INTO contatos_historico VALUES (?,?,?,?,?,?,?)",
+                         (quando, fuso, (perfil or "")[:120], (arquivo or "")[:120], int(aceitas), int(recusadas), (detalhe or "")[:2000]))
+        self.con.commit()
+
+    # --- Estatísticas que não se apagam ---
+
+    def atualizar_estatisticas(self):
+        """Recalcula os totais dos dias que ainda estão no Arquivo e guarda em `estatisticas_diarias`. Os dias que já não
+        estão no Arquivo ficam como estavam (a tabela nunca é apagada pela limpeza)."""
+        quando = dt.datetime.now().isoformat(timespec="seconds")
+        linhas = self.con.execute(
+            "SELECT data, coalesce(tribunal,''), coalesce(vara,''), coalesce(frente,''), coalesce(porte,''), "
+            "coalesce(faixa_valor,''), count(*) FROM leads WHERE data <> '' GROUP BY 1,2,3,4,5,6").fetchall()
+        dias = sorted({l[0] for l in linhas})
+        for d in dias:
+            self.con.execute("DELETE FROM estatisticas_diarias WHERE data = ?", (d,))
+        self.con.executemany("INSERT OR REPLACE INTO estatisticas_diarias VALUES (?,?,?,?,?,?,?,0,?)",
+                             [l + (quando,) for l in linhas])
+        self.con.commit()
+        return len(linhas)
+
+    def estatisticas(self, desde=None):
+        cols = ("data", "tribunal", "vara", "frente", "porte", "faixa_valor", "novas", "encerradas")
+        sql, args = "SELECT data, tribunal, vara, frente, porte, faixa_valor, novas, encerradas FROM estatisticas_diarias", ()
+        if desde:
+            sql, args = sql + " WHERE data >= ?", (desde,)
+        return [dict(zip(cols, r)) for r in self.con.execute(sql + " ORDER BY data", args)]
+
+    # --- Espaço e limpeza do dado completo ---
+
+    def espaco(self):
+        try:
+            tamanho = os.path.getsize(self.caminho) if self.caminho and os.path.exists(self.caminho) else 0
+        except OSError:
+            tamanho = 0
+        r = self.con.execute("SELECT count(*), sum(CASE WHEN bruto_limpo = 0 THEN 1 ELSE 0 END), min(data), max(data) FROM leads").fetchone()
+        return {"bytes": tamanho, "acoes": r[0] or 0, "com_detalhe": r[1] or 0, "desde": r[2] or "", "ate": r[3] or "",
+                "estatisticas_dias": self.con.execute("SELECT count(DISTINCT data) FROM estatisticas_diarias").fetchone()[0] or 0}
+
+    def limpar_detalhe(self, meses=12, perfil=""):
+        """Apaga só o dado completo (trecho do Diário etc.) das ações mais velhas que `meses`; fica o resumo e as
+        estatísticas. Devolve quantas ações foram resumidas."""
+        meses = int(meses or 0)
+        if meses <= 0:
+            return 0
+        self.atualizar_estatisticas()
+        limite = (dt.date.today() - dt.timedelta(days=round(meses * 30.44))).isoformat()
+        feitas = 0
+        for proc, dados in self.con.execute("SELECT processo, dados FROM leads WHERE bruto_limpo = 0 AND primeira_vez < ?", (limite,)).fetchall():
+            try:
+                d = json.loads(dados or "{}")
+            except ValueError:
+                d = {}
+            r = {k: d[k] for k in _RESUMO if k in d}
+            if isinstance(d.get("empresa_receita"), dict):
+                r["empresa_receita"] = {k: d["empresa_receita"][k] for k in _RESUMO_RECEITA if k in d["empresa_receita"]}
+            self.con.execute("UPDATE leads SET dados = ?, bruto_limpo = 1 WHERE processo = ?", (json.dumps(r, ensure_ascii=False), proc))
+            feitas += 1
+        if feitas:
+            self.registrar_acao(perfil, "limpeza", f"mais de {meses} meses", "", "", feitas)
+        self.con.commit()
+        return feitas
+
+    def compactar(self):
+        self.con.commit()
+        self.con.execute("VACUUM")
+
     def todos_leads(self, vara=None, desde=None):
-        sql, args = "SELECT dados, status, primeira_vez FROM leads WHERE 1=1", ()
+        sql, args = "SELECT dados, status, primeira_vez, motivo, frente, bruto_limpo, status_em FROM leads WHERE 1=1", ()
         if vara:
             sql, args = sql + " AND vara = ?", args + (vara,)
         if desde:
             sql, args = sql + " AND primeira_vez >= ?", args + (desde,)
         saida = []
-        for dados, status, quando in self.con.execute(sql + " ORDER BY primeira_vez DESC", args):
+        for dados, status, quando, motivo, frente, limpo, status_em in self.con.execute(sql + " ORDER BY primeira_vez DESC", args):
             lead = json.loads(dados)
-            lead["status"], lead["primeira_vez"] = status, quando
+            lead["status"], lead["primeira_vez"] = situacao_valida(status) or "novo", quando
+            lead["motivo"], lead["frente"], lead["resumido"], lead["status_em"] = motivo or "", frente or "", bool(limpo), status_em or ""
             saida.append(lead)
         return saida
 
@@ -68,13 +299,13 @@ class Banco:
         self.con.commit()
 
     def limpar_antigos(self, dias=365):
-        """Retenção: apaga ações, publicações e execuções mais velhas que `dias` (LGPD: não acumular texto sem necessidade)."""
+        """Retenção: publicações do monitor e execuções mais velhas que `dias` são apagadas. As ações do Radar não são
+        apagadas (0.7.13): o dado completo vira resumo (limpar_detalhe) e as estatísticas ficam para sempre."""
         if not dias or int(dias) <= 0:
             return 0
         limite = (dt.date.today() - dt.timedelta(days=int(dias))).isoformat()
-        total = 0
-        for sql in ("DELETE FROM leads WHERE primeira_vez < ?", "DELETE FROM publicacoes WHERE visto_em < ?",
-                    "DELETE FROM execucoes WHERE quando < ?"):
+        total = self.limpar_detalhe(max(1, round(int(dias) / 30.44)))
+        for sql in ("DELETE FROM publicacoes WHERE visto_em < ?", "DELETE FROM execucoes WHERE quando < ?"):
             total += self.con.execute(sql, (limite,)).rowcount
         self.con.commit()
         return total
@@ -145,3 +376,10 @@ class Banco:
 
     def publicacoes_desde(self, desde):
         return [p for p in self.publicacoes(5000) if (p.get("visto_em") or "") >= desde]
+
+
+def _contar(valores):
+    c = {}
+    for v in valores:
+        c[v] = c.get(v, 0) + 1
+    return c

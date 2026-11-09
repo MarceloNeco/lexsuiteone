@@ -49,6 +49,10 @@ def consultar(cnpj, banco=None, validade_dias=30):
             "telefone": _telefone(d.get("ddd_telefone_1")),
             "telefone2": _telefone(d.get("ddd_telefone_2")),
             "email": (d.get("email") or "").lower(),
+            # 0.7.14: endereço completo da empresa (cadastro público); vale também para MEI (decisão do dono, 09/Nov)
+            "logradouro": " ".join(x for x in (d.get("descricao_tipo_de_logradouro") or "", d.get("logradouro") or "") if x).strip(),
+            "numero": str(d.get("numero") or ""), "complemento": d.get("complemento") or "",
+            "bairro": d.get("bairro") or "", "cep": str(d.get("cep") or ""),
             "socios": [{"nome": q.get("nome_socio") or q.get("nome") or "", "qualificacao": q.get("qualificacao_socio") or q.get("qualificacao") or ""}
                        for q in (d.get("qsa") or []) if isinstance(q, dict)][:8],
             "simples": (d.get("opcao_pelo_simples") if d.get("opcao_pelo_simples") is not None else None),

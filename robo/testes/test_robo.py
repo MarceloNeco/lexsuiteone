@@ -297,7 +297,7 @@ class RadarExecutar(unittest.TestCase):
         pubs = [djen.normalizar(dict(ITEM_DJEN, tipoComunicacao="Lista de distribuição"))]
         original = (monitor.coletar_caderno, cnpj.consultar)
         verificar_original = conta.verificar
-        conta.verificar = lambda cfg, versao, hoje=None, pedir=None: verificar_original(cfg, versao, hoje, pedir=lambda u, c, **k: {"ok": True})
+        conta.verificar = lambda cfg, versao, hoje=None, pedir=None, retorno=None: verificar_original(cfg, versao, hoje, pedir=lambda u, c, **k: {"ok": True}, retorno=retorno)
         monitor.coletar_caderno = lambda tribunais, dias, banco, diag, aviso, lidos=None, **k: (lidos.append(("TRT2", "2026-10-23", "1")), aviso("  Caderno TRT2: 1 publicações"), pubs)[2]
         cnpj.consultar = lambda c, banco=None, validade_dias=30: {"cnpj": c, "razao_social": "TRANSPORTADORA EXEMPLO LTDA", "porte": "ME", "capital_social": 1000}
         try:

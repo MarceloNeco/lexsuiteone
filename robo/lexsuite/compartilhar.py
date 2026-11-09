@@ -9,8 +9,12 @@ import shutil
 from . import planilha, preferencias
 
 NOME_RADAR = preferencias.NOME_ARQUIVO  # uma planilha só: Radar + Preferências + Exclusões + (ocultas) Controle, Log, Saúde, Sobre
-NOME_PAGINA = "Lista para abrir no celular.html"  # cópia da tela; até a 0.7.9 se chamava "LexSuiteONE - Radar.html"
-NOME_PAGINA_ANTIGO = "LexSuiteONE - Radar.html"
+NOME_PAGINA = "Retrato da última leitura.html"  # cópia da tela (0.7.14; antes "Lista para abrir no celular.html")
+NOMES_PAGINA_ANTIGOS = ("LexSuiteONE - Radar.html", "Lista para abrir no celular.html")
+NOME_PAGINA_ANTIGO = NOMES_PAGINA_ANTIGOS[0]
+NOME_HISTORICO = "Histórico de leituras"
+AVISO_RADAR = ("ATENÇÃO: esta planilha é regravada pelo {produto} a cada leitura. Pode filtrar e ordenar à vontade; "
+               "para anotar ou mexer, use \"Gerar uma cópia\" no programa (o que for digitado aqui se perde na próxima leitura).")
 SUBPASTA_ATUALIZACAO = "atualizacao"
 
 
@@ -131,7 +135,23 @@ def criar_se_faltar(cfg, versao="", pasta_robo="", aviso=print):
     return caminho
 
 
-def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao="", pasta_robo="", aviso=print):
+def _linhas_lista(itens, colunas, linha_csv):
+    cabecalho = [titulo for titulo, _ in colunas] + ["Excluída (motivo)", "Ações na janela"]
+    linhas = [cabecalho]
+    for it in itens:
+        l = linha_csv(it)
+        linhas.append([_celula(l.get(chave)) for _, chave in colunas] + [it.get("excluida") or "", it.get("acoes_na_janela", "")])
+    return linhas
+
+
+def _destacar(linhas, chaves, minimo):
+    if "valor_causa" not in chaves or not minimo:
+        return set()
+    j = chaves.index("valor_causa")
+    return {n for n, l in enumerate(linhas[1:], 1) if isinstance(l[j], (int, float)) and not isinstance(l[j], bool) and l[j] >= minimo}
+
+
+def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao="", pasta_robo="", aviso=print, arquivo=None):
     """Regrava LexSuiteONE.xlsx: aba Radar (a lista), as abas editáveis preservadas (Preferências, Exclusões,
     Controle oculta) e as abas ocultas Log, Saúde e Sobre. Também copia a página HTML.
     Devolve o caminho da planilha, ou '' se não houver pasta ou se a planilha estiver em uso."""
@@ -143,11 +163,7 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     editaveis, ok = _abas_editaveis(caminho, aviso)
     if not ok:
         return ""
-    cabecalho = [titulo for titulo, _ in colunas] + ["Excluída (motivo)", "Ações na janela"]
-    linhas = [cabecalho]
-    for it in pagina.get("itens") or []:
-        l = linha_csv(it)
-        linhas.append([_celula(l.get(chave)) for _, chave in colunas] + [it.get("excluida") or "", it.get("acoes_na_janela", "")])
+    linhas = _linhas_lista(pagina.get("itens") or [], colunas, linha_csv)
     # 0.7.13: a aba Log mostra o histórico de leituras, uma linha por tribunal e por tentativa, visível ao escritório.
     from . import causas
     rotulo = {"ok": "Lido", "ainda_nao_liberado_3h": "Diário de hoje só às 3h (não é erro)", "nao_publicado": "Ainda não publicado",
@@ -171,35 +187,75 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     ultima = log[1][0] if len(log) > 1 else ""
     chaves = [chave for _, chave in colunas]
     moeda = [chaves.index(k) for k in ("capital_social", "valor_causa") if k in chaves]
-    destacar = set()
-    if "valor_causa" in chaves:
-        minimo = float(pagina.get("valor_minimo") or 0)
-        j = chaves.index("valor_causa")
-        destacar = {n for n, l in enumerate(linhas[1:], 1)
-                    if isinstance(l[j], (int, float)) and not isinstance(l[j], bool) and minimo and l[j] >= minimo}
-    planilha.escrever_xlsx(caminho, [
-        {"nome": "Radar", "linhas": linhas, "visual": True, "filtro": True, "moeda": moeda, "destacar": destacar,
-         "larguras": [8, 9, 34, 26, 12, 12, 40, 18, 22, 16, 36, 20, 18, 16, 28, 40, 15, 16, 12, 30, 30, 30, 10]},
-    ] + [dict(a, visual=True) for a in editaveis] + [
-        {"nome": NOME_COMO_USAR, "linhas": como_usar(_nome_produto(pasta_robo)), "visual": True, "larguras": [24, 70, 70]},
-        {"nome": "Log", "linhas": log, "visual": True, "filtro": True, "larguras": [24, 16, 10, 22, 10, 26, 40, 10, 8, 60]},
+    minimo = float(pagina.get("valor_minimo") or 0)
+    produto = _nome_produto(pasta_robo)
+    larguras = [14, 11, 8, 9, 34, 26, 12, 12, 40, 18, 22, 16, 36, 20, 18, 16, 28, 40, 15, 16, 12, 30, 40, 10, 40, 30, 30, 10]
+    abas = [{"nome": "Radar", "linhas": linhas, "visual": True, "filtro": True, "moeda": moeda, "destacar": _destacar(linhas, chaves, minimo),
+             "aviso": AVISO_RADAR.format(produto=produto), "proteger": True, "larguras": larguras}]
+    if arquivo is not None:  # 0.7.14: tudo o que o RADAR já leu nos últimos 12 meses, de qualquer tribunal e situação
+        la = _linhas_lista(arquivo, colunas, linha_csv)
+        abas.append({"nome": "Arquivo", "linhas": la, "visual": True, "filtro": True, "moeda": moeda, "destacar": _destacar(la, chaves, minimo),
+                     "aviso": "Arquivo: tudo o que o " + produto + " já leu (12 meses), inclusive o que foi arquivado. Só para consulta.",
+                     "proteger": True, "larguras": larguras})
+    contatos = [["Processo", "Empresa", "Canal", "Contato", "De pessoa (sócio)", "Fonte", "Data", "Confiança", "Origem", "Validação", "Observação"]]
+    for c in (banco.contatos() if hasattr(banco, "contatos") else []):
+        contatos.append([c["processo"], c["empresa"], c["canal"], c["valor"], "sim" if c["de_pessoa"] else "", c["fonte"], c["data"],
+                         c["confianca"], c["origem"], c["validacao"], c["observacao"]])
+    abas.append({"nome": "Contatos", "linhas": contatos, "visual": True, "filtro": True, "proteger": True,
+                 "aviso": "Contatos encontrados (Receita, área logada ou digitados), sempre com a fonte e a data. Os da Receita também estão na aba Radar.",
+                 "larguras": [26, 34, 11, 34, 10, 20, 11, 10, 12, 12, 40]})
+    planilha.escrever_xlsx(caminho, abas + [dict(a, visual=True) for a in editaveis] + [
+        {"nome": NOME_COMO_USAR, "linhas": como_usar(produto), "visual": True, "larguras": [24, 70, 70]},
+        {"nome": NOME_HISTORICO, "linhas": log, "visual": True, "filtro": True, "proteger": True, "larguras": [24, 16, 10, 22, 10, 26, 40, 10, 8, 60]},
         {"nome": "Saúde", "linhas": saude, "oculta": True, "larguras": [20, 18, 10, 80]},
         {"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo), versao, chave_impressao, ultima), "oculta": True, "larguras": [30, 80]},
-    ])
+    ], so_leitura_recomendado=True)
     html = os.path.join(pasta_robo, "saida", "radar", "radar.html") if pasta_robo else ""
     if html and os.path.exists(html):
         shutil.copyfile(html, os.path.join(base, NOME_PAGINA))
-        antiga = os.path.join(base, NOME_PAGINA_ANTIGO)
-        if os.path.exists(antiga):
-            try:
-                os.remove(antiga)  # o nome antigo confundia (parecia uma segunda planilha)
-            except OSError:
-                pass
+        for nome in NOMES_PAGINA_ANTIGOS:  # os nomes antigos confundiam (pareciam outra planilha)
+            antiga = os.path.join(base, nome)
+            if os.path.exists(antiga):
+                try:
+                    os.remove(antiga)
+                except OSError:
+                    pass
     aviso(f"  Planilha compartilhada: {caminho}")
     return caminho
 
 
 NOME_COMO_USAR = "Como usar"
+
+
+def gerar_copia(cfg, agora=None):
+    """0.7.14: cópia da planilha para o escritório trabalhar (anotar, mexer), na subpasta "Cópias", sem a proteção, sem
+    a marca de somente leitura e com o aviso trocado. O RADAR nunca mexe nas cópias. Devolve (ok, caminho ou motivo)."""
+    import datetime as _dt
+    import re as _re
+    import zipfile as _zip
+    base = pasta_base(cfg)
+    origem = os.path.join(base, NOME_RADAR) if base else ""
+    if not origem or not os.path.exists(origem):
+        return False, "A planilha ainda não existe: faça uma leitura primeiro."
+    agora = agora or _dt.datetime.now()
+    destino_pasta = os.path.join(base, "Cópias")
+    os.makedirs(destino_pasta, exist_ok=True)
+    destino = os.path.join(destino_pasta, f"{os.path.splitext(NOME_RADAR)[0]} - cópia {agora:%Y-%m-%d %Hh%Mm%S}.xlsx")
+    marca_copia = f"Cópia de {agora:%d/%m/%Y %H:%M}: pode anotar e mexer à vontade. O RADAR não altera as cópias."
+    try:
+        with _zip.ZipFile(origem) as zin, _zip.ZipFile(destino, "w", _zip.ZIP_DEFLATED) as zout:
+            for info in zin.infolist():
+                dados = zin.read(info.filename)
+                if info.filename.startswith("xl/worksheets/") or info.filename == "xl/workbook.xml":
+                    t = dados.decode("utf-8")
+                    t = _re.sub(r"<sheetProtection[^>]*/>", "", t)
+                    t = _re.sub(r"<fileSharing[^>]*/>", "", t)
+                    t = _re.sub(r"(<c r=\"A1\" s=\"7\" t=\"inlineStr\"><is><t[^>]*>)[^<]*(</t>)", lambda m: m.group(1) + marca_copia + m.group(2), t)
+                    dados = t.encode("utf-8")
+                zout.writestr(info, dados)
+    except (OSError, _zip.BadZipFile) as e:
+        return False, f"Não consegui copiar a planilha ({e.__class__.__name__})."
+    return True, destino
 
 
 def _nome_produto(pasta_robo):
