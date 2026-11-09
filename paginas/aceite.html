@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aceite dos termos · {{marca.nome}} · LexSuiteONE</title>
+<meta name="description" content="Leia e aceite os termos de uso, a política de privacidade e o termo de tratamento de dados do {{marca.nome}}, da LexSuiteONE.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#102038">
+<!-- Esta página fala só com o banco da SolverONE (endereço exato do projeto), para registrar o aceite. Nenhum outro pedido externo. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src https://qvdvkqydhnadhewcidia.supabase.co; form-action 'none'; base-uri 'none'; frame-ancestors 'none'">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="preload" href="fontes/figtree.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: "Figtree"; src: url("fontes/figtree.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }
+:root { color-scheme: light; --noite: #102038; --tinta: #0f1d33; --tinta-2: #45506a; --tinta-3: #6b7489; --papel: #fff; --papel-2: #f3f5f8; --fio: #dbe1ea;
+  --latao: #d4ab6a; --latao-texto: #85601f; --latao-fundo: #f6efe0; --ok: #1f7a4d; --erro: #b3261e; --f: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--papel-2); color: var(--tinta); font: 400 1.0625rem/1.6 var(--f); -webkit-font-smoothing: antialiased; }
+a { color: var(--latao-texto); }
+:focus-visible { outline: 3px solid var(--latao); outline-offset: 3px; border-radius: 4px; }
+header { background: var(--noite); color: #fff; padding: 18px 20px; }
+header .miolo { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.nome { font-weight: 400; letter-spacing: -.01em; } .nome strong { font-weight: 800; } .nome strong b { color: var(--latao); font-weight: 800; }
+.miolo { max-width: 54rem; margin: 0 auto; padding: 0 20px; }
+main .miolo { padding: 28px 20px 48px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 8px; } h2 { font-size: 1.15rem; margin: 22px 0 8px; } h3 { font-size: 1rem; margin: 16px 0 6px; }
+p, li { margin: 0 0 10px; } .mudo { color: var(--tinta-2); }
+.cartao { background: var(--papel); border: 1px solid var(--fio); border-radius: 16px; padding: 20px; margin-top: 18px; }
+.termos { height: 24rem; overflow: auto; border: 1px solid var(--fio); border-radius: 12px; padding: 16px 18px; background: var(--papel); font-size: .98rem; }
+.termos h2:first-child { margin-top: 0; }
+.fim { text-align: center; color: var(--tinta-3); font-size: .9rem; padding: 10px 0 0; border-top: 1px dashed var(--fio); margin-top: 16px; }
+label { display: block; font-weight: 600; margin: 14px 0 6px; } label small { display: block; font-weight: 400; color: var(--tinta-3); }
+input[type=text], input[type=email] { width: 100%; font: inherit; padding: 12px 14px; border: 1px solid var(--fio); border-radius: 10px; background: var(--papel); }
+.marca { display: flex; gap: 12px; align-items: flex-start; font-weight: 500; margin-top: 16px; } .marca input { width: 22px; height: 22px; margin-top: 3px; flex: none; }
+button { font: 700 1.05rem var(--f); background: var(--latao); color: var(--noite); border: 0; border-radius: 12px; padding: 14px 22px; cursor: pointer; margin-top: 18px; min-height: 48px; }
+button[disabled] { opacity: .45; cursor: not-allowed; }
+.aviso { border-radius: 12px; padding: 12px 14px; margin-top: 14px; } .aviso.erro { background: #fdecea; color: var(--erro); } .aviso.ok { background: #e7f5ec; color: var(--ok); } .aviso.info { background: var(--latao-fundo); color: var(--latao-texto); }
+.protocolo { font-size: 1.3rem; font-weight: 800; letter-spacing: .04em; }
+footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-align: center; }
+@media print { header, footer, form, .fim { display: none; } .termos { height: auto; overflow: visible; border: 0; } body { background: #fff; } }
+</style>
+</head>
+<body>
+<header><div class="miolo"><span class="nome">{{marca.logo}}</span><span class="mudo" style="color:#c9d2e0">· LexSuiteONE · SolverONE</span></div></header>
+<main><div class="miolo">
+  <h1>Aceite dos termos</h1>
+  <p id="quem" class="aviso info" hidden></p>
+  <p class="mudo">Antes de instalar e usar o {{marca.nome}}, leia os termos até o fim, confira seus dados e confirme. O aceite fica registrado com data e hora e vale como assinatura eletrônica simples entre particulares (MP 2.200-2/2001, art. 10, §2º; Código Civil, art. 107). Versão dos termos: <b id="versao">1.0</b>, de 09/Nov/2026.</p>
+
+  <div class="cartao">
+    <div class="termos" id="termos" tabindex="0" aria-label="Texto dos termos; role até o fim para liberar o aceite">
+      <h2>1. Termos de uso do {{marca.nome}} (LexSuiteONE)</h2>
+      <p><b>O que é.</b> O {{marca.nome}} é um programa da suíte LexSuiteONE, da SolverONE, que lê fontes públicas da Justiça (o Diário de Justiça Eletrônico Nacional e os cadastros públicos de empresas) e organiza, para o escritório, a relação de ações novas ajuizadas contra pessoas jurídicas, com a ficha cadastral de cada empresa. Ele roda no computador do escritório e grava a relação numa planilha no Google Drive do escritório.</p>
+      <p><b>Quem pode usar.</b> O programa é licenciado a escritórios de advocacia e departamentos jurídicos, para uso por advogados e pessoas autorizadas pelo escritório. Cada pessoa usa com o próprio nome e e-mail; o código de cliente identifica o escritório e não deve ser repassado a terceiros.</p>
+      <p><b>Uso exclusivo do escritório.</b> As informações entregues pelo {{marca.nome}} (relação de ações, fichas de empresas, sócios e contatos) são para uso interno e exclusivo do escritório licenciado, identificado pelo código de cliente. É vedado repassar, vender, ceder, publicar ou compartilhar essas informações com terceiros, inclusive outros escritórios, ou usá-las fora da atividade jurídica do próprio escritório.</p>
+      <p><b>O que o escritório se compromete.</b> Usar as informações conforme a lei, o Estatuto da OAB, o Código de Ética e os provimentos aplicáveis, inclusive quanto à captação de clientela (Provimento 205/2021 da OAB). O {{marca.nome}} entrega informação pública organizada; a decisão sobre como usá-la, e a responsabilidade por esse uso, é do escritório e dos seus advogados. O programa nunca mostra dados de pessoas físicas partes dos processos.</p>
+      <p><b>O que a SolverONE se compromete.</b> Manter o programa funcionando e atualizado (as atualizações são assinadas digitalmente), responder a dúvidas por judicial@solverone.com.br, não acessar o computador do escritório e não guardar a relação de ações nem as anotações do escritório.</p>
+      <p><b>Limites.</b> As fontes públicas podem mudar, atrasar ou ficar indisponíveis; o programa avisa quando isso acontece. A SolverONE não garante que toda ação nova apareça, nem a exatidão dos cadastros públicos consultados. O valor da causa e outros dados que só existem em área logada dos tribunais não são obtidos pelo programa.</p>
+      <p><b>Licença e fim.</b> A licença é do escritório, pelo prazo e condições combinados à parte. Qualquer das partes pode encerrar com aviso de 30 dias. Ao encerrar, o escritório desinstala o programa; a planilha do Drive é do escritório e fica com ele.</p>
+
+      <h2>2. Política de privacidade da nuvem da SolverONE</h2>
+      <p><b>O que fica no computador do escritório e no seu Drive</b> (e nunca chega à SolverONE): a relação de ações, as fichas das empresas, os contatos, as anotações e situações marcadas pelo escritório.</p>
+      <p><b>O que a SolverONE guarda</b>, no banco de dados hospedado em São Paulo (Supabase): (a) os dados da licença: nome do escritório, CNPJ, código de cliente, validade, modalidade; (b) nome, e-mail profissional e função de cada pessoa que usa o programa, e uma identificação aleatória de cada computador; (c) registros técnicos de erro, sem conteúdo de processos e sem caminhos pessoais do Windows; (d) a cada leitura, <b>totais por situação</b> dos processos entregues, por dia, tribunal, frente e faixa de valor, sem nome de empresa, número de processo, CNPJ ou pessoa; (e) o registro deste aceite (nome, e-mail, data e hora, versão dos termos, início do endereço IP e navegador).</p>
+      <p><b>Para quê.</b> Prestar o serviço, conferir a licença, dar suporte, avisar o responsável do escritório quando entra pessoa ou computador novo, medir o resultado do serviço e cumprir obrigações legais.</p>
+      <p><b>Por quanto tempo.</b> Registros técnicos: 90 dias. Dados das pessoas: enquanto usarem o programa e por até 12 meses depois. Totais por situação: sem limite, por não identificarem ninguém. Dados da licença e registro de aceite: enquanto houver contrato e pelo prazo legal de guarda.</p>
+      <p><b>Com quem.</b> Supabase (hospedagem do banco, São Paulo) e Resend (entrega de e-mails automáticos). Nenhum dado é vendido nem usado para publicidade. Nenhuma transferência internacional pela SolverONE.</p>
+      <p><b>Seus direitos.</b> Acesso, correção, exclusão e portabilidade dos seus dados pessoais, e informação sobre o uso: escreva para privacidade@solverone.com.br. Pedido respondido em até 15 dias.</p>
+
+      <h2>3. Termo de tratamento de dados entre o escritório e a SolverONE</h2>
+      <p>O escritório é o <b>controlador</b> dos dados que trata com o {{marca.nome}}; a SolverONE é a <b>operadora</b> dos dados listados na seção 2 e os trata só para as finalidades acima e conforme as instruções do escritório (Lei 13.709/2018, art. 39).</p>
+      <p><b>A SolverONE se obriga a</b>: adotar medidas de segurança (acesso ao banco só por funções com permissão mínima, regras de linha, segredos fora do código, registro de acessos da equipe); manter sigilo; não usar os dados para outra finalidade; comunicar incidente de segurança que afete dados do escritório em até 48 horas do conhecimento; ao fim do contrato, exportar os dados do escritório a pedido e, em até 30 dias, anonimizar as pessoas e encerrar a licença; avisar com 30 dias de antecedência a troca de suboperador.</p>
+      <p><b>O escritório se obriga a</b>: responder pelo uso que faz das informações e dos contatos de empresas e sócios, inclusive perante a OAB; garantir que só pessoas autorizadas usem o programa e informar a saída delas; manter o computador e o Drive com os cuidados usuais; aceitar o envio dos totais por situação como parte do serviço.</p>
+      <p><b>Este aceite.</b> Quem aceita declara ter poderes para representar o escritório nesta contratação e ter lido os três documentos acima. O registro do aceite (nome, e-mail, data, hora, versão e resumo do IP) é a prova do consentimento e fica guardado pela SolverONE.</p>
+      <p class="fim">Fim dos termos · versão 1.0 · 09/Nov/2026 · SolverONE · LexSuiteONE</p>
+    </div>
+
+    <form id="form" novalidate>
+      <label for="nome">Nome completo<small>Como no documento. Ex.: Maria da Silva Santos</small></label>
+      <input type="text" id="nome" autocomplete="name" maxlength="120" required>
+      <label for="email">E-mail<small>O mesmo que recebeu o e-mail de boas-vindas, se possível.</small></label>
+      <input type="email" id="email" autocomplete="email" maxlength="120" required>
+      <label for="codigo">Código de cliente<small>Veio no e-mail de boas-vindas (LEX-XXXX-XXXX). Identifica o escritório.</small></label>
+      <input type="text" id="codigo" autocomplete="off" maxlength="13" required>
+      <label class="marca"><input type="checkbox" id="li" disabled><span>Li os termos até o fim e <b>aceito</b> os Termos de uso, a Política de privacidade e o Termo de tratamento de dados, em nome do escritório.</span></label>
+      <div id="dica" class="aviso info">Role o texto dos termos até o fim para liberar a caixa de aceite.</div>
+      <button type="submit" id="botao" disabled>Confirmar o aceite</button>
+      <div id="msg" class="aviso" hidden></div>
+    </form>
+    <div id="pronto" class="cartao" hidden>
+      <h2>Aceite registrado</h2>
+      <p>Protocolo: <span class="protocolo" id="protocolo"></span></p>
+      <p id="quando" class="mudo"></p>
+      <p>Guarde este protocolo (ou imprima esta página). Uma cópia dos termos fica sempre em <a href="aceite.html">judicial.solverone.com.br/aceite.html</a>. Agora você pode seguir com a instalação pelo e-mail de boas-vindas.</p>
+    </div>
+  </div>
+</div></main>
+<footer>SolverONE · LexSuiteONE · Dúvidas: judicial@solverone.com.br · Privacidade: privacidade@solverone.com.br</footer>
+<script>
+(function () {
+  "use strict";
+  // Só o endereço exato do projeto e a chave publicável (pública por desenho). Quem protege é o banco (função com limites).
+  var NUVEM = "https://qvdvkqydhnadhewcidia.supabase.co", CHAVE = "sb_publishable_oRJmeUwlBbOP_HoOXf0xLw_4O8v43EA";
+  var APP = "radar-judicial", TERMO = "lexsuiteone-termos", VERSAO = document.getElementById("versao").textContent.trim();
+  var termos = document.getElementById("termos"), li = document.getElementById("li"), botao = document.getElementById("botao"), dica = document.getElementById("dica"), msg = document.getElementById("msg");
+  var q = new URLSearchParams(location.search);
+  function normCodigo(c) { c = String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); return c.length === 11 && c.indexOf("LEX") === 0 ? c.slice(0, 3) + "-" + c.slice(3, 7) + "-" + c.slice(7, 11) : String(c || "").toUpperCase(); }
+  if (q.get("codigo")) document.getElementById("codigo").value = normCodigo(q.get("codigo"));
+  var quem = document.getElementById("quem");
+  async function contexto() {   // mostra "em nome de <escritório>" quando o código é conhecido
+    var c = normCodigo(document.getElementById("codigo").value); if (!/^LEX-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(c)) { quem.hidden = true; return; }
+    try {
+      var r = await fetch(NUVEM + "/rest/v1/rpc/sol_aceite_contexto", { method: "POST", headers: { apikey: CHAVE, Authorization: "Bearer " + CHAVE, "Content-Type": "application/json" }, body: JSON.stringify({ p_app: APP, p_licenca: c }) });
+      var j = r.ok ? await r.json() : null;
+      if (j && j.ok) { quem.textContent = "Este aceite é dado em nome de " + j.escritorio + " (código " + c + ")." + (j.ja_aceito ? " Já existe um aceite registrado para este escritório; um novo aceite não faz mal." : ""); quem.hidden = false; }
+      else quem.hidden = true;
+    } catch (e) { quem.hidden = true; }
+  }
+  document.getElementById("codigo").addEventListener("change", contexto); contexto();
+  if (q.get("email")) document.getElementById("email").value = String(q.get("email")).toLowerCase();
+  function leuTudo() { return termos.scrollTop + termos.clientHeight >= termos.scrollHeight - 8; }
+  function liberar() { if (leuTudo() && li.disabled) { li.disabled = false; dica.textContent = "Obrigado por ler. Marque a caixa para aceitar."; } }
+  termos.addEventListener("scroll", liberar); setTimeout(liberar, 300);
+  li.addEventListener("change", function () { botao.disabled = !li.checked; });
+  function mostrar(texto, tipo) { msg.textContent = texto; msg.className = "aviso " + tipo; msg.hidden = false; }
+  async function sha256(texto) { var b = new TextEncoder().encode(texto); var h = await crypto.subtle.digest("SHA-256", b); return Array.from(new Uint8Array(h)).map(function (x) { return x.toString(16).padStart(2, "0"); }).join(""); }
+  document.getElementById("form").addEventListener("submit", async function (ev) {
+    ev.preventDefault();
+    var nome = document.getElementById("nome").value.trim().replace(/\s+/g, " "), email = document.getElementById("email").value.trim().toLowerCase(), codigo = normCodigo(document.getElementById("codigo").value);
+    if (nome.split(" ").length < 2) return mostrar("Escreva o nome completo: nome e sobrenome.", "erro");
+    if (!/^[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}$/.test(email)) return mostrar("Confira o e-mail.", "erro");
+    if (!/^LEX-[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(codigo)) return mostrar("O código de cliente tem o formato LEX-XXXX-XXXX (veja o e-mail de boas-vindas).", "erro");
+    if (!li.checked) return mostrar("Marque a caixa de aceite.", "erro");
+    botao.disabled = true; mostrar("Registrando…", "info");
+    try {
+      var hash = await sha256(termos.innerText.replace(/\s+/g, " ").trim());
+      var r = await fetch(NUVEM + "/rest/v1/rpc/sol_aceite_registrar", { method: "POST", headers: { apikey: CHAVE, Authorization: "Bearer " + CHAVE, "Content-Type": "application/json" },
+        body: JSON.stringify({ p: { app: APP, licenca: codigo, termo: TERMO, versao: VERSAO, hash: hash, nome: nome, email: email, navegador: navigator.userAgent.slice(0, 120), origem: q.get("codigo") ? "email" : "site" } }) });
+      var j = null; try { j = await r.json(); } catch (e) {}
+      if (!r.ok || !j || !j.ok) {
+        var m = (j && (j.message || j.hint)) || "";
+        if (/desconhecido/i.test(m)) m = "Código de cliente não encontrado. Confira no e-mail de boas-vindas.";
+        else if (/tentativas/i.test(m)) m = "Muitas tentativas. Espere um pouco e tente de novo.";
+        else if (!m) m = "Não consegui registrar agora. Confira a internet e tente de novo; se continuar, escreva para judicial@solverone.com.br.";
+        botao.disabled = false; return mostrar(m, "erro");
+      }
+      msg.hidden = true; document.getElementById("form").hidden = true;
+      document.getElementById("protocolo").textContent = j.protocolo;
+      document.getElementById("quando").textContent = "Aceito por " + nome + " (" + email + ")" + (quem.hidden ? "" : ", " + quem.textContent.replace("Este aceite é dado ", "").split(".")[0]) + ", em " + new Date(j.aceito_em).toLocaleString("pt-BR") + ", versão " + VERSAO + " dos termos.";
+      document.getElementById("pronto").hidden = false; document.getElementById("pronto").scrollIntoView({ behavior: "smooth" });
+    } catch (e) { botao.disabled = false; mostrar("Sem conexão com a nuvem da SolverONE. Confira a internet e tente de novo.", "erro"); }
+  });
+})();
+</script>
+</body>
+</html>
