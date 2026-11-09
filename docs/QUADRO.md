@@ -136,9 +136,11 @@ Arquitetura (pedido no quadro).
 ### Fazendo agora
 - (nada) **0.7.16 na `main`, pronta para publicar** (com o "pode" do dono, 09/Nov noite; revisada: 1 bloqueio corrigido
   e aprovado na segunda revisão, 145 testes). A Operação revisa e publica com "publica a versão 0.7.16".
-- **0.7.17 pronta no ramo e revisada (aprovada)**: filtros com várias opções e contagem cruzada, "Limpar filtros" sempre
-  visível, turmas (2º grau) fora, decisão 14, limpeza só com cópia, data do critério no Painel. Vai à `main` quando a
-  0.7.16 for publicada e o dono der o "pode" (muda o manual).
+- **0.7.17 na `main`, pronta para publicar** (com o "pode a 0.7.17" do dono, 09/Nov noite; revisada e aprovada duas
+  vezes, 149 testes): filtros com várias opções e contagem cruzada, "Limpar filtros" sempre visível, turmas (2º grau)
+  fora, decisão 14, limpeza só com cópia e no máximo uma a cada 24 h, data do critério no Painel, e-mail de boas-vindas
+  sem o passo de compartilhar a pasta, site e manual com tudo o que vai à SolverONE. Pacote 44 e 43. **O e-mail ao
+  Leandro só depois desta versão publicada.**
 - Antes (agora parte da 0.7.17): as quatro observações da Arquitetura sobre a planilha grande (cópias fora da pasta
   quando ela estiver compartilhada, ou aviso; data da mudança da regra de "ação nova" no Histórico e nas Estatísticas;
   limpeza automática só enxuga com cópia bem-sucedida; pergunta 14), item 92, itens 79 e 82, e o que vier da visita. Depois, a
