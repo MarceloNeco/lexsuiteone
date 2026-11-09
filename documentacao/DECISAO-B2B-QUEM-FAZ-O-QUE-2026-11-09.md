@@ -154,6 +154,29 @@ a ser só do RootifyONE.
 - Pendente para sessão no desktop: ampliar o check de `lex_eventos` com `termos_aceitos`, `aceite_dispensado`,
   `aceite_exigido` (hoje tudo entra como `licenca_alterada` com detalhe próprio, porque o DROP CONSTRAINT pede confirmação).
 
+### 5c. Decisão do dono (09/Nov, noite): termos em DUAS CAMADAS
+
+| Camada | Quem aceita | O quê (termo em `sol_termos`) | Quando | Efeito |
+|---|---|---|---|---|
+| 1 Escritório | O responsável, uma vez, pelo link do e-mail de boas-vindas | `lexsuiteone-termos` (contrato de licença + privacidade + tratamento de dados), versão 1.0 | Antes de instalar | Libera a licença (ou a equipe dispensa, com motivo) |
+| 2 Pessoa | Cada pessoa que usa o programa | `lexsuiteone-uso` (termos de uso), versão 1.0, link `aceite.html?ler=uso` | No cadastro do programa, primeira vez; de novo se a versão mudar | Sem aceite da pessoa ela não lê, mesmo com a licença liberada |
+
+- **Registro** (os dois em `sol_aceites`): versão, data/hora em UTC + **fuso informado** (coluna `fuso`), e-mail, nome, hash,
+  IP resumido, origem (`email`, `site` ou `programa`), protocolo. Versão vigente de cada termo em `sol_termos`
+  (`admin_sol_termo_publicar` muda a versão com motivo e registro; `sol_termo_vigente` é leitura pública).
+- **`lex-conta`** (v10, publicada): `cadastrar` aceita `aceite_uso: {versao, fuso}` (a caixa marcada no cadastro) e grava o
+  aceite da pessoa; `verificar` e `cadastrar` devolvem `termos: {escritorio: {...}, pessoa: {...}}`, cada um com
+  `versao_vigente`, `link`, `aceito`, `versao`, `aceito_em`, `fuso`, `nome`, `email`, `protocolo`, `precisa_aceitar`
+  (escritório traz também `exigido`). **Trava da pessoa** (`motivo: aceite_uso_pendente`) só quando o programa manda
+  `suporta_aceite_uso: true` na `verificar`: assim o programa instalado hoje (0.7.13/0.7.14) não trava; a versão da Produto
+  que tiver a caixa de aceite declara o suporte e passa a travar.
+- **Quem pode aceitar a camada 2**: só e-mail já cadastrado como pessoa da licença (o cadastro grava a pessoa e, na
+  mesma chamada, o aceite). Nome exige só o nome (sobrenome obrigatório fica na camada 1).
+- **RootifyONE**: ficha mostra "Termos" com o escritório (`admin_lex_listar.aceite`) e cada pessoa (`admin_sol_aceites`
+  filtrado por termo `lexsuiteone-uso`, último por e-mail; `admin_sol_termos()` dá a versão vigente para marcar "versão
+  antiga"). Aba Configuração do produto: versões vigentes e, mais adiante, "publicar versão nova" (`admin_sol_termo_publicar`).
+- **Programa (Produto)**: ver pedido no quadro (caixa de aceite no cadastro, Configuração com as duas camadas, link).
+
 ## 6. Ordem de entrega
 
 1. **Dono**: dá o "pode aplicar" para o SQL único de `admin_lex_listar` (pedido nº 1 do RootifyONE + campo `aceite`) e para
