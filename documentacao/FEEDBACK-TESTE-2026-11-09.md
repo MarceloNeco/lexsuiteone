@@ -45,3 +45,19 @@ desenho antes do código), **O** = Operação (publicar). Nada aqui foi implemen
 | 58 | "Lista para abrir no celular": o que é? | Ver acima. Proposta: renomear para "Retrato da última leitura (abre no celular)" ou deixar de gravar. Decisão do dono | P | 0.7.13 |
 | 59 | Completar os dados não públicos com o login do advogado (Claude in Chrome ou integração), escolhendo um grupo de processos | Liga aos itens 40 e 41. Pesquisa feita em `PESQUISA-ACESSO-PJE-2026-11-09.md` (resumo: não há caminho oficial simples; contato vem do CNPJ, não do processo; há bloqueio por volume); o desenho fica com a Arquitetura; os prompts do Claude in Chrome (`docs/VISITA-KR-LAW.md`) a Produto revisa com o resultado | A, P, pesquisa | depois da pesquisa |
 | 60 | Gráficos também na planilha | Aba "Estatísticas" com a tabela de totais (funciona no Excel e no Google Planilhas). Gráfico desenhado dentro do arquivo fica para depois: dá muito trabalho só com a biblioteca padrão e o Google Planilhas converte mal | P | 0.8 |
+
+## Segunda rodada do mesmo dia (situação do processo e ações em lote)
+
+Reforço do dono: leu o TRT2, depois o TRT15, e o TRT2 sumiu da tela **e da planilha**. Confirma o item 42: a planilha
+hoje é o espelho da tela (tribunais marcados e período escolhido); o dado continua no banco, mas o escritório não o vê.
+O Arquivo resolve.
+
+| # | O que o dono pediu | Proposta | Quem | Pacote |
+|---|---|---|---|---|
+| 61 | O status fica escondido e cortado na ficha; tem que aparecer no cartão, com filtro e mudança em lote | O campo passa a se chamar **Situação** e vira uma etiqueta no próprio cartão. Filtro "Situação". Muda pelo cartão (um clique) ou em lote | P (tela); A (guardar no banco, item 43) | 0.7.13 (etiqueta e filtro) + 0.8 (banco) |
+| 62 | Rever as situações: o que é novo, visto, em contato, descartado, arquivado, "em análise" | Proposta: **Nova** (ainda não aberta) → **Vista** (abriu a ficha; automático) → **Em análise** (buscando contato, valor, decidindo) → **Em contato** (o escritório já falou com a empresa) → **Arquivada** (sai da Lista e vai para o Arquivo, com motivo: sem interesse, já é cliente, fora do perfil, outro). "Descartado" vira "Arquivada: sem interesse". Decisão do dono | P, dono decide | 0.7.13 |
+| 63 | Ações em lote: arquivar, mudar a situação, completar dados pendentes; selecionar todos da lista | Caixa em cada cartão e "Selecionar todos os N desta lista (com os filtros)". Barra de ações em lote, que aparece só quando há seleção, com o nome **"Com os selecionados:"** e os botões "Mudar a situação", "Arquivar", "Preparar busca na área logada" | P; A (item 43) | 0.8 (precisa da situação no banco) |
+| 64 | Mostrar quantos processos serão afetados antes de aplicar em lote | O botão diz o número ("Arquivar 1.512 processos") e, acima de 20, pede confirmação escrita na janela ("Arquivar 1.512 processos? Eles saem da Lista e continuam no Arquivo"). Dá para desfazer logo depois | P | 0.8 |
+| 65 | Pílulas de filtro com aparência diferente das ações em lote | Filtros: pílulas claras com contorno (como hoje). Ações em lote: barra própria em azul-marinho com botões em latão, presa ao rodapé da tela enquanto houver seleção. Ninguém confunde "filtrar" com "aplicar" | P | 0.8 |
+| 66 | Filtro de valor: personalizado e **"valor não informado"** | A lista do item 54 ganha "Sem valor informado" (as que dependem do PJe) ao lado de Todos, 10 mil ... 1 milhão e "Outro valor..." | P | 0.7.13 |
+| 67 | Termos que o advogado entende, nada técnico | "Situação" (não status), "Com os selecionados" (não "ações em lote"), "Arquivar" (não "descartar"), "Sem valor informado", "Contato encontrado" e "Sem contato" | P | 0.7.13 |
