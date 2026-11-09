@@ -19,7 +19,7 @@ from . import compartilhar, config, conta, djen, monitor, preferencias, saidas, 
 
 class Interrompida(Exception):
     """Alguém clicou em "Interromper": a leitura parou num ponto seguro (0.7.15). O que já foi gravado fica; o Diário
-    interrompido não é marcado como lido, e a próxima leitura continua de onde parou."""
+    interrompido não é marcado como lido, e a próxima leitura baixa de novo os Diários desta leitura."""
 
 
 class RoboDesligado(Exception):
@@ -276,7 +276,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
                     aviso(f"  Receita: {feitas} de {com_cnpj}")
             banco.guardar_lead(n, agora.date().isoformat())
         novos = novos_feitos
-        if not interrompida:  # Diário interrompido não fica marcado como lido: a próxima leitura continua de onde parou
+        if not interrompida:  # Diário interrompido não fica marcado como lido: a próxima leitura baixa de novo os Diários desta leitura
             monitor.guardar([], banco, lidos)
         detalhes = {}
         for n in novos:
@@ -303,8 +303,11 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     apagados = banco.limpar_antigos(int(r.get("guardar_dias") or 365))
     if apagados:
         aviso(f"  Retenção: {apagados} registro(s) com mais de {int(r.get('guardar_dias') or 365)} dias resumidos ou apagados (o detalhe sai; o resumo e as estatísticas ficam).")
-    situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} ações novas contra empresas; {com_cnpj} com CNPJ no Diário.",
-                "en": f"{len(pubs)} notices read; {len(novos)} new lawsuits against companies; {com_cnpj} with a tax ID in the gazette.",
+    if interrompida:  # 0.7.16: depois de uma parada na Receita, conta só o que foi feito (antes misturava parcial e total)
+        com_cnpj = sum(1 for n in novos_feitos if n.get("cnpjs"))
+    parcial_pt, parcial_en = (" (leitura interrompida)", " (reading stopped)") if interrompida else ("", "")
+    situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} ações novas contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
+                "en": f"{len(pubs)} notices read; {len(novos)} new lawsuits against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}
     from . import causas
     for t in tentativas:  # avisos que não são erro (Diário de hoje só às 3h) e tribunais que falharam

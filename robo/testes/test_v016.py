@@ -197,5 +197,121 @@ class TestArmazenamento(unittest.TestCase):
         self.assertIn(sit["disco"]["nivel"], ("ok", "baixo", "critico"))
 
 
+class TestTelaEProcessos(unittest.TestCase):
+    def test_janela_preta_fecha_sem_tela_e_espera_leitura(self):
+        from lexsuite import app
+
+        class Est:
+            rodando = False
+
+        class Srv:
+            estado, ultimo_pedido, fechou = Est(), 0.0, False
+
+            def shutdown(self):
+                self.fechou = True
+        relogio = {"t": 0.0}
+        srv = Srv()
+        def dormir(s):
+            relogio["t"] += s
+            srv.estado.rodando = relogio["t"] < 200  # leitura até 200 s: não fecha
+        self.assertTrue(app.vigiar_tela(srv, lambda *_: None, limite_s=180, passo_s=15, relogio=lambda: relogio["t"], dormir=dormir))
+        self.assertGreaterEqual(relogio["t"], 200 + 180)
+        # o computador dormiu (relógio pulou): recomeça a contar em vez de fechar na hora
+        srv2, rel2, passos = Srv(), {"t": 0.0}, iter([15, 3600, 15, 15])
+        def dormir2(s):
+            rel2["t"] += next(passos, 15)
+        app.vigiar_tela(srv2, lambda *_: None, limite_s=180, passo_s=15, relogio=lambda: rel2["t"], dormir=dormir2)
+        self.assertGreater(rel2["t"], 3600 + 180)
+
+    def test_resposta_v1_e_pedido_so_do_que_falta(self):
+        from lexsuite import contatos as ct
+        proc = "0000001-00.2026.5.02.0001"
+        item = {"processo": proc, "tribunal": "TRT2", "empresa": {"razao_social": "Empresa Fictícia Ltda", "cnpj": "", "logradouro": "Rua X"},
+                "contato": {"canais": ["telefone"]}, "valor_causa": None, "ajuizada_em": ""}
+        self.assertEqual(ct.faltando(item), ["valor_causa", "data_ajuizamento", "email"])
+        pasta = tempfile.mkdtemp()
+        caminho, n, texto = ct.preparar_v1([item], pasta, limite=30, hoje=dt.date(2026, 11, 12))
+        self.assertEqual(n, 1)
+        self.assertIn("RESPOSTA PARA O RADAR v1", texto)
+        self.assertIn("valor_causa, data_ajuizamento, email", texto)
+        resp = "\n".join([
+            "RESPOSTA PARA O RADAR v1", "| processo | dado | valor | resultado | fonte | data | observação |", "|---|---|---|---|---|---|---|",
+            f"| {proc} | valor_causa | R$ 150.000,00 | encontrado | PJe petição inicial | 2026-11-12 | |",
+            f"| {proc} | data_ajuizamento | 05/11/2026 | encontrado | PJe petição inicial | 2026-11-12 | |",
+            f"| {proc} | email | contato@empresaficticia.com.br | encontrado | PJe citação | 2026-11-12 | da empresa |",
+            f"| {proc} | telefone | | nao_consta | PJe petição inicial | 2026-11-12 | |",
+            f"| {proc} | endereco | | tentar_depois | | 2026-11-12 | sessão expirou |",
+            f"| {proc} | email | 123.456.789-09 | encontrado | PJe | 2026-11-12 | |",
+            f"| {proc} | telefone | (11) 3333-4444 | encontrado | PJe | 2026-11-12 | telefone da testemunha |"])
+        r = ct.colar_v1(resp, {proc: "Empresa Fictícia Ltda"})
+        self.assertEqual([(c["campo"], c["valor"]) for c in r["completar"]], [("valor_causa", 150000.0), ("data_ajuizamento", "2026-11-05")])
+        self.assertEqual([c["canal"] for c in r["contatos"]], ["email"])
+        self.assertEqual((len(r["nao_consta"]), len(r["tentar_depois"]), len(r["recusadas"])), (1, 1, 2))
+        shutil.rmtree(pasta, ignore_errors=True)
+
+    def test_valor_no_programa_vale_na_lista(self):
+        from lexsuite import radar
+        b = _banco_com(1)
+        proc = "0000000-11.2026.5.02.0001"
+        self.assertTrue(b.completar(proc, "valor_causa", 250000.0, "digitado", perfil="ana@example.com"))
+        item = radar.montar_radar({"radar": {"tribunais": ["TRT2"], "dias_na_pagina": 5}}, b)["itens"][0]
+        self.assertEqual((item["valor_causa"], item["valor_fonte"]), (250000.0, "digitado"))
+        self.assertEqual(b.acoes(1)[0]["acao"], "completar:valor_causa")
+        self.assertTrue(b.completar(proc, "valor_causa", None))
+        self.assertIsNone(radar.montar_radar({"radar": {"tribunais": ["TRT2"], "dias_na_pagina": 5}}, b)["itens"][0]["valor_causa"])
+        with self.assertRaises(ValueError):
+            b.completar(proc, "cpf", "x")
+
+    def test_nome_sem_e_outros_e_classe_em_maiusculas(self):
+        from lexsuite import radar
+        self.assertEqual(cl.limpar_nome("Fundacao do Abc e Outros (1)"), "Fundacao do Abc")
+        self.assertEqual(cl.limpar_nome("EMPRESA FICTICIA LTDA E OUTROS"), "EMPRESA FICTICIA LTDA")
+        item = radar.item_de_lead({"processo": "1", "classe": "AçãO TRABALHISTA - RITO ORDINáRIO", "empresas": ["X Ltda"]}, {})
+        self.assertEqual(item["classe"], "AÇÃO TRABALHISTA - RITO ORDINÁRIO")
+
+    def test_termos_das_duas_camadas_e_aceite_de_uso(self):
+        from lexsuite import conta
+        t = conta._termos({"escritorio": {"versao_vigente": "1.0", "link": "https://judicial.solverone.com.br/aceite.html", "aceito": True,
+                                          "versao": "1.0", "nome": "Responsável Fictício"},
+                           "pessoa": {"versao_vigente": "1.0", "link": "https://outro-site.example/aceite", "aceito": False}})
+        self.assertEqual(t["escritorio"]["link"], "https://judicial.solverone.com.br/aceite.html")
+        self.assertEqual(t["pessoa"]["link"], "")  # link fora da SolverONE não é seguido
+        enviados = []
+        def pedir(url, corpo, **k):
+            enviados.append(corpo)
+            return {"ok": True, "termos": {"pessoa": {"versao_vigente": "1.0", "aceito": True, "versao": "1.0"}}}
+        cfg = {"conta": {"codigo": "LEX-AAAA-BBBB"}, "usuario": {}}
+        ok, _ = conta.cadastrar(cfg, "0.7.16", "ana@example.com", "Ana Fictícia", "11222333000181", pedir=pedir,
+                                aceite_uso={"versao": "1.0", "fuso": "America/Sao_Paulo"})
+        self.assertTrue(ok)
+        self.assertEqual(enviados[0]["aceite_uso"], {"versao": "1.0", "fuso": "America/Sao_Paulo"})
+        self.assertNotIn("suporta_aceite_uso", enviados[0])  # a trava da pessoa ainda não é pedida (pergunta 13)
+        self.assertTrue(cfg["conta"]["termos"]["pessoa"]["aceito"])
+
+    def test_cmd_radar_interrompida_termina_com_aviso_suave(self):
+        import argparse
+        import json
+        import lexsuite_robo as lr
+        from lexsuite import radar
+        pasta = tempfile.mkdtemp()
+        orig_aqui, orig_exec = lr.AQUI, radar.executar
+        lr.AQUI = pasta
+        def interrompe(*a, **k):
+            raise radar.Interrompida({"pt": "parcial"})
+        radar.executar = interrompe
+        try:
+            cfgp = os.path.join(pasta, "config.json")
+            with open(cfgp, "w", encoding="utf-8") as f:
+                json.dump({"radar": {"tribunais": ["TRT2"]}}, f)
+            lr.cmd_radar(argparse.Namespace(config=cfgp, diagnostico=False, dias=1, sem_cnpj=True, agendado=False))
+            with open(os.path.join(pasta, "saida", "leitura.json"), encoding="utf-8") as f:
+                andamento = json.load(f)
+        finally:
+            lr.AQUI, radar.executar = orig_aqui, orig_exec
+            shutil.rmtree(pasta, ignore_errors=True)
+        self.assertEqual(andamento.get("origem"), "à mão (RODAR.bat)")
+        self.assertFalse(andamento.get("rodando"))
+
+
 if __name__ == "__main__":
     unittest.main()

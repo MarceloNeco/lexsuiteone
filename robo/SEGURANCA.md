@@ -1,4 +1,4 @@
-# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.15)
+# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.16)
 
 Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
 licença (código, versão e só quantidades por situação), o cadastro de quem usa (nome, e-mail, função e documento do
@@ -6,11 +6,11 @@ escritório), avisos técnicos de erro (sem conteúdo de processos) e a procura 
 ações, as fichas, os contatos e as anotações não saem do computador e da pasta do escritório.
 
 - **Sem segredos no código ou no pacote.** Nenhuma senha, chave de API ou certificado. A chave privada que assina
-  atualizações nasce no computador do suporte e nunca sai dele; o pacote leva só a chave pública.
+  atualizações existe só dentro do serviço de assinatura da SolverONE (ninguém a tem); o pacote leva só a chave pública.
 - **Tela local.** O servidor escuta só em 127.0.0.1 (nunca na rede). Pedidos que mudam algo (POST) exigem o cabeçalho
   `X-LexSuite` que só a própria página manda, e a origem é conferida: outro site aberto no navegador não consegue
   mandar o robô rodar nem mudar a configuração. Sem cookies, sem sessão, sem login.
-- **Entradas tratadas como não confiáveis.** Planilha: leitor próprio com limite de 50 MB, DTD e entidades recusadas; valores
+- **Entradas tratadas como não confiáveis.** Planilha: leitor próprio que lê só as abas editáveis, com limite de 50 MB por parte e 1 GB no total, DTD e entidades recusadas; valores
   inválidos caem no padrão; planilha ilegível nunca é sobrescrita. Pacote de atualização: assinatura Ed25519 (RFC 8032) sobre versão e
   SHA-256, conferência do SHA-256 do zip, limite de tamanho e de quantidade de arquivos, lista fechada de nomes
   permitidos, recusa de `..`, caminhos absolutos e letras de unidade, e a chave pública nunca é substituída por um
@@ -18,7 +18,9 @@ ações, as fichas, os contatos e as anotações não saem do computador e da pa
 - **Rede.** Só HTTPS para DJEN, PJe (consulta pública), BrasilAPI, Minha Receita e a conferência da licença na SolverONE
   (Supabase, função `lex-conta`: código de cliente, identificação da instalação, versão e, desde a 0.7.14, a tabela de
   totais por situação, dia, tribunal, frente e faixa de valor, sem nome, processo, CNPJ ou contato; a tela mostra a tabela
-  enviada), com intervalo mínimo entre pedidos,
+  enviada); o cadastro de quem usa (nome, e-mail, função e documento do escritório: CNPJ, CPF ou passaporte); avisos
+  técnicos de erro (etapa, versão, Windows e mensagem sem caminhos pessoais); a procura de versão nova no site; DataJud
+  (consulta pública do CNJ, quando ligada) e, só se o escritório configurar, e-mail (SMTP) e Telegram para avisos. Com intervalo mínimo entre pedidos,
   poucas tentativas e teto de 2 GB por download (lido em pedaços; caderno descompactado também limitado). Nada de burlar
   captcha, trocar IP ou abrir várias cópias. A tela não faz nenhum pedido externo (fontes do sistema).
 - **Tela só local.** Além de escutar em 127.0.0.1, recusa qualquer pedido cujo cabeçalho Host não seja 127.0.0.1 ou

@@ -1,7 +1,7 @@
 """Tela local do Radar: um servidor pequeno só no próprio computador (127.0.0.1), biblioteca padrão.
 
-A página escolhe os tribunais, manda rodar e mostra a lista. Nada sai do computador além do que o
-robô já fazia (ler o DJEN e a Receita). Só aceita pedidos do navegador desta máquina, vindos da
+A página escolhe os tribunais, manda rodar e mostra a lista. A tela não manda nada para fora; o programa fala
+com o DJEN, a Receita e a SolverONE (licença, cadastro, totais por situação), como está em SEGURANCA.md. Só aceita pedidos do navegador desta máquina, vindos da
 própria página (cabeçalho X-LexSuite); outro site aberto no navegador não consegue mandar rodar.
 """
 

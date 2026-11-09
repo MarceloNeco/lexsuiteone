@@ -270,7 +270,7 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
         except Exception as e:  # um tribunal com problema não derruba os outros
             if e.__class__.__name__ == "Interrompida":  # 0.7.15: parada pedida; registra e sobe (não é erro do tribunal)
                 tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": "-", "causa": "interrompida",
-                                   "fez": "interrompida a pedido; este Diário é lido de novo na próxima leitura", "fez_en": "stopped on request; this gazette is read again next time",
+                                   "fez": "interrompida a pedido; os Diários desta leitura são baixados de novo na próxima", "fez_en": "stopped on request; this reading's gazettes are downloaded again next time",
                                    "duracao": round(time.perf_counter() - inicio, 1), "leu_ate": "", "detalhe": ""})
                 raise
             erro = e

@@ -166,7 +166,7 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 Itens 85 a 88 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`: botão **Interromper** (a leitura para no próximo ponto
 seguro: entre um Diário e outro ou entre uma consulta à Receita e outra; o que já foi gravado fica, o Diário
-interrompido não é marcado como lido e a próxima leitura continua de onde parou; vale para a leitura agendada, pelo
+interrompido não é marcado como lido e a próxima leitura baixa de novo os Diários desta leitura; vale para a leitura agendada, pelo
 `saida/parar.json`; registrado em `acoes` e no histórico); aviso **"Fazendo agora a leitura das 08h00, que não rodou na
 hora porque o computador estava desligado ou em repouso"** (`agendar.horario_perdido`); a "próxima leitura" da tela se
 atualiza sozinha quando o horário passa. A seguir, com o desenho da Arquitetura: termos por pessoa e "Atualizar
