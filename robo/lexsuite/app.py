@@ -240,6 +240,7 @@ class Servidor(ThreadingHTTPServer):
         self.caminho_config = os.path.join(pasta, "config.json")
         self.caminho_db = os.path.join(pasta, "lexsuite.db")
         self.modelo = os.path.join(pasta, "radar_modelo.html")
+        self.hist = {}  # 0.7.18: andamento das estatísticas dos meses anteriores
         import time as _t
         self.ultimo_pedido = _t.monotonic()  # 0.7.16: a janela preta fecha sozinha quando a tela some (ver vigiar_tela)
 
@@ -396,6 +397,12 @@ class Tratador(BaseHTTPRequestHandler):
             except Exception:  # noqa: BLE001 - o retrato do armazenamento nunca derruba a tela
                 pagina["armazenamento"] = {}
             pagina["espaco"] = banco.espaco()
+            from . import historico as _hist  # 0.7.18: estatísticas dos meses anteriores (sazonalidade)
+            hs = _hist.situacao(banco)
+            hs.update({"por_mes": _hist.por_mes(banco, tribunais.validar(r.get("tribunais"))),
+                       "por_semana": _hist.por_dia_da_semana(banco, tribunais.validar(r.get("tribunais"))),
+                       "rodando": dict(s.hist) if s.hist.get("rodando") else {}})
+            pagina["historico"] = hs
             crit = banco.execucoes("criterio", 1)
             pagina["criterio"] = crit[0] if crit else {}
             ultimo = banco.execucoes("retorno", 1)
@@ -448,6 +455,15 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"tentativas": banco.execucoes("tentativa", 120)})
             except Exception:  # noqa: BLE001 - banco ausente ou ilegível: lista vazia
                 return self._responder({"tentativas": []})
+        if u.path == "/estatisticas":  # 0.7.18: andamento das estatísticas dos meses anteriores
+            from . import historico as _hist
+            try:
+                sit = _hist.situacao(bd.Banco(s.caminho_db))
+            except Exception:  # noqa: BLE001
+                sit = {}
+            sit["rodando"] = dict(s.hist) if s.hist.get("rodando") else {}
+            sit["ultimo"] = s.hist.get("ultimo") or {}
+            return self._responder(sit)
         if u.path == "/estado":
             return self._responder(s.estado_atual())
         if u.path == "/manual":
@@ -643,6 +659,38 @@ class Tratador(BaseHTTPRequestHandler):
                 if ok:
                     abrir_no_windows(msg)
             return self._responder({"ok": ok, "mensagem" if ok else "motivo": msg, "armazenamento": armazenamento.situacao(cfg, banco, s.pasta)})
+        if caminho in ("/estatisticas/pedir", "/estatisticas/ler", "/estatisticas/parar"):  # 0.7.18
+            from . import historico as _hist
+            if caminho.endswith("parar"):
+                s.hist["parar"] = True
+                return self._responder({"ok": True})
+            if s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento) or s.hist.get("rodando"):
+                return self._responder({"ok": False, "motivo": "Espere a leitura em andamento terminar. / Wait for the reading in progress."})
+            cfg, banco = s.config(), bd.Banco(s.caminho_db)
+            if caminho.endswith("pedir"):
+                try:
+                    meses = max(1, min(24, int(corpo.get("meses") or _hist.MESES_PADRAO)))
+                except (TypeError, ValueError):
+                    return self._responder({"ok": False, "motivo": "meses inválido"}, status=400)
+                n = _hist.pedir(banco, meses, tribunais.validar(cfg["radar"].get("tribunais")), perfil=cfg["usuario"].get("email", ""))
+                return self._responder({"ok": True, "na_fila": n, "historico": _hist.situacao(banco)})
+            s.hist.clear()
+            s.hist.update({"rodando": True, "k": 0, "total": 0, "tribunal": "", "data": ""})
+
+            def ler():
+                try:
+                    b2 = bd.Banco(s.caminho_db)
+                    def andamento(k, total, trib, data):
+                        s.hist.update({"k": k, "total": total, "tribunal": trib, "data": data})
+                    r_ = _hist.processar(b2, aviso=print, parar=lambda: bool(s.hist.get("parar")), andamento=andamento)
+                    s.hist.update({"ultimo": r_})
+                except Exception as e:  # noqa: BLE001
+                    s.hist.update({"erro": e.__class__.__name__})
+                finally:
+                    s.hist["rodando"] = False
+                    s.hist.pop("parar", None)
+            threading.Thread(target=ler, daemon=True, name="estatisticas-antigas").start()
+            return self._responder({"ok": True})
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)
@@ -989,7 +1037,7 @@ def vigiar_tela(servidor, aviso=print, limite_s=FECHAR_SEM_TELA_S, passo_s=15, r
         if agora - anterior > max(60, passo_s * 4):  # acordou de repouso: dá tempo de a tela voltar a falar
             servidor.ultimo_pedido = agora
         anterior = agora
-        ocupado = servidor.estado.rodando or getattr(servidor, "_planilha_tentando", False)
+        ocupado = servidor.estado.rodando or getattr(servidor, "_planilha_tentando", False) or (getattr(servidor, "hist", {}) or {}).get("rodando")
         if ocupado:
             servidor.ultimo_pedido = agora
             continue

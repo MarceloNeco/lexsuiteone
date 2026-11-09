@@ -81,11 +81,14 @@ class Banco:
             CREATE TABLE IF NOT EXISTS estatisticas_diarias (data TEXT, tribunal TEXT, vara TEXT, frente TEXT,
                 porte TEXT, faixa_valor TEXT, novas INTEGER DEFAULT 0, encerradas INTEGER DEFAULT 0, atualizado_em TEXT,
                 PRIMARY KEY (data, tribunal, vara, frente, porte, faixa_valor));
+            CREATE TABLE IF NOT EXISTS historico (tribunal TEXT, data TEXT, situacao TEXT, novas INTEGER DEFAULT 0,
+                quando TEXT, PRIMARY KEY (tribunal, data));
+            CREATE TABLE IF NOT EXISTS historico_processos (processo TEXT PRIMARY KEY);
         """)
         colunas = {r[1] for r in self.con.execute("PRAGMA table_info(leads)")}
         for nome, tipo in (("frente", "TEXT DEFAULT ''"), ("motivo", "TEXT DEFAULT ''"), ("status_em", "TEXT DEFAULT ''"),
                            ("bruto_limpo", "INTEGER DEFAULT 0"), ("data", "TEXT DEFAULT ''"), ("porte", "TEXT DEFAULT ''"),
-                           ("faixa_valor", "TEXT DEFAULT ''")):
+                           ("faixa_valor", "TEXT DEFAULT ''"), ("fora_criterio", "INTEGER DEFAULT 0")):
             if nome not in colunas:
                 self.con.execute(f"ALTER TABLE leads ADD COLUMN {nome} {tipo}")  # nosec B608 - nomes fixos acima
         # Situações antigas (Novo, Visto, Em contato, Descartado) passam para as chaves novas, uma vez (versão do esquema).
@@ -96,7 +99,37 @@ class Banco:
             self._preencher_resumo()
             self.con.execute("PRAGMA user_version = 714")
             self.con.commit()
+        if (self.con.execute("PRAGMA user_version").fetchone() or [0])[0] < 718:
+            self._reclassificar_0718()
+            self.con.execute("PRAGMA user_version = 718")
+            self.con.commit()
         self.caminho = caminho
+
+    def _reclassificar_0718(self):
+        """0.7.18, uma vez: o que foi guardado pela regra antiga e não é ação nova sai da Lista, do Arquivo, da planilha e
+        das estatísticas (fica no banco, marcado `fora_criterio`). Conservador: fica tudo o que tem sinal de distribuição
+        ou de começo de ação, o que já foi trabalhado e o que tem dado completado à mão ou contato."""
+        from . import classificar as cl
+        com_contato = {r[0] for r in self.con.execute("SELECT DISTINCT processo FROM contatos")}
+        marcar = []
+        for proc, dados, status, vara in self.con.execute("SELECT processo, dados, status, vara FROM leads"):
+            try:
+                d = json.loads(dados or "{}")
+            except ValueError:
+                continue
+            if cl.segundo_grau(vara or d.get("vara")):
+                marcar.append((proc,))
+                continue
+            if (status or "novo") != "novo" or d.get("manual") or proc in com_contato or "texto_curto" not in d:
+                continue
+            texto = cl.sem_acento(" ".join(str(d.get(k) or "") for k in ("tipo", "texto_curto"))).lower()
+            if "distribu" in texto or cl.parece_inicio(d.get("texto_curto") or ""):
+                continue
+            marcar.append((proc,))
+        self.con.executemany("UPDATE leads SET fora_criterio = 1 WHERE processo = ?", marcar)
+        if marcar:
+            self.con.execute("DELETE FROM estatisticas_diarias")  # refeitas na próxima atualização, já sem os marcados
+            self.registrar_acao("automático", "reclassificar:0.7.18", "regra de ação nova da 0.7.16 e 2º grau", "", "", len(marcar))
 
     def _preencher_resumo(self):
         """Ações guardadas antes da 0.7.13: preenche data, frente, porte e faixa de valor (uma vez)."""
@@ -164,7 +197,7 @@ class Banco:
         self.con.execute("INSERT INTO acoes VALUES (?,?,?,?,?,?,?,?)",
                          (quando, fuso, (perfil or "")[:120], acao, (alvo or "")[:2000], antes or "", depois or "", int(quantos or 0)))
 
-    CAMPOS_MANUAIS = ("valor_causa", "data_ajuizamento")
+    CAMPOS_MANUAIS = ("valor_causa", "data_ajuizamento", "uf")
 
     def completar(self, processo, campo, valor, fonte="digitado", data="", perfil=""):
         """0.7.16: guarda no programa um dado que o Diário não traz (valor da causa digitado no cartão ou vindo da área
@@ -195,14 +228,14 @@ class Banco:
         return [dict(zip(cols, r)) for r in self.con.execute("SELECT * FROM acoes ORDER BY quando_utc DESC LIMIT ?", (int(limite),))]
 
     def totais_por_situacao(self):
-        return dict(self.con.execute("SELECT status, count(*) FROM leads GROUP BY status").fetchall())
+        return dict(self.con.execute("SELECT status, count(*) FROM leads WHERE coalesce(fora_criterio, 0) = 0 GROUP BY status").fetchall())
 
     def retorno(self, dias=60, limite=2000):
         """Totais por situação para a SolverONE (só quantidades): [{data, tribunal, frente, faixa_valor, situacao, qtd}]."""
         desde = (dt.date.today() - dt.timedelta(days=int(dias))).isoformat()
         linhas = self.con.execute(
-            "SELECT data, coalesce(tribunal,''), coalesce(frente,''), coalesce(faixa_valor,''), status, count(*) FROM leads "
-            "WHERE data >= ? GROUP BY 1,2,3,4,5 ORDER BY 1 DESC LIMIT ?", (desde, int(limite))).fetchall()
+            "SELECT data, coalesce(tribunal,''), coalesce(frente,''), coalesce(faixa_valor,''), status, count(*) FROM leads WHERE coalesce(fora_criterio, 0) = 0 AND "
+            "data >= ? GROUP BY 1,2,3,4,5 ORDER BY 1 DESC LIMIT ?", (desde, int(limite))).fetchall()
         return [{"data": d, "tribunal": t[:40], "frente": f[:40], "faixa_valor": fx[:40], "situacao": situacao_valida(st) or "novo", "qtd": n}
                 for d, t, f, fx, st, n in linhas]
 
@@ -241,7 +274,7 @@ class Banco:
         quando = dt.datetime.now().isoformat(timespec="seconds")
         linhas = self.con.execute(
             "SELECT data, coalesce(tribunal,''), coalesce(vara,''), coalesce(frente,''), coalesce(porte,''), "
-            "coalesce(faixa_valor,''), count(*) FROM leads WHERE data <> '' GROUP BY 1,2,3,4,5,6").fetchall()
+            "coalesce(faixa_valor,''), count(*) FROM leads WHERE data <> '' AND coalesce(fora_criterio, 0) = 0 GROUP BY 1,2,3,4,5,6").fetchall()
         dias = sorted({l[0] for l in linhas})
         for d in dias:
             self.con.execute("DELETE FROM estatisticas_diarias WHERE data = ?", (d,))
@@ -264,7 +297,7 @@ class Banco:
             tamanho = os.path.getsize(self.caminho) if self.caminho and os.path.exists(self.caminho) else 0
         except OSError:
             tamanho = 0
-        r = self.con.execute("SELECT count(*), sum(CASE WHEN bruto_limpo = 0 THEN 1 ELSE 0 END), min(data), max(data) FROM leads").fetchone()
+        r = self.con.execute("SELECT count(*), sum(CASE WHEN bruto_limpo = 0 THEN 1 ELSE 0 END), min(data), max(data) FROM leads WHERE coalesce(fora_criterio, 0) = 0").fetchone()
         return {"bytes": tamanho, "acoes": r[0] or 0, "com_detalhe": r[1] or 0, "desde": r[2] or "", "ate": r[3] or "",
                 "estatisticas_dias": self.con.execute("SELECT count(DISTINCT data) FROM estatisticas_diarias").fetchone()[0] or 0}
 
@@ -299,7 +332,7 @@ class Banco:
         self.con.execute("VACUUM")
 
     def todos_leads(self, vara=None, desde=None):
-        sql, args = "SELECT dados, status, primeira_vez, motivo, frente, bruto_limpo, status_em FROM leads WHERE 1=1", ()
+        sql, args = "SELECT dados, status, primeira_vez, motivo, frente, bruto_limpo, status_em FROM leads WHERE coalesce(fora_criterio, 0) = 0", ()
         if vara:
             sql, args = sql + " AND vara = ?", args + (vara,)
         if desde:

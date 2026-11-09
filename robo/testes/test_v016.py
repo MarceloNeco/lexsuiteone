@@ -405,5 +405,45 @@ class V0717Revisao(unittest.TestCase):
         self.assertNotIn(",", ar.aviso_tamanho("trabalhista", 900, 1000).split("linhas")[0].replace("(", ""))
 
 
+class V0718(unittest.TestCase):
+    """0.7.18: estatísticas dos meses anteriores (só totais), reclassificação única da lista antiga, UF no programa."""
+
+    def test_estatisticas_antigas_so_totais(self):
+        from lexsuite import banco as bd, historico as h
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        self.assertEqual(h.pedir(b, 1, ["TRT2"], hoje=dt.date(2026, 11, 9)), 20)
+        orig_meta, orig_baixar = djen.meta_caderno, djen.baixar_caderno
+        pub = dict(ITEM_DJEN, tipoComunicacao="Lista de distribuição")
+        djen.meta_caderno = lambda s_, d, *a, **k: None if d.endswith("-02") else {"url": "fictício"}
+        djen.baixar_caderno = lambda s_, d, *a, **k: [djen.normalizar(dict(pub, numeroprocessocommascara="10%05d-11.2026.5.02.0221" % int(d[-2:])))]
+        try:
+            r = h.processar(b, limite=5, aviso=lambda *_: None, pausa=0)
+        finally:
+            djen.meta_caderno, djen.baixar_caderno = orig_meta, orig_baixar
+        self.assertEqual(r["lidos"] + r["sem_diario"], 5)
+        self.assertEqual(b.todos_leads(), [])  # nada entra na Lista nem no Arquivo
+        self.assertEqual(sum(m["novas"] for m in h.por_mes(b)), r["novas"])
+        self.assertEqual(h.situacao(b)["na_fila"], 15)
+
+    def test_reclassificacao_unica_da_lista_antiga(self):
+        import json
+        import sqlite3
+        from lexsuite import banco as bd
+        caminho = os.path.join(tempfile.mkdtemp(), "antigo.db")
+        b = bd.Banco(caminho)
+        b.con.execute("PRAGMA user_version = 714")
+        dados = lambda proc, txt, vara="1ª Vara do Trabalho de São Paulo": {"processo": proc, "tribunal": "TRT2", "vara": vara,
+                                                                            "empresas": ["Empresa Fictícia Ltda"], "texto_curto": txt, "tipo": "Intimação"}
+        for proc, txt, vara in (("a", "Fica V. Sa. notificado para pagar custas.", None), ("b", "Notificação inicial da reclamada.", None),
+                                ("c", "Processo distribuído por sorteio.", None), ("d", "Lista", "10ª Turma - Cadeira 3")):
+            b.guardar_lead(dados(proc, txt, vara or "1ª Vara do Trabalho de São Paulo"), "2026-11-06")
+        b.con.execute("UPDATE leads SET fora_criterio = 0, vara = CASE processo WHEN 'd' THEN '10ª Turma - Cadeira 3' ELSE vara END")
+        b.con.commit(); b.con.close()
+        b2 = bd.Banco(caminho)
+        self.assertEqual(sorted(l["processo"] for l in b2.todos_leads()), ["b", "c"])
+        self.assertEqual(len(sqlite3.connect(caminho).execute("SELECT * FROM leads").fetchall()), 4)  # nada é apagado
+        _ = json
+
+
 if __name__ == "__main__":
     unittest.main()
