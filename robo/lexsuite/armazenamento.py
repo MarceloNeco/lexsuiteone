@@ -220,7 +220,7 @@ def limpar(cfg, banco, pasta_robo, versao, aviso=print, automatico=False, hoje=N
                                          "frentes": list(preferencias.NOMES_FRENTE)})
     if not automatico:  # na automática, quem chamou já está gravando a planilha
         radar.regravar_planilha(cfg, banco, pasta_robo, versao, aviso)
-    return True, ("Planilha limpa. Cópia completa em: " + onde) if ok else "Planilha enxugada sem cópia (pouco espaço no disco)."
+    return True, "Planilha limpa. Cópia completa em: " + onde
 
 
 # --- Retrato para a Configuração -----------------------------------------------------------------------------------

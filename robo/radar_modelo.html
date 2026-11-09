@@ -878,7 +878,7 @@ window.LEXSUITE_RADAR = null;
     valor_salvo: "✓ saved", sit_salva: "✓"
   });
   var visao = "painel"; try { visao = localStorage.getItem("lexsuite:visao") || "painel"; } catch (e) {}
-  var lang = "pt", F = { valor: false, gig: false, exc: false, trib: "", cnpj: false, data: "", vara: "", setor: "", porte: "", uf: "", busca: "", valorSel: "", sit: "", contato: "", frente: "" }, ordem = "valor", ordem2 = "", aberto = {};
+  var lang = "pt", F = { valor: false, gig: false, exc: false, trib: [], cnpj: false, data: [], vara: [], setor: [], porte: [], uf: [], busca: "", valorSel: "", sit: [], contato: "", frente: [] }, ordem = "valor", ordem2 = "", aberto = {};
   var DA = null, selecionados = {}, ultimoDesfazer = null, migrou = false;
   var SITS = ["novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado"];
   var FILTROS_PADRAO = JSON.stringify({ valor: false, gig: false, exc: false, trib: [], cnpj: false, data: [], vara: [], setor: [], porte: [], uf: [], busca: "", valorSel: "", sit: [], contato: "", frente: [] });
