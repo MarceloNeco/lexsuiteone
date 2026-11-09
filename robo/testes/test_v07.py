@@ -214,7 +214,7 @@ class Compartilhada(unittest.TestCase):
         self.assertLess(protegida.index("<sheetProtection"), protegida.index("<autoFilter"))
         self.assertIn('FF0F1D33', estilos)
         self.assertIn('numFmtId="164"', estilos)
-        self.assertIn('<cellXfs count="8">', estilos)
+        self.assertIn('<cellXfs count="9">', estilos)  # 0.7.18: 8 = faixa verde da cópia de trabalho
         self.assertLess(estilos.index("<numFmts"), estilos.index("<fonts"))
         j = planilha._col([c for _, c in radar.COLUNAS_RADAR].index("valor_causa"))
         self.assertIn(f'<c r="{j}3" s="5"><v>250000</v></c>', folha)  # acima do mínimo: destacado
@@ -799,7 +799,7 @@ class V0714(unittest.TestCase):
         z = zipfile.ZipFile(copia)
         self.assertNotIn("sheetProtection", z.read("xl/worksheets/sheet1.xml").decode())
         self.assertNotIn("readOnlyRecommended", z.read("xl/workbook.xml").decode())
-        self.assertIn("Cópia de 09/11/2026 10:30", z.read("xl/worksheets/sheet1.xml").decode())
+        self.assertIn("Cópia de trabalho gerada em 09/11/2026 às 10:30", z.read("xl/worksheets/sheet1.xml").decode())  # 0.7.18: texto e faixa verde
         self.assertIn("Cópias", copia)
 
     def test_frente_pela_regra(self):
@@ -887,7 +887,7 @@ class V0714b(unittest.TestCase):
         st = {l[0]: l[1] for l in b.con.execute("SELECT processo, status FROM leads")}
         self.assertEqual([st[str(k)] for k in range(5)], ["novo", "em_contato", "descartado", "novo", "visto"])
         self.assertEqual(b.con.execute("SELECT faixa_valor FROM leads WHERE processo = '0'").fetchone()[0], "100k-300k")
-        self.assertEqual(b.con.execute("PRAGMA user_version").fetchone()[0], 714)
+        self.assertEqual(b.con.execute("PRAGMA user_version").fetchone()[0], 718)  # 0.7.18: reclassificação feita junto
         bd.Banco(caminho)  # abrir de novo não refaz nada nem dá erro
 
     def test_retorno_corta_em_2000(self):

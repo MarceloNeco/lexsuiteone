@@ -23,7 +23,7 @@ Onde roda: no seu computador, que lê o DJEN nos horários que o escritório esc
 
 Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual", no alto da tela.
 
-Segurança, em uma linha: o {{marca.curto}} não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados ficam no seu computador e no seu Google Drive; à SolverONE vão só quantidades de processos por situação, sem nomes nem números de processo.
+Segurança, em uma linha: o {{marca.curto}} não pede nem guarda senha, não contorna captcha, não mostra pessoas físicas e só instala atualizações assinadas digitalmente. Os dados dos processos ficam no seu computador e na pasta que o escritório escolher. À SolverONE vão a conferência da licença, o cadastro de quem usa, o aceite dos termos, avisos técnicos de erro e quantidades de processos por situação, sem nomes nem números de processo.
 
 Dúvidas? Escreva para {{contato}}. Este e-mail saiu de um endereço automático e não recebe respostas.
 

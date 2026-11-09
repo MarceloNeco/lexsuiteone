@@ -228,6 +228,8 @@ button.barra-l:focus-visible { outline: 2px solid var(--latao); }
 .barra-l.apagada .enche { background: var(--linha-2); }
 .barra-l .n { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 2.5rem; text-align: right; }
 .barra-l .n small { font-weight: 500; color: var(--tinta-3); margin-left: 6px; }
+.saz-cab { display: flex; gap: 8px; align-items: center; }
+.col.pico .pe { background: var(--latao); }
 .colunas { display: flex; align-items: flex-end; gap: 6px; height: clamp(170px, 18vw, 320px); padding-top: 18px; overflow-x: auto; scrollbar-width: thin; }
 .col { all: unset; box-sizing: border-box; flex: 1 0 34px; max-width: 140px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
 button.col { cursor: pointer; }
@@ -320,6 +322,17 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 /* 0.7.16: Configuração em janela própria (cabeçalho escuro, X, Salvar), pasta compacta, armazenamento, ✓ salvo, carregando */
 #config:not([hidden]) { position: fixed; z-index: 70; top: 3vh; left: 50%; transform: translateX(-50%); width: min(1100px, 96vw); max-height: 94vh; overflow-y: auto; padding: 0 22px 0; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
 #c-veu { z-index: 65; display: none; } #c-veu:has(+ #config:not([hidden])) { display: block; }
+/* 0.7.18: o perfil abre na mesma janela da Configuração; pelo menu ☰ os dois abrem como página (sem misturar com a lista) */
+#perfil:not([hidden]) { position: fixed; z-index: 70; top: 3vh; left: 50%; transform: translateX(-50%); width: min(900px, 96vw); max-height: 94vh; overflow-y: auto; padding: 0 22px 0; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+#perfil .conf-cab { margin: 0 -22px 4px; }
+#perfil .painel-rodape { position: sticky; bottom: 0; background: var(--folha); padding: 12px 0 16px; border-top: 1px solid var(--linha); }
+#pf-veu { z-index: 65; display: none; } #pf-veu:has(+ #perfil:not([hidden])) { display: block; }
+body.modo-pagina .miolo > :not(#app):not(footer), body.modo-pagina #app > :not(.pagina) { display: none !important; }
+body.modo-pagina #config.pagina:not([hidden]), body.modo-pagina #perfil.pagina:not([hidden]) { position: static; transform: none; width: auto; max-height: none; box-shadow: none; margin-top: 8px; }
+body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
+.engrenagem.so-icone { padding: 6px 10px; font-size: 1.15rem; }
+.perfil-licenca { background: var(--papel-2); border-radius: 10px; padding: 10px 14px; display: grid; gap: 4px; font-size: .9rem; }
+.perfil-licenca b { color: var(--tinta); }
 .conf-cab { position: sticky; top: 0; z-index: 2; margin: 0 -22px 4px; padding: 14px 22px; background: var(--marinho); color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .conf-cab h3 { margin: 0; color: #fff; font-size: 1.15rem; }
 .conf-x { all: unset; box-sizing: border-box; cursor: pointer; font-size: 1.15rem; line-height: 1; padding: 8px 12px; border-radius: 8px; color: #fff; }
@@ -537,10 +550,13 @@ footer a:hover { text-decoration: underline; }
     </div>
     <div class="dica" id="c-dica"></div>
   </div>
-  <div class="painel" id="perfil" hidden>
-    <h3 id="pf-titulo"></h3>
+  <div class="veu" id="pf-veu"></div>
+  <div class="painel" id="perfil" hidden role="dialog" aria-modal="true" aria-labelledby="pf-titulo">
+    <div class="conf-cab"><h3 id="pf-titulo"></h3><button type="button" class="conf-x" id="pf-x">✕</button></div>
     <p class="nota-registro" id="pf-texto"></p>
+    <div id="pf-licenca"></div>
     <dl class="perfil-dl" id="pf-lista"></dl>
+    <div id="pf-outra"></div>
     <div class="painel-rodape">
       <span class="cont" id="pf-msg" aria-live="polite"></span>
       <button type="button" class="chip" id="pf-fechar"></button>
@@ -632,7 +648,7 @@ window.LEXSUITE_RADAR = null;
       f_exc_mostrar: "Mostrar excluídas ({n})", f_exc_ocultar: "Ocultar excluídas", excluida: "Excluída",
       dica_tj: "Tribunais estaduais publicam diários muito maiores (o TJSP sozinho pode passar de 1 GB por dia) e a regra de \"ação nova\" ainda não foi calibrada neles.",
       c_titulo: "Configuração deste computador", c_nome: "Seu nome", c_papel: "Função no escritório", c_papel_vazio: "escolha", c_escritorio: "Escritório",
-      perfil: "Seu perfil", perfil_rot: "Seu perfil: {n}", perfil_x: "Quem usa o {c} neste computador. O nome, o e-mail e a função ficam registrados na licença do escritório; o nome do escritório vale para este computador. Toque no lápis para mudar.",
+      perfil: "Seu perfil", perfil_rot: "Seu perfil: {n}", perfil_x: "Quem usa o {c} neste computador, registrado na licença do escritório. Nome e função mudam pelo lápis; e-mail e escritório são fixos (🔒).",
       editar: "Editar {r}", cancelar: "Cancelar", fechar: "Fechar", troca_aviso: "Outra pessoa vai usar este computador: {a} deixa de usar o {c} aqui e não ocupa mais vaga na licença do escritório. Depois, confira o nome e a função.", troca_btn: "Trocar a pessoa", email_invalido: "Confira o e-mail: falta o @ ou o domínio.", nome_falta: "Escreva o nome.", w_guardado: "Guardado neste computador.", cod_ok: "Código confirmado: {e}.", cod_ok_sem: "Código confirmado.",
       w_passo: "Passo {a} de {b}", w_voltar: "Voltar", w_avancar: "Avançar", w_concluir: "Começar a primeira leitura", w_so_salvar: "Salvar e ver a tela",
       w1_t: "Bem-vindo ao {m}, da LexSuiteONE", w1_x: "Para começar, informe o código de cliente que veio no e-mail de boas-vindas e o nome do escritório.",
@@ -729,7 +745,7 @@ window.LEXSUITE_RADAR = null;
       f_exc_mostrar: "Show excluded ({n})", f_exc_ocultar: "Hide excluded", excluida: "Excluded",
       dica_tj: "State courts publish much larger gazettes (TJSP alone can exceed 1 GB a day) and the \"new lawsuit\" rule is not calibrated for them yet.",
       c_titulo: "Settings for this computer", c_nome: "Your name", c_papel: "Role at the firm", c_papel_vazio: "choose", c_escritorio: "Firm",
-      perfil: "Your profile", perfil_rot: "Your profile: {n}", perfil_x: "Who uses {c} on this computer. Name, e-mail and role are registered under the firm\u2019s license; the firm name applies to this computer. Tap the pencil to change.",
+      perfil: "Your profile", perfil_rot: "Your profile: {n}", perfil_x: "Who uses {c} on this computer, registered under the firm\u2019s licence. Name and role change with the pencil; e-mail and firm are fixed (🔒).",
       editar: "Edit {r}", cancelar: "Cancel", fechar: "Close", troca_aviso: "Someone else will use this computer: {a} stops using {c} here and no longer takes a seat on the firm\u2019s license. Then check the name and role.", troca_btn: "Change the person", email_invalido: "Check the e-mail: the @ or the domain is missing.", nome_falta: "Type the name.", w_guardado: "Saved on this computer.", cod_ok: "Code confirmed: {e}.", cod_ok_sem: "Code confirmed.",
       w_passo: "Step {a} of {b}", w_voltar: "Back", w_avancar: "Next", w_concluir: "Start the first reading", w_so_salvar: "Save and open the screen",
       w1_t: "Welcome to {m}, by LexSuiteONE", w1_x: "To start, enter the client code from the welcome e-mail and the firm's name.",
@@ -818,6 +834,15 @@ window.LEXSUITE_RADAR = null;
   };
   // 0.7.16: textos novos (PT e EN)
   Object.assign(T.pt, {
+    voltar: "Voltar", pf_licenca: "Licença do escritório", pf_codigo: "Código:", pf_escritorio_lic: "Escritório:", pf_situacao: "Situação:", pf_validade: "(até {d})",
+    pf_fixo: "Fixo: identifica você na licença do escritório.", pf_outra_pessoa: "Outra pessoa vai usar este computador",
+    pf_outra_pessoa_x: "O e-mail e o escritório não se editam: são a sua identificação na licença. Se outra pessoa do escritório vai usar este computador, ela se cadastra com o e-mail dela, e a SolverONE confere se o domínio do e-mail é do escritório.",
+    copia_t: "Cópia criada", abrir_copia: "Abrir a cópia", abrir_pasta_copia: "Abrir a pasta",
+    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" e depois em \"Ler agora\" (30 Diários por vez) ou deixe para a leitura automática da noite. Guarda só os totais: nada entra na Lista, no Arquivo nem na planilha, e nada vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
+    saz_vazio: "Ainda não há meses suficientes. Escolha quantos meses buscar e clique em \"Buscar estatísticas\".", saz_semana: "Por dia da semana:", saz_pico: "Mês com mais ações: {m} ({n}).",
+    saz_estado: "Diários antigos lidos: {l}; na fila: {f}; sem Diário: {s}; com erro: {e}.", saz_de_ate: "De {d} a {a}.", saz_meses_rot: "Meses para trás", saz_meses: "{m} mês(es) para trás",
+    saz_pedir: "Buscar estatísticas", saz_ler: "Ler agora (30 Diários)", saz_parar: "Parar", saz_na_fila: "{n} Diário(s) na fila. Clique em \"Ler agora\" ou deixe para a leitura da noite.",
+    saz_lendo: "Lendo o Diário {k} de {n}: {tr} {d}…",
     m_sit: "{n} situações", m_frente: "{n} frentes", m_trib: "{n} tribunais", m_data: "{n} datas", m_vara: "{n} varas", m_setor: "{n} setores", m_porte: "{n} portes", m_uf: "{n} estados",
     m_buscar: "Procurar na lista", m_limpar: "Limpar",
     criterio_nota: "Desde {d}, \"ação nova\" conta só a lista de distribuição, a audiência inicial e a notificação inicial em varas de 1º grau (antes entravam intimações comuns e recursos). Números de antes e de depois não se comparam.",
@@ -848,6 +873,15 @@ window.LEXSUITE_RADAR = null;
     valor_salvo: "✓ salvo", sit_salva: "✓"
   });
   Object.assign(T.en, {
+    voltar: "Back", pf_licenca: "Firm licence", pf_codigo: "Code:", pf_escritorio_lic: "Firm:", pf_situacao: "Status:", pf_validade: "(until {d})",
+    pf_fixo: "Fixed: identifies you on the firm's licence.", pf_outra_pessoa: "Someone else will use this computer",
+    pf_outra_pessoa_x: "E-mail and firm cannot be edited: they identify you on the licence. If someone else from the firm will use this computer, they sign up with their own e-mail, and SolverONE checks that the e-mail domain belongs to the firm.",
+    copia_t: "Copy created", abrir_copia: "Open the copy", abrir_pasta_copia: "Open the folder",
+    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" and then \"Read now\" (30 gazettes at a time) or leave it for the night reading. Only totals are kept: nothing goes to the List, the Archive or the spreadsheet, and nothing goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
+    saz_vazio: "Not enough months yet. Choose how many months to fetch and click \"Fetch statistics\".", saz_semana: "By weekday:", saz_pico: "Busiest month: {m} ({n}).",
+    saz_estado: "Old gazettes read: {l}; queued: {f}; no gazette: {s}; with error: {e}.", saz_de_ate: "From {d} to {a}.", saz_meses_rot: "Months back", saz_meses: "{m} month(s) back",
+    saz_pedir: "Fetch statistics", saz_ler: "Read now (30 gazettes)", saz_parar: "Stop", saz_na_fila: "{n} gazette(s) queued. Click \"Read now\" or leave it for the night reading.",
+    saz_lendo: "Reading gazette {k} of {n}: {tr} {d}…",
     m_sit: "{n} statuses", m_frente: "{n} practice areas", m_trib: "{n} courts", m_data: "{n} dates", m_vara: "{n} court units", m_setor: "{n} sectors", m_porte: "{n} sizes", m_uf: "{n} states",
     m_buscar: "Search the list", m_limpar: "Clear",
     criterio_nota: "Since {d}, a \"new lawsuit\" counts only the distribution list, the first hearing and the first notice in first-instance courts (ordinary notices and appeals used to count). Numbers before and after are not comparable.",
@@ -1113,6 +1147,12 @@ window.LEXSUITE_RADAR = null;
 
   /* ---------- configuração deste computador ---------- */
   var snapC = "";
+  function modoPagina(id) {  // 0.7.18: pelo menu ☰, Configuração e perfil abrem como página, com "Voltar"
+    ["config", "perfil"].forEach(function (k) { $(k).classList.toggle("pagina", k === id); });
+    document.body.classList.toggle("modo-pagina", !!id);
+    ["c-fechar", "pf-x"].forEach(function (b) { $(b).textContent = id ? "← " + t("voltar") : "✕"; });
+    if (id) window.scrollTo(0, 0);
+  }
   function estadoConfig() {
     return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), $("c-dias").value, $("c-avisar").checked, $("c-aba").checked]);
   }
@@ -1123,7 +1163,7 @@ window.LEXSUITE_RADAR = null;
       abrirJanela(c, [[t("c_continuar"), null], [t("c_descartar"), function () { fecharConfig(true); }], [t("c_salvar"), salvarConfig, true]]);
       return;
     }
-    $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false");
+    $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); if ($("config").classList.contains("pagina")) modoPagina(null);
   }
   function desenharArmConfig(sit) {
     var box = $("c-arm"); box.textContent = ""; sit = sit || (D && D.armazenamento) || {};
@@ -1178,9 +1218,10 @@ window.LEXSUITE_RADAR = null;
     camada(t("termos_esc"), tm.escritorio, ac); camada(t("termos_pes"), tm.pessoa, null);
     box.appendChild(dl); if (!tm.escritorio && !tm.pessoa) box.appendChild(el("p", "agenda-info", t("termos_sem")));
   }
-  function abrirConfig(forcar, rolarPara) {
+  function abrirConfig(forcar, rolarPara, comoPagina) {
     var p = $("config"), abrir = forcar || p.hidden;
     if (!abrir) { fecharConfig(false); return; }
+    fecharPerfil(); modoPagina(comoPagina ? "config" : null);
     $("c-codigo").value = (APP && APP.conta && APP.conta.codigo) || "";
     var fixo = !!(APP && APP.conta && APP.conta.codigo && APP.conta.ok);  // código válido e salvo: só para ler
     $("c-codigo").readOnly = fixo; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
@@ -1472,30 +1513,42 @@ window.LEXSUITE_RADAR = null;
     b.textContent = iniciais(u.nome, u.email); b.setAttribute("aria-label", t("perfil_rot", { n: u.nome || u.email })); b.title = t("perfil_rot", { n: u.nome || u.email });
     b.setAttribute("aria-expanded", String(!$("perfil").hidden));
   }
-  function fecharPerfil() { $("perfil").hidden = true; editando = ""; $("b-perfil").setAttribute("aria-expanded", "false"); }
-  function abrirPerfil() {
+  function fecharPerfil() { $("perfil").hidden = true; editando = ""; $("b-perfil").setAttribute("aria-expanded", "false"); if ($("perfil").classList.contains("pagina")) modoPagina(null); }
+  function abrirPerfil(comoPagina) {
     var p = $("perfil");
-    if (!p.hidden) { fecharPerfil(); return; }
+    if (!p.hidden && !comoPagina) { fecharPerfil(); return; }
     $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
+    modoPagina(comoPagina === true ? "perfil" : null);
     p.hidden = false; editando = ""; $("pf-msg").textContent = ""; desenharPerfil(); $("b-perfil").setAttribute("aria-expanded", "true");
     p.scrollIntoView({ block: "nearest" });
   }
-  function camposPerfil() {
-    var u = (APP && APP.usuario) || {};
-    return [{ k: "nome", r: t("c_nome"), v: u.nome || "" }, { k: "email", r: t("seu_email"), v: u.email || "" },
-            { k: "papel", r: t("c_papel"), v: u.papel || "" }, { k: "escritorio", r: t("c_escritorio"), v: (APP && APP.config.escritorio) || "" }];
+  function camposPerfil() {  // 0.7.18: e-mail e escritório ficam fixos (identificam a pessoa na licença); trocar de pessoa é à parte
+    var u = (APP && APP.usuario) || {}, ct = (APP && APP.conta) || {};
+    return [{ k: "nome", r: t("c_nome"), v: u.nome || "" }, { k: "email", r: t("seu_email"), v: u.email || "", fixo: true },
+            { k: "papel", r: t("c_papel"), v: u.papel || "" }, { k: "escritorio", r: t("c_escritorio"), v: ct.escritorio || (APP && APP.config.escritorio) || "", fixo: true }];
   }
   function desenharPerfil() {
     $("pf-titulo").textContent = t("perfil"); $("pf-texto").textContent = t("perfil_x", { c: marcaCurto() }); $("pf-fechar").textContent = t("fechar");
     var dl = $("pf-lista"); dl.textContent = "";
+    var ct = (APP && APP.conta) || {}, lic = el("div", "perfil-licenca"); $("pf-licenca").textContent = "";
+    lic.appendChild(el("b", null, t("pf_licenca")));
+    lic.appendChild(el("span", null, t("pf_codigo") + " " + (ct.codigo || "—")));
+    lic.appendChild(el("span", null, t("pf_escritorio_lic") + " " + (ct.escritorio || (APP && APP.config.escritorio) || "—")));
+    lic.appendChild(el("span", null, t("pf_situacao") + " " + (ct.texto || "—") + (ct.validade ? " " + t("pf_validade", { d: dataCurta(ct.validade) }) : "")));
+    $("pf-licenca").appendChild(lic);
     camposPerfil().forEach(function (c) {
       dl.appendChild(el("dt", null, c.r));
       if (editando === c.k) { dl.appendChild(editorPerfil(c)); return; }
       dl.appendChild(el("dd", c.v ? null : "vazio", c.v || "—"));
+      if (c.fixo) { var df = el("dd", "lapis"); df.appendChild(el("span", "cinza", "🔒")); df.title = t("pf_fixo"); df.setAttribute("aria-label", t("pf_fixo")); dl.appendChild(df); return; }
       var dd = el("dd", "lapis"), b = el("button", null, "✏️"); b.type = "button"; b.setAttribute("aria-label", t("editar", { r: c.r.toLowerCase() })); b.title = b.getAttribute("aria-label");
       b.addEventListener("click", function () { editando = c.k; $("pf-msg").textContent = ""; desenharPerfil(); var f = $("pf-campo"); if (f) f.focus(); });
       dd.appendChild(b); dl.appendChild(dd);
     });
+    var outra = $("pf-outra"); outra.textContent = "";
+    var tp = el("button", "btn-txt", t("pf_outra_pessoa")); tp.type = "button";
+    tp.addEventListener("click", function () { editando = "email"; $("pf-msg").textContent = ""; desenharPerfil(); var f = $("pf-campo"); if (f) { f.value = ""; f.focus(); } });
+    if (editando !== "email") { outra.appendChild(tp); outra.appendChild(el("p", "nota-registro", t("pf_outra_pessoa_x"))); }
   }
   function editorPerfil(c) {
     var dd = el("dd"); dd.style.gridColumn = "2 / -1";
@@ -1581,7 +1634,9 @@ window.LEXSUITE_RADAR = null;
   function barraApp() {
     var naWizard = !$("wizard").hidden;
     $("app").hidden = MODO !== "app" || naWizard; $("controles").hidden = naWizard; $("lista").hidden = naWizard; if (naWizard) $("mais").hidden = true;
-    $("b-config").hidden = true; $("b-menu").hidden = MODO !== "app" || naWizard;  // 0.7.14: Configuração vai para o menu ☰ $("versao-topo").textContent = D.versao ? "v" + D.versao : "";
+    $("b-config").hidden = MODO !== "app" || naWizard; $("b-config").classList.add("so-icone"); $("b-config-txt").textContent = ""; $("b-config").setAttribute("aria-label", t("config")); $("b-config").title = t("config");  // 0.7.18: engrenagem ao lado do perfil
+    $("b-menu").hidden = MODO !== "app" || naWizard;
+    if ($("versao-topo")) $("versao-topo").textContent = D.versao ? "v" + D.versao : "";
     $("resumo").hidden = naWizard; if (naWizard) { $("b-planilha").hidden = true; $("b-pasta").hidden = true; $("perfil").hidden = true; }
     botaoPerfil();
     if (MODO !== "app" || naWizard) return;
@@ -1592,7 +1647,7 @@ window.LEXSUITE_RADAR = null;
     document.querySelectorAll(".abas button").forEach(function (b) { b.textContent = t("aba_" + b.getAttribute("data-aba")); b.setAttribute("aria-pressed", String(aba === b.getAttribute("data-aba"))); });
     $("b-limpar").textContent = t("limpar"); $("b-salvar").textContent = t("salvar"); $("b-salvar-rodar").textContent = t("salvar_rodar"); $("painel-dica").textContent = t("dica");
     $("p-mira-t").textContent = t("mira_t"); $("p-mira").textContent = t("mira_trib", { c: marcaCurto() }); $("c-mira").textContent = t("mira_conf");
-    $("b-config-txt").textContent = t("config"); $("c-titulo").textContent = t("c_titulo"); $("c-l-codigo").textContent = t("cod"); $("c-l-pasta").textContent = t("c_pasta"); $("c-l-outra").textContent = t("c_outra");
+    $("b-config-txt").textContent = ""; $("c-titulo").textContent = t("c_titulo"); $("c-l-codigo").textContent = t("cod"); $("c-l-pasta").textContent = t("c_pasta"); $("c-l-outra").textContent = t("c_outra");
     $("c-testar").textContent = t("c_testar"); $("c-escolher").textContent = t("op_escolher"); $("c-criar").textContent = t("criar_pasta"); $("c-salvar").textContent = t("c_salvar"); $("c-atualizar").textContent = t("c_atualizar"); $("c-dica").textContent = t("c_dica");
     painel(); infoConfig(); bannerControle(); if (!$("config").hidden) desenharAgenda(); if (!$("perfil").hidden && !editando) desenharPerfil();
     if (APP && !vigia) mostrarEstado(APP.estado);
@@ -1689,7 +1744,13 @@ window.LEXSUITE_RADAR = null;
     bf.addEventListener("click", function () { multiAberto = ""; cabecalho(); b.focus(); });
     rod.appendChild(bl); rod.appendChild(bf); pn.appendChild(rod);
     box.appendChild(pn);
-    var posicionar = function () { var r = b.getBoundingClientRect(); pn.style.top = Math.min(r.bottom + 4, window.innerHeight - 120) + "px"; pn.style.left = Math.max(8, Math.min(r.left, window.innerWidth - pn.offsetWidth - 8)) + "px"; };
+    var posicionar = function () {  // 0.7.18 (revisão): nunca sai da tela; sem espaço embaixo, abre para cima
+      var r = b.getBoundingClientRect(), alt = window.innerHeight, abaixo = alt - r.bottom - 12, acima = r.top - 12;
+      var w = Math.min(380, window.innerWidth - 16); pn.style.width = w + "px";
+      pn.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+      if (abaixo >= 220 || abaixo >= acima) { pn.style.top = (r.bottom + 4) + "px"; pn.style.bottom = "auto"; pn.style.maxHeight = Math.max(160, abaixo) + "px"; }
+      else { pn.style.top = "auto"; pn.style.bottom = (alt - r.top + 4) + "px"; pn.style.maxHeight = Math.max(160, acima) + "px"; }
+    };
     if (!pn.hidden) setTimeout(posicionar, 0);
     b.addEventListener("click", function () { multiAberto = multiAberto === k ? "" : k; cabecalho(); });
   }
@@ -1947,7 +2008,11 @@ window.LEXSUITE_RADAR = null;
     abrirJanela(c, [[t("cancelar"), null], [t("abrir_para_editar"), function () { abrirPlanilha("editar"); }, true]]);
   }
   function gerarCopia() {
-    post("/copia-planilha", {}).then(function (r) { mostrarAviso(r.ok ? t("copia_ok", { c: r.caminho }) : (r.motivo || t("falha"))); });
+    post("/copia-planilha", {}).then(function (r) {
+      if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; }
+      var c = el("div"); c.appendChild(el("h3", null, t("copia_t"))); c.appendChild(el("p", null, t("copia_ok", { c: r.caminho })));
+      abrirJanela(c, [[t("fechar"), null], [t("abrir_pasta_copia"), function () { post("/abrir", { o_que: "pasta_copias" }); }], [t("abrir_copia"), function () { post("/abrir", { o_que: "ultima_copia" }); }, true]]);
+    });
   }
   function montarMenu() {
     var g = $("gaveta"); g.textContent = "";
@@ -1959,7 +2024,7 @@ window.LEXSUITE_RADAR = null;
     g.appendChild(el("div", "grupo-menu", t("menu_contatos")));
     add(t("colar_logada"), colarContatos);
     g.appendChild(el("div", "grupo-menu", t("menu_programa")));
-    add(t("config"), function () { abrirConfig(false); }); add(t("perfil"), abrirPerfil); add(t("abrir_aba"), function () { post("/abrir-em-aba", {}); }); add(t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); });
+    add(t("config"), function () { abrirConfig(true, null, true); }); add(t("perfil"), function () { abrirPerfil(true); }); add(t("abrir_aba"), function () { post("/abrir-em-aba", {}); }); add(t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); });
     add(t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }); add(t("sair"), sairDoRadar);
   }
   function abrirMenu() { montarMenu(); $("gaveta").hidden = false; $("veu").hidden = false; $("b-menu").setAttribute("aria-expanded", "true"); var p = $("gaveta").querySelector("button"); if (p) p.focus(); }
@@ -2048,6 +2113,51 @@ window.LEXSUITE_RADAR = null;
     });
     g.appendChild(c); return g;
   }
+  /* 0.7.18: estatísticas dos meses anteriores (sazonalidade e picos), só totais, lidas aos poucos */
+  var vigiaHist = null;
+  function grafSazonal() {
+    var h = (D && D.historico) || {}, g = el("div", "graf largo"), cab = el("div", "saz-cab");
+    cab.appendChild(el("h3", null, t("saz_t"))); cab.appendChild(ajuda(t("saz_ajuda"))); g.appendChild(cab);
+    var meses = h.por_mes || [];
+    if (meses.length) {
+      var max = Math.max.apply(null, meses.map(function (m) { return m.novas; }).concat([1])), pico = meses.reduce(function (a, m) { return m.novas > a.novas ? m : a; }, meses[0]);
+      var c = el("div", "colunas");
+      meses.forEach(function (m) {
+        var col = el("div", "col" + (m === pico ? " pico" : "")), rot = m.mes.slice(5) + "/" + m.mes.slice(0, 4);
+        col.setAttribute("aria-label", rot + ": " + t("g_acoes_n", { n: num(m.novas) })); col.title = col.getAttribute("aria-label");
+        col.appendChild(el("span", "n", num(m.novas)));
+        var pe = el("span", "pe"); pe.style.height = Math.max(2, Math.round(100 * m.novas / max)) + "%"; col.appendChild(pe);
+        col.appendChild(el("span", "d", rot)); c.appendChild(col);
+      });
+      g.appendChild(c);
+      var sem = h.por_semana || [], nomes = lang === "pt" ? ["seg", "ter", "qua", "qui", "sex"] : ["Mon", "Tue", "Wed", "Thu", "Fri"], tot = sem.slice(0, 5).reduce(function (a, b) { return a + b; }, 0);
+      if (tot) g.appendChild(el("p", "nota-g", t("saz_semana") + " " + nomes.map(function (nm, ix) { return nm + " " + Math.round(100 * (sem[ix] || 0) / tot) + "%"; }).join(" · ") + ". " + t("saz_pico", { m: pico.mes.slice(5) + "/" + pico.mes.slice(0, 4), n: num(pico.novas) })));
+    } else g.appendChild(el("p", "nota-g", t("saz_vazio")));
+    var st = el("p", "nota-g");
+    st.textContent = t("saz_estado", { l: num(h.lidos || 0), f: num(h.na_fila || 0), s: num(h.sem_diario || 0), e: num(h.erros || 0) }) + (h.desde ? " " + t("saz_de_ate", { d: dataCurta(h.desde), a: dataCurta(h.ate) }) : "");
+    g.appendChild(st);
+    var bar = el("div", "progresso"), bi_ = el("i"); bar.appendChild(bi_); bar.hidden = true; g.appendChild(bar);
+    var ac = el("div", "conf-acoes"), sel_ = el("select"); sel_.setAttribute("aria-label", t("saz_meses_rot"));
+    [1, 3, 6, 12].forEach(function (m) { var o = el("option", null, t("saz_meses", { m: m })); o.value = String(m); sel_.appendChild(o); }); sel_.value = String((h.pedido && h.pedido.meses) || 3);
+    var bp = el("button", "chip", t("saz_pedir")), bl = el("button", "primario", t("saz_ler")), bx = el("button", "chip", t("saz_parar")); bp.type = bl.type = bx.type = "button";
+    bl.hidden = !(h.na_fila > 0); bx.hidden = true;
+    bp.addEventListener("click", function () { post("/estatisticas/pedir", { meses: sel_.value }).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } mostrarAviso(t("saz_na_fila", { n: num(r.na_fila || 0) })); carregar(); }); });
+    var acompanhar = function () {
+      bar.hidden = false; bx.hidden = false; bl.disabled = true; bp.disabled = true; clearInterval(vigiaHist);
+      vigiaHist = setInterval(function () {
+        fetch("/estatisticas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (e) {
+          var rd = e.rodando || {};
+          if (rd.rodando) { bi_.style.width = Math.round(100 * (rd.k || 0) / Math.max(1, rd.total || 1)) + "%"; st.textContent = t("saz_lendo", { k: rd.k || 0, n: rd.total || 0, tr: rd.tribunal || "", d: dataCurta(rd.data || "") }); return; }
+          clearInterval(vigiaHist); vigiaHist = null; carregar();
+        }).catch(function () {});
+      }, 2000);
+    };
+    bl.addEventListener("click", function () { post("/estatisticas/ler", {}).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } acompanhar(); }); });
+    bx.addEventListener("click", function () { post("/estatisticas/parar", {}); bx.disabled = true; });
+    ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); g.appendChild(ac);
+    if (h.rodando && h.rodando.rodando) setTimeout(acompanhar, 0);
+    return g;
+  }
   function desenharPainel(itens) {
     cacheValor = {}; try { desenharPainel_(itens); } finally { cacheValor = null; }
   }
@@ -2068,6 +2178,7 @@ window.LEXSUITE_RADAR = null;
     k.appendChild(kpi(t("k_sem_valor"), num(itens.length - comV.length), t("k_sem_valor_det")));
     alvo.appendChild(k);
     alvo.appendChild(grafDias(itens));
+    if (MODO === "app") alvo.appendChild(grafSazonal());
     var grade = el("div", "grade-graf");
     var fx = [[null, null], [0, 50000], [50000, 100000], [100000, 300000], [300000, 1000000], [1000000, Infinity]];
     var faixas = fx.map(function (f, ix) {
@@ -2314,7 +2425,7 @@ window.LEXSUITE_RADAR = null;
       $("w-msg").textContent = r.escritorio ? t("cod_ok", { e: r.escritorio }) : t("cod_ok_sem");
     }).catch(function () { $("w-msg").textContent = t("falha"); });
   });
-  $("b-perfil").addEventListener("click", abrirPerfil);
+  $("b-perfil").addEventListener("click", function () { abrirPerfil(false); });
   $("pf-fechar").addEventListener("click", fecharPerfil);
   ["w-codigo", "w-escritorio", "w-cnpj", "w-nome", "w-email"].forEach(function (id) { $(id).addEventListener("keydown", function (ev) { if (ev.key === "Enter") wizardAvancar(); }); });
   $("c-pasta").addEventListener("change", function () { $("c-outra-wrap").hidden = this.value !== "__outra"; $("c-escolher").hidden = this.value !== "__outra" || !cEscolher; $("c-teste-txt").textContent = ""; $("c-criar").hidden = true; });
@@ -2323,6 +2434,9 @@ window.LEXSUITE_RADAR = null;
   $("c-testar").addEventListener("click", function () { testarPastaC(false); });
   $("c-salvar").addEventListener("click", salvarConfig);
   $("c-fechar").addEventListener("click", function () { fecharConfig(false); });
+  $("pf-x").addEventListener("click", fecharPerfil);
+  $("pf-veu").addEventListener("click", fecharPerfil);
+  $("perfil").addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !$("janela").open && !editando) { ev.stopPropagation(); fecharPerfil(); } });
   $("c-veu").addEventListener("click", function () { fecharConfig(false); });
   ["input", "change"].forEach(function (ev) { $("config").addEventListener(ev, marcarSalvarC); });
   $("config").addEventListener("click", function () { setTimeout(marcarSalvarC, 0); });

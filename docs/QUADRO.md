@@ -137,6 +137,10 @@ Arquitetura (pedido no quadro).
 ### Fazendo agora
 - (nada) **0.7.16 na `main`, pronta para publicar** (com o "pode" do dono, 09/Nov noite; revisada: 1 bloqueio corrigido
   e aprovado na segunda revisão, 145 testes). A Operação revisa e publica com "publica a versão 0.7.16".
+- **0.7.18 inclui tudo da 0.7.17** (que não foi publicada) e o bloqueio da revisão da Operação: textos do e-mail e do
+  site sobre o que vai à SolverONE corrigidos, Bandit verde (B608 em `banco.limpar_detalhe`), painel dos filtros que não
+  sai da tela no celular e no notebook, aviso do banco acima de 1 GB também na Configuração, cópia de trabalho com
+  faixa verde e texto profissional na pasta `Cópias da planilha`. **0.7.18 na `main`, pronta para publicar** (com o "pode a 0.7.18" do dono, 09/Nov noite; a 0.7.17 fica sem tag).
 - **0.7.18 pronta no ramo e revisada** (bloqueio da revisão corrigido: a limpeza da lista antiga só tira o que mostra
   intimação comum): estatísticas dos meses anteriores (sazonalidade no Painel, 30 Diários por vez, à noite ou "Ler
   agora", só totais), engrenagem e perfil em janela, páginas pelo menu, licença no perfil com e-mail e escritório
@@ -463,4 +467,5 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 09/Nov (noite) | **Tudo na 0.7.16, antes da visita** (não haverá outra visita ao Leandro). Estrutura da planilha decidida pela Produto por delegação do dono ("tome as melhores decisões"): `documentacao/DESENHO-PLANILHA-GRANDE.md`, decisões 1 a 9. |
 | 09/Nov (noite) | **Termos 1.1 aprovados** pelo dono e pelo Leandro e **publicados** (página `aceite.html` e passo no e-mail de boas-vindas); versão 1.1 vigente. **Trava da KR Law desligada até depois da visita de quinta 12/Nov**, para o Leandro não travar na instalação. Pacote da 0.7.16: 44 e 43 arquivos (`lexsuite/armazenamento.py`). |
 | 09/Nov (noite) | **Perguntas 10 a 14, recomendações aceitas**: (10) 30 Diários antigos por noite, ajustável; (11) primeira carga de 3 meses e só os tribunais marcados como **padrão configurável**, sem bloquear o escritório; (12) o dono abre um Diário antigo no navegador quando puder; (13) todas as pessoas aceitam os termos de uso na primeira abertura da versão nova; (14) banco acima de 1 GB resume com 6 meses só os processos nunca abertos, com aviso na Configuração. |
+| 09/Nov (noite) | **Regras de "ação nova" (delegadas à Produto pelo dono: "tome as melhores decisões")**: conta a lista de distribuição, a audiência inicial, una ou de conciliação, a notificação inicial e "notifique-se a reclamada", só em varas de 1º grau (turmas, gabinetes e seções de 2º grau ficam fora); intimação comum não conta. O que a regra antiga guardou e mostra intimação comum sai da lista uma vez, sem apagar (0.7.18). A data da mudança aparece no Painel. Antes do tributário, regra própria (cite-se, citação do executado). |
 | 08/Nov | Auditoria em banco (quem, quando com fuso, antes/depois) para mudanças de configuração e controle, em todos os produtos; a planilha é controle extra. |

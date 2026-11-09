@@ -256,10 +256,11 @@ def gerar_copia(cfg, agora=None):
     if not origem or not os.path.exists(origem):
         return False, "A planilha ainda não existe: faça uma leitura primeiro."
     agora = agora or _dt.datetime.now()
-    destino_pasta = os.path.join(base, "Cópias")
+    destino_pasta = os.path.join(base, PASTA_COPIAS_TRABALHO)
     os.makedirs(destino_pasta, exist_ok=True)
     destino = os.path.join(destino_pasta, f"{os.path.splitext(NOME_RADAR)[0]} - cópia {agora:%Y-%m-%d %Hh%Mm%S}.xlsx")
-    marca_copia = f"Cópia de {agora:%d/%m/%Y %H:%M}: pode anotar e mexer à vontade. O RADAR não altera as cópias."
+    marca_copia = (f"Cópia de trabalho gerada em {agora:%d/%m/%Y às %H:%M}. Este arquivo é do escritório: pode ser editado "
+                   f"livremente e não é alterado pelo RADAR. Para os dados mais recentes, gere uma nova cópia.")
     try:
         with _zip.ZipFile(origem) as zin, _zip.ZipFile(destino, "w", _zip.ZIP_DEFLATED) as zout:
             for info in zin.infolist():
@@ -268,12 +269,16 @@ def gerar_copia(cfg, agora=None):
                     t = dados.decode("utf-8")
                     t = _re.sub(r"<sheetProtection[^>]*/>", "", t)
                     t = _re.sub(r"<fileSharing[^>]*/>", "", t)
-                    t = _re.sub(r"(<c r=\"A1\" s=\"7\" t=\"inlineStr\"><is><t[^>]*>)[^<]*(</t>)", lambda m: m.group(1) + marca_copia + m.group(2), t)
+                    t = _re.sub(r"(<c r=\"A1\" s=\")7(\" t=\"inlineStr\"><is><t[^>]*>)[^<]*(</t>)",
+                                lambda m: m.group(1) + "8" + m.group(2) + marca_copia + m.group(3), t)  # 0.7.18: faixa verde
                     dados = t.encode("utf-8")
                 zout.writestr(info, dados)
     except (OSError, _zip.BadZipFile) as e:
         return False, f"Não consegui copiar a planilha ({e.__class__.__name__})."
     return True, destino
+
+
+PASTA_COPIAS_TRABALHO = "Cópias da planilha"  # 0.7.18 (antes "Cópias"); "Cópias de segurança" são as do sistema
 
 
 def _nome_produto(pasta_robo):

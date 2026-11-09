@@ -106,7 +106,8 @@ def item_de_lead(lead, cfg_radar, contatos=None):
             "capital_social": emp.get("capital_social") or 0,
             "cnae": emp.get("cnae") or "", "atividade": emp.get("atividade") or "",
             "cnaes_secundarios": emp.get("cnaes_secundarios") or [],
-            "municipio": emp.get("municipio") or "", "uf": emp.get("uf") or "",
+            "municipio": emp.get("municipio") or "",
+            "uf": emp.get("uf") or ((lead.get("manual") or {}).get("uf") or {}).get("valor") or "",  # 0.7.18: da área logada
             "telefone": emp.get("telefone") or "", "telefone2": emp.get("telefone2") or "", "email": emp.get("email") or "",
             "socios": emp.get("socios") or [], "simples": emp.get("simples"),
             "inicio_atividade": emp.get("inicio_atividade") or "",
