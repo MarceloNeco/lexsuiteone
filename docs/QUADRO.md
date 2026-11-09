@@ -155,9 +155,8 @@ RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `S
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- **Bloqueado pelo conector do Supabase** (fora nesta sessão desde a noite de 08/Nov): aplicar `2026-11-09-sol-retorno-e-lex-auditoria.sql`
-  e publicar `lex-conta` v6 e `lex-equipe` v1 (código pronto em `nuvem/supabase/functions/`). É o que falta para o
-  botão de boas-vindas funcionar; prazo quarta 11/Nov. Qualquer sessão com o conector pode fazer: três comandos.
+- Nada em andamento. Próximos: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com
+  credencial na `lex-conta`, desenho do site `paginas/app/` para a Produto.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -165,6 +164,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 09/Nov (madrugada): **nuvem aplicada e publicada** (o conector voltou depois que o dono religou os conectores da conta):
+  SQL `2026-11-09-sol-retorno-e-lex-auditoria.sql` (conferência toda "true"; `sol_apps` tem `radar-judicial`, suíte
+  `lexsuiteone`, acesso `instalado`), `lex-conta` v7 (código v6, com `retorno` e `RESEND_API_KEY_LEX`) e `lex-equipe` v1
+  publicadas e testadas (sem login → 401; código desconhecido → resposta normal). **O botão "Preparar e-mail de
+  boas-vindas" do RootifyONE 0.18.16 está pronto para uso.** Lição: os conectores são ligados e desligados por conta,
+  não por conversa; desligar num chat desliga em todos.
 - 09/Nov (tarde): **RootifyONE 0.18.16 publicado** (PR #99 do rootify-one, mesclado): menu B2B → LexSuiteONE → RADAR JUDICIAL; ficha com e-mail do
   responsável, lote de e-mails (inválidos antes de salvar), Ativar/Pausar com motivo e histórico com quem/motivo, bloco
   Retorno, botão "Preparar e-mail de boas-vindas" com prévia e confirmação (envio pela `lex-equipe`), botões (?) de ajuda;
@@ -226,6 +231,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | Worker `integracao-resposta` | Correção do segundo bounce aplicada e testada em 08/Nov (15:18 UTC): serviço de envio é só encaminhado; pessoa recebe a resposta. Versão anterior guardada na Cloudflare. | Operação |
 | Documentos internos em `docs/` | Ficam públicos no site. Mudança para `documentacao/` aprovada pelo dono **para depois de quinta 12/Nov** (Arquitetura faz e ajusta os caminhos). Documentos internos novos já nascem em `documentacao/`. | Arquitetura |
 | Desenho da 0.8 | Na branch `claude/friendly-einstein-li603e` (Arquitetura), seções 3 a 7 sendo reescritas em cima do que a Produto construiu. Entra na `main` em `documentacao/` quando ficar coerente. | Arquitetura |
+| Conectores (Supabase, Resend, Cloudflare…) | A chave liga/desliga **para a conta inteira**, não por conversa: desligar num chat derruba em todos (aconteceu em 08/Nov). Antes de desligar um conector, conferir no quadro se outra sessão depende dele. | todas |
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
 
 ## Pedidos entre sessões

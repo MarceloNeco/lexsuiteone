@@ -1,7 +1,7 @@
 -- =====================================================================================
 -- 2026-11-09-sol-retorno-e-lex-auditoria.sql  —  projeto solverone-app (Supabase)
 -- Desenho: documentacao/DESENHO-RETORNO-E-ROOTIFY.md (decisões do dono de 09/Nov).
--- PRÉ-REQUISITO: 2026-11-08b e 2026-11-08c aplicados. ⏳ AINDA NÃO APLICADO: aplicar pelo conector na próxima sessão
+-- PRÉ-REQUISITO: 2026-11-08b e 2026-11-08c aplicados. APLICADO em 09/Nov/2026 pelo conector (prefixo em sol_apps sem "_").
 -- da Arquitetura (não tem DROP; não pede confirmação). Cada bloco tem o DESFAZER em comentário.
 --
 -- O QUE FAZ:
@@ -27,7 +27,7 @@ comment on column public.sol_apps.suite is 'Linha de negócio / suíte (ex.: lex
 comment on column public.sol_apps.acesso is 'web: app no navegador; instalado: programa no computador do cliente; nuvem: roda em servidor da SolverONE.';
 comment on column public.sol_apps.retorno_dimensoes is 'Nomes das dimensões dim1..dim3 de sol_retorno_diario para este app (ex.: ["tribunal","frente","faixa_valor"]).';
 insert into public.sol_apps (codigo, nome, prefixo, ativo, suite, acesso, retorno_dimensoes)
-values ('radar-judicial', 'RADAR JUDICIAL (LexSuiteONE)', 'lex_', true, 'lexsuiteone', 'instalado', '["tribunal","frente","faixa_valor"]'::jsonb)
+values ('radar-judicial', 'RADAR JUDICIAL (LexSuiteONE)', 'lex', true, 'lexsuiteone', 'instalado', '["tribunal","frente","faixa_valor"]'::jsonb)
 on conflict (codigo) do update set suite = excluded.suite, acesso = excluded.acesso, retorno_dimensoes = excluded.retorno_dimensoes;
 -- DESFAZER: delete from public.sol_apps where codigo = 'radar-judicial'; alter table public.sol_apps drop column suite, drop column acesso, drop column retorno_dimensoes;
 
