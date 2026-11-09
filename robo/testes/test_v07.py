@@ -350,8 +350,13 @@ class SegurancaV071(unittest.TestCase):
         banco = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
         banco.guardar_lead({"processo": "1", "empresas": ["X"]}, "2020-01-01")
         banco.guardar_lead({"processo": "2", "empresas": ["Y"]}, dt.date.today().isoformat())
+        banco.con.execute("UPDATE leads SET dados = ? WHERE processo = '1'", ('{"processo": "1", "empresas": ["X"], "texto_curto": "nome do reclamante"}',))
         self.assertEqual(banco.limpar_antigos(365), 1)
-        self.assertEqual([l["processo"] for l in banco.todos_leads()], ["2"])
+        # 0.7.13: a ação velha não some; o dado completo vira resumo (sem o trecho do Diário) e as estatísticas ficam
+        leads = {l["processo"]: l for l in banco.todos_leads()}
+        self.assertEqual(sorted(leads), ["1", "2"])
+        self.assertTrue(leads["1"]["resumido"] and "texto_curto" not in leads["1"])
+        self.assertFalse(leads["2"]["resumido"])
         self.assertEqual(banco.limpar_antigos(0), 0)
 
     def test_mostrar_socios_desligado(self):
