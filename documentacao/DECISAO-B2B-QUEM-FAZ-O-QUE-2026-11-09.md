@@ -114,6 +114,26 @@ a ser só do RootifyONE.
   contrato e prescricional. **Validar o texto com o Leandro antes de publicar**; o aceite não substitui a proposta
   comercial (preço, prazo), que continua à parte.
 
+### 5a. Acréscimo do dono (09/Nov, noite): licença ativa, uso travado até o aceite
+
+- O código de cliente **vai no e-mail de boas-vindas** (não precisa esconder). A licença nasce ativa; o que fica travado é
+  o **uso**: a `lex-conta` responde `ok: false, motivo: "aceite_pendente"` à ação `verificar` enquanto não houver aceite
+  da licença em `sol_aceites`, com a `mensagem` "Antes do primeiro uso, o responsável do escritório precisa aceitar os
+  termos…" e o link já preenchido. A ação `cadastrar` passa (registrar a pessoa não é usar). Toda resposta traz
+  `aceite: {aceito, versao, aceito_em, nome}` ou `{aceito: false, link}`.
+- Trava por licença: `lex_contas.exigir_aceite` (padrão **true** para licença nova; as licenças criadas antes da página
+  existir ficaram **false** para ninguém ficar preso; a Arquitetura liga a da KR Law quando a página for publicada).
+  O RootifyONE pode mostrar e trocar esse interruptor pela `admin_lex_salvar` (`exigir_aceite`) e lê-lo em `admin_lex_listar`.
+- Página de aceite pelo link do e-mail: **código fixo** (não editável), **e-mail fixo** (o do responsável, cadastrado na
+  licença) e **nome pré-preenchido editável** (o cadastro às vezes está errado). Link:
+  `aceite.html?codigo=…&email=…&nome=…`. Sem link (pelo site), os três campos ficam editáveis, e a página busca o e-mail
+  do responsável pelo código. O banco confere: para o RADAR, o e-mail do aceite tem de ser um e-mail da licença
+  (responsável, boas-vindas ou pessoa cadastrada), se a licença tiver algum; senão a página explica para usar o link do e-mail.
+- Programa 0.7.13 (já instalado) recebe `aceite_pendente` como "licença não ativa" + a mensagem com o link + "Fale com
+  judicial@". Legível, mas melhora na 0.7.14 (pedido à Produto): `MOTIVOS["aceite_pendente"]`, link clicável na tela e o
+  instalador (`INSTALAR.bat`) tratando `aceite_pendente` (hoje cairia em "sem internet").
+- Arquivos: `nuvem/supabase/2026-11-09d-lex-exigir-aceite.sql` (aplicado), `lex-conta` v8 (código "v7", publicada).
+
 ## 6. Ordem de entrega
 
 1. **Dono**: dá o "pode aplicar" para o SQL único de `admin_lex_listar` (pedido nº 1 do RootifyONE + campo `aceite`) e para

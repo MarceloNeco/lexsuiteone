@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v6 (v4 + modalidade + retorno dos processos): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v7 (v6 + aceite dos termos: licença ativa, uso travado até o aceite): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -20,6 +20,7 @@ const PUBLICOS = new Set(["gmail.com", "googlemail.com", "outlook.com", "outlook
   "msn.com", "yahoo.com", "yahoo.com.br", "ymail.com", "icloud.com", "me.com", "aol.com", "uol.com.br", "bol.com.br", "terra.com.br",
   "globo.com", "ig.com.br", "zipmail.com.br", "proton.me", "protonmail.com", "pm.me", "tutanota.com", "gmx.com", "mail.com"]);
 const CONTATO = "judicial@solverone.com.br";
+const LINK_ACEITE = "https://judicial.solverone.com.br/aceite.html";
 const REMETENTE = "SolverONE <nao-responda@solverone.com.br>";
 const AVISOS_POR_DIA = 20;
 // Retorno dos processos à SolverONE (decisão do dono, 09/Nov): só contagens por situação. Situações do programa:
@@ -71,7 +72,7 @@ Deno.serve(async (req) => {
   if (!(await pode(`cod:${codigo}:${acao}`, 120, 3600))) return limite();
 
   const { data: conta, error } = await sb.from("lex_contas")
-    .select("codigo, escritorio, documento, max_pessoas, max_computadores, ativo, validade, mensagem, dominios, email_boas_vindas, exigir_aprovacao, modalidade")
+    .select("codigo, escritorio, documento, max_pessoas, max_computadores, ativo, validade, mensagem, dominios, email_boas_vindas, exigir_aprovacao, modalidade, exigir_aceite, email_responsavel")
     .eq("codigo", codigo).maybeSingle();
   if (error) return json({ ok: false, motivo: "erro" }, 500);
   if (!conta) return json({ ok: false, motivo: "codigo_desconhecido" });
@@ -201,8 +202,19 @@ Deno.serve(async (req) => {
   let ok = !!conta.ativo && !vencida;
   let motivo = ok ? "" : (conta.ativo ? "vencido" : "desativado");
   if (ok && conta.exigir_aprovacao && aprovacaoPessoa === "aguardando") { ok = false; motivo = "aguardando_aprovacao"; }
-  const resposta: Record<string, unknown> = { ok, motivo, escritorio: conta.escritorio, validade: conta.validade ?? "", mensagem: conta.mensagem ?? "",
-    modalidade: conta.modalidade ?? "instalado" };   // item F: "nuvem" = a tela avisa e continua lendo
+  // Aceite dos termos (decisão do dono, 09/Nov): a licença fica ativa, mas o uso só é liberado depois que o responsável
+  // aceita os termos na página pública (sol_aceites). O "cadastrar" passa (registrar a pessoa não é usar); o "verificar" trava.
+  let mensagem = conta.mensagem ?? "";
+  const { data: aceite } = await sb.rpc("sol_tem_aceite", { p_app: "radar-judicial", p_licenca: codigo, p_termo: "lexsuiteone-termos" });
+  const aceiteInfo = (aceite && typeof aceite === "object") ? aceite as Record<string, unknown> : { aceito: false };
+  if (ok && conta.exigir_aceite && acao === "verificar" && !aceiteInfo.aceito) {
+    ok = false; motivo = "aceite_pendente";
+    const link = `${LINK_ACEITE}?codigo=${codigo}` + (conta.email_responsavel || conta.email_boas_vindas ? `&email=${encodeURIComponent(String(conta.email_responsavel || conta.email_boas_vindas))}` : "");
+    mensagem = `Antes do primeiro uso, o responsável do escritório precisa aceitar os termos (leva 3 minutos): ${link}`;
+    (aceiteInfo as Record<string, unknown>).link = link;
+  }
+  const resposta: Record<string, unknown> = { ok, motivo, escritorio: conta.escritorio, validade: conta.validade ?? "", mensagem,
+    modalidade: conta.modalidade ?? "instalado", aceite: aceiteInfo };   // item F: "nuvem" = a tela avisa e continua lendo
   if (aprovacaoPessoa) resposta.aprovacao = aprovacaoPessoa;
   if (emUso) resposta.em_uso = emUso;
   if (retorno) resposta.retorno = retorno;
