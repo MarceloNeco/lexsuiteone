@@ -72,7 +72,9 @@ apagam; cada ação ganha a **frente** (trabalhista, tributário, cível, empres
 - Lista de palavras em `lexsuite/frentes.py`, ajustável; ação sem classe reconhecida fica "cível" com a marca "a
   conferir". Filtro "Frente" e cor discreta no cartão (Produto). Uma lista só, com a marca, como o dono pediu.
 
-## 6. Perguntas para o dono
+## 6. Perguntas para o dono (respondidas em 09/Nov; o que vale está em "Decisões do dono" no quadro)
+
+**Respostas**: situações Novo · Visto · Em análise · Em contato · Virou cliente · Descartado · Arquivado (masculino; só Arquivado sai da Lista); dado completo 12 meses, resumo e estatísticas para sempre; encerradas pelo DataJud numa versão seguinte com o aviso do atraso; frente por regra escrita com "a conferir"; área logada até 30 processos por dia, ajustável. A Produto já implementa.
 
 1. **Nomes dos status**: Novo, Lido, Em tratamento, Tratado, Descartado. Pode ser assim? Hoje são Novo, Visto, Em
    contato, Descartado.

@@ -42,7 +42,7 @@ Retenção: a mesma do resto do banco local (365 dias). Fica em `lexsuite.db`, t
 
 ## 3. Completar pela área logada (item 41)
 
-1. Botão **"Preparar busca de contatos"**: gera `saida/contatos/buscar-contatos-AAAA-MM-DD.md` com (a) as instruções para
+1. Botão **"Preparar busca de contatos"** (no máximo 30 processos por dia, ajustável; aviso de que quem abre é o advogado com a credencial dele e de que telefone e e-mail quase nunca estão no processo, decisão do dono de 09/Nov): gera `saida/contatos/buscar-contatos-AAAA-MM-DD.md` com (a) as instruções para
    o Claude in Chrome (só leitura; só dados da empresa ré; nunca pessoa física nem CPF; onde olhar no PJe: petição
    inicial e citação; formato exato da resposta) e (b) a tabela dos processos sem contato: processo, tribunal, vara,
    empresa, CNPJ. A tela mostra o passo a passo: "abra o PJe logado, abra o Claude in Chrome, arraste este arquivo".

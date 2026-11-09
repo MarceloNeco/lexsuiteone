@@ -59,6 +59,11 @@ Três conversas do Claude Code trabalham neste repositório: **Operação** (Son
   "pronta para publicar" no quadro e param. Mudança no que o cliente vê (site, pacote, e-mail) só com o "pode" do dono.
 - **Mudança de regra de negócio, nuvem ou banco** passa primeiro pela Arquitetura (desenho curto, "pode" do dono),
   depois é implementada por quem for dono dos arquivos.
+- **Perguntas ao dono: uma lista só** (decisão do dono, 09/Nov). Toda pergunta ao dono vai para a seção "Perguntas ao
+  dono" de `docs/QUADRO.md`, numerada, com quem pergunta e a recomendação. Antes de perguntar qualquer coisa, a
+  sessão confere essa lista e as "Decisões do dono": o que já está lá não se pergunta de novo. **A Produto consolida**
+  as perguntas abertas, leva ao dono num prompt único, registra as respostas em "Decisões" e marca "respondida".
+  Nenhuma sessão pergunta ao dono por fora do quadro, salvo bloqueio imediato da própria tarefa.
 - Se a `main` recusar o envio, puxar e resolver localmente; nunca force push. Se o conflito for em arquivo de outra
   sessão, não resolver: anotar no quadro e avisar o dono.
 - Tarefa em andamento quando esta regra entrou (08/Nov) termina como está. As regras valem da tarefa seguinte.

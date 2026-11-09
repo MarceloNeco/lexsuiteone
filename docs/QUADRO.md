@@ -129,11 +129,10 @@ RootifyONE (`rootify-lex.js`), seção "0.8 e nuvem" de `robo/PENDENCIAS.md`, `S
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- **Publicar a `lex-conta` com a leitura de `RESEND_API_KEY_LEX`** (código já na `main`, commit b8d6c1f): o conector do
-  Supabase caiu nesta sessão; publicar na próxima sessão da Arquitetura (ou qualquer sessão com o conector), com
-  `deploy_edge_function` a partir de `nuvem/supabase/functions/lex-conta/index.ts`, `verify_jwt = false`. Enquanto isso a
-  versão no ar (v5) envia os avisos com o segredo `RESEND_API_KEY` que já existia no projeto: funciona.
-- Depois: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com credencial, site `paginas/app/`.
+- Próximo (sem depender do dono): aplicar `nuvem/supabase/2026-11-09-sol-retorno-e-lex-auditoria.sql` quando o conector
+  voltar; `lex-conta` v6 (campo `retorno`) e publicar junto com a leitura de `RESEND_API_KEY_LEX`; RootifyONE 0.18.16
+  (ficha: e-mail do responsável, lote, Ativar/Pausar com motivo, bloco Retorno, menu B2B → LexSuiteONE, apps com suíte
+  e acesso); função `lex-equipe` para o e-mail de boas-vindas com prévia (botão depois do texto e da prévia da Produto).
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -141,6 +140,11 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 09/Nov: decisões do dono recebidas. Entregues: `documentacao/DESENHO-RETORNO-E-ROOTIFY.md` (totais por situação para a
+  SolverONE, agnóstico em `sol_retorno_diario`; ficha da licença: responsável, lote, Ativar/Pausar com motivo, boas-vindas
+  com prévia, apps e menu B2B; quem faz cada parte), SQL `2026-11-09-sol-retorno-e-lex-auditoria.sql` (testado em
+  Postgres local, ainda não aplicado: conector fora), `documentacao/TERMO-TRATAMENTO-DADOS-RASCUNHO.md` (para o dono e
+  o Leandro revisarem), regra "Perguntas ao dono: uma lista só" no `CLAUDE.md`.
 - 09/Nov: desenho curto de Arquivo, status no banco com lote, limpeza do bruto, Estatísticas diárias e frente
   (`documentacao/DESENHO-ARQUIVO-ESTATISTICAS.md`), lido com a pesquisa do acesso ao PJe; 6 perguntas ao dono. Contatos
   (itens 40 e 41): decisões do dono registradas e pedido à Produto.
@@ -174,10 +178,8 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Respostas às 6 perguntas de `documentacao/DESENHO-ARQUIVO-ESTATISTICAS.md` (status, o que fica na Lista, limpeza,
-  encerradas pelo DataJud, frente, limite diário da área logada).
-- Na ficha da KR Law no RootifyONE: e-mail de boas-vindas e domínio (ou a Operação, que recebeu o e-mail do Leandro).
-- Termo de tratamento de dados com a KR Law (bloqueante para a 0.8 entrar no ar).
+- Revisar com o Leandro `documentacao/TERMO-TRATAMENTO-DADOS-RASCUNHO.md` (campos a preencher no fim) e validar com advogado.
+- Nada mais: as demais perguntas estão respondidas em "Decisões do dono" (09/Nov).
 
 ---
 
@@ -223,6 +225,15 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 
 | 08/Nov | Arquitetura | Produto | **Contatos aprovados pelo dono** (`documentacao/DESENHO-CONTATOS.md`, seções 1 a 4 e 8): implementar na próxima versão do programa (1) colunas de contato com fonte, data, confiança e validação na tela e na planilha (aba Radar em grupo recolhível + aba Contatos editável e preservada), endereço completo da Receita, canal "Outros"; MEI e empresário individual com todos os contatos; (2) vermelho "Contato a buscar na área logada" quando falta; (3) botões "Preparar busca de contatos" (gera `saida/contatos/buscar-contatos-<data>.md`) e "Colar contatos encontrados" (tabela Markdown de 8 colunas, validação linha a linha, recusa reclamante e CPF); (4) tabelas `contatos`, `contatos_historico` e `acoes` no `lexsuite.db` e a função única `pode(acao)` (hoje sempre sim) por onde passa toda ação que muda dado, inclusive em lote. Texto das instruções do arquivo: a Arquitetura escreve quando a Produto pedir | não |
+
+## Pedidos entre sessões (continuação, 09/Nov)
+
+| Data | De | Para | Pedido | Feito? |
+|---|---|---|---|---|
+| 09/Nov | Arquitetura | Produto | **Retorno à SolverONE** (`documentacao/DESENHO-RETORNO-E-ROOTIFY.md`, seção 1): a cada leitura, montar do banco local a tabela de totais (data, tribunal, frente, faixa de valor, situação → quantidade; situações `novo, visto, em_analise, em_contato, virou_cliente, descartado, arquivado`) e mandar no campo `retorno` da ação `verificar` da `lex-conta` (até 2.000 linhas; a resposta traz `retorno.gravadas/recusadas`); guardar a última tabela enviada; Configuração ganha o bloco "O que a SolverONE recebe" com a tabela exata, a data e a frase "só quantidades; nenhum nome, processo ou contato". Só depois de a Arquitetura avisar aqui que a `lex-conta` v6 está publicada | não |
+| 09/Nov | Arquitetura | Produto | **E-mail de boas-vindas com prévia** (seção 2 do mesmo desenho): texto final PT (e EN) e a prévia já preenchida (nome, código, links) a partir de `docs/email/`; a Arquitetura faz o botão no RootifyONE e a função de envio. Nada é enviado ao Leandro até o dono dizer "pode enviar" | não |
+| 09/Nov | Arquitetura | Operação | Quando a ficha nova do RootifyONE estiver no ar (0.18.16): preencher na KR Law o e-mail do responsável, o e-mail de boas-vindas e o domínio. O envio do e-mail de boas-vindas só pelo botão com prévia e só com o "pode enviar" do dono | não |
+| 09/Nov | Arquitetura | rootify-one (diretriz geral) | Registrar na diretriz: produto B2B entra no menu do RootifyONE por linha de negócio (grupo **B2B** → suíte → produto, ex.: LexSuiteONE → RADAR JUDICIAL), separado dos apps de consumo; `sol_apps` ganha `suite` e `acesso` (web · instalado · nuvem). A Arquitetura faz o catálogo e o menu na 0.18.16 | não |
 
 ## Perguntas ao dono (uma lista só; a Produto consolida e leva ao dono)
 
