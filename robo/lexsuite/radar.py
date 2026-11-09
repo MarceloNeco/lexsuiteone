@@ -141,8 +141,16 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     }
 
 
+def registrar_tentativas(banco, tentativas, origem, versao, quando=None):
+    """Histórico de leituras (0.7.13): uma linha por tribunal, com a hora local e o fuso, a origem, o que foi pedido,
+    a resposta, a causa e o que o programa fez. Sem dado pessoal."""
+    quando = quando or dt.datetime.now().astimezone().isoformat(timespec="seconds")
+    for t in tentativas:
+        banco.registrar("tentativa", dict(t, quando_local=quando, origem=origem, versao=versao))
+
+
 def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False, pasta_diag=None, agora=None, versao="",
-             caminho_config=None):
+             caminho_config=None, origem="botão"):
     """Uma rodada do radar: confere o controle do escritório, baixa o caderno de cada tribunal escolhido, separa as
     ações novas contra empresa, consulta a Receita quando há CNPJ, guarda, avalia a saúde, registra no log e grava
     a saída local e a planilha compartilhada. Devolve a situação. Pode levantar RoboDesligado e rede.BloqueadoForaDoBrasil."""
@@ -175,9 +183,16 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     rodada_id = agora.strftime("%Y-%m-%dT%H:%M")
     aviso(f"Radar: lista de distribuição de {', '.join(escolhidos)} (últimos {dias} dia(s) úteis)")
     registro = {"versao": versao, "tribunais": escolhidos, "lidas": 0, "novas": 0, "com_cnpj": 0, "duracao": 0, "resultado": "", "erro": ""}
+    tentativas = []
     try:
         lidos = []
-        pubs = monitor.coletar_caderno(escolhidos, dias, banco, pasta_diag, aviso, lidos=lidos)
+        try:
+            pubs = monitor.coletar_caderno(escolhidos, dias, banco, pasta_diag, aviso, lidos=lidos, tentativas=tentativas)
+        finally:
+            try:
+                registrar_tentativas(banco, tentativas, origem, versao)
+            except Exception as e:  # noqa: BLE001 - o histórico nunca esconde o erro da leitura
+                aviso(f"  Não consegui gravar o histórico de leituras ({e.__class__.__name__}).")
         ano_min = agora.year - 1 if agora.month <= 2 else agora.year
         novos = acoes_do_dia(pubs, ano_min, banco.processos_vistos())
         consultar = bool(r.get("receita", True)) and not sem_cnpj
@@ -219,7 +234,9 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         saude.registrar(banco, saude.avaliar(pubs, novos, feitas, falhas, agora.date()), aviso)
         registro.update({"lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj, "resultado": "ok"})
     except Exception as e:
-        registro.update({"resultado": "erro", "erro": f"{e.__class__.__name__}: {e}"[:300], "duracao": round(time.perf_counter() - inicio)})
+        from . import causas
+        registro.update({"resultado": "erro", "erro": f"{e.__class__.__name__}: {e}"[:300], "causa": causas.classificar(e),
+                         "duracao": round(time.perf_counter() - inicio)})
         banco.registrar("radar", registro)
         raise
     registro["duracao"] = round(time.perf_counter() - inicio)
@@ -230,6 +247,13 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} ações novas contra empresas; {com_cnpj} com CNPJ no Diário.",
                 "en": f"{len(pubs)} notices read; {len(novos)} new lawsuits against companies; {com_cnpj} with a tax ID in the gazette.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}
+    from . import causas
+    for t in tentativas:  # avisos que não são erro (Diário de hoje só às 3h) e tribunais que falharam
+        if t["causa"] == "ok":
+            continue
+        situacao.setdefault("avisos", []).append({
+            "tribunal": t["tribunal"], "causa": t["causa"], "aviso": causas.e_aviso(t["causa"]), "leu_ate": t.get("leu_ate", ""),
+            "pt": f"{t['tribunal']}: {causas.mensagem(t['causa'], 'pt')}", "en": f"{t['tribunal']}: {causas.mensagem(t['causa'], 'en')}"})
     aviso("  " + situacao["pt"])
     if pasta_base:
         pagina = gravar_saida(cfg, banco, os.path.join(pasta_base, "saida", "radar"), agora, situacao, aviso, versao, prefs)

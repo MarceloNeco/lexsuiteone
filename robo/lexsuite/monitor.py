@@ -18,6 +18,7 @@ Duas formas de consulta:
 
 import csv
 import datetime as dt
+import time
 import hashlib
 import json
 import os
@@ -222,35 +223,71 @@ def dias_uteis(hoje, dias):
     return sorted(datas)
 
 
-def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=None, lidos=None):
+def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=None, lidos=None, tentativas=None):
     """Cadernos dos últimos dias úteis. Só baixa de novo se o CNJ reprocessou (versão mudou).
-    Os cadernos lidos vão para `lidos`; quem marca como conferido é `guardar`, no fim da rodada."""
+    Os cadernos lidos vão para `lidos`; quem marca como conferido é `guardar`, no fim da rodada.
+    0.7.13: cada tribunal é uma tentativa à parte (vai para `tentativas`, com a causa); um tribunal com problema não
+    derruba os outros. Só levanta erro se nenhum tribunal pôde ser lido (ou se o pedido saiu de fora do Brasil)."""
+    from . import causas
     hoje = hoje or dt.date.today()
     pubs = []
+    tentativas = tentativas if tentativas is not None else []
+    primeiro_erro = None
     # Dias com Diário (0.7.11): volta dia útil a dia útil, até 10, e só conta os dias em que o tribunal publicou o
     # caderno. Assim feriado (nacional, estadual) e recesso não fazem a leitura sair vazia.
     candidatas = dias_uteis(hoje, 10)[::-1]
     for sigla in tribunais:
-        contados = 0
-        for d in candidatas:
-            if d != hoje and contados >= max(0, int(dias)):
-                break
-            meta = djen.meta_caderno(sigla, d.isoformat(), aviso)
-            if meta is None:
-                continue
-            if d != hoje:
-                contados += 1
-            versao = str(meta.get("versao", ""))
-            if versao and banco.versao_caderno(sigla, d.isoformat()) == versao:
-                aviso(f"  Caderno {sigla} {d:%d/%m}: já conferido (versão {versao})")
-                continue
-            aviso(f"  Baixando o caderno {sigla} {d:%d/%m} (pode levar alguns minutos)...")
-            lote = djen.baixar_caderno(sigla, d.isoformat(), diagnostico, aviso, meta=meta)
-            if lote is None:
-                continue
-            pubs += lote
-            if lidos is not None:
-                lidos.append((sigla, d.isoformat(), versao or "?"))
+        contados, motivos, lidos_trib, inicio = 0, {}, [], time.perf_counter()
+        pedidas, http, erro = [], "200", None
+        try:
+            for d in candidatas:
+                if d != hoje and contados >= max(0, int(dias)):
+                    break
+                pedidas.append(d.isoformat())
+                meta = djen.meta_caderno(sigla, d.isoformat(), aviso, motivos)
+                if meta is None:
+                    continue
+                if d != hoje:
+                    contados += 1
+                versao = str(meta.get("versao", ""))
+                if versao and banco.versao_caderno(sigla, d.isoformat()) == versao:
+                    aviso(f"  Caderno {sigla} {d:%d/%m}: já conferido (versão {versao})")
+                    lidos_trib.append(d)
+                    continue
+                aviso(f"  Baixando o caderno {sigla} {d:%d/%m} (pode levar alguns minutos)...")
+                lote = djen.baixar_caderno(sigla, d.isoformat(), diagnostico, aviso, meta=meta)
+                if lote is None:
+                    continue
+                pubs += lote
+                lidos_trib.append(d)
+                if lidos is not None:
+                    lidos.append((sigla, d.isoformat(), versao or "?"))
+        except rede.BloqueadoForaDoBrasil:
+            raise
+        except Exception as e:  # um tribunal com problema não derruba os outros
+            erro = e
+            primeiro_erro = primeiro_erro or e
+            http = str(getattr(e, "codigo", "") or "-")
+            aviso(f"  {sigla}: {causas.mensagem(causas.classificar(e))}")
+        causa = causas.classificar(erro) if erro else (
+            "ainda_nao_liberado_3h" if hoje.isoformat() in motivos and motivos[hoje.isoformat()] == "ainda_nao_liberado_3h" else "ok")
+        if erro is None and causa == "ainda_nao_liberado_3h":
+            http = "403"
+        ate = max(lidos_trib).strftime("%d/%m") if lidos_trib else ""
+        if erro is not None:
+            fez = f"parou neste tribunal; leu até {ate}" if ate else "não leu este tribunal; seguiu com os outros"
+        elif causa == "ainda_nao_liberado_3h":
+            fez = f"pulou hoje (só às 3h); leu até {ate}" if ate else "pulou hoje (só às 3h)"
+        else:
+            fez = f"leu até {ate}" if ate else "nenhum caderno novo"
+        fez_en = (f"stopped on this court; read up to {ate}" if ate else "could not read this court; went on with the others") if erro is not None else (
+            (f"skipped today (only after 3 a.m.); read up to {ate}" if ate else "skipped today (only after 3 a.m.)") if causa == "ainda_nao_liberado_3h"
+            else (f"read up to {ate}" if ate else "no new gazette"))
+        tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": http, "causa": causa,
+                           "fez": fez, "fez_en": fez_en, "duracao": round(time.perf_counter() - inicio, 1), "leu_ate": ate,
+                           "detalhe": f"{erro.__class__.__name__}: {erro}"[:300] if erro else ""})
+    if primeiro_erro is not None and all(t["causa"] not in ("ok", "ainda_nao_liberado_3h") for t in tentativas[-len(tribunais):]):
+        raise primeiro_erro
     return pubs
 
 

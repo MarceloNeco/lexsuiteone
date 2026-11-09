@@ -148,10 +148,23 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     for it in pagina.get("itens") or []:
         l = linha_csv(it)
         linhas.append([_celula(l.get(chave)) for _, chave in colunas] + [it.get("excluida") or "", it.get("acoes_na_janela", "")])
-    log = [["Quando", "Versão", "Tribunais", "Publicações lidas", "Ações novas", "Com CNPJ", "Duração (s)", "Resultado", "Erro"]]
-    for e in banco.execucoes("radar", 500):
-        log.append([e.get("quando", ""), e.get("versao", ""), ", ".join(e.get("tribunais") or []), e.get("lidas", ""),
-                    e.get("novas", ""), e.get("com_cnpj", ""), e.get("duracao", ""), e.get("resultado", ""), e.get("erro", "")])
+    # 0.7.13: a aba Log mostra o histórico de leituras, uma linha por tribunal e por tentativa, visível ao escritório.
+    from . import causas
+    rotulo = {"ok": "Lido", "ainda_nao_liberado_3h": "Diário de hoje só às 3h (não é erro)", "nao_publicado": "Ainda não publicado",
+              "governo_fora": "Site do CNJ fora do ar", "bloqueio_fora_do_brasil": "Fora do Brasil", "sem_internet": "Sem internet",
+              "erro_do_programa": "Erro do programa"}
+    log = [["Quando (hora local e fuso)", "Origem", "Tribunal", "Dias pedidos", "Resposta do site", "Situação", "O que o programa fez",
+            "Duração (s)", "Versão", "Explicação"]]
+    for e in banco.execucoes("tentativa", 1000):
+        c = e.get("causa", "")
+        log.append([e.get("quando_local") or e.get("quando", ""), e.get("origem", ""), e.get("tribunal", ""), e.get("dias_pedidos", ""),
+                    e.get("http", ""), rotulo.get(c, c), e.get("fez", ""), e.get("duracao", ""), e.get("versao", ""),
+                    "" if c == "ok" else causas.mensagem(c)])
+    for e in banco.execucoes("radar", 200):  # rodadas antigas (antes da 0.7.13) e o resumo de cada rodada
+        log.append([e.get("quando", ""), "resumo da rodada", ", ".join(e.get("tribunais") or []), "", "",
+                    "Lido" if e.get("resultado") == "ok" else (rotulo.get(e.get("causa", ""), "Parou")),
+                    f"{e.get('lidas', '')} publicações, {e.get('novas', '')} ações novas, {e.get('com_cnpj', '')} com CNPJ",
+                    e.get("duracao", ""), e.get("versao", ""), causas.mensagem(e["causa"]) if e.get("causa") else (e.get("erro") or "")])
     saude = [["Quando", "Fonte", "Situação", "Detalhe"]]
     for e in banco.execucoes("saude", 300):
         saude.append([e.get("quando", ""), e.get("fonte", ""), e.get("situacao", ""), e.get("detalhe", "")])
@@ -169,7 +182,7 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
          "larguras": [8, 9, 34, 26, 12, 12, 40, 18, 22, 16, 36, 20, 18, 16, 28, 40, 15, 16, 12, 30, 30, 30, 10]},
     ] + [dict(a, visual=True) for a in editaveis] + [
         {"nome": NOME_COMO_USAR, "linhas": como_usar(_nome_produto(pasta_robo)), "visual": True, "larguras": [24, 70, 70]},
-        {"nome": "Log", "linhas": log, "oculta": True, "larguras": [20, 8, 40, 12, 12, 10, 10, 16, 60]},
+        {"nome": "Log", "linhas": log, "visual": True, "filtro": True, "larguras": [24, 16, 10, 22, 10, 26, 40, 10, 8, 60]},
         {"nome": "Saúde", "linhas": saude, "oculta": True, "larguras": [20, 18, 10, 80]},
         {"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo), versao, chave_impressao, ultima), "oculta": True, "larguras": [30, 80]},
     ])

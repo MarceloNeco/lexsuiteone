@@ -28,6 +28,28 @@ class BloqueadoForaDoBrasil(Exception):
     """O serviço recusou porque o pedido não saiu de um endereço do Brasil."""
 
 
+def _sem_consulta(url):
+    """Endereço sem a parte depois do "?" (o link do caderno vale 5 minutos e traz assinatura): não vai para registro."""
+    return str(url).split("?", 1)[0][:120]
+
+
+class ErroHTTP(RuntimeError):
+    """O site respondeu com um código de erro (403, 404, 503...). Guarda o código e o texto da resposta, para o
+    programa saber a causa (0.7.13: o 403 "só a partir das 03:00" do DJEN não é erro)."""
+
+    def __init__(self, codigo, url, texto):
+        self.codigo, self.url, self.texto = int(codigo), _sem_consulta(url), str(texto or "")[:2000]
+        super().__init__(f"HTTP {self.codigo} em {self.url}: {self.texto[:300]}")
+
+
+class SemResposta(RuntimeError):
+    """O site não respondeu (tempo esgotado, sem internet, endereço não encontrado)."""
+
+    def __init__(self, url, motivo):
+        self.url, self.motivo = _sem_consulta(url), str(motivo)
+        super().__init__(f"Sem resposta de {self.url}: {self.motivo}")
+
+
 def _respeitar_intervalo(minimo):
     espera = minimo - (time.time() - _ultimo_pedido[0])
     if espera > 0:
@@ -61,13 +83,13 @@ def pedir(url, corpo=None, cabecalhos=None, tentativas=5, intervalo_minimo=0.6, 
                 time.sleep(min(pausa, 120))
                 espera *= 2
                 continue
-            raise RuntimeError(f"HTTP {e.code} em {url[:120]}: {texto[:300]}") from None
+            raise ErroHTTP(e.code, url, texto) from None
         except (urllib.error.URLError, TimeoutError) as e:
             if tentativa < tentativas:
                 time.sleep(espera)
                 espera *= 2
                 continue
-            raise RuntimeError(f"Sem resposta de {url[:120]}: {e}") from None
+            raise SemResposta(url, e) from None
     raise RuntimeError("Tentativas esgotadas")
 
 
@@ -78,15 +100,20 @@ def pedir_bytes(url, tempo_limite=600, limite=LIMITE_DOWNLOAD):
     """Baixa um arquivo (ex.: o ZIP do caderno do DJEN, cujo link vale 5 minutos), em pedaços e com teto de tamanho."""
     req = urllib.request.Request(_so_https(url), headers={"User-Agent": AGENTE})
     partes, total = [], 0
-    with urllib.request.urlopen(req, timeout=tempo_limite) as r:  # nosec B310 - esquema conferido em _so_https
-        while True:
-            pedaco = r.read(1024 * 1024)
-            if not pedaco:
-                break
-            total += len(pedaco)
-            if total > limite:
-                raise ValueError(f"resposta maior que o limite de {limite // (1024 * 1024)} MB: {url[:60]}")
-            partes.append(pedaco)
+    try:
+        with urllib.request.urlopen(req, timeout=tempo_limite) as r:  # nosec B310 - esquema conferido em _so_https
+            while True:
+                pedaco = r.read(1024 * 1024)
+                if not pedaco:
+                    break
+                total += len(pedaco)
+                if total > limite:
+                    raise ValueError(f"resposta maior que o limite de {limite // (1024 * 1024)} MB: {url[:60]}")
+                partes.append(pedaco)
+    except urllib.error.HTTPError as e:
+        raise ErroHTTP(e.code, url, e.read().decode("utf-8", errors="replace")[:2000]) from None
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+        raise SemResposta(url, e) from None
     return b"".join(partes)
 
 

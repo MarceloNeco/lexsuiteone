@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.12 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.13 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -60,6 +60,10 @@ abra o `.xlsx` e edite direto (modo de compatibilidade com Office); o Drive leva
 computador. Se a planilha estiver aberta e travada na hora de uma rodada, o robô deixa como está e tenta na seguinte.
 
 ## A tela
+
+- **Leitura entre meia-noite e 3h (0.7.13):** o Diário do dia só sai às 3h; o programa avisa e lê até o último dia
+  publicado. Se o site do CNJ estiver fora do ar, a tela diz isso (não é problema do computador) e lê os outros
+  tribunais. **Histórico de leituras** (abaixo do estado) e a aba **Log** da planilha mostram cada tentativa.
 
 - **Painel e Lista (0.7.12):** o Painel mostra os números do período (ações, acima do valor mínimo, valor somado, com
   CNPJ, empresas, sem valor), ações por dia, faixas de valor, setores, empresas com mais ações, porte, tribunais e

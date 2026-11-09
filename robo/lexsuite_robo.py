@@ -409,19 +409,22 @@ def cmd_radar(a):
     try:
         def com_hora(msg):  # janela preta da leitura automática: cada passo com a hora
             print(f"  {dt.datetime.now():%H:%M:%S}  {str(msg).strip()}", flush=True)
+        from lexsuite import agendar as _ag
         situacao = radar.executar(cfg, banco, com_hora, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
-                                  caminho_config=a.config)
+                                  caminho_config=a.config, origem=_ag.origem_da_leitura(cfg))
         if cfg["radar"].get("avisar_ao_terminar", True):
             from lexsuite import agendar, app
             m = app.marca(AQUI)
             agendar.notificar(m.get("nome", "RADAR JUDICIAL"), agendar.texto_aviso(situacao, m.get("curto", "RADAR")))
     except radar.RoboDesligado as e:
         raise SystemExit("  " + str(e))
-    except Exception as e:  # leitura agendada: avisa a SolverONE (sem dado pessoal) e encerra com a mensagem
+    except Exception as e:  # leitura agendada: mensagem clara; avisa a SolverONE só quando é defeito do programa
         import traceback
-        from lexsuite import conta
-        conta.registrar_erro(cfg, VERSAO, "leitura agendada", traceback.format_exc()[-1800:])
-        raise SystemExit("  " + str(e))
+        from lexsuite import causas, conta
+        causa = causas.classificar(e)
+        if causa in ("erro_do_programa", "bloqueio_fora_do_brasil"):
+            conta.registrar_erro(cfg, VERSAO, "leitura agendada", traceback.format_exc()[-1800:])
+        raise SystemExit("  " + causas.mensagem(causa) + "\n  (detalhe: " + f"{e.__class__.__name__}: {e}"[:300] + ")")
 
 
 def cmd_atualizar(a):

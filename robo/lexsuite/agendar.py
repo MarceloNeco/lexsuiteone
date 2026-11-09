@@ -57,6 +57,20 @@ def do_config(cfg):
     return validar(r.get("horarios")), validar_dias(r.get("dias"))
 
 
+def origem_da_leitura(cfg, agora=None, tolerancia_min=15):
+    """Para o histórico de leituras: "agendamento" se a leitura começou até 15 minutos depois de um horário marcado;
+    senão "fora do horário" (computador ligado depois do horário, leitura de recuperação, ou rodada à mão)."""
+    agora = agora or dt.datetime.now()
+    horarios, _ = do_config(cfg)
+    for h in horarios:
+        hh, mm = (int(x) for x in h.split(":"))
+        for dia in (agora.date(), agora.date() - dt.timedelta(days=1)):
+            marcado = dt.datetime.combine(dia, dt.time(hh, mm))
+            if dt.timedelta(0) <= agora - marcado <= dt.timedelta(minutes=tolerancia_min):
+                return "agendamento"
+    return "fora do horário"
+
+
 def proxima(horarios, dias="todos", agora=None):
     """Data e hora da próxima leitura automática (datetime local), ou None se não houver horário."""
     agora = agora or dt.datetime.now()

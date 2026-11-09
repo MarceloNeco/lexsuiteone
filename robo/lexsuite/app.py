@@ -63,6 +63,7 @@ class Estado:
         self.inicio = self.fim = None
         self.situacao = None
         self.erro = None
+        self.erro_info = None  # 0.7.13: {causa, pt, en, detalhe}: a tela mostra o texto claro e esconde o técnico
 
     def aviso(self, msg):
         hora, texto = dt.datetime.now().strftime("%H:%M:%S"), str(msg).strip()
@@ -107,26 +108,27 @@ class Estado:
         with self.lock:
             return {"rodando": self.rodando, "progresso": min(99, self.progresso) if self.rodando else (100 if self.fim else 0),
                     "mensagens": list(self.mensagens[-15:]), "inicio": self.inicio,
-                    "fim": self.fim, "situacao": self.situacao, "erro": self.erro}
+                    "fim": self.fim, "situacao": self.situacao, "erro": self.erro, "erro_info": self.erro_info}
 
     def comecar(self):
         with self.lock:
             if self.rodando:
                 return False
-            self.rodando, self.mensagens, self.erro = True, [], None
+            self.rodando, self.mensagens, self.erro, self.erro_info = True, [], None, None
             self.progresso, self.total_trib, self.tribs_vistos = 1, 0, set()
             self.inicio, self.fim = dt.datetime.now().isoformat(timespec="seconds"), None
         self._eco("")
         self._eco(f"  ===== Leitura começou às {dt.datetime.now():%H:%M} (não feche esta janela) =====")
         return True
 
-    def terminar(self, situacao=None, erro=None):
+    def terminar(self, situacao=None, erro=None, info=None):
         with self.lock:
             self.rodando = False
             self.fim = dt.datetime.now().isoformat(timespec="seconds")
             if situacao:
                 self.situacao = situacao
             self.erro = erro
+            self.erro_info = info
         fim = f"  ===== Leitura terminou às {dt.datetime.now():%H:%M}"
         self._eco(fim + (f" com erro: {erro} =====" if erro else (f": {situacao.get('pt', '')} =====" if situacao else " =====")))
 
@@ -163,16 +165,18 @@ class Servidor(ThreadingHTTPServer):
                     agendar.notificar(marca(self.pasta).get("nome", "RADAR JUDICIAL"), agendar.texto_aviso(situacao, marca(self.pasta).get("curto", "RADAR")))
             except radar.RoboDesligado as e:
                 self.estado.aviso(str(e))
-                self.estado.terminar(erro=str(e))
-            except rede.BloqueadoForaDoBrasil as e:
-                self.estado.aviso(str(e))
-                self.estado.terminar(erro=str(e))
-                conta.registrar_erro(self.config(), VERSAO, "leitura: fora do Brasil", str(e))
-            except Exception as e:  # a tela precisa saber que parou, qualquer que seja o motivo
-                self.estado.aviso(f"Erro: {e.__class__.__name__}: {e}")
-                self.estado.terminar(erro=f"{e.__class__.__name__}: {e}")
-                import traceback
-                conta.registrar_erro(self.config(), VERSAO, "leitura pela tela", traceback.format_exc()[-1800:])
+                self.estado.terminar(erro=str(e), info={"causa": "desligado", "pt": str(e), "en": str(e), "detalhe": ""})
+            except Exception as e:  # a tela precisa saber que parou, qualquer que seja o motivo; em palavras claras
+                from . import causas
+                causa = causas.classificar(e)
+                info = {"causa": causa, "pt": causas.mensagem(causa, "pt"), "en": causas.mensagem(causa, "en"),
+                        "detalhe": f"{e.__class__.__name__}: {e}"[:600]}
+                self.estado.aviso(info["pt"])
+                self.estado.terminar(erro=info["pt"], info=info)
+                if causa in ("erro_do_programa", "bloqueio_fora_do_brasil"):  # site do governo fora não é defeito nosso
+                    import traceback
+                    conta.registrar_erro(self.config(), VERSAO, "leitura pela tela" if causa == "erro_do_programa" else "leitura: fora do Brasil",
+                                         traceback.format_exc()[-1800:])
 
         threading.Thread(target=alvo, daemon=True, name="radar").start()
         return True
@@ -263,6 +267,12 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": False, "motivo": "nao_encontrado"})
             return self._responder({"ok": True, "razao_social": d.get("razao_social", ""), "nome_fantasia": d.get("nome_fantasia", ""),
                                     "situacao": d.get("situacao", ""), "municipio": d.get("municipio", ""), "uf": d.get("uf", "")})
+        if u.path == "/historico":  # 0.7.13: as últimas tentativas de leitura, uma por tribunal
+            try:
+                banco = bd.Banco(self.server.caminho_db)
+                return self._responder({"tentativas": banco.execucoes("tentativa", 120)})
+            except Exception:  # noqa: BLE001 - banco ausente ou ilegível: lista vazia
+                return self._responder({"tentativas": []})
         if u.path == "/estado":
             return self._responder(s.estado.como_dict())
         if u.path == "/manual":

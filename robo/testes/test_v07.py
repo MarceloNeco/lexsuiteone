@@ -163,10 +163,11 @@ class Compartilhada(unittest.TestCase):
         caminho = compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "abcd", "", lambda *_: None)
         doc = planilha.ler_xlsx(caminho)
         nomes = [(a["nome"], a["oculta"]) for a in doc["abas"]]
-        self.assertEqual(nomes, [("Radar", False), ("Preferências", False), ("Exclusões", False), ("Controle", True), ("Como usar", False), ("Log", True), ("Saúde", True), ("Sobre", True)])
+        self.assertEqual(nomes, [("Radar", False), ("Preferências", False), ("Exclusões", False), ("Controle", True), ("Como usar", False), ("Log", False), ("Saúde", True), ("Sobre", True)])
         col = doc["abas"][0]["linhas"][0].index("Excluída (motivo)")
         self.assertEqual(doc["abas"][0]["linhas"][1][col], "Exclusão: cliente")
-        self.assertEqual(doc["abas"][5]["linhas"][1][3], 10)
+        log = doc["abas"][5]["linhas"]  # 0.7.13: Log visível; a rodada antiga aparece como "resumo da rodada"
+        self.assertTrue(any(l[1] == "resumo da rodada" and "10 publicações" in str(l[6]) for l in log[1:]))
         self.assertIn(["Escritório", "Escritório Teste"], doc["abas"][7]["linhas"])
         # o escritório edita Exclusões; a próxima regravação preserva
         abas = [{"nome": a["nome"], "linhas": a["linhas"], "oculta": a["oculta"]} for a in doc["abas"]]
@@ -501,7 +502,7 @@ class V0711(unittest.TestCase):
     def test_feriado_nao_esvazia_a_leitura(self):
         from lexsuite import monitor, djen, banco as bd
         pedidos = []
-        def meta(sigla, data, aviso=print):
+        def meta(sigla, data, aviso=print, motivos=None):
             pedidos.append(data)
             return None if data in ("2026-11-09", "2026-11-06") else {"versao": "1"}  # segunda e sexta sem Diário
         orig_meta, orig_baixar = djen.meta_caderno, djen.baixar_caderno
@@ -589,3 +590,95 @@ class PlanilhaAberta0711(unittest.TestCase):
         finally:
             compartilhar.gravar_radar = orig
         self.assertIn("aberta no Excel", " ".join(recados))
+
+
+class V0713(unittest.TestCase):
+    """0.7.13: o 403 "só a partir das 03:00" não é erro; um tribunal com problema não derruba os outros; mensagens
+    claras em PT e EN; histórico de leituras com a causa de cada tentativa."""
+    TEXTO_3H = '{"erro":"Os cadernos do dia atual s\\u00f3 podem ser acessados a partir das 03:00."}'
+
+    def _coletar(self, resposta, tribunais=("TRT15",), hoje=dt.date(2026, 11, 9)):
+        from lexsuite import monitor, djen, rede, banco as bd
+        orig_pedir, orig_baixar = rede.pedir_json, djen.baixar_caderno
+        rede.pedir_json = resposta
+        djen.baixar_caderno = lambda *a, **k: [{"processo": a[0] + " " + a[1]}]
+        tentativas = []
+        try:
+            b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+            pubs = monitor.coletar_caderno(list(tribunais), 1, b, aviso=lambda *_: None, hoje=hoje, tentativas=tentativas)
+        finally:
+            rede.pedir_json, djen.baixar_caderno = orig_pedir, orig_baixar
+        return pubs, tentativas
+
+    def test_403_das_3h_nao_e_erro(self):
+        from lexsuite import rede
+        hoje = "2026-11-09"
+        def resposta(url, **kw):
+            if hoje in url:
+                raise rede.ErroHTTP(403, url, self.TEXTO_3H)
+            return {"versao": "1", "url": "https://x"}
+        pubs, tent = self._coletar(resposta)
+        self.assertEqual([p["processo"] for p in pubs], ["TRT15 2026-11-06"])  # pulou segunda 00h e leu sexta
+        self.assertEqual(tent[0]["causa"], "ainda_nao_liberado_3h")
+        self.assertEqual(tent[0]["http"], "403")
+        self.assertIn("pulou hoje", tent[0]["fez"])
+        self.assertIn("06/11", tent[0]["fez"])
+
+    def test_outros_403_e_bloqueio_continuam_erro(self):
+        from lexsuite import rede, causas
+        def fora(url, **kw):
+            raise rede.BloqueadoForaDoBrasil("fora")
+        with self.assertRaises(rede.BloqueadoForaDoBrasil):
+            self._coletar(fora)
+        def proibido(url, **kw):
+            raise rede.ErroHTTP(403, url, '{"erro":"acesso negado"}')
+        with self.assertRaises(rede.ErroHTTP):
+            self._coletar(proibido)
+        self.assertEqual(causas.classificar(rede.ErroHTTP(403, "u", "acesso negado")), "erro_do_programa")
+        self.assertEqual(causas.classificar(rede.BloqueadoForaDoBrasil("x")), "bloqueio_fora_do_brasil")
+
+    def test_governo_fora_nao_derruba_os_outros(self):
+        from lexsuite import rede, causas
+        def resposta(url, **kw):
+            if "TRT2/" in url:
+                raise rede.ErroHTTP(503, url, "Service Unavailable")
+            return {"versao": "1", "url": "https://x"}
+        pubs, tent = self._coletar(resposta, tribunais=("TRT2", "TRT15"), hoje=dt.date(2026, 11, 10))
+        self.assertTrue(pubs and all(p["processo"].startswith("TRT15") for p in pubs))
+        causas_ = {t["tribunal"]: t["causa"] for t in tent}
+        self.assertEqual(causas_, {"TRT2": "governo_fora", "TRT15": "ok"})
+        self.assertEqual(causas.classificar(rede.SemResposta("u", "timed out")), "governo_fora")
+        self.assertEqual(causas.classificar(rede.SemResposta("u", "[Errno 11001] getaddrinfo failed")), "sem_internet")
+        self.assertEqual(causas.classificar(rede.ErroHTTP(429, "u", "")), "governo_fora")
+        def tudo_fora(url, **kw):
+            raise rede.ErroHTTP(503, url, "")
+        with self.assertRaises(rede.ErroHTTP):  # nenhum tribunal pôde ser lido: aí sim a rodada para
+            self._coletar(tudo_fora, tribunais=("TRT2", "TRT15"))
+
+    def test_historico_grava_a_causa(self):
+        from lexsuite import radar, banco as bd
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        radar.registrar_tentativas(b, [{"tribunal": "TRT15", "dias_pedidos": "2026-11-09", "http": "403", "causa": "ainda_nao_liberado_3h",
+                                        "fez": "pulou hoje (só às 3h); leu até 06/11", "duracao": 1.2, "leu_ate": "06/11", "detalhe": ""}],
+                                   "botão", "0.7.13", quando="2026-11-09T00:05:27-03:00")
+        h = b.execucoes("tentativa")
+        self.assertEqual(h[0]["causa"], "ainda_nao_liberado_3h")
+        self.assertEqual(h[0]["origem"], "botão")
+        self.assertEqual(h[0]["quando_local"], "2026-11-09T00:05:27-03:00")
+        self.assertNotIn("processo", h[0])
+
+    def test_mensagens_claras_em_pt_e_en(self):
+        from lexsuite import causas, app
+        for c in causas.CAUSAS[1:]:
+            pt, en = causas.mensagem(c, "pt"), causas.mensagem(c, "en")
+            self.assertTrue(pt and en and pt != en, c)
+            for ruim in ("RuntimeError", "HTTP", "\\u00", "https://"):
+                self.assertNotIn(ruim, pt + en, c)
+        self.assertIn("3h", causas.mensagem("ainda_nao_liberado_3h", "pt"))
+        self.assertIn("3 a.m.", causas.mensagem("ainda_nao_liberado_3h", "en"))
+        self.assertIn("Não é problema do seu computador", causas.mensagem("governo_fora", "pt"))
+        e = app.Estado(eco=None)
+        e.comecar()
+        e.terminar(erro="x", info={"causa": "governo_fora", "pt": "a", "en": "b", "detalhe": "HTTP 503"})
+        self.assertEqual(e.como_dict()["erro_info"]["causa"], "governo_fora")
+

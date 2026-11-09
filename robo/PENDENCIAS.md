@@ -162,7 +162,17 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.12 (08/Nov, visual; pronta para publicar com o "pode")
+## 0.7.13 (09/Nov, correção; pronta para publicar com o "pode")
+
+Defeito achado pelo dono às 00:05 de segunda: o DJEN só libera o Diário do dia a partir das 3h e responde HTTP 403 antes
+disso; o programa tratava como erro e parava a leitura inteira, com "RuntimeError" e endereço técnico na tela. Agora:
+esse 403 é reconhecido pelo texto da resposta e vira aviso ("o Diário de hoje só sai às 3h; li até o último dia
+publicado"); cada tribunal é tentado à parte e o que foi lido é salvo; as mensagens dizem a causa em PT e EN (site do
+CNJ fora do ar, sem internet, fora do Brasil, erro do programa), com o detalhe técnico recolhido; histórico de leituras
+na tela e na aba Log da planilha (visível), uma linha por tribunal, com hora local e fuso, origem, resposta, causa e o
+que o programa fez. O pacote grande (situações, lote, Arquivo, Estatísticas, contatos) sai na 0.7.14.
+
+## 0.7.12 (08/Nov, visual; publicada)
 
 Itens 38 e 39 de `documentacao/FEEDBACK-TESTE-2026-11-08.md`, com o "pode pra tudo" do dono: a tela ganha o Painel
 (o desenho antigo de Cajamar: cartões de números, ações por dia, faixas de valor, setores, empresas, porte, tribunais

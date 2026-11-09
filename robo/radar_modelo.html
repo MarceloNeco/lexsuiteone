@@ -138,6 +138,16 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .estado .andando { color: var(--latao-texto); font-weight: 600; }
 .estado .log { color: var(--tinta-3); font-size: .8rem; }
 .estado .erro { color: var(--erro); }
+/* 0.7.13: aviso que não é erro (Diário de hoje só às 3h), detalhe técnico recolhido e histórico de leituras */
+.estado .aviso-leve { color: var(--latao-texto); }
+.estado details { font-size: .8rem; color: var(--tinta-3); }
+.estado details summary { cursor: pointer; color: var(--latao-texto); font-weight: 600; width: max-content; }
+.estado details code { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .76rem; margin-top: 4px; }
+.historico { margin-top: 6px; border: 1px solid var(--linha); border-radius: 10px; overflow-x: auto; background: var(--folha); }
+.historico table { border-collapse: collapse; width: 100%; font-size: .8rem; }
+.historico th, .historico td { text-align: left; padding: 6px 10px; border-top: 1px solid var(--linha); vertical-align: top; }
+.historico th { color: var(--tinta-3); font-weight: 600; border-top: 0; white-space: nowrap; }
+.historico td.ok { color: #2f6b3a; } .historico td.aviso { color: var(--latao-texto); } .historico td.ruim { color: var(--erro); }
 .painel { background: var(--folha); border: 1px solid var(--linha); border-radius: 10px; padding: 14px 16px; display: grid; gap: 12px; }
 .painel-topo { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
 .abas { display: inline-flex; border: 1px solid var(--linha-2); border-radius: 999px; overflow: hidden; }
@@ -503,7 +513,7 @@ window.LEXSUITE_RADAR = null;
       atu_ok: "Atualizado para a versão {v}. Reiniciando...", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia", pern: "{d} dias", rodar: "Ler o Diário agora", rodando: "Lendo o Diário...",
       aba_regiao: "Por região", aba_uf: "Por estado", todos: "Selecionar todos", todos_ramo: "Selecionar todos ({r})", limpar: "Limpar", escolhidos: "{n} de {k} tribunais escolhidos", salvar: "Salvar", salvar_rodar: "Salvar e ler agora",
       dica: "Cada tribunal publica um diário por dia, de 5 a 150 MB. Dois tribunais levam uns 5 minutos; os 24, de 30 a 60 minutos na primeira vez. O computador precisa estar no Brasil.",
-      ultima: "Última atualização em {q}: {s}", nunca: "Ainda não leu neste computador.", erro: "Parou com erro: {e}", carregando: "Carregando...", falha: "Não consegui falar com o programa. A janela preta LexSuiteONE ainda está aberta?",
+      ultima: "Última atualização em {q}: {s}", nunca: "Ainda não leu neste computador.", erro: "A leitura parou. {e}", ver_detalhes: "Ver detalhes técnicos", hist_abrir: "Histórico de leituras", hist_fechar: "Fechar o histórico", hist_vazio: "Nenhuma leitura registrada ainda.", hist_quando: "Quando", hist_origem: "Origem", hist_trib: "Tribunal", hist_dias: "Dias pedidos", hist_resp: "Resposta", hist_causa: "Situação", hist_fez: "O que o programa fez", hist_dur: "Duração", c_ok: "Lido", c_ainda_nao_liberado_3h: "Hoje só às 3h", c_nao_publicado: "Ainda não publicado", c_governo_fora: "Site do CNJ fora do ar", c_bloqueio_fora_do_brasil: "Fora do Brasil", c_sem_internet: "Sem internet", c_erro_do_programa: "Erro do programa", aviso_3h: "O Diário de hoje só fica disponível a partir das 3h da manhã. Li até o último dia já publicado ({d}); nada a fazer.", aviso_tribs: "{n} tribunal(is): {m}", carregando: "Carregando...", falha: "Não consegui falar com o programa. A janela preta LexSuiteONE ainda está aberta?",
       f_valor: "Acima de {min}", f_gig: "Sem jurídico próprio provável", trib_todos: "Todos os tribunais", ord_valor: "Maior valor primeiro", ord_hora: "Ordem de chegada", exportar: "Baixar a lista (.csv)",
       mostrando: "Mostrando {a} de {b}", mais: "Mostrar mais {n}", grupo_hora: "{h}, {t}",
       conferir: "valor a conferir", conferir_sub: "no PJe, atrás do captcha", manual: "digitado",
@@ -558,7 +568,7 @@ window.LEXSUITE_RADAR = null;
       atu_ok: "Updated to version {v}. Restarting...", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last day", pern: "{d} days", rodar: "Read the gazette now", rodando: "Reading the gazette...",
       aba_regiao: "By region", aba_uf: "By state", todos: "Select all", todos_ramo: "Select all ({r})", limpar: "Clear", escolhidos: "{n} of {k} courts chosen", salvar: "Save", salvar_rodar: "Save and read now",
       dica: "Each court publishes one gazette a day, 5 to 150 MB. Two courts take about 5 minutes; all 24, 30 to 60 minutes the first time. The computer must be in Brazil.",
-      ultima: "Last update at {q}: {s}", nunca: "Not read on this computer yet.", erro: "Stopped with an error: {e}", carregando: "Loading...", falha: "Could not reach the program. Is the black LexSuiteONE window still open?",
+      ultima: "Last update at {q}: {s}", nunca: "Not read on this computer yet.", erro: "The reading stopped. {e}", ver_detalhes: "Show technical details", hist_abrir: "Reading history", hist_fechar: "Close the history", hist_vazio: "No reading recorded yet.", hist_quando: "When", hist_origem: "Source", hist_trib: "Court", hist_dias: "Days requested", hist_resp: "Response", hist_causa: "Status", hist_fez: "What the program did", hist_dur: "Duration", c_ok: "Read", c_ainda_nao_liberado_3h: "Today only after 3 a.m.", c_nao_publicado: "Not published yet", c_governo_fora: "CNJ site down", c_bloqueio_fora_do_brasil: "Outside Brazil", c_sem_internet: "No internet", c_erro_do_programa: "Program error", aviso_3h: "Today\u2019s gazette is only available from 3 a.m. I read up to the last published day ({d}); nothing to do.", aviso_tribs: "{n} court(s): {m}", carregando: "Loading...", falha: "Could not reach the program. Is the black LexSuiteONE window still open?",
       f_valor: "Above {min}", f_gig: "Without likely in-house counsel", trib_todos: "All courts", ord_valor: "Highest value first", ord_hora: "Arrival order", exportar: "Download the list (.csv)",
       mostrando: "Showing {a} of {b}", mais: "Show {n} more", grupo_hora: "{h}, {t}",
       conferir: "value to check", conferir_sub: "in PJe, behind the captcha", manual: "typed",
@@ -636,7 +646,22 @@ window.LEXSUITE_RADAR = null;
       (e.mensagens || []).slice(-4, -1).forEach(function (m) { box.appendChild(el("span", "log", m.hora + "  " + m.texto)); });
       return;
     }
-    if (e.erro) box.appendChild(el("span", "erro", t("erro", { e: e.erro })));
+    if (e.erro) {
+      var inf = e.erro_info || {}, txtErro = inf[lang] || inf.pt || e.erro;
+      box.appendChild(el("span", "erro", t("erro", { e: txtErro })));
+      if (inf.detalhe) { var det = el("details"); det.appendChild(el("summary", null, t("ver_detalhes"))); det.appendChild(el("code", null, inf.detalhe)); box.appendChild(det); }
+    }
+    if (!e.erro && e.situacao && e.situacao.avisos && e.situacao.avisos.length) {
+      // Avisos agrupados por causa: "Diário de hoje só às 3h" não é erro; tribunal fora do ar é.
+      var grupos = {};
+      e.situacao.avisos.forEach(function (a) { (grupos[a.causa] = grupos[a.causa] || []).push(a); });
+      Object.keys(grupos).forEach(function (c) {
+        var g = grupos[c], ate = g.map(function (a) { return a.leu_ate; }).filter(Boolean).sort().pop() || "—";
+        var msg = c === "ainda_nao_liberado_3h" ? t("aviso_3h", { d: ate }) : (g[0][lang] || g[0].pt).replace(/^[^:]+:\s*/, "");
+        var nomes = g.map(function (a) { return a.tribunal; }).join(", ");
+        box.appendChild(el("span", g[0].aviso ? "aviso-leve" : "erro", (g.length > 1 || c !== "ainda_nao_liberado_3h") ? t("aviso_tribs", { n: g.length > 3 ? num(g.length) : nomes, m: msg }) : msg));
+      });
+    }
     if (e.situacao) {
       box.appendChild(el("span", "ok", t("ultima", { q: dataHora(e.situacao.quando || e.fim), s: e.situacao[lang] || e.situacao.pt })));
       if (e.situacao.aviso_planilha) {
@@ -650,6 +675,33 @@ window.LEXSUITE_RADAR = null;
     }
     else if (!e.erro) box.appendChild(el("span", "ok", t("nunca")));
     if (APP && APP.config.proxima) box.appendChild(el("span", "proxima", t("proxima", { q: quandoProxima(APP.config.proxima) })));
+    if (MODO === "app") {
+      var bh = el("button", "btn-txt", historicoAberto ? t("hist_fechar") : t("hist_abrir")); bh.type = "button";
+      bh.addEventListener("click", function () { historicoAberto = !historicoAberto; mostrarEstado(e); });
+      box.appendChild(bh);
+      if (historicoAberto) box.appendChild(historicoDiv);
+      if (historicoAberto) carregarHistorico();
+    }
+  }
+  var historicoAberto = false, historicoDiv = document.createElement("div");
+  historicoDiv.className = "historico";
+  function carregarHistorico() {
+    fetch("/historico", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
+      var lista = (d.tentativas || []).slice(0, 60); historicoDiv.textContent = "";
+      if (!lista.length) { historicoDiv.appendChild(el("p", "nota", t("hist_vazio"))); return; }
+      var tb = el("table"), cab = el("tr");
+      ["hist_quando", "hist_origem", "hist_trib", "hist_dias", "hist_resp", "hist_causa", "hist_fez", "hist_dur"].forEach(function (k) { cab.appendChild(el("th", null, t(k))); });
+      var th = el("thead"); th.appendChild(cab); tb.appendChild(th); var tbody = el("tbody");
+      lista.forEach(function (h) {
+        var tr = el("tr"), q = String(h.quando_local || h.quando || "");
+        var cls = h.causa === "ok" ? "ok" : (h.causa === "ainda_nao_liberado_3h" || h.causa === "nao_publicado") ? "aviso" : "ruim";
+        [q.slice(8, 10) + "/" + q.slice(5, 7) + " " + q.slice(11, 16) + (q.length > 19 ? " (" + q.slice(19) + ")" : ""), (lang === "en" ? ({ "botão": "button", "agendamento": "schedule", "fora do horário": "off schedule" })[h.origem] : "") || h.origem || "", h.tribunal || "", h.dias_pedidos || "", h.http || "",
+         null, (lang === "en" && h.fez_en) || h.fez || "", h.duracao != null ? h.duracao + " s" : ""].forEach(function (v, ix) {
+          var td = ix === 5 ? el("td", cls, t("c_" + (h.causa || "erro_do_programa"))) : el("td", null, v); tr.appendChild(td); });
+        tbody.appendChild(tr);
+      });
+      tb.appendChild(tbody); historicoDiv.appendChild(tb);
+    }).catch(function () { historicoDiv.textContent = t("falha"); });
   }
   function vigiar() {
     if (vigia) return;
