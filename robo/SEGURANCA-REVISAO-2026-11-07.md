@@ -1,4 +1,5 @@
 # Revisão de segurança e privacidade — LexSuiteONE robô v0.7.1 (07/Nov/2026)
+> Nota (0.7.14, 09/Nov): a retenção de 365 dias citada abaixo foi substituída por 12 meses com resumo guardado (o trecho do Diário sai; o resumo e as estatísticas ficam) e a conferência da licença passou a levar só quantidades por situação. Ver `SEGURANCA.md`.
 
 Revisão feita com a skill `seguranca-lgpd-gdpr` (varredura de segredos e dados pessoais, Bandit, Gitleaks na CI,
 checklist OWASP/ASVS, checklist de robôs de dados públicos, triagem LGPD). Triagem técnica, não parecer jurídico.

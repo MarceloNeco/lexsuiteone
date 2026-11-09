@@ -54,9 +54,10 @@ PARA_VOCE = {
 class Estado:
     """O que a tela pergunta a cada 2 segundos enquanto o robô roda."""
 
-    def __init__(self, eco=None):
+    def __init__(self, eco=None, arquivo=None, origem="botão"):
         self.lock = threading.Lock()
         self.eco = eco  # janela preta: cada passo da leitura aparece também ali, com a hora
+        self.arquivo, self.origem = arquivo, origem  # 0.7.14: andamento em arquivo, para a tela ver a leitura agendada
         self.rodando = False
         self.progresso, self.total_trib, self.tribs_vistos = 0, 0, set()
         self.mensagens = []
@@ -72,6 +73,24 @@ class Estado:
             del self.mensagens[:-80]
             self._progredir(texto)
         self._eco(f"  {hora}  {texto}")
+        self._gravar_andamento()
+
+    def _gravar_andamento(self):
+        """Grava saida/leitura.json (rodando, progresso, últimas mensagens, pid, origem, batida). Nunca derruba a leitura."""
+        if not self.arquivo:
+            return
+        try:
+            with self.lock:
+                d = {"rodando": self.rodando, "progresso": self.progresso, "inicio": self.inicio, "fim": self.fim,
+                     "mensagens": self.mensagens[-6:], "pid": os.getpid(), "origem": self.origem,
+                     "batida": dt.datetime.now().isoformat(timespec="seconds")}
+            os.makedirs(os.path.dirname(self.arquivo), exist_ok=True)
+            tmp = self.arquivo + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(d, f, ensure_ascii=False)
+            os.replace(tmp, self.arquivo)
+        except (OSError, ValueError):
+            pass
 
     def _progredir(self, texto):
         """Porcentagem estimada a partir dos passos que a leitura já informa: tribunais (5 a 60%), consultas à Receita
@@ -119,6 +138,7 @@ class Estado:
             self.inicio, self.fim = dt.datetime.now().isoformat(timespec="seconds"), None
         self._eco("")
         self._eco(f"  ===== Leitura começou às {dt.datetime.now():%H:%M} (não feche esta janela) =====")
+        self._gravar_andamento()
         return True
 
     def terminar(self, situacao=None, erro=None, info=None):
@@ -129,8 +149,57 @@ class Estado:
                 self.situacao = situacao
             self.erro = erro
             self.erro_info = info
+        self._gravar_andamento()
         fim = f"  ===== Leitura terminou às {dt.datetime.now():%H:%M}"
         self._eco(fim + (f" com erro: {erro} =====" if erro else (f": {situacao.get('pt', '')} =====" if situacao else " =====")))
+
+
+def processo_vivo(pid):
+    """True se o processo existe. No Windows usa OpenProcess (os.kill no Windows ENCERRARIA o processo)."""
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return False
+    if pid <= 0:
+        return False
+    if os.name == "nt":
+        try:
+            import ctypes
+            k = ctypes.windll.kernel32
+            h = k.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+            if not h:
+                return False
+            codigo = ctypes.c_ulong()
+            k.GetExitCodeProcess(h, ctypes.byref(codigo))
+            k.CloseHandle(h)
+            return codigo.value == 259  # STILL_ACTIVE
+        except Exception:  # noqa: BLE001 - na dúvida, considera vivo e deixa a batida decidir
+            return True
+    try:
+        os.kill(pid, 0)  # nosec - sinal 0 só confere se existe (fora do Windows)
+        return True
+    except PermissionError:  # existe, mas é de outro usuário
+        return True
+    except OSError:
+        return False
+
+
+def leitura_em_outro_processo(arquivo, minutos=45):
+    """A leitura que está rodando em OUTRO processo (a agendada pelo Windows, por exemplo), ou None."""
+    try:
+        with open(arquivo, encoding="utf-8") as f:
+            d = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(d, dict) or not d.get("rodando") or int(d.get("pid") or 0) == os.getpid():
+        return None
+    try:
+        batida = dt.datetime.fromisoformat(str(d.get("batida")))
+    except ValueError:
+        return None
+    if (dt.datetime.now() - batida).total_seconds() > minutos * 60 or not processo_vivo(d.get("pid")):
+        return None
+    return d
 
 
 class Servidor(ThreadingHTTPServer):
@@ -140,7 +209,8 @@ class Servidor(ThreadingHTTPServer):
     def __init__(self, endereco, pasta):
         super().__init__(endereco, Tratador)
         self.pasta = pasta
-        self.estado = Estado(eco=print)
+        self.arquivo_andamento = os.path.join(pasta, "saida", "leitura.json")
+        self.estado = Estado(eco=print, arquivo=self.arquivo_andamento, origem="botão")
         self.versao_cache = None
         self.caminho_config = os.path.join(pasta, "config.json")
         self.caminho_db = os.path.join(pasta, "lexsuite.db")
@@ -148,6 +218,17 @@ class Servidor(ThreadingHTTPServer):
 
     def config(self):
         return config.carregar(self.caminho_config, aviso=lambda *_: None)
+
+    def estado_atual(self):
+        """O estado desta tela; se ela não está lendo, mas há leitura agendada (ou outra janela) rodando agora noutro
+        processo, mostra essa leitura (a tela exibe a barra e desliga "Ler o Diário agora")."""
+        d = self.estado.como_dict()
+        if not d["rodando"]:
+            fora = leitura_em_outro_processo(self.arquivo_andamento)
+            if fora:
+                d.update({"rodando": True, "externa": True, "origem": fora.get("origem", ""), "inicio": fora.get("inicio"),
+                          "progresso": min(99, int(fora.get("progresso") or 1)), "mensagens": fora.get("mensagens") or []})
+        return d
 
     def planilha_depois(self, intervalo=120, limite_s=7200, primeira=5):
         """0.7.14: regrava a planilha em segundo plano; se ela estiver aberta (travada), tenta de novo a cada 2 minutos
@@ -181,8 +262,8 @@ class Servidor(ThreadingHTTPServer):
         return True
 
     def rodar(self, dias=None):
-        """Começa uma rodada numa thread. Devolve False se já há uma rodando."""
-        if not self.estado.comecar():
+        """Começa uma rodada numa thread. Devolve False se já há uma rodando (aqui ou agendada, em outro processo)."""
+        if leitura_em_outro_processo(self.arquivo_andamento) or not self.estado.comecar():
             return False
 
         def alvo():
@@ -287,10 +368,11 @@ class Tratador(BaseHTTPRequestHandler):
                            "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
                            "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True)),
                            "area_logada_por_dia": int(r.get("area_logada_por_dia") or 30),
+                           "abrir_em_aba": bool(r.get("abrir_em_aba")),
                            "guardar_meses": int(r.get("guardar_meses") or 12)},
                 "atualizacao": {"chave": bool(chave), "impressao": assinatura.impressao(chave) if chave else "",
                                 "url": cfg["atualizacao"].get("url", ""), "pasta": compartilhar.pasta_atualizacao(cfg)},
-                "versao": VERSAO, "estado": s.estado.como_dict(), "pasta_robo": s.pasta,
+                "versao": VERSAO, "estado": s.estado_atual(), "pasta_robo": s.pasta,
                 "conta": conta.situacao(cfg), "marca": marca(s.pasta),
             }
             return self._responder(pagina)
@@ -314,7 +396,7 @@ class Tratador(BaseHTTPRequestHandler):
             except Exception:  # noqa: BLE001 - banco ausente ou ilegível: lista vazia
                 return self._responder({"tentativas": []})
         if u.path == "/estado":
-            return self._responder(s.estado.como_dict())
+            return self._responder(s.estado_atual())
         if u.path == "/manual":
             manual = os.path.join(s.pasta, "MANUAL-DO-ESCRITORIO.html")
             if not os.path.exists(manual):
@@ -396,6 +478,8 @@ class Tratador(BaseHTTPRequestHandler):
                 r["dias"] = agendar.validar_dias(corpo["dias"])
             if "avisar_ao_terminar" in corpo:
                 r["avisar_ao_terminar"] = bool(corpo["avisar_ao_terminar"])
+            if "abrir_em_aba" in corpo:
+                r["abrir_em_aba"] = bool(corpo["abrir_em_aba"])
             if "nome" in corpo:
                 cfg["usuario"]["nome"] = str(corpo["nome"] or "").strip()[:60]
             if "papel" in corpo:
@@ -431,6 +515,9 @@ class Tratador(BaseHTTPRequestHandler):
                 ok, msg = agendar.agendar(s.pasta, *agendar.do_config(cfg)) if ligar else agendar.desagendar()
                 resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg})
             return self._responder(resposta)
+        if caminho == "/abrir-em-aba":  # 0.7.14: a mesma tela numa aba comum do navegador (junto das outras abas)
+            webbrowser.open(f"http://127.0.0.1:{s.server_address[1]}/")
+            return self._responder({"ok": True})
         if caminho == "/situacao":  # 0.7.14: muda a situação de um ou muitos processos (lote); devolve o "antes" para desfazer
             try:
                 r = bd.Banco(s.caminho_db).mudar_situacao(corpo.get("processos") or [], corpo.get("situacao"),
@@ -668,9 +755,12 @@ def navegador_app():
     return ""
 
 
-def abrir_janela(url):
+def abrir_janela(url, aba=False):
     """Abre a tela numa janela própria, com o nome e o ícone do produto e sem o endereço 127.0.0.1 à vista.
-    Sem Chrome nem Edge, abre no navegador padrão."""
+    Sem Chrome nem Edge, abre no navegador padrão. 0.7.14: aba=True abre numa aba comum do navegador (opção do escritório)."""
+    if aba:
+        webbrowser.open(url)
+        return True
     exe = navegador_app()
     if exe:
         try:
@@ -754,13 +844,20 @@ def criar(pasta, porta=None, espera=0):
     raise SystemExit("  Nenhuma porta livre entre 8765 e 8775. Feche outra janela do LexSuiteONE e tente de novo.")
 
 
+def _prefere_aba(pasta):
+    try:
+        return bool(config.carregar(os.path.join(pasta, "config.json"), aviso=lambda *_: None)["radar"].get("abrir_em_aba"))
+    except Exception:  # noqa: BLE001 - na dúvida, a janela própria de sempre
+        return False
+
+
 def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
     if not espera:
         ja = procurar_aberto()
         if ja:
             aviso("  O RADAR já está aberto neste computador: trazendo a tela. Esta janela fecha sozinha.")
             if abrir:
-                abrir_janela(ja)
+                abrir_janela(ja, aba=_prefere_aba(pasta))
             import time
             time.sleep(3)
             return
@@ -770,7 +867,7 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
     aviso("  Deixe esta janela aberta enquanto usa a tela. Para encerrar, feche a janela (ou Ctrl+C).")
     titulo_janela(f"{marca(pasta).get('nome', 'RADAR JUDICIAL')} - não feche esta janela")
     if abrir:
-        threading.Timer(0.6, lambda: abrir_janela(url)).start()
+        threading.Timer(0.6, lambda: abrir_janela(url, aba=_prefere_aba(pasta))).start()
 
     def migrar():
         try:

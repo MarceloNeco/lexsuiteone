@@ -174,9 +174,18 @@ planilha, Gerar uma cópia, pasta em cartões, horários com um clique, "O que a
 crescem com a tela (teste permanente em 4 larguras: `robo/testes/tela/larguras.js`). Programa: situação no banco do
 computador (migra a do navegador), Arquivo, retorno de totais na conferência da licença, estatísticas diárias, frente,
 endereço completo da Receita, limpeza só do detalhe, planilha só para leitura, regravação sozinha quando o Excel
-fechar, aviso vermelho e proteção sem senha na aba Radar, abas Arquivo, Contatos e "Histórico de leituras", página
+fechar, aviso vermelho na aba Radar (a proteção da aba saiu: o Excel não deixa ordenar com células bloqueadas), abas Arquivo, Contatos e "Histórico de leituras", página
 "Retrato da última leitura". Pacote: 43 arquivos no download completo e 42 no de atualização (entram `contatos.py` e
 `frentes.py`).
+
+Ajustes antes de publicar (revisão da Operação e pedidos do dono, 09/Nov): leitura agendada visível na tela (barra de
+progresso e "Ler o Diário agora" desligado enquanto a agenda do Windows lê, pelo arquivo `saida/leitura.json`; duas
+leituras nunca rodam juntas); aceite dos termos (`aceite_pendente` com o link na faixa da tela, "Termos aceitos por… em…"
+na Configuração, instalador avisa e continua); opção de abrir a tela numa aba do navegador (menu ☰ e Configuração);
+textos sobre dados corrigidos (manual, `SEGURANCA.md`, e-mail de boas-vindas: só quantidades vão à SolverONE; depois de
+12 meses o detalhe vira resumo); Desfazer limpa o motivo; CPF sem pontuação recusado pelo dígito verificador; registro do
+retorno só quando enviado. Adiado para a 0.7.15: a função única `pode(acao)` (níveis de acesso, desenho de 08/Nov) e os
+motivos de recusa da colagem e os avisos da planilha em inglês.
 
 ## 0.7.13 (09/Nov, correção; publicada)
 

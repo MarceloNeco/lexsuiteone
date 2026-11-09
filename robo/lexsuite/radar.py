@@ -200,7 +200,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     except Exception:  # noqa: BLE001 - o retorno nunca impede a leitura
         tabela_retorno = []
     conta.verificar(cfg, versao, agora.date(), retorno=tabela_retorno)
-    if tabela_retorno:
+    if tabela_retorno and (cfg.get("conta") or {}).get("resposta") not in ("sem_resposta", "sem_codigo", "codigo_invalido"):
         banco.registrar("retorno", {"quando_local": agora.astimezone().isoformat(timespec="seconds"), "linhas": tabela_retorno,
                                     "resposta": (cfg.get("conta") or {}).get("retorno_resposta") or {}})
     if caminho_config:
@@ -279,7 +279,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         aviso(f"  Não consegui atualizar as estatísticas ({e.__class__.__name__}).")
     apagados = banco.limpar_antigos(int(r.get("guardar_dias") or 365))
     if apagados:
-        aviso(f"  Retenção: {apagados} registro(s) com mais de {int(r.get('guardar_dias') or 365)} dias apagados.")
+        aviso(f"  Retenção: {apagados} registro(s) com mais de {int(r.get('guardar_dias') or 365)} dias resumidos ou apagados (o detalhe sai; o resumo e as estatísticas ficam).")
     situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} ações novas contra empresas; {com_cnpj} com CNPJ no Diário.",
                 "en": f"{len(pubs)} notices read; {len(novos)} new lawsuits against companies; {com_cnpj} with a tax ID in the gazette.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}

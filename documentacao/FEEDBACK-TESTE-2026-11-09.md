@@ -103,3 +103,10 @@ O Arquivo resolve.
 |---|---|---|---|---|
 | 83 | Na 0.7.14, o Painel já preparado para receber os gráficos novos da 0.7.15 (estatísticas no tempo), sem refazer o desenho | O Painel vira uma grade de blocos: cada gráfico é um bloco com título, (?) e os mesmos filtros; a 0.7.15 só acrescenta blocos. Nada é específico da frente trabalhista | P | 0.7.14 |
 | 84 | **Regra permanente**: a tela usa toda a largura disponível. No notebook ocupa a tela inteira; arrastada para um monitor maior, estica e aproveita o espaço (gráficos e números maiores); no celular, uma coluna legível. Não pode piorar de uma versão para outra | Largura fluida (sem teto fixo de largura no conteúdo), grade de blocos que ganha colunas conforme a tela, números e gráficos que crescem com a largura. Teste automático a cada versão em 4 larguras (celular 390, notebook 1366, monitor 1920 e 2560) que falha se sobrar faixa vazia nas laterais, se algo sair da tela ou se o texto cortar; prints das 4 larguras para o dono antes de publicar | P | 0.7.14 (e toda versão) |
+
+## Oitava rodada (leitura das 9h17, 09/Nov)
+
+| # | O que o dono viu | Explicação e proposta | Quem | Pacote |
+|---|---|---|---|---|
+| 85 | A leitura automática rodou às 9h17, mas os horários são 8h e 20h | A tarefa do Windows tem "executar assim que possível": se o computador estava desligado ou dormindo às 8h, a leitura acontece quando ele volta (por isso 9h17). O "Histórico de leituras" mostra a origem "fora do horário" nesses casos. Proposta: a tela dizer isso com todas as letras ("leitura das 8h feita às 9h17, porque o computador estava desligado ou dormindo") | P | 0.7.15 |
+| 86 | Às 9h19 a tela ainda dizia "Próxima leitura automática: hoje às 08h00" | A tela tinha sido aberta às 2h46 e não recarregou. Na 0.7.14 ela recarrega ao fim de cada leitura, inclusive a agendada; na 0.7.15, a "próxima leitura" também se atualiza sozinha quando o horário passa | P | 0.7.15 |

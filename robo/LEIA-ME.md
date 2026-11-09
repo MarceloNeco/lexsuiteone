@@ -55,9 +55,9 @@ Uma só: `<pasta compartilhada>\LexSuiteONE\LexSuiteONE.xlsx`.
   **Log** (cada rodada), **Saúde** (o que o robô percebeu: Diário fora do ar, formato mudou, Receita sem resposta) e
   **Sobre** (versão, computador, pasta).
 
-Também fica ali a página `Lista para abrir no celular.html` (até a 0.7.9, `LexSuiteONE - Radar.html`), que abre em qualquer lugar. Para editar no Google Planilhas,
+Também fica ali a página `Retrato da última leitura.html` (antes `Lista para abrir no celular.html`), uma foto da lista na última leitura que abre em qualquer lugar. Para editar no Google Planilhas,
 abra o `.xlsx` e edite direto (modo de compatibilidade com Office); o Drive leva a mudança de volta para o
-computador. Se a planilha estiver aberta e travada na hora de uma rodada, o robô deixa como está e tenta na seguinte.
+computador. Se a planilha estiver aberta e travada na hora de uma rodada, o robô tenta de novo a cada 2 minutos e grava sozinho quando ela for fechada.
 
 ## A tela
 

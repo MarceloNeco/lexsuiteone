@@ -191,22 +191,22 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     produto = _nome_produto(pasta_robo)
     larguras = [14, 11, 8, 9, 34, 26, 12, 12, 40, 18, 22, 16, 36, 20, 18, 16, 28, 40, 15, 16, 12, 30, 40, 10, 40, 30, 30, 10]
     abas = [{"nome": "Radar", "linhas": linhas, "visual": True, "filtro": True, "moeda": moeda, "destacar": _destacar(linhas, chaves, minimo),
-             "aviso": AVISO_RADAR.format(produto=produto), "proteger": True, "larguras": larguras}]
+             "aviso": AVISO_RADAR.format(produto=produto), "larguras": larguras}]
     if arquivo is not None:  # 0.7.14: tudo o que o RADAR já leu nos últimos 12 meses, de qualquer tribunal e situação
         la = _linhas_lista(arquivo, colunas, linha_csv)
         abas.append({"nome": "Arquivo", "linhas": la, "visual": True, "filtro": True, "moeda": moeda, "destacar": _destacar(la, chaves, minimo),
                      "aviso": "Arquivo: tudo o que o " + produto + " já leu (12 meses), inclusive o que foi arquivado. Só para consulta.",
-                     "proteger": True, "larguras": larguras})
+                     "larguras": larguras})
     contatos = [["Processo", "Empresa", "Canal", "Contato", "De pessoa (sócio)", "Fonte", "Data", "Confiança", "Origem", "Validação", "Observação"]]
     for c in (banco.contatos() if hasattr(banco, "contatos") else []):
         contatos.append([c["processo"], c["empresa"], c["canal"], c["valor"], "sim" if c["de_pessoa"] else "", c["fonte"], c["data"],
                          c["confianca"], c["origem"], c["validacao"], c["observacao"]])
-    abas.append({"nome": "Contatos", "linhas": contatos, "visual": True, "filtro": True, "proteger": True,
+    abas.append({"nome": "Contatos", "linhas": contatos, "visual": True, "filtro": True,
                  "aviso": "Contatos encontrados (Receita, área logada ou digitados), sempre com a fonte e a data. Os da Receita também estão na aba Radar.",
                  "larguras": [26, 34, 11, 34, 10, 20, 11, 10, 12, 12, 40]})
     planilha.escrever_xlsx(caminho, abas + [dict(a, visual=True) for a in editaveis] + [
         {"nome": NOME_COMO_USAR, "linhas": como_usar(produto), "visual": True, "larguras": [24, 70, 70]},
-        {"nome": NOME_HISTORICO, "linhas": log, "visual": True, "filtro": True, "proteger": True, "larguras": [24, 16, 10, 22, 10, 26, 40, 10, 8, 60]},
+        {"nome": NOME_HISTORICO, "linhas": log, "visual": True, "filtro": True, "larguras": [24, 16, 10, 22, 10, 26, 40, 10, 8, 60]},
         {"nome": "Saúde", "linhas": saude, "oculta": True, "larguras": [20, 18, 10, 80]},
         {"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo), versao, chave_impressao, ultima), "oculta": True, "larguras": [30, 80]},
     ], so_leitura_recomendado=True)

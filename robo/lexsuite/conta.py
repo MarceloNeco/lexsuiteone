@@ -27,7 +27,20 @@ MOTIVOS = {
     "desativado": "A licença deste escritório está desativada.",
     "vencido": "A licença deste escritório venceu.",
     "codigo_invalido": "O código de cliente tem o formato LEX-XXXX-XXXX (veja o e-mail de boas-vindas).",
+    "aceite_pendente": "Falta o aceite dos termos pelo responsável do escritório.",
 }
+
+
+def _aceite(a):
+    """Bloco `aceite` da resposta da SolverONE (lex-conta v8): {aceito, versao, aceito_em, nome} ou {aceito: False, link}.
+    O link só vale se for do site da SolverONE (https)."""
+    if not isinstance(a, dict):
+        return {}
+    link = str(a.get("link") or "")
+    if not re.match(r"^https://([a-z0-9-]+\.)*solverone\.com\.br/", link):
+        link = ""
+    return {"aceito": bool(a.get("aceito")), "versao": str(a.get("versao") or "")[:20], "aceito_em": str(a.get("aceito_em") or "")[:25],
+            "nome": str(a.get("nome") or "")[:120], "link": link[:500]}
 CONTATO = "judicial@solverone.com.br"
 
 
@@ -81,6 +94,8 @@ def verificar(cfg, versao, hoje=None, pedir=None, retorno=None):
     c["escritorio_licenca"] = str(r.get("escritorio") or "")[:80]
     c["validade"] = str(r.get("validade") or "")[:10]
     c["mensagem"] = str(r.get("mensagem") or "")[:300]
+    if "aceite" in r:
+        c["aceite"] = _aceite(r.get("aceite"))
     if c["ok"]:
         c["ultima_ok"] = hoje.isoformat()
     return c
@@ -120,11 +135,13 @@ def situacao(cfg):
     c = cfg.get("conta") or {}
     motivo = bloqueio(cfg)
     if motivo:
-        return {"codigo": c.get("codigo", ""), "ok": False, "texto": motivo}
+        pend = c.get("resposta") == "aceite_pendente"
+        return {"codigo": c.get("codigo", ""), "ok": False, "texto": motivo, "aceite": c.get("aceite") or {},
+                "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else ""}
     texto = "Licença ativa" + (f" até {c['validade']}" if c.get("validade") else "") + "."
     if c.get("resposta") == "sem_resposta":
         texto = f"Licença confirmada pela última vez em {c.get('ultima_ok')}; sem resposta da SolverONE agora."
-    return {"codigo": c.get("codigo", ""), "ok": True, "texto": texto}
+    return {"codigo": c.get("codigo", ""), "ok": True, "texto": texto, "aceite": c.get("aceite") or {}, "aceite_link": ""}
 
 
 # ---------- cadastro de quem usa (nome, e-mail, função) e do escritório (CNPJ) ----------
