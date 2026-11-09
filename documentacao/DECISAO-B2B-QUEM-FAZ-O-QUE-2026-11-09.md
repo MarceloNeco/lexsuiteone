@@ -177,6 +177,49 @@ a ser só do RootifyONE.
   antiga"). Aba Configuração do produto: versões vigentes e, mais adiante, "publicar versão nova" (`admin_sol_termo_publicar`).
 - **Programa (Produto)**: ver pedido no quadro (caixa de aceite no cadastro, Configuração com as duas camadas, link).
 
+### 5d. Versão nova dos termos (pedido nº 2 da conversa do RootifyONE, 09/Nov)
+
+**Resposta às quatro perguntas do pedido**
+- (a) **Quem publica**: em dois passos, cada um no seu lugar. O **texto** mora no site do produto (`paginas/aceite.html`,
+  do LexSuiteONE), porque o cliente lê sem login e o programa aponta para lá; mudar texto = o LexSuiteONE publica a página
+  com o número de versão novo. A **vigência** mora no banco (`sol_termos`): quem a liga é o dono, pelo RootifyONE,
+  clicando "Publicar versão X" (aba Configuração do produto → bloco Termos), com motivo. Até esse clique, a página nova
+  pode estar no ar sem valer; nada muda para os clientes. Não vale o modelo `termos.json` dos apps B2C aqui: o texto
+  B2B é documento contratual, versionado no repositório e publicado no site do produto.
+- (b) **Novo aceite**: para a **pessoa**, versão nova = aceita de novo, sempre (decisão do dono). Para o **escritório**,
+  o dono decide no clique: interruptor "Exigir novo aceite do responsável" (`p_reaceite`). Ligado: a `lex-conta` volta a
+  travar (`aceite_pendente`, mensagem "Os termos mudaram (versão X)…") e a jornada mostra "Termos: versão antiga,
+  pendente". Desligado: o aceite antigo segue valendo; a ficha mostra "aceito na versão 1.0; vigente 1.1".
+- (c) **Texto dentro do RootifyONE**: mostrar em prévia (iframe ou janela) a página `aceite.html?ler=1` do site, como já
+  faz com o e-mail de boas-vindas; não copiar o texto para o RootifyONE (uma fonte só). O botão "Publicar versão X" exige
+  que a página já responda com a versão X (a prévia lê `#versao`); se não, o botão fica desabilitado com o aviso "a página
+  ainda está na versão Y: peça ao LexSuiteONE".
+- (d) **Por pessoa**: sim, já decidido (seção 5c): o responsável aceita os três documentos uma vez; cada pessoa aceita os
+  Termos de uso no cadastro do programa, por versão.
+
+**Fluxo completo de uma versão nova**
+1. Dono pede a mudança de texto (quadro). LexSuiteONE revisa (Leandro quando for cláusula), sobe o número em
+   `paginas/aceite.html` (`#versao` e a linha "Fim dos termos"), gera `docs/`, publica na `main` com o "pode publicar" do dono
+   e escreve no quadro "página na versão X; hash do texto: …".
+2. Dono abre o RootifyONE → LexSuiteONE › RADAR JUDICIAL → Configuração → Termos → "Publicar versão": escolhe o termo
+   (`lexsuiteone-termos` ou `lexsuiteone-uso`), digita a versão X, o motivo, liga ou não "exigir novo aceite do
+   responsável" (só para o termo do escritório), confirma. O RootifyONE chama `admin_sol_termo_publicar`.
+3. Efeito imediato: `sol_termo_vigente` passa a devolver X (a página mostra X); `lex-conta` passa a devolver
+   `termos.*.versao_vigente = X` e `precisa_aceitar = true` para quem aceitou a antiga; pessoa trava na próxima abertura
+   (programa com `suporta_aceite_uso`); escritório trava só se `reaceite` ligado. Aceites antigos ficam guardados.
+4. RootifyONE mostra, na ficha e na jornada, quem está na versão antiga; o e-mail de aviso aos escritórios ("os termos
+   mudaram") fica para uma etapa seguinte (função `lex-equipe`, ação `aviso_termos`, a desenhar quando houver mais de um cliente).
+
+**Contrato para o RootifyONE** (tudo já aplicado, 09/Nov):
+- `admin_sol_termos()` → lista `[{termo, suite, alcance, titulo, versao, vigente_desde, link, hash_texto, reaceite_obrigatorio, atualizado_em}]`.
+- `admin_sol_termo_publicar(p_termo, p_versao, p_link, p_hash_texto, p_motivo, p_reaceite)` → ficha nova do termo. Erros:
+  "Essa já é a versão vigente", "Escreva o motivo", "Termo não encontrado". `p_link` e `p_hash_texto` podem ir vazios
+  (mantém os atuais). Registrado em `lab_registrar_log` (`sol_termo_publicar`, com motivo).
+- `sol_aceite_situacao(p_app, p_licenca, p_termo, p_email)` → `{aceito, versao, aceito_em, fuso, nome, email, protocolo,
+  versao_vigente, vigente_desde, link, reaceite_obrigatorio, precisa_aceitar}` (e-mail nulo = escritório).
+- `admin_sol_aceites(p_app, p_licenca)` → histórico completo (inclui `fuso`).
+- `admin_lex_listar().aceite` → último aceite do escritório; `.exigir_aceite` → trava ligada/desligada.
+
 ## 6. Ordem de entrega
 
 1. **Dono**: dá o "pode aplicar" para o SQL único de `admin_lex_listar` (pedido nº 1 do RootifyONE + campo `aceite`) e para
