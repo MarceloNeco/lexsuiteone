@@ -135,7 +135,9 @@ def sinal_inicio(texto):
     if not m:
         return ""
     t = sem_acento(m.group(0)).lower()
-    return "audiência inicial" if t.startswith("audi") else "notificação inicial" if t.startswith(("notif", "notifique")) else "citação inicial"
+    if t.startswith("notifique"):
+        return "notifique-se a reclamada"  # da regra estrita do diagnóstico (diagnostico.ESTRITA), com rótulo próprio
+    return "audiência inicial" if t.startswith("audi") else "notificação inicial" if t.startswith("notif") else "citação inicial"
 
 
 def nota(lead, rito_ordinario_desde=40):

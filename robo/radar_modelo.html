@@ -1347,7 +1347,7 @@ window.LEXSUITE_RADAR = null;
       [[t("cod"), $("w-codigo").value.trim().toUpperCase()], [t("c_escritorio"), $("w-escritorio").value], [t("doc_tipo"), t("tipo_" + (tipoDoc() === "passaporte" ? "pass" : tipoDoc())) + ": " + $("w-cnpj").value], [t("seu_nome"), nome], [t("seu_email"), $("w-email").value], [t("c_papel"), papelTexto($("w-papel"), $("w-papel-outro")) || "—"], [t("w_tribs"), escolher ? (nTrib + ": " + Object.keys(sel).join(", ")) : t("tr_todos").replace(/ \(.*\)$/, "")], [t("w_rotina"), $("w-agendar").checked ? descAgenda((APP && APP.config.horarios) || [], (APP && APP.config.dias) || "todos") : "—"]].forEach(function (par) { dl.appendChild(el("dt", null, par[0])); dl.appendChild(el("dd", null, par[1] || "—")); });
       var dest = $("w-destino"); dest.textContent = "";
       if (wDestino) { dest.appendChild(el("b", null, t("w_destino") + " ")); dest.appendChild(el("code", null, wDestino)); } else dest.textContent = t("w_sem_planilha");
-      $("w-compartilhar").hidden = true;  // 0.7.16: não é preciso compartilhar nada com a SolverONE (decisão do dono) $("w-l-comp").textContent = t("comp_t"); $("w-abrir-pasta").textContent = t("abrir_pasta_mae"); $("w-comp-nota").textContent = t("comp_nota", { c: marcaCurto() });
+      $("w-compartilhar").hidden = true;  // 0.7.16: não é preciso compartilhar nada com a SolverONE (decisão do dono)
       var ol = $("w-comp-passos"); ol.textContent = ""; [t("comp_1"), t("comp_2", { s: wSub }), t("comp_3")].forEach(function (x) { ol.appendChild(el("li", null, x)); });
     }
     $("w-voltar").hidden = wPasso === 1; $("w-voltar").textContent = t("w_voltar");

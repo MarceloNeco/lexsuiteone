@@ -169,7 +169,13 @@ Feedback do dono sobre os filtros (print da 0.7.15): "Limpar filtros" não apare
 processo"). Agora: caixas de marcar com busca, contagem cruzada, opção com zero some. A lista trazia "10ª Turma -
 Cadeira 3": recurso distribuído a turma não é ação nova; 2º grau fica de fora. Observações da Arquitetura sobre a
 planilha grande: limpeza automática só com cópia, data do critério no Painel, aviso de cópias em pasta compartilhada
-(tela e manual), decisão 14 (banco acima de 1 GB). Pacote igual ao da 0.7.16 (44 e 43 arquivos).
+(tela e manual), decisão 14 (banco acima de 1 GB). Pacote igual ao da 0.7.16 (44 e 43 arquivos). Ressalvas da revisão da
+0.7.16 (Operação): e-mail de boas-vindas sem o passo de compartilhar a pasta (A); site e manual dizem tudo o que vai à
+SolverONE (B, C); limpeza automática no máximo uma vez a cada 24 h e a poda nunca apaga cópia feita à mão nem
+exportação (D); "notifique-se a reclamada" mantido (vem da regra estrita do diagnóstico) com rótulo próprio (E); cópia
+da planilha antiga antes da troca de nome; cópia pela metade apagada. **Antes do tributário (F)**: a regra de ação nova
+não reconhece "cite-se" nem "citação do executado" da execução fiscal; desenhar a regra própria da frente tributária
+antes de prometer essa frente.
 
 ## 0.7.16 (09/Nov, noite; tudo antes da visita de quinta, decisão do dono)
 

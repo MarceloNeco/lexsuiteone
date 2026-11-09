@@ -379,5 +379,31 @@ class V0717(unittest.TestCase):
         self.assertEqual(b.execucoes("limpeza_planilha", 5), [])
 
 
+class V0717Revisao(unittest.TestCase):
+    """Ressalvas da revisão da 0.7.16: limpeza automática não se repete; poda não apaga cópia feita à mão; aviso legível."""
+
+    def test_limpeza_nao_repete_e_poda_poupa_as_feitas_a_mao(self):
+        from lexsuite import armazenamento as ar, radar, planilha, preferencias as pf
+        pasta = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, pasta, True)
+        base = os.path.join(pasta, "LexSuiteONE")
+        cfg = {"compartilhar": {"pasta": pasta}, "radar": {"tribunais": ["TRT2"], "dias_na_pagina": 30}}
+        b = _banco_com(1100, espalhar=30)
+        os.makedirs(base)
+        abas = pf.abas_padrao()
+        for l in abas[0]["linhas"]:
+            if l[0] == "Limite de linhas da planilha":
+                l[1] = 1000
+        planilha.escrever_xlsx(os.path.join(base, pf.NOME_ARQUIVO), [{"nome": "Radar", "linhas": [["x"]]}] + abas)
+        ok, _ = ar.copia_seguranca(cfg, b, "feita à mão", lambda *_: None, agora=dt.datetime(2026, 1, 1, 9, 0))
+        self.assertTrue(ok)
+        for _ in range(4):
+            radar.gravar_planilha(cfg, radar.montar_radar(cfg, b), b, "0.7.17", pasta, lambda *_: None)
+        nomes = [c["nome"] for c in ar.copias(base)]
+        self.assertEqual(sum(1 for n in nomes if n.endswith("limpeza automática")), 1)  # uma só, não uma por gravação
+        self.assertIn("2026-01-01 09h00m00 - feita à mão", nomes)
+        self.assertNotIn(",", ar.aviso_tamanho("trabalhista", 900, 1000).split("linhas")[0].replace("(", ""))
+
+
 if __name__ == "__main__":
     unittest.main()

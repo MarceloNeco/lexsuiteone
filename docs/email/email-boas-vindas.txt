@@ -15,8 +15,8 @@ https://judicial.solverone.com.br/aceite.html?codigo={{codigo}}&email={{email}}&
 
 Como instalar, em quatro passos
 1. Instale: abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Ele baixa o resto, prepara tudo e abre a tela do programa numa janela própria.
-2. Configure: a tela confere o código e pede o seu nome, e-mail e função, a pasta do Google Drive onde fica a planilha e os tribunais (de início, os 24 TRTs). A primeira leitura começa em seguida.
-3. No Google Drive, dê acesso de editor à pasta "{{marca.nome}} - planilha" para {{drive}}, a conta de sistemas da SolverONE (o fim da instalação mostra onde ela ficou e o passo a passo). É o único passo à mão: por ela acompanhamos o {{marca.curto}} sem acessar o seu computador.
+2. Configure: a tela confere o código e pede o seu nome, e-mail e função, a pasta onde ficam as planilhas (no computador ou no Google Drive) e os tribunais (de início, os 24 TRTs). A primeira leitura começa em seguida.
+3. Confira a Configuração (menu ☰): pasta das planilhas, leituras automáticas, espaço do computador e termos. Não é preciso compartilhar nada com a SolverONE: as planilhas e os dados ficam no computador e na pasta do escritório.
 4. Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho.
 
 Onde roda: no seu computador, que lê o DJEN nos horários que o escritório escolher (de início, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.

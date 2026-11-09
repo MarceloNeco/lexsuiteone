@@ -7,7 +7,7 @@ puro, obrigatória para não cair em spam). Campos a preencher:
 |---|---|---|
 | `{{nome}}` | primeiro nome de quem recebe | (obrigatório) |
 | `{{contato}}` | e-mail para dúvidas; o cliente escreve para ele, nunca responde ao e-mail | `judicial@solverone.com.br` (contato de toda a suíte LexSuiteONE; `contato@` é o genérico da SolverONE) |
-| `{{drive}}` | endereço de sistemas da SolverONE, com quem o cliente compartilha a subpasta LexSuiteONE do Drive (não é caixa de atendimento) | `integracao@solverone.com.br` |
+| `{{drive}}` | (sem uso desde 09/Nov: nada é compartilhado com a SolverONE; o modelo não usa mais este campo) | `integracao@solverone.com.br` |
 | `{{email}}` | e-mail do responsável pela licença (campo "e-mail do responsável" da ficha no RootifyONE); vai dentro do link do aceite dos termos, fixo na página | (vazio: a página pede o e-mail) |
 | `{{codigo}}` | código de cliente `LEX-XXXX-XXXX`, **obrigatório desde a 0.7.7**: o instalador não instala sem ele. Pegar no RootifyONE (Clientes → Licenças do RADAR); o código real nunca entra no repositório nem no quadro | (sem código, o bloco sai; não mandar o e-mail assim) |
 
@@ -27,8 +27,7 @@ bloco do código; sem ele, o bloco é removido, e o cliente não consegue instal
 
 ## Regras
 
-- As caixas `{{contato}}` e `{{drive}}` precisam existir antes do envio ao cliente. O domínio recebe e-mail pelo
-  ImprovMX (encaminhamento), então as duas são apelidos lá; `{{drive}}` precisa também ser uma Conta Google criada com esse
-  e-mail, senão o compartilhamento do Drive não chega. Passo a passo em `docs/DNS-SOLVERONE.md`.
+- A caixa `{{contato}}` precisa existir antes do envio ao cliente (apelido no ImprovMX; passo a passo em
+  `docs/DNS-SOLVERONE.md`). Desde 09/Nov o e-mail não pede para compartilhar pasta nenhuma com a SolverONE.
 - Um e-mail por pessoa, enviado depois que ela pediu o pacote. Não é lista nem campanha.
 - Nada de senha ou chave no corpo do e-mail. O código de cliente não é segredo: identifica a conta, não dá acesso.

@@ -376,7 +376,7 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
             na_lista = {i.get("processo") for i in radar_f}  # o que já está na aba Radar não se repete no Arquivo
             arquivo = [i for i in armazenamento.selecionar_arquivo(todos_f, prefs.get("dias_arquivo") or 90, armazenamento.corte(banco, frente))
                        if i.get("processo") not in na_lista]
-            if len(radar_f) + len(arquivo) >= limite and not limpou:
+            if len(radar_f) + len(arquivo) >= limite and not limpou and not armazenamento.limpeza_recente(banco):
                 aviso(f"  A planilha {armazenamento.FRENTE_LEGIVEL.get(frente, frente)} chegou ao limite de {limite} linhas: "
                       "guardo uma cópia de segurança e enxugo a aba Arquivo (nada sai do programa).")
                 armazenamento.limpar(cfg, banco, pasta_base, versao, aviso, automatico=True)
