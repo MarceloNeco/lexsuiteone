@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v9 (v8 + termos em duas camadas: escritório e pessoa; 'cadastrar' aceita aceite_uso; 'verificar' trava sem aceite da pessoa quando o programa declara suporte): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v10 (v9 + versão nova dos termos: escritório volta a travar só se reaceite_obrigatorio; pessoa sempre): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -252,19 +252,24 @@ Deno.serve(async (req) => {
   // Aceite dos termos (decisão do dono, 09/Nov): a licença fica ativa, mas o uso só é liberado depois que o responsável
   // aceita os termos na página pública (sol_aceites). O "cadastrar" passa (registrar a pessoa não é usar); o "verificar" trava.
   let mensagem = conta.mensagem ?? "";
-  const { data: aceite } = await sb.rpc("sol_tem_aceite", { p_app: "radar-judicial", p_licenca: codigo, p_termo: "lexsuiteone-termos" });
-  const aceiteInfo = (aceite && typeof aceite === "object") ? aceite as Record<string, unknown> : { aceito: false };
-  if (ok && conta.exigir_aceite && acao === "verificar" && !aceiteInfo.aceito) {
-    ok = false; motivo = "aceite_pendente";
-    const link = `${LINK_ACEITE}?codigo=${codigo}` + (conta.email_responsavel || conta.email_boas_vindas ? `&email=${encodeURIComponent(String(conta.email_responsavel || conta.email_boas_vindas))}` : "");
-    mensagem = `Antes do primeiro uso, o responsável do escritório precisa aceitar os termos (leva 3 minutos): ${link}`;
-    (aceiteInfo as Record<string, unknown>).link = link;
-  }
   // Termos em duas camadas (decisão do dono, 09/Nov): escritório (contrato, uma vez) e pessoa (termos de uso, por versão).
   const { data: tEsc } = await sb.rpc("sol_aceite_situacao", { p_app: "radar-judicial", p_licenca: codigo, p_termo: TERMO_ESCRITORIO, p_email: null });
+  const esc = (tEsc && typeof tEsc === "object") ? tEsc as Record<string, unknown> : { aceito: false, precisa_aceitar: true };
+  // Compatibilidade com o programa 0.7.x: `aceite` continua (aceito/versao/aceito_em/nome; link quando pendente).
+  const aceiteInfo: Record<string, unknown> = { aceito: !!esc.aceito, versao: esc.versao ?? null, aceito_em: esc.aceito_em ?? null, nome: esc.nome ?? null };
+  // Escritório pendente: nunca aceitou, ou saiu versão nova com reaceite_obrigatorio e o aceite é da versão antiga.
+  const escPendente = !esc.aceito || (esc.reaceite_obrigatorio === true && esc.precisa_aceitar === true);
+  if (ok && conta.exigir_aceite && acao === "verificar" && escPendente) {
+    ok = false; motivo = "aceite_pendente";
+    const link = `${LINK_ACEITE}?codigo=${codigo}` + (conta.email_responsavel || conta.email_boas_vindas ? `&email=${encodeURIComponent(String(conta.email_responsavel || conta.email_boas_vindas))}` : "");
+    mensagem = esc.aceito
+      ? `Os termos mudaram (versão ${esc.versao_vigente ?? ""}): o responsável do escritório precisa aceitar a versão nova (leva 3 minutos): ${link}`
+      : `Antes do primeiro uso, o responsável do escritório precisa aceitar os termos (leva 3 minutos): ${link}`;
+    aceiteInfo.link = link;
+  }
   const { data: tPes } = email ? await sb.rpc("sol_aceite_situacao", { p_app: "radar-judicial", p_licenca: codigo, p_termo: TERMO_PESSOA, p_email: email }) : { data: null };
   const termos: Record<string, unknown> = {
-    escritorio: { ...(tEsc as Record<string, unknown> ?? {}), exigido: !!conta.exigir_aceite },
+    escritorio: { ...esc, exigido: !!conta.exigir_aceite, pendente: !!conta.exigir_aceite && escPendente },
     pessoa: tPes ? { ...(tPes as Record<string, unknown>) } : { termo: TERMO_PESSOA, aceito: false, precisa_aceitar: true },
   };
   if (aceiteUsoErro) (termos.pessoa as Record<string, unknown>).erro_aceite = aceiteUsoErro;

@@ -64,6 +64,22 @@ vigente em `admin_sol_termos`, marcar "versão antiga: precisa aceitar de novo";
 Configuração do produto, a lista de `admin_sol_termos` (termo, alcance, versão, desde, link) e, por enquanto só leitura,
 sem botão de publicar versão (fica para depois, com desenho).
 
+**3c. Resposta ao seu pedido nº 2 (versão nova dos termos), 09/Nov.** Desenho completo em
+`lexsuiteone/documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`, seção 5d. Em resumo: o texto mora no site do produto
+(LexSuiteONE publica a página com o número novo); a vigência mora no banco e **quem a liga é o dono, no RootifyONE**.
+Construa em Configuração → Termos: (1) lista de `admin_sol_termos()` (termo, alcance, versão, desde, link, "exige novo
+aceite"); (2) prévia do texto: iframe de `https://judicial.solverone.com.br/aceite.html?ler=1` (ou `?ler=uso` para o
+termo de pessoa), como a prévia do e-mail; (3) botão **"Publicar versão"**: campos versão (obrigatório, diferente da
+vigente), motivo (obrigatório), e, só para o termo `lexsuiteone-termos`, interruptor "Exigir novo aceite do responsável"
+com (?) "Ligado: o programa volta a travar nos escritórios até o responsável aceitar a versão nova. Desligado: o aceite
+antigo continua valendo"; antes de habilitar o botão, ler o `#versao` da página do site e exigir que seja igual à versão
+digitada (se não, mostrar "a página ainda está na versão Y: peça ao LexSuiteONE"); confirmar e chamar
+`admin_sol_termo_publicar(p_termo, p_versao, p_link: '', p_hash_texto: '', p_motivo, p_reaceite)`; (4) na ficha da
+licença e na jornada, marcar "versão antiga" quando `versao` do aceite for diferente de `versao_vigente` (use
+`sol_aceite_situacao` ou compare com `admin_sol_termos`); para o escritório, "pendente" só se `reaceite_obrigatorio`
+estiver ligado ou nunca houver aceite. Para a pessoa, versão nova = aceita de novo, sempre. Não copie o texto dos termos
+para dentro do RootifyONE nem para `termos.json`: a fonte é uma só, a página do produto.
+
 **4. O que esperar (vem do LexSuiteONE, colado por mim).** O "publicado" da página de aceite e do e-mail com `{{email}}`
 e `&nome=`; o aviso de que a trava da KR Law foi ligada; a ampliação do check de `lex_eventos` com tipos próprios
 (`termos_aceitos`, `aceite_dispensado`, `aceite_exigido`) numa sessão em que eu esteja no desktop (até lá, tudo é
