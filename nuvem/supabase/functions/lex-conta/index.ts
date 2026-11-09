@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v6 (v4 + modalidade + retorno dos processos): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v8 (v7 + ação 'aceite': a página pública de termos grava por aqui, com e-mail de confirmação): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -20,6 +20,7 @@ const PUBLICOS = new Set(["gmail.com", "googlemail.com", "outlook.com", "outlook
   "msn.com", "yahoo.com", "yahoo.com.br", "ymail.com", "icloud.com", "me.com", "aol.com", "uol.com.br", "bol.com.br", "terra.com.br",
   "globo.com", "ig.com.br", "zipmail.com.br", "proton.me", "protonmail.com", "pm.me", "tutanota.com", "gmx.com", "mail.com"]);
 const CONTATO = "judicial@solverone.com.br";
+const LINK_ACEITE = "https://judicial.solverone.com.br/aceite.html";
 const REMETENTE = "SolverONE <nao-responda@solverone.com.br>";
 const AVISOS_POR_DIA = 20;
 // Retorno dos processos à SolverONE (decisão do dono, 09/Nov): só contagens por situação. Situações do programa:
@@ -60,6 +61,38 @@ Deno.serve(async (req) => {
     return json({ ok: !error });
   }
 
+  // ---- Aceite dos termos (página pública aceite.html). Só esta função grava em sol_aceites: a chave publicável não
+  //      executa a função de escrita. Valida, limita, grava, registra o evento e manda e-mail de confirmação. ----
+  if (e.acao === "aceite") {
+    const codigo = texto(e.codigo, 13).toUpperCase();
+    const email = texto(e.email, 120).toLowerCase();
+    if (!CODIGO.test(codigo)) return json({ ok: false, motivo: "codigo_invalido" });
+    if (!EMAIL.test(email)) return json({ ok: false, motivo: "email_invalido" });
+    if (!(await pode(`cod:${codigo}:aceite`, 30, 86400))) return limite();
+    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim();
+    const { data: r, error: erro } = await sb.rpc("sol_aceite_registrar", { p: {
+      app: "radar-judicial", licenca: codigo, termo: texto(e.termo, 60), versao: texto(e.versao, 20), hash: texto(e.hash, 64).toLowerCase(),
+      nome: texto(e.nome, 120), email, navegador: texto(e.navegador, 120), origem: e.origem === "site" ? "site" : "email", ip } });
+    if (erro || !r || typeof r !== "object") {
+      const m = String(erro?.message ?? "");
+      const motivo = /desconhecido/i.test(m) ? "codigo_desconhecido" : /tentativas/i.test(m) ? "limite" : /responsável/i.test(m) ? "email_nao_e_do_responsavel"
+        : /nome completo/i.test(m) ? "nome_incompleto" : /e-mail/i.test(m) ? "email_invalido" : /termo/i.test(m) ? "dados_invalidos" : "erro";
+      return json({ ok: false, motivo }, motivo === "erro" ? 500 : 200);
+    }
+    const a = r as Record<string, unknown>;
+    const quando = new Date(String(a.aceito_em)).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+    await sb.from("lex_eventos").insert({ codigo, email, tipo: "licenca_alterada", quem: `cliente:${email}`,
+      detalhe: `termos aceitos: versão ${a.versao}, protocolo ${a.protocolo}, por ${a.nome}` });
+    // Confirmação para quem aceitou (prova em mãos do escritório) e cópia para a SolverONE. Nunca trava a resposta.
+    try {
+      const assunto = `LexSuiteONE · aceite dos termos registrado · ${a.protocolo}`;
+      const corpo = `Olá, ${a.nome}.\n\nRegistramos o aceite dos termos de uso, da política de privacidade e do termo de tratamento de dados da LexSuiteONE em nome de ${a.escritorio} (código ${codigo}).\n\nProtocolo: ${a.protocolo}\nVersão dos termos: ${a.versao}\nData e hora: ${quando} (Brasília)\nAceito por: ${a.nome} <${email}>\n\nOs termos ficam sempre em ${LINK_ACEITE}. Se você não fez este aceite, responda este e-mail agora.\n\nSolverONE · LexSuiteONE\n\n---\nHello, ${a.nome}. We recorded the acceptance of the LexSuiteONE terms on behalf of ${a.escritorio} (code ${codigo}). Protocol ${a.protocolo}, version ${a.versao}, ${quando} (Brasília). If this was not you, reply to this e-mail now.`;
+      await enviarEmail(email, assunto, corpo);
+      await enviarEmail(CONTATO, `${assunto} · ${a.escritorio}`, `Licença ${codigo} (${a.escritorio}): termos v${a.versao} aceitos por ${a.nome} <${email}> em ${quando}. Protocolo ${a.protocolo}. Detalhes no RootifyONE.`);
+    } catch { /* o registro já está feito; o e-mail é cortesia */ }
+    return json({ ok: true, protocolo: a.protocolo, aceito_em: a.aceito_em, escritorio: a.escritorio });
+  }
+
   // ---- Conferência da licença (padrão) e cadastro ----
   const codigo = texto(e.codigo, 13).toUpperCase();
   const instalacao = texto(e.instalacao, 16).toLowerCase();
@@ -71,7 +104,7 @@ Deno.serve(async (req) => {
   if (!(await pode(`cod:${codigo}:${acao}`, 120, 3600))) return limite();
 
   const { data: conta, error } = await sb.from("lex_contas")
-    .select("codigo, escritorio, documento, max_pessoas, max_computadores, ativo, validade, mensagem, dominios, email_boas_vindas, exigir_aprovacao, modalidade")
+    .select("codigo, escritorio, documento, max_pessoas, max_computadores, ativo, validade, mensagem, dominios, email_boas_vindas, exigir_aprovacao, modalidade, exigir_aceite, email_responsavel")
     .eq("codigo", codigo).maybeSingle();
   if (error) return json({ ok: false, motivo: "erro" }, 500);
   if (!conta) return json({ ok: false, motivo: "codigo_desconhecido" });
@@ -201,8 +234,19 @@ Deno.serve(async (req) => {
   let ok = !!conta.ativo && !vencida;
   let motivo = ok ? "" : (conta.ativo ? "vencido" : "desativado");
   if (ok && conta.exigir_aprovacao && aprovacaoPessoa === "aguardando") { ok = false; motivo = "aguardando_aprovacao"; }
-  const resposta: Record<string, unknown> = { ok, motivo, escritorio: conta.escritorio, validade: conta.validade ?? "", mensagem: conta.mensagem ?? "",
-    modalidade: conta.modalidade ?? "instalado" };   // item F: "nuvem" = a tela avisa e continua lendo
+  // Aceite dos termos (decisão do dono, 09/Nov): a licença fica ativa, mas o uso só é liberado depois que o responsável
+  // aceita os termos na página pública (sol_aceites). O "cadastrar" passa (registrar a pessoa não é usar); o "verificar" trava.
+  let mensagem = conta.mensagem ?? "";
+  const { data: aceite } = await sb.rpc("sol_tem_aceite", { p_app: "radar-judicial", p_licenca: codigo, p_termo: "lexsuiteone-termos" });
+  const aceiteInfo = (aceite && typeof aceite === "object") ? aceite as Record<string, unknown> : { aceito: false };
+  if (ok && conta.exigir_aceite && acao === "verificar" && !aceiteInfo.aceito) {
+    ok = false; motivo = "aceite_pendente";
+    const link = `${LINK_ACEITE}?codigo=${codigo}` + (conta.email_responsavel || conta.email_boas_vindas ? `&email=${encodeURIComponent(String(conta.email_responsavel || conta.email_boas_vindas))}` : "");
+    mensagem = `Antes do primeiro uso, o responsável do escritório precisa aceitar os termos (leva 3 minutos): ${link}`;
+    (aceiteInfo as Record<string, unknown>).link = link;
+  }
+  const resposta: Record<string, unknown> = { ok, motivo, escritorio: conta.escritorio, validade: conta.validade ?? "", mensagem,
+    modalidade: conta.modalidade ?? "instalado", aceite: aceiteInfo };   // item F: "nuvem" = a tela avisa e continua lendo
   if (aprovacaoPessoa) resposta.aprovacao = aprovacaoPessoa;
   if (emUso) resposta.em_uso = emUso;
   if (retorno) resposta.retorno = retorno;
@@ -210,6 +254,14 @@ Deno.serve(async (req) => {
   if (!temAprovada && conta.email_boas_vindas && acao === "verificar") resposta.email_sugerido = conta.email_boas_vindas;
   return json(resposta);
 });
+
+// Envio simples pelo Resend (texto puro). Sem chave nos Secrets, não envia e não falha.
+async function enviarEmail(para: string, assunto: string, corpo: string) {
+  const chave = Deno.env.get("RESEND_API_KEY_LEX") || Deno.env.get("RESEND_API_KEY");
+  if (!chave || !EMAIL.test(para)) return;
+  await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${chave}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ from: REMETENTE, to: [para], reply_to: CONTATO, subject: assunto, text: corpo }) });
+}
 
 // Grava o aviso em lex_avisos e tenta enviar pelo Resend. Para o responsável do escritório: nome da pessoa e domínio
 // (gente do próprio escritório). Para a SolverONE: escritório e domínio, sem o e-mail (o detalhe está no RootifyONE).
