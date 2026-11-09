@@ -61,3 +61,12 @@ O Arquivo resolve.
 | 65 | Pílulas de filtro com aparência diferente das ações em lote | Filtros: pílulas claras com contorno (como hoje). Ações em lote: barra própria em azul-marinho com botões em latão, presa ao rodapé da tela enquanto houver seleção. Ninguém confunde "filtrar" com "aplicar" | P | 0.8 |
 | 66 | Filtro de valor: personalizado e **"valor não informado"** | A lista do item 54 ganha "Sem valor informado" (as que dependem do PJe) ao lado de Todos, 10 mil ... 1 milhão e "Outro valor..." | P | 0.7.13 |
 | 67 | Termos que o advogado entende, nada técnico | "Situação" (não status), "Com os selecionados" (não "ações em lote"), "Arquivar" (não "descartar"), "Sem valor informado", "Contato encontrado" e "Sem contato" | P | 0.7.13 |
+
+## Terceira rodada (filtros e endereço)
+
+| # | O que o dono pediu | Proposta | Quem | Pacote |
+|---|---|---|---|---|
+| 68 | Um botão para desligar todos os filtros de uma vez | "Limpar filtros (N)" ao lado dos filtros, aparece só quando há algum ligado e mostra quantos | P | 0.7.13 |
+| 69 | Filtros salvos (preferidos) | "Salvar estes filtros" com um nome ("TRT15 acima de 300 mil, indústria"); os salvos viram atalhos acima da lista. Na 0.7.13 ficam neste computador; na 0.8, no banco, para valer em outra tela | P | 0.7.13 |
+| 70 | Endereço da parte passiva (local de trabalho; nunca a casa de ninguém) | O cadastro do CNPJ, que o RADAR já consulta, traz o endereço da **empresa** (rua, número, bairro, CEP); hoje só a cidade é guardada. Passa a aparecer na ficha e na planilha. Endereço de **sócio** não existe em cadastro público e é dado de pessoa física: não entra. Cuidado: no MEI e no empresário individual o endereço da empresa costuma ser a casa do dono. Proposta: nesses casos mostrar só cidade e UF. Decisão do dono | P (tela e planilha); A (regra do MEI, junto do pedido sobre MEI) | 0.7.13 |
+| 71 | Em todos os filtros, a opção "não informado", como no valor | Cada filtro ganha "Não informado" quando houver ações sem aquele dado (porte, setor, estado, CNPJ, contato, valor), com o motivo na dica (sem CNPJ no Diário, não consta na Receita, só na área logada) | P | 0.7.13 |
