@@ -38,7 +38,7 @@ def _texto_xml(txt):
 
 # Estilos (0.7.12): 0 normal, 1 negrito (cabeçalho simples), 2 cabeçalho azul-marinho com letra branca, 3 texto com
 # quebra de linha, 4 valor em R$, 5 valor em R$ destacado (fundo latão claro), 6 título grande.
-_X_CAB, _X_TEXTO, _X_MOEDA, _X_MOEDA_DEST, _X_TITULO = 2, 3, 4, 5, 6
+_X_CAB, _X_TEXTO, _X_MOEDA, _X_MOEDA_DEST, _X_TITULO, _X_AVISO = 2, 3, 4, 5, 6, 7
 
 
 def _celula(ref, v, estilo):
@@ -67,33 +67,44 @@ def _ncols(aba):
     return max((len(l) for l in (aba.get("linhas") or [])), default=0)
 
 
+def _linha_cab(aba):
+    """Linha do cabeçalho: 2 quando a aba tem a linha de aviso no topo (0.7.14), senão 1."""
+    return 2 if aba.get("aviso") else 1
+
+
 def _estilo(aba, i, j):
     """Estilo da célula (linha i a partir de 1, coluna j a partir de 0). Aba com "visual": cabeçalho escuro, texto com
     quebra, colunas de dinheiro em R$ e linhas destacadas; sem "visual", como antes (só o cabeçalho em negrito)."""
+    cab = _linha_cab(aba)
+    if aba.get("aviso") and i == 1:
+        return _X_AVISO
     if not aba.get("visual"):
-        return i == 1
-    if i == 1:
+        return i == cab
+    if i == cab:
         return _X_CAB
     if j in (aba.get("moeda") or ()):
-        return _X_MOEDA_DEST if (i - 1) in (aba.get("destacar") or ()) else _X_MOEDA
+        return _X_MOEDA_DEST if (i - cab) in (aba.get("destacar") or ()) else _X_MOEDA
     return _X_TEXTO
 
 
 def _xml_aba(aba):
     linhas = aba.get("linhas") or []
+    cab = _linha_cab(aba)
+    if aba.get("aviso"):
+        linhas = [[aba["aviso"]]] + list(linhas)
     larguras = aba.get("larguras")
     congelar = aba.get("congelar_cabecalho", True)
     fixar_col = int(aba.get("fixar_colunas") or 0)
-    ncols = max((len(l) for l in linhas), default=0)
+    ncols = max((len(l) for l in linhas[cab - 1:]), default=0)
     ult = f"{_col(max(ncols, 1) - 1)}{max(len(linhas), 1)}"
     p = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n',
          f'<worksheet xmlns="{NS}" xmlns:r="{NS_R}">',
          f'<dimension ref="A1:{ult}"/>']
     if congelar and linhas and fixar_col:
-        p.append(f'<sheetViews><sheetView workbookViewId="0"><pane xSplit="{fixar_col}" ySplit="1" '
-                 f'topLeftCell="{_col(fixar_col)}2" activePane="bottomRight" state="frozen"/></sheetView></sheetViews>')
+        p.append(f'<sheetViews><sheetView workbookViewId="0"><pane xSplit="{fixar_col}" ySplit="{cab}" '
+                 f'topLeftCell="{_col(fixar_col)}{cab + 1}" activePane="bottomRight" state="frozen"/></sheetView></sheetViews>')
     elif congelar and linhas:
-        p.append('<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" '
+        p.append(f'<sheetViews><sheetView workbookViewId="0"><pane ySplit="{cab}" topLeftCell="A{cab + 1}" '
                  'activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>')
     else:
         p.append('<sheetViews><sheetView workbookViewId="0"/></sheetViews>')
@@ -106,16 +117,20 @@ def _xml_aba(aba):
     p.append("<sheetData>")
     for i, linha in enumerate(linhas, 1):
         cels = "".join(_celula(f"{_col(j)}{i}", v, _estilo(aba, i, j)) for j, v in enumerate(linha))
-        altura = ' ht="30" customHeight="1"' if (aba.get("visual") and i == 1) else ""
+        altura = ' ht="36" customHeight="1"' if (aba.get("aviso") and i == 1) else (' ht="30" customHeight="1"' if (aba.get("visual") and i == cab) else "")
         p.append(f'<row r="{i}"{altura}>{cels}</row>')
     p.append("</sheetData>")
-    if aba.get("filtro") and len(linhas) >= 1 and ncols:
-        p.append(f'<autoFilter ref="A1:{ult}"/>')
+    if aba.get("proteger"):  # sem senha: é cautela, não trava; filtro, ordenação e largura de coluna continuam livres
+        p.append('<sheetProtection sheet="1" objects="1" scenarios="1" formatColumns="0" formatRows="0" sort="0" autoFilter="0"/>')
+    if aba.get("filtro") and len(linhas) >= cab and ncols:
+        p.append(f'<autoFilter ref="A{cab}:{ult}"/>')
+    if aba.get("aviso") and ncols > 1:
+        p.append(f'<mergeCells count="1"><mergeCell ref="A1:{_col(ncols - 1)}1"/></mergeCells>')
     p.append("</worksheet>")
     return "".join(p)
 
 
-def escrever_xlsx(caminho, abas):
+def escrever_xlsx(caminho, abas, so_leitura_recomendado=False):
     """Grava um .xlsx de forma atômica. Levanta ValueError se as abas forem inválidas."""
     if not abas:
         raise ValueError("É preciso ao menos uma aba.")
@@ -155,12 +170,13 @@ def escrever_xlsx(caminho, abas):
     # Filtro automático: o Excel e o Google Planilhas esperam o nome oculto _xlnm._FilterDatabase de cada aba filtrada.
     nomes = "".join(
         f'<definedName name="_xlnm._FilterDatabase" localSheetId="{i}" hidden="1">'
-        f"'{_texto_xml(a['nome']).replace(chr(39), chr(39) * 2)}'!$A$1:${_col(_ncols(a) - 1)}${len(a['linhas'])}"
+        f"'{_texto_xml(a['nome']).replace(chr(39), chr(39) * 2)}'!$A${_linha_cab(a)}:${_col(_ncols(a) - 1)}${len(a['linhas']) + _linha_cab(a) - 1}"
         "</definedName>"
         for i, a in enumerate(abas) if a.get("filtro") and a.get("linhas") and _ncols(a))
     wb = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
           f'<workbook xmlns="{NS}" xmlns:r="{NS_R}">'
-          '<bookViews><workbookView activeTab="0"/></bookViews>'
+          + ('<fileSharing readOnlyRecommended="1"/>' if so_leitura_recomendado else '')
+          + '<bookViews><workbookView activeTab="0"/></bookViews>'
           f'<sheets>{folhas}</sheets>'
           + (f"<definedNames>{nomes}</definedNames>" if nomes else "") + '</workbook>')
     wbrels = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
@@ -175,14 +191,15 @@ def escrever_xlsx(caminho, abas):
                '<font><b/><sz val="11"/><name val="Calibri"/></font>'
                '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>'
                '<font><b/><sz val="14"/><color rgb="FF0F1D33"/><name val="Calibri"/></font></fonts>'
-               '<fills count="4"><fill><patternFill patternType="none"/></fill>'
+               '<fills count="5"><fill><patternFill patternType="none"/></fill>'
                '<fill><patternFill patternType="gray125"/></fill>'
                '<fill><patternFill patternType="solid"><fgColor rgb="FF0F1D33"/><bgColor indexed="64"/></patternFill></fill>'
-               '<fill><patternFill patternType="solid"><fgColor rgb="FFF7F0E1"/><bgColor indexed="64"/></patternFill></fill></fills>'
+               '<fill><patternFill patternType="solid"><fgColor rgb="FFF7F0E1"/><bgColor indexed="64"/></patternFill></fill>'
+               '<fill><patternFill patternType="solid"><fgColor rgb="FFB42F2F"/><bgColor indexed="64"/></patternFill></fill></fills>'
                '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'
                '<border><left/><right/><top/><bottom style="thin"><color rgb="FFD9DEE7"/></bottom><diagonal/></border></borders>'
                '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
-               '<cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+               '<cellXfs count="8"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
                '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
                '<xf numFmtId="0" fontId="2" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1">'
                '<alignment vertical="center" wrapText="1"/></xf>'
@@ -192,7 +209,9 @@ def escrever_xlsx(caminho, abas):
                '<alignment vertical="top"/></xf>'
                '<xf numFmtId="164" fontId="1" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1">'
                '<alignment vertical="top"/></xf>'
-               '<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs>'
+               '<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
+               '<xf numFmtId="0" fontId="2" fillId="4" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1">'
+               '<alignment vertical="center" wrapText="1"/></xf></cellXfs>'
                '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
                '</styleSheet>')
     agora = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")

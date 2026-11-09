@@ -149,6 +149,37 @@ class Servidor(ThreadingHTTPServer):
     def config(self):
         return config.carregar(self.caminho_config, aviso=lambda *_: None)
 
+    def planilha_depois(self, intervalo=120, limite_s=7200, primeira=5):
+        """0.7.14: regrava a planilha em segundo plano; se ela estiver aberta (travada), tenta de novo a cada 2 minutos
+        por até 2 horas e grava sozinho quando o Excel fechar. Uma tentativa por vez."""
+        if getattr(self, "_planilha_tentando", False) or not compartilhar.pasta_base(self.config()):
+            return False
+        self._planilha_tentando = True
+
+        def alvo():
+            import time as _t
+            inicio = _t.time()
+            _t.sleep(primeira)
+            try:
+                while _t.time() - inicio < limite_s:
+                    try:
+                        if self.estado.rodando:  # a leitura em andamento grava a planilha no fim
+                            _t.sleep(intervalo)
+                            continue
+                        if radar.regravar_planilha(self.config(), bd.Banco(self.caminho_db), self.pasta, VERSAO, lambda *_: None):
+                            if self.estado.situacao:
+                                self.estado.situacao.pop("aviso_planilha", None)
+                                self.estado.situacao["planilha_gravada_em"] = dt.datetime.now().isoformat(timespec="minutes")
+                            return
+                    except Exception:  # noqa: BLE001 - tenta de novo no próximo intervalo
+                        pass
+                    _t.sleep(intervalo)
+            finally:
+                self._planilha_tentando = False
+
+        threading.Thread(target=alvo, daemon=True, name="planilha").start()
+        return True
+
     def rodar(self, dias=None):
         """Começa uma rodada numa thread. Devolve False se já há uma rodando."""
         if not self.estado.comecar():
@@ -161,6 +192,8 @@ class Servidor(ThreadingHTTPServer):
                 situacao = radar.executar(cfg, banco, self.estado.aviso, self.pasta, dias=dias, versao=VERSAO,
                                           caminho_config=self.caminho_config)
                 self.estado.terminar(situacao)
+                if situacao.get("aviso_planilha"):
+                    self.planilha_depois()
                 if cfg["radar"].get("avisar_ao_terminar", True):
                     agendar.notificar(marca(self.pasta).get("nome", "RADAR JUDICIAL"), agendar.texto_aviso(situacao, marca(self.pasta).get("curto", "RADAR")))
             except radar.RoboDesligado as e:
@@ -226,8 +259,13 @@ class Tratador(BaseHTTPRequestHandler):
                 dias = max(1, min(90, int(qs.get("dias", [r.get("dias_na_pagina", 1)])[0])))
             except (TypeError, ValueError):
                 dias = 1
-            pagina = radar.montar_radar(cfg, bd.Banco(s.caminho_db), situacao=s.estado.situacao, dias=dias)
+            banco = bd.Banco(s.caminho_db)
+            visao = "arquivo" if qs.get("visao", [""])[0] == "arquivo" else "lista"
+            pagina = radar.montar_radar(cfg, banco, situacao=s.estado.situacao, dias=dias, visao=visao)
             pagina["versao"] = VERSAO
+            pagina["espaco"] = banco.espaco()
+            ultimo = banco.execucoes("retorno", 1)
+            pagina["retorno"] = ultimo[0] if ultimo else {}
             comp = cfg["compartilhar"]
             base = compartilhar.pasta_base(cfg)
             chave = atualizar.chave_publica(s.pasta)
@@ -247,7 +285,9 @@ class Tratador(BaseHTTPRequestHandler):
                            "agendavel": agendar.disponivel(), "agendado": agendado,
                            "horarios": horarios, "dias": dias, "tem_noite": agendar.tem_noite(horarios),
                            "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
-                           "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True))},
+                           "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True)),
+                           "area_logada_por_dia": int(r.get("area_logada_por_dia") or 30),
+                           "guardar_meses": int(r.get("guardar_meses") or 12)},
                 "atualizacao": {"chave": bool(chave), "impressao": assinatura.impressao(chave) if chave else "",
                                 "url": cfg["atualizacao"].get("url", ""), "pasta": compartilhar.pasta_atualizacao(cfg)},
                 "versao": VERSAO, "estado": s.estado.como_dict(), "pasta_robo": s.pasta,
@@ -391,6 +431,68 @@ class Tratador(BaseHTTPRequestHandler):
                 ok, msg = agendar.agendar(s.pasta, *agendar.do_config(cfg)) if ligar else agendar.desagendar()
                 resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg})
             return self._responder(resposta)
+        if caminho == "/situacao":  # 0.7.14: muda a situação de um ou muitos processos (lote); devolve o "antes" para desfazer
+            try:
+                r = bd.Banco(s.caminho_db).mudar_situacao(corpo.get("processos") or [], corpo.get("situacao"),
+                                                          perfil=s.config()["usuario"].get("email", ""), motivo=str(corpo.get("motivo") or ""))
+            except ValueError as e:
+                return self._responder({"ok": False, "motivo": str(e)}, status=400)
+            s.planilha_depois()
+            return self._responder({"ok": True, **r})
+        if caminho == "/desfazer":
+            n = bd.Banco(s.caminho_db).desfazer_situacao(corpo.get("antes") or {}, perfil=s.config()["usuario"].get("email", ""))
+            s.planilha_depois()
+            return self._responder({"ok": True, "quantos": n})
+        if caminho == "/migrar-situacoes":  # uma vez: o que estava guardado no navegador vai para o banco do computador
+            banco = bd.Banco(s.caminho_db)
+            atuais = {l["processo"]: l["status"] for l in banco.todos_leads()}
+            grupos = {}
+            itens = corpo.get("itens") if isinstance(corpo.get("itens"), dict) else {}
+            for proc, st in list(itens.items())[:20000]:
+                st = bd.situacao_valida(st)
+                if st and atuais.get(proc) == "novo" and st != "novo":
+                    grupos.setdefault(st, []).append(proc)
+            levados = 0
+            for st, procs in grupos.items():  # uma mudança (e um registro) por situação, não por processo
+                levados += banco.mudar_situacao(procs, st, perfil="migração do navegador")["quantos"]
+            return self._responder({"ok": True, "levados": levados})
+        if caminho == "/limpar":
+            banco = bd.Banco(s.caminho_db)
+            try:
+                meses = max(1, min(120, int(corpo.get("meses") or 12)))
+            except (TypeError, ValueError):
+                return self._responder({"ok": False, "motivo": "meses inválido"}, status=400)
+            feitas = banco.limpar_detalhe(meses, perfil=s.config()["usuario"].get("email", ""))
+            banco.compactar()
+            return self._responder({"ok": True, "resumidas": feitas, "espaco": banco.espaco()})
+        if caminho == "/copia-planilha":
+            cfg = s.config()
+            ok, resultado = compartilhar.gerar_copia(cfg)
+            if ok and corpo.get("abrir", True):
+                abrir_no_windows(resultado)
+            return self._responder({"ok": ok, "caminho" if ok else "motivo": resultado})
+        if caminho == "/contatos/preparar":
+            from . import contatos as ct
+            cfg = s.config()
+            pagina = radar.montar_radar(cfg, bd.Banco(s.caminho_db), dias=90)
+            quero = {str(x) for x in (corpo.get("processos") or []) if isinstance(x, (str, int))}
+            itens = [i for i in pagina["itens"] if not quero or i["processo"] in quero]
+            caminho_md, n = ct.preparar(itens, s.pasta, marca(s.pasta)["nome"], int(cfg["radar"].get("area_logada_por_dia") or 30))
+            abrir_no_windows(os.path.dirname(caminho_md))
+            return self._responder({"ok": True, "caminho": caminho_md, "quantos": n})
+        if caminho == "/contatos/colar":
+            from . import contatos as ct
+            banco = bd.Banco(s.caminho_db)
+            empresas = {}
+            for l in banco.todos_leads():
+                emp = (l.get("empresa_receita") or {}).get("razao_social") or (l.get("empresas") or [""])[0]
+                empresas[l["processo"]] = emp
+            aceitas, recusadas = ct.colar(str(corpo.get("texto") or "")[:200000], empresas)
+            novas = sum(1 for c in aceitas if banco.guardar_contato(c))
+            banco.registrar_colagem(s.config()["usuario"].get("email", ""), str(corpo.get("arquivo") or "")[:120], novas, len(recusadas),
+                                    "; ".join(f"linha {r['linha']}: {r['motivo']}" for r in recusadas)[:2000])
+            s.planilha_depois()
+            return self._responder({"ok": True, "aceitas": novas, "repetidas": len(aceitas) - novas, "recusadas": recusadas[:200]})
         if caminho == "/abrir":
             cfg = s.config()
             base = compartilhar.pasta_base(cfg)
@@ -398,7 +500,11 @@ class Tratador(BaseHTTPRequestHandler):
             if corpo.get("o_que") == "pasta_mae":  # a pasta escolhida, onde aparece a pasta da planilha (para compartilhar)
                 alvo = os.path.dirname(base) if base else ""
             else:
-                alvo = planilha if corpo.get("o_que") == "planilha" else (os.path.dirname(planilha) if planilha else "")
+                alvo = planilha if corpo.get("o_que") in ("planilha", "editar") else (os.path.dirname(planilha) if planilha else "")
+            if corpo.get("o_que") == "editar":  # Preferências e Exclusões: abre normal, para o escritório poder salvar
+                alvo = planilha
+            elif corpo.get("o_que") == "planilha" and abrir_so_leitura(alvo):
+                return self._responder({"ok": True, "so_leitura": True})
             if abrir_no_windows(alvo):
                 return self._responder({"ok": True})
             return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Escolha a pasta do Google Drive em Configuração e faça uma leitura.",
@@ -414,6 +520,8 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": False, "motivo": "Escolha a pasta da planilha em Configuração."})
             recados = []
             ok = radar.regravar_planilha(s.config(), bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append)
+            if not ok:
+                s.planilha_depois()
             if ok and s.estado.situacao:
                 s.estado.situacao.pop("aviso_planilha", None)
             return self._responder({"ok": ok, "motivo": " ".join(x.strip() for x in recados)[-300:]})
@@ -458,6 +566,36 @@ def marca(pasta):
     except (OSError, ValueError, AttributeError):
         pass
     return dict(MARCA_PADRAO)
+
+
+def excel_exe():
+    """Caminho do Excel pelo registro do Windows (App Paths), ou ''."""
+    if os.name != "nt":
+        return ""
+    try:
+        import winreg
+        for raiz in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+            try:
+                with winreg.OpenKey(raiz, r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\excel.exe") as k:
+                    valor = winreg.QueryValue(k, None)
+                    if valor and os.path.exists(valor.strip('"')):
+                        return valor.strip('"')
+            except OSError:
+                continue
+    except ImportError:
+        pass
+    return ""
+
+
+def abrir_so_leitura(caminho):
+    """0.7.14: abre a planilha no Excel em modo somente leitura (/r), para quem olha não travar a gravação do robô.
+    Sem Excel (ou fora do Windows), devolve False e quem chamou abre do jeito normal."""
+    exe = excel_exe()
+    if not exe or not caminho or not os.path.exists(caminho):
+        return False
+    import subprocess  # nosec B404 - só abre o Excel do próprio Windows com a planilha do programa
+    subprocess.Popen([exe, "/r", caminho], close_fds=True)  # nosec B603 - lista fixa, sem shell
+    return True
 
 
 def abrir_no_windows(caminho):

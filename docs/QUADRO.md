@@ -92,18 +92,20 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.14 (pacote)**: situações no banco local (chaves da Arquitetura) com lote, desfazer e (?); Arquivo; abas Painel ·
-  Lista · Arquivo · Histórico; menu ☰ com Configuração; uma coluna; filtros novos (limpar, salvos, não informado, valor
-  com faixas, contato, situação, frente), busca, ordenação dupla; selo de contato; endereço; contatos (preparar busca e
-  colar resposta); planilha com aviso, proteção sem senha, abrir só para leitura, gravar ao fechar, cópia, abas Arquivo,
-  Contatos e Histórico de leituras; retorno de totais à SolverONE; tela na largura toda com teste em 4 tamanhos. Itens
-  42 a 84 de `documentacao/FEEDBACK-TESTE-2026-11-09.md` (menos 79 e 82, que são da 0.7.15).
+- (nada) Próximo: 0.7.15 (estatísticas no tempo e "Atualizar estatísticas", depois do desenho da Arquitetura do item 82).
 
 ### Arquivos em uso
-- `robo/lexsuite/` (banco, radar, compartilhar, planilha, app, cnpj, conta, frentes), `robo/radar_modelo.html`,
-  `robo/testes/`, `robo/LEIA-ME.md`, `robo/ARQUITETURA.md`, `robo/PENDENCIAS.md` (seção Produto), `paginas/manual.html`.
+- (nenhum)
 
 ### Feito (mais recente primeiro)
+- 09/Nov: **0.7.14 na `main`, pronta para publicar**, com o "pode" do dono (pacote dos itens 40 a 84, menos 79 e 82):
+  menu ☰, abas Painel · Lista · Arquivo · Histórico, situação no banco com lote e Desfazer, busca e filtros novos,
+  contatos (preparar busca e colar resposta), endereço, planilha com aviso, proteção, abrir só para leitura, "Editar
+  Preferências e Exclusões", cópia e regravação sozinha, retorno de totais à SolverONE, letra e gráficos que crescem com
+  a tela, teste permanente de larguras (`robo/testes/tela/`). 114 testes de unidade e 28 verificações de tela; revisor
+  sem bloqueio depois dos ajustes. **Pacote: 43 arquivos no download completo e 42 no de atualização** (novos
+  `lexsuite/contatos.py` e `lexsuite/frentes.py`). O manual do site já descreve a 0.7.14. Falta o "publica a versão
+  0.7.14" do dono na Operação e o teste no Windows do "Abrir a planilha" só para leitura.
 - 09/Nov: **incidente**: o banco do pacote 0.7.14 (commit 0835aac: situações, ações, contatos, estatísticas, frente)
   foi à `main` sem querer, junto de um envio do quadro feito a partir do ramo. Revertido na `main` com commit de reversão
   (sem reescrever histórico) antes de qualquer publicação; a 0.7.13 sai só com a correção do erro das 3h, revisada. A
@@ -300,6 +302,8 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 09/Nov | Arquitetura | Produto | **Aceite dos termos no programa (0.7.14)**: a `lex-conta` v8 responde `ok:false, motivo:"aceite_pendente"` (com `mensagem` e `aceite.link`) enquanto o responsável não aceitar os termos; a 0.7.13 mostra isso como "A licença deste escritório não está ativa. Antes do primeiro uso… <link>. Fale com judicial@" (legível, mas tosco). Pedido: (1) `conta.py`: `MOTIVOS["aceite_pendente"] = "Falta o aceite dos termos pelo responsável do escritório."` e a tela mostrar `mensagem` com o link clicável (abre o navegador); (2) `instalador/INSTALAR.bat`: tratar `aceite_pendente` como "Falta aceitar os termos: abra o link do e-mail de boas-vindas" em vez de cair em "sem internet"; (3) Configuração: mostrar "Termos aceitos por … em … (v…)" a partir de `aceite` da resposta. Contrato em `documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`, seção 5a | não |
 | 09/Nov | Arquitetura | conversa do RootifyONE (via dono) | **Acréscimo ao aplicado de hoje**: `admin_lex_listar` também devolve `exigir_aceite` (boolean) e `admin_lex_salvar` aceita `exigir_aceite` (interruptor "Exigir aceite dos termos antes do uso" na ficha, com (?) explicando: a licença fica ativa, o programa só libera depois do aceite). A prévia do e-mail de boas-vindas deve preencher `{{email}}` (e-mail do responsável) e `{{nome}}` (já preenche) também dentro do link do aceite | não |
 | 09/Nov | Produto | Arquitetura | Item 82 de `documentacao/FEEDBACK-TESTE-2026-11-09.md`: **"Atualizar estatísticas"** (só totais, sem Lista nem Arquivo) de 1, 3, 6 ou 12 meses para trás, por frente, tribunal e vara, em fila noturna aos poucos e com agendamento periódico. Pede desenho curto: até quando o DJEN guarda os cadernos antigos (a API de caderno aceita datas passadas?), volume e tempo (TRT2 é grande; 1 ano dos 24 TRTs ≈ 6 mil cadernos), limite seguro de pedidos por noite sem incomodar os sistemas do CNJ, e se a fonte melhor para série longa é o DataJud (que já traz encerramento). Produto implementa na 0.7.15 depois do desenho | não |
+| 09/Nov | Produto | Operação | 0.7.14 pronta na `main`. Ao publicar: **43 arquivos no download completo e 42 no de atualização** (novos `lexsuite/contatos.py` e `lexsuite/frentes.py`). Depois, teste no Windows (ou peça ao dono): "Abrir a planilha" abre o Excel em somente leitura; com ela aberta, "Ler o Diário agora" mostra o aviso de planilha aberta e grava sozinho alguns minutos depois de fechar o Excel; "Editar Preferências e Exclusões" abre para editar | não |
+| 09/Nov | Produto | Arquitetura | `CLAUDE.md` ("Como entregar"): a contagem do pacote passa a 43 e 42 arquivos na 0.7.14 (novos `contatos.py` e `frentes.py`) | não |
 
 ## Perguntas ao dono (uma lista só; a Produto consolida e leva ao dono)
 

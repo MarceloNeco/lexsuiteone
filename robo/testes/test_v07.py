@@ -163,19 +163,20 @@ class Compartilhada(unittest.TestCase):
         caminho = compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "abcd", "", lambda *_: None)
         doc = planilha.ler_xlsx(caminho)
         nomes = [(a["nome"], a["oculta"]) for a in doc["abas"]]
-        self.assertEqual(nomes, [("Radar", False), ("Preferências", False), ("Exclusões", False), ("Controle", True), ("Como usar", False), ("Log", False), ("Saúde", True), ("Sobre", True)])
-        col = doc["abas"][0]["linhas"][0].index("Excluída (motivo)")
-        self.assertEqual(doc["abas"][0]["linhas"][1][col], "Exclusão: cliente")
-        log = doc["abas"][5]["linhas"]  # 0.7.13: Log visível; a rodada antiga aparece como "resumo da rodada"
+        self.assertEqual(nomes, [("Radar", False), ("Contatos", False), ("Preferências", False), ("Exclusões", False), ("Controle", True), ("Como usar", False), ("Histórico de leituras", False), ("Saúde", True), ("Sobre", True)])
+        self.assertIn("regravada", doc["abas"][0]["linhas"][0][0])  # 0.7.14: linha de aviso no topo; cabeçalho na 2
+        col = doc["abas"][0]["linhas"][1].index("Excluída (motivo)")
+        self.assertEqual(doc["abas"][0]["linhas"][2][col], "Exclusão: cliente")
+        log = doc["abas"][6]["linhas"]  # 0.7.13: Log visível; a rodada antiga aparece como "resumo da rodada"
         self.assertTrue(any(l[1] == "resumo da rodada" and "10 publicações" in str(l[6]) for l in log[1:]))
-        self.assertIn(["Escritório", "Escritório Teste"], doc["abas"][7]["linhas"])
+        self.assertIn(["Escritório", "Escritório Teste"], doc["abas"][8]["linhas"])
         # o escritório edita Exclusões; a próxima regravação preserva
         abas = [{"nome": a["nome"], "linhas": a["linhas"], "oculta": a["oculta"]} for a in doc["abas"]]
-        abas[2]["linhas"] = [["Nome ou CNPJ", "Motivo"], ["Cliente Preservado Ltda", "cliente"]]
+        abas[3]["linhas"] = [["Nome ou CNPJ", "Motivo"], ["Cliente Preservado Ltda", "cliente"]]
         planilha.escrever_xlsx(caminho, abas)
         compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "abcd", "", lambda *_: None)
         doc2 = planilha.ler_xlsx(caminho)
-        self.assertEqual(doc2["abas"][2]["linhas"][1][0], "Cliente Preservado Ltda")
+        self.assertEqual(doc2["abas"][3]["linhas"][1][0], "Cliente Preservado Ltda")
         self.assertEqual(preferencias.carregar(os.path.dirname(caminho))["exclusoes"][0]["nome"], "Cliente Preservado Ltda")
         # planilha corrompida (em uso): não regrava, não perde nada
         with open(caminho, "wb") as f:
@@ -201,24 +202,31 @@ class Compartilhada(unittest.TestCase):
         wb = z.read("xl/workbook.xml").decode()
         ncol = len(radar.COLUNAS_RADAR) + 2
         ult = planilha._col(ncol - 1)
-        self.assertIn(f'<autoFilter ref="A1:{ult}4"/>', folha)
+        self.assertIn(f'<autoFilter ref="A2:{ult}5"/>', folha)  # 0.7.14: aviso na linha 1, cabeçalho na 2
         self.assertLess(folha.index("</sheetData>"), folha.index("<autoFilter"))
         self.assertIn("_xlnm._FilterDatabase", wb)
-        self.assertIn(f"'Radar'!$A$1:${ult}$4", wb)
+        self.assertIn(f"'Radar'!$A$2:${ult}$5", wb)
+        self.assertIn('<fileSharing readOnlyRecommended="1"/>', wb)
+        self.assertIn('<sheetProtection sheet="1"', folha)
+        self.assertIn('autoFilter="0"', folha)
+        self.assertIn('<mergeCell ref="A1:', folha)
+        self.assertLess(folha.index("<sheetProtection"), folha.index("<autoFilter"))
+        self.assertLess(folha.index("<autoFilter"), folha.index("<mergeCells"))
         self.assertIn('FF0F1D33', estilos)
         self.assertIn('numFmtId="164"', estilos)
-        self.assertIn('<cellXfs count="7">', estilos)
+        self.assertIn('<cellXfs count="8">', estilos)
         self.assertLess(estilos.index("<numFmts"), estilos.index("<fonts"))
         j = planilha._col([c for _, c in radar.COLUNAS_RADAR].index("valor_causa"))
-        self.assertIn(f'<c r="{j}2" s="5"><v>250000</v></c>', folha)  # acima do mínimo: destacado
-        self.assertIn(f'<c r="{j}3" s="4"><v>30000</v></c>', folha)   # abaixo: só o formato R$
-        self.assertIn('<c r="A1" s="2"', folha)
+        self.assertIn(f'<c r="{j}3" s="5"><v>250000</v></c>', folha)  # acima do mínimo: destacado
+        self.assertIn(f'<c r="{j}4" s="4"><v>30000</v></c>', folha)   # abaixo: só o formato R$
+        self.assertIn('<c r="A1" s="7"', folha)  # linha vermelha de aviso
+        self.assertIn('<c r="A2" s="2"', folha)  # cabeçalho azul-marinho
         import xml.etree.ElementTree as ET
         for nome in z.namelist():
             if nome.endswith(".xml") or nome.endswith(".rels"):
                 ET.fromstring(z.read(nome))  # todo XML é bem formado
         doc = planilha.ler_xlsx(caminho)
-        self.assertEqual(doc["abas"][0]["linhas"][1][[c for _, c in radar.COLUNAS_RADAR].index("valor_causa")], 250000)
+        self.assertEqual(doc["abas"][0]["linhas"][2][[c for _, c in radar.COLUNAS_RADAR].index("valor_causa")], 250000)
         como = [a for a in doc["abas"] if a["nome"] == "Como usar"][0]
         self.assertFalse(como["oculta"])
         self.assertTrue(any("Google" in " ".join(map(str, l)) for l in como["linhas"]))
@@ -350,8 +358,13 @@ class SegurancaV071(unittest.TestCase):
         banco = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
         banco.guardar_lead({"processo": "1", "empresas": ["X"]}, "2020-01-01")
         banco.guardar_lead({"processo": "2", "empresas": ["Y"]}, dt.date.today().isoformat())
+        banco.con.execute("UPDATE leads SET dados = ? WHERE processo = '1'", ('{"processo": "1", "empresas": ["X"], "texto_curto": "nome do reclamante"}',))
         self.assertEqual(banco.limpar_antigos(365), 1)
-        self.assertEqual([l["processo"] for l in banco.todos_leads()], ["2"])
+        # 0.7.13: a ação velha não some; o dado completo vira resumo (sem o trecho do Diário) e as estatísticas ficam
+        leads = {l["processo"]: l for l in banco.todos_leads()}
+        self.assertEqual(sorted(leads), ["1", "2"])
+        self.assertTrue(leads["1"]["resumido"] and "texto_curto" not in leads["1"])
+        self.assertFalse(leads["2"]["resumido"])
         self.assertEqual(banco.limpar_antigos(0), 0)
 
     def test_mostrar_socios_desligado(self):
@@ -677,3 +690,121 @@ class V0713(unittest.TestCase):
         e.terminar(erro="x", info={"causa": "governo_fora", "pt": "a", "en": "b", "detalhe": "HTTP 503"})
         self.assertEqual(e.como_dict()["erro_info"]["causa"], "governo_fora")
 
+
+
+class V0714(unittest.TestCase):
+    """0.7.14: situação no banco (lote, desfazer, migração), Arquivo, retorno de totais, contatos, cópia da planilha,
+    frente. Dados fictícios."""
+
+    def _banco(self):
+        from lexsuite import banco as bd
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        for k, trib in enumerate(["TRT2", "TRT15", "TRT15"]):
+            b.guardar_lead({"processo": f"000{k}-11.2026.5.02.0001", "tribunal": trib, "vara": "1ª Vara", "empresas": [f"Empresa Fictícia {k} Ltda"],
+                            "data_publicacao": "2026-11-06", "valor_causa": [None, 30000, 250000][k], "classe": "ATOrd"}, "2026-11-06")
+        return b
+
+    def test_situacao_lote_e_desfazer(self):
+        from lexsuite import banco as bd
+        b = self._banco()
+        procs = ["0000-11.2026.5.02.0001", "0001-11.2026.5.02.0001"]
+        r = b.mudar_situacao(procs, "arquivado", perfil="ana@example.com", motivo="sem interesse")
+        self.assertEqual(r["quantos"], 2)
+        self.assertEqual(set(r["antes"].values()), {"novo"})
+        sit = {l["processo"]: l["status"] for l in b.todos_leads()}
+        self.assertEqual(sit[procs[0]], "arquivado")
+        self.assertEqual(b.acoes(1)[0]["quantos"], 2)  # quem, quando e quantos ficam registrados
+        self.assertEqual(b.desfazer_situacao(r["antes"]), 2)
+        self.assertEqual({l["status"] for l in b.todos_leads()}, {"novo"})
+        with self.assertRaises(ValueError):
+            b.mudar_situacao(procs, "qualquer")
+        self.assertEqual(bd.situacao_valida("Em contato"), "em_contato")  # situações antigas viram as chaves novas
+        self.assertEqual(bd.situacao_valida("Virou cliente"), "virou_cliente")
+
+    def test_lista_esconde_arquivado_e_arquivo_mostra_tudo(self):
+        from lexsuite import radar
+        b = self._banco()
+        b.mudar_situacao(["0002-11.2026.5.02.0001"], "arquivado")
+        cfg = {"radar": {"tribunais": ["TRT15"], "dias_na_pagina": 30}}
+        agora = dt.datetime(2026, 11, 9, 9, 0)
+        lista = radar.montar_radar(cfg, b, agora=agora, prefs={}, dias=30)
+        arquivo = radar.montar_radar(cfg, b, agora=agora, prefs={}, dias=30, visao="arquivo")
+        self.assertEqual([i["processo"] for i in lista["itens"]], ["0001-11.2026.5.02.0001"])  # só TRT15 e não arquivado
+        self.assertEqual(len(arquivo["itens"]), 3)  # TRT2 (desmarcado) e o arquivado continuam no Arquivo
+        self.assertEqual({i["situacao"] for i in arquivo["itens"]}, {"novo", "arquivado"})
+        self.assertEqual(lista["itens"][0]["frente"], "trabalhista")
+
+    def test_retorno_so_quantidades(self):
+        b = self._banco()
+        b.mudar_situacao(["0001-11.2026.5.02.0001"], "virou_cliente")
+        tabela = b.retorno(dias=3650)
+        self.assertTrue(tabela)
+        for linha in tabela:
+            self.assertEqual(set(linha), {"data", "tribunal", "frente", "faixa_valor", "situacao", "qtd"})
+            self.assertNotIn("Empresa", json.dumps(linha))
+        self.assertIn("virou_cliente", {l["situacao"] for l in tabela})
+
+    def test_retorno_vai_na_conferencia(self):
+        from lexsuite import conta
+        enviado = {}
+        def pedir(url, corpo, **k):
+            enviado.update(corpo)
+            return {"ok": True, "retorno": {"gravadas": 1, "recusadas": 0}}
+        cfg = {"conta": {"codigo": "LEX-7K4M-2PQ9", "instalacao": "0123456789abcdef"}}
+        c = conta.verificar(cfg, "0.7.14", dt.date(2026, 11, 9), pedir=pedir,
+                            retorno=[{"data": "2026-11-06", "tribunal": "TRT15", "frente": "trabalhista", "faixa_valor": "sem", "situacao": "novo", "qtd": 2}])
+        self.assertEqual(enviado["retorno"][0]["qtd"], 2)
+        self.assertEqual(c["retorno_resposta"]["gravadas"], 1)
+
+    def test_contatos_colar_valida_linha_a_linha(self):
+        from lexsuite import contatos
+        empresas = {"0001-11.2026.5.02.0001": "Empresa Fictícia 1 Ltda"}
+        texto = """| processo | empresa | canal | valor | de_pessoa | fonte | data | observação |
+|---|---|---|---|---|---|---|---|
+| 0001-11.2026.5.02.0001 | Empresa Fictícia 1 Ltda | telefone | (19) 3333-4444 | não | PJe petição inicial | 2026-11-09 | |
+| 0001-11.2026.5.02.0001 | Empresa Fictícia 1 Ltda | e-mail | contato@ficticia.example | sim | PJe citação | 2026-11-09 | sócio |
+| 0001-11.2026.5.02.0001 | Empresa Fictícia 1 Ltda | outro | CPF 123.456.789-09 | sim | outro | 2026-11-09 | |
+| 0001-11.2026.5.02.0001 | Empresa Fictícia 1 Ltda | telefone | (19) 99999-0000 | sim | PJe petição inicial | 2026-11-09 | do reclamante |
+| 9999-11.2026.5.02.0001 | Outra | telefone | (11) 3333-4444 | não | outro | 2026-11-09 | |
+| 0001-11.2026.5.02.0001 | Empresa Fictícia 1 Ltda | fax | 123 | não | outro | 2026-11-09 | |"""
+        aceitas, recusadas = contatos.colar(texto, empresas, hoje=dt.date(2026, 11, 9))
+        self.assertEqual([a["canal"] for a in aceitas], ["telefone", "email"])
+        self.assertTrue(aceitas[1]["de_pessoa"])
+        motivos = " | ".join(r["motivo"] for r in recusadas)
+        self.assertEqual(len(recusadas), 4)
+        for trecho in ("CPF", "reclamante", "não está na sua lista", "canal desconhecido"):
+            self.assertIn(trecho, motivos)
+
+    def test_contatos_preparar_respeita_o_limite(self):
+        from lexsuite import contatos
+        itens = [{"processo": f"{k:04d}-11.2026.5.02.0001", "tribunal": "TRT15", "vara": "V", "empresa": {"razao_social": f"Empresa Fictícia {k}", "cnpj": ""},
+                  "contato": {"tem": k == 0}} for k in range(50)]
+        caminho, n = contatos.preparar(itens, tempfile.mkdtemp(), limite=30, hoje=dt.date(2026, 11, 9))
+        self.assertEqual(n, 30)
+        texto = open(caminho, encoding="utf-8").read()
+        self.assertIn("Nunca** anote CPF", texto)
+        self.assertNotIn("0000-11.2026", texto)  # quem já tem contato não entra
+
+    def test_copia_da_planilha_sem_protecao(self):
+        from lexsuite import compartilhar, radar, banco as bd
+        pasta = tempfile.mkdtemp()
+        b = self._banco()
+        cfg = {"escritorio": "Escritório Teste", "compartilhar": {"pasta": pasta, "subpasta": "LexSuiteONE"}}
+        pagina = radar.montar_radar({"radar": {"tribunais": ["TRT15"]}}, b, agora=dt.datetime(2026, 11, 9), prefs={}, dias=30)
+        caminho = compartilhar.gravar_radar(cfg, pagina, b, "0.7.14", radar.COLUNAS_RADAR, radar.linha_csv, "", "", lambda *_: None, arquivo=[])
+        self.assertIn("readOnlyRecommended", zipfile.ZipFile(caminho).read("xl/workbook.xml").decode())
+        ok, copia = compartilhar.gerar_copia(cfg, agora=dt.datetime(2026, 11, 9, 10, 30))
+        self.assertTrue(ok, copia)
+        z = zipfile.ZipFile(copia)
+        self.assertNotIn("sheetProtection", z.read("xl/worksheets/sheet1.xml").decode())
+        self.assertNotIn("readOnlyRecommended", z.read("xl/workbook.xml").decode())
+        self.assertIn("Cópia de 09/11/2026 10:30", z.read("xl/worksheets/sheet1.xml").decode())
+        self.assertIn("Cópias", copia)
+
+    def test_frente_pela_regra(self):
+        from lexsuite import frentes
+        self.assertEqual(frentes.frente({"tribunal": "TRT15", "classe": "Execução Fiscal"}), "trabalhista")
+        self.assertEqual(frentes.frente({"tribunal": "TJSP", "classe": "Execução Fiscal"}), "tributario")
+        self.assertEqual(frentes.frente({"tribunal": "TJSP", "classe": "Recuperação Judicial"}), "empresarial")
+        self.assertEqual(frentes.frente({"tribunal": "TJSP", "classe": "Procedimento Comum Cível"}), "civel")
+        self.assertTrue(frentes.a_conferir({"tribunal": "TJSP", "classe": "Procedimento Comum Cível"}))
