@@ -303,6 +303,32 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .opcoes-cartao label { border: 1px solid var(--linha-2); border-radius: 10px; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-start; cursor: pointer; background: var(--folha); }
 .opcoes-cartao label:has(input:checked) { border-color: var(--latao); background: var(--latao-wash); }
 .opcoes-cartao small { display: block; color: var(--tinta-3); }
+/* 0.7.16: Configuração em janela própria (cabeçalho escuro, X, Salvar), pasta compacta, armazenamento, ✓ salvo, carregando */
+#config:not([hidden]) { position: fixed; z-index: 70; top: 3vh; left: 50%; transform: translateX(-50%); width: min(1100px, 96vw); max-height: 94vh; overflow-y: auto; padding: 0 22px 0; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+#c-veu { z-index: 65; display: none; } #c-veu:has(+ #config:not([hidden])) { display: block; }
+.conf-cab { position: sticky; top: 0; z-index: 2; margin: 0 -22px 4px; padding: 14px 22px; background: var(--marinho); color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.conf-cab h3 { margin: 0; color: #fff; font-size: 1.15rem; }
+.conf-x { all: unset; box-sizing: border-box; cursor: pointer; font-size: 1.15rem; line-height: 1; padding: 8px 12px; border-radius: 8px; color: #fff; }
+.conf-x:hover, .conf-x:focus-visible { background: rgba(255,255,255,.16); outline: 2px solid var(--latao); }
+.conf-sec, #config fieldset > legend { margin: 8px 0 0; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--latao-texto); }
+#config .painel-rodape { position: sticky; bottom: 0; background: var(--folha); padding: 12px 0 16px; border-top: 1px solid var(--linha); z-index: 2; }
+#c-salvar:disabled { opacity: .45; cursor: default; }
+.opcoes-cartao.compacta { display: flex; flex-wrap: wrap; gap: 6px; }
+.opcoes-cartao.compacta label { padding: 6px 14px; align-items: center; border-radius: 999px; display: inline-flex; gap: 8px; white-space: nowrap; }
+.opcoes-cartao input[type="radio"] { width: 16px; height: 16px; min-height: 0; padding: 0; margin: 0; flex: none; accent-color: var(--marinho); }
+.opcoes-cartao.compacta small { display: none; }
+.arm-tabela { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.arm-tabela td, .arm-tabela th { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--linha); }
+.arm-barra { display: inline-block; width: 120px; height: 8px; border-radius: 999px; background: var(--linha); overflow: hidden; vertical-align: middle; }
+.arm-barra i { display: block; height: 100%; background: var(--latao); } .arm-barra.cheia i { background: var(--erro); }
+.banner.arm { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: var(--latao-wash); color: var(--latao-texto); border-color: var(--latao); }
+.banner.arm.critico { background: #fbe9e7; color: var(--erro); border-color: var(--erro); }
+.salvo-ok { color: #1e7d3c; font-weight: 700; margin-left: 6px; }
+.carregando { position: fixed; inset: 0; z-index: 95; background: rgba(15,29,51,.9); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; font-size: 1.1rem; text-align: center; padding: 20px; }
+.carregando[hidden] { display: none; }
+.roda { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,.25); border-top-color: var(--latao); border-radius: 50%; animation: roda 1s linear infinite; }
+@keyframes roda { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .roda { animation-duration: 4s; } }
 .horas-prontas { display: flex; flex-wrap: wrap; gap: 6px; }
 .horas-prontas button { border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 6px 12px; min-height: 34px; font-weight: 600; cursor: pointer; }
 .horas-prontas button[aria-pressed="true"] { background: var(--marinho); color: #fff; border-color: var(--marinho); }
@@ -383,6 +409,7 @@ footer a:hover { text-decoration: underline; }
 </div></div>
 <nav class="gaveta" id="gaveta" hidden aria-label="Menu"></nav>
 <div class="veu" id="veu" hidden></div>
+<div class="carregando" id="carregando" hidden role="status" aria-live="polite"><div class="roda" aria-hidden="true"></div><p id="carregando-txt"></p></div>
 <dialog class="janela" id="janela"><div class="conteudo" id="janela-conteudo"></div></dialog>
 <div class="miolo">
 
@@ -403,6 +430,7 @@ footer a:hover { text-decoration: underline; }
     <label class="campo-conf"><span id="w-l-escritorio"></span><input id="w-escritorio" type="text" maxlength="80" autocomplete="organization"></label>
     <label class="campo-conf"><span id="w-l-nome"></span><input id="w-nome" type="text" maxlength="60" autocomplete="name"></label>
     <label class="campo-conf"><span id="w-l-email"></span><input id="w-email" type="email" maxlength="120" autocomplete="email"></label>
+    <label class="conf-acoes" id="w-termos-wrap" hidden><input type="checkbox" id="w-termos"> <span id="w-l-termos"></span> <a id="w-termos-link" target="_blank" rel="noopener noreferrer"></a></label>
     <div class="campo-conf"><span><span id="w-l-papel"></span> <button type="button" class="info" id="w-papel-info" aria-controls="w-papel-dica" aria-expanded="false">i</button></span><select id="w-papel" aria-labelledby="w-l-papel"></select></div>
     <p class="dica-campo" id="w-papel-dica" hidden></p>
     <label class="campo-conf" id="w-papel-outro-wrap" hidden><span id="w-l-papel-outro"></span><input id="w-papel-outro" type="text" maxlength="40" autocomplete="organization-title"></label>
@@ -451,13 +479,18 @@ footer a:hover { text-decoration: underline; }
   </div>
   <div class="banner nova" id="b-nova" hidden><span id="b-nova-txt"></span> <button type="button" class="primario" id="b-nova-btn"></button></div>
   <div class="banner" id="banner" hidden></div>
+  <div class="banner arm" id="b-arm" hidden></div>
   <div class="estado" id="estado"></div>
-  <div class="painel" id="config" hidden>
-    <h3 id="c-titulo"></h3>
+  <div class="veu" id="c-veu"></div>
+  <div class="painel" id="config" hidden role="dialog" aria-modal="true" aria-labelledby="c-titulo">
+    <div class="conf-cab"><h3 id="c-titulo"></h3><button type="button" class="conf-x" id="c-fechar">✕</button></div>
     <p class="nota-registro" id="c-mira"></p>
+    <h4 class="conf-sec" id="c-s-licenca"></h4>
     <label class="campo-conf"><span id="c-l-codigo"></span><input id="c-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
     <p class="nota-registro" id="c-codigo-nota" hidden></p>
-    <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta" hidden></select><span class="opcoes-cartao" id="c-pasta-cartoes" role="radiogroup"></span></label>
+    <h4 class="conf-sec" id="c-s-pasta"></h4>
+    <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta" hidden></select><span class="opcoes-cartao compacta" id="c-pasta-cartoes" role="radiogroup"></span></label>
+    <p class="agenda-info" id="c-pasta-nota"></p>
     <label class="campo-conf" id="c-outra-wrap" hidden><span id="c-l-outra"></span><input id="c-outra" type="text" spellcheck="false"></label>
     <div class="conf-acoes"><button type="button" class="chip" id="c-escolher" hidden></button><button type="button" class="chip" id="c-testar"></button><button type="button" class="chip" id="c-criar" hidden></button><span id="c-teste-txt"></span></div>
     <fieldset class="agenda" id="c-agendar-wrap">
@@ -479,6 +512,9 @@ footer a:hover { text-decoration: underline; }
       <legend id="c-l-tela"></legend>
       <label class="conf-acoes"><input type="checkbox" id="c-aba"> <span id="c-l-aba"></span></label>
     </fieldset>
+    <fieldset class="agenda" id="c-arm-wrap"><legend id="c-l-arm"></legend><div id="c-arm"></div></fieldset>
+    <fieldset class="agenda" id="c-termos-wrap"><legend id="c-l-termos"></legend><div id="c-termos"></div></fieldset>
+    <h4 class="conf-sec" id="c-s-sobre"></h4>
     <dl class="conf-info" id="c-info"></dl>
     <div class="painel-rodape">
       <span class="cont" id="c-msg"></span>
@@ -589,16 +625,16 @@ window.LEXSUITE_RADAR = null;
       w2_t: "Onde fica a planilha", w2_x: "A planilha é a lista do escritório em Excel, atualizada a cada leitura, com as abas de preferências e exclusões. O {c} cria uma pasta própria para ela no lugar que você escolher.",
       w3_t: "Frente, tribunais e leituras automáticas", w3_x: "Hoje o {c} acompanha a frente trabalhista; as outras frentes entram nas próximas versões.", w3_trib: "Tribunais escolhidos: {n}.",
       w4_t: "Tudo pronto", w4_x: "A primeira leitura leva de alguns minutos (poucos tribunais) a uma hora (os 24 TRTs); o andamento aparece na tela e na janela preta, que não pode ser fechada. O manual fica no alto da tela.",
-      w_rotina: "Leituras automáticas", w_nome_falta: "Informe o nome do escritório.", w_pasta_falta: "Escolha uma pasta ou marque \"Nenhuma\".", c_pasta: "Pasta da planilha (Google Drive)", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
+      w_rotina: "Leituras automáticas", w_nome_falta: "Informe o nome do escritório.", w_pasta_falta: "Escolha uma pasta ou marque \"Nenhuma\".", c_pasta: "Pasta das planilhas", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
       c_nenhuma: "Só neste computador (na pasta do RADAR)", c_outra_op: "Outra pasta...", c_salvar: "Salvar", c_atualizar: "Verificar atualização",
       c_versao: "Versão instalada", c_pasta_robo: "Pasta do programa", c_controle: "A planilha está em", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Ler sozinho, com o computador ligado", c_agendar_nao: "Leitura automática só no Windows.", w_agendar: "Ler sozinho {d} (dá para mudar em Configuração).", ag_titulo: "Leitura automática", ag_nova: "Outro horário", ag_add: "Acrescentar", ag_tirar: "Tirar o horário {h}", ag_todos: "Todos os dias", ag_uteis: "De segunda a sexta", ag_todo_dia: "todo dia", ag_seg_sex: "de segunda a sexta", ag_as: "às {h}", ag_e: " e ", ag_max: "No máximo 6 horários.", ag_ja: "Esse horário já está na lista.", ag_um: "Deixe pelo menos um horário (ou desmarque Ler sozinho).", ag_hora_inv: "Escolha a hora.", ag_compensa: "Se o computador estiver desligado ou dormindo na hora, a leitura acontece assim que ele ligar.", ag_noite: "O Diário sai a partir das 19h. Sem um horário depois das 19h, a leitura da noite não pega o Diário do dia; ele só entra na leitura seguinte.", ag_avisar: "Mostrar um aviso no canto da tela ao terminar cada leitura", proxima: "Próxima leitura automática: {q}.", hoje: "hoje", amanha: "amanhã", ag_salvar_dica: "Os horários valem depois de Salvar.", ag_le: "Lê {d}.", cod_instalador: "Veio do instalador. Para trocar o código, use Configuração depois.", papel_escolha: "Escolha uma opção", papel_outra: "Outra", papel_sem: "Prefiro não informar", papel_outro_l: "Qual é a sua função?", papel_dica: "Ajuda a SolverONE a adaptar o {c} ao trabalho de cada função. Se preferir, escolha \"Prefiro não informar\".", papel_falta: "Escolha a sua função no escritório (ou \"Prefiro não informar\").", papel_outro_falta: "Escreva qual é a sua função.",
-      op_drive: "No Google Drive deste computador (recomendado)", op_drive_x: "A planilha fica no seu Google Drive: dá para abrir em qualquer lugar e compartilhar com a equipe e com a SolverONE.", op_drive_nao: "Não achei o Google Drive para computador aqui. Para a planilha ir ao Drive, instale-o (google.com/drive/download) com a conta do escritório e abra o RADAR de novo; enquanto isso, use \"Só neste computador\".",
+      op_drive: "No Google Drive deste computador", op_drive_x: "A planilha fica no seu Google Drive: dá para abrir em qualquer lugar e compartilhar com a equipe do escritório.", op_drive_nao: "Não achei o Google Drive para computador aqui. Para a planilha ir ao Drive, instale-o (google.com/drive/download) com a conta do escritório e abra o RADAR de novo; enquanto isso, use \"Só neste computador\".",
       op_outra: "Escolher outra pasta", op_outra_x: "Qualquer pasta deste computador. Se ela não existir, o {c} cria.", op_escolher: "Escolher pasta…", op_local: "Só neste computador, por enquanto", op_local_x: "A planilha fica na pasta do {c} ({p}). Dá para passar para o Google Drive depois, em Configuração.",
       criar_pasta: "Criar a pasta", pasta_criada: "Pasta criada.", pasta_nao_existe: "Essa pasta ainda não existe. Clique em \"Criar a pasta\" ou siga em frente: o {c} cria ao avançar.",
       w_frente: "Frente", fr_trab: "✓ Trabalhista · 24 TRTs", fr_trib: "Tributário · em breve", fr_civel: "Cível e empresarial · em breve", w_tribs: "Tribunais", tr_todos: "Todos os 24 TRTs (recomendado)", tr_todos_x: "A primeira leitura leva de 30 a 60 minutos; as seguintes, bem menos.", tr_escolher: "Escolher os tribunais agora", tr_escolher_x: "Por região ou por estado. Dá para mudar quando quiser, em Tribunais.", w_tribs_falta: "Escolha pelo menos um tribunal.",
       w_destino: "A planilha vai ficar em:", w_sem_planilha: "Sem planilha por enquanto: a lista fica só nesta tela.", comp_t: "Falta um passo: compartilhar a pasta com a SolverONE (uma vez só)", comp_1: "Clique em \"Abrir a pasta\", logo abaixo.", comp_2: "Na janela que abrir, clique com o botão direito na pasta \"{s}\" e escolha Compartilhar (com o ícone do Google Drive).", comp_3: "Digite integracao@solverone.com.br, deixe como Editor e clique em Enviar.", comp_nota: "Sem isso o {c} funciona normalmente no escritório; a SolverONE só não vê o registro das leituras para ajudar quando algo der errado.", abrir_pasta_mae: "Abrir a pasta",
       c_chave: "Chave de atualização", c_chave_falta: "ausente: atualização desligada", c_atu_pasta: "Atualizações chegam por", c_salvo: "Salvo.",
-      c_dica: "A planilha LexSuiteONE.xlsx fica numa pasta própria, dentro da pasta escolhida acima: a aba Radar traz a lista; Preferências e Exclusões são do escritório; as abas ocultas são da SolverONE. Essa pasta é compartilhada uma vez com integracao@solverone.com.br (Editor).",
+      c_dica: "As planilhas (uma por frente: LexSuiteONE - Trabalhista.xlsx agora) ficam numa pasta própria, dentro da pasta escolhida acima, junto da pasta Cópias de segurança. A aba Radar traz a lista; Preferências e Exclusões são do escritório. Não é preciso compartilhar nada com a SolverONE.",
       atu_ok: "Atualizado para a versão {v}. Reiniciando...", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia", pern: "{d} dias", rodar: "Ler o Diário agora", rodando: "Lendo o Diário...",
       aba_regiao: "Por região", aba_uf: "Por estado", todos: "Selecionar todos", todos_ramo: "Selecionar todos ({r})", limpar: "Limpar", escolhidos: "{n} de {k} tribunais escolhidos", salvar: "Salvar", salvar_rodar: "Salvar e ler agora",
       dica: "Cada tribunal publica um diário por dia, de 5 a 150 MB. Dois tribunais levam uns 5 minutos; os 24, de 30 a 60 minutos na primeira vez. O computador precisa estar no Brasil.",
@@ -649,7 +685,7 @@ window.LEXSUITE_RADAR = null;
       hist_explica: "Cada linha é uma tentativa de leitura de um tribunal: quando, de onde veio o pedido, o que o site respondeu e o que o programa fez.",
       hist_resp_ajuda: "Código que o site do CNJ devolveu: 200 = respondeu normal; 403 antes das 3h = o Diário do dia ainda não foi liberado (não é erro); 404 = ainda não publicado; 429 ou 5xx = site do CNJ sobrecarregado ou fora do ar; \u201c-\u201d = sem resposta.",
       cod_tecnico: "código {c}", n_tribunais: "{n} tribunais", aviso_3h_tribs: "{t}: o Diário de hoje só sai às 3h da manhã; li até o último dia publicado ({d}). Nada a fazer.",
-      c_pasta_drive: "Google Drive (recomendado)", c_pasta_outra_x: "Escolha outra pasta deste computador ou da rede.", c_pasta_local_x: "Fica só neste computador, na pasta do programa; ninguém mais vê a planilha.",
+      c_pasta_drive: "Google Drive", c_pasta_outra_x: "Escolha outra pasta deste computador ou da rede.", c_pasta_local_x: "Fica só neste computador, na pasta do programa; ninguém mais vê a planilha.",
       ag_expl: "Clique nos horários em que o programa lê o Diário sozinho. Cada horário é uma leitura (não é início e fim). Para um horário que não está aqui, use \u201cOutro horário\u201d.",
       ret_titulo: "O que a SolverONE recebe", ret_quando: "Última conferência ({q}): {n} linha(s).", ret_nada: "Nada enviado ainda (vai na próxima leitura).", ret_frase: "Só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou contato.", ret_ver: "Ver a tabela enviada",
       editar_prefs: "Editar Preferências e Exclusões", editar_prefs_x: "Abre a planilha para editar as abas Preferências e Exclusões (as únicas que o programa lê). Salve e feche o Excel quando terminar: com a planilha aberta, o programa espera para gravar a lista.", abrir_para_editar: "Abrir para editar",
@@ -686,16 +722,16 @@ window.LEXSUITE_RADAR = null;
       w2_t: "Where the spreadsheet lives", w2_x: "The spreadsheet is the firm\u2019s list in Excel, updated at every reading, with the preferences and exclusions sheets. {c} creates its own folder for it wherever you choose.",
       w3_t: "Practice, courts and automatic readings", w3_x: "Today {c} follows the labor practice; the other practices come in the next versions.", w3_trib: "Courts selected: {n}.",
       w4_t: "All set", w4_x: "The first reading takes from a few minutes (few courts) to an hour (all 24); progress shows on screen and in the black window, which must stay open. The manual is at the top of the screen.",
-      w_rotina: "Automatic readings", w_nome_falta: "Enter the firm's name.", w_pasta_falta: "Choose a folder or pick \"None\".", c_pasta: "Spreadsheet folder (Google Drive)", c_outra: "Folder path", c_testar: "Test folder",
+      w_rotina: "Automatic readings", w_nome_falta: "Enter the firm's name.", w_pasta_falta: "Choose a folder or pick \"None\".", c_pasta: "Spreadsheets folder", c_outra: "Folder path", c_testar: "Test folder",
       c_nenhuma: "This computer only (in the RADAR folder)", c_outra_op: "Another folder...", c_salvar: "Save", c_atualizar: "Check for updates",
       c_versao: "Installed version", c_pasta_robo: "Program folder", c_controle: "The spreadsheet is at", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Read by itself, with the computer on", c_agendar_nao: "Automatic reading only on Windows.", w_agendar: "Read by itself {d} (you can change it in Settings).", ag_titulo: "Automatic reading", ag_nova: "Another time", ag_add: "Add", ag_tirar: "Remove time {h}", ag_todos: "Every day", ag_uteis: "Monday to Friday", ag_todo_dia: "every day", ag_seg_sex: "Monday to Friday", ag_as: "at {h}", ag_e: " and ", ag_max: "At most 6 times.", ag_ja: "That time is already on the list.", ag_um: "Keep at least one time (or untick Read by itself).", ag_hora_inv: "Pick the time.", ag_compensa: "If the computer is off or asleep at that time, the reading runs as soon as it is back on.", ag_noite: "The gazette comes out from 7 pm. Without a time after 7 pm, the evening reading misses the day\u2019s gazette; it only comes in at the next reading.", ag_avisar: "Show a notice in the corner of the screen when each reading ends", proxima: "Next automatic reading: {q}.", hoje: "today", amanha: "tomorrow", ag_salvar_dica: "The times apply after Save.", ag_le: "Reads {d}.", cod_instalador: "It came from the installer. To change the code, use Settings later.", papel_escolha: "Choose an option", papel_outra: "Other", papel_sem: "Prefer not to say", papel_outro_l: "What is your role?", papel_dica: "Helps SolverONE adapt {c} to each role. If you prefer, choose \"Prefer not to say\".", papel_falta: "Choose your role at the firm (or \"Prefer not to say\").", papel_outro_falta: "Type your role.",
-      op_drive: "In this computer\u2019s Google Drive (recommended)", op_drive_x: "The spreadsheet lives in your Google Drive: open it anywhere and share it with the team and with SolverONE.", op_drive_nao: "Google Drive for desktop was not found here. For the spreadsheet to go to Drive, install it (google.com/drive/download) with the firm\u2019s account and open RADAR again; meanwhile, use \"This computer only\".",
+      op_drive: "In this computer\u2019s Google Drive", op_drive_x: "The spreadsheet lives in your Google Drive: open it anywhere and share it with the firm\u2019s team.", op_drive_nao: "Google Drive for desktop was not found here. For the spreadsheet to go to Drive, install it (google.com/drive/download) with the firm\u2019s account and open RADAR again; meanwhile, use \"This computer only\".",
       op_outra: "Choose another folder", op_outra_x: "Any folder on this computer. If it does not exist, {c} creates it.", op_escolher: "Choose folder…", op_local: "This computer only, for now", op_local_x: "The spreadsheet stays in the {c} folder ({p}). You can move it to Google Drive later, in Settings.",
       criar_pasta: "Create the folder", pasta_criada: "Folder created.", pasta_nao_existe: "This folder does not exist yet. Click \"Create the folder\" or go on: {c} creates it when you continue.",
       w_frente: "Practice", fr_trab: "✓ Labor · 24 regional courts", fr_trib: "Tax · coming soon", fr_civel: "Civil and corporate · coming soon", w_tribs: "Courts", tr_todos: "All 24 regional labor courts (recommended)", tr_todos_x: "The first reading takes 30 to 60 minutes; later ones much less.", tr_escolher: "Choose the courts now", tr_escolher_x: "By region or by state. Change it any time in Courts.", w_tribs_falta: "Choose at least one court.",
       w_destino: "The spreadsheet will be at:", w_sem_planilha: "No spreadsheet for now: the list stays on this screen only.", comp_t: "One step left: share the folder with SolverONE (only once)", comp_1: "Click \"Open the folder\", below.", comp_2: "In the window that opens, right-click the \"{s}\" folder and choose Share (with the Google Drive icon).", comp_3: "Type integracao@solverone.com.br, keep it as Editor and click Send.", comp_nota: "Without it {c} works normally at the firm; SolverONE just cannot see the reading log to help when something goes wrong.", abrir_pasta_mae: "Open the folder",
       c_chave: "Update key", c_chave_falta: "missing: updates disabled", c_atu_pasta: "Updates arrive via", c_salvo: "Saved.",
-      c_dica: "The LexSuiteONE.xlsx spreadsheet lives in its own folder inside the folder chosen above: the Radar sheet holds the list; Preferences and Exclusions belong to the firm; hidden sheets are SolverONE\u2019s. That folder is shared once with integracao@solverone.com.br (Editor).",
+      c_dica: "The spreadsheets (one per practice area: LexSuiteONE - Trabalhista.xlsx for now) live in their own folder inside the folder chosen above, next to the Backups folder. The Radar sheet holds the list; Preferences and Exclusions belong to the firm. Nothing needs to be shared with SolverONE.",
       atu_ok: "Updated to version {v}. Restarting...", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last day", pern: "{d} days", rodar: "Read the gazette now", rodando: "Reading the gazette...",
       aba_regiao: "By region", aba_uf: "By state", todos: "Select all", todos_ramo: "Select all ({r})", limpar: "Clear", escolhidos: "{n} of {k} courts chosen", salvar: "Save", salvar_rodar: "Save and read now",
       dica: "Each court publishes one gazette a day, 5 to 150 MB. Two courts take about 5 minutes; all 24, 30 to 60 minutes the first time. The computer must be in Brazil.",
@@ -746,7 +782,7 @@ window.LEXSUITE_RADAR = null;
       hist_explica: "Each line is one reading attempt for a court: when, where the request came from, what the site answered and what the program did.",
       hist_resp_ajuda: "Code the CNJ site returned: 200 = normal answer; 403 before 3 a.m. = today\u2019s gazette not released yet (not an error); 404 = not published yet; 429 or 5xx = CNJ site overloaded or down; \u201c-\u201d = no answer.",
       cod_tecnico: "code {c}", n_tribunais: "{n} courts", aviso_3h_tribs: "{t}: today\u2019s gazette only comes out at 3 a.m.; I read up to the last published day ({d}). Nothing to do.",
-      c_pasta_drive: "Google Drive (recommended)", c_pasta_outra_x: "Choose another folder on this computer or the network.", c_pasta_local_x: "Stays on this computer only, in the program folder; nobody else sees the spreadsheet.",
+      c_pasta_drive: "Google Drive", c_pasta_outra_x: "Choose another folder on this computer or the network.", c_pasta_local_x: "Stays on this computer only, in the program folder; nobody else sees the spreadsheet.",
       ag_expl: "Click the times when the program reads the gazette by itself. Each time is one reading (not a start and end). For a time not listed, use \u201cAnother time\u201d.",
       ret_titulo: "What SolverONE receives", ret_quando: "Last check ({q}): {n} row(s).", ret_nada: "Nothing sent yet (goes with the next reading).", ret_frase: "Only counts by status, day, court, practice area and value range; no name, case number or contact.", ret_ver: "See the table sent",
       editar_prefs: "Edit Preferences and Exclusions", editar_prefs_x: "Opens the spreadsheet to edit the Preferences and Exclusions tabs (the only ones the program reads). Save and close Excel when done: while it is open, the program waits to write the list.", abrir_para_editar: "Open to edit",
@@ -766,6 +802,61 @@ window.LEXSUITE_RADAR = null;
       link_manual: "Manual", rodape1: "Sources: DJEN distribution lists (CNJ) and the Federal Revenue public registry. Generated {q}.",
       rodape2: "Individuals in the case never appear. Nothing here uses artificial intelligence. {m}, by LexSuiteONE, a SolverONE product. Version {v}." }
   };
+  // 0.7.16: textos novos (PT e EN)
+  Object.assign(T.pt, {
+    sair: "Sair do RADAR", sair_t: "Sair do RADAR?", sair_x: "Fecha esta tela e a janela preta. As leituras automáticas continuam marcadas no Windows.",
+    sair_ok: "Pode fechar esta janela. O RADAR foi encerrado.", sair_rodando: "Há uma leitura em andamento: espere terminar ou clique em Interromper.",
+    fechado_t: "O RADAR foi fechado", fechado_x: "A tela ficou fechada ou escondida por alguns minutos e o programa se encerrou para não ficar aberto à toa. Abra de novo pelo atalho da área de trabalho.",
+    atualizando: "Atualizando para a versão {v}… a tela volta sozinha em alguns segundos.", reiniciando: "Reiniciando o programa…",
+    c_s_licenca: "Licença e código", c_s_pasta: "Onde ficam as planilhas", c_s_sobre: "Sobre este computador e o que a SolverONE recebe",
+    c_pasta_nota: "Mudar a pasta não move as planilhas que já existem: o RADAR cria as novas na pasta escolhida na próxima leitura, e as antigas ficam onde estão.",
+    c_fechar: "Fechar", c_mudou_t: "Salvar as mudanças?", c_mudou: "Você mudou a Configuração e ainda não salvou.", c_descartar: "Descartar", c_continuar: "Continuar editando",
+    arm_t: "Armazenamento neste computador", arm_planilha: "Planilha {f}", arm_linhas: "{n} de {l} linhas ({p}%)", arm_banco: "Banco do programa ({n} ações guardadas)",
+    arm_saida: "Pasta saida/ (páginas e arquivos de trabalho)", arm_copias: "Cópias de segurança ({n} de {g} guardadas)", arm_disco: "Espaço livre no disco",
+    arm_disco_v: "{l} livres de {t} ({p}%)", arm_ok: "Tudo certo.", arm_limpar: "Limpar a planilha (com cópia)", arm_copia: "Fazer uma cópia de segurança agora",
+    arm_exportar: "Exportar o Arquivo completo (CSV)", arm_pasta: "Abrir a pasta das cópias", arm_sem_planilha: "Nenhuma planilha ainda: ela nasce na primeira leitura.",
+    arm_limpar_t: "Limpar a planilha?", arm_limpar_x: "Antes, o RADAR guarda uma cópia completa (planilhas e o Arquivo inteiro em CSV) na pasta Cópias de segurança. Depois, a aba Arquivo da planilha fica com os últimos 30 dias e todo processo trabalhado. Nada sai do programa: a tela Arquivo continua com tudo.",
+    arm_feito: "Pronto.", arm_ajuda: "A planilha é a vitrine; o arquivo completo fica no programa. Acima de 80% do limite o RADAR avisa; a 100% guarda uma cópia e enxuga a aba Arquivo sozinho. Ficam as 6 cópias mais recentes. Com pouco espaço no disco, o RADAR não faz cópia nova e avisa.",
+    arm_ver: "Ver armazenamento",
+    termos_t: "Termos e condições", termos_esc: "Escritório (licença, privacidade e tratamento de dados)", termos_pes: "Você (termos de uso)",
+    termos_aceito: "aceito em {d} por {n} (versão {v})", termos_vigente: "versão vigente {v}", termos_nao: "ainda não aceito", termos_ler: "ler os termos",
+    termos_sem: "A situação dos termos aparece depois da próxima conferência da licença.", termos_antiga: "aceito na versão {v}: há versão nova ({w})",
+    w_termos: "Li e aceito os termos de uso", w_termos_falta: "Para continuar, marque que leu e aceita os termos de uso.",
+    arq_parcial: "Mostrando as {m} ações mais recentes de {n}. Para achar uma mais antiga, use a busca (ela procura em tudo o que o programa guarda).",
+    arq_busca: "Busca no programa: {n} ação(ões) com \"{q}\".",
+    buscar_logada: "Buscar na área logada", buscar_logada_t: "Pedido pronto e copiado", buscar_logada_x: "O texto já está copiado. 1) Abra o PJe com o seu login, na janela da extensão de IA que o escritório usa. 2) Cole o texto na extensão e espere a resposta. 3) Copie o bloco \"RESPOSTA PARA O RADAR v1\" e cole aqui em \"Colar resposta da área logada\". O texto pede só o que falta neste processo.",
+    buscar_logada_ajuda: "Só o advogado, com o login dele, abre o processo. O RADAR prepara o pedido (só o que falta) e lê a resposta padronizada; funciona com qualquer extensão de IA ou à mão. Até {n} processos por dia.",
+    buscar_logada_nada: "Este processo já tem valor, data e contatos: nada a pedir.", colar_logada: "Colar resposta da área logada",
+    colar_v1_res: "{c} dado(s) do processo completados; {n} não consta(m) no processo; {d} para tentar depois.",
+    valor_salvo: "✓ salvo", sit_salva: "✓"
+  });
+  Object.assign(T.en, {
+    sair: "Exit RADAR", sair_t: "Exit RADAR?", sair_x: "Closes this screen and the black window. Automatic readings stay scheduled in Windows.",
+    sair_ok: "You can close this window. RADAR has exited.", sair_rodando: "A reading is in progress: wait for it to finish or click Stop.",
+    fechado_t: "RADAR was closed", fechado_x: "The screen was closed or hidden for a few minutes and the program exited so it does not stay open for nothing. Open it again from the desktop shortcut.",
+    atualizando: "Updating to version {v}… the screen comes back by itself in a few seconds.", reiniciando: "Restarting the program…",
+    c_s_licenca: "Licence and code", c_s_pasta: "Where the spreadsheets live", c_s_sobre: "About this computer and what SolverONE receives",
+    c_pasta_nota: "Changing the folder does not move existing spreadsheets: RADAR creates new ones in the chosen folder on the next reading, and the old ones stay where they are.",
+    c_fechar: "Close", c_mudou_t: "Save changes?", c_mudou: "You changed the Settings and did not save yet.", c_descartar: "Discard", c_continuar: "Keep editing",
+    arm_t: "Storage on this computer", arm_planilha: "Spreadsheet {f}", arm_linhas: "{n} of {l} rows ({p}%)", arm_banco: "Program database ({n} lawsuits saved)",
+    arm_saida: "saida/ folder (pages and work files)", arm_copias: "Backups ({n} of {g} kept)", arm_disco: "Free disk space",
+    arm_disco_v: "{l} free of {t} ({p}%)", arm_ok: "All good.", arm_limpar: "Clean up the spreadsheet (with backup)", arm_copia: "Make a backup now",
+    arm_exportar: "Export the full Archive (CSV)", arm_pasta: "Open the backups folder", arm_sem_planilha: "No spreadsheet yet: it is created on the first reading.",
+    arm_limpar_t: "Clean up the spreadsheet?", arm_limpar_x: "First RADAR saves a full backup (spreadsheets and the whole Archive as CSV) in the Backups folder. Then the spreadsheet Archive sheet keeps the last 30 days and every lawsuit being worked on. Nothing leaves the program: the Archive screen still has everything.",
+    arm_feito: "Done.", arm_ajuda: "The spreadsheet is the shop window; the full archive stays in the program. Above 80% of the limit RADAR warns; at 100% it saves a backup and trims the Archive sheet by itself. The 6 newest backups are kept. With little disk space, RADAR makes no new backup and warns.",
+    arm_ver: "See storage",
+    termos_t: "Terms and conditions", termos_esc: "Firm (licence, privacy and data processing)", termos_pes: "You (terms of use)",
+    termos_aceito: "accepted on {d} by {n} (version {v})", termos_vigente: "current version {v}", termos_nao: "not accepted yet", termos_ler: "read the terms",
+    termos_sem: "The terms status shows after the next licence check.", termos_antiga: "accepted version {v}: a new version exists ({w})",
+    w_termos: "I have read and accept the terms of use", w_termos_falta: "To continue, tick that you have read and accept the terms of use.",
+    arq_parcial: "Showing the {m} most recent lawsuits out of {n}. To find an older one, use the search (it searches everything the program keeps).",
+    arq_busca: "Program search: {n} lawsuit(s) with \"{q}\".",
+    buscar_logada: "Search the logged-in area", buscar_logada_t: "Request ready and copied", buscar_logada_x: "The text is already copied. 1) Open PJe with your login, in the window of the AI extension the firm uses. 2) Paste the text into the extension and wait for the answer. 3) Copy the \"RESPOSTA PARA O RADAR v1\" block and paste it here in \"Paste logged-in answer\". The text asks only for what is missing in this lawsuit.",
+    buscar_logada_ajuda: "Only the lawyer, with their own login, opens the lawsuit. RADAR prepares the request (only what is missing) and reads the standard answer; works with any AI extension or by hand. Up to {n} lawsuits a day.",
+    buscar_logada_nada: "This lawsuit already has value, date and contacts: nothing to ask.", colar_logada: "Paste logged-in answer",
+    colar_v1_res: "{c} lawsuit field(s) completed; {n} not in the lawsuit; {d} to try later.",
+    valor_salvo: "✓ saved", sit_salva: "✓"
+  });
   var visao = "painel"; try { visao = localStorage.getItem("lexsuite:visao") || "painel"; } catch (e) {}
   var lang = "pt", F = { valor: false, gig: false, exc: false, trib: "", cnpj: false, data: "", vara: "", setor: "", porte: "", uf: "", busca: "", valorSel: "", sit: "", contato: "", frente: "" }, ordem = "valor", ordem2 = "", aberto = {};
   var DA = null, selecionados = {}, ultimoDesfazer = null, migrou = false;
@@ -807,7 +898,7 @@ window.LEXSUITE_RADAR = null;
       if (APP && (!(APP.conta && APP.conta.codigo) || !APP.config.escritorio || !(APP.usuario && APP.usuario.email)) && !configVista) { configVista = true; abrirWizard(); }
       else if (APP && !APP.config.pasta && !configVista) { configVista = true; abrirConfig(true); }
       if (APP && APP.estado && APP.estado.rodando) vigiar();
-      if (!migrou) { migrou = true; migrarSituacoesDoNavegador(); }
+      if (!migrou) { migrou = true; migrarSituacoesDoNavegador(); migrarValoresDoNavegador(); }
       if (visao === "arquivo") { DA = null; carregarArquivo(); }
     }).catch(function () { $("estado").textContent = t("falha"); });
   }
@@ -830,7 +921,7 @@ window.LEXSUITE_RADAR = null;
           var bi = el("button", "btn-txt", t("interromper")); bi.type = "button";
           bi.addEventListener("click", function () {
             var c = el("div"); c.appendChild(el("h3", null, t("interromper_q"))); c.appendChild(el("p", null, t("interromper_x")));
-            abrirJanela(c, [[t("continuar_lendo"), null], [t("interromper"), function () { post("/interromper", {}).then(function () { vigiar(); }).catch(function () { mostrarAviso(t("falha")); }); }, true]]);
+            abrirJanela(c, [[t("continuar_lendo"), null], [t("interromper"), function () { post("/interromper", {}).then(function () { vigiar(); }).catch(function () { var cf = el("div"); cf.appendChild(el("p", null, t("falha"))); abrirJanela(cf, [[t("fechar"), null, true]]); }); }, true]]);
           });
           box.appendChild(bi);
         }
@@ -895,6 +986,25 @@ window.LEXSUITE_RADAR = null;
     if (APP && APP.config.proxima && Date.now() > new Date(APP.config.proxima).getTime() + 60000) { carregar(); return; }  // a "próxima leitura" passou: recarrega
     fetch("/estado", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (e) { if (e.rodando) { mostrarEstado(e); vigiar(); } }).catch(function () {});
   }, 60000);
+  // 0.7.16: a cada 30 s a tela avisa o programa que está aberta (fechada por 3 minutos, a janela preta se encerra sozinha)
+  var reiniciando = false, falhasBatimento = 0, salvoAgora = {};
+  function recente(chave) { return salvoAgora[chave] && Date.now() - salvoAgora[chave] < 5000; }
+  function telaFechada() {
+    mostrarCarregando(t("fechado_t") + ". " + t("fechado_x"), false);
+  }
+  setInterval(function () {
+    if (MODO !== "app" || reiniciando) return;
+    fetch("/estado", { headers: cabecalhosApp(), cache: "no-store" }).then(function () { falhasBatimento = 0; }).catch(function () { falhasBatimento += 1; if (falhasBatimento >= 2) telaFechada(); });
+  }, 30000);
+  function sairDoRadar() {
+    var c = el("div"); c.appendChild(el("h3", null, t("sair_t"))); c.appendChild(el("p", null, t("sair_x")));
+    abrirJanela(c, [[t("cancelar"), null], [t("sair"), function () {
+      post("/sair", {}).then(function (r) {
+        if (!r.ok) { mostrarAviso(r.motivo || t("sair_rodando")); return; }
+        reiniciando = true; mostrarCarregando(t("sair_ok"), false); setTimeout(function () { try { window.close(); } catch (e) {} }, 400);
+      }).catch(function () { mostrarAviso(t("falha")); });
+    }, true]]);
+  }
   function vigiar() {
     if (vigia) return;
     $("b-rodar").disabled = true; $("b-salvar-rodar").disabled = true;
@@ -972,8 +1082,75 @@ window.LEXSUITE_RADAR = null;
   }
 
   /* ---------- configuração deste computador ---------- */
-  function abrirConfig(forcar) {
+  var snapC = "";
+  function estadoConfig() {
+    return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), $("c-dias").value, $("c-avisar").checked, $("c-aba").checked]);
+  }
+  function marcarSalvarC() { if (!$("config").hidden) $("c-salvar").disabled = estadoConfig() === snapC; }
+  function fecharConfig(forcar) {
+    if (!forcar && !$("config").hidden && estadoConfig() !== snapC) {
+      var c = el("div"); c.appendChild(el("h3", null, t("c_mudou_t"))); c.appendChild(el("p", null, t("c_mudou")));
+      abrirJanela(c, [[t("c_continuar"), null], [t("c_descartar"), function () { fecharConfig(true); }], [t("c_salvar"), salvarConfig, true]]);
+      return;
+    }
+    $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false");
+  }
+  function desenharArmConfig(sit) {
+    var box = $("c-arm"); box.textContent = ""; sit = sit || (D && D.armazenamento) || {};
+    var tb = el("table", "arm-tabela"), mb = function (b) { return (Math.round((b || 0) / 104857.6) / 10).toLocaleString(loc()) + " MB"; };
+    var linha = function (rot, val, extra) { var tr = el("tr"); tr.appendChild(el("th", null, rot)); var td = el("td"); if (extra) td.appendChild(extra); td.appendChild(document.createTextNode(val)); tr.appendChild(td); tb.appendChild(tr); };
+    (sit.planilhas || []).forEach(function (pl) {
+      var barra = el("span", "arm-barra" + (pl.nivel === "cheia" ? " cheia" : "")), i_ = el("i"); i_.style.width = Math.min(100, pl.pct || 0) + "%"; barra.appendChild(i_);
+      linha(t("arm_planilha", { f: pl.frente_legivel }), " " + t("arm_linhas", { n: num(pl.linhas), l: num(pl.limite), p: pl.pct }) + " · " + mb(pl.bytes), barra);
+    });
+    if (!(sit.planilhas || []).length) linha(t("arm_planilha", { f: "" }), t("arm_sem_planilha"));
+    linha(t("arm_banco", { n: num((sit.banco || {}).acoes || 0) }), mb((sit.banco || {}).bytes));
+    linha(t("arm_saida"), mb((sit.saida || {}).bytes));
+    linha(t("arm_copias", { n: num((sit.copias || {}).n || 0), g: (sit.copias || {}).guardadas || 6 }), mb((sit.copias || {}).bytes));
+    var dk = sit.disco || {}, gb = function (b) { return (Math.round((b || 0) / 107374182.4) / 10).toLocaleString(loc()) + " GB"; };
+    linha(t("arm_disco"), dk.total ? t("arm_disco_v", { l: gb(dk.livre), t: gb(dk.total), p: dk.pct_livre }) : "—");
+    box.appendChild(tb);
+    (sit.mensagens || []).forEach(function (m) { box.appendChild(el("p", "agenda-info alerta", m)); });
+    if (!(sit.mensagens || []).length) box.appendChild(el("p", "agenda-info", t("arm_ok")));
+    var ac = el("div", "conf-acoes");
+    [["arm_limpar", limparPlanilha], ["arm_copia", function () { acaoArm("/armazenamento/copia"); }], ["arm_exportar", function () { acaoArm("/armazenamento/exportar"); }],
+     ["arm_pasta", function () { post("/abrir", { o_que: "copias" }); }]].forEach(function (b) { var x = el("button", "chip", t(b[0])); x.type = "button"; x.addEventListener("click", b[1]); ac.appendChild(x); });
+    ac.appendChild(ajuda(t("arm_ajuda"))); box.appendChild(ac);
+  }
+  function acaoArm(rota) {
+    mostrarAviso(t("carregando"));
+    return post(rota, {}).then(function (r) { mostrarAviso(r.ok ? (r.mensagem ? t("arm_feito") + " " + r.mensagem : t("arm_feito")) : (r.motivo || t("falha"))); if (r.armazenamento) { if (D) D.armazenamento = r.armazenamento; desenharArmConfig(r.armazenamento); desenharBannerArm(); } }).catch(function () { mostrarAviso(t("falha")); });
+  }
+  function limparPlanilha() {
+    var c = el("div"); c.appendChild(el("h3", null, t("arm_limpar_t"))); c.appendChild(el("p", null, t("arm_limpar_x")));
+    abrirJanela(c, [[t("cancelar"), null], [t("arm_limpar"), function () { acaoArm("/armazenamento/limpar"); }, true]]);
+  }
+  function desenharBannerArm() {
+    var b = $("b-arm"), sit = (D && D.armazenamento) || {}; b.textContent = "";
+    b.hidden = MODO !== "app" || !sit.nivel || sit.nivel === "ok"; if (b.hidden) return;
+    b.classList.toggle("critico", sit.nivel === "critico");
+    b.appendChild(el("span", null, (sit.mensagens || []).join(" ")));
+    var x1 = el("button", "primario", t("arm_limpar")); x1.type = "button"; x1.addEventListener("click", limparPlanilha); b.appendChild(x1);
+    var x2 = el("button", "chip", t("arm_ver")); x2.type = "button"; x2.addEventListener("click", function () { abrirConfig(true, "c-arm-wrap"); }); b.appendChild(x2);
+  }
+  function desenharTermosConfig() {
+    var box = $("c-termos"); box.textContent = ""; var tm = (APP && APP.conta && APP.conta.termos) || {}, ac = (APP && APP.conta && APP.conta.aceite) || {};
+    var dl = el("dl", "conf-info");
+    var camada = function (rot, b, velho) {
+      dl.appendChild(el("dt", null, rot)); var dd = el("dd");
+      var txt = b && b.aceito ? (b.versao && b.versao_vigente && b.versao !== b.versao_vigente ? t("termos_antiga", { v: b.versao, w: b.versao_vigente }) : t("termos_aceito", { d: dataHora(b.aceito_em) || b.aceito_em || "—", n: b.nome || "—", v: b.versao || "—" }))
+        : (velho && velho.aceito ? t("termos_aceito", { d: dataHora(velho.aceito_em) || velho.aceito_em || "—", n: velho.nome || "—", v: velho.versao || "—" }) : t("termos_nao"));
+      dd.appendChild(document.createTextNode(txt + (b && b.versao_vigente ? " · " + t("termos_vigente", { v: b.versao_vigente }) : "") + " "));
+      var link = (b && b.link) || (velho && velho.link) || "";
+      if (link) { var a = el("a", null, t("termos_ler")); a.href = link; a.target = "_blank"; a.rel = "noopener noreferrer"; dd.appendChild(a); }
+      dl.appendChild(dd);
+    };
+    camada(t("termos_esc"), tm.escritorio, ac); camada(t("termos_pes"), tm.pessoa, null);
+    box.appendChild(dl); if (!tm.escritorio && !tm.pessoa) box.appendChild(el("p", "agenda-info", t("termos_sem")));
+  }
+  function abrirConfig(forcar, rolarPara) {
     var p = $("config"), abrir = forcar || p.hidden;
+    if (!abrir) { fecharConfig(false); return; }
     $("c-codigo").value = (APP && APP.conta && APP.conta.codigo) || "";
     var fixo = !!(APP && APP.conta && APP.conta.codigo && APP.conta.ok);  // código válido e salvo: só para ler
     $("c-codigo").readOnly = fixo; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
@@ -997,9 +1174,16 @@ window.LEXSUITE_RADAR = null;
       else if (atual) sp.value = atual;
       else sp.value = (d.candidatas || []).length ? d.candidatas[0] : "";
       $("c-outra-wrap").hidden = sp.value !== "__outra"; $("c-escolher").hidden = sp.value !== "__outra" || !cEscolher; $("c-criar").hidden = true;
-      cartoesPasta(d);
+      cartoesPasta(d); snapC = estadoConfig(); marcarSalvarC();
     }).catch(function () {});
     infoConfig();
+    $("c-s-licenca").textContent = t("c_s_licenca"); $("c-s-pasta").textContent = t("c_s_pasta"); $("c-s-sobre").textContent = t("c_s_sobre");
+    $("c-pasta-nota").textContent = t("c_pasta_nota"); $("c-l-arm").textContent = t("arm_t"); $("c-l-termos").textContent = t("termos_t");
+    $("c-fechar").setAttribute("aria-label", t("c_fechar")); $("c-fechar").title = t("c_fechar");
+    desenharArmConfig(); desenharTermosConfig();
+    snapC = estadoConfig(); marcarSalvarC();
+    if (rolarPara) setTimeout(function () { $(rolarPara).scrollIntoView({ behavior: "smooth", block: "start" }); }, 50);
+    $("c-fechar").focus();
   }
   var cEscolher = false;
   function cartoesPasta(d) {  // 0.7.14: as opções da pasta em cartões (a lista do Windows abria cortada na janela do programa)
@@ -1054,7 +1238,7 @@ window.LEXSUITE_RADAR = null;
     corpo.horarios = cHoras.slice(); corpo.dias = $("c-dias").value; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
     post("/config", corpo).then(function (r) {
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
-      $("c-msg").textContent = t("c_salvo") + (r.agendar_msg ? " " + r.agendar_msg : ""); $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); carregar();
+      $("c-msg").textContent = t("c_salvo") + (r.agendar_msg ? " " + r.agendar_msg : ""); fecharConfig(true); mostrarAviso(t("c_salvo")); carregar();
     }).catch(function () { $("c-msg").textContent = t("falha"); });
   }
   function verificarAtualizacao() {
@@ -1102,6 +1286,10 @@ window.LEXSUITE_RADAR = null;
     }).catch(function () {});
     var cod = (APP && APP.conta && APP.conta.codigo) || "";
     $("w-codigo").value = cod; $("w-codigo").readOnly = !!cod; $("w-codigo-nota").hidden = !cod; $("w-codigo-nota").textContent = t("cod_instalador");
+    var tPesW = (APP && APP.conta && APP.conta.termos && APP.conta.termos.pessoa) || null;  // 0.7.16: termos de uso, quando a página existe
+    $("w-termos-wrap").hidden = !(tPesW && tPesW.link && tPesW.versao_vigente && !(tPesW.aceito && tPesW.versao === tPesW.versao_vigente));
+    $("w-l-termos").textContent = t("w_termos") + (tPesW && tPesW.versao_vigente ? " (" + tPesW.versao_vigente + ")" : ""); $("w-termos-link").textContent = t("termos_ler");
+    if (tPesW && tPesW.link) $("w-termos-link").href = tPesW.link; $("w-termos").checked = false;
     $("w-email").value = (APP && APP.usuario.email) || ""; var docAtual = (APP && APP.documento_escritorio) || {}; if (docAtual.tipo) { document.querySelector('input[name="w-doctipo"][value="' + docAtual.tipo + '"]').checked = true; } $("w-cnpj").value = docAtual.numero ? mascarar(docAtual.numero) : ""; validarDoc(false);
     $("wizard").hidden = false; desenharWizard(); barraApp();
   }
@@ -1129,7 +1317,7 @@ window.LEXSUITE_RADAR = null;
       [[t("cod"), $("w-codigo").value.trim().toUpperCase()], [t("c_escritorio"), $("w-escritorio").value], [t("doc_tipo"), t("tipo_" + (tipoDoc() === "passaporte" ? "pass" : tipoDoc())) + ": " + $("w-cnpj").value], [t("seu_nome"), nome], [t("seu_email"), $("w-email").value], [t("c_papel"), papelTexto($("w-papel"), $("w-papel-outro")) || "—"], [t("w_tribs"), escolher ? (nTrib + ": " + Object.keys(sel).join(", ")) : t("tr_todos").replace(/ \(.*\)$/, "")], [t("w_rotina"), $("w-agendar").checked ? descAgenda((APP && APP.config.horarios) || [], (APP && APP.config.dias) || "todos") : "—"]].forEach(function (par) { dl.appendChild(el("dt", null, par[0])); dl.appendChild(el("dd", null, par[1] || "—")); });
       var dest = $("w-destino"); dest.textContent = "";
       if (wDestino) { dest.appendChild(el("b", null, t("w_destino") + " ")); dest.appendChild(el("code", null, wDestino)); } else dest.textContent = t("w_sem_planilha");
-      $("w-compartilhar").hidden = !wNoDrive; $("w-l-comp").textContent = t("comp_t"); $("w-abrir-pasta").textContent = t("abrir_pasta_mae"); $("w-comp-nota").textContent = t("comp_nota", { c: marcaCurto() });
+      $("w-compartilhar").hidden = true;  // 0.7.16: não é preciso compartilhar nada com a SolverONE (decisão do dono) $("w-l-comp").textContent = t("comp_t"); $("w-abrir-pasta").textContent = t("abrir_pasta_mae"); $("w-comp-nota").textContent = t("comp_nota", { c: marcaCurto() });
       var ol = $("w-comp-passos"); ol.textContent = ""; [t("comp_1"), t("comp_2", { s: wSub }), t("comp_3")].forEach(function (x) { ol.appendChild(el("li", null, x)); });
     }
     $("w-voltar").hidden = wPasso === 1; $("w-voltar").textContent = t("w_voltar");
@@ -1151,7 +1339,10 @@ window.LEXSUITE_RADAR = null;
       if ($("w-papel").value === "Outra" && !$("w-papel-outro").value.trim()) { $("w-msg").textContent = t("papel_outro_falta"); $("w-papel-outro").focus(); return; }
       if (!docValido()) { $("w-msg").textContent = t("doc_invalido"); $("w-cnpj").focus(); return; }
       $("w-msg").textContent = t("conferindo"); $("w-avancar").disabled = true;
+      if (!$("w-termos-wrap").hidden && !$("w-termos").checked) { $("w-avancar").disabled = false; $("w-msg").textContent = t("w_termos_falta"); $("w-termos").focus(); return; }
       var corpo1 = { codigo: $("w-codigo").value, escritorio: $("w-escritorio").value, doc_tipo: tipoDoc(), documento: $("w-cnpj").value, nome: $("w-nome").value, email: $("w-email").value };
+      var tPes = (APP && APP.conta && APP.conta.termos && APP.conta.termos.pessoa) || null;
+      if (tPes && !$("w-termos-wrap").hidden && $("w-termos").checked) { var fz = ""; try { fz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {} corpo1.aceite_uso = { versao: tPes.versao_vigente || "", fuso: fz }; }
       var pc = papelCorpo($("w-papel"), $("w-papel-outro")); corpo1.papel = pc.papel; if (pc.papel_outro) corpo1.papel_outro = pc.papel_outro;
       post("/config", corpo1).then(function (r) {
         $("w-avancar").disabled = false;
@@ -1510,14 +1701,25 @@ window.LEXSUITE_RADAR = null;
     par(dl2, t("dist"), i.ajuizada_em ? (i.ajuizada_em.indexOf("após") === 0 ? i.ajuizada_em : dataCurta(i.ajuizada_em)) : "", t("nao_cap_pje"));
     var cv = el("span", "campo-valor"); var inp = el("input"); inp.type = "text"; inp.inputMode = "decimal"; inp.placeholder = "R$"; var m = guardado("valor:" + i.id); if (m) inp.value = Number(m).toLocaleString("pt-BR"); else if (i.valor_causa) inp.value = Number(i.valor_causa).toLocaleString("pt-BR"); cv.appendChild(inp);
     var bs = el("button", "btn-txt", t("salvar_valor")); bs.type = "button";
-    bs.addEventListener("click", function () { var n = Number(String(inp.value).replace(/[R$\s.]/g, "").replace(",", ".")); guardar("valor:" + i.id, isFinite(n) && n > 0 ? n : ""); desenhar(); });
+    var valorInicial = inp.value; bs.disabled = MODO !== "app";
+    var marcarBs = function () { bs.disabled = MODO !== "app" || inp.value === valorInicial; };
+    inp.addEventListener("input", marcarBs); marcarBs();
+    bs.addEventListener("click", function () {  // 0.7.16: o valor fica no programa (vale em outra tela e na planilha)
+      var n = Number(String(inp.value).replace(/[R$\s.]/g, "").replace(",", "."));
+      post("/valor", { processo: i.id, valor: isFinite(n) && n > 0 ? String(n) : "" }).then(function (r) {
+        if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; }
+        guardar("valor:" + i.id, ""); i.valor_causa = r.valor; i.valor_fonte = r.valor ? "digitado" : ""; cacheValor = null;
+        salvoAgora[i.id + ":valor"] = Date.now(); desenhar();
+      }).catch(function () { mostrarAviso(t("falha")); });
+    });
     inp.addEventListener("keydown", function (ev) { if (ev.key === "Enter") bs.click(); });
-    cv.appendChild(bs); if (vd.v == null) cv.appendChild(el("small", "falta", " " + t("nao_cap_pje")));
+    cv.appendChild(bs); if (recente(i.id + ":valor")) cv.appendChild(el("span", "salvo-ok", t("valor_salvo"))); else if (vd.v == null) cv.appendChild(el("small", "falta", " " + t("nao_cap_pje")));
     par(dl2, t("valor_rotulo"), cv);
     par(dl2, t("outras"), (i.empresas || []).slice(1).map(titulo), t("nenhuma"));
     var cs = el("span", "campo-valor"); var sl = el("select");
     SITS.forEach(function (k) { var o = el("option", null, t("st_" + k)); o.value = k; sl.appendChild(o); }); sl.value = statusDe(i); sl.disabled = MODO !== "app";
-    sl.addEventListener("change", function () { pedirSituacao([i.id], sl.value); }); cs.appendChild(sl); cs.appendChild(ajuda(explicaSituacoes));
+    sl.addEventListener("change", function () { salvoAgora[i.id + ":sit"] = Date.now(); pedirSituacao([i.id], sl.value); }); cs.appendChild(sl);
+    if (recente(i.id + ":sit")) cs.appendChild(el("span", "salvo-ok", t("sit_salva"))); cs.appendChild(ajuda(explicaSituacoes));
     par(dl2, t("status"), cs);
     c2.appendChild(dl2); ficha.appendChild(c2);
     // Ações
@@ -1528,6 +1730,10 @@ window.LEXSUITE_RADAR = null;
     bc.addEventListener("click", function () { var ok = function () { bc.textContent = t("copiado"); setTimeout(function () { bc.textContent = t("copiar"); }, 1500); };
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(i.processo).then(ok, function () { window.prompt(t("copiar"), i.processo); }); else window.prompt(t("copiar"), i.processo); });
     ac.appendChild(bc);
+    if (MODO === "app") {  // 0.7.16 (item 91): pedido à área logada, só com o que falta, para qualquer extensão de IA
+      var bl = el("button", "btn-txt", t("buscar_logada")); bl.type = "button"; bl.addEventListener("click", function () { prepararBusca([i.id]); });
+      ac.appendChild(bl); ac.appendChild(ajuda(t("buscar_logada_ajuda", { n: (APP && APP.config.area_logada_por_dia) || 30 })));
+    }
     ficha.appendChild(ac);
     ficha.appendChild(el("div", "nota", t("nota_valor")));
     corpo.appendChild(ficha);
@@ -1636,11 +1842,15 @@ window.LEXSUITE_RADAR = null;
     lote.appendChild(ajuda(t("preparar_ajuda", { n: (APP && APP.config.area_logada_por_dia) || 30 })));
     var bx = el("button", null, t("sel_limpar")); bx.type = "button"; bx.addEventListener("click", function () { selecionados = {}; desenhar(); }); lote.appendChild(bx);
   }
-  function prepararBusca(ids) {
-    post("/contatos/preparar", { processos: ids }).then(function (r) {
-      var c = el("div"); c.appendChild(el("h3", null, t("busca_pronta_t", { n: num(r.quantos || 0) })));
-      c.appendChild(el("p", null, t("busca_pronta", { c: r.caminho || "" })));
-      abrirJanela(c, [[t("fechar"), null], [t("colar_contatos"), colarContatos, true]]);
+  function prepararBusca(ids) {  // 0.7.16: o texto vai copiado; o arquivo fica em saida/contatos
+    post("/contatos/preparar", { processos: ids, abrir_pasta: false }).then(function (r) {
+      if (!r.quantos) { mostrarAviso(t("buscar_logada_nada")); return; }
+      var mostrar = function () {
+        var c = el("div"); c.appendChild(el("h3", null, t("buscar_logada_t")));
+        c.appendChild(el("p", null, t("buscar_logada_x"))); c.appendChild(el("p", "nota", t("busca_pronta", { c: r.caminho || "" })));
+        abrirJanela(c, [[t("fechar"), null], [t("colar_logada"), colarContatos, true]]);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText && r.texto) navigator.clipboard.writeText(r.texto).then(mostrar, mostrar); else mostrar();
     }).catch(function () { mostrarAviso(t("falha")); });
   }
   function colarContatos() {
@@ -1650,6 +1860,7 @@ window.LEXSUITE_RADAR = null;
       post("/contatos/colar", { texto: ta.value }).then(function (r) {
         var d = el("div"); d.appendChild(el("h3", null, t("colar_res", { a: num(r.aceitas || 0), r: num((r.recusadas || []).length) })));
         if (r.repetidas) d.appendChild(el("p", null, t("colar_rep", { n: num(r.repetidas) })));
+        if (r.completados != null) d.appendChild(el("p", null, t("colar_v1_res", { c: num(r.completados), n: num(r.nao_consta || 0), d: num(r.tentar_depois || 0) })));
         (r.recusadas || []).slice(0, 30).forEach(function (x) { d.appendChild(el("p", "nota", t("linha_n", { n: x.linha }) + ": " + x.motivo)); });
         abrirJanela(d, [[t("fechar"), function () { carregar(); }, true]]);
       });
@@ -1677,9 +1888,10 @@ window.LEXSUITE_RADAR = null;
     g.appendChild(el("div", "grupo-menu", t("menu_planilha")));
     add(t("planilha_abrir"), abrirPlanilhaComAviso); add(t("gerar_copia"), gerarCopia); add(t("editar_prefs"), editarPreferencias); add(t("pasta_abrir"), function () { abrirPlanilha("pasta"); });
     g.appendChild(el("div", "grupo-menu", t("menu_contatos")));
-    add(t("colar_contatos"), colarContatos);
+    add(t("colar_logada"), colarContatos);
     g.appendChild(el("div", "grupo-menu", t("menu_programa")));
     add(t("config"), function () { abrirConfig(false); }); add(t("perfil"), abrirPerfil); add(t("abrir_aba"), function () { post("/abrir-em-aba", {}); }); add(t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); });
+    add(t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }); add(t("sair"), sairDoRadar);
   }
   function abrirMenu() { montarMenu(); $("gaveta").hidden = false; $("veu").hidden = false; $("b-menu").setAttribute("aria-expanded", "true"); var p = $("gaveta").querySelector("button"); if (p) p.focus(); }
   function fecharMenu() { $("gaveta").hidden = true; $("veu").hidden = true; $("b-menu").setAttribute("aria-expanded", "false"); }
@@ -1687,6 +1899,8 @@ window.LEXSUITE_RADAR = null;
     var a = $("arquivo-info"); a.textContent = ""; a.hidden = visao !== "arquivo" || MODO !== "app"; if (a.hidden) return;
     var esp = (DA && DA.espaco) || (D && D.espaco) || {};
     a.appendChild(el("span", null, t("arq_info", { n: num(esp.acoes || 0), d: dataCurta(esp.desde || ""), mb: (Math.round((esp.bytes || 0) / 104857.6) / 10).toLocaleString(loc()) })));
+    if (DA && DA.arquivo_busca) a.appendChild(el("span", "nota", " " + t("arq_busca", { n: num(DA.arquivo_total || 0), q: DA.arquivo_busca })));
+    else if (DA && DA.arquivo_total > (DA.itens || []).length) a.appendChild(el("span", "nota", " " + t("arq_parcial", { m: num((DA.itens || []).length), n: num(DA.arquivo_total) })));
     var meses = (APP && APP.config.guardar_meses) || 12, b = el("button", "chip", t("arq_limpar", { m: meses })); b.type = "button";
     b.addEventListener("click", function () {
       var c = el("div"); c.appendChild(el("h3", null, t("arq_limpar", { m: meses }))); c.appendChild(el("p", null, t("arq_limpar_x", { m: meses })));
@@ -1694,8 +1908,15 @@ window.LEXSUITE_RADAR = null;
     });
     a.appendChild(b); a.appendChild(ajuda(t("arq_ajuda")));
   }
-  function carregarArquivo() {
-    return fetch("/dados?visao=arquivo&dias=" + periodo, { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) { DA = d; cabecalho(); desenhar(); });
+  function carregarArquivo(q) {  // 0.7.16: as 5 mil mais recentes; a busca vai ao programa (procura em tudo)
+    var url = "/dados?visao=arquivo&dias=" + periodo + (q ? "&q=" + encodeURIComponent(q) : "");
+    return fetch(url, { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) { DA = d; cabecalho(); desenhar(); });
+  }
+  function migrarValoresDoNavegador() {  // 0.7.16: o valor da causa digitado (até a 0.7.15 ficava só neste navegador) vai para o programa
+    if (MODO !== "app") return;
+    var pares = [];
+    try { for (var k = 0; k < localStorage.length; k++) { var ch = localStorage.key(k); if (ch && ch.indexOf("lexsuite:radar:valor:") === 0) pares.push([ch, ch.slice(21), localStorage.getItem(ch)]); } } catch (e) { return; }
+    pares.forEach(function (p) { post("/valor", { processo: p[1], valor: String(p[2] || "") }).then(function (r) { if (r.ok) try { localStorage.removeItem(p[0]); } catch (e) {} }); });
   }
   function migrarSituacoesDoNavegador() {  // uma vez: o que estava guardado neste navegador (até a 0.7.13) vai para o programa
     if (MODO !== "app") return;
@@ -1821,6 +2042,7 @@ window.LEXSUITE_RADAR = null;
     $("b-mais").textContent = t("mais", { n: num(Math.min(10, resto)) }); $("b-mais50").hidden = resto <= 10; $("b-mais50").textContent = t("mais", { n: num(Math.min(50, resto)) });
   }
   function cabecalho() {
+    desenharBannerArm();
     var itens = D.itens || [], min = minimo(), comValor = itens.filter(function (i) { return valorDe(i).v >= min; }).length, semValor = itens.filter(function (i) { return valorDe(i).v == null; }).length;
     var tribs = D.tribunais || [], tx = tribs.length <= 3 ? t("t1", { a: tribs.join(", ") }) : tribs.length <= 6 ? t("tn", { k: tribs.length, a: tribs.join(", ") }) : t("tk", { k: tribs.length });
     desenharMarca($("marca")); $("escritorio-nome").textContent = MODO === "app" ? "" : (D.escritorio || "");
@@ -1939,7 +2161,9 @@ window.LEXSUITE_RADAR = null;
       };
     }).catch(function () {});
   }
+  function mostrarCarregando(txt, roda) { $("carregando-txt").textContent = txt; $("carregando").querySelector(".roda").hidden = roda === false; $("carregando").hidden = false; }
   function reiniciarDepois(versao) {
+    reiniciando = true; mostrarCarregando(versao ? t("atualizando", { v: versao }) : t("reiniciando"));
     post("/reiniciar", {}).catch(function () {}).then(function () {
       var tentativas = 0, caiu = false;
       (function esperar() {
@@ -1966,6 +2190,12 @@ window.LEXSUITE_RADAR = null;
   $("b-menu").addEventListener("click", function () { if ($("gaveta").hidden) abrirMenu(); else fecharMenu(); });
   $("veu").addEventListener("click", fecharMenu);
   var buscaTimer = null;
+  var buscaArqTimer = null;
+  $("f-busca").addEventListener("input", function (e) {
+    if (visao === "arquivo" && DA && (DA.arquivo_total > (DA.itens || []).length || DA.arquivo_busca)) {
+      var q = e.target.value.trim(); clearTimeout(buscaArqTimer); buscaArqTimer = setTimeout(function () { carregarArquivo(q.length >= 3 ? q : ""); }, 600);
+    }
+  });
   $("f-busca").addEventListener("input", function (e) { clearTimeout(buscaTimer); buscaTimer = setTimeout(function () { F.busca = e.target.value; limite = 10; desenhar(); var nf = filtrosLigados(); $("b-limpar-filtros").hidden = !nf; $("b-limpar-filtros").textContent = t("limpar_filtros", { n: nf }); }, 180); });
   $("f-valor-sel").addEventListener("change", function (e) {
     var v = e.target.value;
@@ -2030,6 +2260,11 @@ window.LEXSUITE_RADAR = null;
   $("c-criar").addEventListener("click", function () { testarPastaC(true); });
   $("c-testar").addEventListener("click", function () { testarPastaC(false); });
   $("c-salvar").addEventListener("click", salvarConfig);
+  $("c-fechar").addEventListener("click", function () { fecharConfig(false); });
+  $("c-veu").addEventListener("click", function () { fecharConfig(false); });
+  ["input", "change"].forEach(function (ev) { $("config").addEventListener(ev, marcarSalvarC); });
+  $("config").addEventListener("click", function () { setTimeout(marcarSalvarC, 0); });
+  $("config").addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !$("janela").open) { ev.stopPropagation(); fecharConfig(false); } });
   $("c-agendar").addEventListener("change", desenharAgenda);
   $("c-dias").addEventListener("change", function () { cDias = this.value; $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); });
   $("c-hora-add").addEventListener("click", acrescentarHora);

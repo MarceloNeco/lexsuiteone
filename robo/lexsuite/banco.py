@@ -164,6 +164,32 @@ class Banco:
         self.con.execute("INSERT INTO acoes VALUES (?,?,?,?,?,?,?,?)",
                          (quando, fuso, (perfil or "")[:120], acao, (alvo or "")[:2000], antes or "", depois or "", int(quantos or 0)))
 
+    CAMPOS_MANUAIS = ("valor_causa", "data_ajuizamento")
+
+    def completar(self, processo, campo, valor, fonte="digitado", data="", perfil=""):
+        """0.7.16: guarda no programa um dado que o Diário não traz (valor da causa digitado no cartão ou vindo da área
+        logada; data de ajuizamento), com fonte e data. Valor vazio apaga. Devolve True se o processo existe."""
+        if campo not in self.CAMPOS_MANUAIS:
+            raise ValueError("campo inválido")
+        linha = self.con.execute("SELECT dados FROM leads WHERE processo = ?", (processo,)).fetchone()
+        if not linha:
+            return False
+        dados = json.loads(linha[0])
+        manual = dados.setdefault("manual", {})
+        antes = str((manual.get(campo) or {}).get("valor") or "")
+        if valor in (None, ""):
+            manual.pop(campo, None)
+        else:
+            manual[campo] = {"valor": valor, "fonte": str(fonte or "digitado")[:80], "data": str(data or dt.date.today().isoformat())[:10]}
+        if campo == "valor_causa":
+            self.con.execute("UPDATE leads SET dados = ?, faixa_valor = ? WHERE processo = ?",
+                             (json.dumps(dados, ensure_ascii=False), faixa_valor(valor if valor not in (None, "") else dados.get("valor_causa")), processo))
+        else:
+            self.con.execute("UPDATE leads SET dados = ? WHERE processo = ?", (json.dumps(dados, ensure_ascii=False), processo))
+        self.registrar_acao(perfil, "completar:" + campo, processo, antes, str(valor or ""), 1)
+        self.con.commit()
+        return True
+
     def acoes(self, limite=500):
         cols = ("quando_utc", "fuso", "perfil", "acao", "alvo", "antes", "depois", "quantos")
         return [dict(zip(cols, r)) for r in self.con.execute("SELECT * FROM acoes ORDER BY quando_utc DESC LIMIT ?", (int(limite),))]
