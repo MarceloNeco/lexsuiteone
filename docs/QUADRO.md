@@ -92,13 +92,16 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- Feedback de 09/Nov registrado (itens 42 a 60, `documentacao/FEEDBACK-TESTE-2026-11-09.md`). Esperando o "pode" do
-  dono para a 0.7.13 (só tela e planilha: menu ☰, uma coluna, ficha sem corte, planilha protegida com aviso e
-  "Gerar uma cópia", selo de contato, motivos do "não capturado", faixas de valor, ordenação dupla, busca, animação).
-  Pesquisa de acesso com o login do advogado: `documentacao/PESQUISA-ACESSO-PJE-2026-11-09.md`.
+- **0.7.14 (pacote)**: situações no banco local (chaves da Arquitetura) com lote, desfazer e (?); Arquivo; abas Painel ·
+  Lista · Arquivo · Histórico; menu ☰ com Configuração; uma coluna; filtros novos (limpar, salvos, não informado, valor
+  com faixas, contato, situação, frente), busca, ordenação dupla; selo de contato; endereço; contatos (preparar busca e
+  colar resposta); planilha com aviso, proteção sem senha, abrir só para leitura, gravar ao fechar, cópia, abas Arquivo,
+  Contatos e Histórico de leituras; retorno de totais à SolverONE; tela na largura toda com teste em 4 tamanhos. Itens
+  42 a 84 de `documentacao/FEEDBACK-TESTE-2026-11-09.md` (menos 79 e 82, que são da 0.7.15).
 
 ### Arquivos em uso
-- (nenhum)
+- `robo/lexsuite/` (banco, radar, compartilhar, planilha, app, cnpj, conta, frentes), `robo/radar_modelo.html`,
+  `robo/testes/`, `robo/LEIA-ME.md`, `robo/ARQUITETURA.md`, `robo/PENDENCIAS.md` (seção Produto), `paginas/manual.html`.
 
 ### Feito (mais recente primeiro)
 - 09/Nov: **incidente**: o banco do pacote 0.7.14 (commit 0835aac: situações, ações, contatos, estatísticas, frente)
