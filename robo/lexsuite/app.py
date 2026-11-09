@@ -15,6 +15,7 @@ from urllib.parse import parse_qs, urlparse
 
 from . import VERSAO, agendar, armazenamento, assinatura, atualizar, banco as bd, cnpj, compartilhar, config, conta, preferencias, radar, rede, tribunais
 from . import classificar as cl
+from . import planilha as planilha_mod
 
 PORTAS = range(8765, 8776)
 PAPEIS = ("Sócio ou sócia", "Advogado ou advogada", "Estagiário ou estagiária", "Equipe administrativa")
@@ -469,6 +470,7 @@ class Tratador(BaseHTTPRequestHandler):
                 "tribunais": [x for x in tribunais.TRIBUNAIS if x["ramo"] in FRENTES], "ramos": [r for r in tribunais.RAMOS if r in FRENTES], "regioes": tribunais.REGIOES, "ufs": tribunais.UFS,
                 "config": {"tribunais": tribunais.validar(r.get("tribunais")), "escritorio": cfg.get("escritorio", ""),
                            "valor_minimo": r.get("valor_minimo"), "dias_na_pagina": r.get("dias_na_pagina"),
+                           "dias_para_tras": int(r.get("dias_para_tras", 1) or 1),
                            "teto_capital_gigante": r.get("teto_capital_gigante"),
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
@@ -539,7 +541,7 @@ class Tratador(BaseHTTPRequestHandler):
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
-            return self._responder({"candidatas": cand, "atual": cfg["compartilhar"].get("pasta", ""), "drive": bool(cand),
+            return self._responder({"candidatas": cand, "nuvens": compartilhar.nuvens(), "atual": cfg["compartilhar"].get("pasta", ""), "drive": bool(cand),
                                     "pasta_programa": s.pasta, "subpasta": compartilhar.subpasta_para(cfg, marca(s.pasta)["nome"]),
                                     "escolher": os.name == "nt"})
         return self._responder({"erro": "não existe"}, status=404)
@@ -852,6 +854,7 @@ class Tratador(BaseHTTPRequestHandler):
                 alvo = planilha if corpo.get("o_que") in ("planilha", "editar") else (os.path.dirname(planilha) if planilha else "")
             if corpo.get("o_que") == "editar":  # Preferências e Exclusões: abre normal, para o escritório poder salvar
                 alvo = planilha
+                planilha_mod.liberar_escrita(alvo)  # 0.7.21: a marca "somente leitura" volta na próxima gravação
             elif corpo.get("o_que") == "planilha" and abrir_so_leitura(alvo):
                 return self._responder({"ok": True, "so_leitura": True})
             if abrir_no_windows(alvo):

@@ -63,7 +63,13 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
-- **0.7.21:** ressalvas da revisão da 0.7.20: regra de segurança da página também para formulários e molduras; erro das
+- **0.7.21 (teste do dono no Windows):** pastas em duas opções (Neste computador, padrão, ou Pasta compartilhada:
+  rede, OneDrive ou Google Drive para computador, com atalho quando estão instalados) e explicação antes de mudar;
+  planilha de consulta marcada "somente leitura" no Windows (abre só para leitura até com dois cliques; "Editar
+  Preferências e Exclusões" tira a marca); aviso "planilha só para leitura" volta a cada versão, licença ou pessoa nova;
+  (?) ao lado de "Abrir a planilha"; cópia de trabalho com o nome do escritório; embaixo de "Ler o Diário agora", o que
+  ele vai ler; validade da licença ("válida até …" ou "sem data de vencimento"); menu "Área logada → Trazer dados da
+  área logada". Também as ressalvas da revisão da 0.7.20: regra de segurança da página também para formulários e molduras; erro das
   estatísticas antigas aparece na hora e só diz "a SolverONE foi avisada" depois de o aviso chegar; "última leitura"
   também com o programa em pasta de rede; AssistONE diz o que vai à SolverONE (Configuração e Primeiro acesso) e o
   "Próximo ›" do tour cabe numa linha.

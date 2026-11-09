@@ -37,6 +37,24 @@ def candidatas():
     return achadas
 
 
+def nuvens():
+    """0.7.21 (decisão do dono): pastas de nuvem sincronizadas que existem neste Windows, para a tela oferecer como atalho
+    da "pasta compartilhada": Google Drive para computador (Meu Drive / My Drive) e OneDrive. [{tipo, caminho}]."""
+    achadas = [{"tipo": "gdrive", "caminho": p} for p in candidatas()]
+    home = os.path.expanduser("~")
+    opcoes = [os.environ.get(v, "") for v in ("OneDriveCommercial", "OneDriveConsumer", "OneDrive")]
+    try:
+        opcoes += [os.path.join(home, n) for n in sorted(os.listdir(home)) if n.lower().startswith("onedrive")]
+    except OSError:
+        pass
+    vistos = set()
+    for p in opcoes:
+        if p and os.path.isdir(p) and os.path.normcase(os.path.abspath(p)) not in vistos:
+            vistos.add(os.path.normcase(os.path.abspath(p)))
+            achadas.append({"tipo": "onedrive", "caminho": p})
+    return achadas
+
+
 def no_google_drive(pasta):
     """True se a pasta fica dentro do Meu Drive / My Drive do Google Drive para computador."""
     partes = [x.lower() for x in os.path.normpath(str(pasta or "")).replace("\\", "/").split("/")]
@@ -232,7 +250,7 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
         {"nome": NOME_HISTORICO, "linhas": log, "visual": True, "filtro": True, "larguras": [24, 16, 10, 22, 10, 26, 40, 10, 8, 60]},
         {"nome": "Saúde", "linhas": saude, "oculta": True, "larguras": [20, 18, 10, 80]},
         {"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo), versao, chave_impressao, ultima), "oculta": True, "larguras": [30, 80]},
-    ], so_leitura_recomendado=True)
+    ], so_leitura_recomendado=True, marcar=True)
     html = os.path.join(pasta_robo, "saida", "radar", "radar.html") if pasta_robo else ""
     if html and os.path.exists(html):
         shutil.copyfile(html, os.path.join(base, NOME_PAGINA))
@@ -264,8 +282,11 @@ def gerar_copia(cfg, agora=None):
     destino_pasta = os.path.join(base, PASTA_COPIAS_TRABALHO)
     os.makedirs(destino_pasta, exist_ok=True)
     destino = os.path.join(destino_pasta, f"{os.path.splitext(NOME_RADAR)[0]} - cópia {agora:%Y-%m-%d %Hh%Mm%S}.xlsx")
-    marca_copia = (f"Cópia de trabalho gerada em {agora:%d/%m/%Y às %H:%M}. Este arquivo é do escritório: pode ser editado "
-                   f"livremente e não é alterado pelo RADAR. Para os dados mais recentes, gere uma nova cópia.")
+    from xml.sax.saxutils import escape as _esc
+    nome_esc = ((cfg.get("conta") or {}).get("escritorio_licenca") or cfg.get("escritorio") or "").strip()[:80]
+    dono = f"do escritório {nome_esc}" if nome_esc else "do escritório"  # 0.7.21 (dono): o nome do escritório na faixa
+    marca_copia = _esc(f"Cópia de trabalho gerada em {agora:%d/%m/%Y às %H:%M}. Este arquivo é {dono}: pode ser editado "
+                       f"livremente e não é alterado pelo RADAR. Para os dados mais recentes, gere uma nova cópia.")
     try:
         with _zip.ZipFile(origem) as zin, _zip.ZipFile(destino, "w", _zip.ZIP_DEFLATED) as zout:
             for info in zin.infolist():

@@ -164,7 +164,7 @@ def situacao(cfg):
         return {"codigo": c.get("codigo", ""), "ok": False, "texto": motivo, "aceite": c.get("aceite") or {},
                 "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else "", "termos": c.get("termos") or {},
                 "escritorio": c.get("escritorio_licenca", ""), "validade": c.get("validade", ""), "recursos": c.get("recursos") or {}}
-    texto = "Licença ativa" + (f" até {c['validade']}" if c.get("validade") else "") + "."
+    texto = "Licença ativa."  # 0.7.21: a validade aparece em linha própria na tela ("Válida até …"), no idioma escolhido
     if c.get("resposta") == "sem_resposta":
         texto = f"Licença confirmada pela última vez em {c.get('ultima_ok')}; sem resposta da SolverONE agora."
     return {"codigo": c.get("codigo", ""), "ok": True, "texto": texto, "aceite": c.get("aceite") or {}, "aceite_link": "",

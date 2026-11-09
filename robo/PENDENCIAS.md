@@ -164,6 +164,11 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 ## 0.7.21 (09/Nov, noite; no ramo)
 
+Teste do dono no Windows (0.7.20) e decisões dele em 09/Nov (pastas em duas opções, planilha forçada a só leitura,
+grupo "Área logada"): feito. **Pedido ao RootifyONE (master do AssistONE):** balão do tour que "voa" de um passo ao
+outro; o personagem não some no tour (só se cobrir o alvo) e o último passo aponta para ele visível; depois a Produto
+troca o bloco embutido.
+
 Ressalvas da revisão da 0.7.20 (Operação): 1, 2, 5, 6, 8 e 9 feitas na Produto. Ficam com a Arquitetura: versão em
 `docs/recursos-do-app.json` (3) e cabeçalho "v12" da `lex-conta` (4). Item 7 (ícone e fonte do manual dão 404 no servidor
 local; cai na fonte do sistema) fica como está.
