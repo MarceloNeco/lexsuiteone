@@ -162,6 +162,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.24 (10/Nov, teste do dono no Windows)
+
+Aviso da planilha também no link da última leitura; marca "somente leitura" ao abrir; lupa com as partes da
+Configuração; critério embaixo do botão; nomes das opções de pasta. **Pedido à Arquitetura:** página dos termos em
+modo leitura (`aceite.html?ler=1`) sem a coluna vazia da direita e com a busca.
+
 ## 0.7.23 (10/Nov)
 
 Ressalvas da revisão da 0.7.22 (Operação), itens 1 a 8: feitas. Pacote 45/44.
