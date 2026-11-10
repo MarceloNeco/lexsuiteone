@@ -546,9 +546,15 @@ class Tratador(BaseHTTPRequestHandler):
         if u.path == "/regras":  # 0.7.28 (dono): regras do escritório editadas na tela
             cfg = s.config()
             base = compartilhar.pasta_base(cfg)
-            p = preferencias.carregar(base) if base else preferencias.padrao()
+            p = preferencias.padrao()
+            arq = preferencias.caminho(base, "trabalhista") if base else ""
+            if arq and os.path.exists(arq):  # só a planilha trabalhista: é a que o POST regrava (as outras frentes somam na leitura)
+                try:
+                    p = preferencias.carregar(base, doc=planilha_mod.ler_xlsx(arq, so_abas=preferencias.ABAS_EDITAVEIS))
+                except Exception as e:  # noqa: BLE001 - em uso ou ilegível: a tela mostra o padrão e avisa
+                    p["erro"] = f"{e.__class__.__name__}"
             return self._responder({"ok": True, "valores": {k: p.get(k) for k in preferencias.PADRAO},
-                                    "exclusoes": p.get("exclusoes") or [], "tem_pasta": bool(base), "erro": p.get("erro", "")})
+                                    "exclusoes": p.get("exclusoes") or [], "limites": preferencias.LIMITES, "tem_pasta": bool(base), "erro": p.get("erro", "")})
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
@@ -802,7 +808,7 @@ class Tratador(BaseHTTPRequestHandler):
             recados = []
             try:
                 compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, recados.append)
-                ok = radar.regravar_planilha(cfg, bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append,
+                ok = os.path.exists(preferencias.caminho(compartilhar.pasta_base(cfg), "trabalhista")) and radar.regravar_planilha(cfg, bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append,
                                              novas_regras={"Preferências": pref, "Exclusões": exc_l})
             except OSError:
                 ok = False

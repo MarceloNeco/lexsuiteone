@@ -168,6 +168,9 @@ Teste do dono no Windows (0.7.27), tudo feito: mês em letras e fuso; critério 
 cores de filtro e ordenação; Limpar filtros; filtros lembrados; ✕/Cancelar/clicar fora em toda janela; administração
 dos filtros salvos (locais; nuvem depois); Regras do escritório na tela; aviso de "já está aberto" no segundo clique.
 Em aberto: travar a digitação na planilha de consulta (proteção de aba), sem resposta do dono.
+Revisão (Produto, revisor): a tela mostra e regrava só as exclusões da planilha trabalhista (as das outras frentes seguem
+somando na leitura); sem planilha criada, não diz "salvo"; números fora do limite avisam antes de salvar. Fica: gravar
+pela tela reescreve a aba Preferências só com as linhas padrão (linha extra escrita à mão nessa aba se perde).
 
 Ressalvas da revisão da 0.7.27 (Operação): 1, 2 (números) e 4 feitas; 3 parcial (testes de rota e de texto mais firmes;
 o comportamento da tela fica com o script de tela da Operação, pedido no quadro para ir ao repositório). Campos de texto

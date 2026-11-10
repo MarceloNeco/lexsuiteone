@@ -1895,7 +1895,7 @@ window.LEXSUITE_RADAR = null;
     rg_esc_exc: "Esconder clientes e empresas excluídas", rg_esc_exc_x: "Esconde as empresas da lista de exclusões abaixo (clientes atuais, conflitos).", rg_socios: "Mostrar sócios e administradores", rg_socios_x: "Nomes de pessoas do cadastro público da Receita. Desligue se o escritório não precisa.",
     rg_dias_arq: "Dias na aba Arquivo da planilha", rg_dias_arq_x: "A aba Arquivo mostra os últimos N dias e todo processo trabalhado.", rg_limite: "Limite de linhas da planilha", rg_limite_x: "A 80% o RADAR avisa; a 100% guarda uma cópia de segurança e enxuga a aba Arquivo.",
     rg_exc_t: "Empresas excluídas", rg_exc_x: "Clientes atuais, conflitos ou quem o escritório não quer prospectar. Pode ser o nome ou o CNPJ.", rg_exc_busca: "Procurar na lista de excluídas", rg_exc_nome: "Nome ou CNPJ da empresa", rg_exc_motivo: "Motivo (ex.: cliente atual)",
-    rg_exc_add: "Acrescentar", rg_exc_tirar: "Tirar", rg_exc_vazio: "Nenhuma empresa excluída.", rg_exc_ja: "Essa empresa já está na lista.", rg_salvar: "Salvar regras", rg_pendente: "Há mudanças não salvas.", rg_salvo: "✓ Regras salvas na planilha.",
+    rg_exc_add: "Acrescentar", rg_exc_tirar: "Tirar", rg_exc_vazio: "Nenhuma empresa excluída.", rg_exc_ja: "Essa empresa já está na lista.", rg_salvar: "Salvar regras", rg_pendente: "Há mudanças não salvas.", rg_salvo: "✓ Regras salvas na planilha.", rg_fora: "Número fora do permitido: use de {a} a {b}.",
     fs_titulo: "Filtros salvos", fs_x: "Ficam neste computador. Arquivar esconde da lista sem apagar.", fs_renomear: "Renomear", fs_arquivar: "Arquivar", fs_desarquivar: "Voltar para a lista", fs_arquivado: "arquivado", fs_apagar: "Apagar", fs_novo_nome: "Novo nome do filtro:", fs_existe: "Já existe um filtro com esse nome.", fs_apagar_q: "Apagar o filtro “{n}”?",
     r_filtrar: "Filtrar", r_ordenar: "Ordenar", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "Aqui aparecem só os tribunais lidos. Para ler outros:",
     rodar_crit_x: "O que “Ler o Diário agora” lê: o Diário de hoje e dos últimos dias úteis com publicação, nos tribunais escolhidos. Diário já lido não é baixado de novo. Os filtros da lista não mudam o que é lido (lê tudo, para nada se perder); eles só escolhem o que aparece, e ficam guardados.",
@@ -1962,7 +1962,7 @@ window.LEXSUITE_RADAR = null;
     rg_esc_exc: "Hide clients and excluded companies", rg_esc_exc_x: "Hides the companies in the exclusion list below (current clients, conflicts).", rg_socios: "Show partners and directors", rg_socios_x: "Names of people from the public tax registry. Turn off if the firm does not need them.",
     rg_dias_arq: "Days in the spreadsheet Archive tab", rg_dias_arq_x: "The Archive tab shows the last N days and every worked lawsuit.", rg_limite: "Spreadsheet row limit", rg_limite_x: "At 80% RADAR warns; at 100% it keeps a backup and trims the Archive tab.",
     rg_exc_t: "Excluded companies", rg_exc_x: "Current clients, conflicts or companies the firm does not want to approach. Name or CNPJ.", rg_exc_busca: "Search the excluded list", rg_exc_nome: "Company name or CNPJ", rg_exc_motivo: "Reason (e.g. current client)",
-    rg_exc_add: "Add", rg_exc_tirar: "Remove", rg_exc_vazio: "No excluded companies.", rg_exc_ja: "This company is already in the list.", rg_salvar: "Save rules", rg_pendente: "There are unsaved changes.", rg_salvo: "✓ Rules saved to the spreadsheet.",
+    rg_exc_add: "Add", rg_exc_tirar: "Remove", rg_exc_vazio: "No excluded companies.", rg_exc_ja: "This company is already in the list.", rg_salvar: "Save rules", rg_pendente: "There are unsaved changes.", rg_salvo: "✓ Rules saved to the spreadsheet.", rg_fora: "Number out of range: use {a} to {b}.",
     fs_titulo: "Saved filters", fs_x: "Kept on this computer. Archive hides it from the list without deleting.", fs_renomear: "Rename", fs_arquivar: "Archive", fs_desarquivar: "Back to the list", fs_arquivado: "archived", fs_apagar: "Delete", fs_novo_nome: "New filter name:", fs_existe: "A filter with this name already exists.", fs_apagar_q: "Delete the filter “{n}”?",
     r_filtrar: "Filter", r_ordenar: "Sort", limpar_filtros_0: "Clear filters", trib_so_lidos: "Only the courts read show here. To read others:",
     rodar_crit_x: "What “Read the gazette now” reads: today\u2019s gazette and the last working days with publications, in the chosen courts. A gazette already read is not downloaded again. The list filters do not change what is read (everything is read, so nothing is lost); they only choose what shows, and they are remembered.",
@@ -3219,7 +3219,7 @@ window.LEXSUITE_RADAR = null;
       REGRAS_CAMPOS.forEach(function (c) {
         var lb = el("label", "rg-campo"), tx = el("span", null, t(c[2])), inp = el("input");
         if (c[1] === "sim") { inp.type = "checkbox"; inp.checked = !!d.valores[c[0]]; lb.className = "rg-campo rg-sim"; lb.appendChild(inp); lb.appendChild(tx); }
-        else { inp.type = "number"; inp.min = "0"; inp.step = c[0].indexOf("valor") >= 0 || c[0].indexOf("teto") >= 0 ? "1000" : "1"; inp.value = d.valores[c[0]]; lb.appendChild(tx); lb.appendChild(inp); }
+        else { inp.type = "number"; var lim_ = (d.limites || {})[c[0]] || [0]; inp.min = String(lim_[0]); if (lim_[1] != null) inp.max = String(lim_[1]); inp.step = c[0].indexOf("valor") >= 0 || c[0].indexOf("teto") >= 0 ? "1000" : "1"; inp.value = d.valores[c[0]]; lb.appendChild(tx); lb.appendChild(inp); }
         lb.appendChild(ajuda(t(c[3]))); ins[c[0]] = inp; grade.appendChild(lb);
       });
       box.appendChild(grade);
@@ -3252,7 +3252,8 @@ window.LEXSUITE_RADAR = null;
       function marcarRegras() { bs.disabled = false; msg.textContent = t("rg_pendente"); }
       Object.keys(ins).forEach(function (k) { ins[k].addEventListener(ins[k].type === "checkbox" ? "change" : "input", marcarRegras); });
       bs.addEventListener("click", function () {
-        var vals = {}; Object.keys(ins).forEach(function (k) { vals[k] = ins[k].type === "checkbox" ? ins[k].checked : Number(ins[k].value); });
+        var vals = {}, fora_ = null; Object.keys(ins).forEach(function (k) { vals[k] = ins[k].type === "checkbox" ? ins[k].checked : Number(ins[k].value); if (!fora_ && ins[k].type !== "checkbox" && !ins[k].checkValidity()) fora_ = ins[k]; });
+        if (fora_) { msg.textContent = t("rg_fora", { a: fora_.min, b: fora_.max || "∞" }); fora_.focus(); return; }
         bs.disabled = true; msg.textContent = t("carregando");
         post("/regras", { valores: vals, exclusoes: regrasExc }).then(function (r) {
           if (!r.ok) { bs.disabled = false; msg.textContent = r.motivo || t("falha"); return; }

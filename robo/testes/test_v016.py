@@ -907,6 +907,14 @@ class Regras0728(unittest.TestCase):
             self.assertEqual(d["valores"]["valor_minimo"], 250000); self.assertTrue(d["valores"]["esconder_gigantes"])
             self.assertFalse(d["valores"]["mostrar_socios"]); self.assertEqual(d["valores"]["limite_linhas"], preferencias.PADRAO["limite_linhas"])
             self.assertEqual([e["nome"] for e in d["exclusoes"]], ["Empresa Fictícia Cliente Ltda"])
+            # revisão: a tela mostra só as exclusões da planilha que ela regrava (a de outra frente não volta depois de tirar)
+            from lexsuite import compartilhar, planilha
+            base = compartilhar.pasta_base(srv.config())
+            planilha.escrever_xlsx(os.path.join(base, preferencias.NOMES_FRENTE["tributario"]),
+                                   [{"nome": "Exclusões", "linhas": [["Nome", "Motivo"], ["Outra Empresa Fictícia SA", "tributário"]]}])
+            self.assertEqual([e["nome"] for e in pedir("GET", "/regras")["exclusoes"]], ["Empresa Fictícia Cliente Ltda"])
+            self.assertTrue(pedir("POST", "/regras", {"valores": {}, "exclusoes": []})["ok"])
+            self.assertEqual(pedir("GET", "/regras")["exclusoes"], [])
         finally:
             srv.shutdown(); srv.server_close()
 
@@ -920,6 +928,25 @@ class Regras0728(unittest.TestCase):
             c.request("POST", "/regras", body="{}", headers={"X-LexSuite": "1", "Content-Type": "application/json"})
             r = _j.loads(c.getresponse().read()); c.close()
             self.assertFalse(r["ok"]); self.assertTrue(r["motivo_en"])
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_regras_nao_diz_salvo_sem_planilha(self):
+        import threading, http.client, json as _j
+        from unittest import mock
+        from lexsuite import app, compartilhar
+        pasta = tempfile.mkdtemp(); planilhas = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
+            _j.dump({"radar": {"tribunais": ["TRT2"]}, "compartilhar": {"pasta": planilhas}}, f)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            with mock.patch.object(compartilhar, "criar_se_faltar", return_value=None):  # a criação falhou sem erro
+                c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=20)
+                c.request("POST", "/regras", body=_j.dumps({"valores": {}, "exclusoes": [{"nome": "Empresa Fictícia Ltda"}]}),
+                          headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+                r = _j.loads(c.getresponse().read()); c.close()
+            self.assertFalse(r["ok"])
         finally:
             srv.shutdown(); srv.server_close()
 
