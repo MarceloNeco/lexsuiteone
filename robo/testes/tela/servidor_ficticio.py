@@ -61,7 +61,16 @@ if modo == "pronto":
     b.mudar_situacao(["0000004-11.2026.5.02.0001"], "arquivado", motivo="sem interesse")
     b.atualizar_estatisticas()
 s = app.Servidor(("127.0.0.1", int(os.environ.get("PORTA", "8781"))), pasta)
-# 0.7.27: dados fictícios nunca vão à internet ("Ler o Diário agora" aqui não chama o DJEN; incidente da revisão da 0.7.26)
+# 0.7.27/0.7.28: dados fictícios nunca vão à internet. "Ler o Diário agora" fica desligado e, por garantia, o ponto único
+# de saída (lexsuite.rede) recusa tudo: estatísticas dos meses anteriores, CNPJ e licença também ficam aqui dentro.
 s.rodar = lambda dias=None: (s.estado.terminar(erro="Servidor de teste: leitura desligada (dados fictícios)."), True)[1]
+from lexsuite import rede as _rede  # noqa: E402
+
+
+def _sem_internet(*_a, **_k):
+    raise OSError("servidor de teste: sem internet (dados fictícios)")
+
+
+_rede.pedir = _rede.pedir_bytes = _rede.pedir_json = _sem_internet
 print("pronto", s.server_address[1], flush=True)
 s.serve_forever()

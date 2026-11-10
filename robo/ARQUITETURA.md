@@ -1,4 +1,4 @@
-# Arquitetura do robô LexSuiteONE · RADAR JUDICIAL (v0.7.27)
+# Arquitetura do robô LexSuiteONE · RADAR JUDICIAL (v0.7.28)
 
 Leia antes de mexer. Python puro (só biblioteca padrão), **sem IA**, sem chave no código. Nada depende de modelo de
 linguagem nenhum: as regras são escritas e explicáveis. Se um dia entrar IA (resumos, peças), entra como peça opcional

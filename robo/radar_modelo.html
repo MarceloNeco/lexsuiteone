@@ -1862,7 +1862,7 @@ window.LEXSUITE_RADAR = null;
     planilha_em_uso_sem_excel: "Não consegui marcar a planilha como “somente leitura”: ela parece estar aberta para edição em outro lugar ou falta permissão na pasta. Abri a planilha do jeito normal; não salve nela e feche a outra para o {c} voltar a atualizá-la.",
     planilha_em_uso: "Não consegui marcar a planilha como “somente leitura”: ela parece estar aberta para edição em outro lugar (por exemplo, em “Editar Preferências e Exclusões”) ou falta permissão na pasta. Pedi ao Excel para abrir só para leitura; feche a outra para o {c} voltar a atualizá-la.",
     bg_c_pasta: "Onde ficam as planilhas (pasta)", bg_c_agenda: "Leitura automática (horários)",
-    bg_titulo: "Procurar", bg_ph: "Empresa, processo, CNPJ, cidade, opção do programa ou assunto do manual", bg_opcoes: "Telas e opções", bg_acoes: "Ações", bg_manual: "No manual", bg_nada: "Nada encontrado. Tente outra palavra.",
+    bg_ph_off: "Empresa, processo, CNPJ ou cidade", bg_titulo: "Procurar", bg_ph: "Empresa, processo, CNPJ, cidade, opção do programa ou assunto do manual", bg_opcoes: "Telas e opções", bg_acoes: "Ações", bg_manual: "No manual", bg_nada: "Nada encontrado. Tente outra palavra.",
     termos_ler_todos: "Ler os termos (abre no navegador)", termos_aceitar_esc: "Aceitar em nome do escritório", termos_aceitar_esc_x: "Só o responsável pela licença aceita em nome do escritório. A página abre no navegador com o código, o seu nome e o seu e-mail já preenchidos; confira e confirme.",
     pasta_fica: "As planilhas ficam em:", pasta_drive_x: "Sincroniza com a nuvem pelo Google Drive para computador: dá para abrir no celular e com a equipe.", pasta_local_x: "Fica só neste computador; ninguém mais vê. Bom para começar.", pasta_outra_x: "Para a equipe abrir de outros computadores, escolha uma pasta de rede, do OneDrive ou do Google Drive para computador. Também vale outra pasta deste computador.",
     escolhendo: "A janela de pastas do Windows abriu. Se não aparecer, procure atrás desta tela ou na barra de tarefas.",
@@ -1918,7 +1918,7 @@ window.LEXSUITE_RADAR = null;
     planilha_em_uso_sem_excel: "I could not mark the spreadsheet “read-only”: it seems to be open for editing elsewhere or the folder is not writable. I opened it the normal way; do not save in it and close the other one so {c} can update it again.",
     planilha_em_uso: "I could not mark the spreadsheet “read-only”: it seems to be open for editing elsewhere (for example, in “Edit Preferences and Exclusions”) or the folder is not writable. I asked Excel to open it read-only; close the other one so {c} can update it again.",
     bg_c_pasta: "Where spreadsheets live (folder)", bg_c_agenda: "Automatic reading (times)",
-    bg_titulo: "Search", bg_ph: "Company, case number, CNPJ, city, program option or manual topic", bg_opcoes: "Screens and options", bg_acoes: "Lawsuits", bg_manual: "In the manual", bg_nada: "Nothing found. Try another word.",
+    bg_ph_off: "Company, case number, CNPJ or city", bg_titulo: "Search", bg_ph: "Company, case number, CNPJ, city, program option or manual topic", bg_opcoes: "Screens and options", bg_acoes: "Lawsuits", bg_manual: "In the manual", bg_nada: "Nothing found. Try another word.",
     termos_ler_todos: "Read the terms (opens in the browser)", termos_aceitar_esc: "Accept on behalf of the firm", termos_aceitar_esc_x: "Only the licence holder accepts on behalf of the firm. The page opens in the browser with the code, your name and your e-mail filled in; check and confirm.",
     pasta_fica: "The spreadsheets live in:", pasta_drive_x: "Syncs to the cloud through Google Drive for desktop: open it on the phone and with the team.", pasta_local_x: "Stays on this computer only; nobody else sees it. Good to start with.", pasta_outra_x: "So the team can open it from other computers, choose a network, OneDrive or Google Drive for desktop folder. Another folder on this computer also works.",
     escolhendo: "The Windows folder picker opened. If you do not see it, look behind this screen or on the taskbar.",
@@ -3146,7 +3146,7 @@ window.LEXSUITE_RADAR = null;
   // 0.7.19: busca geral (lupa no topo): telas e opções do menu, ações da Lista e do Arquivo carregado, e títulos do manual
   var manualTitulos = null;
   function abrirBusca() {
-    fecharMenu(); var b = $("busca-global"); b.hidden = false; $("bg-titulo").textContent = t("bg_titulo"); $("bg-q").placeholder = t("bg_ph");
+    fecharMenu(); var b = $("busca-global"); b.hidden = false; $("bg-titulo").textContent = t("bg_titulo"); $("bg-q").placeholder = t(MODO === "app" ? "bg_ph" : "bg_ph_off");
     $("bg-x").setAttribute("aria-label", t("fechar")); $("b-busca").setAttribute("aria-expanded", "true");
     $("bg-q").value = ""; resultadosBusca(); $("bg-q").focus();
     if (manualTitulos === null) { manualTitulos = []; fetch("/manual").then(function (r) { return r.text(); }).then(function (h) {

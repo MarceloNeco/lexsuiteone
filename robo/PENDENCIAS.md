@@ -162,6 +162,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.28 (10/Nov)
+
+Ressalvas da revisão da 0.7.27 (Operação): 1, 2 (números) e 4 feitas; 3 parcial (testes de rota e de texto mais firmes;
+o comportamento da tela fica com o script de tela da Operação, pedido no quadro para ir ao repositório). Campos de texto
+com `Infinity` literal no `config.json` ficam para depois (só edição à mão).
+
 ## 0.7.27 (10/Nov)
 
 Ressalvas da revisão da 0.7.26 (Operação): 1 a 5 e 7 feitas; 6 aceita (lacunas residuais da heurística). Incidente do

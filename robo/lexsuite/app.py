@@ -477,9 +477,9 @@ class Tratador(BaseHTTPRequestHandler):
                            "horarios": horarios, "dias": dias, "tem_noite": agendar.tem_noite(horarios),
                            "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
                            "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True)),
-                           "area_logada_por_dia": int(r.get("area_logada_por_dia") or 30),
+                           "area_logada_por_dia": config.inteiro(r.get("area_logada_por_dia", 30), 30, 1, 365),
                            "abrir_em_aba": bool(r.get("abrir_em_aba")),
-                           "guardar_meses": int(r.get("guardar_meses") or 12)},
+                           "guardar_meses": config.inteiro(r.get("guardar_meses", 12), 12, 1, 120)},
                 "atualizacao": {"chave": bool(chave), "impressao": assinatura.impressao(chave) if chave else "",
                                 "url": cfg["atualizacao"].get("url", ""), "pasta": compartilhar.pasta_atualizacao(cfg)},
                 "versao": VERSAO, "estado": s.estado_atual(), "pasta_robo": s.pasta,
@@ -793,7 +793,7 @@ class Tratador(BaseHTTPRequestHandler):
             quero = {str(x) for x in (corpo.get("processos") or []) if isinstance(x, (str, int))}
             itens = [i for i in pagina["itens"] if not quero or i["processo"] in quero]
             # 0.7.16: o pedido traz, em cada processo, só o que falta, e pede a "RESPOSTA PARA O RADAR v1" (qualquer extensão de IA)
-            caminho_md, n, texto = ct.preparar_v1(itens, s.pasta, marca(s.pasta)["nome"], int(cfg["radar"].get("area_logada_por_dia") or 30))
+            caminho_md, n, texto = ct.preparar_v1(itens, s.pasta, marca(s.pasta)["nome"], config.inteiro(cfg["radar"].get("area_logada_por_dia", 30), 30, 1, 365))
             if corpo.get("abrir_pasta", not quero):
                 abrir_no_windows(os.path.dirname(caminho_md))
             return self._responder({"ok": True, "caminho": caminho_md, "quantos": n, "texto": texto})

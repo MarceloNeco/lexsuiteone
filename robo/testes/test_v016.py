@@ -816,6 +816,13 @@ class V0725(unittest.TestCase):
                     mock.patch.object(app, "abrir_so_leitura", return_value=True):
                 r = self._post(srv, "/abrir", {"o_que": "planilha"})
             self.assertTrue(r["ok"]); self.assertTrue(r["em_uso"])
+            with mock.patch.object(compartilhar, "pasta_base", return_value=pasta), \
+                    mock.patch.object(preferencias, "caminho", return_value=caminho), \
+                    mock.patch.object(planilha, "marcar_se_livre", return_value=False), \
+                    mock.patch.object(app, "abrir_so_leitura", return_value=False), \
+                    mock.patch.object(app, "abrir_no_windows", return_value=True):
+                r = self._post(srv, "/abrir", {"o_que": "planilha"})
+            self.assertTrue(r["ok"]); self.assertTrue(r["em_uso"]); self.assertNotIn("so_leitura", r)  # sem Excel: a tela usa o outro texto
         finally:
             srv.shutdown(); srv.server_close()
 
@@ -845,10 +852,35 @@ class V0727(unittest.TestCase):
         import re
         s = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "radar_modelo.html"), encoding="utf-8").read()
         for chave in ("planilha_em_uso", "planilha_em_uso_sem_excel"):
-            textos = re.findall(chave + r': "([^"]*)"', s)
+            textos = re.findall(r"\b" + chave + r': "([^"]*)"', s)
             self.assertEqual(len(textos), 2, chave)  # PT e EN
             self.assertTrue(all("{c}" in x and "RADAR" not in x for x in textos), chave)
-        self.assertIn('t(r.so_leitura ? "planilha_em_uso" : "planilha_em_uso_sem_excel", { c: marcaCurto() })', s)
+        self.assertRegex(s, r'\.so_leitura \? "planilha_em_uso" : "planilha_em_uso_sem_excel"')
+
+
+class V0728(unittest.TestCase):
+    """0.7.28: revisão da 0.7.27."""
+
+    def test_area_logada_e_guardar_meses_absurdos(self):
+        import threading, http.client, json as _j
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
+            f.write('{"radar": {"tribunais": ["TRT2"], "area_logada_por_dia": Infinity, "guardar_meses": "abc"}}')
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+            c.request("GET", "/dados", headers={"X-LexSuite": "1"}); r = c.getresponse(); corpo = r.read(); c.close()
+            self.assertEqual(r.status, 200)
+            d = _j.loads(corpo)
+            self.assertEqual(d["app"]["config"]["area_logada_por_dia"], 30); self.assertEqual(d["app"]["config"]["guardar_meses"], 12)
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_servidor_ficticio_sem_internet(self):
+        texto = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "tela", "servidor_ficticio.py"), encoding="utf-8").read()
+        self.assertIn("_rede.pedir = _rede.pedir_bytes = _rede.pedir_json = _sem_internet", texto)
 
 
 if __name__ == "__main__":
