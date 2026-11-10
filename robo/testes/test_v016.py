@@ -926,3 +926,46 @@ class Regras0728(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+_ROBO_ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import json  # noqa: E402
+
+
+class JaAberto0728(unittest.TestCase):
+    """0.7.28 (dono): segundo clique no atalho não abre outra janela; a tela aberta avisa."""
+
+    def test_segundo_clique_chama_a_tela_aberta(self):
+        import threading, time, http.client
+        from unittest import mock
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        shutil.copy(os.path.join(_ROBO_, "radar_modelo.html"), pasta)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            porta = srv.server_address[1]
+            srv.ultimo_pedido = time.monotonic() - 999  # ninguém olhando a tela
+            self.assertEqual(app.procurar_aberto([porta], detalhe=True), (f"http://127.0.0.1:{porta}/", False))
+            self.assertLess(srv.ultimo_pedido, time.monotonic() - 900)  # a sonda não conta como tela aberta
+            def estado():
+                c = http.client.HTTPConnection("127.0.0.1", porta, timeout=10)
+                c.request("GET", "/estado", headers={"X-LexSuite": "1"})
+                d = json.loads(c.getresponse().read()); c.close(); return d
+            estado()  # a tela pergunta: agora está ativa
+            self.assertTrue(app.procurar_aberto([porta], detalhe=True)[1])
+            with mock.patch.object(app, "procurar_aberto", return_value=(f"http://127.0.0.1:{porta}/", True)), \
+                    mock.patch.object(app, "abrir_janela") as abrir, mock.patch("time.sleep"):
+                ditos = []
+                app.servir(pasta, aviso=ditos.append)
+            abrir.assert_not_called()
+            self.assertIn("já está aberto", " ".join(ditos))
+            self.assertTrue(estado().get("chamado"))   # a tela recebe o aviso uma vez
+            self.assertFalse(estado().get("chamado"))
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_tela_avisa(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertIn("e.chamado", h)
+        self.assertEqual(h.count("ja_aberto:"), 2)

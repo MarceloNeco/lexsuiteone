@@ -417,7 +417,8 @@ class Tratador(BaseHTTPRequestHandler):
         if not self._host_local():
             return self._responder({"erro": "pedido recusado"}, status=403)
         import time as _t
-        self.server.ultimo_pedido = _t.monotonic()
+        if self.headers.get("X-LexSuite-Sonda") != "1":  # 0.7.28: a sonda do segundo clique não conta como tela aberta
+            self.server.ultimo_pedido = _t.monotonic()
         u = urlparse(self.path)
         qs = parse_qs(u.query)
         s = self.server
@@ -516,7 +517,14 @@ class Tratador(BaseHTTPRequestHandler):
             sit["erro"] = s.hist.get("erro", "")
             return self._responder(sit)
         if u.path == "/estado":
-            return self._responder(s.estado_atual())
+            d = s.estado_atual()
+            d["tela_ativa"] = _t.monotonic() - s.ultimo_pedido < 25  # a tela pergunta a cada 10 s
+            if self.headers.get("X-LexSuite-Sonda") != "1" and getattr(s, "chamado", 0):
+                d["chamado"] = True; s.chamado = 0  # 0.7.28: alguém clicou no atalho de novo; a tela avisa e vem para a frente
+            return self._responder(d)
+        if u.path == "/chamar" and self.headers.get("X-LexSuite-Sonda") == "1":
+            s.chamado = _t.monotonic()
+            return self._responder({"ok": True})
         if u.path == "/manual":
             manual = os.path.join(s.pasta, "MANUAL-DO-ESCRITORIO.html")
             if not os.path.exists(manual):
@@ -1114,22 +1122,36 @@ def atualizar_atalho(pasta):
         return False
 
 
-def procurar_aberto(portas=None):
+def chamar_tela(url):
+    """0.7.28: pede à tela já aberta que mostre "O RADAR já estava aberto aqui" e venha para a frente."""
+    import http.client
+    try:
+        p = int(url.rstrip("/").rsplit(":", 1)[1])
+        c = http.client.HTTPConnection("127.0.0.1", p, timeout=1)
+        c.request("GET", "/chamar", headers={"X-LexSuite": "1", "X-LexSuite-Sonda": "1", "Host": f"127.0.0.1:{p}"})
+        c.getresponse().read(); c.close()
+        return True
+    except (OSError, ValueError, IndexError):
+        return False
+
+
+def procurar_aberto(portas=None, detalhe=False):
     """Endereço de uma tela do RADAR que já está aberta neste computador ("" se nenhuma). Evita a segunda janela preta
     quando a pessoa clica de novo no atalho."""
     import http.client
     for p in portas or PORTAS:
         try:
             c = http.client.HTTPConnection("127.0.0.1", p, timeout=0.6)
-            c.request("GET", "/estado", headers={"X-LexSuite": "1", "Host": f"127.0.0.1:{p}"})
+            c.request("GET", "/estado", headers={"X-LexSuite": "1", "X-LexSuite-Sonda": "1", "Host": f"127.0.0.1:{p}"})
             r = c.getresponse()
-            ok = r.status == 200 and "LexSuiteONE" in (r.getheader("Server") or "") and "rodando" in json.loads(r.read() or b"{}")
+            d = json.loads(r.read() or b"{}")
+            ok = r.status == 200 and "LexSuiteONE" in (r.getheader("Server") or "") and "rodando" in d
             c.close()
             if ok:
-                return f"http://127.0.0.1:{p}/"
+                return (f"http://127.0.0.1:{p}/", bool(d.get("tela_ativa"))) if detalhe else f"http://127.0.0.1:{p}/"
         except (OSError, ValueError):
             continue
-    return ""
+    return ("", False) if detalhe else ""
 
 
 def reiniciar_depois(servidor, pasta):
@@ -1197,12 +1219,18 @@ def vigiar_tela(servidor, aviso=print, limite_s=FECHAR_SEM_TELA_S, passo_s=15, r
 
 def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
     if not espera:
-        ja = procurar_aberto()
+        ja, ativa = procurar_aberto(detalhe=True)
         if ja:
+            import time
+            if ativa and chamar_tela(ja):  # 0.7.28 (dono): a tela já está aberta; não abre outra, ela avisa e vem para a frente
+                aviso("  O RADAR já está aberto neste computador. Procure a janela \"RADAR JUDICIAL\" na barra de tarefas;")
+                aviso("  ela mostra o aviso \"O RADAR já estava aberto aqui\". Esta janela fecha sozinha.")
+                aviso("  / RADAR is already open: look for the RADAR JUDICIAL window on the taskbar.")
+                time.sleep(6)
+                return
             aviso("  O RADAR já está aberto neste computador: trazendo a tela. Esta janela fecha sozinha.")
             if abrir:
                 abrir_janela(ja, aba=_prefere_aba(pasta))
-            import time
             time.sleep(3)
             return
     servidor = criar(pasta, porta, espera=20 if espera else 0)

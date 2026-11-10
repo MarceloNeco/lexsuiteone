@@ -1887,6 +1887,7 @@ window.LEXSUITE_RADAR = null;
   Object.assign(T.pt, {
     lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento",
     rodar_crit_1: "Lê: hoje e o último dia útil · {l}", rodar_crit_n: "Lê: hoje e os últimos {d} dias úteis · {l}", rodar_crit_alterar: "alterar",
+    ja_aberto: "O RADAR já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "RADAR já aberto",
     rg_titulo: "Regras do escritório", rg_intro: "O que o RADAR esconde ou destaca na lista. Fica gravado nas abas Preferências e Exclusões da planilha (e nas cópias de segurança); não é preciso abrir o Excel.",
     rg_sem_pasta: "Escolha primeiro onde ficam as planilhas (acima).", rg_valor: "Valor mínimo da causa (R$)", rg_valor_x: "Usado no filtro “Acima de” e no destaque. Ações abaixo continuam na lista.",
     rg_min: "Mínimo de ações da mesma empresa", rg_min_x: "Ex.: 3 = só destacar empresa com 3 ou mais ações novas na janela de dias. 1 = todas.", rg_janela: "Janela do mínimo de ações (dias)", rg_janela_x: "Quantos dias para trás contar as ações da mesma empresa.",
@@ -1953,6 +1954,7 @@ window.LEXSUITE_RADAR = null;
   Object.assign(T.en, {
     lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date",
     rodar_crit_1: "Reads: today and the last working day · {l}", rodar_crit_n: "Reads: today and the last {d} working days · {l}", rodar_crit_alterar: "change",
+    ja_aberto: "RADAR was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "RADAR already open",
     rg_titulo: "Firm rules", rg_intro: "What RADAR hides or highlights in the list. Saved in the spreadsheet\u2019s Preferences and Exclusions tabs (and in the backups); no need to open Excel.",
     rg_sem_pasta: "First choose where the spreadsheets live (above).", rg_valor: "Minimum claim value (R$)", rg_valor_x: "Used by the “Above” filter and the highlight. Lower lawsuits stay in the list.",
     rg_min: "Minimum lawsuits per company", rg_min_x: "E.g. 3 = only highlight companies with 3 or more new lawsuits in the day window. 1 = all.", rg_janela: "Window for the minimum (days)", rg_janela_x: "How many days back to count the same company\u2019s lawsuits.",
@@ -2173,8 +2175,13 @@ window.LEXSUITE_RADAR = null;
   }
   setInterval(function () {
     if (MODO !== "app" || reiniciando) return;
-    fetch("/estado", { headers: cabecalhosApp(), cache: "no-store" }).then(function () { falhasBatimento = 0; }).catch(function () { falhasBatimento += 1; if (falhasBatimento >= 2) telaFechada(); });
-  }, 30000);
+    fetch("/estado", { headers: cabecalhosApp(), cache: "no-store" }).then(function (r) { falhasBatimento = 0; return r.json(); }).then(function (e) {
+      if (e && e.chamado) {  // 0.7.28 (dono): clicaram no atalho de novo; esta tela avisa e tenta vir para a frente
+        mostrarAviso(t("ja_aberto")); try { window.focus(); } catch (x) {}
+        var tit_ = document.title, n_ = 0, pisca_ = setInterval(function () { document.title = n_++ % 2 ? tit_ : "● " + t("ja_aberto_curto"); if (n_ > 9) { clearInterval(pisca_); document.title = tit_; } }, 700);
+      }
+    }).catch(function () { falhasBatimento += 1; if (falhasBatimento >= 5) telaFechada(); });
+  }, 10000);
   function sairDoRadar() {
     var c = el("div"); c.appendChild(el("h3", null, t("sair_t"))); c.appendChild(el("p", null, t("sair_x")));
     abrirJanela(c, [[t("cancelar"), null], [t("sair"), function () {
