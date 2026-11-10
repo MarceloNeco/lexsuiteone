@@ -345,7 +345,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     return situacao
 
 
-def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
+def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, novas_regras=None):
     """Grava as planilhas (0.7.16: uma por frente). Se uma estiver aberta no Excel (o Windows trava o arquivo), avisa com
     clareza: nada se perde, a lista está no computador e a planilha é regravada depois. Antes, confere o disco e o
     tamanho: a 80% do limite avisa; a 100% faz a cópia de segurança e enxuga a aba Arquivo sozinho. Devolve True se
@@ -395,7 +395,7 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
             processos = {i.get("processo") for i in radar_f + arquivo} if len(ordem) > 1 else None
             caminho = compartilhar.gravar_radar(cfg, pagina, banco, versao, COLUNAS_RADAR, linha_csv, impressao, pasta_base,
                                                 aviso, arquivo=arquivo, frente=frente, itens=radar_f, aviso_tamanho=texto,
-                                                processos=processos)
+                                                processos=processos, novas_regras=novas_regras if frente == "trabalhista" else None)
             if not caminho:  # planilha em uso ou ilegível: gravar_radar já avisou e não regravou nada
                 tudo_ok = False
                 continue
@@ -417,10 +417,15 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
     return False
 
 
-def regravar_planilha(cfg, banco, pasta_base, versao, aviso=print):
-    """Botão "Gravar a planilha agora" (depois de fechar o Excel): grava a lista atual sem ler o Diário de novo."""
-    pagina = montar_radar(cfg, banco, None, False, None)
-    return gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso)
+def regravar_planilha(cfg, banco, pasta_base, versao, aviso=print, novas_regras=None):
+    """Botão "Gravar a planilha agora" (depois de fechar o Excel): grava a lista atual sem ler o Diário de novo.
+    0.7.28: com `novas_regras` ({"Preferências": linhas, "Exclusões": linhas}), grava também as regras do escritório
+    editadas na tela, e a lista já sai com elas."""
+    prefs = None
+    if novas_regras:
+        prefs = preferencias.carregar(compartilhar.pasta_base(cfg), doc={"abas": [{"nome": n, "linhas": l} for n, l in novas_regras.items()]})
+    pagina = montar_radar(cfg, banco, None, False, None, prefs=prefs)
+    return gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso, novas_regras=novas_regras)
 
 
 def gravar_saida(cfg, banco, pasta, agora, situacao, aviso=print, versao="", prefs=None):

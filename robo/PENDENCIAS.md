@@ -162,6 +162,20 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.28 (10/Nov)
+
+Teste do dono no Windows (0.7.27), tudo feito: mês em letras e fuso; critério da leitura compacto com "alterar";
+cores de filtro e ordenação; Limpar filtros; filtros lembrados; ✕/Cancelar/clicar fora em toda janela; administração
+dos filtros salvos (locais; nuvem depois); Regras do escritório na tela; aviso de "já está aberto" no segundo clique.
+Em aberto: travar a digitação na planilha de consulta (proteção de aba), sem resposta do dono.
+Revisão (Produto, revisor): a tela mostra e regrava só as exclusões da planilha trabalhista (as das outras frentes seguem
+somando na leitura); sem planilha criada, não diz "salvo"; números fora do limite avisam antes de salvar. Fica: gravar
+pela tela reescreve a aba Preferências só com as linhas padrão (linha extra escrita à mão nessa aba se perde).
+
+Ressalvas da revisão da 0.7.27 (Operação): 1, 2 (números) e 4 feitas; 3 parcial (testes de rota e de texto mais firmes;
+o comportamento da tela fica com o script de tela da Operação, pedido no quadro para ir ao repositório). Campos de texto
+com `Infinity` literal no `config.json` ficam para depois (só edição à mão).
+
 ## 0.7.27 (10/Nov)
 
 Ressalvas da revisão da 0.7.26 (Operação): 1 a 5 e 7 feitas; 6 aceita (lacunas residuais da heurística). Incidente do

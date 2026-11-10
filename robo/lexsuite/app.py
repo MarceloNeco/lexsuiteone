@@ -417,7 +417,8 @@ class Tratador(BaseHTTPRequestHandler):
         if not self._host_local():
             return self._responder({"erro": "pedido recusado"}, status=403)
         import time as _t
-        self.server.ultimo_pedido = _t.monotonic()
+        if self.headers.get("X-LexSuite-Sonda") != "1":  # 0.7.28: a sonda do segundo clique não conta como tela aberta
+            self.server.ultimo_pedido = _t.monotonic()
         u = urlparse(self.path)
         qs = parse_qs(u.query)
         s = self.server
@@ -477,9 +478,9 @@ class Tratador(BaseHTTPRequestHandler):
                            "horarios": horarios, "dias": dias, "tem_noite": agendar.tem_noite(horarios),
                            "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
                            "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True)),
-                           "area_logada_por_dia": int(r.get("area_logada_por_dia") or 30),
+                           "area_logada_por_dia": config.inteiro(r.get("area_logada_por_dia", 30), 30, 1, 365),
                            "abrir_em_aba": bool(r.get("abrir_em_aba")),
-                           "guardar_meses": int(r.get("guardar_meses") or 12)},
+                           "guardar_meses": config.inteiro(r.get("guardar_meses", 12), 12, 1, 120)},
                 "atualizacao": {"chave": bool(chave), "impressao": assinatura.impressao(chave) if chave else "",
                                 "url": cfg["atualizacao"].get("url", ""), "pasta": compartilhar.pasta_atualizacao(cfg)},
                 "versao": VERSAO, "estado": s.estado_atual(), "pasta_robo": s.pasta,
@@ -516,7 +517,14 @@ class Tratador(BaseHTTPRequestHandler):
             sit["erro"] = s.hist.get("erro", "")
             return self._responder(sit)
         if u.path == "/estado":
-            return self._responder(s.estado_atual())
+            d = s.estado_atual()
+            d["tela_ativa"] = _t.monotonic() - s.ultimo_pedido < 25  # a tela pergunta a cada 10 s
+            if self.headers.get("X-LexSuite-Sonda") != "1" and getattr(s, "chamado", 0):
+                d["chamado"] = True; s.chamado = 0  # 0.7.28: alguém clicou no atalho de novo; a tela avisa e vem para a frente
+            return self._responder(d)
+        if u.path == "/chamar" and self.headers.get("X-LexSuite-Sonda") == "1":
+            s.chamado = _t.monotonic()
+            return self._responder({"ok": True})
         if u.path == "/manual":
             manual = os.path.join(s.pasta, "MANUAL-DO-ESCRITORIO.html")
             if not os.path.exists(manual):
@@ -535,6 +543,18 @@ class Tratador(BaseHTTPRequestHandler):
                 s.versao_cache = (time.monotonic(), {"disponivel": bool(r.get("disponivel") and r.get("ok")), "versao": r.get("versao", ""),
                                                      "atual": VERSAO})
             return self._responder(s.versao_cache[1])
+        if u.path == "/regras":  # 0.7.28 (dono): regras do escritório editadas na tela
+            cfg = s.config()
+            base = compartilhar.pasta_base(cfg)
+            p = preferencias.padrao()
+            arq = preferencias.caminho(base, "trabalhista") if base else ""
+            if arq and os.path.exists(arq):  # só a planilha trabalhista: é a que o POST regrava (as outras frentes somam na leitura)
+                try:
+                    p = preferencias.carregar(base, doc=planilha_mod.ler_xlsx(arq, so_abas=preferencias.ABAS_EDITAVEIS))
+                except Exception as e:  # noqa: BLE001 - em uso ou ilegível: a tela mostra o padrão e avisa
+                    p["erro"] = f"{e.__class__.__name__}"
+            return self._responder({"ok": True, "valores": {k: p.get(k) for k in preferencias.PADRAO},
+                                    "exclusoes": p.get("exclusoes") or [], "limites": preferencias.LIMITES, "tem_pasta": bool(base), "erro": p.get("erro", "")})
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
@@ -778,6 +798,24 @@ class Tratador(BaseHTTPRequestHandler):
                             s.hist.pop("parar", None)
             threading.Thread(target=ler, daemon=True, name="estatisticas-antigas").start()
             return self._responder({"ok": True})
+        if caminho == "/regras":  # 0.7.28 (dono): grava as regras do escritório nas abas da planilha
+            cfg = s.config()
+            if not compartilhar.pasta_base(cfg):
+                return self._responder({"ok": False, "motivo": "Escolha primeiro a pasta das planilhas em Configuração.",
+                                        "motivo_en": "Choose the spreadsheet folder in Settings first."})
+            exc = corpo.get("exclusoes") if isinstance(corpo.get("exclusoes"), list) else []
+            pref, exc_l = preferencias.linhas_regras(corpo.get("valores") if isinstance(corpo.get("valores"), dict) else {}, exc)
+            recados = []
+            try:
+                compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, recados.append)
+                ok = os.path.exists(preferencias.caminho(compartilhar.pasta_base(cfg), "trabalhista")) and radar.regravar_planilha(cfg, bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append,
+                                             novas_regras={"Preferências": pref, "Exclusões": exc_l})
+            except OSError:
+                ok = False
+            if not ok:
+                return self._responder({"ok": False, "motivo": "Não consegui gravar: a planilha pode estar aberta no Excel. Feche-a e salve de novo.",
+                                        "motivo_en": "Could not save: the spreadsheet may be open in Excel. Close it and save again."})
+            return self._responder({"ok": True, "exclusoes": len(exc_l) - 1})
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)
@@ -793,7 +831,7 @@ class Tratador(BaseHTTPRequestHandler):
             quero = {str(x) for x in (corpo.get("processos") or []) if isinstance(x, (str, int))}
             itens = [i for i in pagina["itens"] if not quero or i["processo"] in quero]
             # 0.7.16: o pedido traz, em cada processo, só o que falta, e pede a "RESPOSTA PARA O RADAR v1" (qualquer extensão de IA)
-            caminho_md, n, texto = ct.preparar_v1(itens, s.pasta, marca(s.pasta)["nome"], int(cfg["radar"].get("area_logada_por_dia") or 30))
+            caminho_md, n, texto = ct.preparar_v1(itens, s.pasta, marca(s.pasta)["nome"], config.inteiro(cfg["radar"].get("area_logada_por_dia", 30), 30, 1, 365))
             if corpo.get("abrir_pasta", not quero):
                 abrir_no_windows(os.path.dirname(caminho_md))
             return self._responder({"ok": True, "caminho": caminho_md, "quantos": n, "texto": texto})
@@ -1090,22 +1128,36 @@ def atualizar_atalho(pasta):
         return False
 
 
-def procurar_aberto(portas=None):
+def chamar_tela(url):
+    """0.7.28: pede à tela já aberta que mostre "O RADAR já estava aberto aqui" e venha para a frente."""
+    import http.client
+    try:
+        p = int(url.rstrip("/").rsplit(":", 1)[1])
+        c = http.client.HTTPConnection("127.0.0.1", p, timeout=1)
+        c.request("GET", "/chamar", headers={"X-LexSuite": "1", "X-LexSuite-Sonda": "1", "Host": f"127.0.0.1:{p}"})
+        c.getresponse().read(); c.close()
+        return True
+    except (OSError, ValueError, IndexError):
+        return False
+
+
+def procurar_aberto(portas=None, detalhe=False):
     """Endereço de uma tela do RADAR que já está aberta neste computador ("" se nenhuma). Evita a segunda janela preta
     quando a pessoa clica de novo no atalho."""
     import http.client
     for p in portas or PORTAS:
         try:
             c = http.client.HTTPConnection("127.0.0.1", p, timeout=0.6)
-            c.request("GET", "/estado", headers={"X-LexSuite": "1", "Host": f"127.0.0.1:{p}"})
+            c.request("GET", "/estado", headers={"X-LexSuite": "1", "X-LexSuite-Sonda": "1", "Host": f"127.0.0.1:{p}"})
             r = c.getresponse()
-            ok = r.status == 200 and "LexSuiteONE" in (r.getheader("Server") or "") and "rodando" in json.loads(r.read() or b"{}")
+            d = json.loads(r.read() or b"{}")
+            ok = r.status == 200 and "LexSuiteONE" in (r.getheader("Server") or "") and "rodando" in d
             c.close()
             if ok:
-                return f"http://127.0.0.1:{p}/"
+                return (f"http://127.0.0.1:{p}/", bool(d.get("tela_ativa"))) if detalhe else f"http://127.0.0.1:{p}/"
         except (OSError, ValueError):
             continue
-    return ""
+    return ("", False) if detalhe else ""
 
 
 def reiniciar_depois(servidor, pasta):
@@ -1173,12 +1225,18 @@ def vigiar_tela(servidor, aviso=print, limite_s=FECHAR_SEM_TELA_S, passo_s=15, r
 
 def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
     if not espera:
-        ja = procurar_aberto()
+        ja, ativa = procurar_aberto(detalhe=True)
         if ja:
+            import time
+            if ativa and chamar_tela(ja):  # 0.7.28 (dono): a tela já está aberta; não abre outra, ela avisa e vem para a frente
+                aviso("  O RADAR já está aberto neste computador. Procure a janela \"RADAR JUDICIAL\" na barra de tarefas;")
+                aviso("  ela mostra o aviso \"O RADAR já estava aberto aqui\". Esta janela fecha sozinha.")
+                aviso("  / RADAR is already open: look for the RADAR JUDICIAL window on the taskbar.")
+                time.sleep(6)
+                return
             aviso("  O RADAR já está aberto neste computador: trazendo a tela. Esta janela fecha sozinha.")
             if abrir:
                 abrir_janela(ja, aba=_prefere_aba(pasta))
-            import time
             time.sleep(3)
             return
     servidor = criar(pasta, porta, espera=20 if espera else 0)

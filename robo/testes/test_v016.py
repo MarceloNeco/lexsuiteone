@@ -816,6 +816,13 @@ class V0725(unittest.TestCase):
                     mock.patch.object(app, "abrir_so_leitura", return_value=True):
                 r = self._post(srv, "/abrir", {"o_que": "planilha"})
             self.assertTrue(r["ok"]); self.assertTrue(r["em_uso"])
+            with mock.patch.object(compartilhar, "pasta_base", return_value=pasta), \
+                    mock.patch.object(preferencias, "caminho", return_value=caminho), \
+                    mock.patch.object(planilha, "marcar_se_livre", return_value=False), \
+                    mock.patch.object(app, "abrir_so_leitura", return_value=False), \
+                    mock.patch.object(app, "abrir_no_windows", return_value=True):
+                r = self._post(srv, "/abrir", {"o_que": "planilha"})
+            self.assertTrue(r["ok"]); self.assertTrue(r["em_uso"]); self.assertNotIn("so_leitura", r)  # sem Excel: a tela usa o outro texto
         finally:
             srv.shutdown(); srv.server_close()
 
@@ -845,11 +852,147 @@ class V0727(unittest.TestCase):
         import re
         s = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "radar_modelo.html"), encoding="utf-8").read()
         for chave in ("planilha_em_uso", "planilha_em_uso_sem_excel"):
-            textos = re.findall(chave + r': "([^"]*)"', s)
+            textos = re.findall(r"\b" + chave + r': "([^"]*)"', s)
             self.assertEqual(len(textos), 2, chave)  # PT e EN
             self.assertTrue(all("{c}" in x and "RADAR" not in x for x in textos), chave)
-        self.assertIn('t(r.so_leitura ? "planilha_em_uso" : "planilha_em_uso_sem_excel", { c: marcaCurto() })', s)
+        self.assertRegex(s, r'\.so_leitura \? "planilha_em_uso" : "planilha_em_uso_sem_excel"')
+
+
+class V0728(unittest.TestCase):
+    """0.7.28: revisão da 0.7.27."""
+
+    def test_area_logada_e_guardar_meses_absurdos(self):
+        import threading, http.client, json as _j
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
+            f.write('{"radar": {"tribunais": ["TRT2"], "area_logada_por_dia": Infinity, "guardar_meses": "abc"}}')
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+            c.request("GET", "/dados", headers={"X-LexSuite": "1"}); r = c.getresponse(); corpo = r.read(); c.close()
+            self.assertEqual(r.status, 200)
+            d = _j.loads(corpo)
+            self.assertEqual(d["app"]["config"]["area_logada_por_dia"], 30); self.assertEqual(d["app"]["config"]["guardar_meses"], 12)
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_servidor_ficticio_sem_internet(self):
+        texto = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "tela", "servidor_ficticio.py"), encoding="utf-8").read()
+        self.assertIn("_rede.pedir = _rede.pedir_bytes = _rede.pedir_json = _sem_internet", texto)
+
+
+class Regras0728(unittest.TestCase):
+    """0.7.28 (dono): as regras do escritório se editam na tela e o RADAR grava nas abas da planilha."""
+
+    def test_salvar_e_ler_as_regras(self):
+        import threading, http.client, json as _j
+        from lexsuite import app, preferencias
+        pasta = tempfile.mkdtemp(); planilhas = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
+            _j.dump({"radar": {"tribunais": ["TRT2"]}, "compartilhar": {"pasta": planilhas}}, f)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        def pedir(metodo, rota, corpo=None):
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=20)
+            c.request(metodo, rota, body=_j.dumps(corpo) if corpo is not None else None, headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+            r = _j.loads(c.getresponse().read()); c.close(); return r
+        try:
+            r = pedir("POST", "/regras", {"valores": {"valor_minimo": 250000, "esconder_gigantes": True, "mostrar_socios": False, "limite_linhas": 1e400},
+                                          "exclusoes": [{"nome": "Empresa Fictícia Cliente Ltda", "motivo": "cliente atual"}, {"nome": ""},
+                                                        {"nome": "empresa fictícia cliente ltda", "motivo": "repetida"}]})
+            self.assertTrue(r["ok"], r); self.assertEqual(r["exclusoes"], 1)
+            d = pedir("GET", "/regras")
+            self.assertEqual(d["valores"]["valor_minimo"], 250000); self.assertTrue(d["valores"]["esconder_gigantes"])
+            self.assertFalse(d["valores"]["mostrar_socios"]); self.assertEqual(d["valores"]["limite_linhas"], preferencias.PADRAO["limite_linhas"])
+            self.assertEqual([e["nome"] for e in d["exclusoes"]], ["Empresa Fictícia Cliente Ltda"])
+            # revisão: a tela mostra só as exclusões da planilha que ela regrava (a de outra frente não volta depois de tirar)
+            from lexsuite import compartilhar, planilha
+            base = compartilhar.pasta_base(srv.config())
+            planilha.escrever_xlsx(os.path.join(base, preferencias.NOMES_FRENTE["tributario"]),
+                                   [{"nome": "Exclusões", "linhas": [["Nome", "Motivo"], ["Outra Empresa Fictícia SA", "tributário"]]}])
+            self.assertEqual([e["nome"] for e in pedir("GET", "/regras")["exclusoes"]], ["Empresa Fictícia Cliente Ltda"])
+            self.assertTrue(pedir("POST", "/regras", {"valores": {}, "exclusoes": []})["ok"])
+            self.assertEqual(pedir("GET", "/regras")["exclusoes"], [])
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_regras_sem_pasta(self):
+        import threading, http.client, json as _j
+        from lexsuite import app
+        srv = app.Servidor(("127.0.0.1", 0), tempfile.mkdtemp())
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+            c.request("POST", "/regras", body="{}", headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+            r = _j.loads(c.getresponse().read()); c.close()
+            self.assertFalse(r["ok"]); self.assertTrue(r["motivo_en"])
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_regras_nao_diz_salvo_sem_planilha(self):
+        import threading, http.client, json as _j
+        from unittest import mock
+        from lexsuite import app, compartilhar
+        pasta = tempfile.mkdtemp(); planilhas = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
+            _j.dump({"radar": {"tribunais": ["TRT2"]}, "compartilhar": {"pasta": planilhas}}, f)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            with mock.patch.object(compartilhar, "criar_se_faltar", return_value=None):  # a criação falhou sem erro
+                c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=20)
+                c.request("POST", "/regras", body=_j.dumps({"valores": {}, "exclusoes": [{"nome": "Empresa Fictícia Ltda"}]}),
+                          headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+                r = _j.loads(c.getresponse().read()); c.close()
+            self.assertFalse(r["ok"])
+        finally:
+            srv.shutdown(); srv.server_close()
 
 
 if __name__ == "__main__":
     unittest.main()
+
+
+_ROBO_ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import json  # noqa: E402
+
+
+class JaAberto0728(unittest.TestCase):
+    """0.7.28 (dono): segundo clique no atalho não abre outra janela; a tela aberta avisa."""
+
+    def test_segundo_clique_chama_a_tela_aberta(self):
+        import threading, time, http.client
+        from unittest import mock
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        shutil.copy(os.path.join(_ROBO_, "radar_modelo.html"), pasta)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            porta = srv.server_address[1]
+            srv.ultimo_pedido = time.monotonic() - 999  # ninguém olhando a tela
+            self.assertEqual(app.procurar_aberto([porta], detalhe=True), (f"http://127.0.0.1:{porta}/", False))
+            self.assertLess(srv.ultimo_pedido, time.monotonic() - 900)  # a sonda não conta como tela aberta
+            def estado():
+                c = http.client.HTTPConnection("127.0.0.1", porta, timeout=10)
+                c.request("GET", "/estado", headers={"X-LexSuite": "1"})
+                d = json.loads(c.getresponse().read()); c.close(); return d
+            estado()  # a tela pergunta: agora está ativa
+            self.assertTrue(app.procurar_aberto([porta], detalhe=True)[1])
+            with mock.patch.object(app, "procurar_aberto", return_value=(f"http://127.0.0.1:{porta}/", True)), \
+                    mock.patch.object(app, "abrir_janela") as abrir, mock.patch("time.sleep"):
+                ditos = []
+                app.servir(pasta, aviso=ditos.append)
+            abrir.assert_not_called()
+            self.assertIn("já está aberto", " ".join(ditos))
+            self.assertTrue(estado().get("chamado"))   # a tela recebe o aviso uma vez
+            self.assertFalse(estado().get("chamado"))
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_tela_avisa(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertIn("e.chamado", h)
+        self.assertEqual(h.count("ja_aberto:"), 2)

@@ -6,7 +6,7 @@ import os
 import platform
 import shutil
 
-from . import planilha, preferencias
+from . import config, planilha, preferencias
 
 NOME_RADAR = preferencias.NOME_ARQUIVO  # uma planilha só: Radar + Preferências + Exclusões + (ocultas) Controle, Log, Saúde, Sobre
 NOME_PAGINA = "Retrato da última leitura.html"  # cópia da tela (0.7.14; antes "Lista para abrir no celular.html")
@@ -120,7 +120,7 @@ def _sobre(cfg, versao, chave_impressao, ultima):
             ["Suporte", preferencias.SUPORTE]]
 
 
-def _abas_editaveis(caminho, aviso=print):
+def _abas_editaveis(caminho, aviso=print, novas=None):
     """Lê da planilha existente as abas que o escritório edita, para preservá-las. Devolve (abas, ok).
     ok=False quando o arquivo existe mas não pôde ser lido (em uso, corrompido): aí NÃO se regrava."""
     if not os.path.exists(caminho):
@@ -142,6 +142,10 @@ def _abas_editaveis(caminho, aviso=print):
             abas.append({"nome": padrao["nome"], "linhas": linhas, "oculta": padrao.get("oculta", False), "larguras": padrao.get("larguras")})
         else:
             abas.append(padrao)
+    if novas:  # 0.7.28: regras editadas na tela substituem as abas Preferências e Exclusões (a Controle fica como está)
+        for a in abas:
+            if a["nome"] in novas:
+                a["linhas"] = [list(l) for l in novas[a["nome"]]]
     return abas, True
 
 
@@ -184,7 +188,7 @@ def _destacar(linhas, chaves, minimo):
 
 
 def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao="", pasta_robo="", aviso=print, arquivo=None,
-                 frente="trabalhista", itens=None, aviso_tamanho="", processos=None):
+                 frente="trabalhista", itens=None, aviso_tamanho="", processos=None, novas_regras=None):
     """Regrava a planilha da frente (0.7.16: uma por frente): aba Radar (a lista), Arquivo, Contatos, as abas editáveis
     preservadas (Preferências, Exclusões, Controle oculta) e as abas Histórico, Saúde e Sobre. Também copia a página HTML.
     `itens`: as linhas da aba Radar (padrão: as da página). `processos`: só os contatos desses processos.
@@ -199,7 +203,7 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
         aviso(f"  A planilha {preferencias.NOME_ANTIGO} está aberta: feche-a para o RADAR trocar o nome e gravar. A lista está salva.")
         return ""
     caminho = os.path.join(base, preferencias.NOMES_FRENTE.get(frente) or NOME_RADAR)
-    editaveis, ok = _abas_editaveis(caminho, aviso)
+    editaveis, ok = _abas_editaveis(caminho, aviso, novas_regras)
     if not ok:
         return ""
     linhas = _linhas_lista(pagina.get("itens") or [] if itens is None else itens, colunas, linha_csv)
@@ -286,7 +290,7 @@ def gerar_copia(cfg, agora=None):
     from xml.sax.saxutils import escape as _esc
     nome_esc = planilha._limpa(str((cfg.get("conta") or {}).get("escritorio_licenca") or cfg.get("escritorio") or "")).replace("\x7f", "").strip()[:80]
     dono = f"do escritório {nome_esc}" if nome_esc else "do escritório"  # 0.7.21 (dono): o nome do escritório na faixa
-    marca_copia = _esc(f"Cópia de trabalho gerada em {agora:%d/%m/%Y às %H:%M}. Este arquivo é {dono}: pode ser editado "
+    marca_copia = _esc(f"Cópia de trabalho gerada em {config.data_curta(agora)} às {agora:%H:%M}. Este arquivo é {dono}: pode ser editado "
                        f"livremente e não é alterado pelo RADAR. Para os dados mais recentes, gere uma nova cópia.")
     try:
         with _zip.ZipFile(origem) as zin, _zip.ZipFile(destino, "w", _zip.ZIP_DEFLATED) as zout:

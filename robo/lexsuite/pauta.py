@@ -15,7 +15,7 @@ import datetime as dt
 import urllib.parse
 
 from . import classificar as cl
-from . import rede
+from . import config, rede
 
 BASE = "https://pje.trt{n}.jus.br/pje-consulta-api/api"
 CABECALHO = {"X-Grau-Instancia": "1"}
@@ -63,7 +63,7 @@ def leads_da_pauta(sigla, vara, dias=10, a_partir=None, aviso=print):
     por_processo = {}
     for d in dias_uteis(hoje, dias):
         itens = audiencias(sigla, id_oj, d.isoformat())
-        aviso(f"  Pauta {d:%d/%m}: {len(itens)} audiências")
+        aviso(f"  Pauta {config.data_curta(d, False)}: {len(itens)} audiências")
         for a in itens:
             tipo = (a.get("tipo") or "").lower()
             if not any(p in cl.sem_acento(tipo) for p in PRIMEIRA_AUDIENCIA):

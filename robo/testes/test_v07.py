@@ -632,7 +632,7 @@ class V0713(unittest.TestCase):
         self.assertEqual(tent[0]["causa"], "ainda_nao_liberado_3h")
         self.assertEqual(tent[0]["http"], "403")
         self.assertIn("pulou hoje", tent[0]["fez"])
-        self.assertIn("06/11", tent[0]["fez"])
+        self.assertIn("06/NOV", tent[0]["fez"])  # 0.7.28: mês em letras
 
     def test_outros_403_e_bloqueio_continuam_erro(self):
         from lexsuite import rede, causas
@@ -800,7 +800,7 @@ class V0714(unittest.TestCase):
         z = zipfile.ZipFile(copia)
         self.assertNotIn("sheetProtection", z.read("xl/worksheets/sheet1.xml").decode())
         self.assertNotIn("readOnlyRecommended", z.read("xl/workbook.xml").decode())
-        self.assertIn("Cópia de trabalho gerada em 09/11/2026 às 10:30", z.read("xl/worksheets/sheet1.xml").decode())  # 0.7.18: texto e faixa verde
+        self.assertIn("Cópia de trabalho gerada em 09/NOV/2026 às 10:30", z.read("xl/worksheets/sheet1.xml").decode())  # 0.7.18: texto e faixa verde
         self.assertIn("Cópias", copia)
         import stat
         self.assertIn("Este arquivo é do escritório Escritório Teste", z.read("xl/worksheets/sheet1.xml").decode())  # 0.7.21
