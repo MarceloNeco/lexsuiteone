@@ -129,7 +129,9 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.26 no ramo** (10/Nov): ressalvas da revisão da 0.7.25. Vai à `main` com o "pode a 0.7.26" do dono.
+- **0.7.26 na `main`, pronta para publicar** (10/Nov, com o "pode" do dono): ressalvas da revisão da 0.7.25. Revisada e
+  aprovada (172 testes, root e usuário comum; cada correção desfeita derruba um teste). Pacote 45/44. O dono testa tudo
+  de uma vez na 0.7.26 (roteiro único no Drive). Pedido à Arquitetura: `docs/NOVA-SESSAO.md` linha 8 ainda diz 0.7.25.
   Publicadas: 0.7.20, 0.7.22, 0.7.23, 0.7.24 e 0.7.25. Teste do dono no Windows pendente (0.7.24 e 0.7.25 juntas).
 
 ### Arquivos em uso
