@@ -2064,7 +2064,7 @@ window.LEXSUITE_RADAR = null;
       }
       var lk = el("span", "atalhos-fim"), ver = el("button", "btn-txt", t("ver_lista")), pl = el("button", "btn-txt", t("planilha_abrir"));
       ver.type = pl.type = "button"; ver.addEventListener("click", function () { visao = "lista"; desenhar(); $("visao").scrollIntoView({ behavior: "smooth" }); });
-      pl.addEventListener("click", abrirPlanilhaComAviso); lk.appendChild(ver);  // 0.7.24: este link também passa pelo aviso lk.appendChild(pl); box.appendChild(lk);
+      pl.addEventListener("click", abrirPlanilhaComAviso); lk.appendChild(ver); lk.appendChild(pl); box.appendChild(lk);  // 0.7.24: este link também passa pelo aviso
     }
     else if (!e.erro) box.appendChild(el("span", "ok", t("nunca")));
     if (APP && APP.config.proxima) box.appendChild(el("span", "proxima", t("proxima", { q: quandoProxima(APP.config.proxima) })));
