@@ -10,6 +10,12 @@ escritos para rodar **sozinhos**, no Sonnet, na conta do escritório, sem ningu�
 SolverONE pela conversa compartilhada). Cópia para o celular: Google Doc na pasta "VISITA KR LAW (quinta 12-Nov)" do
 Drive do dono. O GitHub é a fonte.
 
+**Revisão de 10/Nov (pedido do dono), com o que aprendemos estudando os pacotes de skills jurídicas:** cada prompt agora
+começa identificando em que sistema está (PJe de 1º ou 2º grau, e-SAJ, eproc, Projudi, Diário do tribunal, DJEN), porque o
+mesmo processo tem várias portas oficiais; ganhou a regra "só o que leu na tela nesta sessão" e uma conferência antes do
+relatório; a Parte B do Prompt 2 só cita norma aberta na fonte oficial; o Prompt 1 anota onde aparece quem assinou as
+decisões (sem copiar o nome); e há um Prompt 5, público e sem login, que testa a ideia do raio-x da vara e do juiz (LexRay).
+
 ## Para que serve
 
 O dono não é advogado e não tem acesso às áreas logadas dos tribunais nem ao Astrea. O Leandro é o parceiro que abre
@@ -91,6 +97,23 @@ RESPOSTA PARA O RADAR v1
 - **Pode compartilhar porque não tem nada sensível.** Nenhuma tela de login entra no relatório, nenhuma credencial é
   vista e nomes de pessoas físicas não são copiados. Os relatórios ainda assim não entram no repositório nem no site.
 
+## O mesmo processo tem várias portas (leia antes)
+
+Um processo aparece em mais de um lugar oficial, e cada lugar mostra uma parte. Os prompts pedem para a extensão dizer
+primeiro em qual está e anotar as diferenças. Os nomes abaixo são os mais comuns; o que vale é o que aparecer na tela.
+
+| Porta | O que costuma mostrar | Login |
+|---|---|---|
+| Sistema do tribunal, painel do advogado (PJe nos TRTs, TRFs e em vários TJs; e-SAJ, eproc ou Projudi em outros) | Autos completos, documentos, expedientes, prazos | Advogado, com certificado ou token |
+| Consulta pública do mesmo sistema | Capa do processo e movimentações; poucos documentos | Não (às vezes captcha) |
+| DJEN, Diário de Justiça Eletrônico Nacional (comunica.pje.jus.br) | Intimações e decisões publicadas, de todos os tribunais | Não |
+| Diário próprio do tribunal (ex.: DJE do TJSP) | Publicações do tribunal, em cadernos | Não |
+| Domicílio Judicial Eletrônico | Citações e intimações enviadas a empresas | A empresa ou quem a representa |
+| Sistema do escritório (Astrea) | O que o escritório cadastrou ou capturou | Advogado |
+
+Qual porta vale para contar prazo e quando cada uma recebe a publicação é pergunta para o Leandro, não para a extensão:
+ela só anota os avisos que o próprio site mostrar.
+
 ## Ordem do dia (quinta 12/Nov)
 
 Links para abrir no celular, todos sem login: este arquivo; instalação em
@@ -99,8 +122,7 @@ manual em https://judicial.solverone.com.br/manual.html; pacote em https://judic
 No computador do Leandro, abrir os prompts por este arquivo no GitHub (sem login) e copiar pelo botão de copiar do bloco.
 
 **Antes, em casa (até quarta).** Ensaio da instalação no PC do dono com a segunda conta Google, `DIAGNOSTICO.bat` e uma
-rodada real; e-mail de boas-vindas já enviado ao Leandro (pelo dono, no botão "Preparar e-mail de boas-vindas" do
-RootifyONE, com prévia). Confirmar com o Leandro: certificado digital em mãos para o PJe; em que pasta fica a planilha
+rodada real. Confirmar com o Leandro: certificado digital em mãos para o PJe; em que pasta fica a planilha
 (no computador ou numa pasta do Google Drive; não é preciso compartilhar com a SolverONE); o texto dos termos 1.1; se a conta Claude do escritório tem a extensão
 Claude in Chrome (plano pago). Se não tiver, a extensão roda num perfil novo do Chrome dele ("Visita SolverONE") com a
 conta do dono, e o perfil é apagado no fim. O notebook do dono não recebe login nem certificado de ninguém. Combinar um
@@ -129,8 +151,11 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
    programa: num cartão de um processo novo da lista, clique em "Buscar na área logada" (o pedido vai copiado, só com o
    que falta), cole na extensão, e cole a resposta de volta. Anote o que deu certo e o que travou: é a base da próxima
    versão da área logada.
-5. **Se der tempo: Prompt 4, e-SAJ e DJE do TJSP.** Parte pública sem login; parte logada só se o Leandro quiser.
+5. **Se der tempo: Prompt 4, e-SAJ, DJE do TJSP e DJEN.** Parte pública sem login; parte logada só se o Leandro quiser.
    Serve para as frentes tributária e cível.
+   **Prompt 5 (LexRay, raio-x da vara e do juiz)** é público e sem login: roda na visita se sobrar uma janela, ou em
+   casa. Enquanto ele roda, conversar com o Leandro: como ele descobre quem vai julgar (titular, substituto, divisão por
+   final de número, mutirões) e o que mais queria saber de um juiz antes de redigir.
 6. **Lista do dia pronta.** Mostrar na tela local e na planilha; validar 3 ou 4 itens com o Leandro (é ação nova? é
    empresa? a comarca interessa?); anotar as regras que ele quer ajustar. Escolher 3 empresas para o Prompt 2, que roda
    em casa, sem login em nada.
@@ -156,6 +181,11 @@ Depois: relatórios e feedbacks vão para a sessão de Produto; dúvidas de inst
 - Uma ação por vez, sem pressa, uma aba só. Dados de pessoas físicas seguem a tabela acima: "pessoa física" no lugar do
   nome. Empresas (razão social, CNPJ e os canais da empresa) podem ser citadas.
 - Ignorar processos de outros clientes que apareçam na tela; abrir só o de referência.
+- **Só o que leu na tela nesta sessão.** A extensão não deduz, não completa e não cita de memória: o que não viu vira
+  "não encontrei" (ou `nao_consta` na resposta para o RADAR). Antes do `RELATÓRIO FINAL`, ela confere a própria resposta
+  por uma lista curta (padrão que os melhores pacotes de skills jurídicas usam).
+- **Nome de juiz, desembargador ou servidor não é copiado:** vira "magistrado 1", "magistrado 2" (o mesmo número para a
+  mesma pessoa), com o cargo. Serve para saber se dá para montar o raio-x por juiz sem guardar nomes agora.
 - Modelo da extensão: Sonnet. Cada prompt termina com `RELATÓRIO FINAL`, que é colado na sessão de Produto para virar
   desenho de integração e skills de navegação.
 
@@ -184,11 +214,14 @@ Regras que não se negociam:
 - Não navegue para fora do PJe. Nada é enviado a ninguém.
 - Dados da empresa ré (razão social, CNPJ, endereço, e-mail, telefone) podem ser anotados. Dados do reclamante e de qualquer outra pessoa física (testemunhas, advogados, prepostos), nunca: escreva "pessoa física" no lugar. A qualificação da petição inicial traz os dados do reclamante logo ao lado dos da empresa: anote só a parte da empresa.
 - Se a tela do advogado mostrar processos de outros clientes, ignore-os: só abra o processo de referência.
+- Só vale o que você leu na tela nesta sessão. Não deduza, não complete e não cite nada de memória: o que não viu é "não encontrei".
+- Nome de juiz, desembargador ou servidor não se copia: escreva "magistrado 1", "magistrado 2" (o mesmo número para a mesma pessoa) e o cargo.
 
 O que fazer, nessa ordem:
+0. Identificar onde você está. Anote o nome do sistema e a versão que a tela mostrar (PJe, e-SAJ, eproc, Projudi ou outro), o tribunal, se é 1º ou 2º grau e se é o painel do advogado ou uma consulta pública. Se não for o PJe, siga o mesmo roteiro com os nomes que aparecerem e anote cada diferença.
 1. Localizar a consulta. A partir do painel do advogado, encontre a função de consulta de processo por número (menu, atalho ou campo de busca). Anote: caminho de menu, URL da tela, nome do campo e formato que o número precisa ter. Registre a TELA do painel e a TELA da consulta.
 2. Abrir o processo de referência. Anote a URL que abre e se ela contém um identificador interno (um número que não é o número CNJ).
-3. Mapear os dados do processo. Na tela do processo, liste os blocos que existem e quais campos cada um mostra. Procure especialmente: classe, assunto(s), data de distribuição (ou autuação), valor da causa, órgão julgador (vara), partes do polo passivo com CNPJ e endereço, advogados das partes, situação atual, última movimentação. Para cada campo, anote o rótulo exato e em qual aba ou seção ele está. Veja se o cadastro da parte ré (clicando no nome dela, se o PJe permitir só visualizar) mostra endereço, e-mail ou telefone. Registre a TELA do processo e a TELA do cadastro da parte ré.
+3. Mapear os dados do processo. Na tela do processo, liste os blocos que existem e quais campos cada um mostra. Procure especialmente: classe, assunto(s), data de distribuição (ou autuação), valor da causa, órgão julgador (vara), grau e fase (conhecimento, execução, recurso), partes do polo passivo com CNPJ e endereço, advogados das partes, situação atual, última movimentação. Para cada campo, anote o rótulo exato e em qual aba ou seção ele está. Veja se o cadastro da parte ré (clicando no nome dela, se o PJe permitir só visualizar) mostra endereço, e-mail ou telefone. Registre a TELA do processo e a TELA do cadastro da parte ré.
 4. Mapear as movimentações e os documentos. Encontre a lista de movimentações e a lista de documentos (petição inicial, notificação ou citação inicial, decisões, atas). Anote como a lista é organizada (ordem, paginação, filtros) e que tipos de documento aparecem. Registre a TELA da lista de documentos.
 5. Baixar. Procure as opções de download: documento individual, "autos completos" ou "download do processo" (PDF único ou vários). Baixe a petição inicial e, se existir, o PDF dos autos completos, para a pasta padrão de downloads do Chrome. Anote: nome do botão, se é um link com endereço (qual) ou um botão sem endereço, se abre nova aba, formato, tamanho aproximado, tempo e se pediu confirmação. Não baixe mais de 3 arquivos. Registre a TELA de download.
 6. Contatos da empresa ré nos autos. Abra no visualizador do PJe (sem baixar outro arquivo):
@@ -197,14 +230,23 @@ O que fazer, nessa ordem:
    c) Para cada documento: o texto é selecionável (PDF de texto) ou é imagem escaneada? Os dados estão sempre no mesmo lugar e com as mesmas expressões?
 7. Intimações e publicações. No painel do advogado, veja onde chegam as intimações e os expedientes (nome da aba, filtros, prazos, como se marca ciência, sem marcar nada). Registre a TELA de intimações.
 8. Verificar o que pediu intervenção humana. Liste cada momento em que o site exigiu captcha, token, certificado ou nova autenticação, e quanto tempo a sessão durou sem pedir login de novo.
+9. Quem decide (para um futuro raio-x da vara e do juiz). Nas decisões, despachos e sentenças do processo, veja se aparece quem assinou e onde (rodapé de assinatura eletrônica, cabeçalho, campo próprio na capa do processo). Para cada documento: tipo, data, "magistrado N" e cargo (juiz titular, juiz substituto, relator, outro). Veja também se a capa do processo ou a vara indicam o juiz responsável. Não copie nomes.
+
+Antes de entregar, confira a sua resposta e corrija o que falhar:
+- Cada valor da RESPOSTA PARA O RADAR tem documento e página que você leu nesta sessão. Nada foi deduzido.
+- Não há dado do reclamante, de testemunha, de advogado da outra parte, CPF nem nome de magistrado.
+- O número do processo está no formato 0000000-00.0000.0.00.0000; valores sem "R$" e com vírgula nos centavos (150000,00); datas como 2026-11-12.
+- O que você não leu está como nao_consta (o processo não traz) ou tentar_depois (problema técnico), nunca em branco.
 
 RELATÓRIO FINAL, neste formato:
+- Sistema: nome, versão, tribunal, grau, painel do advogado ou consulta pública.
 - Mapa do fluxo: passos numerados, cada um com "tela → ação → resultado", incluindo URLs e nomes exatos de menus, botões e campos, e o número da TELA quando houver.
 - Tabela de campos: campo | rótulo na tela | aba ou seção | exemplo (mascarado se for pessoa física).
 - Downloads: o que baixou, como (link com endereço, botão, nova aba), formato, tamanho e onde ficou.
 - Contatos da ré nos autos: documento | dado (endereço, e-mail ou telefone) | aparece? | página e trecho | expressão que vem antes | texto ou imagem | valor encontrado (só da empresa).
 - Extração repetível: para cada dado, "sim", "parcial" ou "não", com o motivo (mesmo lugar e mesmas expressões em todo processo? texto selecionável? depende de alguém ter digitado certo?). Diga também se esses dados só aparecem com o login do advogado.
 - Intimações: onde chegam e como funcionam.
+- Quem decide: documento | data | magistrado N | cargo | onde aparece a assinatura. Diga quantos magistrados diferentes assinaram e se a capa ou a vara indicam o juiz responsável.
 - Mapa técnico para quem vai construir o robô: endereços (URLs) de cada tela e o que muda neles; nomes exatos de menus, campos e botões; ordem de cliques; como é o download (link direto e qual endereço, nova aba ou botão sem link); paginação; quanto tempo a sessão durou sem pedir login de novo; em que passo exato entram certificado ou token; o que dá para fazer sem o advogado logado, o que exige o advogado logado e o que exige uma pessoa.
 - Barreiras: onde exigiu captcha, token ou certificado, e o que mais pode impedir um robô (limite de tempo da sessão, mensagens de erro).
 - Dificuldades que você teve navegando (o que não achou, o que demorou).
@@ -266,7 +308,13 @@ Grau de confiança de cada linha:
 - Média: uma fonte só, oficial (site da empresa ou cadastro do CNPJ), sem confirmação.
 - Baixa: só em fonte de terceiros (diretório, agregador), divergente entre fontes ou com sinal de estar desatualizado.
 
-Parte B, contexto para o compliance (curta): diga o que não é permitido ou não é recomendável pelas regras da OAB sobre publicidade e captação de clientela (Provimento 205/2021 e Código de Ética e Disciplina), e o que a LGPD exige para usar dados de contato de empresa e de sócios. Cite a fonte de cada ponto. Se der tempo, na Biblioteca de Anúncios da Meta (facebook.com/ads/library), país Brasil, pesquise "defesa trabalhista para empresas" e "sua empresa foi processada" e anote os 3 anúncios mais relevantes: anunciante, mensagem resumida, chamada para ação e link.
+Parte B, contexto para o compliance (curta): diga o que não é permitido ou não é recomendável pelas regras da OAB sobre publicidade e captação de clientela (Provimento 205/2021 e Código de Ética e Disciplina), e o que a LGPD exige para usar dados de contato de empresa e de sócios. Só cite o que você abrir nesta sessão numa fonte oficial: o Provimento 205/2021 em https://www.oab.org.br/leisnormas/legislacao/provimentos/205-2021?provimentos=True, o Código de Ética no site da OAB, a LGPD (Lei 13.709/2018) no site do Planalto e as orientações da ANPD no gov.br. Para cada ponto, copie o trecho curto que o sustenta e o endereço. Se a página não abrir, escreva "não conferido" e não preencha de memória: número de artigo errado aqui custa caro. Se der tempo, na Biblioteca de Anúncios da Meta (facebook.com/ads/library), país Brasil, pesquise "defesa trabalhista para empresas" e "sua empresa foi processada" e anote os 3 anúncios mais relevantes: anunciante, mensagem resumida, chamada para ação e link.
+
+Antes de entregar, confira e corrija o que falhar:
+- Toda linha da ficha tem fonte, data da consulta e grau de confiança.
+- Nenhum contato de pessoa entrou sem estar publicado pela própria empresa, com o lugar anotado.
+- Nada sobre o reclamante ou outra pessoa física.
+- Na Parte B, toda regra citada tem trecho e endereço abertos nesta sessão; o resto está como "não conferido".
 
 RELATÓRIO FINAL, pronto para o compliance:
 - Uma ficha por empresa, com o cabeçalho "Razão social · CNPJ · cidade · data do levantamento" e esta tabela:
@@ -306,13 +354,15 @@ Regras que não se negociam:
 
 O que mapear, nessa ordem:
 1. Menu principal: liste os módulos (processos, clientes, contatos, atendimentos, prospecção ou oportunidades, publicações/intimações, agenda, financeiro, relatórios, configurações) com o nome exato de cada um. Registre a TELA do menu.
-2. Cadastro de processo: abra um processo de exemplo e liste os campos (número CNJ, tribunal, vara, classe, partes e papéis, valor, responsável, etiquetas, situação) com o rótulo exato de cada um. Veja se há campo para "origem" ou "como chegou" o caso. Registre a TELA do processo.
-3. Publicações e intimações: onde aparecem, como o sistema as capta (há configuração de OAB? de diários? de DJEN? aviso por e-mail?), e como uma publicação vira tarefa ou prazo. Registre a TELA de publicações e a TELA da configuração de captura, se existir.
+2. Cadastro de processo: abra um processo de exemplo e liste os campos (número CNJ, tribunal, vara, juiz ou relator, classe, partes e papéis, valor, responsável, etiquetas, situação) com o rótulo exato de cada um. Veja se há campo para "origem" ou "como chegou" o caso. Registre a TELA do processo.
+3. Publicações e intimações: onde aparecem, como o sistema as capta (há configuração de OAB? de diários? de DJEN? do Domicílio Judicial Eletrônico? aviso por e-mail?), se cada publicação mostra de qual diário ou fonte veio, e como uma publicação vira tarefa ou prazo. Registre a TELA de publicações e a TELA da configuração de captura, se existir.
 4. Prospecção, contatos e CRM: existe módulo de prospecção, oportunidades, funil, leads, atendimentos ou CRM (com qualquer um desses nomes)? Se existir, descreva as etapas e os campos. Abra um contato pessoa jurídica de exemplo e liste os campos com o rótulo exato: razão social, CNPJ, telefone (quantos), e-mail (quantos), site, redes sociais (quais), endereço, pessoa de contato e cargo, origem do contato, etiquetas, responsável, observações. Anote quais são obrigatórios. Registre a TELA do cadastro do contato pessoa jurídica.
 5. Importação de contatos: há importação de contatos ou clientes por planilha (CSV, Excel)? Que modelo ou colunas pede? Aceita telefone, e-mail e redes? Trata duplicados (por CNPJ ou nome)? Abra a tela só para ler e pare antes de escolher arquivo. Registre a TELA de importação.
 6. De contato a cliente: contato e cliente são o mesmo cadastro com um tipo, ou cadastros separados? Há botão ou etapa para transformar um contato em cliente? O que muda (campos, contrato, honorários)? Como um processo é ligado ao cliente?
 7. Entrada de dados em lote em geral: procure "importar" (planilha, CSV), "integrações", "API", "webhooks" ou "aplicativos" nas configurações. Anote o que existe, que formatos aceita e que campos pede, sem executar nada. Se houver link para documentação de API, anote o endereço. Registre a TELA de integrações.
 8. Saída de dados: procure "exportar" e "relatórios"; anote formatos disponíveis.
+
+Antes de entregar, confira e corrija o que falhar: nada foi criado, alterado ou importado; nenhum nome de pessoa física ou de magistrado foi copiado; cada campo listado tem o rótulo exato que você leu na tela; o que você não achou está como "não encontrei".
 
 RELATÓRIO FINAL:
 - Mapa dos módulos e caminhos de menu, com o número da TELA quando houver.
@@ -329,7 +379,7 @@ RELATÓRIO FINAL:
 - Lista das telas registradas: número, nome curto e o que mostra.
 ```
 
-## Prompt 4 · e-SAJ e Diário do TJSP (frentes tributária e cível, se der tempo)
+## Prompt 4 · e-SAJ, Diário do TJSP e DJEN (frentes tributária e cível, se der tempo)
 
 Como usar: aba nova na janela da extensão, sem login. A parte logada só acontece se o Leandro quiser entrar no e-SAJ
 com o certificado dele. Troque o número do processo de referência, se houver um do TJSP. Cole, clique em "Permitir" e
@@ -350,26 +400,73 @@ Como trabalhar (você roda numa extensão do navegador, sozinho, e não salva ar
 Regras que não se negociam:
 - Nunca peça, digite, copie ou anote senha, token, código de certificado ou qualquer credencial.
 - Somente leitura. Nada é enviado a ninguém. Não baixe mais de 2 arquivos.
-- Dados de empresas podem ser anotados. Dados de pessoas físicas, nunca: escreva "pessoa física".
+- Dados de empresas podem ser anotados. Dados de pessoas físicas, nunca: escreva "pessoa física". Nome de magistrado vira "magistrado 1", "magistrado 2".
+- Só vale o que você leu na tela nesta sessão. Não deduza qual diário vale para prazo: anote só o aviso que o próprio site mostrar, com o endereço.
 
 Parte pública, nessa ordem:
+0. Antes de tudo, veja se o site do tribunal avisa que o processo ou a consulta mudou de sistema (por exemplo, para o eproc) ou que as publicações passaram ao DJEN. Anote o aviso com o endereço e siga a mesma lógica no sistema indicado.
 1. Consulta de processos do 1º grau: quais campos de busca existem (número, nome da parte, documento da parte, OAB, outros), se há captcha e em que momento ele aparece, o que a lista de resultados mostra e o que a tela do processo mostra sem login (partes, classe, assunto, vara, valor, movimentações). Quais documentos abrem sem login? Registre a TELA da busca e a TELA do processo.
 2. Filtros por classe ou assunto: dá para localizar execuções fiscais ou ações contra empresas por classe, assunto, vara ou período na consulta pública? Se não, anote o que falta.
 3. Diário da Justiça Eletrônico (dje.tjsp.jus.br): como se pesquisa (por nome, OAB, data, caderno), em que formato vem (PDF por caderno?), se há busca por texto dentro do diário, e como uma publicação de execução fiscal ou citação de empresa apareceria lá. Registre a TELA da pesquisa.
-4. Anote o que é possível fazer sem login e o que exige o advogado.
+4. DJEN (https://comunica.pje.jus.br), sem login: pesquise o mesmo processo de referência (ou a OAB do advogado, se ele informar). A mesma publicação aparece no DJE do TJSP e no DJEN? Em que datas? O texto é igual? Algum dos dois mostra quem assinou? Anote as diferenças.
+5. Anote o que é possível fazer sem login e o que exige o advogado.
 
 Parte logada (só se o advogado já estiver logado quando você chegar a este passo; se não estiver, pule):
-5. Painel do advogado: intimações, processos, prazos. O que muda em relação à parte pública (documentos, download de autos, dados das partes)?
-6. Baixe no máximo 1 documento de exemplo e anote formato e tamanho.
+6. Painel do advogado: intimações, processos, prazos. O que muda em relação à parte pública (documentos, download de autos, dados das partes)?
+7. Baixe no máximo 1 documento de exemplo e anote formato e tamanho.
+
+Antes de entregar, confira: nenhum nome de pessoa física ou de magistrado; cada afirmação sobre o site tem a TELA ou o endereço; o que não viu está como "não encontrei".
 
 RELATÓRIO FINAL:
 - Mapa do fluxo público e, se houver, do fluxo logado, com URLs, nomes exatos de campos e botões, e os números das telas.
-- Tabela: o que aparece | sem login | com login.
+- Tabela: o que aparece | e-SAJ sem login | e-SAJ com login | DJE do TJSP | DJEN.
+- Avisos de mudança de sistema ou de diário que o site mostrou, com o endereço.
 - Captcha: onde aparece, de que tipo, e o que isso impede um robô de fazer sozinho.
 - Diário: formato, pesquisa, e como achar execuções fiscais e citações de empresa.
 - Mapa técnico para quem vai construir o robô: endereços de cada tela e o que muda neles; campos e botões exatos; ordem de cliques; como é o download; onde entram captcha, certificado e token; o que dá para fazer sem login.
 - Barreiras e dificuldades.
 - Sugestão em 5 linhas: o que um robô consegue fazer sem login no TJSP e o que teria de ficar com a pessoa.
+- Lista das telas registradas.
+```
+
+## Prompt 5 · LexRay: dá para fazer o raio-x da vara e do juiz? (público, sem login)
+
+Como usar: aba nova, sem login em nada. Roda na visita, se sobrar uma janela, ou em casa, com a conta do dono. Troque a
+vara e o processo de referência pelos do TRT2 combinados com o Leandro. Testa duas perguntas do produto LexRay: as
+decisões publicadas mostram quem assinou? Uma vara é decidida sempre pelo mesmo juiz ou por vários? E quais leis e súmulas
+ela mais cita? Nada de nome de pessoa física nem de magistrado: só "magistrado 1", "magistrado 2".
+
+```
+Você está numa aba do Chrome, sem login. Sua tarefa é testar, somente lendo e só em fonte pública, se as decisões publicadas de uma vara permitem descrever o perfil de quem julga ali, para um produto de jurimetria descritiva (sem ranking e sem prever resultado). Fonte principal: o Diário de Justiça Eletrônico Nacional, DJEN (https://comunica.pje.jus.br). Tribunal: TRT2. Vara: [nome da vara do processo de referência]. Processo de referência: [número] (troque pelos reais).
+
+Como trabalhar (você roda numa extensão do navegador, sozinho, e não salva arquivos):
+- Ninguém acompanha você. Não faça perguntas no meio do caminho: decida sozinho pelas regras daqui. Se faltar uma informação, anote "faltou: ..." e siga.
+- Antes de cada ação, diga em uma linha o que está vendo e o que vai fazer. Uma ação por vez. Se não achar algo em 3 tentativas, anote "não encontrei" e siga.
+- Telas: registre em texto as que importarem para quem vai construir o robô: TELA 01 — nome-curto — URL: ... | Filtros e campos (rótulo exato): ... | Botões e links: ... | Paginação: ... | Observações: ...
+- Captcha ou login: não resolva nem contorne. Escreva BLOQUEIO, entregue o RELATÓRIO FINAL com o que já tem e espere.
+- Pare depois de 30 publicações lidas, 60 ações ou 45 minutos, o que vier primeiro, e entregue o relatório mesmo incompleto.
+
+Regras que não se negociam:
+- Só leitura, só fonte pública. Nada é enviado a ninguém.
+- Nunca copie nome de parte que seja pessoa física (reclamante, testemunha), de advogado, de servidor ou de magistrado. Magistrado vira "magistrado 1", "magistrado 2" (o mesmo número para a mesma pessoa em todo o relatório), com o cargo que aparecer (juiz titular, juiz substituto, outro). Empresas podem ser citadas.
+- Só vale o que você leu nesta sessão. Não deduza o desfecho: se a publicação não diz, escreva "não diz".
+- Leis, súmulas e orientações: anote como aparecem no texto (ex.: "art. 477 da CLT", "Súmula 331 do TST"). Não corrija, não complete e não explique: só conte.
+
+O que fazer, nessa ordem:
+1. No DJEN, descubra como filtrar por tribunal, por órgão (vara), por período e por número de processo. Anote os filtros que existem e os rótulos exatos. Registre a TELA da pesquisa.
+2. Pesquise as publicações da vara nos últimos 60 dias. Se não houver filtro por vara, pesquise pelo processo de referência e anote que o filtro não existe.
+3. Leia até 30 publicações que sejam decisão, despacho ou sentença (ignore editais e listas). Para cada uma, anote: data | tipo (sentença, decisão, despacho, ata, outro) | assunto, se aparecer | aparece quem assinou? onde? | magistrado N e cargo | desfecho, se for sentença (procedente, parcialmente procedente, improcedente, acordo homologado, extinção, não diz) | leis, súmulas e orientações citadas.
+4. Abra o processo de referência no DJEN e repita o item 3 só para ele.
+
+Antes de entregar, confira e corrija o que falhar: nenhum nome de pessoa física, advogado, servidor ou magistrado; cada linha tem data e tipo lidos na publicação; desfecho só quando a publicação diz.
+
+RELATÓRIO FINAL:
+- Viabilidade em 5 linhas: as publicações mostram quem assinou (sempre, às vezes, nunca)? Dá para saber o desfecho pelo texto? Dá para filtrar por vara?
+- Quem assina na vara: magistrado N | cargo | quantas publicações | percentual. Diga se um magistrado concentra a maior parte ou se há rodízio.
+- Tabela das publicações lidas (o item 3), sem nomes.
+- Normas mais citadas: norma como aparece no texto | quantas vezes | em quantas publicações.
+- Desfechos das sentenças lidas: tipo | quantas.
+- Mapa técnico para quem vai construir o robô: endereços, filtros, paginação, formato do texto (HTML, PDF), limites e bloqueios que apareceram.
 - Lista das telas registradas.
 ```
 
