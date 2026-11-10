@@ -162,6 +162,10 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.26 (10/Nov)
+
+Ressalvas da revisão da 0.7.25 (Operação): 1 a 8 feitas; 9 sem ação. Pacote 45/44.
+
 ## 0.7.25 (10/Nov)
 
 Ressalvas da 0.7.23 (5 baixas) e da 0.7.24 (2 médias, 5 baixas): feitas. Decisão registrada (0.7.23, item 3): o
