@@ -47,7 +47,20 @@ button[disabled] { opacity: .45; cursor: not-allowed; }
 .aviso { border-radius: 12px; padding: 12px 14px; margin-top: 14px; } .aviso.erro { background: #fdecea; color: var(--erro); } .aviso.ok { background: #e7f5ec; color: var(--ok); } .aviso.info { background: var(--latao-fundo); color: var(--latao-texto); }
 .protocolo { font-size: 1.3rem; font-weight: 800; letter-spacing: .04em; }
 footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-align: center; }
-@media print { header, footer, form, .fim { display: none; } .termos { height: auto; overflow: visible; border: 0; } body { background: #fff; } }
+/* Modo leitura (?ler=1 ou ?ler=uso): sem a coluna do formulário; a página inteira rola; índice fixo ao lado do texto. */
+body.leitura .grade { grid-template-columns: minmax(0, 1fr); }
+body.leitura .lado { display: none; }
+body.leitura .termos { height: auto; overflow: visible; grid-template-columns: minmax(200px, 16rem) minmax(0, 80ch); }
+body.leitura .termos > nav.indice { top: 76px; }
+body.leitura.so-uso .cartao { max-width: calc(80ch + 2 * clamp(16px, 2vw, 28px) + 42px); } body.leitura.so-uso .termos { grid-template-columns: minmax(0, 80ch); } body.leitura.so-uso .termos > section, body.leitura.so-uso .termos > .fim { grid-column: 1; }
+.busca { display: none; align-items: center; gap: 10px; background: var(--papel); border: 1px solid var(--fio); border-radius: 999px; padding: 4px 6px 4px 16px; margin: 14px 0 4px; max-width: 80ch; position: sticky; top: 8px; z-index: 3; box-shadow: 0 2px 10px rgba(16,32,56,.08); }
+body.leitura .busca { display: flex; }
+.busca input { flex: 1; min-width: 0; border: 0; outline: 0; font: inherit; padding: 8px 0; background: transparent; }
+.busca span { color: var(--tinta-3); font-size: .85rem; white-space: nowrap; padding-right: 6px; }
+.busca button { margin: 0; min-height: 0; width: 36px; height: 36px; padding: 0; border-radius: 50%; background: var(--papel-2); color: var(--noite); font-size: .95rem; border: 1px solid var(--fio); }
+.busca button[disabled] { opacity: .4; }
+mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { background: var(--latao); color: var(--noite); }
+@media print { header, footer, form, .fim, .busca { display: none; } .termos { height: auto; overflow: visible; border: 0; } body { background: #fff; } }
 </style>
 </head>
 <body>
@@ -55,7 +68,8 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
 <main><div class="miolo">
   <div class="topo"><h1>Termos do {{marca.nome}}</h1>
   <p id="quem" class="aviso info" hidden></p>
-  <p class="mudo">Sua licença já está ativa; o {{marca.nome}} só libera a leitura depois deste aceite. Leia os termos até o fim, confira seus dados e confirme. O aceite fica registrado com data e hora e vale como assinatura eletrônica simples entre particulares (MP 2.200-2/2001, art. 10, §2º; Código Civil, art. 107). Versão dos termos: <b id="versao">1.1</b>, de 09/Nov/2026.</p></div>
+  <label class="busca" id="busca-caixa"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#6b7489" stroke-width="2.2"/><path d="M15.5 15.5 21 21" stroke="#6b7489" stroke-width="2.2" stroke-linecap="round"/></svg><input id="busca" type="search" placeholder="Procurar nos termos (ex.: sócios, planilha, prazo)" aria-label="Procurar nos termos"><span id="achados"></span><button type="button" id="anterior" aria-label="Resultado anterior" title="Anterior (Shift+Enter)" disabled>▲</button><button type="button" id="proximo" aria-label="Próximo resultado" title="Próximo (Enter)" disabled>▼</button></label>
+  <p class="mudo" id="intro">Sua licença já está ativa; o {{marca.nome}} só libera a leitura depois deste aceite. Leia os termos até o fim, confira seus dados e confirme. O aceite fica registrado com data e hora e vale como assinatura eletrônica simples entre particulares (MP 2.200-2/2001, art. 10, §2º; Código Civil, art. 107). Versão dos termos: <b id="versao">1.1</b>, de 09/Nov/2026.</p></div>
 
   <div class="grade">
   <div class="cartao">
@@ -181,13 +195,41 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
   var FUSO = ""; try { FUSO = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
   // Modo leitura (?ler=uso, ?ler=1): só o texto. É o link que o programa mostra na caixa "li e aceito" do cadastro de cada pessoa.
   if (q.get("ler")) {
-    document.getElementById("form").hidden = true; termos.style.height = "auto"; termos.style.overflow = "visible";
-    var av = document.getElementById("quem"); av.textContent = q.get("ler") === "uso" ? "Termos de uso (seções 3 a 5). Cada pessoa aceita na primeira vez que usa o programa, na tela de cadastro." : "Leitura dos termos. O aceite do escritório é feito pelo link do e-mail de boas-vindas."; av.hidden = false;
+    document.body.classList.add("leitura"); if (q.get("ler") === "uso") document.body.classList.add("so-uso");
+    document.getElementById("form").hidden = true;
+    document.getElementById("intro").textContent = q.get("ler") === "uso"
+      ? "Termos de uso do {{marca.nome}} (seções 3 a 5), versão " + VERSAO + ". Cada pessoa que usa o programa aceita estes termos na tela de cadastro, na primeira vez e a cada versão nova."
+      : "Leitura dos termos do {{marca.nome}}, versão " + VERSAO + ", de 09/Nov/2026. O aceite em nome do escritório é feito pelo link do e-mail de boas-vindas; cada pessoa aceita os Termos de uso no cadastro do programa.";
     if (q.get("ler") === "uso") { ["s1","s2","s6","s7","s8","s9","s10","s11"].forEach(function (id) { var el = document.getElementById(id); if (el) el.hidden = true; }); var nav = termos.querySelector("nav.indice"); if (nav) nav.hidden = true; }   // a pessoa aceita as seções 3 a 5
   }
+  // Busca dentro dos termos (modo leitura): destaca, mostra "3 de 7", setas e Enter/Shift+Enter andam pelos resultados.
+  (function () {
+    var caixa = document.getElementById("busca"), achados = document.getElementById("achados"), ant = document.getElementById("anterior"), prox = document.getElementById("proximo");
+    var secoes = Array.prototype.slice.call(termos.querySelectorAll("section")), originais = secoes.map(function (x) { return x.innerHTML; });
+    var marcas = [], atual = -1;
+    function sem(x) { return x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+    function ir(i) { if (!marcas.length) return; if (atual >= 0 && marcas[atual]) marcas[atual].classList.remove("atual"); atual = (i + marcas.length) % marcas.length; marcas[atual].classList.add("atual"); marcas[atual].scrollIntoView({ behavior: "smooth", block: "center" }); achados.textContent = (atual + 1) + " de " + marcas.length; }
+    caixa.addEventListener("input", function () {
+      var alvo = sem(caixa.value.trim());
+      secoes.forEach(function (sec, i) {
+        sec.innerHTML = originais[i];
+        if (!alvo || sec.hidden) return;
+        var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT), nos = []; while (w.nextNode()) nos.push(w.currentNode);
+        nos.forEach(function (no) {
+          var t = no.nodeValue, k = sem(t).indexOf(alvo); if (k < 0 || sem(t).length !== t.length) return;   // só quando os índices batem (sem acento composto)
+          var m = document.createElement("mark"); m.textContent = t.substr(k, alvo.length); var resto = no.splitText(k); resto.nodeValue = resto.nodeValue.substr(alvo.length); no.parentNode.insertBefore(m, resto);
+        });
+      });
+      marcas = Array.prototype.slice.call(termos.querySelectorAll("mark")); atual = -1;
+      if (marcas.length) ir(0); else achados.textContent = alvo ? "nada encontrado" : "";
+      ant.disabled = prox.disabled = marcas.length < 2;
+    });
+    prox.addEventListener("click", function () { ir(atual + 1); }); ant.addEventListener("click", function () { ir(atual - 1); });
+    caixa.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); ir(atual + (ev.shiftKey ? -1 : 1)); } });
+  })();
   // Versão vigente vem do banco (sol_termos); o texto desta página tem de ser o da versão vigente.
   fetch(NUVEM + "/rest/v1/rpc/sol_termo_vigente", { method: "POST", headers: { apikey: CHAVE, Authorization: "Bearer " + CHAVE, "Content-Type": "application/json" }, body: JSON.stringify({ p_termo: TERMO }) })
-    .then(function (r) { return r.ok ? r.json() : null; }).then(function (t) { if (t && t.versao && t.versao !== VERSAO) { VERSAO = t.versao; document.getElementById("versao").textContent = t.versao; } }).catch(function () {});
+    .then(function (r) { return r.ok ? r.json() : null; }).then(function (t) { if (t && t.versao && t.versao !== VERSAO) { var antiga = VERSAO; VERSAO = t.versao; var v = document.getElementById("versao"); if (v) v.textContent = t.versao; if (q.get("ler")) { var it = document.getElementById("intro"); it.textContent = it.textContent.replace("versão " + antiga, "versão " + t.versao); } } }).catch(function () {});
   function normCodigo(c) { c = String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); return c.length === 11 && c.indexOf("LEX") === 0 ? c.slice(0, 3) + "-" + c.slice(3, 7) + "-" + c.slice(7, 11) : String(c || "").toUpperCase(); }
   var campoCodigo = document.getElementById("codigo"), campoEmail = document.getElementById("email"), campoNome = document.getElementById("nome");
   function fixar(campo) { campo.readOnly = true; campo.setAttribute("aria-readonly", "true"); campo.classList.add("fixo"); campo.title = "Veio do e-mail de boas-vindas; não se altera aqui."; }
@@ -209,7 +251,7 @@ footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-
       else quem.hidden = true;
     } catch (e) { quem.hidden = true; }
   }
-  document.getElementById("codigo").addEventListener("change", contexto); contexto();
+  document.getElementById("codigo").addEventListener("change", contexto); if (!q.get("ler")) contexto();
   function leuTudo() { return termos.scrollTop + termos.clientHeight >= termos.scrollHeight - 8; }
   function liberar() { if (leuTudo() && li.disabled) { li.disabled = false; dica.textContent = "Obrigado por ler. Marque a caixa para aceitar."; } }
   termos.addEventListener("scroll", liberar); setTimeout(liberar, 300);
