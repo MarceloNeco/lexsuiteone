@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- **0.7.21 em espera (09/Nov)**: o dono mandou publicar; o revisor não aprovou por um teste que falha como usuário comum (`test_v07.py` 182 grava direto numa planilha agora marcada somente leitura), e por isso a automação de testes está vermelha; o programa está certo (todos os gravadores da planilha liberam e remarcam). Pedido à Produto na tabela de pedidos (continuação). Nada foi publicado.
+- **0.7.22 em revisão (10/Nov)**: o dono mandou publicar (commit `550ec6c`, automação verde); revisão do que mudou desde a revisão da 0.7.21, testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.20. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
