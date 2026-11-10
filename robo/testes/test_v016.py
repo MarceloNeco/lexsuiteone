@@ -819,5 +819,37 @@ class V0725(unittest.TestCase):
         finally:
             srv.shutdown(); srv.server_close()
 
+class V0727(unittest.TestCase):
+    """0.7.27: revisão da 0.7.26."""
+
+    def test_dados_com_infinity_e_nan_no_config_dao_json_valido(self):
+        import threading, http.client, json as _j
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
+            f.write('{"radar": {"tribunais": ["TRT2"], "valor_minimo": Infinity, "dias_na_pagina": NaN, "teto_capital_gigante": -Infinity}}')
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+            c.request("GET", "/dados", headers={"X-LexSuite": "1"}); r = c.getresponse(); corpo = r.read(); c.close()
+            self.assertEqual(r.status, 200)
+            def recusa(x):
+                raise ValueError(x)
+            d = _j.loads(corpo, parse_constant=recusa)  # o navegador recusa Infinity e NaN; aqui também
+            self.assertIsNone(d["app"]["config"]["valor_minimo"]); self.assertEqual(d["app"]["config"]["dias_na_pagina"], 1)
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_textos_de_planilha_em_uso_com_marca(self):
+        import re
+        s = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "radar_modelo.html"), encoding="utf-8").read()
+        for chave in ("planilha_em_uso", "planilha_em_uso_sem_excel"):
+            textos = re.findall(chave + r': "([^"]*)"', s)
+            self.assertEqual(len(textos), 2, chave)  # PT e EN
+            self.assertTrue(all("{c}" in x and "RADAR" not in x for x in textos), chave)
+        self.assertIn('t(r.so_leitura ? "planilha_em_uso" : "planilha_em_uso_sem_excel", { c: marcaCurto() })', s)
+
+
 if __name__ == "__main__":
     unittest.main()

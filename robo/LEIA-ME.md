@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.26 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.27 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,9 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.27:** ressalvas da revisão da 0.7.26: `Infinity`/`NaN` escritos à mão em valor mínimo, dias na página e teto de
+  capital não impedem mais a tela de abrir; o aviso de planilha em uso não se repete e diz a verdade também sem Excel;
+  a lupa do retrato salvo oferece só Painel e Lista; o servidor de teste com dados fictícios nunca chama o Diário.
 - **0.7.26:** ressalvas da revisão da 0.7.25: `dias_na_pagina` absurdo no `config.json` não impede mais gravar a página e a
   planilha no fim da leitura; o aviso de planilha em uso diz a verdade (pode ser Excel aberto ou falta de permissão) e
   fica na tela até a próxima ação; a lupa do retrato salvo só oferece o que funciona offline; testes que de fato falham

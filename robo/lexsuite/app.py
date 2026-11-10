@@ -466,9 +466,9 @@ class Tratador(BaseHTTPRequestHandler):
                 "papeis": list(PAPEIS), "documento_escritorio": cfg.get("documento_escritorio") or {},
                 "tribunais": [x for x in tribunais.TRIBUNAIS if x["ramo"] in FRENTES], "ramos": [r for r in tribunais.RAMOS if r in FRENTES], "regioes": tribunais.REGIOES, "ufs": tribunais.UFS,
                 "config": {"tribunais": tribunais.validar(r.get("tribunais")), "escritorio": cfg.get("escritorio", ""),
-                           "valor_minimo": r.get("valor_minimo"), "dias_na_pagina": r.get("dias_na_pagina"),
+                           "valor_minimo": _finito(r.get("valor_minimo")), "dias_na_pagina": config.inteiro(r.get("dias_na_pagina", 1), 1, 1, 90),
                            "dias_para_tras": _dias_para_tras(r),
-                           "teto_capital_gigante": r.get("teto_capital_gigante"),
+                           "teto_capital_gigante": _finito(r.get("teto_capital_gigante")),  # 0.7.27: Infinity/NaN não quebram o JSON
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
                            "planilha": preferencias.caminho(base) if base and os.path.exists(preferencias.caminho(base)) else "",
@@ -980,6 +980,16 @@ def personalizar_manual(html, cfg):
         itens = "".join(f"<li>{h.escape(t)}</li>" for t in PARA_VOCE[papel])
         bloco = f"<div class=\"caixa\"><b>Para você, {h.escape(papel.lower())}</b><ul>{itens}</ul></div>"
     return html.replace("<!--OLA-->", ola, 1).replace("<!--PARA_VOCE-->", bloco, 1)
+
+
+def _finito(v):
+    """0.7.27 (revisão): número finito ou None (Infinity e NaN escritos à mão no config.json gerariam JSON inválido)."""
+    import math
+    try:
+        f = float(v)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return v if math.isfinite(f) and not isinstance(v, bool) else None
 
 
 def _dias_para_tras(r):

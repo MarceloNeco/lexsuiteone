@@ -61,5 +61,7 @@ if modo == "pronto":
     b.mudar_situacao(["0000004-11.2026.5.02.0001"], "arquivado", motivo="sem interesse")
     b.atualizar_estatisticas()
 s = app.Servidor(("127.0.0.1", int(os.environ.get("PORTA", "8781"))), pasta)
+# 0.7.27: dados fictícios nunca vão à internet ("Ler o Diário agora" aqui não chama o DJEN; incidente da revisão da 0.7.26)
+s.rodar = lambda dias=None: (s.estado.terminar(erro="Servidor de teste: leitura desligada (dados fictícios)."), True)[1]
 print("pronto", s.server_address[1], flush=True)
 s.serve_forever()

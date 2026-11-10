@@ -390,7 +390,7 @@ def cmd_monitor(a):
         situacao = _rodada(cfg, banco, a, carteira, processos, pasta_diag, rod)
 
     agora = dt.datetime.fromisoformat(exemplo["rodadas"][-1]["quando"]) if exemplo else dt.datetime.now()
-    pagina = monitor.montar_pagina(cfg, banco, int((cfg.get("monitor") or {}).get("dias_na_pagina", 7)), bool(exemplo),
+    pagina = monitor.montar_pagina(cfg, banco, config.inteiro((cfg.get("monitor") or {}).get("dias_na_pagina", 7), 7, 1, 90), bool(exemplo),
                                    situacao, agora, cfg.get("escritorio", ""), carteira)
     pagina["versao"] = VERSAO
     saidas.gravar_monitor(os.path.join(pasta, "dia.html"), pagina)
