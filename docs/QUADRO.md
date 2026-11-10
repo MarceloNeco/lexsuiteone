@@ -126,6 +126,10 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- **0.7.24 na `main`, pronta para publicar** (10/Nov, com o "pode a 0.7.24" do dono): teste do dono no Windows da 0.7.23
+  (aviso da planilha no link da última leitura, marca somente leitura ao abrir, lupa com as partes da Configuração e Enter,
+  critério embaixo do botão, nomes das opções de pasta) e teste automático contra comentário que engole código. Revisada e
+  aprovada (169 testes, também como usuário comum). Pacote 45/44. A Operação publica com "publica a versão 0.7.24".
 - **0.7.22 na `main`, pronta para publicar** (09/Nov noite, com o "pode" do dono para a 0.7.21 e o AssistONE novo;
   a 0.7.21 não sai). Tem: tudo da 0.7.21 (teste do dono no Windows e decisões de pastas, só leitura e Área logada),
   a revisão da 0.7.21 pela Operação (bloqueio do teste e itens 2 a 15) e o AssistONE 1.1.1 do RootifyONE. Revisada e
