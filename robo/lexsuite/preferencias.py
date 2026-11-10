@@ -145,7 +145,7 @@ def _numero(v, padrao):
     try:
         n = float(t)
         return int(n) if n == int(n) else n
-    except ValueError:
+    except (ValueError, OverflowError):  # revisão da 0.7.28: "1e400", "inf" e "NaN" voltam ao padrão
         return padrao
 
 
@@ -155,6 +155,28 @@ def versao_tupla(v):
 
 LIMITES = {"valor_minimo": (0, 1e12), "minimo_acoes": (1, 100), "janela_dias": (1, 365), "teto_capital_gigante": (0, 1e15),
            "dias_arquivo": (7, 3650), "limite_linhas": (1000, 1000000)}
+
+
+MAX_EXCLUSOES = 5000
+
+
+def marca_regras(pasta_base, frente="trabalhista"):
+    """Revisão da 0.7.28: (marca, doc, erro) das abas Preferências e Exclusões como estão agora na planilha da frente.
+    A tela recebe a marca ao abrir as regras e a devolve ao salvar: se a planilha mudou nesse meio tempo (outra pessoa,
+    outro computador, edição à mão) ou não pôde ser lida quando a tela abriu, o salvamento é recusado e nada se perde.
+    Sem arquivo: marca "nova". Arquivo que não se lê: marca None e o erro."""
+    import hashlib
+    import json
+    c = caminho(pasta_base, frente)
+    if not c or not os.path.exists(c):
+        return "nova", None, ""
+    try:
+        doc = planilha.ler_xlsx(c, so_abas=ABAS_EDITAVEIS)
+    except Exception as e:  # noqa: BLE001 - corrompida, em uso, sincronizando: quem chama recusa
+        return None, None, e.__class__.__name__
+    abas = {cl.sem_acento(a["nome"]).strip().lower(): a["linhas"] for a in doc["abas"]}
+    conteudo = json.dumps([abas.get("preferencias", []), abas.get("exclusoes", [])], default=str, ensure_ascii=False)
+    return hashlib.sha256(conteudo.encode("utf-8")).hexdigest()[:32], doc, ""
 
 
 def linhas_regras(valores, exclusoes):
@@ -177,12 +199,14 @@ def linhas_regras(valores, exclusoes):
         pref.append([nomes[chave], v, linha[2]])
     exc = [list(LINHAS_EXCLUSOES[0])]
     vistos = set()
-    for e in (exclusoes or [])[:5000]:
-        nome = str((e or {}).get("nome") or "").strip()[:160]
+    for e in (exclusoes or [])[:MAX_EXCLUSOES]:
+        if not isinstance(e, dict):  # revisão da 0.7.28: item que não é {nome, motivo} é ignorado
+            continue
+        nome = str(e.get("nome") or "").strip()[:160]
         if not nome or nome.lower() in vistos:
             continue
         vistos.add(nome.lower())
-        exc.append([nome, str((e or {}).get("motivo") or "").strip()[:200]])
+        exc.append([nome, str(e.get("motivo") or "").strip()[:200]])
     return pref, exc
 
 
@@ -193,10 +217,12 @@ def padrao():
     return p
 
 
-def carregar(pasta_base, doc=None, frente="trabalhista"):
+def carregar(pasta_base, doc=None, frente="trabalhista", trocar=None):
     """Lê as abas editáveis da planilha da frente. Sem pasta ou sem arquivo, devolve o padrão; se não conseguir ler,
     diz o erro. `doc` pode ser a planilha já lida (evita ler duas vezes). 0.7.16: as Exclusões das planilhas das outras
-    frentes também valem (cliente é cliente em todas)."""
+    frentes também valem (cliente é cliente em todas). Revisão da 0.7.28: `trocar` ({"Preferências": linhas,
+    "Exclusões": linhas}) são as regras que acabaram de ser salvas na tela: valem no lugar dessas abas, e a aba Controle
+    e as Exclusões das outras frentes continuam sendo lidas do disco."""
     prefs = padrao()
     c = caminho(pasta_base, frente)
     if doc is None:
@@ -213,15 +239,19 @@ def carregar(pasta_base, doc=None, frente="trabalhista"):
                         nome = str(linha[0] if linha else "").strip()
                         if nome and not nome.lower().startswith("(exemplo"):
                             prefs["exclusoes"].append({"nome": nome, "motivo": str(linha[1]).strip() if len(linha) > 1 else ""})
-        if not c or not os.path.exists(c):
+        existe = bool(c) and os.path.exists(c)
+        if not existe and not trocar:
             return prefs
         try:
-            doc = planilha.ler_xlsx(c, so_abas=ABAS_EDITAVEIS)
+            doc = planilha.ler_xlsx(c, so_abas=ABAS_EDITAVEIS) if existe else {"abas": []}
         except Exception as e:  # planilha corrompida ou em uso: o robô segue com o padrão e avisa
             prefs["erro"] = (f"Não consegui ler as abas Preferências e Exclusões de {os.path.basename(c)} (arquivo corrompido ou bloqueado). "
                              "Nesta leitura valem as preferências padrão. / Could not read the Preferences and Exclusions tabs; "
                              f"default preferences apply this time. ({e.__class__.__name__})")
             return prefs
+        if trocar:
+            doc = {"abas": [a for a in doc["abas"] if cl.sem_acento(a["nome"]).strip().lower() not in ("preferencias", "exclusoes")]
+                   + [{"nome": n, "linhas": l} for n, l in trocar.items()]}
     abas = {cl.sem_acento(a["nome"]).strip().lower(): a["linhas"] for a in doc["abas"]}
     for linha in abas.get("preferencias", [])[1:]:
         if len(linha) >= 2 and str(linha[0]).strip() in CHAVES:

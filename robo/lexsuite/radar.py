@@ -371,7 +371,7 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, novas_r
         ordem = [f for f in preferencias.NOMES_FRENTE if f in frentes] or ["trabalhista"]
         tudo_ok, limpou = True, False
         for frente in ordem:
-            prefs = preferencias.carregar(base, frente=frente)
+            prefs = preferencias.carregar(base, frente=frente, trocar=novas_regras if frente == "trabalhista" else None)  # revisão da 0.7.28: limite e dias novos já valem
             limite = int(prefs.get("limite_linhas") or 60000)
             radar_f = [i for i in lista if armazenamento.frente_do(i) == frente]
             todos_f = [i for i in todos if armazenamento.frente_do(i) == frente]
@@ -422,8 +422,8 @@ def regravar_planilha(cfg, banco, pasta_base, versao, aviso=print, novas_regras=
     0.7.28: com `novas_regras` ({"Preferências": linhas, "Exclusões": linhas}), grava também as regras do escritório
     editadas na tela, e a lista já sai com elas."""
     prefs = None
-    if novas_regras:
-        prefs = preferencias.carregar(compartilhar.pasta_base(cfg), doc={"abas": [{"nome": n, "linhas": l} for n, l in novas_regras.items()]})
+    if novas_regras:  # revisão da 0.7.28: com a aba Controle e as Exclusões das outras frentes, lidas do disco
+        prefs = preferencias.carregar(compartilhar.pasta_base(cfg), trocar=novas_regras)
     pagina = montar_radar(cfg, banco, None, False, None, prefs=prefs)
     return gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso, novas_regras=novas_regras)
 

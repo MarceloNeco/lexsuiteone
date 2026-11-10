@@ -722,7 +722,8 @@ class TelaSemComentarioQueEngoleCodigo(unittest.TestCase):
     válido). Procura, depois de //, qualquer coisa com cara de comando: chamada seguida de ";", var/let/const/if/for/while/
     return, ou atribuição seguida de ";" (revisão da 0.7.24: um comando só também conta)."""
     PADROES = (r"[A-Za-z_$][\w$.]*\([^)]*\)\s*(;|$)", r"\b(var|let|const|if|for|while|return)\b[^;]*[;{]", r"[\w$.\]]+\s*=[^=>][^;]*;",
-               r"[\w$\]]\s*(\+\+|--)\s*;", r"[\w$.\]]+\s*[+\-*/]=", r"\b(break|continue)\s*;")  # 0.7.26: i++, z += 1, a.f(c) sem ";", break
+               r"[\w$\]]\s*(\+\+|--)\s*;", r"[\w$.\]]+\s*[+\-*/]=", r"\b(break|continue)\s*;",
+               r"\}\s*(catch|finally|else)\b", r"\}\s*\)?\s*;?\s*$")  # 0.7.26; revisão da 0.7.28: "} catch (e) {}" e "}" no fim: i++, z += 1, a.f(c) sem ";", break
 
     @classmethod
     def ruins(cls, texto):
@@ -745,7 +746,8 @@ class TelaSemComentarioQueEngoleCodigo(unittest.TestCase):
     def test_o_teste_pega_o_erro(self):
         for ex in ("a.appendChild(b); // nota  a.appendChild(c);", "x(); // nota  if (x) { y(); }",
                    "x(); // nota  var z = 1;", "x(); // nota  z = 1;", "x(); // nota i++;", "x(); // nota z += 1;",
-                   "x(); // nota a.f(c)", "x(); // nota break;", 'var s = "x"// nota z = 1;'):
+                   "x(); // nota a.f(c)", "x(); // nota break;", 'var s = "x"// nota z = 1;',
+                   "try { x(); // nota } catch (e) {}", "if (a) { x(); // nota }"):
             self.assertTrue(self.ruins(ex), ex)
         self.assertFalse(self.ruins("x(); // nota em prosa (com parênteses); e ponto e vírgula"))
 
@@ -884,39 +886,114 @@ class V0728(unittest.TestCase):
 
 
 class Regras0728(unittest.TestCase):
-    """0.7.28 (dono): as regras do escritório se editam na tela e o RADAR grava nas abas da planilha."""
+    """0.7.28 (dono): as regras do escritório se editam na tela e o RADAR grava nas abas da planilha.
+    Revisão da 0.7.28: nunca grava por cima do que a tela não leu; cópia antes; pedido ruim não derruba."""
+
+    def setUp(self):
+        import threading, json as _j
+        from lexsuite import app
+        self.pasta = tempfile.mkdtemp(); planilhas = tempfile.mkdtemp()
+        with open(os.path.join(self.pasta, "config.json"), "w", encoding="utf-8") as f:
+            _j.dump({"radar": {"tribunais": ["TRT2"]}, "compartilhar": {"pasta": planilhas}}, f)
+        self.srv = app.Servidor(("127.0.0.1", 0), self.pasta)
+        threading.Thread(target=self.srv.serve_forever, daemon=True).start()
+
+    def tearDown(self):
+        self.srv.shutdown(); self.srv.server_close()
+
+    def pedir(self, metodo, rota, corpo=None, cru=None):
+        import http.client, json as _j
+        c = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=20)
+        c.request(metodo, rota, body=cru if cru is not None else (_j.dumps(corpo) if corpo is not None else None),
+                  headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+        r = c.getresponse(); d = _j.loads(r.read()); d["_status"] = r.status; c.close(); return d
+
+    def base(self):
+        from lexsuite import compartilhar
+        return compartilhar.pasta_base(self.srv.config())
+
+    def arquivo(self):
+        from lexsuite import preferencias
+        return preferencias.caminho(self.base(), "trabalhista")
+
+    def exclusoes_no_disco(self):
+        from lexsuite import preferencias
+        return [e["nome"] for e in preferencias.carregar(self.base(), doc=__import__("lexsuite.planilha", fromlist=["x"]).ler_xlsx(self.arquivo(), so_abas=preferencias.ABAS_EDITAVEIS))["exclusoes"]]
+
+    def salvar(self, valores=None, exclusoes=None, marca=None):
+        if marca is None:
+            marca = self.pedir("GET", "/regras")["marca"]
+        return self.pedir("POST", "/regras", {"valores": valores or {}, "exclusoes": exclusoes or [], "marca": marca})
 
     def test_salvar_e_ler_as_regras(self):
-        import threading, http.client, json as _j
-        from lexsuite import app, preferencias
-        pasta = tempfile.mkdtemp(); planilhas = tempfile.mkdtemp()
-        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
-            _j.dump({"radar": {"tribunais": ["TRT2"]}, "compartilhar": {"pasta": planilhas}}, f)
-        srv = app.Servidor(("127.0.0.1", 0), pasta)
-        threading.Thread(target=srv.serve_forever, daemon=True).start()
-        def pedir(metodo, rota, corpo=None):
-            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=20)
-            c.request(metodo, rota, body=_j.dumps(corpo) if corpo is not None else None, headers={"X-LexSuite": "1", "Content-Type": "application/json"})
-            r = _j.loads(c.getresponse().read()); c.close(); return r
-        try:
-            r = pedir("POST", "/regras", {"valores": {"valor_minimo": 250000, "esconder_gigantes": True, "mostrar_socios": False, "limite_linhas": 1e400},
-                                          "exclusoes": [{"nome": "Empresa Fictícia Cliente Ltda", "motivo": "cliente atual"}, {"nome": ""},
-                                                        {"nome": "empresa fictícia cliente ltda", "motivo": "repetida"}]})
-            self.assertTrue(r["ok"], r); self.assertEqual(r["exclusoes"], 1)
-            d = pedir("GET", "/regras")
-            self.assertEqual(d["valores"]["valor_minimo"], 250000); self.assertTrue(d["valores"]["esconder_gigantes"])
-            self.assertFalse(d["valores"]["mostrar_socios"]); self.assertEqual(d["valores"]["limite_linhas"], preferencias.PADRAO["limite_linhas"])
-            self.assertEqual([e["nome"] for e in d["exclusoes"]], ["Empresa Fictícia Cliente Ltda"])
-            # revisão: a tela mostra só as exclusões da planilha que ela regrava (a de outra frente não volta depois de tirar)
-            from lexsuite import compartilhar, planilha
-            base = compartilhar.pasta_base(srv.config())
-            planilha.escrever_xlsx(os.path.join(base, preferencias.NOMES_FRENTE["tributario"]),
-                                   [{"nome": "Exclusões", "linhas": [["Nome", "Motivo"], ["Outra Empresa Fictícia SA", "tributário"]]}])
-            self.assertEqual([e["nome"] for e in pedir("GET", "/regras")["exclusoes"]], ["Empresa Fictícia Cliente Ltda"])
-            self.assertTrue(pedir("POST", "/regras", {"valores": {}, "exclusoes": []})["ok"])
-            self.assertEqual(pedir("GET", "/regras")["exclusoes"], [])
-        finally:
-            srv.shutdown(); srv.server_close()
+        from lexsuite import preferencias, planilha
+        d0 = self.pedir("GET", "/regras"); self.assertTrue(d0["ok"]); self.assertEqual(d0["marca"], "nova")
+        r = self.salvar({"valor_minimo": 250000, "esconder_gigantes": True, "mostrar_socios": False, "limite_linhas": 1e400},
+                        [{"nome": "Empresa Fictícia Cliente Ltda", "motivo": "cliente atual"}, {"nome": ""},
+                         {"nome": "empresa fictícia cliente ltda", "motivo": "repetida"}, 7, "texto", None], marca="nova")
+        self.assertTrue(r["ok"], r); self.assertEqual(r["exclusoes"], 1)
+        d = self.pedir("GET", "/regras")
+        self.assertEqual(d["valores"]["valor_minimo"], 250000); self.assertTrue(d["valores"]["esconder_gigantes"])
+        self.assertFalse(d["valores"]["mostrar_socios"]); self.assertEqual(d["valores"]["limite_linhas"], preferencias.PADRAO["limite_linhas"])
+        self.assertEqual([e["nome"] for e in d["exclusoes"]], ["Empresa Fictícia Cliente Ltda"])
+        self.assertEqual(d["marca"], r["marca"])
+        # a tela mostra só as exclusões da planilha que ela regrava (a de outra frente não volta depois de tirar)
+        planilha.escrever_xlsx(os.path.join(self.base(), preferencias.NOMES_FRENTE["tributario"]),
+                               [{"nome": "Exclusões", "linhas": [["Nome", "Motivo"], ["Outra Empresa Fictícia SA", "tributário"]]}])
+        self.assertEqual([e["nome"] for e in self.pedir("GET", "/regras")["exclusoes"]], ["Empresa Fictícia Cliente Ltda"])
+        # ...mas, na leitura e na aba Radar, as das outras frentes continuam valendo junto com as novas (trocar=)
+        p = preferencias.carregar(self.base(), trocar={"Preferências": preferencias.linhas_regras({}, [])[0],
+                                                       "Exclusões": [["Nome", "Motivo"], ["Nova Fictícia Ltda", ""]]})
+        self.assertEqual(sorted(e["nome"] for e in p["exclusoes"]), ["Nova Fictícia Ltda", "Outra Empresa Fictícia SA"])
+        self.assertTrue(self.salvar({}, [])["ok"])
+        self.assertEqual(self.pedir("GET", "/regras")["exclusoes"], [])
+
+    def test_planilha_ilegivel_nao_mostra_formulario_nem_grava_por_cima(self):
+        """Bloqueio da revisão: planilha com 3 exclusões, ilegível ao abrir a tela, legível ao salvar: nada se perde."""
+        import shutil as _sh
+        r = self.salvar({"valor_minimo": 250000}, [{"nome": f"Empresa Fictícia {n} Ltda"} for n in (1, 2, 3)], marca="nova")
+        self.assertTrue(r["ok"], r)
+        from lexsuite import planilha
+        boa = self.arquivo() + ".boa"; _sh.copyfile(self.arquivo(), boa)
+        planilha.liberar_escrita(self.arquivo())  # a consulta fica "somente leitura" (sem root não se escreve por cima)
+        with open(self.arquivo(), "wb") as f:
+            f.write(b"isto nao e um xlsx")  # corrompida / sincronizando
+        d = self.pedir("GET", "/regras")
+        self.assertFalse(d["ok"]); self.assertNotIn("valores", d); self.assertNotIn("exclusoes", d); self.assertTrue(d["motivo_en"])
+        self.assertFalse(self.salvar({}, [], marca="")["ok"])  # ainda ilegível: recusa
+        planilha.liberar_escrita(self.arquivo()); _sh.copyfile(boa, self.arquivo())  # o Drive terminou de sincronizar
+        for marca in ("", "nova", "qualquer"):  # a tela não tinha lido: qualquer marca que não seja a de agora é recusada
+            self.assertFalse(self.salvar({}, [], marca=marca)["ok"])
+        self.assertEqual(len(self.exclusoes_no_disco()), 3)
+
+    def test_planilha_mudou_depois_de_abrir(self):
+        r = self.salvar({}, [{"nome": "Empresa Fictícia A Ltda"}], marca="nova"); self.assertTrue(r["ok"])
+        marca_tela = self.pedir("GET", "/regras")["marca"]
+        self.assertTrue(self.salvar({}, [{"nome": "Empresa Fictícia A Ltda"}, {"nome": "Empresa Fictícia B Ltda"}])["ok"])  # outro computador
+        r = self.salvar({}, [], marca=marca_tela)
+        self.assertFalse(r["ok"]); self.assertTrue(r.get("mudou"))
+        self.assertEqual(len(self.exclusoes_no_disco()), 2)
+
+    def test_copia_antes_de_salvar(self):
+        from lexsuite import armazenamento
+        self.assertTrue(self.salvar({}, [{"nome": "Empresa Fictícia A Ltda"}], marca="nova")["ok"])
+        r = self.salvar({}, [])
+        self.assertTrue(r["ok"]); self.assertTrue(r["copia"].endswith(armazenamento.REGRAS))
+        pasta = os.path.join(armazenamento.pasta_copias(self.base()), r["copia"])
+        self.assertTrue(any(n.endswith(".xlsx") for n in os.listdir(pasta)))
+        self.assertIn(r["copia"], [c["nome"] for c in armazenamento.copias(self.base())])
+
+    def test_pedidos_ruins_nao_derrubam(self):
+        marca = self.pedir("GET", "/regras")["marca"]
+        for cru in ("{}", "null", "[]", "", '{"valores": {}}', '{"exclusoes": []}', '{"valores": [], "exclusoes": [], "marca": "nova"}',
+                    '{"valores": {}, "exclusoes": {}, "marca": "nova"}', '{"valores": {}, "exclusoes": [], "marca": 3}'):
+            d = self.pedir("POST", "/regras", cru=cru)
+            self.assertFalse(d.get("ok"), cru); self.assertIn(d["_status"], (400,), cru)
+        for v in ("1e400", "Infinity", "-1e999", "inf", "NaN", "abc", None, [], {}):
+            d = self.salvar({"valor_minimo": v, "minimo_acoes": v, "janela_dias": v}, [], marca=marca)
+            self.assertTrue(d["ok"], (v, d)); marca = d["marca"]
+        d = self.salvar({}, [{"nome": f"Fictícia {n}"} for n in range(5001)], marca=marca)
+        self.assertFalse(d["ok"]); self.assertIn("5000", d["motivo"])
 
     def test_regras_sem_pasta(self):
         import threading, http.client, json as _j
@@ -932,28 +1009,19 @@ class Regras0728(unittest.TestCase):
             srv.shutdown(); srv.server_close()
 
     def test_regras_nao_diz_salvo_sem_planilha(self):
-        import threading, http.client, json as _j
         from unittest import mock
-        from lexsuite import app, compartilhar
-        pasta = tempfile.mkdtemp(); planilhas = tempfile.mkdtemp()
-        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
-            _j.dump({"radar": {"tribunais": ["TRT2"]}, "compartilhar": {"pasta": planilhas}}, f)
-        srv = app.Servidor(("127.0.0.1", 0), pasta)
-        threading.Thread(target=srv.serve_forever, daemon=True).start()
-        try:
-            with mock.patch.object(compartilhar, "criar_se_faltar", return_value=None):  # a criação falhou sem erro
-                c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=20)
-                c.request("POST", "/regras", body=_j.dumps({"valores": {}, "exclusoes": [{"nome": "Empresa Fictícia Ltda"}]}),
-                          headers={"X-LexSuite": "1", "Content-Type": "application/json"})
-                r = _j.loads(c.getresponse().read()); c.close()
-            self.assertFalse(r["ok"])
-        finally:
-            srv.shutdown(); srv.server_close()
+        from lexsuite import compartilhar
+        with mock.patch.object(compartilhar, "criar_se_faltar", return_value=None):  # a criação falhou sem erro
+            r = self.salvar({}, [{"nome": "Empresa Fictícia Ltda"}], marca="nova")
+        self.assertFalse(r["ok"])
 
-
-if __name__ == "__main__":
-    unittest.main()
-
+    def test_datas_vazias(self):
+        from lexsuite import config, avisar
+        self.assertEqual(config.data_curta(None), ""); self.assertEqual(config.data_curta(""), "")
+        self.assertEqual(avisar._data_br(None), ""); self.assertEqual(avisar._data_br("abc"), "")
+        self.assertEqual(avisar._data_br("2026-11-06"), "06/NOV/2026")
+        import datetime as _d
+        self.assertEqual(config.data_curta(_d.date(999, 1, 2)), "02/JAN/0999")
 
 _ROBO_ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 import json  # noqa: E402

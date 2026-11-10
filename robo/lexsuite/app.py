@@ -228,6 +228,9 @@ def leitura_em_outro_processo(arquivo, minutos=45):
     return d
 
 
+_TRAVA_REGRAS = threading.Lock()
+
+
 class Servidor(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = True
@@ -546,15 +549,20 @@ class Tratador(BaseHTTPRequestHandler):
         if u.path == "/regras":  # 0.7.28 (dono): regras do escritório editadas na tela
             cfg = s.config()
             base = compartilhar.pasta_base(cfg)
-            p = preferencias.padrao()
-            arq = preferencias.caminho(base, "trabalhista") if base else ""
-            if arq and os.path.exists(arq):  # só a planilha trabalhista: é a que o POST regrava (as outras frentes somam na leitura)
-                try:
-                    p = preferencias.carregar(base, doc=planilha_mod.ler_xlsx(arq, so_abas=preferencias.ABAS_EDITAVEIS))
-                except Exception as e:  # noqa: BLE001 - em uso ou ilegível: a tela mostra o padrão e avisa
-                    p["erro"] = f"{e.__class__.__name__}"
-            return self._responder({"ok": True, "valores": {k: p.get(k) for k in preferencias.PADRAO},
-                                    "exclusoes": p.get("exclusoes") or [], "limites": preferencias.LIMITES, "tem_pasta": bool(base), "erro": p.get("erro", "")})
+            if not base:
+                return self._responder({"ok": True, "tem_pasta": False})
+            # só a planilha trabalhista: é a que o POST regrava (as outras frentes somam na leitura do Diário)
+            marca_r, doc, erro = preferencias.marca_regras(base)
+            if marca_r is None:  # revisão da 0.7.28 (bloqueio): sem ler a planilha, a tela NÃO mostra o formulário padrão
+                return self._responder({"ok": False, "tem_pasta": True, "erro_leitura": erro,
+                                        "motivo": "Não consegui ler as regras do escritório na planilha (pode estar aberta no Excel, "
+                                                  "ainda sincronizando no Drive ou danificada). Feche o Excel, espere o Drive terminar e abra de novo.",
+                                        "motivo_en": "Could not read the firm rules from the spreadsheet (it may be open in Excel, still "
+                                                     "syncing in Drive or damaged). Close Excel, wait for Drive and open this again."})
+            p = preferencias.carregar(base, doc=doc) if doc else preferencias.padrao()
+            return self._responder({"ok": True, "valores": {k: p.get(k) for k in preferencias.PADRAO}, "marca": marca_r,
+                                    "exclusoes": p.get("exclusoes") or [], "limites": preferencias.LIMITES, "tem_pasta": True,
+                                    "max_exclusoes": preferencias.MAX_EXCLUSOES})
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
@@ -800,22 +808,48 @@ class Tratador(BaseHTTPRequestHandler):
             return self._responder({"ok": True})
         if caminho == "/regras":  # 0.7.28 (dono): grava as regras do escritório nas abas da planilha
             cfg = s.config()
-            if not compartilhar.pasta_base(cfg):
+            base = compartilhar.pasta_base(cfg)
+            if not base:
                 return self._responder({"ok": False, "motivo": "Escolha primeiro a pasta das planilhas em Configuração.",
                                         "motivo_en": "Choose the spreadsheet folder in Settings first."})
-            exc = corpo.get("exclusoes") if isinstance(corpo.get("exclusoes"), list) else []
-            pref, exc_l = preferencias.linhas_regras(corpo.get("valores") if isinstance(corpo.get("valores"), dict) else {}, exc)
-            recados = []
-            try:
-                compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, recados.append)
-                ok = os.path.exists(preferencias.caminho(compartilhar.pasta_base(cfg), "trabalhista")) and radar.regravar_planilha(cfg, bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append,
-                                             novas_regras={"Preferências": pref, "Exclusões": exc_l})
-            except OSError:
-                ok = False
-            if not ok:
-                return self._responder({"ok": False, "motivo": "Não consegui gravar: a planilha pode estar aberta no Excel. Feche-a e salve de novo.",
-                                        "motivo_en": "Could not save: the spreadsheet may be open in Excel. Close it and save again."})
-            return self._responder({"ok": True, "exclusoes": len(exc_l) - 1})
+            valores, exc, marca_tela = corpo.get("valores"), corpo.get("exclusoes"), corpo.get("marca")
+            if not isinstance(valores, dict) or not isinstance(exc, list) or not isinstance(marca_tela, str):  # revisão da 0.7.28
+                return self._responder({"ok": False, "motivo": "Pedido incompleto: abra as regras de novo.",
+                                        "motivo_en": "Incomplete request: open the rules again."}, status=400)
+            if len(exc) > preferencias.MAX_EXCLUSOES:
+                return self._responder({"ok": False, "motivo": f"São {len(exc)} empresas excluídas; o limite é {preferencias.MAX_EXCLUSOES}. Tire algumas e salve de novo.",
+                                        "motivo_en": f"There are {len(exc)} excluded companies; the limit is {preferencias.MAX_EXCLUSOES}. Remove some and save again."})
+            # revisão da 0.7.28 (bloqueio): só grava por cima do que a tela leu. Se a planilha não se lê agora, ou mudou
+            # depois que a tela abriu (outra pessoa, outro computador, edição à mão), recusa e nada se perde.
+            with _TRAVA_REGRAS:  # revisão da 0.7.28: conferir a marca, copiar e gravar sem outro salvamento no meio
+                marca_agora, _doc, _erro = preferencias.marca_regras(base)
+                if marca_agora is None:
+                    return self._responder({"ok": False, "motivo": "Não consegui ler a planilha agora: ela pode estar aberta no Excel ou sincronizando. Nada foi alterado.",
+                                            "motivo_en": "Could not read the spreadsheet now: it may be open in Excel or syncing. Nothing was changed."})
+                if marca_agora != marca_tela:
+                    return self._responder({"ok": False, "mudou": True,
+                                            "motivo": "As regras na planilha mudaram depois que você abriu esta tela (outra pessoa, outro computador ou edição à mão). Nada foi alterado: abra as regras de novo e refaça a mudança.",
+                                            "motivo_en": "The rules in the spreadsheet changed after you opened this screen (someone else, another computer or a manual edit). Nothing was changed: open the rules again and redo the change."})
+                pref, exc_l = preferencias.linhas_regras(valores, exc)
+                copia_ok, onde = armazenamento.copia_antes_das_regras(base)
+                if not copia_ok:
+                    return self._responder({"ok": False, "motivo": onde + " Nada foi alterado.",
+                                            "motivo_en": "Could not save the backup copy before saving. Nothing was changed."})
+                if preferencias.marca_regras(base)[0] != marca_tela:  # outro computador mudou a planilha durante a cópia
+                    return self._responder({"ok": False, "mudou": True, "motivo": "A planilha mudou agora mesmo (outro computador). Nada foi alterado: abra as regras de novo.",
+                                            "motivo_en": "The spreadsheet just changed (another computer). Nothing was changed: open the rules again."})
+                recados = []
+                try:
+                    compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, recados.append)
+                    ok = os.path.exists(preferencias.caminho(base, "trabalhista")) and radar.regravar_planilha(
+                        cfg, bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append, novas_regras={"Preferências": pref, "Exclusões": exc_l})
+                except OSError:
+                    ok = False
+                if not ok:
+                    return self._responder({"ok": False, "motivo": "Não consegui gravar: a planilha pode estar aberta no Excel. Feche-a e salve de novo.",
+                                            "motivo_en": "Could not save: the spreadsheet may be open in Excel. Close it and save again."})
+                return self._responder({"ok": True, "exclusoes": len(exc_l) - 1, "marca": preferencias.marca_regras(base)[0] or "",
+                                        "copia": os.path.basename(onde)})
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)
@@ -888,12 +922,9 @@ class Tratador(BaseHTTPRequestHandler):
                 if alvo:
                     os.makedirs(alvo, exist_ok=True)
             else:
-                alvo = planilha if corpo.get("o_que") in ("planilha", "editar") else (os.path.dirname(planilha) if planilha else "")
+                alvo = planilha if corpo.get("o_que") == "planilha" else (os.path.dirname(planilha) if planilha else "")
             em_uso = False
-            if corpo.get("o_que") == "editar":  # Preferências e Exclusões: abre normal, para o escritório poder salvar
-                alvo = planilha
-                planilha_mod.liberar_escrita(alvo)  # 0.7.21: a marca "somente leitura" volta na próxima gravação
-            elif corpo.get("o_que") == "planilha" and alvo and os.path.exists(alvo):
+            if corpo.get("o_que") == "planilha" and alvo and os.path.exists(alvo):
                 em_uso = not planilha_mod.marcar_se_livre(alvo)  # 0.7.25: aberta para editar noutro lugar? não marca agora
                 if abrir_so_leitura(alvo):
                     return self._responder({"ok": True, "so_leitura": True, "em_uso": em_uso})
@@ -1229,9 +1260,10 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
         if ja:
             import time
             if ativa and chamar_tela(ja):  # 0.7.28 (dono): a tela já está aberta; não abre outra, ela avisa e vem para a frente
-                aviso("  O RADAR já está aberto neste computador. Procure a janela \"RADAR JUDICIAL\" na barra de tarefas;")
-                aviso("  ela mostra o aviso \"O RADAR já estava aberto aqui\". Esta janela fecha sozinha.")
-                aviso("  / RADAR is already open: look for the RADAR JUDICIAL window on the taskbar.")
+                m_ = marca(pasta)  # revisão da 0.7.28: o nome vem da marca, não fixo
+                aviso(f"  O {m_['curto']} já está aberto neste computador. Procure a janela \"{m_['nome']}\" na barra de tarefas;")
+                aviso(f"  ela mostra o aviso \"O {m_['curto']} já estava aberto aqui\". Esta janela fecha sozinha.")
+                aviso(f"  / {m_['curto']} is already open: look for the {m_['nome']} window on the taskbar.")
                 time.sleep(6)
                 return
             aviso("  O RADAR já está aberto neste computador: trazendo a tela. Esta janela fecha sozinha.")
