@@ -22,6 +22,14 @@ PADRAO = {
 }
 
 
+def inteiro(valor, padrao, minimo, maximo):
+    """0.7.23 (revisão): número do config.json com limite; texto, lista, Infinity ou 1e400 viram o padrão."""
+    try:
+        return max(minimo, min(maximo, int(valor)))
+    except (TypeError, ValueError, OverflowError):
+        return padrao
+
+
 def carregar(caminho, aviso=print):
     """Lê o config.json. Se não existir, cria a partir do config.exemplo.json (ou do padrão) e segue."""
     if not os.path.exists(caminho):

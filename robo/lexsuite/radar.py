@@ -193,7 +193,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     versao = versao or _versao()
     r = cfg.get("radar") or {}
     escolhidos = tribunais.validar(r.get("tribunais") or ["TRT2", "TRT15"])
-    dias = int(dias if dias is not None else r.get("dias_para_tras", 1))
+    dias = config.inteiro(dias if dias is not None else r.get("dias_para_tras", 1), 1, 0, 10)
     agora = agora or dt.datetime.now()
     inicio = time.perf_counter()
     base_compartilhada = compartilhar.pasta_base(cfg)
@@ -409,7 +409,8 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
     except PermissionError:
         aviso("  A planilha está aberta no Excel (ou em outro programa), ou falta permissão para gravar nesta pasta ou arquivo: "
               "feche-a ou confira a pasta para ela ser atualizada. A lista está salva. / The spreadsheet is open or the folder is not writable; the list is saved.")
-        banco.registrar("saude", {"fonte": "Pasta compartilhada", "situacao": "atenção", "detalhe": "planilha aberta em outro programa"})
+        banco.registrar("saude", {"fonte": "Pasta compartilhada", "situacao": "atenção",
+                                  "detalhe": "planilha aberta em outro programa ou sem permissão para gravar na pasta"})
     except Exception as e:  # a pasta pode estar fora do ar (Drive pausado); a rodada em si deu certo
         aviso(f"  Não consegui gravar a planilha compartilhada ({e.__class__.__name__}: {e}).")
         banco.registrar("saude", {"fonte": "Pasta compartilhada", "situacao": "erro", "detalhe": f"{e.__class__.__name__}: {e}"[:200]})

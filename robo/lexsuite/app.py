@@ -982,10 +982,7 @@ def personalizar_manual(html, cfg):
 
 def _dias_para_tras(r):
     """0.7.21 (revisão): o mesmo limite do POST /config (0 a 10); texto ou lista no config.json não derruba a tela."""
-    try:
-        return max(0, min(10, int(r.get("dias_para_tras", 1))))
-    except (TypeError, ValueError):
-        return 1
+    return config.inteiro(r.get("dias_para_tras", 1), 1, 0, 10)
 
 
 # 0.7.21: texto do erro das estatísticas antigas antes de o aviso técnico chegar à SolverONE (sem promessa de aviso)

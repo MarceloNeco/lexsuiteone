@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.22 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.23 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,10 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.23:** ressalvas da revisão da 0.7.22: textos sem "Google Drive" como padrão, aviso de planilha que fala também
+  de falta de permissão, passo do tour com "Área logada", motivos da licença em inglês na tela em EN, números do
+  `config.json` com limite (texto ou valor absurdo não derrubam a tela nem a leitura), nome do escritório sempre válido
+  na cópia de trabalho e testes que faltavam.
 - **0.7.22:** AssistONE 1.1.1 (master do RootifyONE): no tour, o balão desliza de um passo ao outro, o personagem não
   some (só se cobrir o que está sendo mostrado) e o "Próximo ›" cabe numa linha.
 - **0.7.21 (teste do dono no Windows):** pastas em duas opções (Neste computador, padrão, ou Pasta compartilhada:

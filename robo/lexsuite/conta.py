@@ -155,13 +155,42 @@ def bloqueio(cfg, hoje=None):
     return ""
 
 
+MOTIVOS_EN = {
+    "codigo_desconhecido": "This client code does not exist. Check the code in the welcome e-mail.",
+    "desativado": "This firm\u2019s licence is deactivated.",
+    "vencido": "This firm\u2019s licence has expired.",
+    "codigo_invalido": "The client code has the format LEX-XXXX-XXXX (see the welcome e-mail).",
+    "aceite_pendente": "The firm\u2019s representative still has to accept the terms.",
+}
+
+
+def bloqueio_en(cfg, hoje=None):
+    """0.7.23 (revisão): o mesmo motivo de `bloqueio`, em inglês, para a tela em EN. A mensagem da SolverONE vai como veio."""
+    if not bloqueio(cfg, hoje):
+        return ""
+    c = cfg.get("conta") or {}
+    msg = (" " + c["mensagem"]) if c.get("mensagem") else ""
+    fale = f" Contact {CONTATO}."
+    codigo = normalizar(c.get("codigo"))
+    if not codigo:
+        return "The client code is missing (it is in the welcome e-mail). Enter it in Settings."
+    if not valido(codigo):
+        return MOTIVOS_EN["codigo_invalido"]
+    resposta = c.get("resposta") or ""
+    if resposta not in ("", "ok", "sem_resposta"):
+        return (MOTIVOS_EN.get(resposta, "This firm\u2019s licence is not active.") + msg + fale).strip()
+    if not c.get("ultima_ok"):
+        return ("I could not confirm the client code with SolverONE yet. Check the internet and try again." + fale).strip()
+    return (f"For more than {DIAS_SEM_RESPOSTA} days I could not confirm the licence with SolverONE. Check the internet and try again." + fale).strip()
+
+
 def situacao(cfg):
     """Para a tela: {'codigo', 'ok', 'texto'}."""
     c = cfg.get("conta") or {}
     motivo = bloqueio(cfg)
     if motivo:
         pend = c.get("resposta") == "aceite_pendente"
-        return {"codigo": c.get("codigo", ""), "ok": False, "texto": motivo, "texto_en": "Licence blocked (details in Portuguese): " + motivo,
+        return {"codigo": c.get("codigo", ""), "ok": False, "texto": motivo, "texto_en": bloqueio_en(cfg) or motivo,
                 "aceite": c.get("aceite") or {},
                 "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else "", "termos": c.get("termos") or {},
                 "escritorio": c.get("escritorio_licenca", ""), "validade": c.get("validade", ""), "recursos": c.get("recursos") or {}}

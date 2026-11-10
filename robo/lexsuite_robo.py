@@ -309,7 +309,7 @@ def _rodada(cfg, banco, a, carteira, processos, pasta_diag, exemplo_rodada=None)
             pubs = pubs_exemplo
         else:
             hoje = agora.date()
-            pubs = monitor.coletar_radar(varas, (hoje - dt.timedelta(days=int(m.get("dias_para_tras", 3)))).isoformat(),
+            pubs = monitor.coletar_radar(varas, (hoje - dt.timedelta(days=config.inteiro(m.get("dias_para_tras", 3), 3, 0, 30))).isoformat(),
                                          hoje.isoformat(), pasta_diag, print)
             conferidas_radar = len(pubs)
         ano_min = agora.year - 1 if agora.month <= 2 else agora.year
