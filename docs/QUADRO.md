@@ -259,6 +259,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 10/Nov: **modo leitura da página de aceite** (`?ler=1` e `?ler=uso`, pedido da Produto): sem a coluna do formulário, a
+  página inteira rola, índice fixo ao lado do texto (até 80 caracteres), busca no alto com destaque, contador "3 de 7" e
+  setas (Enter/Shift+Enter), texto de abertura próprio do modo leitura; no `?ler=uso` só as seções 3 a 5, no cartão da
+  largura do texto. Conferido em capturas a 1400 px. Publicado.
 - 10/Nov: quatro pedidos da Produto: regra das pastas do Google Drive no `CLAUDE.md`; `docs/recursos-do-app.json` sem versão
   do programa (campos `declaracao` e `atualizado_em`); cabeçalho da `lex-conta` com o número da publicação (v13) e **data
   "hoje" em America/Sao_Paulo para a validade da licença** (antes era UTC: entre 21h e meia-noite de Brasília a licença
