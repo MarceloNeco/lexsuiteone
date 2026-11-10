@@ -153,6 +153,39 @@ def versao_tupla(v):
     return tuple(int(x) for x in re.findall(r"\d+", str(v or ""))[:3]) or (0,)
 
 
+LIMITES = {"valor_minimo": (0, 1e12), "minimo_acoes": (1, 100), "janela_dias": (1, 365), "teto_capital_gigante": (0, 1e15),
+           "dias_arquivo": (7, 3650), "limite_linhas": (1000, 1000000)}
+
+
+def linhas_regras(valores, exclusoes):
+    """0.7.28 (dono): as regras editadas na tela do RADAR viram as linhas das abas Preferências e Exclusões (o escritório
+    não precisa mais editar a planilha). Valores fora do limite voltam ao padrão; texto é cortado. Devolve (pref, exc)."""
+    nomes = {v: k for k, v in CHAVES.items()}
+    pref = [list(LINHAS_PREFERENCIAS[0])]
+    for linha in LINHAS_PREFERENCIAS[1:]:
+        chave = CHAVES[linha[0]]
+        v = (valores or {}).get(chave, PADRAO[chave])
+        if chave.startswith(("esconder", "mostrar")):
+            v = "sim" if (v is True or _sim(v)) else "não"
+        else:
+            n = _numero(v, PADRAO[chave])
+            mn, mx = LIMITES.get(chave, (0, 1e15))
+            try:
+                v = n if mn <= float(n) <= mx else PADRAO[chave]
+            except (TypeError, ValueError, OverflowError):
+                v = PADRAO[chave]
+        pref.append([nomes[chave], v, linha[2]])
+    exc = [list(LINHAS_EXCLUSOES[0])]
+    vistos = set()
+    for e in (exclusoes or [])[:5000]:
+        nome = str((e or {}).get("nome") or "").strip()[:160]
+        if not nome or nome.lower() in vistos:
+            continue
+        vistos.add(nome.lower())
+        exc.append([nome, str((e or {}).get("motivo") or "").strip()[:200]])
+    return pref, exc
+
+
 def padrao():
     p = dict(PADRAO)
     p.update({"exclusoes": [], "controle": {"ativo": True, "validade": "", "versao_minima": "", "mensagem": "",

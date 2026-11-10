@@ -883,5 +883,46 @@ class V0728(unittest.TestCase):
         self.assertIn("_rede.pedir = _rede.pedir_bytes = _rede.pedir_json = _sem_internet", texto)
 
 
+class Regras0728(unittest.TestCase):
+    """0.7.28 (dono): as regras do escritório se editam na tela e o RADAR grava nas abas da planilha."""
+
+    def test_salvar_e_ler_as_regras(self):
+        import threading, http.client, json as _j
+        from lexsuite import app, preferencias
+        pasta = tempfile.mkdtemp(); planilhas = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
+            _j.dump({"radar": {"tribunais": ["TRT2"]}, "compartilhar": {"pasta": planilhas}}, f)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        def pedir(metodo, rota, corpo=None):
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=20)
+            c.request(metodo, rota, body=_j.dumps(corpo) if corpo is not None else None, headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+            r = _j.loads(c.getresponse().read()); c.close(); return r
+        try:
+            r = pedir("POST", "/regras", {"valores": {"valor_minimo": 250000, "esconder_gigantes": True, "mostrar_socios": False, "limite_linhas": 1e400},
+                                          "exclusoes": [{"nome": "Empresa Fictícia Cliente Ltda", "motivo": "cliente atual"}, {"nome": ""},
+                                                        {"nome": "empresa fictícia cliente ltda", "motivo": "repetida"}]})
+            self.assertTrue(r["ok"], r); self.assertEqual(r["exclusoes"], 1)
+            d = pedir("GET", "/regras")
+            self.assertEqual(d["valores"]["valor_minimo"], 250000); self.assertTrue(d["valores"]["esconder_gigantes"])
+            self.assertFalse(d["valores"]["mostrar_socios"]); self.assertEqual(d["valores"]["limite_linhas"], preferencias.PADRAO["limite_linhas"])
+            self.assertEqual([e["nome"] for e in d["exclusoes"]], ["Empresa Fictícia Cliente Ltda"])
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_regras_sem_pasta(self):
+        import threading, http.client, json as _j
+        from lexsuite import app
+        srv = app.Servidor(("127.0.0.1", 0), tempfile.mkdtemp())
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+            c.request("POST", "/regras", body="{}", headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+            r = _j.loads(c.getresponse().read()); c.close()
+            self.assertFalse(r["ok"]); self.assertTrue(r["motivo_en"])
+        finally:
+            srv.shutdown(); srv.server_close()
+
+
 if __name__ == "__main__":
     unittest.main()

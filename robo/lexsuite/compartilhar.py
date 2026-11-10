@@ -120,7 +120,7 @@ def _sobre(cfg, versao, chave_impressao, ultima):
             ["Suporte", preferencias.SUPORTE]]
 
 
-def _abas_editaveis(caminho, aviso=print):
+def _abas_editaveis(caminho, aviso=print, novas=None):
     """Lê da planilha existente as abas que o escritório edita, para preservá-las. Devolve (abas, ok).
     ok=False quando o arquivo existe mas não pôde ser lido (em uso, corrompido): aí NÃO se regrava."""
     if not os.path.exists(caminho):
@@ -142,6 +142,10 @@ def _abas_editaveis(caminho, aviso=print):
             abas.append({"nome": padrao["nome"], "linhas": linhas, "oculta": padrao.get("oculta", False), "larguras": padrao.get("larguras")})
         else:
             abas.append(padrao)
+    if novas:  # 0.7.28: regras editadas na tela substituem as abas Preferências e Exclusões (a Controle fica como está)
+        for a in abas:
+            if a["nome"] in novas:
+                a["linhas"] = [list(l) for l in novas[a["nome"]]]
     return abas, True
 
 
@@ -184,7 +188,7 @@ def _destacar(linhas, chaves, minimo):
 
 
 def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao="", pasta_robo="", aviso=print, arquivo=None,
-                 frente="trabalhista", itens=None, aviso_tamanho="", processos=None):
+                 frente="trabalhista", itens=None, aviso_tamanho="", processos=None, novas_regras=None):
     """Regrava a planilha da frente (0.7.16: uma por frente): aba Radar (a lista), Arquivo, Contatos, as abas editáveis
     preservadas (Preferências, Exclusões, Controle oculta) e as abas Histórico, Saúde e Sobre. Também copia a página HTML.
     `itens`: as linhas da aba Radar (padrão: as da página). `processos`: só os contatos desses processos.
@@ -199,7 +203,7 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
         aviso(f"  A planilha {preferencias.NOME_ANTIGO} está aberta: feche-a para o RADAR trocar o nome e gravar. A lista está salva.")
         return ""
     caminho = os.path.join(base, preferencias.NOMES_FRENTE.get(frente) or NOME_RADAR)
-    editaveis, ok = _abas_editaveis(caminho, aviso)
+    editaveis, ok = _abas_editaveis(caminho, aviso, novas_regras)
     if not ok:
         return ""
     linhas = _linhas_lista(pagina.get("itens") or [] if itens is None else itens, colunas, linha_csv)

@@ -535,6 +535,12 @@ class Tratador(BaseHTTPRequestHandler):
                 s.versao_cache = (time.monotonic(), {"disponivel": bool(r.get("disponivel") and r.get("ok")), "versao": r.get("versao", ""),
                                                      "atual": VERSAO})
             return self._responder(s.versao_cache[1])
+        if u.path == "/regras":  # 0.7.28 (dono): regras do escritório editadas na tela
+            cfg = s.config()
+            base = compartilhar.pasta_base(cfg)
+            p = preferencias.carregar(base) if base else preferencias.padrao()
+            return self._responder({"ok": True, "valores": {k: p.get(k) for k in preferencias.PADRAO},
+                                    "exclusoes": p.get("exclusoes") or [], "tem_pasta": bool(base), "erro": p.get("erro", "")})
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
@@ -778,6 +784,24 @@ class Tratador(BaseHTTPRequestHandler):
                             s.hist.pop("parar", None)
             threading.Thread(target=ler, daemon=True, name="estatisticas-antigas").start()
             return self._responder({"ok": True})
+        if caminho == "/regras":  # 0.7.28 (dono): grava as regras do escritório nas abas da planilha
+            cfg = s.config()
+            if not compartilhar.pasta_base(cfg):
+                return self._responder({"ok": False, "motivo": "Escolha primeiro a pasta das planilhas em Configuração.",
+                                        "motivo_en": "Choose the spreadsheet folder in Settings first."})
+            exc = corpo.get("exclusoes") if isinstance(corpo.get("exclusoes"), list) else []
+            pref, exc_l = preferencias.linhas_regras(corpo.get("valores") if isinstance(corpo.get("valores"), dict) else {}, exc)
+            recados = []
+            try:
+                compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, recados.append)
+                ok = radar.regravar_planilha(cfg, bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append,
+                                             novas_regras={"Preferências": pref, "Exclusões": exc_l})
+            except OSError:
+                ok = False
+            if not ok:
+                return self._responder({"ok": False, "motivo": "Não consegui gravar: a planilha pode estar aberta no Excel. Feche-a e salve de novo.",
+                                        "motivo_en": "Could not save: the spreadsheet may be open in Excel. Close it and save again."})
+            return self._responder({"ok": True, "exclusoes": len(exc_l) - 1})
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)
