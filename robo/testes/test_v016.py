@@ -717,5 +717,28 @@ class V0723(unittest.TestCase):
         self.assertEqual(n[0], {"tipo": "gdrive", "caminho": pasta})
 
 
+class TelaSemComentarioQueEngoleCodigo(unittest.TestCase):
+    """0.7.24: um comentário // no meio da linha já engoliu código três vezes (o node não acusa, porque continua válido).
+    Este teste procura // seguido de mais código na mesma linha em radar_modelo.html (fora da cópia do AssistONE)."""
+
+    def test_nenhum_comentario_no_meio_da_linha(self):
+        import re
+        s = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "radar_modelo.html"), encoding="utf-8").read()
+        i = s.index('<script id="assistone-master">'); j = s.index("</script>", i)
+        ruins = []
+        for n, linha in enumerate((s[:i] + s[j:]).split("\n"), 1):
+            for m in re.finditer(r"(?<![:\"'\\])//(?!/)", linha):
+                resto = linha[m.end():]
+                if re.search(r"\)\s*;\s*[A-Za-z_$][\w$.\[\]\"]*\s*[(=]", resto) or re.search(r";\s*(var|if|return|function)\b", resto):
+                    ruins.append(linha.strip()[:120])
+        self.assertEqual(ruins, [])
+
+    def test_o_teste_pega_o_erro(self):
+        import re
+        linha = 'a.appendChild(b);  // nota  a.appendChild(c); box.appendChild(a);'
+        resto = linha[linha.index("//") + 2:]
+        self.assertTrue(re.search(r"\)\s*;\s*[A-Za-z_$][\w$.\[\]\"]*\s*[(=]", resto))
+
+
 if __name__ == "__main__":
     unittest.main()

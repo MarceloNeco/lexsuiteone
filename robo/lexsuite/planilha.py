@@ -265,7 +265,11 @@ def escrever_xlsx(caminho, abas, so_leitura_recomendado=False, marcar=False):
             for i, a in enumerate(abas, 1):
                 z.writestr(f"xl/worksheets/sheet{i}.xml", _xml_aba(a))
         liberar_escrita(caminho)  # no Windows, trocar um arquivo marcado "somente leitura" falha
-        os.replace(tmp, caminho)
+        try:
+            os.replace(tmp, caminho)
+        except PermissionError:  # 0.7.24: a tela pode ter marcado de novo no mesmo instante ("Abrir a planilha"); mais uma vez
+            liberar_escrita(caminho)
+            os.replace(tmp, caminho)
         if marcar:
             marcar_so_leitura(caminho)
     except BaseException:
