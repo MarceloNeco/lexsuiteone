@@ -721,7 +721,8 @@ class TelaSemComentarioQueEngoleCodigo(unittest.TestCase):
     """0.7.24/0.7.25: um comentário // no meio da linha já engoliu código três vezes (o node não acusa, porque continua
     válido). Procura, depois de //, qualquer coisa com cara de comando: chamada seguida de ";", var/let/const/if/for/while/
     return, ou atribuição seguida de ";" (revisão da 0.7.24: um comando só também conta)."""
-    PADROES = (r"[A-Za-z_$][\w$.]*\([^)]*\)\s*;", r"\b(var|let|const|if|for|while|return)\b[^;]*[;{]", r"[\w$.\]]+\s*=[^=>][^;]*;")
+    PADROES = (r"[A-Za-z_$][\w$.]*\([^)]*\)\s*(;|$)", r"\b(var|let|const|if|for|while|return)\b[^;]*[;{]", r"[\w$.\]]+\s*=[^=>][^;]*;",
+               r"[\w$\]]\s*(\+\+|--)\s*;", r"[\w$.\]]+\s*[+\-*/]=", r"\b(break|continue)\s*;")  # 0.7.26: i++, z += 1, a.f(c) sem ";", break
 
     @classmethod
     def ruins(cls, texto):
@@ -730,7 +731,7 @@ class TelaSemComentarioQueEngoleCodigo(unittest.TestCase):
         for linha in texto.split("\n"):
             if "base64," in linha:
                 continue
-            for m in re.finditer(r"(?<![:\"'\\])//(?!/)", linha):
+            for m in re.finditer(r"(?<![:\\])//(?!/)", linha):  # 0.7.26: também "x"// (depois de aspas)
                 if any(re.search(p, linha[m.end():]) for p in cls.PADROES):
                     out.append(linha.strip()[:120])
                     break
@@ -743,7 +744,8 @@ class TelaSemComentarioQueEngoleCodigo(unittest.TestCase):
 
     def test_o_teste_pega_o_erro(self):
         for ex in ("a.appendChild(b); // nota  a.appendChild(c);", "x(); // nota  if (x) { y(); }",
-                   "x(); // nota  var z = 1;", "x(); // nota  z = 1;"):
+                   "x(); // nota  var z = 1;", "x(); // nota  z = 1;", "x(); // nota i++;", "x(); // nota z += 1;",
+                   "x(); // nota a.f(c)", "x(); // nota break;", 'var s = "x"// nota z = 1;'):
             self.assertTrue(self.ruins(ex), ex)
         self.assertFalse(self.ruins("x(); // nota em prosa (com parênteses); e ponto e vírgula"))
 
@@ -758,29 +760,64 @@ class V0725(unittest.TestCase):
         return r
 
     def test_rodar_e_config_com_valores_absurdos(self):
-        import threading, http.client
+        """0.7.26 (revisão): cada correção da 0.7.25 é exercitada de verdade (desfazer qualquer uma faz o teste falhar)."""
+        import threading, http.client, json as _j
+        from unittest import mock
         from lexsuite import app
         pasta = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:  # Infinity literal, escrito à mão
+            f.write('{"radar": {"tribunais": ["TRT2"], "dias_na_pagina": Infinity}}')
         srv = app.Servidor(("127.0.0.1", 0), pasta)
+        recebidos = []
+        srv.rodar = lambda dias=None: (recebidos.append(dias), True)[1]
         threading.Thread(target=srv.serve_forever, daemon=True).start()
         try:
-            r = self._post(srv, "/config", {"dias_na_pagina": 1e400, "dias_para_tras": "abc", "tribunais": []})
-            self.assertIn("ok", r)  # não derrubou a conexão; sem tribunal, "/rodar" recusa sem ir à internet
-            r = self._post(srv, "/rodar", {"dias": 1e400})
-            self.assertFalse(r["ok"]); self.assertTrue(r.get("motivo_en"))  # sem tribunal ou sem licença: motivo nos dois idiomas
             c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
-            c.request("GET", "/dados?dias=Infinity", headers={"X-LexSuite": "1"}); self.assertEqual(c.getresponse().status, 200); c.close()
+            c.request("GET", "/dados", headers={"X-LexSuite": "1"}); self.assertEqual(c.getresponse().status, 200); c.close()
+            for dias, esperado in ((None, None), (1e400, None), (0, 0), (99, 10), (3, 3)):
+                r = self._post(srv, "/rodar", {"dias": dias})
+                self.assertTrue(r["ok"]); self.assertEqual(recebidos[-1], esperado, dias)
+            self.assertIn("ok", self._post(srv, "/config", {"dias_na_pagina": 1e400}))
         finally:
             srv.shutdown(); srv.server_close()
 
+    def test_montar_radar_com_dias_absurdos(self):
+        import datetime as _dt
+        from lexsuite import radar, banco as bd
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "x.db"))
+        for v in (float("inf"), 1e400, "abc", [1], 10 ** 400):
+            pagina = radar.montar_radar({"radar": {"tribunais": ["TRT2"], "dias_na_pagina": v}}, b, agora=_dt.datetime(2026, 11, 10), prefs={})
+            self.assertIn("itens", pagina)
+
     def test_marcar_se_livre(self):
-        import stat
-        from lexsuite import planilha
+        import stat, threading
+        from unittest import mock
+        from lexsuite import planilha, app, compartilhar, preferencias
         pasta = tempfile.mkdtemp(); caminho = os.path.join(pasta, "x.xlsx")
         planilha.escrever_xlsx(caminho, [{"nome": "A", "linhas": [["a"]]}])
+        real_open = open
+        def aberto_no_excel(arq, modo="r", *a, **k):  # o Excel trava a escrita: abrir "r+b" falha
+            if str(arq) == caminho and "+" in modo:
+                raise PermissionError("em uso")
+            return real_open(arq, modo, *a, **k)
+        with mock.patch("builtins.open", aberto_no_excel):
+            self.assertFalse(planilha.marcar_se_livre(caminho))
+        self.assertTrue(os.stat(caminho).st_mode & stat.S_IWRITE)  # em uso: não marcou
         self.assertTrue(planilha.marcar_se_livre(caminho))
         self.assertFalse(os.stat(caminho).st_mode & stat.S_IWRITE)
         self.assertTrue(planilha.marcar_se_livre(caminho))  # já marcada conta como livre
+        # a rota /abrir devolve em_uso para a tela
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            with mock.patch.object(compartilhar, "pasta_base", return_value=pasta), \
+                    mock.patch.object(preferencias, "caminho", return_value=caminho), \
+                    mock.patch.object(planilha, "marcar_se_livre", return_value=False), \
+                    mock.patch.object(app, "abrir_so_leitura", return_value=True):
+                r = self._post(srv, "/abrir", {"o_que": "planilha"})
+            self.assertTrue(r["ok"]); self.assertTrue(r["em_uso"])
+        finally:
+            srv.shutdown(); srv.server_close()
 
 if __name__ == "__main__":
     unittest.main()

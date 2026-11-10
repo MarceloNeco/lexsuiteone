@@ -1,4 +1,4 @@
-# Roteiro de instalação no cliente — RADAR JUDICIAL 0.7.25 (LexSuiteONE)
+# Roteiro de instalação no cliente — RADAR JUDICIAL 0.7.26 (LexSuiteONE)
 
 ## Antes de sair de casa
 

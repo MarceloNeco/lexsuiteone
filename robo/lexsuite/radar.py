@@ -131,7 +131,7 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     0.7.14: visao="lista" esconde as arquivadas; visao="arquivo" traz tudo o que o RADAR já leu, de qualquer tribunal."""
     r = cfg.get("radar") or {}
     agora = agora or dt.datetime.now()
-    dias = int(dias if dias is not None else (r.get("dias_na_pagina") or 1))
+    dias = config.inteiro(dias if dias is not None else r.get("dias_na_pagina", 1), 1, 1, 90)  # 0.7.26: config escrito à mão
     desde = (agora.date() - dt.timedelta(days=dias)).isoformat()
     escolhidos = tribunais.validar(r.get("tribunais") or ["TRT2", "TRT15"])
     prefs = prefs or preferencias.carregar(compartilhar.pasta_base(cfg))
