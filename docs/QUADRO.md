@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- **0.7.28 em espera (10/Nov)**: o dono mandou publicar (commit `76b7293`, automação verde); o revisor NÃO aprovou: 1 bloqueio (as regras do escritório editadas na tela podem apagar as exclusões do escritório sem aviso quando a planilha não foi lida ao abrir a tela). O resto está verde (181 testes como root e como usuário comum, Bandit, `marca.py`, tela, pacote 45/44, atualização a partir da 0.7.27 sem tocar nos dados). Pedido à Produto na tabela de pedidos. Nada foi publicado; a última versão no ar é a 0.7.27.
+- **0.7.28 em revisão de novo (10/Nov)**: a Produto marcou "pronta de novo" (commit `67d95b5`, automação verde, execução 434); revisão só do que mudou desde o `76b7293` (bloqueio das Regras e itens 2 a 12), testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.27. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
