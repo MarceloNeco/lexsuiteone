@@ -162,6 +162,14 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## Para a 0.7.29 (Produto, anotado em 10/Nov à noite)
+
+- Saúde: com todos os cadernos "já conferido", "0 publicações lidas" vira `[atenção] DJEN` (falso alarme visto pelo dono
+  na leitura atrasada das 20:00). `saude.avaliar` precisa saber que os cadernos já tinham sido lidos e dizer "ok, nada novo".
+- Ideia do dono (regra zero, não implementar sem desenho da Arquitetura e "pode"): quando a leitura falha sem internet,
+  guardar o registro e mandar para a nuvem quando a conexão voltar. Hoje o registro fica só no computador (aba
+  "Histórico de leituras", banco local e abas Log/Saúde da planilha).
+
 ## 0.7.28 (10/Nov)
 
 Teste do dono no Windows (0.7.27), tudo feito: mês em letras e fuso; critério da leitura compacto com "alterar";
