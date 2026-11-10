@@ -97,4 +97,5 @@ nunca é delegada a subagente. Resultado de subagente é dado a conferir, não o
   As páginas do site são escritas em `paginas/` com `{{marca.nome}}`, `{{marca.curto}}` e `{{marca.logo}}`; rode
   `python ferramentas/marca.py` para gerar `docs/`. Nunca edite `docs/index.html` nem `docs/404.html` à mão (a automação
   do GitHub confere). O e-mail de boas-vindas lê a mesma configuração ao ser preenchido.
-- A pasta do Drive do dono (LEXSUITE-ONE-ROBO) é cópia de consulta: só atualize quando ele pedir.
+- As pastas do Google Drive do dono são dele: nenhuma conversa pede para restringir, compartilhar ou avisar "feito"; a cópia do
+  Drive (LEXSUITE-ONE-ROBO) é de consulta e só se atualiza quando ele pedir (decisão do dono, 09/Nov).
