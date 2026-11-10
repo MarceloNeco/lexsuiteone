@@ -162,6 +162,11 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.27 (10/Nov)
+
+Ressalvas da revisão da 0.7.26 (Operação): 1 a 5 e 7 feitas; 6 aceita (lacunas residuais da heurística). Incidente do
+revisor (servidor fictício chamou o DJEN): `testes/tela/servidor_ficticio.py` não lê mais o Diário.
+
 ## 0.7.26 (10/Nov)
 
 Ressalvas da revisão da 0.7.25 (Operação): 1 a 8 feitas; 9 sem ação. Pacote 45/44.

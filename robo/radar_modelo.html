@@ -1859,6 +1859,7 @@ window.LEXSUITE_RADAR = null;
     usar_onedrive: "Usar o OneDrive", usar_gdrive: "Usar o Google Drive", sem_gdrive: "Não achei o Google Drive para computador neste Windows. Para usar o Google Drive, instale o Google Drive para computador com a conta do escritório e abra o RADAR de novo; uma pasta de rede ou o OneDrive também servem.",
     mudar_pasta_t: "Mudar a pasta das planilhas?", mudar_pasta_ok: "Mudar a pasta",
     mudar_pasta_x: "A partir da próxima leitura, a planilha de consulta, as cópias de trabalho e as cópias de segurança vão para {para}. O que já existe em {de} fica lá (nada é movido nem apagado), inclusive as abas Preferências e Exclusões do escritório: a planilha nova começa com as regras padrão; para manter as do escritório, copie essas abas da planilha antiga para a nova. O programa continua na pasta dele.",
+    planilha_em_uso_sem_excel: "Não consegui marcar a planilha como “somente leitura”: ela parece estar aberta para edição em outro lugar ou falta permissão na pasta. Abri a planilha do jeito normal; não salve nela e feche a outra para o {c} voltar a atualizá-la.",
     planilha_em_uso: "Não consegui marcar a planilha como “somente leitura”: ela parece estar aberta para edição em outro lugar (por exemplo, em “Editar Preferências e Exclusões”) ou falta permissão na pasta. Pedi ao Excel para abrir só para leitura; feche a outra para o {c} voltar a atualizá-la.",
     bg_c_pasta: "Onde ficam as planilhas (pasta)", bg_c_agenda: "Leitura automática (horários)",
     bg_titulo: "Procurar", bg_ph: "Empresa, processo, CNPJ, cidade, opção do programa ou assunto do manual", bg_opcoes: "Telas e opções", bg_acoes: "Ações", bg_manual: "No manual", bg_nada: "Nada encontrado. Tente outra palavra.",
@@ -1914,6 +1915,7 @@ window.LEXSUITE_RADAR = null;
     usar_onedrive: "Use OneDrive", usar_gdrive: "Use Google Drive", sem_gdrive: "Google Drive for desktop was not found on this Windows. To use Google Drive, install Google Drive for desktop with the firm\u2019s account and open RADAR again; a network folder or OneDrive also work.",
     mudar_pasta_t: "Change the spreadsheet folder?", mudar_pasta_ok: "Change folder",
     mudar_pasta_x: "From the next reading on, the reference spreadsheet, the working copies and the backups go to {para}. What already exists in {de} stays there (nothing is moved or deleted), including the firm\u2019s Preferences and Exclusions tabs: the new spreadsheet starts with the default rules; to keep the firm\u2019s, copy those tabs from the old spreadsheet to the new one. The program stays in its own folder.",
+    planilha_em_uso_sem_excel: "I could not mark the spreadsheet “read-only”: it seems to be open for editing elsewhere or the folder is not writable. I opened it the normal way; do not save in it and close the other one so {c} can update it again.",
     planilha_em_uso: "I could not mark the spreadsheet “read-only”: it seems to be open for editing elsewhere (for example, in “Edit Preferences and Exclusions”) or the folder is not writable. I asked Excel to open it read-only; close the other one so {c} can update it again.",
     bg_c_pasta: "Where spreadsheets live (folder)", bg_c_agenda: "Automatic reading (times)",
     bg_titulo: "Search", bg_ph: "Company, case number, CNPJ, city, program option or manual topic", bg_opcoes: "Screens and options", bg_acoes: "Lawsuits", bg_manual: "In the manual", bg_nada: "Nothing found. Try another word.",
@@ -3162,7 +3164,7 @@ window.LEXSUITE_RADAR = null;
     (MODO === "app" ? [[t("bg_c_pasta"), "c-pasta-cartoes"], [t("bg_c_agenda"), "c-agendar-wrap"], ["AssistONE", "c-aone-wrap"], [t("c_s_licenca"), "c-codigo"]] : []).forEach(function (x) {
       if (!q || semAcento(x[0] + " " + t("config")).indexOf(q) >= 0) opc.push([x[0], t("config"), function () { abrirConfig(true, x[1]); }]);
     });
-    (MODO === "app" ? gruposMenu() : gruposMenu().slice(0, 1)).forEach(function (gr) { gr[1].forEach(function (it) { if (!q || semAcento(it[0] + " " + gr[0]).indexOf(q) >= 0) opc.push([it[0], gr[0], it[1]]); }); });
+    (MODO === "app" ? gruposMenu() : [[gruposMenu()[0][0], gruposMenu()[0][1].slice(0, 2)]]).forEach(function (gr) { gr[1].forEach(function (it) { if (!q || semAcento(it[0] + " " + gr[0]).indexOf(q) >= 0) opc.push([it[0], gr[0], it[1]]); }); });
     bloco(t("bg_opcoes"), opc);
     if (q.length >= 2) {
       var qn = q.replace(/[.\-\/]/g, ""), acoes = [];
@@ -3478,7 +3480,9 @@ window.LEXSUITE_RADAR = null;
   function abrirPlanilha(oque) {
     post("/abrir", { o_que: oque }).then(function (r) {
       if (!r.ok) { mostrarEstado({ erro: r.motivo || t("planilha_falta") }); return; }
-      var n = el("span", r.em_uso ? "erro" : "ok", r.em_uso ? t("planilha_em_uso", { c: marcaCurto() }) : t(oque === "planilha" ? "abrindo_planilha" : "abrindo_pasta")); $("estado").insertBefore(n, $("estado").firstChild);
+      var velho_ = $("aviso-em-uso"); if (velho_) velho_.parentNode.removeChild(velho_);  // 0.7.27: um aviso só, não empilha
+      var n = el("span", r.em_uso ? "erro" : "ok", r.em_uso ? t(r.so_leitura ? "planilha_em_uso" : "planilha_em_uso_sem_excel", { c: marcaCurto() }) : t(oque === "planilha" ? "abrindo_planilha" : "abrindo_pasta"));
+      if (r.em_uso) n.id = "aviso-em-uso"; $("estado").insertBefore(n, $("estado").firstChild);
       if (!r.em_uso) setTimeout(function () { if (n.parentNode) n.parentNode.removeChild(n); }, 8000);  // 0.7.26: o aviso vermelho fica até a próxima ação
     }).catch(function () { $("estado").textContent = t("falha"); });
   }
