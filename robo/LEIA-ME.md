@@ -63,6 +63,14 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.28 (teste do dono no Windows):** datas com o mês em letras em todo o programa (10/NOV/2026) e fuso ao lado
+  da hora, como "(Brasília)"; critério do "Ler o Diário agora" curto, com o atalho "alterar"; filtros em azul-marinho e
+  ordenação em dourado, com "Limpar filtros" sempre ao lado (apagado quando não há filtro); a lista lembra os últimos
+  filtros; toda janela tem ✕, Cancelar e fecha ao clicar fora; filtros salvos em ordem alfabética, com renomear,
+  arquivar e apagar na Configuração (ficam neste computador por enquanto); **Regras do escritório** na Configuração
+  (valor mínimo, jurídico próprio, sócios, arquivo, limite e empresas excluídas) editadas na tela e gravadas pelo RADAR
+  nas abas Preferências e Exclusões da planilha (sem editar Excel à mão; entram na cópia de segurança); clicar de novo
+  no atalho com a tela aberta não abre outra janela: a tela aberta avisa "O RADAR já estava aberto aqui".
 - **0.7.28:** ressalvas da revisão da 0.7.27: limite de área logada por dia e meses guardados com `Infinity`, `NaN` ou
   texto no `config.json` não derrubam a tela; a lupa do retrato salvo mostra o exemplo certo; o servidor de teste com
   dados fictícios não sai para a internet em nenhuma rota.

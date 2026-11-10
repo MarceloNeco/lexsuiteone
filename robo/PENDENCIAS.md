@@ -164,6 +164,11 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 ## 0.7.28 (10/Nov)
 
+Teste do dono no Windows (0.7.27), tudo feito: mês em letras e fuso; critério da leitura compacto com "alterar";
+cores de filtro e ordenação; Limpar filtros; filtros lembrados; ✕/Cancelar/clicar fora em toda janela; administração
+dos filtros salvos (locais; nuvem depois); Regras do escritório na tela; aviso de "já está aberto" no segundo clique.
+Em aberto: travar a digitação na planilha de consulta (proteção de aba), sem resposta do dono.
+
 Ressalvas da revisão da 0.7.27 (Operação): 1, 2 (números) e 4 feitas; 3 parcial (testes de rota e de texto mais firmes;
 o comportamento da tela fica com o script de tela da Operação, pedido no quadro para ir ao repositório). Campos de texto
 com `Infinity` literal no `config.json` ficam para depois (só edição à mão).
