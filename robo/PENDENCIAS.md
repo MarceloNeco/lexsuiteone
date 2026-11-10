@@ -166,6 +166,10 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 - Saúde: com todos os cadernos "já conferido", "0 publicações lidas" vira `[atenção] DJEN` (falso alarme visto pelo dono
   na leitura atrasada das 20:00). `saude.avaliar` precisa saber que os cadernos já tinham sido lidos e dizer "ok, nada novo".
+- Duas janelas pretas (dono, 10/Nov à noite): a leitura automática abre a sua e, ao abrir a tela, vem a do programa.
+  Proposta, esperando o "pode": a leitura automática roda minimizada (só na barra de tarefas; `RODAR.bat --agendado`
+  se reabre com `start /min`), avisa no fim como hoje, e a janela da tela diz que a leitura está na outra janela.
+- Conferir com o dono os "13.339 processos no último dia" (TRT2 e TRT15) vistos na tela da 0.7.27: parece alto para um dia.
 - Ideia do dono (regra zero, não implementar sem desenho da Arquitetura e "pode"): quando a leitura falha sem internet,
   guardar o registro e mandar para a nuvem quando a conexão voltar. Hoje o registro fica só no computador (aba
   "Histórico de leituras", banco local e abas Log/Saúde da planilha).
