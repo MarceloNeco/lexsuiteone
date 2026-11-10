@@ -254,10 +254,10 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
                     contados += 1
                 versao = str(meta.get("versao", ""))
                 if versao and banco.versao_caderno(sigla, d.isoformat()) == versao:
-                    aviso(f"  Caderno {sigla} {d:%d/%m}: já conferido (versão {versao})")
+                    aviso(f"  Caderno {sigla} {config.data_curta(d, False)}: já conferido (versão {versao})")
                     lidos_trib.append(d)
                     continue
-                aviso(f"  Baixando o caderno {sigla} {d:%d/%m} (pode levar alguns minutos)...")
+                aviso(f"  Baixando o caderno {sigla} {config.data_curta(d, False)} (pode levar alguns minutos)...")
                 lote = djen.baixar_caderno(sigla, d.isoformat(), diagnostico, aviso, meta=meta)
                 if lote is None:
                     continue
@@ -281,7 +281,7 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
             "ainda_nao_liberado_3h" if hoje.isoformat() in motivos and motivos[hoje.isoformat()] == "ainda_nao_liberado_3h" else "ok")
         if erro is None and causa == "ainda_nao_liberado_3h":
             http = "403"
-        ate = max(lidos_trib).strftime("%d/%m") if lidos_trib else ""
+        ate = config.data_curta(max(lidos_trib), False) if lidos_trib else ""
         if erro is not None:
             fez = f"parou neste tribunal; leu até {ate}" if ate else "não leu este tribunal; seguiu com os outros"
         elif causa == "ainda_nao_liberado_3h":

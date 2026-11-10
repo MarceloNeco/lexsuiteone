@@ -6,7 +6,7 @@ import os
 import platform
 import shutil
 
-from . import planilha, preferencias
+from . import config, planilha, preferencias
 
 NOME_RADAR = preferencias.NOME_ARQUIVO  # uma planilha só: Radar + Preferências + Exclusões + (ocultas) Controle, Log, Saúde, Sobre
 NOME_PAGINA = "Retrato da última leitura.html"  # cópia da tela (0.7.14; antes "Lista para abrir no celular.html")
@@ -286,7 +286,7 @@ def gerar_copia(cfg, agora=None):
     from xml.sax.saxutils import escape as _esc
     nome_esc = planilha._limpa(str((cfg.get("conta") or {}).get("escritorio_licenca") or cfg.get("escritorio") or "")).replace("\x7f", "").strip()[:80]
     dono = f"do escritório {nome_esc}" if nome_esc else "do escritório"  # 0.7.21 (dono): o nome do escritório na faixa
-    marca_copia = _esc(f"Cópia de trabalho gerada em {agora:%d/%m/%Y às %H:%M}. Este arquivo é {dono}: pode ser editado "
+    marca_copia = _esc(f"Cópia de trabalho gerada em {config.data_curta(agora)} às {agora:%H:%M}. Este arquivo é {dono}: pode ser editado "
                        f"livremente e não é alterado pelo RADAR. Para os dados mais recentes, gere uma nova cópia.")
     try:
         with _zip.ZipFile(origem) as zin, _zip.ZipFile(destino, "w", _zip.ZIP_DEFLATED) as zout:

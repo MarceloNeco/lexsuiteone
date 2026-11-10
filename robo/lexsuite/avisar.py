@@ -17,6 +17,8 @@ import urllib.error
 import urllib.request
 from email.message import EmailMessage
 
+from . import config
+
 
 def enviar(cfg, assunto, html, anexos=()):
     senha = os.environ.get("LEXSUITE_SMTP_SENHA")
@@ -58,7 +60,7 @@ def resumo_html(painel):
 
 def _data_br(iso):
     try:
-        return dt.date.fromisoformat(str(iso)[:10]).strftime("%d/%m/%Y")
+        return config.data_curta(str(iso)[:10])
     except ValueError:
         return ""
 

@@ -392,7 +392,9 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .nuvens { align-items: center; } .nuvem-nota { color: var(--tinta-3); font-size: .82rem; flex-basis: 100%; }
 .ajuda-topo .ajuda { border-color: rgba(255,255,255,.45); color: #e6eaf2; margin-left: -4px; } .ajuda-topo[hidden] { display: none; }
 #c-pasta-cartoes, #c-agendar-wrap, #c-arm-wrap, #c-termos-wrap, #c-aone-wrap, #c-codigo { scroll-margin-top: 90px; }  /* 0.7.25: não some sob o cabeçalho */
-.rodar-criterio { margin: 2px 0 12px auto; font-size: .82rem; color: var(--tinta-3); max-width: 560px; text-align: right; }  /* 0.7.24: embaixo do botão */
+.rodar-criterio { font-size: .82rem; color: var(--tinta-3); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }  /* 0.7.28: uma linha ao lado do botão */
+.rodar-criterio .btn-txt { font-size: .82rem; }
+@media (max-width: 760px) { .rodar-criterio { white-space: normal; flex: 1 1 100%; text-align: left; order: 5; } }
 .perigo { border: 1px solid #c4473a; background: #fdecea; color: #a3261b; border-radius: 999px; padding: 6px 16px; font-weight: 700; font-size: .86rem; cursor: pointer; box-shadow: 0 1px 3px rgba(163,38,27,.25); }
 .perigo:hover, .perigo:focus-visible { background: #f9d6d2; outline: 2px solid #c4473a; outline-offset: 1px; }
 .salvo-ok { color: #1e7d3c; font-weight: 700; margin-left: 6px; }
@@ -553,9 +555,9 @@ footer a:hover { text-decoration: underline; }
     <button type="button" class="seletor" id="b-trib" aria-expanded="false"><span id="b-trib-txt"></span><i>▼</i></button>
     <label class="campo"><span id="l-periodo"></span><select id="periodo"></select></label>
     <span class="espaco"></span>
+    <span class="rodar-criterio" id="rodar-criterio" hidden></span>
     <button type="button" class="primario" id="b-rodar"></button>
   </div>
-  <p class="rodar-criterio" id="rodar-criterio" hidden></p>
   <div class="banner nova" id="b-nova" hidden><span id="b-nova-txt"></span> <button type="button" class="primario" id="b-nova-btn"></button></div>
   <div class="banner" id="banner" hidden></div>
   <div class="banner arm" id="b-arm" hidden></div>
@@ -1851,10 +1853,10 @@ window.LEXSUITE_RADAR = null;
   // 0.7.16: textos novos (PT e EN)
   Object.assign(T.pt, {
     lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento",
-    rodar_crit_1: "“Ler o Diário agora” lê o Diário de hoje e do último dia útil com publicação em {n} tribunal(is): {l}. Diário já lido não é baixado de novo. Para mudar, use “Tribunais”.",
-    rodar_crit_n: "“Ler o Diário agora” lê o Diário de hoje e dos últimos {d} dias úteis com publicação em {n} tribunal(is): {l}. Diário já lido não é baixado de novo. Para mudar, use “Tribunais”.",
-    rodar_crit_0: "“Ler o Diário agora” lê só o Diário de hoje em {n} tribunal(is): {l}. Para mudar, use “Tribunais”.",
-    rodar_crit_nada: "Escolha primeiro os tribunais em “Tribunais”; “Ler o Diário agora” lê só os escolhidos.",
+    rodar_crit_1: "Lê: hoje e o último dia útil · {l}", rodar_crit_n: "Lê: hoje e os últimos {d} dias úteis · {l}", rodar_crit_alterar: "alterar",
+    rodar_crit_x: "O que “Ler o Diário agora” lê: o Diário de hoje e dos últimos dias úteis com publicação, nos tribunais escolhidos. Diário já lido não é baixado de novo.",
+    rodar_crit_0: "Lê: só hoje · {l}",
+    rodar_crit_nada: "Escolha os tribunais primeiro.",
     planilha_ajuda: "A planilha de consulta: a lista das ações novas que o RADAR regrava a cada leitura, na pasta escolhida em Configuração. Abre só para leitura (filtrar e ordenar funcionam). Para anotar, use “Gerar uma cópia” no menu ☰; para mudar as regras do escritório, “Editar Preferências e Exclusões”.",
     usar_onedrive: "Usar o OneDrive", usar_gdrive: "Usar o Google Drive", sem_gdrive: "Não achei o Google Drive para computador neste Windows. Para usar o Google Drive, instale o Google Drive para computador com a conta do escritório e abra o RADAR de novo; uma pasta de rede ou o OneDrive também servem.",
     mudar_pasta_t: "Mudar a pasta das planilhas?", mudar_pasta_ok: "Mudar a pasta",
@@ -1907,10 +1909,10 @@ window.LEXSUITE_RADAR = null;
   });
   Object.assign(T.en, {
     lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date",
-    rodar_crit_1: "“Read the gazette now” reads today\u2019s gazette and the last working day with publications in {n} court(s): {l}. A gazette already read is not downloaded again. To change, use “Courts”.",
-    rodar_crit_n: "“Read the gazette now” reads today\u2019s gazette and the last {d} working days with publications in {n} court(s): {l}. A gazette already read is not downloaded again. To change, use “Courts”.",
-    rodar_crit_0: "“Read the gazette now” reads only today\u2019s gazette in {n} court(s): {l}. To change, use “Courts”.",
-    rodar_crit_nada: "Choose the courts first in “Courts”; “Read the gazette now” reads only those.",
+    rodar_crit_1: "Reads: today and the last working day · {l}", rodar_crit_n: "Reads: today and the last {d} working days · {l}", rodar_crit_alterar: "change",
+    rodar_crit_x: "What “Read the gazette now” reads: today\u2019s gazette and the last working days with publications, in the chosen courts. A gazette already read is not downloaded again.",
+    rodar_crit_0: "Reads: today only · {l}",
+    rodar_crit_nada: "Choose the courts first.",
     planilha_ajuda: "The reference spreadsheet: the list of new lawsuits that RADAR rewrites at every reading, in the folder chosen in Settings. It opens read-only (filtering and sorting work). To annotate, use “Make a copy” in the ☰ menu; to change the firm\u2019s rules, “Edit Preferences and Exclusions”.",
     usar_onedrive: "Use OneDrive", usar_gdrive: "Use Google Drive", sem_gdrive: "Google Drive for desktop was not found on this Windows. To use Google Drive, install Google Drive for desktop with the firm\u2019s account and open RADAR again; a network folder or OneDrive also work.",
     mudar_pasta_t: "Change the spreadsheet folder?", mudar_pasta_ok: "Change folder",
@@ -1984,8 +1986,13 @@ window.LEXSUITE_RADAR = null;
   function num(n) { return Number(n).toLocaleString(loc()); }
   function reais(n) { if (n == null || n === "") return ""; return "R$ " + Number(n).toLocaleString(loc(), { maximumFractionDigits: 0 }); }
   function reaisCurto(n) { n = Number(n); if (n >= 1e9) return "R$ " + (n / 1e9).toLocaleString(loc(), { maximumFractionDigits: 1 }) + (lang === "pt" ? " bi" : " bn"); if (n >= 1e6) return "R$ " + (n / 1e6).toLocaleString(loc(), { maximumFractionDigits: 1 }) + (lang === "pt" ? " mi" : " M"); if (n >= 1e3) return "R$ " + Math.round(n / 1e3) + (lang === "pt" ? " mil" : "k"); return reais(n); }
-  function dataCurta(iso) { if (!iso) return ""; var p = String(iso).slice(0, 10).split("-"); if (p.length < 3) return String(iso); return lang === "pt" ? p[2] + "/" + p[1] + "/" + p[0] : p[1] + "/" + p[2] + "/" + p[0]; }
-  function dataHora(iso) { if (!iso) return ""; return dataCurta(iso) + " " + String(iso).slice(11, 16); }
+  // 0.7.28 (dono): mês em letras para não confundir dia e mês (10/NOV/2026), e o fuso ao lado da hora
+  var MESES_ = { pt: ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"], en: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"] };
+  function dataCurta(iso, semAno) { if (!iso) return ""; var p = String(iso).slice(0, 10).split("-"); if (p.length < 3 || !/^\d{4}$/.test(p[0])) return String(iso);
+    var m = (MESES_[lang] || MESES_.pt)[Number(p[1]) - 1] || p[1]; return p[2] + "/" + m + (semAno ? "" : "/" + p[0]); }
+  function fuso() { var o = -new Date().getTimezoneOffset() / 60; return o === -3 ? "Brasília" : o === 0 ? "UTC" : "UTC" + (o > 0 ? "+" : "−") + Math.abs(o); }
+  function dataHora(iso) { if (!iso) return ""; var h = String(iso).slice(11, 16); return dataCurta(iso) + (h ? " " + h + " (" + fuso() + ")" : ""); }
+  function datasNoTexto(x) { return String(x || "").replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, function (m) { return dataCurta(m); }); }
   function cnpjFmt(c) { c = String(c || "").replace(/\D/g, ""); return c.length === 14 ? c.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5") : (c || ""); }
   function cnaeFmt(c) { c = String(c || "").replace(/\D/g, ""); return c.length === 7 ? c.replace(/(\d{4})(\d)(\d{2})/, "$1-$2/$3") : c; }
   function titulo(s) { return String(s || "").toLowerCase().replace(/(^|\s|\.|-|\/)([a-zà-ú])/g, function (m, a, b) { return a + b.toUpperCase(); }).replace(/\bS\.a\./g, "S.A.").replace(/\bLtda\b/g, "Ltda").replace(/\b(De|Da|Do|Das|Dos|E)\b/g, function (m) { return m.toLowerCase(); }); }
@@ -2041,7 +2048,7 @@ window.LEXSUITE_RADAR = null;
           box.appendChild(bi);
         }
       }
-      (e.mensagens || []).slice(-4, -1).forEach(function (m) { box.appendChild(el("span", "log", m.hora + "  " + m.texto)); });
+      (e.mensagens || []).slice(-4, -1).forEach(function (m) { box.appendChild(el("span", "log", m.hora + "  " + datasNoTexto(m.texto))); });
       return;
     }
     if (e.erro) {
@@ -2550,8 +2557,8 @@ window.LEXSUITE_RADAR = null;
   function quandoProxima(iso) {
     var d = String(iso).slice(0, 10), h = String(iso).slice(11, 16), hoje = new Date(), amanha = new Date(hoje.getTime() + 864e5);
     function ymd(x) { return x.getFullYear() + "-" + ("0" + (x.getMonth() + 1)).slice(-2) + "-" + ("0" + x.getDate()).slice(-2); }
-    var dia = d === ymd(hoje) ? t("hoje") : d === ymd(amanha) ? t("amanha") : new Date(d + "T12:00:00").toLocaleDateString(loc(), { weekday: "short", day: "2-digit", month: "2-digit" });
-    return dia + " " + t("ag_as", { h: fmtHora(h) });
+    var dia = d === ymd(hoje) ? t("hoje") : d === ymd(amanha) ? t("amanha") : new Date(d + "T12:00:00").toLocaleDateString(loc(), { weekday: "short" }) + " " + dataCurta(d, true);
+    return dia + " " + t("ag_as", { h: fmtHora(h) }) + " (" + fuso() + ")";
   }
   function desenharAgenda() {
     var on = $("c-agendar").checked && !$("c-agendar").disabled;
@@ -3394,7 +3401,14 @@ window.LEXSUITE_RADAR = null;
     desenharMarca($("marca")); $("escritorio-nome").textContent = MODO === "app" ? "" : (D.escritorio || "");
     var temPlanilha = !!(APP && APP.config.planilha);
     var rc_ = $("rodar-criterio"), trs_ = (APP && APP.config && APP.config.tribunais) || [];  // 0.7.21 (dono): o que "Ler o Diário agora" vai ler
-    rc_.hidden = MODO !== "app" || !APP; if (!rc_.hidden) rc_.textContent = trs_.length ? t(((APP.config.dias_para_tras) === 0 ? "rodar_crit_0" : (APP.config.dias_para_tras || 1) > 1 ? "rodar_crit_n" : "rodar_crit_1"), { d: APP.config.dias_para_tras || 1, n: trs_.length, l: trs_.length > 6 ? trs_.slice(0, 6).join(", ") + " (+" + (trs_.length - 6) + ")" : trs_.join(", ") }) : t("rodar_crit_nada");
+    rc_.hidden = MODO !== "app" || !APP; rc_.textContent = "";
+    if (!rc_.hidden) {  // 0.7.28 (dono): uma linha curta ao lado do botão, com atalho para mudar
+      var dpt_ = APP.config.dias_para_tras, lst_ = trs_.length > 4 ? trs_.slice(0, 4).join(", ") + " +" + (trs_.length - 4) : trs_.join(", ");
+      rc_.appendChild(document.createTextNode(trs_.length ? t(dpt_ === 0 ? "rodar_crit_0" : (dpt_ || 1) > 1 ? "rodar_crit_n" : "rodar_crit_1", { d: dpt_ || 1, l: lst_ }) + " · " : t("rodar_crit_nada") + " "));
+      var alt_ = el("button", "btn-txt", t("rodar_crit_alterar")); alt_.type = "button"; alt_.title = t("rodar_crit_x");
+      alt_.addEventListener("click", function () { $("b-trib").click(); $("b-trib").scrollIntoView({ behavior: "smooth", block: "center" }); });
+      rc_.appendChild(alt_); rc_.title = t("rodar_crit_x");
+    }
     $("b-planilha").hidden = MODO !== "app"; $("b-planilha").textContent = t("planilha_abrir");
     var bpa = $("b-planilha-ajuda"); bpa.textContent = ""; bpa.hidden = MODO !== "app" || $("b-planilha").hidden; if (!bpa.hidden) bpa.appendChild(ajuda(t("planilha_ajuda")));
     $("b-planilha").title = temPlanilha ? APP.config.planilha : t("planilha_falta");

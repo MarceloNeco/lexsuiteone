@@ -22,6 +22,24 @@ PADRAO = {
 }
 
 
+MESES = ("JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+
+
+def data_curta(d, ano=True):
+    """0.7.28 (dono): data com o mês em letras, para não confundir dia e mês: 10/NOV/2026 (ou 10/NOV). Aceita date,
+    datetime ou texto ISO; o que não for data volta como veio."""
+    import datetime as _dt
+    if isinstance(d, str):
+        try:
+            d = _dt.date.fromisoformat(d[:10])
+        except ValueError:
+            return d
+    try:
+        return f"{d.day:02d}/{MESES[d.month - 1]}" + (f"/{d.year}" if ano else "")
+    except (AttributeError, IndexError):
+        return str(d)
+
+
 def inteiro(valor, padrao, minimo, maximo):
     """0.7.23 (revisão): número do config.json com limite; texto, lista, Infinity ou 1e400 viram o padrão."""
     try:

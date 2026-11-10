@@ -21,6 +21,7 @@ import zipfile
 
 from . import classificar as cl
 from . import rede
+from .config import data_curta as _dc
 
 URL = "https://comunicaapi.pje.jus.br/api/v1/comunicacao"
 URL_CADERNO = "https://comunicaapi.pje.jus.br/api/v1/caderno/{sigla}/{data}/D"
@@ -108,12 +109,12 @@ def meta_caderno(sigla, data, aviso=print, motivos=None):
         return rede.pedir_json(URL_CADERNO.format(sigla=sigla.upper(), data=data), intervalo_minimo=1.0)
     except RuntimeError as e:
         if causas.ainda_nao_liberado(e):
-            aviso(f"  Caderno {sigla} {data}: o Diário de hoje só fica disponível a partir das 3h; leio até o dia anterior")
+            aviso(f"  Caderno {sigla} {_dc(data)}: o Diário de hoje só fica disponível a partir das 3h; leio até o dia anterior")
             if motivos is not None:
                 motivos[data] = "ainda_nao_liberado_3h"
             return None
         if "HTTP 404" in str(e):
-            aviso(f"  Caderno {sigla} {data}: ainda não publicado")
+            aviso(f"  Caderno {sigla} {_dc(data)}: ainda não publicado")
             if motivos is not None:
                 motivos[data] = "nao_publicado"
             return None
@@ -129,7 +130,7 @@ def baixar_caderno(sigla, data, diagnostico=None, aviso=print, meta=None):
     if str(meta.get("status", "")).lower().startswith("sem comunica"):
         return []
     if not meta.get("url"):
-        aviso(f"  Caderno {sigla} {data}: {meta.get('status', 'sem link')}")
+        aviso(f"  Caderno {sigla} {_dc(data)}: {meta.get('status', 'sem link')}")
         return None
     bruto = rede.pedir_bytes(meta["url"], tempo_limite=600)
     itens = []
@@ -145,7 +146,7 @@ def baixar_caderno(sigla, data, diagnostico=None, aviso=print, meta=None):
         os.makedirs(diagnostico, exist_ok=True)
         with open(os.path.join(diagnostico, f"caderno_{sigla}_{data}_amostra.json"), "w", encoding="utf-8") as f:
             json.dump({"meta": meta, "amostra": itens[:20]}, f, ensure_ascii=False, indent=1)
-    aviso(f"  Caderno {sigla} {data}: {len(itens)} publicações")
+    aviso(f"  Caderno {sigla} {_dc(data)}: {len(itens)} publicações")
     return [normalizar(i) for i in itens]
 
 
