@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v11 (v10 + interruptores do RootifyONE na resposta: recursos {assistone…} lidos de solverone-dados; link do aceite por fragmento): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v13 (publicada no Supabase como v13; o número aqui acompanha o da publicação. v12 + "hoje" em America/Sao_Paulo para a validade da licença): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -139,7 +139,10 @@ Deno.serve(async (req) => {
   if (!conta) return json({ ok: false, motivo: "codigo_desconhecido" });
 
   const agora = new Date().toISOString();
-  const hoje = agora.slice(0, 10);
+  // "hoje" para a validade da licença é o dia em Brasília (a validade é uma data do contrato, não um instante UTC);
+  // o corte do evento diário de acesso continua em UTC, como os carimbos ultima_vez.
+  const hoje = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  const hojeUtc = agora.slice(0, 10);
   const dominios: string[] = Array.isArray(conta.dominios) ? conta.dominios : [];
   const { data: instAntes } = await sb.from("lex_instalacoes").select("email, codigo, esquecida_em").eq("instalacao", instalacao).maybeSingle();
   const instNova = !instAntes || instAntes.codigo !== codigo;
@@ -230,7 +233,7 @@ Deno.serve(async (req) => {
   if (email && acao !== "cadastrar") {
     const { data: u } = await sb.from("lex_usuarios").select("ultima_vez").eq("email", email).maybeSingle();
     await sb.from("lex_usuarios").update({ ultima_vez: agora }).eq("email", email);
-    if (!u || !u.ultima_vez || String(u.ultima_vez).slice(0, 10) < hoje) await evento("acesso", email, versao);
+    if (!u || !u.ultima_vez || String(u.ultima_vez).slice(0, 10) < hojeUtc) await evento("acesso", email, versao);
   }
 
   // Avisos por e-mail (caixa de saída + envio pelo Resend, se a chave estiver nos Secrets). Nunca travam a resposta.
