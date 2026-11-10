@@ -387,9 +387,6 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .pasta-cam { display: block; font-size: .78rem; color: #3b4a5c; background: #f1f4f8; border-radius: 6px; padding: 3px 7px; margin-top: 4px; word-break: break-all; font-family: Consolas, "Courier New", monospace; }
 #c-teste-txt .pasta-cam { display: inline-block; margin-top: 2px; }
 .pasta-ok { color: #1e6b45; font-weight: 600; } .pasta-erro { color: #a3261b; font-weight: 600; }
-/* 0.7.22: no AssistONE 1.1.0 sem o módulo comum, ".dgo-aone-solo .dgo-b" (largura 100%) vence a regra do tour e o botão
-   "Próximo" sai do balão; correção local até o master corrigir (pedido ao RootifyONE) */
-.dgo-aone-tour.dgo-aone-solo .dgo-b { width: auto; min-height: 36px; padding: 8px 14px; }
 .saz-recado { color: #a3261b; font-weight: 600; }
 @media (max-width: 1240px) { body:has(#config:not([hidden])) #dgo-aone, body:has(#perfil:not([hidden])) #dgo-aone { --dgo-aone-sobe: 76px; --dgo-aone-sobe-pc: 76px; } }
 .nuvens { align-items: center; } .nuvem-nota { color: var(--tinta-3); font-size: .82rem; flex-basis: 100%; }
@@ -686,7 +683,7 @@ footer a:hover { text-decoration: underline; }
 <script>
 window.LEXSUITE_RADAR = null;
 </script>
-<!-- 0.7.19: AssistONE (pedido do dono, 09/Nov). Cópia FIEL de rootify-one/assistone.js 1.1.0, o master de todos os apps
+<!-- 0.7.19: AssistONE (pedido do dono, 09/Nov). Cópia FIEL de rootify-one/assistone.js 1.1.1, o master de todos os apps
      da SolverONE; não edite aqui: troque o bloco inteiro pela versão nova do master. Embutido (não é arquivo à parte)
      porque o atualizador já instalado só aceita os arquivos que conhece. Sem IA e sem nenhum pedido externo: só ajuda. -->
 <script id="assistone-master">
@@ -771,7 +768,7 @@ window.LEXSUITE_RADAR = null;
   'use strict';
   if (raiz.AssistONE) return;          /* carregado duas vezes: fica o primeiro */
 
-  var VERSAO = '1.1.0';
+  var VERSAO = '1.1.1';
   var d = document;
   var eu = d.currentScript;
   var proprio = null;                   /* config dado por AssistONE.configurar (app sem o módulo) */
@@ -1025,7 +1022,10 @@ window.LEXSUITE_RADAR = null;
       '.dgo-aone-solo .dgo-linha{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}',
       '.dgo-aone-solo .dgo-linha>*{flex:1;min-width:120px;}',
       '.dgo-aone-solo .dgo-mini{font-size:11.5px;color:#64748b;}',
-      '.dgo-aone-solo.dgo-aone-cartao{background:#111a2e;color:#e8eef8;border-radius:14px;padding:12px;}'
+      '.dgo-aone-solo.dgo-aone-cartao{background:#111a2e;color:#e8eef8;border-radius:14px;padding:12px;}',
+      /* 1.1.1: no tour, os botões do modo sem módulo voltam ao tamanho do tour (a regra acima, de mesma especificidade
+         e escrita depois, deixava "Sair" e "Próximo ›" com 100% cada e o "Próximo" saía do balão) */
+      '.dgo-aone-tour.dgo-aone-solo .dgo-b{width:auto;min-height:36px;padding:8px 14px;font-size:13px;margin-top:0;}'
     ]);
     var st = el('style', { id: 'dgo-aone-estilo' });
     st.textContent = css.join('');
@@ -1644,7 +1644,6 @@ window.LEXSUITE_RADAR = null;
     feedback: function () { return Assistente.feedback(); }
   };
 })(typeof window !== 'undefined' ? window : this);
-
 </script>
 <script>
 (function () {
