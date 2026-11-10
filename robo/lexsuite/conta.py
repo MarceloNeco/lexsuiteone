@@ -179,7 +179,9 @@ def bloqueio_en(cfg, hoje=None):
     resposta = c.get("resposta") or ""
     if resposta not in ("", "ok", "sem_resposta"):
         return (MOTIVOS_EN.get(resposta, "This firm\u2019s licence is not active.") + msg + fale).strip()
-    if not c.get("ultima_ok"):
+    try:  # mesma regra de data do `bloqueio` (revisão da 0.7.23)
+        dt.date.fromisoformat(str(c.get("ultima_ok") or "")[:10])
+    except ValueError:
         return ("I could not confirm the client code with SolverONE yet. Check the internet and try again." + fale).strip()
     return (f"For more than {DIAS_SEM_RESPOSTA} days I could not confirm the licence with SolverONE. Check the internet and try again." + fale).strip()
 

@@ -677,6 +677,8 @@ class V0723(unittest.TestCase):
         self.assertFalse(sit["ok"]); self.assertIn("venceu", sit["texto"]); self.assertIn("expired", sit["texto_en"])
         cfg["conta"]["resposta"] = "ok"
         self.assertEqual(conta.situacao(cfg)["texto_en"], "Licence active.")
+        cfg["conta"].update({"resposta": "sem_resposta", "ultima_ok": "lixo"})  # data inválida: PT e EN dizem a mesma coisa
+        self.assertIn("Ainda não consegui", conta.bloqueio(cfg)); self.assertIn("could not confirm the client code", conta.bloqueio_en(cfg))
 
     def test_dias_para_tras_com_limite(self):
         from lexsuite import config, app
