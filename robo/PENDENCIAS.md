@@ -168,6 +168,15 @@ Teste do dono no Windows (0.7.27), tudo feito: mês em letras e fuso; critério 
 cores de filtro e ordenação; Limpar filtros; filtros lembrados; ✕/Cancelar/clicar fora em toda janela; administração
 dos filtros salvos (locais; nuvem depois); Regras do escritório na tela; aviso de "já está aberto" no segundo clique.
 Em aberto: travar a digitação na planilha de consulta (proteção de aba), sem resposta do dono.
+Revisão da Operação (bloqueio e itens 2 a 12), feita: a tela das Regras só aparece se a planilha foi lida, e o
+salvamento leva a "marca" do que a tela leu (se a planilha mudou ou não se lê, recusa e nada se perde); cópia em
+`Cópias de segurança/... - antes de salvar regras` (6 guardadas, à parte das outras); pedido malformado volta 400;
+fechar a Configuração pergunta pelas regras não salvas; colar contatos recarrega ao fechar e não fecha ao soltar a
+seleção fora; campo vazio e número fora do limite avisam; código do "editar no Excel" removido e a aba "Como usar"
+aponta para a tela; Controle e exclusões das outras frentes valem logo depois de salvar; datas vazias ficam vazias;
+`leu_ate` em ISO; nome pela marca no segundo clique; Cancelar na Configuração; foco volta ao botão de origem; Limpar
+filtros à vista no celular; a busca não fica guardada. Último a salvar não ganha mais: quem salva depois de outra
+mudança recebe "as regras mudaram, abra de novo".
 Revisão (Produto, revisor): a tela mostra e regrava só as exclusões da planilha trabalhista (as das outras frentes seguem
 somando na leitura); sem planilha criada, não diz "salvo"; números fora do limite avisam antes de salvar. Fica: gravar
 pela tela reescreve a aba Preferências só com as linhas padrão (linha extra escrita à mão nessa aba se perde).
