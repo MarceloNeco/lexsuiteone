@@ -342,10 +342,28 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .janela::backdrop { background: rgba(10,16,28,.45); }
 .janela .conteudo { padding: 18px 20px; display: grid; gap: 12px; } .janela h3 { margin: 0; font-size: 1.05rem; }
 .janela .botoes { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.janela .conteudo { position: relative; } .janela h3 { padding-right: 34px; }
+.janela-x { all: unset; cursor: pointer; position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: var(--tinta-3); font-size: 1rem; }
+.janela-x:hover, .janela-x:focus-visible { background: var(--papel-2, #f1f4f8); color: var(--tinta); }
+@media (max-width: 480px) { .janela .botoes { flex-direction: column-reverse; align-items: stretch; } .janela .botoes button { width: 100%; text-align: center; } }
 .janela textarea { width: 100%; min-height: 200px; font: .82rem/1.4 ui-monospace, Consolas, monospace; border: 1px solid var(--linha-2); border-radius: 8px; padding: 8px; }
 .filtros-extra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-bottom: 10px; }
 .busca { flex: 1 1 280px; min-width: 200px; border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 8px 16px; min-height: 38px; font-size: .9rem; }
-.limpar-filtros { color: var(--erro) !important; }
+/* 0.7.28 (dono): filtros (azul-marinho claro) e ordenação (dourado) em cores diferentes; "Limpar filtros" ao lado dos filtros */
+.rotulo-barra { font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); margin-right: 2px; }
+.controles .multi > button, .controles select, .controles .chip { border-color: #c9d3e3; background: #f4f7fb; color: #1b2b45; }
+.controles .multi > button.ligado, .controles .chip[aria-pressed="true"] { border-color: #1b2b45; background: #1b2b45; color: #fff; font-weight: 600; }
+.controles .multi > button.ligado::after { color: #c9d3e3; }
+.limpar-filtros { all: unset; cursor: pointer; font-size: .84rem; font-weight: 700; color: #a3261b; padding: 6px 10px; border-radius: 999px; border: 1px dashed #e3b3ad; }
+.limpar-filtros:disabled { color: var(--tinta-3); border-color: var(--linha-2); cursor: default; font-weight: 500; }
+.limpar-filtros:not(:disabled):hover, .limpar-filtros:focus-visible { background: #fdecea; }
+.ordenacao { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-bottom: 12px; }
+.ordenacao[hidden] { display: none; }
+.ordenacao select { border: 1px solid var(--latao); background: var(--latao-wash); color: var(--latao-texto); border-radius: 999px; padding: 6px 12px; min-height: 36px; font-size: .84rem; font-weight: 600; }
+.ordenacao .rotulo-barra { color: var(--latao-texto); }
+.fs-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 6px 0; border-top: 1px solid var(--linha, #e3e7ee); }
+.fs-nome { flex: 1 1 200px; font-weight: 600; } .fs-arq .fs-nome { color: var(--tinta-3); font-weight: 500; } .fs-apagar { color: #a3261b !important; }
+.multi-nota { font-size: .78rem; color: var(--tinta-3); margin: 6px 10px 2px; }
 .arquivo-info { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: .86rem; color: var(--tinta-2); padding: 0 0 12px; }
 /* cartões de escolha (no lugar da lista que o Windows abre cortada) */
 .opcoes-cartao { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 8px; }
@@ -596,6 +614,7 @@ footer a:hover { text-decoration: underline; }
     </fieldset>
     <fieldset class="agenda" id="c-arm-wrap"><legend id="c-l-arm"></legend><div id="c-arm"></div></fieldset>
     <fieldset class="agenda" id="c-aone-wrap"><legend>AssistONE</legend><div id="c-aone"></div></fieldset>
+    <fieldset class="agenda" id="c-filtros-wrap"><legend id="c-l-filtros"></legend><div id="c-filtros"></div></fieldset>
     <fieldset class="agenda" id="c-termos-wrap"><legend id="c-l-termos"></legend><div id="c-termos"></div></fieldset>
     <h4 class="conf-sec" id="c-s-sobre"></h4>
     <dl class="conf-info" id="c-info"></dl>
@@ -645,9 +664,9 @@ footer a:hover { text-decoration: underline; }
   <input type="search" class="busca" id="f-busca" autocomplete="off" spellcheck="false">
   <select id="f-salvos" aria-label="Filtros salvos"></select>
   <button type="button" class="btn-txt" id="b-salvar-filtro"></button>
-  <button type="button" class="btn-txt limpar-filtros" id="b-limpar-filtros" hidden></button>
 </div>
 <div class="controles" id="controles">
+  <span class="rotulo-barra" id="r-filtrar"></span>
   <select id="f-valor-sel" aria-label="Valor da causa"></select>
   <div class="multi" id="f-sit" data-rotulo="Situação"></div>
   <select id="f-contato" aria-label="Contato"></select>
@@ -662,9 +681,13 @@ footer a:hover { text-decoration: underline; }
   <div class="multi" id="f-setor" data-rotulo="Setor"></div>
   <div class="multi" id="f-porte" data-rotulo="Porte"></div>
   <div class="multi" id="f-uf" data-rotulo="UF"></div>
-  <span class="espaco"></span>
+  <button type="button" class="limpar-filtros" id="b-limpar-filtros"></button>
+</div>
+<div class="ordenacao" id="ordenacao">
+  <span class="rotulo-barra" id="r-ordenar"></span>
   <select id="ordem" aria-label="Ordenar"></select>
   <select id="ordem2" aria-label="Depois por"></select>
+  <span class="espaco"></span>
   <button type="button" class="btn-txt" id="exportar"></button>
 </div>
 
@@ -1854,7 +1877,9 @@ window.LEXSUITE_RADAR = null;
   Object.assign(T.pt, {
     lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento",
     rodar_crit_1: "Lê: hoje e o último dia útil · {l}", rodar_crit_n: "Lê: hoje e os últimos {d} dias úteis · {l}", rodar_crit_alterar: "alterar",
-    rodar_crit_x: "O que “Ler o Diário agora” lê: o Diário de hoje e dos últimos dias úteis com publicação, nos tribunais escolhidos. Diário já lido não é baixado de novo.",
+    fs_titulo: "Filtros salvos", fs_x: "Ficam neste computador. Arquivar esconde da lista sem apagar.", fs_renomear: "Renomear", fs_arquivar: "Arquivar", fs_desarquivar: "Voltar para a lista", fs_arquivado: "arquivado", fs_apagar: "Apagar", fs_novo_nome: "Novo nome do filtro:", fs_existe: "Já existe um filtro com esse nome.", fs_apagar_q: "Apagar o filtro “{n}”?",
+    r_filtrar: "Filtrar", r_ordenar: "Ordenar", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "Aqui aparecem só os tribunais lidos. Para ler outros:",
+    rodar_crit_x: "O que “Ler o Diário agora” lê: o Diário de hoje e dos últimos dias úteis com publicação, nos tribunais escolhidos. Diário já lido não é baixado de novo. Os filtros da lista não mudam o que é lido (lê tudo, para nada se perder); eles só escolhem o que aparece, e ficam guardados.",
     rodar_crit_0: "Lê: só hoje · {l}",
     rodar_crit_nada: "Escolha os tribunais primeiro.",
     planilha_ajuda: "A planilha de consulta: a lista das ações novas que o RADAR regrava a cada leitura, na pasta escolhida em Configuração. Abre só para leitura (filtrar e ordenar funcionam). Para anotar, use “Gerar uma cópia” no menu ☰; para mudar as regras do escritório, “Editar Preferências e Exclusões”.",
@@ -1910,7 +1935,9 @@ window.LEXSUITE_RADAR = null;
   Object.assign(T.en, {
     lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date",
     rodar_crit_1: "Reads: today and the last working day · {l}", rodar_crit_n: "Reads: today and the last {d} working days · {l}", rodar_crit_alterar: "change",
-    rodar_crit_x: "What “Read the gazette now” reads: today\u2019s gazette and the last working days with publications, in the chosen courts. A gazette already read is not downloaded again.",
+    fs_titulo: "Saved filters", fs_x: "Kept on this computer. Archive hides it from the list without deleting.", fs_renomear: "Rename", fs_arquivar: "Archive", fs_desarquivar: "Back to the list", fs_arquivado: "archived", fs_apagar: "Delete", fs_novo_nome: "New filter name:", fs_existe: "A filter with this name already exists.", fs_apagar_q: "Delete the filter “{n}”?",
+    r_filtrar: "Filter", r_ordenar: "Sort", limpar_filtros_0: "Clear filters", trib_so_lidos: "Only the courts read show here. To read others:",
+    rodar_crit_x: "What “Read the gazette now” reads: today\u2019s gazette and the last working days with publications, in the chosen courts. A gazette already read is not downloaded again. The list filters do not change what is read (everything is read, so nothing is lost); they only choose what shows, and they are remembered.",
     rodar_crit_0: "Reads: today only · {l}",
     rodar_crit_nada: "Choose the courts first.",
     planilha_ajuda: "The reference spreadsheet: the list of new lawsuits that RADAR rewrites at every reading, in the folder chosen in Settings. It opens read-only (filtering and sorting work). To annotate, use “Make a copy” in the ☰ menu; to change the firm\u2019s rules, “Edit Preferences and Exclusions”.",
@@ -1969,6 +1996,10 @@ window.LEXSUITE_RADAR = null;
   var SITS = ["novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado"];
   var FILTROS_PADRAO = JSON.stringify({ valor: false, gig: false, exc: false, trib: [], cnpj: false, data: [], vara: [], setor: [], porte: [], uf: [], busca: "", valorSel: "", sit: [], contato: "", frente: [] });
   var MULTI = ["sit", "frente", "trib", "data", "vara", "setor", "porte", "uf"];  // 0.7.17: filtros com várias opções
+  try {  // 0.7.28 (dono): a lista lembra os últimos filtros e a ordem (menos busca e datas, que envelhecem)
+    var ult_ = MODO === "app" && JSON.parse(localStorage.getItem("lexsuite:filtro-atual") || "null");
+    if (ult_ && ult_.F) { Object.keys(F).forEach(function (k) { if (k !== "busca" && k !== "data" && k in ult_.F) F[k] = MULTI.indexOf(k) >= 0 ? [].concat(ult_.F[k] || []) : ult_.F[k]; }); ordem = ult_.ordem || ordem; ordem2 = ult_.ordem2 || ""; }
+  } catch (e) {}
   function lista_(x) { return Array.isArray(x) ? x : (x ? [x] : []); }
   function valorFacet(i, k) {
     if (k === "trib") return i.tribunal || ""; if (k === "data") return diaDe(i); if (k === "vara") return i.vara || "";
@@ -2322,6 +2353,7 @@ window.LEXSUITE_RADAR = null;
     $("c-pasta-nota").textContent = t("c_pasta_nota"); $("c-l-arm").textContent = t("arm_t"); $("c-l-termos").textContent = t("termos_t");
     $("c-fechar").setAttribute("aria-label", t("c_fechar")); $("c-fechar").title = t("c_fechar");
     desenharArmConfig(); desenharTermosConfig();
+    desenharFiltrosSalvos();
     if (window.AssistONE && !$("c-aone").firstChild) { try { $("c-aone").appendChild(AssistONE.cartaoConfig()); } catch (e) {} }
     $("c-aone-wrap").hidden = !window.AssistONE;
     snapC = estadoConfig(); marcarSalvarC();
@@ -2734,7 +2766,7 @@ window.LEXSUITE_RADAR = null;
 
   function barraApp() {
     var naWizard = !$("wizard").hidden;
-    $("app").hidden = MODO !== "app" || naWizard; $("controles").hidden = naWizard; $("lista").hidden = naWizard; if (naWizard) $("mais").hidden = true;
+    $("app").hidden = MODO !== "app" || naWizard; $("controles").hidden = naWizard; if (naWizard) $("ordenacao").hidden = true; $("lista").hidden = naWizard; if (naWizard) $("mais").hidden = true;
     $("b-config").hidden = MODO !== "app" || naWizard; $("b-busca").hidden = naWizard; $("b-busca").setAttribute("aria-label", t("bg_titulo")); $("b-busca").title = t("bg_titulo"); $("b-config").classList.add("so-icone"); $("b-config-txt").textContent = ""; $("b-config").setAttribute("aria-label", t("config")); $("b-config").title = t("config");  // 0.7.18: engrenagem ao lado do perfil
     $("b-menu").hidden = MODO !== "app" || naWizard;
     if ($("versao-topo")) $("versao-topo").textContent = D.versao ? "v" + D.versao : "";
@@ -2801,9 +2833,30 @@ window.LEXSUITE_RADAR = null;
     var MS = lang === "pt" ? ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"] : ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     return DS[d.getDay()] + ", " + ("0" + d.getDate()).slice(-2) + " " + MS[d.getMonth()] + " " + d.getFullYear();
   }
+  function gravarFiltrosSalvos(sv) { try { localStorage.setItem("lexsuite:filtros", JSON.stringify(sv)); } catch (e) {} }
+  function desenharFiltrosSalvos() {  // 0.7.28 (dono): renomear, arquivar e apagar os filtros salvos (ficam neste computador)
+    var box = $("c-filtros"); if (!box) return; box.textContent = ""; $("c-l-filtros").textContent = t("fs_titulo");
+    var sv = filtrosSalvos(), nomes = Object.keys(sv).sort(function (a, b) { return a.localeCompare(b, loc(), { sensitivity: "base" }); });
+    $("c-filtros-wrap").hidden = !nomes.length;
+    box.appendChild(el("p", "agenda-info", t("fs_x")));
+    nomes.forEach(function (n) {
+      var linha = el("div", "fs-linha" + (sv[n].arquivado ? " fs-arq" : "")), nm = el("span", "fs-nome", n + (sv[n].arquivado ? " · " + t("fs_arquivado") : ""));
+      var bR = el("button", "btn-txt", t("fs_renomear")), bA = el("button", "btn-txt", t(sv[n].arquivado ? "fs_desarquivar" : "fs_arquivar")), bX = el("button", "btn-txt fs-apagar", t("fs_apagar"));
+      bR.type = bA.type = bX.type = "button";
+      bR.addEventListener("click", function () { var novo = window.prompt(t("fs_novo_nome"), n); if (!novo || novo === n) return; novo = novo.slice(0, 60); var s2 = filtrosSalvos(); if (s2[novo]) { mostrarAviso(t("fs_existe")); return; } s2[novo] = s2[n]; delete s2[n]; gravarFiltrosSalvos(s2); desenharFiltrosSalvos(); cabecalho(); });
+      bA.addEventListener("click", function () { var s2 = filtrosSalvos(); if (!s2[n]) return; s2[n].arquivado = !s2[n].arquivado; gravarFiltrosSalvos(s2); desenharFiltrosSalvos(); cabecalho(); });
+      bX.addEventListener("click", function () { if (!window.confirm(t("fs_apagar_q", { n: n }))) return; var s2 = filtrosSalvos(); delete s2[n]; gravarFiltrosSalvos(s2); desenharFiltrosSalvos(); cabecalho(); });
+      linha.appendChild(nm); linha.appendChild(bR); linha.appendChild(bA); linha.appendChild(bX); box.appendChild(linha);
+    });
+  }
   function filtrosSalvos() { try { return JSON.parse(localStorage.getItem("lexsuite:filtros") || "{}") || {}; } catch (e) { return {}; } }
   function filtrosLigados() { var p = JSON.parse(FILTROS_PADRAO), n = 0; Object.keys(p).forEach(function (k) { var dif = MULTI.indexOf(k) >= 0 ? lista_(F[k]).length > 0 : F[k] !== p[k]; if (dif && !(k === "gig" && D.prefs && D.prefs.esconder_gigantes && F.gig)) n++; }); return n; }
-  function marcarLimpar() { var nf = filtrosLigados(); $("b-limpar-filtros").hidden = !nf; $("b-limpar-filtros").textContent = t("limpar_filtros", { n: nf }); }
+  function marcarLimpar() {  // 0.7.28 (dono): sempre ao lado dos filtros; apagado quando não há filtro
+    var nf = filtrosLigados(), b = $("b-limpar-filtros"); b.hidden = false; b.disabled = !nf;
+    if (MODO === "app") try { localStorage.setItem("lexsuite:filtro-atual", JSON.stringify({ F: F, ordem: ordem, ordem2: ordem2 })); } catch (e) {}
+    b.textContent = nf ? t("limpar_filtros", { n: nf }) : t("limpar_filtros_0");
+    $("r-filtrar").textContent = t("r_filtrar"); $("r-ordenar").textContent = t("r_ordenar");
+  }
   var multiAberto = "", multiBusca = {};
   var ROTULO_TODOS = { sit: "f_todas_sit", frente: "f_todas_frentes", trib: "trib_todos", data: "f_todas_datas", vara: "f_todas_varas", setor: "f_todos_setores", porte: "f_todos_portes", uf: "f_todas_ufs" };
   var ROTULO_N = { sit: "m_sit", frente: "m_frente", trib: "m_trib", data: "m_data", vara: "m_vara", setor: "m_setor", porte: "m_porte", uf: "m_uf" };
@@ -2835,6 +2888,12 @@ window.LEXSUITE_RADAR = null;
         lista.appendChild(lb);
       });
     };
+    if (k === "trib" && MODO === "app") {  // 0.7.28 (dono): por que só aparecem estes tribunais
+      var nt_ = el("p", "multi-nota"); nt_.appendChild(document.createTextNode(t("trib_so_lidos") + " "));
+      var at_ = el("button", "btn-txt", t("rodar_crit_alterar")); at_.type = "button";
+      at_.addEventListener("click", function () { multiAberto = ""; cabecalho(); $("b-trib").click(); $("b-trib").scrollIntoView({ behavior: "smooth", block: "center" }); });
+      nt_.appendChild(at_); pn.appendChild(nt_);
+    }
     if (chaves.length > 8) {
       var bs = el("input"); bs.type = "search"; bs.placeholder = t("m_buscar"); bs.value = multiBusca[k] || "";
       bs.addEventListener("input", function () { multiBusca[k] = bs.value; desenharLista(); }); pn.appendChild(bs);
@@ -3035,7 +3094,9 @@ window.LEXSUITE_RADAR = null;
     abrirJanela(c, [[t("cancelar"), null], [t(ids.length > 1 ? "aplicar_n" : "aplicar_1", { n: num(ids.length), s: t("st_" + sit) }), function () { mudarSituacao(ids, sit, mot ? mot.value : ""); }, true]]);
   }
   function abrirJanela(conteudo, botoes) {
-    var j = $("janela"), box = $("janela-conteudo"); box.textContent = ""; box.appendChild(conteudo);
+    var j = $("janela"), box = $("janela-conteudo"); box.textContent = "";
+    var fx_ = el("button", "janela-x", "✕"); fx_.type = "button"; fx_.setAttribute("aria-label", t("fechar")); fx_.title = t("fechar");  // 0.7.28 (dono): ✕ em toda janela
+    fx_.addEventListener("click", function () { j.close(); }); box.appendChild(fx_); box.appendChild(conteudo);
     var bb = el("div", "botoes");
     botoes.forEach(function (b) { var x = el("button", b[2] ? "primario" : "chip", b[0]); x.type = "button"; x.addEventListener("click", function () { j.close(); if (b[1]) b[1](); }); bb.appendChild(x); });
     box.appendChild(bb);
@@ -3106,7 +3167,7 @@ window.LEXSUITE_RADAR = null;
     if (ok) { abrirPlanilha("planilha"); return; }
     var c = el("div"); c.appendChild(el("h3", null, t("aviso_pl_t"))); c.appendChild(el("p", null, t("aviso_pl")));
     var lb = el("label", "conf-acoes"), cb = el("input"); cb.type = "checkbox"; lb.appendChild(cb); lb.appendChild(document.createTextNode(" " + t("nao_mostrar"))); c.appendChild(lb);
-    abrirJanela(c, [[t("gerar_copia"), gerarCopia], [t("entendi_abrir"), function () { if (cb.checked) try { localStorage.setItem(chave_, "1"); } catch (e) {} abrirPlanilha("planilha"); }, true]]);
+    abrirJanela(c, [[t("cancelar"), null], [t("gerar_copia"), gerarCopia], [t("entendi_abrir"), function () { if (cb.checked) try { localStorage.setItem(chave_, "1"); } catch (e) {} abrirPlanilha("planilha"); }, true]]);
   }
   function editarPreferencias() {
     var c = el("div"); c.appendChild(el("h3", null, t("editar_prefs"))); c.appendChild(el("p", null, t("editar_prefs_x")));
@@ -3375,7 +3436,7 @@ window.LEXSUITE_RADAR = null;
     ["painel", "lista", "arquivo", "historico"].forEach(function (v) { var b = $("v-" + v); b.textContent = t("v_" + v); b.setAttribute("aria-selected", String(visao === v)); b.hidden = MODO !== "app" && (v === "arquivo" || v === "historico"); });
     $("graficos").hidden = visao !== "painel"; $("lista").hidden = visao === "painel" || visao === "historico";
     $("historico-aba").hidden = visao !== "historico";
-    $("controles").hidden = visao === "historico"; $("filtros-extra").hidden = visao === "historico";
+    $("controles").hidden = visao === "historico"; $("filtros-extra").hidden = visao === "historico"; $("ordenacao").hidden = visao === "historico" || visao === "painel";
     var oc = ["ordem", "ordem2", "exportar"]; oc.forEach(function (id) { $(id).style.visibility = visao === "painel" ? "hidden" : ""; });
     desenharArquivoInfo(); desenharLote();
     if (visao === "historico") { $("mais").hidden = true; desenharHistorico(); return; }
@@ -3431,7 +3492,8 @@ window.LEXSUITE_RADAR = null;
     faixas.forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; fv.appendChild(op); }); fv.value = F.valorSel;
     $("f-busca").placeholder = t("busca_ph"); $("f-busca").value = F.busca;
     var fs = $("f-salvos"), salvos = filtrosSalvos(); fs.textContent = ""; var s0 = el("option", null, t("salvos_ph")); s0.value = ""; fs.appendChild(s0);
-    Object.keys(salvos).sort().forEach(function (k) { var op = el("option", null, k); op.value = k; fs.appendChild(op); }); fs.hidden = !Object.keys(salvos).length;
+    var vis_ = Object.keys(salvos).filter(function (k) { return !(salvos[k] && salvos[k].arquivado); }).sort(function (a, b) { return a.localeCompare(b, loc(), { sensitivity: "base" }); });
+    vis_.forEach(function (k) { var op = el("option", null, k); op.value = k; fs.appendChild(op); }); fs.hidden = !vis_.length;  // 0.7.28: ordem alfabética, arquivados escondidos
     $("b-salvar-filtro").textContent = t("salvar_filtro");
     marcarLimpar();
     var so2 = $("ordem2"); so2.textContent = ""; [["", t("ord2_nada")], ["valor", t("ord2_valor")], ["recentes", t("ord2_recentes")], ["porte", t("ord2_porte")], ["empresa", t("ord2_empresa")], ["vara", t("ord2_vara")], ["situacao", t("ord2_situacao")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; so2.appendChild(op); }); so2.value = ordem2;
@@ -3557,7 +3619,7 @@ window.LEXSUITE_RADAR = null;
       var q = e.target.value.trim(); clearTimeout(buscaArqTimer); buscaArqTimer = setTimeout(function () { carregarArquivo(q.length >= 3 ? q : ""); }, 600);
     }
   });
-  $("f-busca").addEventListener("input", function (e) { clearTimeout(buscaTimer); buscaTimer = setTimeout(function () { F.busca = e.target.value; limite = 10; cabecalho(); desenhar(); $("f-busca").focus(); var nf = filtrosLigados(); $("b-limpar-filtros").hidden = !nf; $("b-limpar-filtros").textContent = t("limpar_filtros", { n: nf }); }, 180); });
+  $("f-busca").addEventListener("input", function (e) { clearTimeout(buscaTimer); buscaTimer = setTimeout(function () { F.busca = e.target.value; limite = 10; cabecalho(); desenhar(); $("f-busca").focus(); marcarLimpar(); }, 180); });
   $("f-valor-sel").addEventListener("change", function (e) {
     var v = e.target.value;
     if (v === "outro") { var x = window.prompt(t("valor_outro_q"), ""); var n = Number(String(x || "").replace(/[R$\s.]/g, "").replace(",", ".")); v = isFinite(n) && n > 0 ? String(Math.round(n)) : F.valorSel; }
@@ -3568,13 +3630,14 @@ window.LEXSUITE_RADAR = null;
   $("b-limpar-filtros").addEventListener("click", function () { var p = JSON.parse(FILTROS_PADRAO); Object.keys(p).forEach(function (k) { F[k] = p[k]; }); F.gig = !!(D.prefs && D.prefs.esconder_gigantes); limite = 10; cabecalho(); desenhar(); });
   $("b-salvar-filtro").addEventListener("click", function () {
     var nome = window.prompt(t("salvar_filtro_q"), ""); if (!nome) return; nome = nome.slice(0, 60);
-    var sv = filtrosSalvos(); sv[nome] = { F: JSON.parse(JSON.stringify(F)), ordem: ordem, ordem2: ordem2 }; try { localStorage.setItem("lexsuite:filtros", JSON.stringify(sv)); } catch (e) {}
+    var sv = filtrosSalvos(); sv[nome] = { F: JSON.parse(JSON.stringify(F)), ordem: ordem, ordem2: ordem2 }; gravarFiltrosSalvos(sv);
     cabecalho();
   });
   $("f-salvos").addEventListener("change", function (e) {
     var sv = filtrosSalvos()[e.target.value]; if (!sv) return;
     Object.keys(sv.F || {}).forEach(function (k) { F[k] = MULTI.indexOf(k) >= 0 ? lista_(sv.F[k]) : sv.F[k]; }); ordem = sv.ordem || ordem; ordem2 = sv.ordem2 || ""; limite = 10; cabecalho(); desenhar(); e.target.value = "";
   });
+  $("janela").addEventListener("click", function (ev) { if (ev.target === this) this.close(); });  // 0.7.28 (dono): clicar fora fecha
   $("b-planilha").addEventListener("click", abrirPlanilhaComAviso);
   $("b-pasta").addEventListener("click", function () { abrirPlanilha("pasta"); });
   document.querySelectorAll(".pilula button").forEach(function (b) { b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("lexsuite:idioma", lang); } catch (e) {} tudo();
