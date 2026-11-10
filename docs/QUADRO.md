@@ -130,7 +130,8 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.27 no ramo** (10/Nov): ressalvas da revisão da 0.7.26. Vai à `main` com o "pode a 0.7.27" do dono.
+- **0.7.27 na `main`, pronta para publicar** (10/Nov, com o "pode" do dono): ressalvas da revisão da 0.7.26. Revisada e
+  aprovada (174 testes, root e usuário comum). Pacote 45/44. O dono testa tudo de uma vez na 0.7.27 (roteiro único no Drive).
   Publicadas: 0.7.20, 0.7.22 a 0.7.26. Teste do dono no Windows pendente, na 0.7.26 (roteiro único no Drive).
   `docs/VISITA-KR-LAW.md` foi revisado por outra conversa a pedido do dono (10/Nov tarde): a Produto não mexe sem `git pull`.
 
