@@ -479,6 +479,7 @@ footer a:hover { text-decoration: underline; }
   .cab { grid-template-columns: 1fr auto; }
   .controles { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; scrollbar-width: thin; }
   .controles > * { flex: 0 0 auto; }
+  .controles .limpar-filtros { position: sticky; right: 0; z-index: 1; background: var(--papel); box-shadow: -12px 0 10px -4px var(--papel); }  /* revisão da 0.7.28: sempre à vista no celular */
   .controles .espaco { display: none; }
   .ficha { grid-template-columns: 1fr; padding-left: 18px; }
   .ficha dl { grid-template-columns: 1fr; gap: 0; }
@@ -630,6 +631,7 @@ footer a:hover { text-decoration: underline; }
     <dl class="conf-info" id="c-info"></dl>
     <div class="painel-rodape">
       <span class="cont" id="c-msg"></span>
+      <button type="button" class="chip" id="c-cancelar"></button>
       <button type="button" class="chip" id="c-atualizar"></button>
       <button type="button" class="primario" id="c-salvar"></button>
     </div>
@@ -1769,7 +1771,7 @@ window.LEXSUITE_RADAR = null;
       c_pasta_drive: "Google Drive", c_pasta_outra_x: "Escolha outra pasta deste computador ou da rede.", c_pasta_local_x: "Fica só neste computador, na pasta do programa; ninguém mais vê a planilha.",
       ag_expl: "Clique nos horários em que o programa lê o Diário sozinho. Cada horário é uma leitura (não é início e fim). Para um horário que não está aqui, use \u201cOutro horário\u201d.",
       ret_titulo: "O que a SolverONE recebe", ret_quando: "Última conferência ({q}): {n} linha(s).", ret_nada: "Nada enviado ainda (vai na próxima leitura).", ret_frase: "Só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou contato.", ret_ver: "Ver a tabela enviada",
-      editar_prefs: "Editar Preferências e Exclusões", editar_prefs_x: "Abre a planilha para editar as abas Preferências e Exclusões (as únicas que o programa lê). Salve e feche o Excel quando terminar: com a planilha aberta, o programa espera para gravar a lista.", abrir_para_editar: "Abrir para editar",
+     
       rodando_auto: "Leitura automática em andamento (começou às {h}).", c_tela: "Onde a tela abre", c_aba: "Abrir pelo atalho numa aba do navegador (junto das outras abas), em vez de uma janela própria", abrir_aba: "Abrir numa aba do navegador",
       aceite_abrir: "Abrir a página de aceite dos termos", termos: "Termos de uso", termos_ok: "aceitos por {n} em {d} (versão {v})", termos_falta: "falta o aceite do responsável do escritório (link no e-mail de boas-vindas)",
       atrasada: "Fazendo agora a leitura das {h}, que não rodou na hora porque o computador estava desligado ou em repouso.", interromper: "Interromper", interromper_q: "Interromper a leitura?",
@@ -1866,7 +1868,7 @@ window.LEXSUITE_RADAR = null;
       c_pasta_drive: "Google Drive", c_pasta_outra_x: "Choose another folder on this computer or the network.", c_pasta_local_x: "Stays on this computer only, in the program folder; nobody else sees the spreadsheet.",
       ag_expl: "Click the times when the program reads the gazette by itself. Each time is one reading (not a start and end). For a time not listed, use \u201cAnother time\u201d.",
       ret_titulo: "What SolverONE receives", ret_quando: "Last check ({q}): {n} row(s).", ret_nada: "Nothing sent yet (goes with the next reading).", ret_frase: "Only counts by status, day, court, practice area and value range; no name, case number or contact.", ret_ver: "See the table sent",
-      editar_prefs: "Edit Preferences and Exclusions", editar_prefs_x: "Opens the spreadsheet to edit the Preferences and Exclusions tabs (the only ones the program reads). Save and close Excel when done: while it is open, the program waits to write the list.", abrir_para_editar: "Open to edit",
+     
       rodando_auto: "Automatic reading in progress (started at {h}).", c_tela: "Where the screen opens", c_aba: "Open from the shortcut in a browser tab (next to the other tabs), instead of its own window", abrir_aba: "Open in a browser tab",
       aceite_abrir: "Open the terms acceptance page", termos: "Terms of use", termos_ok: "accepted by {n} on {d} (version {v})", termos_falta: "the firm\u2019s responsible person has not accepted yet (link in the welcome e-mail)",
       atrasada: "Running now the {h} reading, which did not run on time because the computer was off or asleep.", interromper: "Stop", interromper_q: "Stop the reading?",
@@ -1887,7 +1889,7 @@ window.LEXSUITE_RADAR = null;
   Object.assign(T.pt, {
     lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento",
     rodar_crit_1: "Lê: hoje e o último dia útil · {l}", rodar_crit_n: "Lê: hoje e os últimos {d} dias úteis · {l}", rodar_crit_alterar: "alterar",
-    ja_aberto: "O RADAR já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "RADAR já aberto",
+    ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
     rg_titulo: "Regras do escritório", rg_intro: "O que o RADAR esconde ou destaca na lista. Fica gravado nas abas Preferências e Exclusões da planilha (e nas cópias de segurança); não é preciso abrir o Excel.",
     rg_sem_pasta: "Escolha primeiro onde ficam as planilhas (acima).", rg_valor: "Valor mínimo da causa (R$)", rg_valor_x: "Usado no filtro “Acima de” e no destaque. Ações abaixo continuam na lista.",
     rg_min: "Mínimo de ações da mesma empresa", rg_min_x: "Ex.: 3 = só destacar empresa com 3 ou mais ações novas na janela de dias. 1 = todas.", rg_janela: "Janela do mínimo de ações (dias)", rg_janela_x: "Quantos dias para trás contar as ações da mesma empresa.",
@@ -1895,7 +1897,7 @@ window.LEXSUITE_RADAR = null;
     rg_esc_exc: "Esconder clientes e empresas excluídas", rg_esc_exc_x: "Esconde as empresas da lista de exclusões abaixo (clientes atuais, conflitos).", rg_socios: "Mostrar sócios e administradores", rg_socios_x: "Nomes de pessoas do cadastro público da Receita. Desligue se o escritório não precisa.",
     rg_dias_arq: "Dias na aba Arquivo da planilha", rg_dias_arq_x: "A aba Arquivo mostra os últimos N dias e todo processo trabalhado.", rg_limite: "Limite de linhas da planilha", rg_limite_x: "A 80% o RADAR avisa; a 100% guarda uma cópia de segurança e enxuga a aba Arquivo.",
     rg_exc_t: "Empresas excluídas", rg_exc_x: "Clientes atuais, conflitos ou quem o escritório não quer prospectar. Pode ser o nome ou o CNPJ.", rg_exc_busca: "Procurar na lista de excluídas", rg_exc_nome: "Nome ou CNPJ da empresa", rg_exc_motivo: "Motivo (ex.: cliente atual)",
-    rg_exc_add: "Acrescentar", rg_exc_tirar: "Tirar", rg_exc_vazio: "Nenhuma empresa excluída.", rg_exc_ja: "Essa empresa já está na lista.", rg_salvar: "Salvar regras", rg_pendente: "Há mudanças não salvas.", rg_salvo: "✓ Regras salvas na planilha.", rg_fora: "Número fora do permitido: use de {a} a {b}.",
+    rg_exc_add: "Acrescentar", rg_exc_tirar: "Tirar", rg_exc_vazio: "Nenhuma empresa excluída.", rg_exc_ja: "Essa empresa já está na lista.", rg_salvar: "Salvar regras", rg_pendente: "Há mudanças não salvas.", rg_salvo: "✓ Regras salvas na planilha (com cópia de segurança de antes).", rg_mudou: "As regras do escritório têm mudanças que ainda não foram salvas.", rg_de_novo: "Abrir as regras de novo", rg_vazio: "Preencha este campo antes de salvar.", rg_fora: "Número fora do permitido: use de {a} a {b}.",
     fs_titulo: "Filtros salvos", fs_x: "Ficam neste computador. Arquivar esconde da lista sem apagar.", fs_renomear: "Renomear", fs_arquivar: "Arquivar", fs_desarquivar: "Voltar para a lista", fs_arquivado: "arquivado", fs_apagar: "Apagar", fs_novo_nome: "Novo nome do filtro:", fs_existe: "Já existe um filtro com esse nome.", fs_apagar_q: "Apagar o filtro “{n}”?",
     r_filtrar: "Filtrar", r_ordenar: "Ordenar", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "Aqui aparecem só os tribunais lidos. Para ler outros:",
     rodar_crit_x: "O que “Ler o Diário agora” lê: o Diário de hoje e dos últimos dias úteis com publicação, nos tribunais escolhidos. Diário já lido não é baixado de novo. Os filtros da lista não mudam o que é lido (lê tudo, para nada se perder); eles só escolhem o que aparece, e ficam guardados.",
@@ -1954,7 +1956,7 @@ window.LEXSUITE_RADAR = null;
   Object.assign(T.en, {
     lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date",
     rodar_crit_1: "Reads: today and the last working day · {l}", rodar_crit_n: "Reads: today and the last {d} working days · {l}", rodar_crit_alterar: "change",
-    ja_aberto: "RADAR was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "RADAR already open",
+    ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
     rg_titulo: "Firm rules", rg_intro: "What RADAR hides or highlights in the list. Saved in the spreadsheet\u2019s Preferences and Exclusions tabs (and in the backups); no need to open Excel.",
     rg_sem_pasta: "First choose where the spreadsheets live (above).", rg_valor: "Minimum claim value (R$)", rg_valor_x: "Used by the “Above” filter and the highlight. Lower lawsuits stay in the list.",
     rg_min: "Minimum lawsuits per company", rg_min_x: "E.g. 3 = only highlight companies with 3 or more new lawsuits in the day window. 1 = all.", rg_janela: "Window for the minimum (days)", rg_janela_x: "How many days back to count the same company\u2019s lawsuits.",
@@ -1962,7 +1964,7 @@ window.LEXSUITE_RADAR = null;
     rg_esc_exc: "Hide clients and excluded companies", rg_esc_exc_x: "Hides the companies in the exclusion list below (current clients, conflicts).", rg_socios: "Show partners and directors", rg_socios_x: "Names of people from the public tax registry. Turn off if the firm does not need them.",
     rg_dias_arq: "Days in the spreadsheet Archive tab", rg_dias_arq_x: "The Archive tab shows the last N days and every worked lawsuit.", rg_limite: "Spreadsheet row limit", rg_limite_x: "At 80% RADAR warns; at 100% it keeps a backup and trims the Archive tab.",
     rg_exc_t: "Excluded companies", rg_exc_x: "Current clients, conflicts or companies the firm does not want to approach. Name or CNPJ.", rg_exc_busca: "Search the excluded list", rg_exc_nome: "Company name or CNPJ", rg_exc_motivo: "Reason (e.g. current client)",
-    rg_exc_add: "Add", rg_exc_tirar: "Remove", rg_exc_vazio: "No excluded companies.", rg_exc_ja: "This company is already in the list.", rg_salvar: "Save rules", rg_pendente: "There are unsaved changes.", rg_salvo: "✓ Rules saved to the spreadsheet.", rg_fora: "Number out of range: use {a} to {b}.",
+    rg_exc_add: "Add", rg_exc_tirar: "Remove", rg_exc_vazio: "No excluded companies.", rg_exc_ja: "This company is already in the list.", rg_salvar: "Save rules", rg_pendente: "There are unsaved changes.", rg_salvo: "✓ Rules saved to the spreadsheet (with a backup copy of before).", rg_mudou: "The firm rules have changes that were not saved yet.", rg_de_novo: "Open the rules again", rg_vazio: "Fill in this field before saving.", rg_fora: "Number out of range: use {a} to {b}.",
     fs_titulo: "Saved filters", fs_x: "Kept on this computer. Archive hides it from the list without deleting.", fs_renomear: "Rename", fs_arquivar: "Archive", fs_desarquivar: "Back to the list", fs_arquivado: "archived", fs_apagar: "Delete", fs_novo_nome: "New filter name:", fs_existe: "A filter with this name already exists.", fs_apagar_q: "Delete the filter “{n}”?",
     r_filtrar: "Filter", r_ordenar: "Sort", limpar_filtros_0: "Clear filters", trib_so_lidos: "Only the courts read show here. To read others:",
     rodar_crit_x: "What “Read the gazette now” reads: today\u2019s gazette and the last working days with publications, in the chosen courts. A gazette already read is not downloaded again. The list filters do not change what is read (everything is read, so nothing is lost); they only choose what shows, and they are remembered.",
@@ -2120,7 +2122,7 @@ window.LEXSUITE_RADAR = null;
       var grupos = {};
       e.situacao.avisos.forEach(function (a) { (grupos[a.causa] = grupos[a.causa] || []).push(a); });
       Object.keys(grupos).forEach(function (c) {
-        var g = grupos[c], ate = g.map(function (a) { return a.leu_ate; }).filter(Boolean).sort().pop() || "—";
+        var g = grupos[c], ate = dataCurta(g.map(function (a) { return a.leu_ate; }).filter(Boolean).sort().pop(), true) || "—";
         var msg = c === "ainda_nao_liberado_3h" ? t("aviso_3h", { d: ate }) : (g[0][lang] || g[0].pt).replace(/^[^:]+:\s*/, "");
         var nomesL = g.map(function (a) { return a.tribunal; }), nomes = nomesL.length > 3 ? t("n_tribunais", { n: num(nomesL.length) }) : nomesL.slice(0, -1).join(", ") + (nomesL.length > 1 ? " " + t("e") + " " : "") + nomesL[nomesL.length - 1];
         box.appendChild(el("span", g[0].aviso ? "aviso-leve" : "erro", c === "ainda_nao_liberado_3h" ? t("aviso_3h_tribs", { t: nomes, d: ate }) : nomes + ": " + msg));
@@ -2177,8 +2179,8 @@ window.LEXSUITE_RADAR = null;
     if (MODO !== "app" || reiniciando) return;
     fetch("/estado", { headers: cabecalhosApp(), cache: "no-store" }).then(function (r) { falhasBatimento = 0; return r.json(); }).then(function (e) {
       if (e && e.chamado) {  // 0.7.28 (dono): clicaram no atalho de novo; esta tela avisa e tenta vir para a frente
-        mostrarAviso(t("ja_aberto")); try { window.focus(); } catch (x) {}
-        var tit_ = document.title, n_ = 0, pisca_ = setInterval(function () { document.title = n_++ % 2 ? tit_ : "● " + t("ja_aberto_curto"); if (n_ > 9) { clearInterval(pisca_); document.title = tit_; } }, 700);
+        mostrarAviso(t("ja_aberto", { m: marcaInfo().curto })); try { window.focus(); } catch (x) {}
+        var tit_ = document.title, n_ = 0, pisca_ = setInterval(function () { document.title = n_++ % 2 ? tit_ : "● " + t("ja_aberto_curto", { m: marcaInfo().curto }); if (n_ > 9) { clearInterval(pisca_); document.title = tit_; } }, 700);
       }
     }).catch(function () { falhasBatimento += 1; if (falhasBatimento >= 5) telaFechada(); });
   }, 10000);
@@ -2279,13 +2281,21 @@ window.LEXSUITE_RADAR = null;
     return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), $("c-dias").value, $("c-avisar").checked, $("c-aba").checked]);
   }
   function marcarSalvarC() { if (!$("config").hidden) $("c-salvar").disabled = estadoConfig() === snapC; }
+  var regrasSujo = false, salvarRegrasAgora = null;  // revisão da 0.7.28: fechar a Configuração pergunta também pelas regras
   function fecharConfig(forcar) {
+    if (!forcar && !$("config").hidden && regrasSujo && salvarRegrasAgora) {
+      var cr = el("div"); cr.appendChild(el("h3", null, t("c_mudou_t"))); cr.appendChild(el("p", null, t("rg_mudou")));
+      abrirJanela(cr, [[t("c_continuar"), null], [t("c_descartar"), function () { regrasSujo = false; fecharConfig(); }],
+        [t("rg_salvar"), function () { salvarRegrasAgora(function () { fecharConfig(); }); }, true]]);
+      return;
+    }
     if (!forcar && !$("config").hidden && estadoConfig() !== snapC) {
       var c = el("div"); c.appendChild(el("h3", null, t("c_mudou_t"))); c.appendChild(el("p", null, t("c_mudou")));
       abrirJanela(c, [[t("c_continuar"), null], [t("c_descartar"), function () { fecharConfig(true); }], [t("c_salvar"), salvarConfig, true]]);
       return;
     }
-    $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); if ($("config").classList.contains("pagina")) modoPagina(null);
+    regrasSujo = false; $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); if ($("config").classList.contains("pagina")) modoPagina(null);
+    devolverFoco();
   }
   function desenharArmConfig(sit) {
     var box = $("c-arm"); box.textContent = ""; sit = sit || (D && D.armazenamento) || {};
@@ -2352,10 +2362,13 @@ window.LEXSUITE_RADAR = null;
     }
     box.appendChild(acoes_);
   }
+  var focoAntes_ = null;  // revisão da 0.7.28: ao fechar Configuração ou Perfil, o foco volta ao botão de onde veio
+  function guardarFoco() { var a = document.activeElement; if (a && a !== document.body && !($("config").contains(a) || $("perfil").contains(a) || $("janela").contains(a))) focoAntes_ = a; }
+  function devolverFoco() { var a = focoAntes_; focoAntes_ = null; if (a && document.body.contains(a) && a.offsetParent !== null) try { a.focus(); } catch (e) {} }
   function abrirConfig(forcar, rolarPara, comoPagina) {
     var p = $("config"), abrir = forcar || p.hidden;
     if (!abrir) { fecharConfig(false); return; }
-    fecharPerfil(); modoPagina(comoPagina ? "config" : null);
+    fecharPerfil(); if (p.hidden) guardarFoco(); modoPagina(comoPagina ? "config" : null);
     var fixo = !!(APP && APP.conta && APP.conta.codigo && APP.conta.ok);  // código válido e salvo: só para ler
     $("c-codigo").value = fixo ? mascaraCodigo(APP.conta.codigo) : ((APP && APP.conta && APP.conta.codigo) || "");  // 0.7.19: confirmado aparece mascarado
     $("c-codigo").readOnly = fixo; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
@@ -2678,10 +2691,11 @@ window.LEXSUITE_RADAR = null;
     b.textContent = iniciais(u.nome, u.email); b.setAttribute("aria-label", t("perfil_rot", { n: u.nome || u.email })); b.title = t("perfil_rot", { n: u.nome || u.email });
     b.setAttribute("aria-expanded", String(!$("perfil").hidden));
   }
-  function fecharPerfil() { $("perfil").hidden = true; editando = ""; $("b-perfil").setAttribute("aria-expanded", "false"); if ($("perfil").classList.contains("pagina")) modoPagina(null); }
+  function fecharPerfil() { var ia_ = !$("perfil").hidden; $("perfil").hidden = true; editando = ""; if (ia_) devolverFoco(); $("b-perfil").setAttribute("aria-expanded", "false"); if ($("perfil").classList.contains("pagina")) modoPagina(null); }
   function abrirPerfil(comoPagina) {
     var p = $("perfil");
     if (!p.hidden && !comoPagina) { fecharPerfil(); return; }
+    if (p.hidden) guardarFoco();
     $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
     modoPagina(comoPagina === true ? "perfil" : null);
     p.hidden = false; editando = ""; $("pf-msg").textContent = ""; desenharPerfil(); $("b-perfil").setAttribute("aria-expanded", "true");
@@ -2814,7 +2828,7 @@ window.LEXSUITE_RADAR = null;
     $("b-limpar").textContent = t("limpar"); $("b-salvar").textContent = t("salvar"); $("b-salvar-rodar").textContent = t("salvar_rodar"); $("painel-dica").textContent = t("dica");
     $("p-mira-t").textContent = t("mira_t"); $("p-mira").textContent = t("mira_trib", { c: marcaCurto() }); $("c-mira").textContent = t("mira_conf");
     $("b-config-txt").textContent = ""; $("c-titulo").textContent = t("c_titulo"); $("c-l-codigo").textContent = t("cod"); $("c-l-pasta").textContent = t("c_pasta"); $("c-l-outra").textContent = t("c_outra");
-    $("c-testar").textContent = t("c_testar"); $("c-escolher").textContent = t("op_escolher"); $("c-criar").textContent = t("criar_pasta"); $("c-salvar").textContent = t("c_salvar"); $("c-atualizar").textContent = t("c_atualizar"); $("c-dica").textContent = t("c_dica");
+    $("c-testar").textContent = t("c_testar"); $("c-escolher").textContent = t("op_escolher"); $("c-criar").textContent = t("criar_pasta"); $("c-salvar").textContent = t("c_salvar"); $("c-cancelar").textContent = t("cancelar"); $("c-atualizar").textContent = t("c_atualizar"); $("c-dica").textContent = t("c_dica");
     painel(); infoConfig(); bannerControle(); if (!$("config").hidden) desenharAgenda(); if (!$("perfil").hidden && !editando) desenharPerfil();
     if (APP && !vigia) mostrarEstado(APP.estado);
   }
@@ -2886,7 +2900,7 @@ window.LEXSUITE_RADAR = null;
   function filtrosLigados() { var p = JSON.parse(FILTROS_PADRAO), n = 0; Object.keys(p).forEach(function (k) { var dif = MULTI.indexOf(k) >= 0 ? lista_(F[k]).length > 0 : F[k] !== p[k]; if (dif && !(k === "gig" && D.prefs && D.prefs.esconder_gigantes && F.gig)) n++; }); return n; }
   function marcarLimpar() {  // 0.7.28 (dono): sempre ao lado dos filtros; apagado quando não há filtro
     var nf = filtrosLigados(), b = $("b-limpar-filtros"); b.hidden = false; b.disabled = !nf;
-    if (MODO === "app") try { localStorage.setItem("lexsuite:filtro-atual", JSON.stringify({ F: F, ordem: ordem, ordem2: ordem2 })); } catch (e) {}
+    if (MODO === "app") try { localStorage.setItem("lexsuite:filtro-atual", JSON.stringify({ F: Object.assign({}, F, { busca: "" }), ordem: ordem, ordem2: ordem2 })); } catch (e) {}  // revisão da 0.7.28: o texto da busca não fica guardado
     b.textContent = nf ? t("limpar_filtros", { n: nf }) : t("limpar_filtros_0");
     $("r-filtrar").textContent = t("r_filtrar"); $("r-ordenar").textContent = t("r_ordenar");
   }
@@ -3126,8 +3140,9 @@ window.LEXSUITE_RADAR = null;
     }
     abrirJanela(c, [[t("cancelar"), null], [t(ids.length > 1 ? "aplicar_n" : "aplicar_1", { n: num(ids.length), s: t("st_" + sit) }), function () { mudarSituacao(ids, sit, mot ? mot.value : ""); }, true]]);
   }
-  function abrirJanela(conteudo, botoes) {
+  function abrirJanela(conteudo, botoes, aoFechar) {
     var j = $("janela"), box = $("janela-conteudo"); box.textContent = "";
+    j._aoFechar = aoFechar || null;  // revisão da 0.7.28: roda ao fechar de qualquer jeito (botão, ✕, Esc, clique fora)
     var fx_ = el("button", "janela-x", "✕"); fx_.type = "button"; fx_.setAttribute("aria-label", t("fechar")); fx_.title = t("fechar");  // 0.7.28 (dono): ✕ em toda janela
     fx_.addEventListener("click", function () { j.close(); }); box.appendChild(fx_); box.appendChild(conteudo);
     var bb = el("div", "botoes");
@@ -3187,7 +3202,7 @@ window.LEXSUITE_RADAR = null;
         if (r.repetidas) d.appendChild(el("p", null, t("colar_rep", { n: num(r.repetidas) })));
         if (r.completados != null) d.appendChild(el("p", null, t("colar_v1_res", { c: num(r.completados), n: num(r.nao_consta || 0), d: num(r.tentar_depois || 0) })));
         (r.recusadas || []).slice(0, 30).forEach(function (x) { d.appendChild(el("p", "nota", t("linha_n", { n: x.linha }) + ": " + x.motivo)); });
-        abrirJanela(d, [[t("fechar"), function () { carregar(); }, true]]);
+        abrirJanela(d, [[t("fechar"), null, true]], carregar);
       });
     }, true]]);
   }
@@ -3211,15 +3226,21 @@ window.LEXSUITE_RADAR = null;
   var regrasExc = [];
   function desenharRegras() {
     var box = $("c-regras"); if (!box) return; $("c-l-regras").textContent = t("rg_titulo"); box.textContent = t("carregando");
-    fetch("/regras", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
+    regrasSujo = false; salvarRegrasAgora = null;
+    fetch("/regras", { headers: cabecalhosApp(), cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
       box.textContent = ""; box.appendChild(el("p", "agenda-info", t("rg_intro")));
       if (!d.tem_pasta) { box.appendChild(el("p", "agenda-info alerta", t("rg_sem_pasta"))); return; }
-      if (d.erro) box.appendChild(el("p", "agenda-info alerta", d.erro));
+      if (!d.ok) {  // revisão da 0.7.28 (bloqueio): sem ler a planilha não há formulário, para nada ser gravado por cima
+        box.appendChild(el("p", "agenda-info alerta", (lang === "en" && d.motivo_en) || d.motivo || t("falha")));
+        var de_novo = el("button", "chip", t("rg_de_novo")); de_novo.type = "button"; de_novo.addEventListener("click", desenharRegras);
+        box.appendChild(de_novo); return;
+      }
+      var regrasMarca = d.marca || "";
       var grade = el("div", "rg-grade"), ins = {};
       REGRAS_CAMPOS.forEach(function (c) {
         var lb = el("label", "rg-campo"), tx = el("span", null, t(c[2])), inp = el("input");
         if (c[1] === "sim") { inp.type = "checkbox"; inp.checked = !!d.valores[c[0]]; lb.className = "rg-campo rg-sim"; lb.appendChild(inp); lb.appendChild(tx); }
-        else { inp.type = "number"; var lim_ = (d.limites || {})[c[0]] || [0]; inp.min = String(lim_[0]); if (lim_[1] != null) inp.max = String(lim_[1]); inp.step = c[0].indexOf("valor") >= 0 || c[0].indexOf("teto") >= 0 ? "1000" : "1"; inp.value = d.valores[c[0]]; lb.appendChild(tx); lb.appendChild(inp); }
+        else { inp.type = "number"; var lim_ = (d.limites || {})[c[0]] || [0]; inp.min = String(lim_[0]); if (lim_[1] != null) inp.max = String(lim_[1]); inp.step = c[0].indexOf("valor") >= 0 || c[0].indexOf("teto") >= 0 ? "any" : "1"; inp.required = true; inp.value = d.valores[c[0]]; lb.appendChild(tx); lb.appendChild(inp); }
         lb.appendChild(ajuda(t(c[3]))); ins[c[0]] = inp; grade.appendChild(lb);
       });
       box.appendChild(grade);
@@ -3249,25 +3270,28 @@ window.LEXSUITE_RADAR = null;
       busca.addEventListener("input", desenharExc);
       add.appendChild(nNome); add.appendChild(nMot); add.appendChild(bAdd); box.appendChild(add); box.appendChild(busca); box.appendChild(lista); desenharExc();
       var acoes = el("div", "conf-acoes"), bs = el("button", "primario", t("rg_salvar")), msg = el("span", "rg-msg"); bs.type = "button"; bs.disabled = true;
-      function marcarRegras() { bs.disabled = false; msg.textContent = t("rg_pendente"); }
+      function marcarRegras() { bs.disabled = false; regrasSujo = true; msg.textContent = t("rg_pendente"); }
       Object.keys(ins).forEach(function (k) { ins[k].addEventListener(ins[k].type === "checkbox" ? "change" : "input", marcarRegras); });
-      bs.addEventListener("click", function () {
+      function salvarRegras(depois) {
         var vals = {}, fora_ = null; Object.keys(ins).forEach(function (k) { vals[k] = ins[k].type === "checkbox" ? ins[k].checked : Number(ins[k].value); if (!fora_ && ins[k].type !== "checkbox" && !ins[k].checkValidity()) fora_ = ins[k]; });
-        if (fora_) { msg.textContent = t("rg_fora", { a: fora_.min, b: fora_.max || "∞" }); fora_.focus(); return; }
+        if (fora_) { msg.textContent = fora_.value === "" ? t("rg_vazio") : t("rg_fora", { a: fora_.min, b: fora_.max || "∞" }); fora_.focus(); return; }
         bs.disabled = true; msg.textContent = t("carregando");
-        post("/regras", { valores: vals, exclusoes: regrasExc }).then(function (r) {
-          if (!r.ok) { bs.disabled = false; msg.textContent = r.motivo || t("falha"); return; }
-          msg.textContent = t("rg_salvo"); carregar();
+        post("/regras", { valores: vals, exclusoes: regrasExc, marca: regrasMarca }).then(function (r) {
+          if (!r.ok) {
+            bs.disabled = false; msg.textContent = r.motivo || t("falha");
+            if (r.mudou) { var ab = el("button", "btn-txt", t("rg_de_novo")); ab.type = "button"; ab.addEventListener("click", desenharRegras); msg.appendChild(document.createTextNode(" ")); msg.appendChild(ab); }
+            return;
+          }
+          regrasMarca = r.marca || regrasMarca; regrasSujo = false; msg.textContent = t("rg_salvo"); carregar();
+          if (typeof depois === "function") depois();
         }).catch(function () { bs.disabled = false; msg.textContent = t("falha"); });
-      });
+      }
+      salvarRegrasAgora = salvarRegras;
+      bs.addEventListener("click", function () { salvarRegras(); });
       acoes.appendChild(bs); acoes.appendChild(msg); box.appendChild(acoes);
     }).catch(function () { box.textContent = t("falha"); });
   }
   function editarPreferencias() { abrirConfig(true, "c-regras-wrap"); }  // 0.7.28: as regras agora se editam na tela
-  function editarPreferenciasNoExcel() {
-    var c = el("div"); c.appendChild(el("h3", null, t("editar_prefs"))); c.appendChild(el("p", null, t("editar_prefs_x")));
-    abrirJanela(c, [[t("cancelar"), null], [t("abrir_para_editar"), function () { abrirPlanilha("editar"); }, true]]);
-  }
   function gerarCopia() {
     post("/copia-planilha", {}).then(function (r) {
       if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; }
@@ -3732,7 +3756,10 @@ window.LEXSUITE_RADAR = null;
     var sv = filtrosSalvos()[e.target.value]; if (!sv) return;
     Object.keys(sv.F || {}).forEach(function (k) { F[k] = MULTI.indexOf(k) >= 0 ? lista_(sv.F[k]) : sv.F[k]; }); ordem = sv.ordem || ordem; ordem2 = sv.ordem2 || ""; limite = 10; cabecalho(); desenhar(); e.target.value = "";
   });
-  $("janela").addEventListener("click", function (ev) { if (ev.target === this) this.close(); });  // 0.7.28 (dono): clicar fora fecha
+  var desceuFora_ = false;  // revisão da 0.7.28: só fecha se o clique começou e terminou fora (selecionar texto e soltar fora não fecha)
+  $("janela").addEventListener("mousedown", function (ev) { desceuFora_ = ev.target === this; });
+  $("janela").addEventListener("click", function (ev) { if (ev.target === this && desceuFora_) this.close(); desceuFora_ = false; });  // 0.7.28 (dono): clicar fora fecha
+  $("janela").addEventListener("close", function () { var f_ = this._aoFechar; if (!this.open && f_) { this._aoFechar = null; f_(); } });
   $("b-planilha").addEventListener("click", abrirPlanilhaComAviso);
   $("b-pasta").addEventListener("click", function () { abrirPlanilha("pasta"); });
   document.querySelectorAll(".pilula button").forEach(function (b) { b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("lexsuite:idioma", lang); } catch (e) {} tudo();
@@ -3780,6 +3807,7 @@ window.LEXSUITE_RADAR = null;
   $("c-criar").addEventListener("click", function () { testarPastaC(true); });
   $("c-testar").addEventListener("click", function () { testarPastaC(false); });
   $("c-salvar").addEventListener("click", salvarConfig);
+  $("c-cancelar").addEventListener("click", function () { fecharConfig(); });  // revisão da 0.7.28: Cancelar também na Configuração
   $("c-fechar").addEventListener("click", function () { fecharConfig(false); });
   $("pf-x").addEventListener("click", fecharPerfil);
   $("pf-veu").addEventListener("click", fecharPerfil);

@@ -292,7 +292,8 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
             (f"skipped today (only after 3 a.m.); read up to {ate}" if ate else "skipped today (only after 3 a.m.)") if causa == "ainda_nao_liberado_3h"
             else (f"read up to {ate}" if ate else "no new gazette"))
         tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": http, "causa": causa,
-                           "fez": fez, "fez_en": fez_en, "duracao": round(time.perf_counter() - inicio, 1), "leu_ate": ate,
+                           "fez": fez, "fez_en": fez_en, "duracao": round(time.perf_counter() - inicio, 1),
+                           "leu_ate": str(max(lidos_trib))[:10] if lidos_trib else "",  # revisão da 0.7.28: ISO; a tela mostra no idioma dela
                            "detalhe": f"{erro.__class__.__name__}: {erro}"[:300] if erro else ""})
     if primeiro_erro is not None and all(t["causa"] not in ("ok", "ainda_nao_liberado_3h") for t in tentativas[-len(tribunais):]):
         raise primeiro_erro

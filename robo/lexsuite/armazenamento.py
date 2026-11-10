@@ -24,7 +24,7 @@ AVISO_PCT = 80
 DIAS_DEPOIS_DE_LIMPAR = 30
 GB = 1024 ** 3
 DISCO_BAIXO_GB, DISCO_BAIXO_PCT, DISCO_CRITICO_GB = 5, 10, 1
-_NOME_COPIA = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}h\d{2}m\d{2}( - (antes de limpar|limpeza automática|feita à mão|exportação|teste))?$")
+_NOME_COPIA = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}h\d{2}m\d{2}( - (antes de limpar|limpeza automática|feita à mão|exportação|teste|antes de salvar regras))?$")
 
 FRENTE_LEGIVEL = {"trabalhista": "Trabalhista", "tributario": "Tributário", "civel": "Cível", "empresarial": "Empresarial"}
 
@@ -163,8 +163,10 @@ def _podar(base, aviso):
     """Deixa as COPIAS_GUARDADAS mais novas entre as que o RADAR fez sozinho ou antes de limpar; as feitas à mão e as
     exportações nunca são apagadas pelo programa (0.7.17). Só apaga pastas com o nome das cópias do RADAR."""
     apagadas = []
-    automaticas = [c for c in copias(base) if not c["nome"].endswith((" - feita à mão", " - exportação"))]
-    for c in automaticas[COPIAS_GUARDADAS:]:
+    todas = copias(base)
+    automaticas = [c for c in todas if not c["nome"].endswith((" - feita à mão", " - exportação", REGRAS))]
+    regras = [c for c in todas if c["nome"].endswith(REGRAS)]  # revisão da 0.7.28: contam à parte, não empurram as outras
+    for c in automaticas[COPIAS_GUARDADAS:] + regras[COPIAS_GUARDADAS:]:
         try:
             shutil.rmtree(c["caminho"])
             apagadas.append(c["nome"])
@@ -187,6 +189,28 @@ def _csv_arquivo(caminho, cfg, banco):
             w.writerow([" | ".join(map(str, v)) if isinstance(v, list) else ("" if v is None else v)
                         for v in (linha.get(k) for _, k in radar.COLUNAS_RADAR)])
     return len(itens)
+
+
+REGRAS = " - antes de salvar regras"
+
+
+def copia_antes_das_regras(base, aviso=print, agora=None):
+    """Revisão da 0.7.28: antes de a tela regravar as abas Preferências e Exclusões, a planilha da frente trabalhista vai
+    para "Cópias de segurança/AAAA-MM-DD HHhMMmSS - antes de salvar regras/" (ficam as 6 mais novas dessas). Sem planilha,
+    nada a copiar. Devolve (ok, pasta ou motivo)."""
+    origem = preferencias.caminho(base, "trabalhista")
+    if not origem or not os.path.exists(origem):
+        return True, ""
+    agora = agora or dt.datetime.now()
+    destino = os.path.join(pasta_copias(base), f"{agora:%Y-%m-%d %Hh%Mm%S}{REGRAS}")
+    try:
+        os.makedirs(destino, exist_ok=True)
+        shutil.copyfile(origem, os.path.join(destino, os.path.basename(origem)))
+    except OSError as e:
+        shutil.rmtree(destino, ignore_errors=True)
+        return False, f"Não consegui gravar a cópia de segurança antes de salvar ({e.__class__.__name__})."
+    _podar(base, aviso)
+    return True, destino
 
 
 def copia_seguranca(cfg, banco, motivo="", aviso=print, agora=None, so_csv=False):

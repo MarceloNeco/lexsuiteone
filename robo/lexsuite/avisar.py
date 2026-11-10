@@ -59,10 +59,9 @@ def resumo_html(painel):
 # --- Monitor ---------------------------------------------------------------
 
 def _data_br(iso):
-    try:
-        return config.data_curta(str(iso)[:10])
-    except ValueError:
-        return ""
+    """10/NOV/2026; vazio ou texto que não é data viram "" (revisão da 0.7.28)."""
+    t = config.data_curta(str(iso or "")[:10])
+    return t if t and t[:2].isdigit() and "/" in t else ""
 
 
 def telegram(cfg, textos):
