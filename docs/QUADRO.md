@@ -128,7 +128,8 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.25 no ramo** (10/Nov): ressalvas das revisões da 0.7.23 e da 0.7.24. Vai à `main` com o "pode a 0.7.25" do dono.
+- **0.7.25 na `main`, pronta para publicar** (10/Nov, com o "pode" do dono): ressalvas das revisões da 0.7.23 e da 0.7.24.
+  Revisada e aprovada (171 testes, também como usuário comum). Pacote 45/44. O dono testa a 0.7.24 e a 0.7.25 juntas depois.
   Publicadas até agora: 0.7.20, 0.7.22, 0.7.23 e 0.7.24 (a 0.7.19 e a 0.7.21 ficaram dentro das seguintes).
 
 ### Arquivos em uso
