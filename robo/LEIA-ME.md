@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.24 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.25 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,11 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
+- **0.7.25:** ressalvas das revisões da 0.7.23 e da 0.7.24: "Abrir a planilha" não marca "somente leitura" se ela
+  estiver aberta para edição em outro lugar (e avisa); valores absurdos no config ou nos pedidos não derrubam a tela;
+  título da janela de pastas sem "Meu Drive"; lupa sem as partes da Configuração no retrato salvo e sem repetir itens;
+  fechar a lupa pelo ✕ devolve o foco; o alvo da Configuração não some sob o cabeçalho; teste contra comentário que
+  engole código mais rigoroso.
 - **0.7.24 (teste do dono no Windows da 0.7.23):** o link "Abrir a planilha" da última leitura também mostra o aviso de
   "só para leitura"; a planilha de consulta fica marcada "somente leitura" já ao abrir; a lupa acha as partes da
   Configuração ("Onde ficam as planilhas", horários, armazenamento, termos, AssistONE); o critério de "Ler o Diário
