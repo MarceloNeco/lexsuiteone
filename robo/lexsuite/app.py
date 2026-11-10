@@ -228,6 +228,9 @@ def leitura_em_outro_processo(arquivo, minutos=45):
     return d
 
 
+_TRAVA_REGRAS = threading.Lock()
+
+
 class Servidor(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = True
@@ -818,31 +821,35 @@ class Tratador(BaseHTTPRequestHandler):
                                         "motivo_en": f"There are {len(exc)} excluded companies; the limit is {preferencias.MAX_EXCLUSOES}. Remove some and save again."})
             # revisão da 0.7.28 (bloqueio): só grava por cima do que a tela leu. Se a planilha não se lê agora, ou mudou
             # depois que a tela abriu (outra pessoa, outro computador, edição à mão), recusa e nada se perde.
-            marca_agora, _doc, _erro = preferencias.marca_regras(base)
-            if marca_agora is None:
-                return self._responder({"ok": False, "motivo": "Não consegui ler a planilha agora: ela pode estar aberta no Excel ou sincronizando. Nada foi alterado.",
-                                        "motivo_en": "Could not read the spreadsheet now: it may be open in Excel or syncing. Nothing was changed."})
-            if marca_agora != marca_tela:
-                return self._responder({"ok": False, "mudou": True,
-                                        "motivo": "As regras na planilha mudaram depois que você abriu esta tela (outra pessoa, outro computador ou edição à mão). Nada foi alterado: abra as regras de novo e refaça a mudança.",
-                                        "motivo_en": "The rules in the spreadsheet changed after you opened this screen (someone else, another computer or a manual edit). Nothing was changed: open the rules again and redo the change."})
-            pref, exc_l = preferencias.linhas_regras(valores, exc)
-            copia_ok, onde = armazenamento.copia_antes_das_regras(base)
-            if not copia_ok:
-                return self._responder({"ok": False, "motivo": onde + " Nada foi alterado.",
-                                        "motivo_en": "Could not save the backup copy before saving. Nothing was changed."})
-            recados = []
-            try:
-                compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, recados.append)
-                ok = os.path.exists(preferencias.caminho(base, "trabalhista")) and radar.regravar_planilha(
-                    cfg, bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append, novas_regras={"Preferências": pref, "Exclusões": exc_l})
-            except OSError:
-                ok = False
-            if not ok:
-                return self._responder({"ok": False, "motivo": "Não consegui gravar: a planilha pode estar aberta no Excel. Feche-a e salve de novo.",
-                                        "motivo_en": "Could not save: the spreadsheet may be open in Excel. Close it and save again."})
-            return self._responder({"ok": True, "exclusoes": len(exc_l) - 1, "marca": preferencias.marca_regras(base)[0] or "",
-                                    "copia": os.path.basename(onde)})
+            with _TRAVA_REGRAS:  # revisão da 0.7.28: conferir a marca, copiar e gravar sem outro salvamento no meio
+                marca_agora, _doc, _erro = preferencias.marca_regras(base)
+                if marca_agora is None:
+                    return self._responder({"ok": False, "motivo": "Não consegui ler a planilha agora: ela pode estar aberta no Excel ou sincronizando. Nada foi alterado.",
+                                            "motivo_en": "Could not read the spreadsheet now: it may be open in Excel or syncing. Nothing was changed."})
+                if marca_agora != marca_tela:
+                    return self._responder({"ok": False, "mudou": True,
+                                            "motivo": "As regras na planilha mudaram depois que você abriu esta tela (outra pessoa, outro computador ou edição à mão). Nada foi alterado: abra as regras de novo e refaça a mudança.",
+                                            "motivo_en": "The rules in the spreadsheet changed after you opened this screen (someone else, another computer or a manual edit). Nothing was changed: open the rules again and redo the change."})
+                pref, exc_l = preferencias.linhas_regras(valores, exc)
+                copia_ok, onde = armazenamento.copia_antes_das_regras(base)
+                if not copia_ok:
+                    return self._responder({"ok": False, "motivo": onde + " Nada foi alterado.",
+                                            "motivo_en": "Could not save the backup copy before saving. Nothing was changed."})
+                if preferencias.marca_regras(base)[0] != marca_tela:  # outro computador mudou a planilha durante a cópia
+                    return self._responder({"ok": False, "mudou": True, "motivo": "A planilha mudou agora mesmo (outro computador). Nada foi alterado: abra as regras de novo.",
+                                            "motivo_en": "The spreadsheet just changed (another computer). Nothing was changed: open the rules again."})
+                recados = []
+                try:
+                    compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, recados.append)
+                    ok = os.path.exists(preferencias.caminho(base, "trabalhista")) and radar.regravar_planilha(
+                        cfg, bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append, novas_regras={"Preferências": pref, "Exclusões": exc_l})
+                except OSError:
+                    ok = False
+                if not ok:
+                    return self._responder({"ok": False, "motivo": "Não consegui gravar: a planilha pode estar aberta no Excel. Feche-a e salve de novo.",
+                                            "motivo_en": "Could not save: the spreadsheet may be open in Excel. Close it and save again."})
+                return self._responder({"ok": True, "exclusoes": len(exc_l) - 1, "marca": preferencias.marca_regras(base)[0] or "",
+                                        "copia": os.path.basename(onde)})
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)

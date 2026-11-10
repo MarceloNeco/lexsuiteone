@@ -1890,7 +1890,7 @@ window.LEXSUITE_RADAR = null;
     lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento",
     rodar_crit_1: "Lê: hoje e o último dia útil · {l}", rodar_crit_n: "Lê: hoje e os últimos {d} dias úteis · {l}", rodar_crit_alterar: "alterar",
     ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
-    rg_titulo: "Regras do escritório", rg_intro: "O que o RADAR esconde ou destaca na lista. Fica gravado nas abas Preferências e Exclusões da planilha (e nas cópias de segurança); não é preciso abrir o Excel.",
+    rg_titulo: "Regras do escritório", rg_intro: "O que o RADAR esconde ou destaca na lista. Fica gravado nas abas Preferências e Exclusões da planilha, com cópia de segurança antes; não é preciso abrir o Excel. O que for escrito à mão nessas abas é substituído ao salvar aqui.",
     rg_sem_pasta: "Escolha primeiro onde ficam as planilhas (acima).", rg_valor: "Valor mínimo da causa (R$)", rg_valor_x: "Usado no filtro “Acima de” e no destaque. Ações abaixo continuam na lista.",
     rg_min: "Mínimo de ações da mesma empresa", rg_min_x: "Ex.: 3 = só destacar empresa com 3 ou mais ações novas na janela de dias. 1 = todas.", rg_janela: "Janela do mínimo de ações (dias)", rg_janela_x: "Quantos dias para trás contar as ações da mesma empresa.",
     rg_teto: "Capital social que indica jurídico próprio (R$)", rg_teto_x: "Acima disso a empresa é marcada “jurídico próprio provável” e vai para o fim da lista.", rg_esc_gig: "Esconder jurídico próprio provável", rg_esc_gig_x: "Esconde da lista as empresas acima do capital social indicado.",
@@ -1957,7 +1957,7 @@ window.LEXSUITE_RADAR = null;
     lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date",
     rodar_crit_1: "Reads: today and the last working day · {l}", rodar_crit_n: "Reads: today and the last {d} working days · {l}", rodar_crit_alterar: "change",
     ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
-    rg_titulo: "Firm rules", rg_intro: "What RADAR hides or highlights in the list. Saved in the spreadsheet\u2019s Preferences and Exclusions tabs (and in the backups); no need to open Excel.",
+    rg_titulo: "Firm rules", rg_intro: "What RADAR hides or highlights in the list. Saved in the spreadsheet\u2019s Preferences and Exclusions tabs, with a backup copy first; no need to open Excel. Anything typed by hand in those tabs is replaced when you save here.",
     rg_sem_pasta: "First choose where the spreadsheets live (above).", rg_valor: "Minimum claim value (R$)", rg_valor_x: "Used by the “Above” filter and the highlight. Lower lawsuits stay in the list.",
     rg_min: "Minimum lawsuits per company", rg_min_x: "E.g. 3 = only highlight companies with 3 or more new lawsuits in the day window. 1 = all.", rg_janela: "Window for the minimum (days)", rg_janela_x: "How many days back to count the same company\u2019s lawsuits.",
     rg_teto: "Share capital that suggests in-house counsel (R$)", rg_teto_x: "Above it the company is marked “likely in-house counsel” and goes to the end of the list.", rg_esc_gig: "Hide likely in-house counsel", rg_esc_gig_x: "Hides companies above the given share capital.",
@@ -3267,6 +3267,7 @@ window.LEXSUITE_RADAR = null;
         regrasExc.unshift({ nome: n.slice(0, 160), motivo: nMot.value.trim().slice(0, 200) }); nNome.value = nMot.value = ""; desenharExc(); marcarRegras(); nNome.focus();
       });
       nNome.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); bAdd.click(); } });
+      [nNome, nMot].forEach(function (x) { x.addEventListener("input", function () { if (x.value.trim()) regrasSujo = true; }); });  // revisão da 0.7.28: digitado e não acrescentado também pergunta ao fechar
       busca.addEventListener("input", desenharExc);
       add.appendChild(nNome); add.appendChild(nMot); add.appendChild(bAdd); box.appendChild(add); box.appendChild(busca); box.appendChild(lista); desenharExc();
       var acoes = el("div", "conf-acoes"), bs = el("button", "primario", t("rg_salvar")), msg = el("span", "rg-msg"); bs.type = "button"; bs.disabled = true;
