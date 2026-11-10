@@ -132,8 +132,10 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.28 no ramo** (10/Nov): ressalvas da revisão da 0.7.27. Espera o teste do dono no Windows da 0.7.27 para juntar o que
-  ele achar; vai à `main` com o "pode a 0.7.28". Publicadas: 0.7.20, 0.7.22 a 0.7.27.
+- **0.7.28 pronta para publicar** (10/Nov): ressalvas da revisão da 0.7.27 + teste do dono no Windows (mês em letras e
+  fuso; critério da leitura compacto; filtros azul-marinho e ordenação dourada; Limpar filtros; filtros lembrados;
+  ✕/Cancelar/clicar fora em toda janela; filtros salvos com renomear/arquivar/apagar; Regras do escritório editadas na
+  tela; segundo clique no atalho avisa "já estava aberto"). Publicadas: 0.7.20, 0.7.22 a 0.7.27.
 
 ### Arquivos em uso
 - (nenhum)
