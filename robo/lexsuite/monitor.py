@@ -25,7 +25,7 @@ import os
 import re
 
 from . import classificar as cl
-from . import djen, prazos, rede
+from . import config, djen, prazos, rede
 
 URGENCIAS = ("Urgente", "Alta", "Normal")
 
@@ -334,7 +334,7 @@ def rodar(cfg, banco, modo="api", dias=None, diagnostico=None, aviso=print, cart
     if not (alvos["oabs"] or alvos["processos"] or alvos["partes"]):
         return [], {"pt": "Nada para acompanhar: preencha as OABs no config.json ou o processos.csv.",
                     "en": "Nothing to watch: fill in the bar numbers in config.json or processos.csv."}, []
-    dias = dias if dias is not None else int(m.get("dias_para_tras", 3))
+    dias = dias if dias is not None else config.inteiro(m.get("dias_para_tras", 3), 3, 0, 30)
     tribunais = [t.upper() for t in m.get("tribunais") or []]
     hoje = dt.date.today()
     extras = m.get("feriados_extras") or []

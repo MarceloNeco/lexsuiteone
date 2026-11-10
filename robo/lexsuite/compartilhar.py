@@ -284,7 +284,7 @@ def gerar_copia(cfg, agora=None):
     os.makedirs(destino_pasta, exist_ok=True)
     destino = os.path.join(destino_pasta, f"{os.path.splitext(NOME_RADAR)[0]} - cópia {agora:%Y-%m-%d %Hh%Mm%S}.xlsx")
     from xml.sax.saxutils import escape as _esc
-    nome_esc = _re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", ((cfg.get("conta") or {}).get("escritorio_licenca") or cfg.get("escritorio") or "")).strip()[:80]
+    nome_esc = planilha._limpa(str((cfg.get("conta") or {}).get("escritorio_licenca") or cfg.get("escritorio") or "")).replace("\x7f", "").strip()[:80]
     dono = f"do escritório {nome_esc}" if nome_esc else "do escritório"  # 0.7.21 (dono): o nome do escritório na faixa
     marca_copia = _esc(f"Cópia de trabalho gerada em {agora:%d/%m/%Y às %H:%M}. Este arquivo é {dono}: pode ser editado "
                        f"livremente e não é alterado pelo RADAR. Para os dados mais recentes, gere uma nova cópia.")

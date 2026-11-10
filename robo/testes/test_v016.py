@@ -667,5 +667,55 @@ class V0720(unittest.TestCase):
             srv.shutdown(); srv.server_close()
 
 
+class V0723(unittest.TestCase):
+    """0.7.23: testes que faltavam (revisão da 0.7.22, item 7)."""
+
+    def test_licenca_em_ingles(self):
+        from lexsuite import conta
+        cfg = {"conta": {"codigo": "LEX-ABCD-EFGH", "resposta": "vencido", "ultima_ok": "2026-11-01"}}
+        sit = conta.situacao(cfg)
+        self.assertFalse(sit["ok"]); self.assertIn("venceu", sit["texto"]); self.assertIn("expired", sit["texto_en"])
+        cfg["conta"]["resposta"] = "ok"
+        self.assertEqual(conta.situacao(cfg)["texto_en"], "Licence active.")
+        cfg["conta"].update({"resposta": "sem_resposta", "ultima_ok": "lixo"})  # data inválida: PT e EN dizem a mesma coisa
+        self.assertIn("Ainda não consegui", conta.bloqueio(cfg)); self.assertIn("could not confirm the client code", conta.bloqueio_en(cfg))
+
+    def test_dias_para_tras_com_limite(self):
+        from lexsuite import config, app
+        for v, esperado in (("abc", 1), ([], 1), (float("inf"), 1), (1e400, 1), (99, 10), (-5, 0), (3, 3)):
+            self.assertEqual(config.inteiro(v, 1, 0, 10), esperado, v)
+            self.assertEqual(app._dias_para_tras({"dias_para_tras": v}), esperado, v)
+
+    def test_marca_so_leitura_e_remarca_se_a_troca_falha(self):
+        import stat
+        from unittest import mock
+        from lexsuite import planilha
+        pasta = tempfile.mkdtemp(); caminho = os.path.join(pasta, "x.xlsx")
+        planilha.escrever_xlsx(caminho, [{"nome": "A", "linhas": [["a"]]}], marcar=True)
+        self.assertFalse(os.stat(caminho).st_mode & stat.S_IWRITE)
+        planilha.liberar_escrita(caminho)
+        self.assertTrue(os.stat(caminho).st_mode & stat.S_IWRITE)
+        planilha.marcar_so_leitura(caminho)
+        with mock.patch.object(planilha.os, "replace", side_effect=PermissionError("em uso")):
+            with self.assertRaises(PermissionError):
+                planilha.escrever_xlsx(caminho, [{"nome": "A", "linhas": [["b"]]}], marcar=True)
+        self.assertFalse(os.stat(caminho).st_mode & stat.S_IWRITE)  # voltou a ficar só para leitura
+        self.assertEqual([n for n in os.listdir(pasta) if n.endswith(".tmp")], [])
+
+    def test_planilha_nova_ja_nasce_marcada(self):
+        import stat
+        from lexsuite import compartilhar
+        pasta = tempfile.mkdtemp()
+        cfg = {"compartilhar": {"pasta": pasta, "subpasta": "RADAR"}}
+        caminho = compartilhar.criar_se_faltar(cfg, "0.7.23", "", lambda *_: None)
+        self.assertFalse(os.stat(caminho).st_mode & stat.S_IWRITE)
+
+    def test_nuvens_usa_a_lista_recebida(self):
+        from lexsuite import compartilhar
+        pasta = tempfile.mkdtemp()
+        n = compartilhar.nuvens([pasta])
+        self.assertEqual(n[0], {"tipo": "gdrive", "caminho": pasta})
+
+
 if __name__ == "__main__":
     unittest.main()

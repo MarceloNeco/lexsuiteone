@@ -162,6 +162,10 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.23 (10/Nov)
+
+Ressalvas da revisão da 0.7.22 (Operação), itens 1 a 8: feitas. Pacote 45/44.
+
 ## 0.7.22 (09/Nov, noite)
 
 AssistONE 1.1.1 do RootifyONE embutido (pedido do dono: balão que "voa" no tour, personagem que fica). Pacote 45/44. O RootifyONE corrigiu no master (1.1.1) os botões do tour que saíam do balão no modo sem o módulo comum; a correção local saiu.

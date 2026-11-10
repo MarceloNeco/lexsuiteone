@@ -587,10 +587,12 @@ class Tratador(BaseHTTPRequestHandler):
                 cfg.setdefault("conta", {})["codigo"] = conta.normalizar(corpo["codigo"])
                 c = conta.verificar(cfg, VERSAO)
                 if c.get("resposta") not in ("ok", "sem_resposta"):
-                    return self._responder({"ok": False, "motivo": conta.bloqueio(cfg), "conta": conta.situacao(cfg)})
+                    return self._responder({"ok": False, "motivo": conta.bloqueio(cfg), "motivo_en": conta.bloqueio_en(cfg), "conta": conta.situacao(cfg)})
                 if c.get("resposta") == "sem_resposta" and not c.get("ultima_ok"):
                     return self._responder({"ok": False, "motivo": "Não consegui falar com a SolverONE para confirmar o código. "
-                                                                    "Confira a internet e tente de novo.", "conta": conta.situacao(cfg)})
+                                                                    "Confira a internet e tente de novo.",
+                                            "motivo_en": "I could not reach SolverONE to confirm the code. Check the internet and try again.",
+                                            "conta": conta.situacao(cfg)})
                 if c.get("escritorio_licenca") and not cfg.get("escritorio"):
                     cfg["escritorio"] = c["escritorio_licenca"]
             if "email" in corpo:
@@ -896,13 +898,13 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": False, "motivo": "As estatísticas dos meses anteriores estão sendo lidas: clique em Parar no Painel "
                                                                 "ou espere terminar. / Previous months' statistics are being read: stop them or wait."})
             if not tribunais.validar(s.config()["radar"].get("tribunais")):
-                return self._responder({"ok": False, "motivo": "nenhum tribunal escolhido"})
+                return self._responder({"ok": False, "motivo": "nenhum tribunal escolhido", "motivo_en": "no court chosen"})
             try:
                 dias = int(corpo["dias"]) if corpo.get("dias") is not None else None
             except (TypeError, ValueError):
                 dias = None
             comecou = s.rodar(dias)
-            return self._responder({"ok": comecou, "motivo": "" if comecou else "já está rodando"})
+            return self._responder({"ok": comecou, "motivo": "" if comecou else "já está rodando", "motivo_en": "" if comecou else "already running"})
         return self._responder({"erro": "não existe"}, status=404)
 
 
@@ -982,10 +984,7 @@ def personalizar_manual(html, cfg):
 
 def _dias_para_tras(r):
     """0.7.21 (revisão): o mesmo limite do POST /config (0 a 10); texto ou lista no config.json não derruba a tela."""
-    try:
-        return max(0, min(10, int(r.get("dias_para_tras", 1))))
-    except (TypeError, ValueError):
-        return 1
+    return config.inteiro(r.get("dias_para_tras", 1), 1, 0, 10)
 
 
 # 0.7.21: texto do erro das estatísticas antigas antes de o aviso técnico chegar à SolverONE (sem promessa de aviso)
