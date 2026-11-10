@@ -427,10 +427,7 @@ class Tratador(BaseHTTPRequestHandler):
         if u.path == "/dados":
             cfg = s.config()
             r = cfg["radar"]
-            try:
-                dias = max(1, min(90, int(qs.get("dias", [r.get("dias_na_pagina", 1)])[0])))
-            except (TypeError, ValueError):
-                dias = 1
+            dias = config.inteiro(qs.get("dias", [r.get("dias_na_pagina", 1)])[0], 1, 1, 90)  # 0.7.25: Infinity não derruba
             banco = bd.Banco(s.caminho_db)
             visao = "arquivo" if qs.get("visao", [""])[0] == "arquivo" else "lista"
             pagina = radar.montar_radar(cfg, banco, situacao=s.estado.situacao, dias=dias, visao=visao)
@@ -578,7 +575,7 @@ class Tratador(BaseHTTPRequestHandler):
                 if chave in corpo:
                     try:
                         r[chave] = min(maximo, max(minimo, tipo(corpo[chave])))
-                    except (TypeError, ValueError):
+                    except (TypeError, ValueError, OverflowError):
                         pass
             if "escritorio" in corpo:
                 cfg["escritorio"] = str(corpo["escritorio"] or "").strip()[:80]
@@ -858,9 +855,9 @@ class Tratador(BaseHTTPRequestHandler):
                 alvo = planilha
                 planilha_mod.liberar_escrita(alvo)  # 0.7.21: a marca "somente leitura" volta na próxima gravação
             elif corpo.get("o_que") == "planilha" and alvo and os.path.exists(alvo):
-                planilha_mod.marcar_so_leitura(alvo)  # 0.7.24: vale já, sem esperar a próxima gravação
+                em_uso = not planilha_mod.marcar_se_livre(alvo)  # 0.7.25: aberta para editar noutro lugar? não marca agora
                 if abrir_so_leitura(alvo):
-                    return self._responder({"ok": True, "so_leitura": True})
+                    return self._responder({"ok": True, "so_leitura": True, "em_uso": em_uso})
             if abrir_no_windows(alvo):
                 return self._responder({"ok": True})
             return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Confira a pasta das planilhas em Configuração e faça uma leitura. / The spreadsheet does not exist yet.",
@@ -902,8 +899,8 @@ class Tratador(BaseHTTPRequestHandler):
             if not tribunais.validar(s.config()["radar"].get("tribunais")):
                 return self._responder({"ok": False, "motivo": "nenhum tribunal escolhido", "motivo_en": "no court chosen"})
             try:
-                dias = int(corpo["dias"]) if corpo.get("dias") is not None else None
-            except (TypeError, ValueError):
+                dias = config.inteiro(corpo["dias"], None, 0, 10) if corpo.get("dias") is not None else None
+            except (TypeError, ValueError, OverflowError):
                 dias = None
             comecou = s.rodar(dias)
             return self._responder({"ok": comecou, "motivo": "" if comecou else "já está rodando", "motivo_en": "" if comecou else "already running"})
@@ -1008,7 +1005,7 @@ def escolher_pasta(inicio=""):
     if os.name != "nt":
         return ""
     import subprocess  # nosec B404 - só powershell, sem shell, comando fixo; o texto vai por variável de ambiente
-    env = dict(os.environ, LEXSUITE_TITULO="Escolha a pasta da planilha (de preferência dentro do Meu Drive / My Drive)",
+    env = dict(os.environ, LEXSUITE_TITULO="Escolha a pasta das planilhas / Choose the spreadsheet folder",
                LEXSUITE_INICIO=inicio if os.path.isdir(inicio) else "")
     try:
         r = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-STA", "-Command", _ESCOLHER_PS],  # nosec B603 B607

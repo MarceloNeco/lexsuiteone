@@ -152,6 +152,21 @@ def marcar_so_leitura(caminho):
         pass
 
 
+def marcar_se_livre(caminho):
+    """0.7.25 (revisão): marca "somente leitura" só se ninguém estiver com a planilha aberta para editar (o Excel trava a
+    escrita; marcar por baixo dele faria o Salvar falhar). Devolve False quando ela estava em uso; já marcada conta como livre."""
+    import stat
+    try:
+        if not (os.stat(caminho).st_mode & stat.S_IWRITE):
+            return True
+        with open(caminho, "r+b"):
+            pass
+    except OSError:
+        return False
+    marcar_so_leitura(caminho)
+    return True
+
+
 def escrever_xlsx(caminho, abas, so_leitura_recomendado=False, marcar=False):
     """Grava um .xlsx de forma atômica. Levanta ValueError se as abas forem inválidas."""
     if not abas:

@@ -162,6 +162,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.25 (10/Nov)
+
+Ressalvas da 0.7.23 (5 baixas) e da 0.7.24 (2 médias, 5 baixas): feitas. Decisão registrada (0.7.23, item 3): o
+`monitor.dias_para_tras` à mão fica limitado a 30 dias. Ficam só em PT alguns motivos raros de `app.py` (cadastro) e de
+`conta.MOTIVOS` no cadastro; entram quando o cadastro for revisto.
+
 ## 0.7.24 (10/Nov, teste do dono no Windows)
 
 Aviso da planilha também no link da última leitura; marca "somente leitura" ao abrir; lupa com as partes da

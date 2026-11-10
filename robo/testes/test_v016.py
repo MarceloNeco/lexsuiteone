@@ -718,27 +718,69 @@ class V0723(unittest.TestCase):
 
 
 class TelaSemComentarioQueEngoleCodigo(unittest.TestCase):
-    """0.7.24: um comentário // no meio da linha já engoliu código três vezes (o node não acusa, porque continua válido).
-    Este teste procura // seguido de mais código na mesma linha em radar_modelo.html (fora da cópia do AssistONE)."""
+    """0.7.24/0.7.25: um comentário // no meio da linha já engoliu código três vezes (o node não acusa, porque continua
+    válido). Procura, depois de //, qualquer coisa com cara de comando: chamada seguida de ";", var/let/const/if/for/while/
+    return, ou atribuição seguida de ";" (revisão da 0.7.24: um comando só também conta)."""
+    PADROES = (r"[A-Za-z_$][\w$.]*\([^)]*\)\s*;", r"\b(var|let|const|if|for|while|return)\b[^;]*[;{]", r"[\w$.\]]+\s*=[^=>][^;]*;")
+
+    @classmethod
+    def ruins(cls, texto):
+        import re
+        out = []
+        for linha in texto.split("\n"):
+            if "base64," in linha:
+                continue
+            for m in re.finditer(r"(?<![:\"'\\])//(?!/)", linha):
+                if any(re.search(p, linha[m.end():]) for p in cls.PADROES):
+                    out.append(linha.strip()[:120])
+                    break
+        return out
 
     def test_nenhum_comentario_no_meio_da_linha(self):
-        import re
         s = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "radar_modelo.html"), encoding="utf-8").read()
         i = s.index('<script id="assistone-master">'); j = s.index("</script>", i)
-        ruins = []
-        for n, linha in enumerate((s[:i] + s[j:]).split("\n"), 1):
-            for m in re.finditer(r"(?<![:\"'\\])//(?!/)", linha):
-                resto = linha[m.end():]
-                if re.search(r"\)\s*;\s*[A-Za-z_$][\w$.\[\]\"]*\s*[(=]", resto) or re.search(r";\s*(var|if|return|function)\b", resto):
-                    ruins.append(linha.strip()[:120])
-        self.assertEqual(ruins, [])
+        self.assertEqual(self.ruins(s[:i] + s[j:]), [])
 
     def test_o_teste_pega_o_erro(self):
-        import re
-        linha = 'a.appendChild(b);  // nota  a.appendChild(c); box.appendChild(a);'
-        resto = linha[linha.index("//") + 2:]
-        self.assertTrue(re.search(r"\)\s*;\s*[A-Za-z_$][\w$.\[\]\"]*\s*[(=]", resto))
+        for ex in ("a.appendChild(b); // nota  a.appendChild(c);", "x(); // nota  if (x) { y(); }",
+                   "x(); // nota  var z = 1;", "x(); // nota  z = 1;"):
+            self.assertTrue(self.ruins(ex), ex)
+        self.assertFalse(self.ruins("x(); // nota em prosa (com parênteses); e ponto e vírgula"))
 
+class V0725(unittest.TestCase):
+    """0.7.25: testes que faltavam (revisões da 0.7.23 e da 0.7.24)."""
+
+    def _post(self, srv, rota, corpo):
+        import http.client, json as _j
+        c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+        c.request("POST", rota, body=_j.dumps(corpo), headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+        r = _j.loads(c.getresponse().read()); c.close()
+        return r
+
+    def test_rodar_e_config_com_valores_absurdos(self):
+        import threading, http.client
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            r = self._post(srv, "/config", {"dias_na_pagina": 1e400, "dias_para_tras": "abc", "tribunais": []})
+            self.assertIn("ok", r)  # não derrubou a conexão; sem tribunal, "/rodar" recusa sem ir à internet
+            r = self._post(srv, "/rodar", {"dias": 1e400})
+            self.assertFalse(r["ok"]); self.assertTrue(r.get("motivo_en"))  # sem tribunal ou sem licença: motivo nos dois idiomas
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+            c.request("GET", "/dados?dias=Infinity", headers={"X-LexSuite": "1"}); self.assertEqual(c.getresponse().status, 200); c.close()
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_marcar_se_livre(self):
+        import stat
+        from lexsuite import planilha
+        pasta = tempfile.mkdtemp(); caminho = os.path.join(pasta, "x.xlsx")
+        planilha.escrever_xlsx(caminho, [{"nome": "A", "linhas": [["a"]]}])
+        self.assertTrue(planilha.marcar_se_livre(caminho))
+        self.assertFalse(os.stat(caminho).st_mode & stat.S_IWRITE)
+        self.assertTrue(planilha.marcar_se_livre(caminho))  # já marcada conta como livre
 
 if __name__ == "__main__":
     unittest.main()

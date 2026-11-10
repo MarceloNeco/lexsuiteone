@@ -804,7 +804,7 @@ class V0714(unittest.TestCase):
         self.assertIn("Cópias", copia)
         import stat
         self.assertIn("Este arquivo é do escritório Escritório Teste", z.read("xl/worksheets/sheet1.xml").decode())  # 0.7.21
-        cfg_ruim = dict(cfg, escritorio="Escritório\x0b Ruim\x00 & Cia <Ltda>")  # 0.7.21 (revisão): controle some, XML válido
+        cfg_ruim = dict(cfg, escritorio="Escritório\x0b Ruim\x00\ufffe\uffff\ud800 & Cia <Ltda> 123")  # 0.7.21 (revisão): controle some, XML válido
         ok2, copia2 = compartilhar.gerar_copia(cfg_ruim, agora=dt.datetime(2026, 11, 9, 10, 31))
         self.assertTrue(ok2, copia2)
         import xml.dom.minidom
