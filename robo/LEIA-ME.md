@@ -63,7 +63,7 @@ computador. Se a planilha estiver aberta e travada na hora de uma rodada, o rob�
 
 ## A tela
 
-- **0.7.22:** AssistONE 1.1.0 (master do RootifyONE): no tour, o balão desliza de um passo ao outro, o personagem não
+- **0.7.22:** AssistONE 1.1.1 (master do RootifyONE): no tour, o balão desliza de um passo ao outro, o personagem não
   some (só se cobrir o que está sendo mostrado) e o "Próximo ›" cabe numa linha.
 - **0.7.21 (teste do dono no Windows):** pastas em duas opções (Neste computador, padrão, ou Pasta compartilhada:
   rede, OneDrive ou Google Drive para computador, com atalho quando estão instalados) e explicação antes de mudar;

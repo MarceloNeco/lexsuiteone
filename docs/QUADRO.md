@@ -126,7 +126,7 @@ Arquitetura (pedido no quadro).
 ### Fazendo agora
 - **0.7.22 na `main`, pronta para publicar** (09/Nov noite, com o "pode" do dono para a 0.7.21 e o AssistONE novo;
   a 0.7.21 não sai). Tem: tudo da 0.7.21 (teste do dono no Windows e decisões de pastas, só leitura e Área logada),
-  a revisão da 0.7.21 pela Operação (bloqueio do teste e itens 2 a 15) e o AssistONE 1.1.0 do RootifyONE. Revisada e
+  a revisão da 0.7.21 pela Operação (bloqueio do teste e itens 2 a 15) e o AssistONE 1.1.1 do RootifyONE. Revisada e
   aprovada: 162 testes como root e como usuário comum, Bandit, marca e tela. Pacote 45/44. A Operação publica com
   "publica a versão 0.7.22".
 - **0.7.19 na `main`, pronta para publicar** (com o "pode" do dono, 09/Nov noite; revisada e aprovada, 157 testes;

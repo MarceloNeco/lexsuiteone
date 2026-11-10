@@ -164,7 +164,7 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 ## 0.7.22 (09/Nov, noite)
 
-AssistONE 1.1.0 do RootifyONE embutido (pedido do dono: balão que "voa" no tour, personagem que fica). Pacote 45/44. Correção local de estilo: no modo sem o módulo comum, os botões do tour saíam do balão (`.dgo-aone-solo .dgo-b` com largura 100%); pedido ao RootifyONE para corrigir no master.
+AssistONE 1.1.1 do RootifyONE embutido (pedido do dono: balão que "voa" no tour, personagem que fica). Pacote 45/44. O RootifyONE corrigiu no master (1.1.1) os botões do tour que saíam do balão no modo sem o módulo comum; a correção local saiu.
 
 ## 0.7.21 (09/Nov, noite; no ramo)
 
