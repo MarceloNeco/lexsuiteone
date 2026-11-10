@@ -851,6 +851,7 @@ class Tratador(BaseHTTPRequestHandler):
                     os.makedirs(alvo, exist_ok=True)
             else:
                 alvo = planilha if corpo.get("o_que") in ("planilha", "editar") else (os.path.dirname(planilha) if planilha else "")
+            em_uso = False
             if corpo.get("o_que") == "editar":  # Preferências e Exclusões: abre normal, para o escritório poder salvar
                 alvo = planilha
                 planilha_mod.liberar_escrita(alvo)  # 0.7.21: a marca "somente leitura" volta na próxima gravação
@@ -859,7 +860,7 @@ class Tratador(BaseHTTPRequestHandler):
                 if abrir_so_leitura(alvo):
                     return self._responder({"ok": True, "so_leitura": True, "em_uso": em_uso})
             if abrir_no_windows(alvo):
-                return self._responder({"ok": True})
+                return self._responder({"ok": True, "em_uso": em_uso})
             return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Confira a pasta das planilhas em Configuração e faça uma leitura. / The spreadsheet does not exist yet.",
                                     "caminho": planilha})
         if caminho == "/testar-pasta":
