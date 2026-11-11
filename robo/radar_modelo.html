@@ -616,6 +616,7 @@ footer a:hover { text-decoration: underline; }
     <fieldset class="agenda" id="c-regras-wrap"><legend id="c-l-regras"></legend><div id="c-regras"></div></fieldset>
     <fieldset class="agenda" id="c-agendar-wrap">
       <legend id="c-l-agenda"></legend>
+      <p class="agenda-info" id="c-trib-lidos"></p>
       <label class="conf-acoes"><input type="checkbox" id="c-agendar"> <span id="c-l-agendar"></span></label>
       <p class="agenda-info" id="c-horas-expl"></p>
       <div class="horas-prontas" id="c-horas-prontas" role="group"></div>
@@ -1901,7 +1902,7 @@ window.LEXSUITE_RADAR = null;
     lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento",
     rodar_crit_1: "Lê: hoje e o último dia útil · {l}", rodar_crit_n: "Lê: hoje e os últimos {d} dias úteis · {l}", rodar_crit_alterar: "alterar",
     ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
-    ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Se precisar de suporte, use o DIAGNOSTICO.bat: ele leva estas linhas, sem CPF.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo",
+    c_trib_lidos: "Tribunais que a leitura lê: {l}.", ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Se precisar de suporte, use o DIAGNOSTICO.bat: ele leva estas linhas, sem CPF.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo",
     rg_titulo: "Regras do escritório", rg_intro: "O que o RADAR esconde ou destaca na lista. Fica gravado nas abas Preferências e Exclusões da planilha, com cópia de segurança antes; não é preciso abrir o Excel. O que for escrito à mão nessas abas é substituído ao salvar aqui.",
     rg_sem_pasta: "Escolha primeiro onde ficam as planilhas (acima).", rg_valor: "Valor mínimo da causa (R$)", rg_valor_x: "Usado no filtro “Acima de” e no destaque. Ações abaixo continuam na lista.",
     rg_min: "Mínimo de ações da mesma empresa", rg_min_x: "Ex.: 3 = só destacar empresa com 3 ou mais ações novas na janela de dias. 1 = todas.", rg_janela: "Janela do mínimo de ações (dias)", rg_janela_x: "Quantos dias para trás contar as ações da mesma empresa.",
@@ -1911,7 +1912,7 @@ window.LEXSUITE_RADAR = null;
     rg_exc_t: "Empresas excluídas", rg_exc_x: "Clientes atuais, conflitos ou quem o escritório não quer prospectar. Pode ser o nome ou o CNPJ.", rg_exc_busca: "Procurar na lista de excluídas", rg_exc_nome: "Nome ou CNPJ da empresa", rg_exc_motivo: "Motivo (ex.: cliente atual)",
     rg_exc_add: "Acrescentar", rg_exc_tirar: "Tirar", rg_exc_vazio: "Nenhuma empresa excluída.", rg_exc_ja: "Essa empresa já está na lista.", rg_salvar: "Salvar regras", rg_pendente: "Há mudanças não salvas.", rg_salvo: "✓ Regras salvas na planilha (com cópia de segurança de antes).", rg_mudou: "As regras do escritório têm mudanças que ainda não foram salvas.", rg_de_novo: "Abrir as regras de novo", rg_vazio: "Preencha este campo antes de salvar.", rg_fora: "Número fora do permitido: use de {a} a {b}.",
     fs_titulo: "Filtros salvos", fs_x: "Ficam neste computador. Arquivar esconde da lista sem apagar.", fs_renomear: "Renomear", fs_arquivar: "Arquivar", fs_desarquivar: "Voltar para a lista", fs_arquivado: "arquivado", fs_apagar: "Apagar", fs_novo_nome: "Novo nome do filtro:", fs_existe: "Já existe um filtro com esse nome.", fs_apagar_q: "Apagar o filtro “{n}”?",
-    r_filtrar: "Filtrar", r_ordenar: "Ordenar", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "Aqui aparecem os tribunais que o programa lê (os novos ficam com 0 até a próxima leitura). Para ler outros:",
+    r_filtrar: "Filtrar", r_ordenar: "Ordenar", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "O filtro só mostra o que já está na lista. Para escolher o que o programa lê:",
     rodar_crit_x: "O que “Ler o Diário agora” lê: o Diário de hoje e dos últimos dias úteis com publicação, nos tribunais escolhidos. Diário já lido não é baixado de novo. Os filtros da lista não mudam o que é lido (lê tudo, para nada se perder); eles só escolhem o que aparece, e ficam guardados.",
     rodar_crit_0: "Lê: só hoje · {l}",
     rodar_crit_nada: "Escolha os tribunais primeiro.",
@@ -1969,7 +1970,7 @@ window.LEXSUITE_RADAR = null;
     lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date",
     rodar_crit_1: "Reads: today and the last working day · {l}", rodar_crit_n: "Reads: today and the last {d} working days · {l}", rodar_crit_alterar: "change",
     ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
-    ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). For support, run DIAGNOSTICO.bat: it takes these lines, without CPF.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file",
+    c_trib_lidos: "Courts the reading covers: {l}.", ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). For support, run DIAGNOSTICO.bat: it takes these lines, without CPF.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file",
     rg_titulo: "Firm rules", rg_intro: "What RADAR hides or highlights in the list. Saved in the spreadsheet\u2019s Preferences and Exclusions tabs, with a backup copy first; no need to open Excel. Anything typed by hand in those tabs is replaced when you save here.",
     rg_sem_pasta: "First choose where the spreadsheets live (above).", rg_valor: "Minimum claim value (R$)", rg_valor_x: "Used by the “Above” filter and the highlight. Lower lawsuits stay in the list.",
     rg_min: "Minimum lawsuits per company", rg_min_x: "E.g. 3 = only highlight companies with 3 or more new lawsuits in the day window. 1 = all.", rg_janela: "Window for the minimum (days)", rg_janela_x: "How many days back to count the same company\u2019s lawsuits.",
@@ -1979,7 +1980,7 @@ window.LEXSUITE_RADAR = null;
     rg_exc_t: "Excluded companies", rg_exc_x: "Current clients, conflicts or companies the firm does not want to approach. Name or CNPJ.", rg_exc_busca: "Search the excluded list", rg_exc_nome: "Company name or CNPJ", rg_exc_motivo: "Reason (e.g. current client)",
     rg_exc_add: "Add", rg_exc_tirar: "Remove", rg_exc_vazio: "No excluded companies.", rg_exc_ja: "This company is already in the list.", rg_salvar: "Save rules", rg_pendente: "There are unsaved changes.", rg_salvo: "✓ Rules saved to the spreadsheet (with a backup copy of before).", rg_mudou: "The firm rules have changes that were not saved yet.", rg_de_novo: "Open the rules again", rg_vazio: "Fill in this field before saving.", rg_fora: "Number out of range: use {a} to {b}.",
     fs_titulo: "Saved filters", fs_x: "Kept on this computer. Archive hides it from the list without deleting.", fs_renomear: "Rename", fs_arquivar: "Archive", fs_desarquivar: "Back to the list", fs_arquivado: "archived", fs_apagar: "Delete", fs_novo_nome: "New filter name:", fs_existe: "A filter with this name already exists.", fs_apagar_q: "Delete the filter “{n}”?",
-    r_filtrar: "Filter", r_ordenar: "Sort", limpar_filtros_0: "Clear filters", trib_so_lidos: "Here are the courts the program reads (new ones show 0 until the next reading). To read others:",
+    r_filtrar: "Filter", r_ordenar: "Sort", limpar_filtros_0: "Clear filters", trib_so_lidos: "The filter only shows what is already in the list. To choose what the program reads:",
     rodar_crit_x: "What “Read the gazette now” reads: today\u2019s gazette and the last working days with publications, in the chosen courts. A gazette already read is not downloaded again. The list filters do not change what is read (everything is read, so nothing is lost); they only choose what shows, and they are remembered.",
     rodar_crit_0: "Reads: today only · {l}",
     rodar_crit_nada: "Choose the courts first.",
@@ -2226,7 +2227,6 @@ window.LEXSUITE_RADAR = null;
   function salvarTribunais(depoisRodar) {
     post("/config", { tribunais: Object.keys(sel), dias_na_pagina: periodo }).then(function () {
       $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
-      F.trib = lista_(F.trib).filter(function (v) { return sel[v]; });  // 0.7.29 (dono): tribunal tirado da mira sai também do filtro
       if (depoisRodar) { post("/rodar", {}).then(function (r) { if (r.ok) vigiar(); }); }
       carregar();
     }).catch(function () { $("estado").textContent = t("falha"); });
@@ -2381,6 +2381,10 @@ window.LEXSUITE_RADAR = null;
     var p = $("config"), abrir = forcar || p.hidden;
     if (!abrir) { fecharConfig(false); return; }
     fecharPerfil(); if (p.hidden) guardarFoco(); modoPagina(comoPagina ? "config" : null);
+    var tl_ = $("c-trib-lidos"), trs_c = (APP && APP.config && APP.config.tribunais) || [];  // 0.7.30 (dono): o que a leitura lê, com atalho para a mira (lugar único)
+    tl_.textContent = t("c_trib_lidos", { l: trs_c.length > 6 ? t("n_tribunais", { n: num(trs_c.length) }) : (trs_c.join(", ") || "—") }) + " ";
+    var ta_ = el("button", "btn-txt", t("rodar_crit_alterar")); ta_.type = "button"; tl_.appendChild(ta_);
+    ta_.addEventListener("click", function () { fecharConfig(); if ($("config").hidden) { $("b-trib").click(); $("b-trib").scrollIntoView({ behavior: "smooth", block: "center" }); } });
     var fixo = !!(APP && APP.conta && APP.conta.codigo && APP.conta.ok);  // código válido e salvo: só para ler
     $("c-codigo").value = fixo ? mascaraCodigo(APP.conta.codigo) : ((APP && APP.conta && APP.conta.codigo) || "");  // 0.7.19: confirmado aparece mascarado
     $("c-codigo").readOnly = fixo; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
@@ -2929,7 +2933,6 @@ window.LEXSUITE_RADAR = null;
     var cont = {}; bi.forEach(function (i) { if (passaFiltros(i, k, cx.min, cx.esconder, cx.q)) { var v = valorFacet(i, k); if (v !== "") cont[v] = (cont[v] || 0) + 1; } });
     var sel = lista_(F[k]).filter(function (v) { return v; }); F[k] = sel;
     sel.forEach(function (v) { if (!(v in cont)) cont[v] = 0; });
-    if (k === "trib" && MODO === "app" && APP && APP.config) (APP.config.tribunais || []).forEach(function (v) { if (!(v in cont)) cont[v] = 0; });  // 0.7.29 (dono): o filtro mostra a mira inteira
     var chaves = Object.keys(cont);
     box.hidden = chaves.length < 2 && !sel.length;
     var b = el("button", sel.length ? "ligado" : null); b.type = "button"; b.setAttribute("aria-expanded", String(multiAberto === k)); b.setAttribute("aria-haspopup", "true");

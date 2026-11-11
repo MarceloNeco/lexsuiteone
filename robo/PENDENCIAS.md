@@ -162,6 +162,13 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.30 (no ramo, 11/Nov)
+
+- Dono corrigiu o pedido da 0.7.29: o filtro de tribunais é só para ver o que já está na lista; não acompanha a mira.
+  Desfeito (o filtro volta a mostrar só o que tem na lista; tirar da mira não mexe no filtro). O lugar único do que a
+  leitura lê é a mira ("Tribunais: N de 24" e o "alterar" ao lado de "Ler o Diário agora"); a Configuração ganhou a
+  linha "Tribunais que a leitura lê: ... alterar", que leva à mira.
+
 ## 0.7.29 (11/Nov) — pronta no ramo
 
 Feito: sem janela preta (opção a da Arquitetura, "pode" do dono em 11/Nov); ressalvas 1 a 7, 9 e 10 da segunda revisão
