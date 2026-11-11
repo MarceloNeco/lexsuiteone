@@ -228,7 +228,7 @@ def leitura_em_outro_processo(arquivo, minutos=45):
     return d
 
 
-_TRAVA_REGRAS = threading.Lock()
+_TRAVA_REGRAS = radar.TRAVA_REGRAVAR  # revisão da 0.7.29: a mesma trava de toda regravação da planilha (RLock)
 
 
 class Servidor(ThreadingHTTPServer):
@@ -529,6 +529,8 @@ class Tratador(BaseHTTPRequestHandler):
             d["tela_ativa"] = _t.monotonic() - s.ultimo_pedido < 25  # a tela pergunta a cada 10 s
             if self.headers.get("X-LexSuite-Sonda") == "1":
                 d["pid"] = os.getpid()  # 0.7.29: o "Encerrar o RADAR" só encerra o processo que respondeu por esta porta
+                d["pasta"] = s.pasta  # ...e só o desta pasta (outra instalação no mesmo computador fica)
+                d["chamado_pendente"] = bool(getattr(s, "chamado", 0))  # 0.7.29: a tela ainda não atendeu o "já estava aberto"
             if self.headers.get("X-LexSuite-Sonda") != "1" and getattr(s, "chamado", 0):
                 d["chamado"] = True; s.chamado = 0  # 0.7.28: alguém clicou no atalho de novo; a tela avisa e vem para a frente
             return self._responder(d)
@@ -592,6 +594,9 @@ class Tratador(BaseHTTPRequestHandler):
         if not self._host_local() or not self._da_propria_pagina():
             return self._responder({"erro": "pedido recusado"}, status=403)
         import time as _t
+        if caminho == "/tela-fechada":  # 0.7.29 (dono): fechou a janela no X; o próximo clique no atalho abre a tela de novo
+            self.server.ultimo_pedido = min(self.server.ultimo_pedido, _t.monotonic() - 30)
+            return self._responder({"ok": True})
         self.server.ultimo_pedido = _t.monotonic()
         if caminho == "/sair":  # 0.7.16: "Sair do RADAR" fecha a tela e a janela preta (se não houver leitura nesta janela)
             if self.server.estado.rodando or self.server.hist.get("rodando"):
@@ -940,6 +945,8 @@ class Tratador(BaseHTTPRequestHandler):
                 alvo = os.path.dirname(getattr(s, "ultima_copia", "") or "") or (os.path.join(base, compartilhar.PASTA_COPIAS_TRABALHO) if base else "")
             elif corpo.get("o_que") == "registro":  # 0.7.29: o arquivo do registro (abre no Bloco de Notas)
                 alvo = os.path.join(s.pasta, "saida", "registro.txt")
+                if not os.path.exists(alvo):
+                    return self._responder({"ok": False, "motivo": "Ainda não há registro.", "motivo_en": "There is no log yet."})
             elif corpo.get("o_que") == "copias":  # 0.7.16: a pasta das cópias de segurança
                 alvo = armazenamento.pasta_copias(base)
                 if alvo:
@@ -995,9 +1002,10 @@ class Tratador(BaseHTTPRequestHandler):
                 dias = config.inteiro(corpo["dias"], None, 0, 10) if corpo.get("dias") is not None else None
             except (TypeError, ValueError, OverflowError):
                 dias = None
-            if _TRAVA_REGRAS.locked():  # 0.7.29: o motivo certo, em vez de "já está rodando"
-                return self._responder({"ok": False, "motivo": "As regras do escritório estão sendo gravadas: tente de novo em instantes.",
-                                        "motivo_en": "The firm rules are being saved: try again in a moment."})
+            if not _TRAVA_REGRAS.acquire(blocking=False):  # 0.7.29: o motivo certo, em vez de "já está rodando"
+                return self._responder({"ok": False, "motivo": "A planilha está sendo gravada agora: tente de novo em instantes.",
+                                        "motivo_en": "The spreadsheet is being saved right now: try again in a moment."})
+            _TRAVA_REGRAS.release()
             comecou = s.rodar(dias)
             return self._responder({"ok": comecou, "motivo": "" if comecou else "já está rodando", "motivo_en": "" if comecou else "already running"})
         return self._responder({"erro": "não existe"}, status=404)
@@ -1115,7 +1123,7 @@ def escolher_pasta(inicio=""):
                LEXSUITE_INICIO=inicio if os.path.isdir(inicio) else "")
     try:
         r = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-STA", "-Command", _ESCOLHER_PS],  # nosec B603 B607
-                           capture_output=True, env=env, timeout=600, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+                           capture_output=True, stdin=subprocess.DEVNULL, env=env, timeout=600, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         pasta = r.stdout.decode("utf-8", "replace").strip()
     except (OSError, subprocess.SubprocessError):
         return ""
@@ -1185,10 +1193,26 @@ def atualizar_atalho(pasta):
                LEXSUITE_ALVO=oculto, LEXSUITE_ARGS=f'"{os.path.join(pasta, "lexsuite_robo.py")}" app', LEXSUITE_PASTA=os.path.normpath(pasta))
     try:
         subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", _ATALHO_PS], env=env, timeout=30,  # nosec B603 B607
-                       capture_output=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+                       capture_output=True, stdin=subprocess.DEVNULL, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         return True
     except (OSError, subprocess.SubprocessError):
         return False
+
+
+def tela_atendeu(url, espera_s=13, dormir=None):
+    """0.7.29 (dono): a tela pergunta a cada 10 s; se em 13 s ninguém atendeu o "já estava aberto", a janela foi fechada
+    (no X, sem "Sair") e quem chamou abre a tela de novo."""
+    import time as _t
+    dormir = dormir or _t.sleep
+    try:
+        p = int(url.rstrip("/").rsplit(":", 1)[1])
+    except (ValueError, IndexError):
+        return False
+    for _ in range(int(espera_s * 2)):
+        dormir(0.5)
+        if not _estado_sonda(p).get("chamado_pendente", True):
+            return True
+    return False
 
 
 def chamar_tela(url):
@@ -1281,17 +1305,89 @@ def _encerrar_processo(pid):
         return False
 
 
+def _imagem_do_processo(pid):
+    """Caminho do executável do processo (Windows: QueryFullProcessImageNameW; Linux: /proc), ou "" se não souber."""
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return ""
+    if os.name == "nt":
+        try:
+            import ctypes
+            from ctypes import wintypes
+            k = ctypes.windll.kernel32
+            h = k.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+            if not h:
+                return ""
+            try:
+                buf, n = ctypes.create_unicode_buffer(1024), wintypes.DWORD(1024)
+                return buf.value if k.QueryFullProcessImageNameW(h, 0, buf, ctypes.byref(n)) else ""
+            finally:
+                k.CloseHandle(h)
+        except (OSError, AttributeError, ValueError):
+            return ""
+    try:
+        return os.path.realpath(f"/proc/{pid}/exe")
+    except OSError:
+        return ""
+
+
+def _e_python(pid):
+    """Revisão da 0.7.29 (bloqueio): só se encerra à força um processo cujo executável é o Python."""
+    nome = os.path.basename(_imagem_do_processo(pid)).lower()
+    return nome in ("python.exe", "pythonw.exe") or (os.name != "nt" and nome.startswith("python"))
+
+
+def _dono_da_porta(porta):
+    """Windows: o pid que escuta em 127.0.0.1:porta (netstat -ano), ou 0. Serve para a tela travada que não responde."""
+    if os.name != "nt":
+        return 0
+    import subprocess  # nosec B404 - só o netstat do Windows, lista fixa, sem shell
+    try:
+        r = subprocess.run(["netstat", "-ano", "-p", "TCP"], capture_output=True, timeout=20, shell=False,  # nosec B603 B607
+                           stdin=subprocess.DEVNULL, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    except (OSError, subprocess.SubprocessError):
+        return 0
+    for linha in (r.stdout or b"").decode("ascii", "replace").splitlines():
+        partes = linha.split()
+        if len(partes) >= 5 and partes[1] == f"127.0.0.1:{int(porta)}" and partes[2] in ("0.0.0.0:0", "*:*"):
+            try:
+                return int(partes[-1])
+            except ValueError:
+                return 0
+    return 0
+
+
+def _ler_pid(pasta):
+    try:
+        with open(_arquivo_pid(pasta), encoding="utf-8") as f:
+            d = json.load(f)
+        return int(d.get("pid") or 0), int(d.get("porta") or 0)
+    except (OSError, ValueError, TypeError, AttributeError):
+        return 0, 0
+
+
+def _mesma_pasta(a, b):
+    return os.path.normcase(os.path.abspath(str(a or ""))) == os.path.normcase(os.path.abspath(str(b or "")))
+
+
 def encerrar_aberto(pasta, aviso=print, espera_s=15, dormir=None, portas=None):
-    """0.7.29 (dono: sem janela preta): "Encerrar o RADAR" do DIAGNOSTICO.bat. Pede à tela aberta para interromper a
-    leitura e sair; se ela não responder, encerra o processo dela. Também encerra uma leitura agendada que esteja
-    rodando noutro processo. Devolve True se havia algo para encerrar."""
+    """0.7.29 (dono: sem janela preta): "Encerrar o RADAR" do DIAGNOSTICO.bat. Pede à tela DESTA pasta para interromper
+    a leitura e sair; se ela não sair, encerra à força só o processo que a própria tela informou, que é o do
+    programa.pid e é o Python. A tela travada (não responde) só é encerrada se o Windows confirmar que é ela quem
+    escuta na porta do programa.pid. Leitura agendada noutro processo: pede para parar (parar.json) e espera; nunca é
+    encerrada à força (o número do processo pode ter sido reaproveitado pelo Windows). Devolve True se havia algo."""
     import time as _t
     dormir = dormir or _t.sleep
     achou = False
-    url = procurar_aberto(portas)
+    pid_arq, porta_arq = _ler_pid(pasta)
+    url = procurar_aberto(portas or ([porta_arq] + [p for p in PORTAS if p != porta_arq] if porta_arq else None))
+    porta = int(url.rstrip("/").rsplit(":", 1)[1]) if url else 0
+    pasta_tela = _estado_sonda(porta).get("pasta") if url else ""
+    if url and not (pasta_tela and _mesma_pasta(pasta_tela, pasta)):
+        url = ""  # é o RADAR de outra pasta (ou não disse qual): não é este que se pediu para encerrar
     if url:
         achou = True
-        porta = int(url.rstrip("/").rsplit(":", 1)[1])
         _pedir_local(porta, "/interromper")
         for _ in range(int(espera_s)):
             r = _pedir_local(porta, "/sair")
@@ -1304,23 +1400,50 @@ def encerrar_aberto(pasta, aviso=print, espera_s=15, dormir=None, portas=None):
             saiu = not procurar_aberto([porta])
             if saiu:
                 break
-        if not saiu:  # não saiu: encerra o processo da tela, só se for o mesmo pid que ela informa E o do programa.pid
+        if not saiu:
             pid_tela = _pid_na_porta(porta)
-            try:
-                with open(_arquivo_pid(pasta), encoding="utf-8") as f:
-                    d = json.load(f)
-                if pid_tela and int(d.get("porta") or 0) == porta and int(d.get("pid") or 0) == pid_tela and processo_vivo(pid_tela):
-                    saiu = _encerrar_processo(pid_tela)
-            except (OSError, ValueError, TypeError, AttributeError):
-                pass
-        aviso("  Tela do RADAR encerrada. / RADAR screen closed." if saiu else
-              "  Não consegui encerrar a tela do RADAR: reinicie o computador. / Could not close RADAR: restart the computer.")
+            if pid_tela and pid_tela == pid_arq and porta == porta_arq and processo_vivo(pid_tela) and _e_python(pid_tela):
+                saiu = _encerrar_processo(pid_tela)
+        aviso("  Tela do RADAR encerrada. / RADAR screen closed." if saiu else MSG_NAO_ENCERROU)
+    elif pid_arq and processo_vivo(pid_arq) and _e_python(pid_arq):  # tela travada, sem responder (revisão, item 2)
+        achou = True
+        if porta_arq and _dono_da_porta(porta_arq) == pid_arq and _encerrar_processo(pid_arq):
+            aviso("  Tela do RADAR (travada) encerrada. / Stuck RADAR screen closed.")
+        else:
+            aviso(MSG_NAO_ENCERROU)
     outra = leitura_em_outro_processo(os.path.join(pasta, "saida", "leitura.json"))
     if outra and int(outra.get("pid") or 0) != os.getpid():
         achou = True
-        if _encerrar_processo(outra.get("pid")):
-            aviso("  Leitura em andamento encerrada (a próxima automática acontece no horário). / Reading in progress stopped.")
+        try:
+            os.makedirs(os.path.join(pasta, "saida"), exist_ok=True)
+            with open(os.path.join(pasta, "saida", "parar.json"), "w", encoding="utf-8") as f:
+                json.dump({"quando": dt.datetime.now().isoformat(timespec="seconds"), "quem": "encerrar"}, f)
+        except OSError:
+            pass
+        parou = False
+        for _ in range(30):
+            dormir(1)
+            if not leitura_em_outro_processo(os.path.join(pasta, "saida", "leitura.json")):
+                parou = True
+                break
+        aviso("  Leitura em andamento interrompida. / Reading in progress stopped." if parou else
+              "  Pedi para a leitura parar: ela para no próximo ponto seguro (pode levar alguns minutos). / The reading will stop at the next safe point.")
     return achou
+
+
+MSG_NAO_ENCERROU = ("  Não consegui encerrar o RADAR por aqui. Abra o Gerenciador de Tarefas (Ctrl+Shift+Esc), procure \"Python\" "
+                    "e clique em Finalizar tarefa; ou reinicie o computador. / Could not close RADAR: end \"Python\" in Task Manager.")
+
+
+def _estado_sonda(porta):
+    import http.client
+    try:
+        c = http.client.HTTPConnection("127.0.0.1", int(porta), timeout=2)
+        c.request("GET", "/estado", headers={"X-LexSuite": "1", "X-LexSuite-Sonda": "1", "Host": f"127.0.0.1:{porta}"})
+        d = json.loads(c.getresponse().read() or b"{}"); c.close()
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError):
+        return {}
 
 
 def reiniciar_depois(servidor, pasta):
@@ -1393,7 +1516,7 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
         ja, ativa = procurar_aberto(detalhe=True)
         if ja:
             import time
-            if ativa and chamar_tela(ja):  # 0.7.28 (dono): a tela já está aberta; não abre outra, ela avisa e vem para a frente
+            if ativa and chamar_tela(ja) and tela_atendeu(ja):  # 0.7.28 (dono): a tela já está aberta; não abre outra, ela avisa e vem para a frente
                 m_ = marca(pasta)  # revisão da 0.7.28: o nome vem da marca, não fixo
                 aviso(f"  O {m_['curto']} já está aberto neste computador. Procure a janela \"{m_['nome']}\" na barra de tarefas;")
                 aviso(f"  ela mostra o aviso \"O {m_['curto']} já estava aberto aqui\". Esta janela fecha sozinha.")

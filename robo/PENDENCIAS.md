@@ -162,6 +162,34 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.29 de novo (11/Nov): revisão da Operação + o que estava como 0.7.30
+
+Revisão da 0.7.29 (Operação): bloqueio feito ("Encerrar o RADAR" só encerra à força o processo que a própria tela
+informa, que é o do programa.pid, desta pasta e é o Python; a leitura noutro processo só recebe o pedido de parar e
+nunca é encerrada à força; tela travada só se o netstat confirmar que é ela na porta, senão a mensagem manda ao
+Gerenciador de Tarefas); 2 a 6 e 7, 8, 9, 10, 11, 12, 13 feitos (trava única `radar.TRAVA_REGRAVAR` para toda
+regravação da planilha; fases em 2 colunas abaixo de 900 px e 768 px no `larguras.js`; Saúde só silencia quando todos
+os tribunais estão ok; ao atualizar da 0.7.28 o programa novo passa a tela para o pythonw e a janela preta fecha
+sozinha; registro sem repetir mensagem; diagnóstico sem e-mail nem nome da pasta do usuário; "Encerrar" só desta
+pasta; nome digitado habilita "Salvar regras"; "Abrir o arquivo" sem registro avisa; stdin fechado nos subprocessos).
+Fica: 14 (abaixo de 360 px, já era assim). Também: Painel com "Ver como: Barras | Pizza" (teste no `larguras.js`),
+"Licença: ✓ ativa" no Perfil com cor por estado. Teste do dono: janela fechada no X e clique no atalho em seguida não
+abria a tela (o programa ainda a achava aberta): a tela avisa ao fechar (`/tela-fechada`) e o segundo clique confere
+em 13 s se a tela atendeu o "já estava aberto"; se não atendeu, abre de novo.
+
+### Itens que eram da 0.7.30
+
+- Dono corrigiu o pedido da 0.7.29: o filtro de tribunais é só para ver o que já está na lista; não acompanha a mira.
+  Desfeito (o filtro volta a mostrar só o que tem na lista; tirar da mira não mexe no filtro). O lugar único do que a
+  leitura lê é a mira ("Tribunais: N de 24" e o "alterar" ao lado de "Ler o Diário agora"); a Configuração ganhou a
+  linha "Tribunais que a leitura lê: ... alterar", que leva à mira.
+- Painel (dono): meses com letras (SET/2026) nos gráficos; "Buscar estatísticas" responde ali mesmo (entraram N na
+  fila, ou nada novo porque já está lido ou na fila); faixa no alto do Painel dizendo de quando são os números (N ações,
+  Diários de X a Y, filtros da lista) com o período (1, 3, 7, 15, 30 dias) no mesmo estilo.
+- Achado: o período da lista e do Painel conta pela data em que o programa VIU a ação (`primeira_vez`), não pela data
+  do Diário. A primeira leitura traz até 10 dias de Diários de uma vez, e tudo aparece como "último dia" (os 13.339).
+  Proposta ao dono: contar pela data do Diário. Mexe na regra do que a lista mostra: esperar o "pode".
+
 ## 0.7.29 (11/Nov) — pronta no ramo
 
 Feito: sem janela preta (opção a da Arquitetura, "pode" do dono em 11/Nov); ressalvas 1 a 7, 9 e 10 da segunda revisão

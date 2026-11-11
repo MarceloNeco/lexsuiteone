@@ -50,8 +50,9 @@ header { display: contents; }
 .painel-cab p { margin: 0; color: var(--tinta-2); }
 .mira-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
 .fases { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-.fases li { border: 1px solid var(--linha); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: var(--tinta-3); font-size: .86rem; line-height: 1.3; }
+.fases li { min-width: 0; overflow-wrap: anywhere; hyphens: auto; border: 1px solid var(--linha); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: var(--tinta-3); font-size: .86rem; line-height: 1.3; }
 .fases li b { color: var(--tinta-2); font-weight: 600; }
+@media (max-width: 900px) { .fases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .fases .fase-n { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: .78rem; font-weight: 700; background: var(--papel-2, #f1f4f8); color: var(--tinta-2); margin-bottom: 4px; }
 .fases li.aqui { border-color: var(--latao); background: var(--latao-wash, #fbf6ea); }
 .fases li.aqui b { color: var(--tinta); }
@@ -220,7 +221,34 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .kpi .det { font-size: .78rem; color: var(--tinta-3); }
 .kpi.destaque { border-color: var(--latao); background: var(--latao-wash); }
 .kpi.destaque .val { color: var(--latao-texto); }
+.graf-tipo { margin: 4px 0 10px; }
+.pizza-corpo { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; min-width: 0; }
+.anel { flex: 0 0 136px; width: 136px; height: 136px; }
+.anel-total { font: 600 15px var(--f); fill: var(--tinta); }
+.legenda { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; flex: 1 1 200px; min-width: 0; }
+.leg-item { all: unset; box-sizing: border-box; display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; padding: 3px 6px; border-radius: 6px; font-size: .86rem; color: var(--tinta-2); }
+button.leg-item { cursor: pointer; }
+button.leg-item:hover, button.leg-item:focus-visible { background: var(--papel-2, #f1f4f8); }
+.leg-cor { width: 12px; height: 12px; border-radius: 3px; }
+.leg-rot { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leg-n { color: var(--tinta); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .grade-graf { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+.lic-selo { display: inline-block; padding: 1px 10px; border-radius: 999px; font-weight: 700; font-size: .9em; }
+.lic-ok { color: #1f6b3a; background: #e3f3e8; }
+.lic-alerta { color: #8a5a00; background: #fbefd5; }
+.lic-erro { color: #a33a2e; background: #fbe6e3; }
+.lic-det { color: var(--tinta-3); font-size: .9em; }
+:root[data-theme="dark"] .lic-ok { color: #8fd6a6; background: #1d3326; } :root[data-theme="dark"] .lic-alerta { color: #f0c67a; background: #3a2e14; } :root[data-theme="dark"] .lic-erro { color: #f0a094; background: #3b1f1b; }
+.saz-info { color: var(--latao-texto); font-weight: 600; }
+.painel-periodo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 18px; padding: 12px 16px; border: 1px solid var(--linha); border-left: 4px solid var(--latao); border-radius: 12px; background: var(--folha); margin-bottom: 12px; }
+.pp-texto { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; color: var(--tinta-2); font-size: .9rem; }
+.pp-texto b { color: var(--tinta); font-size: 1rem; }
+.pp-filtros { color: var(--latao-texto); font-weight: 600; }
+.pp-seg { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.pp-rot { font-size: .8rem; color: var(--tinta-3); margin-right: 4px; }
+.pp-seg button { all: unset; cursor: pointer; font-size: .84rem; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--linha-2); color: var(--tinta-2); }
+.pp-seg button:hover, .pp-seg button:focus-visible { border-color: var(--latao); outline: none; }
+.pp-seg button[aria-pressed="true"] { background: var(--marinho); border-color: var(--marinho); color: #fff; font-weight: 600; }
 .graf { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
 .graf.largo { grid-column: 1 / -1; }
 .graf h3 { margin: 0; font-size: .76rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--tinta-2); }
@@ -616,6 +644,7 @@ footer a:hover { text-decoration: underline; }
     <fieldset class="agenda" id="c-regras-wrap"><legend id="c-l-regras"></legend><div id="c-regras"></div></fieldset>
     <fieldset class="agenda" id="c-agendar-wrap">
       <legend id="c-l-agenda"></legend>
+      <p class="agenda-info" id="c-trib-lidos"></p>
       <label class="conf-acoes"><input type="checkbox" id="c-agendar"> <span id="c-l-agendar"></span></label>
       <p class="agenda-info" id="c-horas-expl"></p>
       <div class="horas-prontas" id="c-horas-prontas" role="group"></div>
@@ -1898,10 +1927,10 @@ window.LEXSUITE_RADAR = null;
   };
   // 0.7.16: textos novos (PT e EN)
   Object.assign(T.pt, {
-    lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento",
+    lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento", pf_lic_rot: "Licença:", lic_ativa: "ativa", lic_sem_resposta: "sem confirmação agora", lic_aceite: "aguardando o aceite dos termos", lic_bloqueada: "inativa", lic_sem_codigo: "sem código",
     rodar_crit_1: "Lê: hoje e o último dia útil · {l}", rodar_crit_n: "Lê: hoje e os últimos {d} dias úteis · {l}", rodar_crit_alterar: "alterar",
     ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
-    ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Se precisar de suporte, use o DIAGNOSTICO.bat: ele leva estas linhas, sem CPF.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo",
+    c_trib_lidos: "Tribunais que a leitura lê: {l}.", ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Se precisar de suporte, use o DIAGNOSTICO.bat: ele leva estas linhas, sem CPF.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo",
     rg_titulo: "Regras do escritório", rg_intro: "O que o RADAR esconde ou destaca na lista. Fica gravado nas abas Preferências e Exclusões da planilha, com cópia de segurança antes; não é preciso abrir o Excel. O que for escrito à mão nessas abas é substituído ao salvar aqui.",
     rg_sem_pasta: "Escolha primeiro onde ficam as planilhas (acima).", rg_valor: "Valor mínimo da causa (R$)", rg_valor_x: "Usado no filtro “Acima de” e no destaque. Ações abaixo continuam na lista.",
     rg_min: "Mínimo de ações da mesma empresa", rg_min_x: "Ex.: 3 = só destacar empresa com 3 ou mais ações novas na janela de dias. 1 = todas.", rg_janela: "Janela do mínimo de ações (dias)", rg_janela_x: "Quantos dias para trás contar as ações da mesma empresa.",
@@ -1911,7 +1940,7 @@ window.LEXSUITE_RADAR = null;
     rg_exc_t: "Empresas excluídas", rg_exc_x: "Clientes atuais, conflitos ou quem o escritório não quer prospectar. Pode ser o nome ou o CNPJ.", rg_exc_busca: "Procurar na lista de excluídas", rg_exc_nome: "Nome ou CNPJ da empresa", rg_exc_motivo: "Motivo (ex.: cliente atual)",
     rg_exc_add: "Acrescentar", rg_exc_tirar: "Tirar", rg_exc_vazio: "Nenhuma empresa excluída.", rg_exc_ja: "Essa empresa já está na lista.", rg_salvar: "Salvar regras", rg_pendente: "Há mudanças não salvas.", rg_salvo: "✓ Regras salvas na planilha (com cópia de segurança de antes).", rg_mudou: "As regras do escritório têm mudanças que ainda não foram salvas.", rg_de_novo: "Abrir as regras de novo", rg_vazio: "Preencha este campo antes de salvar.", rg_fora: "Número fora do permitido: use de {a} a {b}.",
     fs_titulo: "Filtros salvos", fs_x: "Ficam neste computador. Arquivar esconde da lista sem apagar.", fs_renomear: "Renomear", fs_arquivar: "Arquivar", fs_desarquivar: "Voltar para a lista", fs_arquivado: "arquivado", fs_apagar: "Apagar", fs_novo_nome: "Novo nome do filtro:", fs_existe: "Já existe um filtro com esse nome.", fs_apagar_q: "Apagar o filtro “{n}”?",
-    r_filtrar: "Filtrar", r_ordenar: "Ordenar", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "Aqui aparecem os tribunais que o programa lê (os novos ficam com 0 até a próxima leitura). Para ler outros:",
+    r_filtrar: "Filtrar", r_ordenar: "Ordenar", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "O filtro só mostra o que já está na lista. Para escolher o que o programa lê:",
     rodar_crit_x: "O que “Ler o Diário agora” lê: o Diário de hoje e dos últimos dias úteis com publicação, nos tribunais escolhidos. Diário já lido não é baixado de novo. Os filtros da lista não mudam o que é lido (lê tudo, para nada se perder); eles só escolhem o que aparece, e ficam guardados.",
     rodar_crit_0: "Lê: só hoje · {l}",
     rodar_crit_nada: "Escolha os tribunais primeiro.",
@@ -1931,9 +1960,12 @@ window.LEXSUITE_RADAR = null;
     pf_fixo: "Fixo: identifica você na licença do escritório.", pf_outra_pessoa: "Outra pessoa vai usar este computador",
     pf_outra_pessoa_x: "O e-mail e o escritório não se editam: são a sua identificação na licença. Se outra pessoa do escritório vai usar este computador, ela se cadastra com o e-mail dela, e a SolverONE confere se o domínio do e-mail é do escritório.",
     copia_t: "Cópia criada", abrir_copia: "Abrir a cópia", abrir_pasta_copia: "Abrir a pasta",
+    g_ver_como: "Ver como", g_barras: "Barras", g_pizza: "Pizza", g_outros: "Outros ({n})", g_sem_dados: "Sem dados neste período.",
+    pp_t: "Estes números: {n} ações", pp_diarios: "Diários de {d} a {a}", pp_filtros: "com {n} filtro(s) da lista", pp_lidas: "Lidas pelo programa nos últimos", pp_1: "1 dia", pp_n: "{d} dias",
     saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" e depois em \"Ler agora\" (30 Diários por vez) ou deixe para a leitura automática da noite. Guarda os totais e, só neste computador, o número dos processos já contados (para não contar duas vezes): nada entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
     saz_vazio: "Ainda não há meses suficientes. Escolha quantos meses buscar e clique em \"Buscar estatísticas\".", saz_semana: "Por dia da semana:", saz_pico: "Mês com mais ações: {m} ({n}).",
     saz_estado: "Diários antigos lidos: {l}; na fila: {f}; sem Diário: {s}; com erro: {e}.", saz_de_ate: "De {d} a {a}.", saz_meses_rot: "Meses para trás", saz_meses: "{m} mês(es) para trás",
+    saz_ja_fila: "Nada novo para buscar: os últimos {m} mês(es) já estão lidos ou na fila ({n} Diários). Clique em \"Ler agora\" ou deixe para a leitura da noite.", saz_ja_lidos: "Nada novo para buscar: os últimos {m} mês(es) já estão lidos. Para ir mais longe, escolha mais meses.",
     saz_pedir: "Buscar estatísticas", saz_ler: "Ler agora (30 Diários)", saz_parar: "Parar", saz_na_fila: "{n} Diário(s) na fila. Clique em \"Ler agora\" ou deixe para a leitura da noite.",
     saz_lendo: "Lendo o Diário {k} de {n}: {tr} {d}…",
     m_sit: "{n} situações", m_frente: "{n} frentes", m_trib: "{n} tribunais", m_data: "{n} datas", m_vara: "{n} varas", m_setor: "{n} setores", m_porte: "{n} portes", m_uf: "{n} estados",
@@ -1966,10 +1998,10 @@ window.LEXSUITE_RADAR = null;
     valor_salvo: "✓ salvo", sit_salva: "✓"
   });
   Object.assign(T.en, {
-    lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date",
+    lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date", pf_lic_rot: "Licence:", lic_ativa: "active", lic_sem_resposta: "not confirmed right now", lic_aceite: "waiting for the terms to be accepted", lic_bloqueada: "inactive", lic_sem_codigo: "no code",
     rodar_crit_1: "Reads: today and the last working day · {l}", rodar_crit_n: "Reads: today and the last {d} working days · {l}", rodar_crit_alterar: "change",
     ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
-    ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). For support, run DIAGNOSTICO.bat: it takes these lines, without CPF.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file",
+    c_trib_lidos: "Courts the reading covers: {l}.", ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). For support, run DIAGNOSTICO.bat: it takes these lines, without CPF.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file",
     rg_titulo: "Firm rules", rg_intro: "What RADAR hides or highlights in the list. Saved in the spreadsheet\u2019s Preferences and Exclusions tabs, with a backup copy first; no need to open Excel. Anything typed by hand in those tabs is replaced when you save here.",
     rg_sem_pasta: "First choose where the spreadsheets live (above).", rg_valor: "Minimum claim value (R$)", rg_valor_x: "Used by the “Above” filter and the highlight. Lower lawsuits stay in the list.",
     rg_min: "Minimum lawsuits per company", rg_min_x: "E.g. 3 = only highlight companies with 3 or more new lawsuits in the day window. 1 = all.", rg_janela: "Window for the minimum (days)", rg_janela_x: "How many days back to count the same company\u2019s lawsuits.",
@@ -1979,7 +2011,7 @@ window.LEXSUITE_RADAR = null;
     rg_exc_t: "Excluded companies", rg_exc_x: "Current clients, conflicts or companies the firm does not want to approach. Name or CNPJ.", rg_exc_busca: "Search the excluded list", rg_exc_nome: "Company name or CNPJ", rg_exc_motivo: "Reason (e.g. current client)",
     rg_exc_add: "Add", rg_exc_tirar: "Remove", rg_exc_vazio: "No excluded companies.", rg_exc_ja: "This company is already in the list.", rg_salvar: "Save rules", rg_pendente: "There are unsaved changes.", rg_salvo: "✓ Rules saved to the spreadsheet (with a backup copy of before).", rg_mudou: "The firm rules have changes that were not saved yet.", rg_de_novo: "Open the rules again", rg_vazio: "Fill in this field before saving.", rg_fora: "Number out of range: use {a} to {b}.",
     fs_titulo: "Saved filters", fs_x: "Kept on this computer. Archive hides it from the list without deleting.", fs_renomear: "Rename", fs_arquivar: "Archive", fs_desarquivar: "Back to the list", fs_arquivado: "archived", fs_apagar: "Delete", fs_novo_nome: "New filter name:", fs_existe: "A filter with this name already exists.", fs_apagar_q: "Delete the filter “{n}”?",
-    r_filtrar: "Filter", r_ordenar: "Sort", limpar_filtros_0: "Clear filters", trib_so_lidos: "Here are the courts the program reads (new ones show 0 until the next reading). To read others:",
+    r_filtrar: "Filter", r_ordenar: "Sort", limpar_filtros_0: "Clear filters", trib_so_lidos: "The filter only shows what is already in the list. To choose what the program reads:",
     rodar_crit_x: "What “Read the gazette now” reads: today\u2019s gazette and the last working days with publications, in the chosen courts. A gazette already read is not downloaded again. The list filters do not change what is read (everything is read, so nothing is lost); they only choose what shows, and they are remembered.",
     rodar_crit_0: "Reads: today only · {l}",
     rodar_crit_nada: "Choose the courts first.",
@@ -1999,9 +2031,12 @@ window.LEXSUITE_RADAR = null;
     pf_fixo: "Fixed: identifies you on the firm's licence.", pf_outra_pessoa: "Someone else will use this computer",
     pf_outra_pessoa_x: "E-mail and firm cannot be edited: they identify you on the licence. If someone else from the firm will use this computer, they sign up with their own e-mail, and SolverONE checks that the e-mail domain belongs to the firm.",
     copia_t: "Copy created", abrir_copia: "Open the copy", abrir_pasta_copia: "Open the folder",
+    g_ver_como: "Show as", g_barras: "Bars", g_pizza: "Pie", g_outros: "Others ({n})", g_sem_dados: "No data in this period.",
+    pp_t: "These numbers: {n} lawsuits", pp_diarios: "gazettes from {d} to {a}", pp_filtros: "with {n} list filter(s)", pp_lidas: "Read by the program in the last", pp_1: "1 day", pp_n: "{d} days",
     saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" and then \"Read now\" (30 gazettes at a time) or leave it for the night reading. It keeps the totals and, only on this computer, the numbers of lawsuits already counted (so none is counted twice): nothing goes to the List, the Archive or the spreadsheet, and none of it goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
     saz_vazio: "Not enough months yet. Choose how many months to fetch and click \"Fetch statistics\".", saz_semana: "By weekday:", saz_pico: "Busiest month: {m} ({n}).",
     saz_estado: "Old gazettes read: {l}; queued: {f}; no gazette: {s}; with error: {e}.", saz_de_ate: "From {d} to {a}.", saz_meses_rot: "Months back", saz_meses: "{m} month(s) back",
+    saz_ja_fila: "Nothing new to fetch: the last {m} month(s) are already read or queued ({n} gazettes). Click \"Read now\" or leave it for tonight\u2019s reading.", saz_ja_lidos: "Nothing new to fetch: the last {m} month(s) are already read. To go further back, choose more months.",
     saz_pedir: "Fetch statistics", saz_ler: "Read now (30 gazettes)", saz_parar: "Stop", saz_na_fila: "{n} gazette(s) queued. Click \"Read now\" or leave it for the night reading.",
     saz_lendo: "Reading gazette {k} of {n}: {tr} {d}…",
     m_sit: "{n} statuses", m_frente: "{n} practice areas", m_trib: "{n} courts", m_data: "{n} dates", m_vara: "{n} court units", m_setor: "{n} sectors", m_porte: "{n} sizes", m_uf: "{n} states",
@@ -2064,6 +2099,7 @@ window.LEXSUITE_RADAR = null;
   var MESES_ = { pt: ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"], en: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"] };
   function dataCurta(iso, semAno) { if (!iso) return ""; var p = String(iso).slice(0, 10).split("-"); if (p.length < 3 || !/^\d{4}$/.test(p[0])) return String(iso);
     var m = (MESES_[lang] || MESES_.pt)[Number(p[1]) - 1] || p[1]; return p[2] + "/" + m + (semAno ? "" : "/" + p[0]); }
+  function mesCurto(am) { var p = String(am || "").split("-"); return p.length < 2 ? String(am || "") : ((MESES_[lang] || MESES_.pt)[Number(p[1]) - 1] || p[1]) + "/" + p[0]; }  // 0.7.30 (dono): SET/2026
   function fuso() { var o = -new Date().getTimezoneOffset() / 60; return o === -3 ? "Brasília" : o === 0 ? "UTC" : "UTC" + (o > 0 ? "+" : "−") + Math.abs(o); }
   function dataHora(iso) { if (!iso) return ""; var h = String(iso).slice(11, 16); return dataCurta(iso) + (h ? " " + h + " (" + fuso() + ")" : ""); }
   function datasNoTexto(x) { return String(x || "").replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, function (m) { return dataCurta(m); }); }
@@ -2195,6 +2231,9 @@ window.LEXSUITE_RADAR = null;
       }
     }).catch(function () { falhasBatimento += 1; if (falhasBatimento >= 5) telaFechada(); });
   }, 10000);
+  window.addEventListener("pagehide", function () {  // 0.7.29 (dono): janela fechada no X: o próximo clique no atalho abre a tela de novo
+    if (MODO === "app") try { fetch("/tela-fechada", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json", "X-LexSuite": "1" }, body: "{}" }); } catch (e) {}
+  });
   function sairDoRadar() {
     var c = el("div"); c.appendChild(el("h3", null, t("sair_t"))); c.appendChild(el("p", null, t("sair_x")));
     abrirJanela(c, [[t("cancelar"), null], [t("sair"), function () {
@@ -2226,7 +2265,6 @@ window.LEXSUITE_RADAR = null;
   function salvarTribunais(depoisRodar) {
     post("/config", { tribunais: Object.keys(sel), dias_na_pagina: periodo }).then(function () {
       $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
-      F.trib = lista_(F.trib).filter(function (v) { return sel[v]; });  // 0.7.29 (dono): tribunal tirado da mira sai também do filtro
       if (depoisRodar) { post("/rodar", {}).then(function (r) { if (r.ok) vigiar(); }); }
       carregar();
     }).catch(function () { $("estado").textContent = t("falha"); });
@@ -2381,6 +2419,10 @@ window.LEXSUITE_RADAR = null;
     var p = $("config"), abrir = forcar || p.hidden;
     if (!abrir) { fecharConfig(false); return; }
     fecharPerfil(); if (p.hidden) guardarFoco(); modoPagina(comoPagina ? "config" : null);
+    var tl_ = $("c-trib-lidos"), trs_c = (APP && APP.config && APP.config.tribunais) || [];  // 0.7.30 (dono): o que a leitura lê, com atalho para a mira (lugar único)
+    tl_.textContent = t("c_trib_lidos", { l: trs_c.length > 6 ? t("n_tribunais", { n: num(trs_c.length) }) : (trs_c.join(", ") || "—") }) + " ";
+    var ta_ = el("button", "btn-txt", t("rodar_crit_alterar")); ta_.type = "button"; tl_.appendChild(ta_);
+    ta_.addEventListener("click", function () { fecharConfig(); if ($("config").hidden) { $("b-trib").click(); $("b-trib").scrollIntoView({ behavior: "smooth", block: "center" }); } });
     var fixo = !!(APP && APP.conta && APP.conta.codigo && APP.conta.ok);  // código válido e salvo: só para ler
     $("c-codigo").value = fixo ? mascaraCodigo(APP.conta.codigo) : ((APP && APP.conta && APP.conta.codigo) || "");  // 0.7.19: confirmado aparece mascarado
     $("c-codigo").readOnly = fixo; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
@@ -2725,7 +2767,9 @@ window.LEXSUITE_RADAR = null;
     lic.appendChild(el("b", null, t("pf_licenca")));
     lic.appendChild(el("span", null, t("pf_codigo") + " " + (ct.codigo ? mascaraCodigo(ct.codigo) : "—")));
     lic.appendChild(el("span", null, t("pf_escritorio_lic") + " " + (ct.escritorio || (APP && APP.config.escritorio) || "—")));
-    lic.appendChild(el("span", null, t("pf_situacao") + " " + (textoConta() || "—")));
+    var est_ = estadoLicenca(), ls_ = el("span", "lic-linha"); ls_.appendChild(document.createTextNode(t("pf_lic_rot") + " "));  // 0.7.30 (dono): "Licença: ✓ ativa", com cor
+    ls_.appendChild(el("span", "lic-selo " + est_.cls, est_.txt)); lic.appendChild(ls_);
+    if (est_.cls !== "lic-ok" && textoConta()) lic.appendChild(el("span", "lic-det", textoConta()));
     if (ct.ok) lic.appendChild(el("span", null, t("lic_validade") + ": " + validadeTexto(ct.validade)));  // 0.7.21 (dono)
     $("pf-licenca").appendChild(lic);
     camposPerfil().forEach(function (c) {
@@ -2929,7 +2973,6 @@ window.LEXSUITE_RADAR = null;
     var cont = {}; bi.forEach(function (i) { if (passaFiltros(i, k, cx.min, cx.esconder, cx.q)) { var v = valorFacet(i, k); if (v !== "") cont[v] = (cont[v] || 0) + 1; } });
     var sel = lista_(F[k]).filter(function (v) { return v; }); F[k] = sel;
     sel.forEach(function (v) { if (!(v in cont)) cont[v] = 0; });
-    if (k === "trib" && MODO === "app" && APP && APP.config) (APP.config.tribunais || []).forEach(function (v) { if (!(v in cont)) cont[v] = 0; });  // 0.7.29 (dono): o filtro mostra a mira inteira
     var chaves = Object.keys(cont);
     box.hidden = chaves.length < 2 && !sel.length;
     var b = el("button", sel.length ? "ligado" : null); b.type = "button"; b.setAttribute("aria-expanded", String(multiAberto === k)); b.setAttribute("aria-haspopup", "true");
@@ -3285,7 +3328,7 @@ window.LEXSUITE_RADAR = null;
         regrasExc.unshift({ nome: n.slice(0, 160), motivo: nMot.value.trim().slice(0, 200) }); nNome.value = nMot.value = ""; desenharExc(); marcarRegras(); nNome.focus();
       });
       nNome.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); bAdd.click(); } });
-      [nNome, nMot].forEach(function (x) { x.addEventListener("input", function () { if (x.value.trim()) regrasSujo = true; }); });  // revisão da 0.7.28: digitado e não acrescentado também pergunta ao fechar
+      [nNome, nMot].forEach(function (x) { x.addEventListener("input", function () { if (nNome.value.trim()) marcarRegras(); }); });  // revisão da 0.7.28: digitado e não acrescentado também pergunta ao fechar
       busca.addEventListener("input", desenharExc);
       add.appendChild(nNome); add.appendChild(nMot); add.appendChild(bAdd); box.appendChild(add); box.appendChild(busca); box.appendChild(lista); desenharExc();
       var acoes = el("div", "conf-acoes"), bs = el("button", "primario", t("rg_salvar")), msg = el("span", "rg-msg"); bs.type = "button"; bs.disabled = true;
@@ -3446,6 +3489,47 @@ window.LEXSUITE_RADAR = null;
   function kpi(rot, val, det, destaque) {
     var k = el("div", "kpi" + (destaque ? " destaque" : "")); k.appendChild(el("span", "rot", rot)); k.appendChild(el("span", "val", val)); if (det) k.appendChild(el("span", "det", det)); return k;
   }
+  var tipoGraf = "barras"; try { tipoGraf = localStorage.getItem("lexsuite:graf-tipo") === "pizza" ? "pizza" : "barras"; } catch (e) {}
+  var CORES_PIZZA = ["#1b2b45", "#3d5a80", "#7d93b3", "#a87a2e", "#cdb27a", "#5f6b7d", "#b7bfcc"];
+  function grafPizza(tit, linhas, opc) {  // 0.7.30 (dono): pizza sóbria (anel), legenda sempre visível, nada sai da tela
+    opc = opc || {}; var g = el("div", "graf graf-pizza"); g.appendChild(el("h3", null, tit));
+    var lim = Math.min(opc.max || 8, 6), base = linhas.filter(function (l) { return l.n > 0; }), fatias = base.slice(0, lim), resto = base.slice(lim);
+    if (resto.length) fatias = fatias.concat([{ k: "", r: t("g_outros", { n: num(resto.length) }), n: resto.reduce(function (a, l) { return a + l.n; }, 0), semFiltro: true, outros: true }]);
+    var total = fatias.reduce(function (a, l) { return a + l.n; }, 0);
+    if (!total) { g.appendChild(el("p", "nota-g", t("g_sem_dados"))); return g; }
+    var NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 120 120"); svg.setAttribute("class", "anel"); svg.setAttribute("aria-hidden", "true");
+    var R = 46, C = 2 * Math.PI * R, ini = 0, corN = 0;
+    var corDe = function (l) { return l.apagada ? "#c9ced8" : l.outros ? "#dfe3ea" : CORES_PIZZA[corN++ % CORES_PIZZA.length]; };
+    var leg = el("ul", "legenda");
+    fatias.forEach(function (l) {
+      var cor = corDe(l), frac = l.n / total, arco = document.createElementNS(NS, "circle");
+      arco.setAttribute("cx", "60"); arco.setAttribute("cy", "60"); arco.setAttribute("r", String(R)); arco.setAttribute("fill", "none");
+      arco.setAttribute("stroke", cor); arco.setAttribute("stroke-width", "18");
+      arco.setAttribute("stroke-dasharray", (frac * C).toFixed(2) + " " + C.toFixed(2)); arco.setAttribute("stroke-dashoffset", (-ini * C).toFixed(2));
+      arco.setAttribute("transform", "rotate(-90 60 60)"); svg.appendChild(arco); ini += frac;
+      var clicavel = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro), li = el("li");
+      var item = el(clicavel ? "button" : "span", "leg-item"); if (clicavel) { item.type = "button"; item.title = t("g_ver", { r: l.r }); item.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
+      var sw = el("i", "leg-cor"); sw.style.background = cor; item.appendChild(sw);
+      var rt = el("span", "leg-rot", l.r); rt.title = l.r; item.appendChild(rt);
+      item.appendChild(el("span", "leg-n", num(l.n) + " · " + num(Math.round(100 * frac)) + "%"));
+      item.setAttribute("aria-label", l.r + ": " + t("g_acoes_n", { n: num(l.n) }) + " (" + Math.round(100 * frac) + "%)");
+      li.appendChild(item); leg.appendChild(li);
+    });
+    var meio = document.createElementNS(NS, "text"); meio.setAttribute("x", "60"); meio.setAttribute("y", "64"); meio.setAttribute("text-anchor", "middle"); meio.setAttribute("class", "anel-total"); meio.textContent = num(total); svg.appendChild(meio);
+    var corpo = el("div", "pizza-corpo"); corpo.appendChild(svg); corpo.appendChild(leg); g.appendChild(corpo);
+    if (opc.nota) g.appendChild(el("p", "nota-g", opc.nota)); return g;
+  }
+  function grafLinhas(tit, linhas, opc) { return tipoGraf === "pizza" ? grafPizza(tit, linhas, opc) : grafBarras(tit, linhas, opc); }
+  function escolhaGraf() {
+    var c = el("div", "graf-tipo pp-seg"); c.setAttribute("role", "group"); c.setAttribute("aria-label", t("g_ver_como"));
+    c.appendChild(el("span", "pp-rot", t("g_ver_como")));
+    [["barras", t("g_barras")], ["pizza", t("g_pizza")]].forEach(function (o) {
+      var b = el("button", null, o[1]); b.type = "button"; b.setAttribute("aria-pressed", String(tipoGraf === o[0]));
+      b.addEventListener("click", function () { tipoGraf = o[0]; try { localStorage.setItem("lexsuite:graf-tipo", o[0]); } catch (e) {} desenhar(); });
+      c.appendChild(b);
+    });
+    return c;
+  }
   function grafBarras(tit, linhas, opc) {
     opc = opc || {}; var g = el("div", "graf" + (opc.largo ? " largo" : "")); g.appendChild(el("h3", null, tit));
     var max = Math.max.apply(null, linhas.map(function (l) { return l.n; }).concat([1])), b = el("div", "barras");
@@ -3469,7 +3553,7 @@ window.LEXSUITE_RADAR = null;
     var max = Math.max.apply(null, dias.map(function (d) { return d.n; }).concat([1])), c = el("div", "colunas");
     dias.forEach(function (d) {
       var col = el(porMes ? "div" : "button", "col"); if (!porMes) { col.type = "button"; col.addEventListener("click", function () { filtrarPor("data", d.k); }); }
-      var rot = porMes ? d.k.slice(5) + "/" + d.k.slice(0, 4) : dataSemana(d.k);
+      var rot = porMes ? mesCurto(d.k) : dataSemana(d.k);
       col.setAttribute("aria-label", rot + ": " + t("g_acoes_n", { n: num(d.n) })); col.title = col.getAttribute("aria-label");
       col.appendChild(el("span", "n", num(d.n)));
       var pe = el("span", "pe"), alvoH = Math.max(2, Math.round(100 * d.n / max)) + "%"; pe.style.height = "0%"; requestAnimationFrame(function () { requestAnimationFrame(function () { pe.style.height = alvoH; }); }); col.appendChild(pe);
@@ -3480,6 +3564,13 @@ window.LEXSUITE_RADAR = null;
   }
   /* 0.7.18: estatísticas dos meses anteriores (sazonalidade e picos), só totais, lidas aos poucos */
   var vigiaHist = null;
+  function estadoLicenca() {  // 0.7.30 (dono): ativa em verde com ✓; sem confirmação e termos pendentes em âmbar; bloqueada em vermelho
+    var c_ = (APP && APP.conta) || {}, tx = String(c_.texto || "");
+    if (!c_.codigo && !c_.ok) return { cls: "lic-alerta", txt: t("lic_sem_codigo") };
+    if (c_.ok) return /^Licença ativa/.test(tx) ? { cls: "lic-ok", txt: "✓ " + t("lic_ativa") } : { cls: "lic-alerta", txt: "⚠ " + t("lic_sem_resposta") };
+    if (c_.aceite_link) return { cls: "lic-alerta", txt: "⚠ " + t("lic_aceite") };
+    return { cls: "lic-erro", txt: "✕ " + t("lic_bloqueada") };
+  }
   function textoConta() { var c_ = (APP && APP.conta) || {}; return (lang === "en" && c_.texto_en) || c_.texto || ""; }
   function validadeTexto(v) {  // 0.7.21: "Válida até 31 de dezembro de 2026" / "Valid until 31 December 2026"; sem data, "Sem vencimento"
     var m_ = /^(\d{4})-(\d{2})-(\d{2})/.exec(v || ""); if (!m_) return t("lic_sem_venc");
@@ -3489,7 +3580,7 @@ window.LEXSUITE_RADAR = null;
     return t("lic_ate", { d: lang === "pt" ? m_[3] + " de " + mes_ + " de " + m_[1] : m_[3] + " " + mes_ + " " + m_[1] });
   }
   function mascaraCodigo(c) { var p_ = String(c || "").split("-"); return p_.length === 3 ? p_[0] + "-••••-" + p_[2] : String(c || "").slice(0, 4) + "••••"; }
-  var histRecado = null;
+  var histRecado = null, histInfo = "";
   function textoLang(x) { return typeof x === "string" ? x : ((x && (x[lang] || x.pt)) || ""); }
   function grafSazonal() {
     var h = (D && D.historico) || {}, g = el("div", "graf largo"), cab = el("div", "saz-cab");
@@ -3499,7 +3590,7 @@ window.LEXSUITE_RADAR = null;
       var max = Math.max.apply(null, meses.map(function (m) { return m.novas; }).concat([1])), pico = meses.reduce(function (a, m) { return m.novas > a.novas ? m : a; }, meses[0]);
       var c = el("div", "colunas");
       meses.forEach(function (m) {
-        var col = el("div", "col" + (m === pico ? " pico" : "")), rot = m.mes.slice(5) + "/" + m.mes.slice(0, 4);
+        var col = el("div", "col" + (m === pico ? " pico" : "")), rot = mesCurto(m.mes);
         col.setAttribute("aria-label", rot + ": " + t("g_acoes_n", { n: num(m.novas) })); col.title = col.getAttribute("aria-label");
         col.appendChild(el("span", "n", num(m.novas)));
         var pe = el("span", "pe"); pe.style.height = Math.max(2, Math.round(100 * m.novas / max)) + "%"; col.appendChild(pe);
@@ -3507,19 +3598,30 @@ window.LEXSUITE_RADAR = null;
       });
       g.appendChild(c);
       var sem = h.por_semana || [], nomes = lang === "pt" ? ["seg", "ter", "qua", "qui", "sex"] : ["Mon", "Tue", "Wed", "Thu", "Fri"], tot = sem.slice(0, 5).reduce(function (a, b) { return a + b; }, 0);
-      if (tot) g.appendChild(el("p", "nota-g", t("saz_semana") + " " + nomes.map(function (nm, ix) { return nm + " " + Math.round(100 * (sem[ix] || 0) / tot) + "%"; }).join(" · ") + ". " + t("saz_pico", { m: pico.mes.slice(5) + "/" + pico.mes.slice(0, 4), n: num(pico.novas) })));
+      if (tot) g.appendChild(el("p", "nota-g", t("saz_semana") + " " + nomes.map(function (nm, ix) { return nm + " " + Math.round(100 * (sem[ix] || 0) / tot) + "%"; }).join(" · ") + ". " + t("saz_pico", { m: mesCurto(pico.mes), n: num(pico.novas) })));
     } else g.appendChild(el("p", "nota-g", t("saz_vazio")));
     var st = el("p", "nota-g");
     st.textContent = t("saz_estado", { l: num(h.lidos || 0), f: num(h.na_fila || 0), s: num(h.sem_diario || 0), e: num(h.erros || 0) }) + (h.desde ? " " + t("saz_de_ate", { d: dataCurta(h.desde), a: dataCurta(h.ate) }) : "");
     g.appendChild(st);
     // 0.7.19 (ressalva 4.1 da Operação): o motivo da parada ou do erro fica na tela, no idioma escolhido, até a próxima tentativa
     if (histRecado) g.appendChild(el("p", "nota-g saz-recado", textoLang(histRecado)));
+    else if (histInfo) g.appendChild(el("p", "nota-g saz-info", histInfo));  // 0.7.30: retorno do "Buscar estatísticas" (informação, não erro)
     var bar = el("div", "progresso"), bi_ = el("i"); bar.appendChild(bi_); bar.hidden = true; g.appendChild(bar);
     var ac = el("div", "conf-acoes"), sel_ = el("select"); sel_.setAttribute("aria-label", t("saz_meses_rot"));
     [1, 3, 6, 12].forEach(function (m) { var o = el("option", null, t("saz_meses", { m: m })); o.value = String(m); sel_.appendChild(o); }); sel_.value = String((h.pedido && h.pedido.meses) || 3);
     var bp = el("button", "chip", t("saz_pedir")), bl = el("button", "primario", t("saz_ler")), bx = el("button", "chip", t("saz_parar")); bp.type = bl.type = bx.type = "button";
     bl.hidden = !(h.na_fila > 0 || h.erros > 0); bx.hidden = true;  // 0.7.19 (4.6): com erros também dá para tentar de novo
-    bp.addEventListener("click", function () { histRecado = null; post("/estatisticas/pedir", { meses: sel_.value }).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } mostrarAviso(t("saz_na_fila", { n: num(r.na_fila || 0) })); carregar(); }); });
+    var msgH = el("p", "nota-g saz-recado"); msgH.setAttribute("aria-live", "polite"); msgH.hidden = true;  // 0.7.30 (dono): o retorno aparece aqui, não lá no alto
+    bp.addEventListener("click", function () {
+      histRecado = null; histInfo = ""; bp.disabled = true; msgH.hidden = false; msgH.textContent = t("carregando");
+      post("/estatisticas/pedir", { meses: sel_.value }).then(function (r) {
+        bp.disabled = false;
+        if (!r.ok) { msgH.textContent = r.motivo || t("falha"); return; }
+        var novos = Number(r.na_fila || 0), fila = Number(h.na_fila || 0) + novos;
+        histInfo = novos ? t("saz_na_fila", { n: num(fila) }) : (fila ? t("saz_ja_fila", { m: sel_.value, n: num(fila) }) : t("saz_ja_lidos", { m: sel_.value }));
+        carregar();
+      }).catch(function () { bp.disabled = false; msgH.textContent = t("falha"); });
+    });
     var acompanhar = function () {
       bar.hidden = false; bx.hidden = false; bl.disabled = true; bp.disabled = true; clearInterval(vigiaHist);
       vigiaHist = setInterval(function () {
@@ -3530,11 +3632,29 @@ window.LEXSUITE_RADAR = null;
         }).catch(function () {});
       }, 2000);
     };
-    bl.addEventListener("click", function () { histRecado = null; post("/estatisticas/ler", {}).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } acompanhar(); }); });
+    bl.addEventListener("click", function () { histRecado = null; histInfo = ""; post("/estatisticas/ler", {}).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } acompanhar(); }); });
     bx.addEventListener("click", function () { post("/estatisticas/parar", {}); bx.disabled = true; });
-    ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); g.appendChild(ac);
+    ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); g.appendChild(ac); g.appendChild(msgH);
     if (h.rodando && h.rodando.rodando) setTimeout(acompanhar, 0);
     return g;
+  }
+  function cabPainel(itens) {  // 0.7.30 (dono): de quando são estes números, e o período num lugar só, no mesmo estilo
+    var c = el("div", "painel-periodo"), tx = el("div", "pp-texto"), ds = itens.map(diaDe).filter(Boolean).sort();
+    tx.appendChild(el("b", null, t("pp_t", { n: num(itens.length) })));
+    tx.appendChild(el("span", null, ds.length ? t("pp_diarios", { d: dataCurta(ds[0]), a: dataCurta(ds[ds.length - 1]) }) : ""));
+    var nf = filtrosLigados(); if (nf) tx.appendChild(el("span", "pp-filtros", t("pp_filtros", { n: nf })));
+    c.appendChild(tx);
+    if (MODO === "app") {
+      var seg = el("div", "pp-seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", t("periodo"));
+      seg.appendChild(el("span", "pp-rot", t("pp_lidas")));
+      [1, 3, 7, 15, 30].forEach(function (d) {
+        var b = el("button", null, d === 1 ? t("pp_1") : t("pp_n", { d: d })); b.type = "button"; b.setAttribute("aria-pressed", String(periodo === d));
+        b.addEventListener("click", function () { if (periodo === d) return; periodo = d; $("periodo").value = String(d); post("/config", { dias_na_pagina: d }).then(carregar, carregar); });
+        seg.appendChild(b);
+      });
+      c.appendChild(seg);
+    }
+    return c;
   }
   function desenharPainel(itens) {
     cacheValor = {}; try { desenharPainel_(itens); } finally { cacheValor = null; }
@@ -3554,9 +3674,11 @@ window.LEXSUITE_RADAR = null;
     k.appendChild(kpi(t("k_cnpj"), num(comCnpj), t("k_pct", { p: num(Math.round(100 * comCnpj / itens.length)) })));
     k.appendChild(kpi(t("k_empresas"), num(emp.length), t("k_empresas_det", { n: num(emp.filter(function (e) { return e.n > 1; }).length) })));
     k.appendChild(kpi(t("k_sem_valor"), num(itens.length - comV.length), t("k_sem_valor_det")));
+    alvo.appendChild(cabPainel(itens));
     alvo.appendChild(k);
     alvo.appendChild(grafDias(itens));
     if (MODO === "app") alvo.appendChild(grafSazonal());
+    alvo.appendChild(escolhaGraf());
     var grade = el("div", "grade-graf");
     var fx = [[null, null], [0, 50000], [50000, 100000], [100000, 300000], [300000, 1000000], [1000000, Infinity]];
     var faixas = fx.map(function (f, ix) {
@@ -3564,15 +3686,15 @@ window.LEXSUITE_RADAR = null;
       var r = ix === 0 ? t("fx_sem") : ix === 1 ? t("fx_ate", { a: reaisCurto(f[1]) }) : f[1] === Infinity ? t("fx_acima", { a: reaisCurto(f[0]) }) : t("fx_entre", { a: reaisCurto(f[0]), b: reaisCurto(f[1]) });
       return { k: "", r: r, n: n, ouro: ix > 0 && f[1] > min, apagada: ix === 0 };
     });
-    grade.appendChild(grafBarras(t("g_faixas"), faixas, { max: 6, nota: t("k_acima", { min: reaisCurto(min) }) + ": " + num(acima) }));
-    grade.appendChild(grafBarras(t("g_setores"), contar(itens, function (i) { return i.setor ? [i.setor, i.setor] : ["", t("sem_setor")]; }), { campo: "setor", comValor: true }));
-    grade.appendChild(grafBarras(t("g_empresas"), emp.map(function (e) { return { k: "", r: e.r, n: e.n, v: e.v }; }), { comValor: true }));
-    grade.appendChild(grafBarras(t("g_porte"), contar(itens, function (i) { var p_ = porteCurto(i); return p_ ? [p_, p_] : ["", t("sem_porte")]; }), { campo: "porte" }));
+    grade.appendChild(grafLinhas(t("g_faixas"), faixas, { max: 6, nota: t("k_acima", { min: reaisCurto(min) }) + ": " + num(acima) }));
+    grade.appendChild(grafLinhas(t("g_setores"), contar(itens, function (i) { return i.setor ? [i.setor, i.setor] : ["", t("sem_setor")]; }), { campo: "setor", comValor: true }));
+    grade.appendChild(grafLinhas(t("g_empresas"), emp.map(function (e) { return { k: "", r: e.r, n: e.n, v: e.v }; }), { comValor: true }));
+    grade.appendChild(grafLinhas(t("g_porte"), contar(itens, function (i) { var p_ = porteCurto(i); return p_ ? [p_, p_] : ["", t("sem_porte")]; }), { campo: "porte" }));
     var tribs = contar(itens, function (i) { return i.tribunal ? [i.tribunal, i.tribunal] : null; });
-    if (tribs.length > 1) grade.appendChild(grafBarras(t("g_trib"), tribs, { campo: "trib", comValor: true, max: 24 }));
-    else grade.appendChild(grafBarras(t("g_vara"), contar(itens, function (i) { return i.vara ? [i.vara, i.vara] : null; }), { campo: "vara" }));
-    grade.appendChild(grafBarras(t("g_sinal"), contar(itens, function (i) { return i.sinal ? [i.sinal, i.sinal] : ["", t("sinal_antigo")]; }), { max: 8 }));
-    grade.appendChild(grafBarras(t("g_uf"), contar(itens, function (i) { var u = (i.empresa || {}).uf; return u ? [u, u] : ["", t("sem_uf")]; }), { campo: "uf" }));
+    if (tribs.length > 1) grade.appendChild(grafLinhas(t("g_trib"), tribs, { campo: "trib", comValor: true, max: 24 }));
+    else grade.appendChild(grafLinhas(t("g_vara"), contar(itens, function (i) { return i.vara ? [i.vara, i.vara] : null; }), { campo: "vara" }));
+    grade.appendChild(grafLinhas(t("g_sinal"), contar(itens, function (i) { return i.sinal ? [i.sinal, i.sinal] : ["", t("sinal_antigo")]; }), { max: 8 }));
+    grade.appendChild(grafLinhas(t("g_uf"), contar(itens, function (i) { var u = (i.empresa || {}).uf; return u ? [u, u] : ["", t("sem_uf")]; }), { campo: "uf" }));
     alvo.appendChild(grade);
     alvo.appendChild(el("p", "nota-g", t("g_nota")));
     if (D && D.criterio && D.criterio.desde) alvo.appendChild(el("p", "nota-g", t("criterio_nota", { d: dataCurta(D.criterio.desde) })));

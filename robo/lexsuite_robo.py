@@ -49,7 +49,15 @@ class Registro:
                 if os.path.exists(antigo):
                     os.replace(antigo, novo)
 
+    errors = "replace"
+
+    def fileno(self):
+        import io
+        raise io.UnsupportedOperation("registro em arquivo")
+
     def write(self, texto):
+        if isinstance(texto, (bytes, bytearray)):
+            texto = bytes(texto).decode("utf-8", "replace")
         if self.eco is not None:
             try:
                 self.eco.write(texto)
@@ -88,6 +96,12 @@ def ultimas_linhas_registro(n=200, caminho=None):
         except OSError:
             pass
     return "\n".join(linhas[-n:])
+
+
+def mascarar_registro(texto):
+    """Revisão da 0.7.29: tira e-mail e o nome da pessoa na pasta do Windows (C:\\Users\\<nome>) das linhas do registro."""
+    t = re.sub(r"[\w.+-]+@[\w-]+\.[\w.-]+", "[e-mail]", str(texto or ""))
+    return re.sub(r"(?i)([a-z]:[\\/](?:users|usuários|usuarios)[\\/])[^\\/\r\n]+", r"\1[usuário]", t)
 
 
 def sem_console():
@@ -560,7 +574,22 @@ def cmd_parar(a):
 
 def cmd_app(a):
     """Tela local no navegador: escolher os tribunais, rodar e ver a lista (ABRIR.bat)."""
-    from lexsuite import app
+    from lexsuite import agendar, app
+    if a.espera and os.name == "nt" and not sem_console() and not getattr(a, "ver", False):
+        # Revisão da 0.7.29: depois de atualizar, o programa ANTIGO (0.7.28) reinicia com janela preta; o novo passa a
+        # tela para o pythonw (sem janela) e sai, e a janela preta fecha sozinha.
+        exe = agendar.executavel_oculto(AQUI)
+        if exe:
+            import subprocess  # nosec B404 - o próprio programa, lista fixa, sem shell
+            args = [exe, os.path.join(AQUI, "lexsuite_robo.py"), "app", "--espera"] + (["--sem-navegador"] if a.sem_navegador else []) \
+                + (["--porta", str(a.porta)] if a.porta else [])
+            try:
+                subprocess.Popen(args, cwd=AQUI, close_fds=True, stdin=subprocess.DEVNULL,  # nosec B603
+                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+                print("  Programa reiniciado sem janela preta: esta janela fecha sozinha.", flush=True)
+                return None
+            except OSError:
+                pass
     cfg = carregar_config(os.path.join(AQUI, "config.json"))
     app.servir(AQUI, a.porta or cfg["radar"].get("porta"), abrir=not a.sem_navegador, espera=a.espera)
 
@@ -605,7 +634,7 @@ def cmd_diagnostico(a):
     if not leads:
         raise SystemExit("  O banco ainda não tem ações guardadas. Rode o RODAR.bat (radar) primeiro.")
     texto = dg.relatorio_radar(leads, amostras=a.amostras)
-    texto += "\n\n== Registro do programa (últimas linhas, sem CPF) ==\n" + dg.mascarar(ultimas_linhas_registro(200))  # 0.7.29
+    texto += "\n\n== Registro do programa (últimas linhas, sem CPF, e-mail nem nome da pasta do usuário) ==\n" + mascarar_registro(dg.mascarar(ultimas_linhas_registro(200)))  # 0.7.29
     with open(caminho, "w", encoding="utf-8") as f:
         f.write(texto)
     print(f"  {len(leads)} ações analisadas. Relatório: {caminho} ({os.path.getsize(caminho) // 1024} KB).")
@@ -685,6 +714,7 @@ def main(argv=None):
         if e.code not in (None, 0):
             print(str(e.code) if not isinstance(e.code, int) else f"  Saiu com código {e.code}.", flush=True)
             _avisar_erro(a.comando, str(e.code))
+            raise SystemExit(1) from None  # revisão: a mensagem já foi para o registro (não sai duas vezes)
         raise
     except Exception:  # noqa: BLE001 - 0.7.29: sem janela preta, o erro vai para o registro e para um aviso do Windows
         import traceback

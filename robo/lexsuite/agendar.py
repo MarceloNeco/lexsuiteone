@@ -32,7 +32,7 @@ SEM_JANELA = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
 
 def _rodar(args):
-    r = subprocess.run(args, capture_output=True, text=True, timeout=30, shell=False,  # nosec B603
+    r = subprocess.run(args, capture_output=True, text=True, timeout=30, shell=False, stdin=subprocess.DEVNULL,  # nosec B603
                        creationflags=SEM_JANELA)  # 0.7.29: chamado do pythonw, o schtasks piscaria uma janela preta
     return r.returncode == 0, (r.stderr or r.stdout or "").strip()[:200]
 
@@ -249,7 +249,7 @@ def migrar_antigas(pasta_robo, cfg):
 def _saida_inteira(args):
     """A saída inteira de um comando (o _rodar corta em 200 letras), em texto, seja UTF-16 ou não."""
     try:
-        r = subprocess.run(args, capture_output=True, timeout=30, shell=False, creationflags=SEM_JANELA)  # nosec B603
+        r = subprocess.run(args, capture_output=True, timeout=30, shell=False, stdin=subprocess.DEVNULL, creationflags=SEM_JANELA)  # nosec B603
     except (OSError, subprocess.SubprocessError):
         return ""
     if r.returncode != 0:

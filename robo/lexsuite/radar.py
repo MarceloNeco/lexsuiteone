@@ -10,6 +10,7 @@ do PJe: a página tem o botão "Abrir no PJe" e o campo para a pessoa digitar.
 import collections
 import datetime as dt
 import os
+import threading
 import time
 
 from . import classificar as cl
@@ -291,7 +292,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         banco.registrar_rodada({"id": rodada_id, "quando": agora.isoformat(timespec="minutes"), "modo": "caderno",
                                 "conferidas": len(pubs), "novas_processos": 0, "novas_acoes": len(novos), "detalhes": detalhes})
         if not interrompida:  # contagem parcial não serve para avaliar a saúde das fontes (daria falso alarme)
-            ja = sum(int(t.get("ja_conferidos") or 0) for t in tentativas)  # 0.7.29: Diários já lidos antes não são alarme
+            ja = ja_conferidos_para_saude(tentativas)
             saude.registrar(banco, saude.avaliar(pubs, novos, feitas, falhas, agora.date(), ja_conferidos=ja), aviso)
         registro.update({"lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj, "resultado": "interrompida" if interrompida else "ok"})
         if interrompida:
@@ -418,7 +419,23 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, novas_r
     return False
 
 
+def ja_conferidos_para_saude(tentativas):
+    """0.7.29: Diários já lidos antes não são alarme; mas, se algum tribunal falhou, a Saúde continua alarmando (0)."""
+    if not all(t.get("causa") in ("ok", "ainda_nao_liberado_3h") for t in tentativas or []):
+        return 0
+    return sum(int(t.get("ja_conferidos") or 0) for t in tentativas or [])
+
+
+TRAVA_REGRAVAR = threading.RLock()  # revisão da 0.7.29: "Salvar regras", "Gravar a planilha agora", a regravação depois
+# da planilha aberta e a limpeza nunca se cruzam (uma leria as abas antes da outra gravar e desfaria a mudança)
+
+
 def regravar_planilha(cfg, banco, pasta_base, versao, aviso=print, novas_regras=None):
+    with TRAVA_REGRAVAR:
+        return _regravar_planilha(cfg, banco, pasta_base, versao, aviso, novas_regras)
+
+
+def _regravar_planilha(cfg, banco, pasta_base, versao, aviso=print, novas_regras=None):
     """Botão "Gravar a planilha agora" (depois de fechar o Excel): grava a lista atual sem ler o Diário de novo.
     0.7.28: com `novas_regras` ({"Preferências": linhas, "Exclusões": linhas}), grava também as regras do escritório
     editadas na tela, e a lista já sai com elas."""

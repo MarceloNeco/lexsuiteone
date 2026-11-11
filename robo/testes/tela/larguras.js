@@ -7,7 +7,7 @@ const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
 (async () => {
   const b = await chromium.launch(); const falhas = []; let n = 0;
   const ok = (c, m) => { n++; if (!c) falhas.push(m); else console.log('  ✓ ' + m); };
-  const tamanhos = [['celular', null], ['notebook', [1366, 768]], ['monitor', [1920, 1080]], ['monitor-grande', [2560, 1440]]];
+  const tamanhos = [['celular', null], ['tablet', [768, 1024]], ['notebook', [1366, 768]], ['monitor', [1920, 1080]], ['monitor-grande', [2560, 1440]]];  // 0.7.29: + 768 px
   for (const [nome, vp] of tamanhos) {
     const ctx = vp ? await b.newContext({ viewport: { width: vp[0], height: vp[1] } }) : await b.newContext(devices['iPhone 14']);
     const p = await ctx.newPage(); const erros = []; p.on('pageerror', e => erros.push(e.message));
@@ -24,6 +24,20 @@ const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
       ok(r.cortados === 0, `${nome}/${aba}: texto dos cartões sem corte (${r.cortados})`);
       await p.screenshot({ path: `${OUT}/${nome}-${aba}.png`, fullPage: false });
     }
+    // 0.7.30 (dono): os gráficos de baixo também em pizza; legenda visível e nada sai da tela
+    await p.click('#v-painel'); await p.waitForTimeout(500);
+    const bp = await p.$('.graf-tipo button:nth-of-type(2)'); if (bp) { await bp.click(); await p.waitForTimeout(700); }
+    const z = await p.evaluate(() => {
+      const W = document.documentElement.clientWidth, cards = [...document.querySelectorAll('.graf-pizza')];
+      const fora = cards.filter(c => { const r = c.getBoundingClientRect(); return [...c.querySelectorAll('.legenda, .anel')].some(x => { const q = x.getBoundingClientRect(); return q.right > r.right + 1 || q.left < r.left - 1; }); }).length;
+      const semLeg = cards.filter(c => !c.querySelector('.legenda li') && !c.querySelector('.nota-g')).length;
+      return { n: cards.length, fora, semLeg, vaza: document.documentElement.scrollWidth > W + 1 };
+    });
+    ok(z.n >= 4, `${nome}/pizza: gráficos em pizza (${z.n})`);
+    ok(!z.vaza && !z.fora, `${nome}/pizza: legenda e anel dentro do cartão, nada sai da tela`);
+    ok(!z.semLeg, `${nome}/pizza: legenda visível em todos`);
+    await p.screenshot({ path: `${OUT}/${nome}-painel-pizza.png`, fullPage: false });
+    await p.evaluate(() => localStorage.removeItem('lexsuite:graf-tipo'));
     ok(!erros.length, `${nome}: sem erro na página ${erros.slice(0, 2).join(' | ')}`);
     await ctx.close();
   }
