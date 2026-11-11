@@ -19,6 +19,16 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
   chave aparecer no chat, peça para revogar.
 - Regra zero: antes de implementar um requisito novo, liste o que falta e confirme com o dono. Não publique nada que o
   cliente vê (Pages, pacote, DNS, e-mail a cliente) sem permissão explícita dele.
+- **Definition of done: regra zero de qualidade (decisão do dono, 11/Nov). Vale para qualquer commit, de qualquer feature, de qualquer aplicativo
+  da SolverONE (RADAR JUDICIAL, RootifyONE, o site e os que vierem), sem exceção por tamanho.** Mexeu em feature, nova, alterada ou removida,
+  a mudança só está pronta quando, no mesmo commit ou na mesma versão, estes três estão conferidos e atualizados, em PT e EN:
+  (1) o **manual** (quando o aplicativo tem manual); (2) o **AssistONE** (a ajuda da tela onde a mudança está, o tour e a busca);
+  (3) as **Novidades da versão** (a janela que aparece depois de atualizar, com a linha "Para rever: menu ☰ → Configurações → Novidades da versão").
+  Conferir é ler cada um contra o que o código faz de verdade e corrigir o que ficou velho; não basta existir nem estar nos dois idiomas.
+  Texto que descreve o comportamento antigo, caminho de menu que mudou ou passo do tour apontando para o vazio é defeito, não detalhe.
+  Aplicativo novo desenha manual, AssistONE e Novidades desde o começo. Os testes `Novo…` da Produto conferem o que dá para automatizar;
+  o resto é revisão: a Produto, a Arquitetura e a Operação conferem isso em todo envio, o revisor trata a falta como **bloqueio** e a
+  Operação não publica versão em que falte.
 - Nunca reescreva histórico nem force push sem o dono pedir na hora. Nunca commite `config.json`, `*.db`, `saida/`,
   `diagnostico/`, `chave_privada.txt`.
 - O robô é só biblioteca padrão do Python, sem IA no caminho principal, sem contornar captcha, sem dado fictício no
@@ -91,10 +101,8 @@ nunca é delegada a subagente. Resultado de subagente é dado a conferir, não o
   `releases/LexSuiteONE-RADAR-<versão>.zip` e `docs/downloads/LexSuiteONE-RADAR.zip` (o pacote de atualização é
   `LexSuiteONE-RADAR-atualizacao-<versão>.zip`; o botão do site baixa o instalador `Instalar-LexSuiteONE.zip`). Atualize `robo/LEIA-ME.md`,
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.
-- Toda mudança que o escritório vê (botão, menu, tela, comportamento) confere três coisas, em PT e EN, antes de ir à `main`:
-  (1) o **manual** (`paginas/manual.html`, gerado para o site e para o pacote); (2) o **AssistONE** (a ajuda da tela onde a
-  mudança está, o tour e a busca); (3) as **Novidades da versão** (a janela que aparece depois de atualizar, com a linha
-  "Para rever: menu ☰ → Configurações → Novidades da versão"). Os testes `Novo…` da Produto conferem os três (regra do dono, 11/Nov).
+- Toda mudança que o escritório vê (botão, menu, tela, comportamento) cumpre a **Definition of done** (regra zero, acima): manual, AssistONE
+  e Novidades da versão conferidos e atualizados, em PT e EN, antes de ir à `main`.
 - Testes: `cd robo && python -m unittest discover -s testes`. A automação do GitHub roda testes, Bandit e Gitleaks.
 - Arquivos `.bat` sempre com fim de linha CRLF.
 - Nome do produto é configuração, não texto fixo: fica só em `docs/marca.json` (nome exato, nome curto, trecho em latão).
