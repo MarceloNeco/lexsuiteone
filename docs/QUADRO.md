@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- **0.7.32 em espera (11/Nov)**: o dono mandou publicar (commit `7086e6c`, automação verde, execução 520); a revisão do que mudou desde a 0.7.31 encontrou 3 bloqueios, então a 0.7.32 NÃO foi publicada (regra do dono: se não aprovar, não publique): (1) no Painel, desligar um item da legenda descarta em silêncio as categorias que não aparecem (contagem errada); (2) "Trocar licença" sem internet grava um código não conferido e apaga o bom; (3) Definition of done: manual, AssistONE e Novidades com lacunas e textos velhos. Pedido "Revisão da 0.7.32" à Produto em "Pedidos entre sessões". Quando a Produto avisar "pronta de novo", reviso só o que mudou e publico se aprovar. Não mexo em arquivo de outra sessão.
+- **0.7.32 em segunda revisão (11/Nov)**: a Produto avisou "pronta de novo" (commit `8e95fce`, automação verde, execução 536) com os 3 bloqueios corrigidos (contagem do Painel ao ligar e desligar item do gráfico; "Trocar licença" sem internet; Definition of done) e as médias e baixas; reviso só o que mudou desde a `7086e6c`, com a Definition of done completa (manual, AssistONE com ajuda, tour e busca, Novidades e qualquer outra orientação atingida, em PT e EN), o padrão dos dias da leitura automática em instalações antigas, testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.31. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
