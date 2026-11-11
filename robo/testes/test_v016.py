@@ -1553,3 +1553,4 @@ class Revisao0730(unittest.TestCase):
         self.assertIn(".gaveta button.gv-sair { color: var(--erro);", h)
         self.assertIn(".bloco-leitura, .barra-lista { grid-template-columns: minmax(0, 1fr); }", h)
         self.assertIn('addEventListener("beforeprint"', h)
+        self.assertEqual(h.count("aceite_banner:"), 2); self.assertEqual(h.count("aceite_duvidas:"), 2)  # teste do dono: faixa do aceite curta, PT e EN

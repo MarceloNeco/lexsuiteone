@@ -1927,7 +1927,7 @@ window.LEXSUITE_RADAR = null;
       ag_expl: "Clique nos horários em que o programa lê o Diário sozinho. Cada horário é uma leitura (não é início e fim). Para um horário que não está aqui, use \u201cOutro horário\u201d.",
       ret_titulo: "O que a SolverONE recebe", ret_quando: "Última conferência ({q}): {n} linha(s).", ret_nada: "Nada enviado ainda (vai na próxima leitura).", ret_frase: "Só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou contato.", ret_ver: "Ver a tabela enviada",
       rodando_auto: "Leitura automática em andamento (começou às {h}).", c_tela: "Onde a tela abre", c_aba: "Abrir pelo atalho numa aba do navegador (junto das outras abas), em vez de uma janela própria", abrir_aba: "Abrir numa aba do navegador",
-      aceite_abrir: "Abrir a página de aceite dos termos", termos: "Termos de uso", termos_ok: "aceitos por {n} em {d} (versão {v})", termos_falta: "falta o aceite do responsável do escritório (link no e-mail de boas-vindas)",
+      aceite_abrir: "Abrir a página de aceite dos termos", aceite_banner: "Falta aceitar os termos: ", aceite_abrir_curto: "abrir a página de aceite", aceite_duvidas: ". Dúvidas: {c}", termos: "Termos de uso", termos_ok: "aceitos por {n} em {d} (versão {v})", termos_falta: "falta o aceite do responsável do escritório (link no e-mail de boas-vindas)",
       atrasada: "Fazendo agora a leitura das {h}, que não rodou na hora porque o computador estava desligado ou em repouso.", interromper: "Interromper", interromper_q: "Interromper a leitura?",
       interromper_x: "A leitura para no próximo ponto seguro: entre um Diário e outro ou entre uma consulta à Receita e outra (se estiver baixando um Diário grande, pode levar alguns minutos). Nada fica pela metade: as ações já gravadas ficam, e o resto é lido na próxima leitura.", continuar_lendo: "Continuar lendo", parando: "Parando no próximo ponto seguro...",
       c_interrompida: "Interrompida",
@@ -2024,7 +2024,7 @@ window.LEXSUITE_RADAR = null;
       ag_expl: "Click the times when the program reads the gazette by itself. Each time is one reading (not a start and end). For a time not listed, use \u201cAnother time\u201d.",
       ret_titulo: "What SolverONE receives", ret_quando: "Last check ({q}): {n} row(s).", ret_nada: "Nothing sent yet (goes with the next reading).", ret_frase: "Only counts by status, day, court, practice area and value range; no name, case number or contact.", ret_ver: "See the table sent",
       rodando_auto: "Automatic reading in progress (started at {h}).", c_tela: "Where the screen opens", c_aba: "Open from the shortcut in a browser tab (next to the other tabs), instead of its own window", abrir_aba: "Open in a browser tab",
-      aceite_abrir: "Open the terms acceptance page", termos: "Terms of use", termos_ok: "accepted by {n} on {d} (version {v})", termos_falta: "the firm\u2019s responsible person has not accepted yet (link in the welcome e-mail)",
+      aceite_abrir: "Open the terms acceptance page", aceite_banner: "The terms still need to be accepted: ", aceite_abrir_curto: "open the acceptance page", aceite_duvidas: ". Questions: {c}", termos: "Terms of use", termos_ok: "accepted by {n} on {d} (version {v})", termos_falta: "the firm\u2019s responsible person has not accepted yet (link in the welcome e-mail)",
       atrasada: "Running now the {h} reading, which did not run on time because the computer was off or asleep.", interromper: "Stop", interromper_q: "Stop the reading?",
       interromper_x: "The reading stops at the next safe point: between two gazettes or between two Federal Revenue lookups (if a large gazette is downloading, it may take a few minutes). Nothing is left half-done: lawsuits already saved stay, and the rest is read in the next reading.", continuar_lendo: "Keep reading", parando: "Stopping at the next safe point...",
       c_interrompida: "Stopped",
@@ -3018,7 +3018,10 @@ window.LEXSUITE_RADAR = null;
     var b = $("banner"), p = (D.prefs || {}), c = p.controle || {}, txt = "";
     if (APP && APP.conta && APP.conta.codigo && !APP.conta.ok) {
       b.hidden = false; b.textContent = textoConta(); b.className = "banner erro";
-      if (APP.conta.aceite_link) { var la = el("a", null, t("aceite_abrir")); la.href = APP.conta.aceite_link; la.target = "_blank"; la.rel = "noopener noreferrer"; b.appendChild(document.createTextNode(" ")); b.appendChild(la); }
+      if (APP.conta.aceite_link) {  // teste do dono (0.7.30): "Falta aceitar os termos: abrir a página de aceite. Dúvidas: …" (sem o link por extenso)
+        b.textContent = t("aceite_banner"); var la = el("a", null, t("aceite_abrir_curto")); la.href = APP.conta.aceite_link; la.target = "_blank"; la.rel = "noopener noreferrer";
+        b.appendChild(la); b.appendChild(document.createTextNode(t("aceite_duvidas", { c: APP.conta.contato || "judicial@solverone.com.br" })));
+      }
       return;
     }
     if (c.mensagem) txt = c.mensagem;

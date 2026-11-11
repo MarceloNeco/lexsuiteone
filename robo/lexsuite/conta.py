@@ -27,7 +27,7 @@ MOTIVOS = {
     "desativado": "A licença deste escritório está desativada.",
     "vencido": "A licença deste escritório venceu.",
     "codigo_invalido": "O código de cliente tem o formato LEX-XXXX-XXXX (veja o e-mail de boas-vindas).",
-    "aceite_pendente": "Falta o aceite dos termos pelo responsável do escritório.",
+    "aceite_pendente": "Falta aceitar os termos.",  # teste do dono (0.7.30): curto; o link vem num botão, não por extenso
 }
 
 
@@ -138,6 +138,8 @@ def bloqueio(cfg, hoje=None):
     if not valido(codigo):
         return MOTIVOS["codigo_invalido"]
     resposta = c.get("resposta") or ""
+    if resposta == "aceite_pendente":  # sem a mensagem da nuvem (repete o motivo e traz o link por extenso)
+        return f"{MOTIVOS[resposta]} Dúvidas: {CONTATO}."
     if resposta not in ("", "ok", "sem_resposta"):
         return (MOTIVOS.get(resposta, "A licença deste escritório não está ativa.") + msg + fale).strip()
     if resposta == "ok":
@@ -160,7 +162,7 @@ MOTIVOS_EN = {
     "desativado": "This firm\u2019s licence is deactivated.",
     "vencido": "This firm\u2019s licence has expired.",
     "codigo_invalido": "The client code has the format LEX-XXXX-XXXX (see the welcome e-mail).",
-    "aceite_pendente": "The firm\u2019s representative still has to accept the terms.",
+    "aceite_pendente": "The terms still need to be accepted.",
 }
 
 
@@ -177,6 +179,8 @@ def bloqueio_en(cfg, hoje=None):
     if not valido(codigo):
         return MOTIVOS_EN["codigo_invalido"]
     resposta = c.get("resposta") or ""
+    if resposta == "aceite_pendente":
+        return f"{MOTIVOS_EN[resposta]} Questions: {CONTATO}."
     if resposta not in ("", "ok", "sem_resposta"):
         return (MOTIVOS_EN.get(resposta, "This firm\u2019s licence is not active.") + msg + fale).strip()
     try:  # mesma regra de data do `bloqueio` (revisão da 0.7.23)
@@ -194,7 +198,7 @@ def situacao(cfg):
         pend = c.get("resposta") == "aceite_pendente"
         return {"codigo": c.get("codigo", ""), "ok": False, "estado": c.get("resposta") or "inativa", "texto": motivo, "texto_en": bloqueio_en(cfg) or motivo,
                 "aceite": c.get("aceite") or {},
-                "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else "", "termos": c.get("termos") or {},
+                "aceite_link": ((c.get("aceite") or {}).get("link") or "") if pend else "", "termos": c.get("termos") or {}, "contato": CONTATO,
                 "escritorio": c.get("escritorio_licenca", ""), "validade": c.get("validade", ""), "recursos": c.get("recursos") or {}}
     texto, texto_en = "Licença ativa.", "Licence active."  # 0.7.21: a validade aparece em linha própria na tela, no idioma escolhido
     if c.get("resposta") == "sem_resposta":

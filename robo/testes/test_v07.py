@@ -835,7 +835,8 @@ class V0714b(unittest.TestCase):
         conta.verificar(cfg, "0.7.14", dt.date(2026, 11, 9), pedir=lambda u, c, **k: resp)
         sit = conta.situacao(cfg)
         self.assertFalse(sit["ok"])
-        self.assertIn("aceite dos termos", sit["texto"])
+        self.assertEqual(sit["texto"], "Falta aceitar os termos. Dúvidas: judicial@solverone.com.br.")  # teste do dono (0.7.30): curto, sem o link por extenso
+        self.assertNotIn("http", sit["texto"] + sit["texto_en"]); self.assertEqual(sit["contato"], "judicial@solverone.com.br")
         self.assertTrue(sit["aceite_link"].startswith("https://judicial.solverone.com.br/"))
         resp["aceite"]["link"] = "https://exemplo-ruim.example/aceite"  # link de fora do site da SolverONE não vale
         conta.verificar(cfg, "0.7.14", dt.date(2026, 11, 9), pedir=lambda u, c, **k: resp)
