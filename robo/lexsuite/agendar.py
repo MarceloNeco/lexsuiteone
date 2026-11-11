@@ -71,8 +71,8 @@ def validar_dias(dias):
             continue
         if isinstance(d, int) and 0 <= d <= 6:
             vistos.add(d)
-        elif str(d).strip().lower()[:3] in SEMANA_CURTA:
-            vistos.add(SEMANA_CURTA.index(str(d).strip().lower()[:3]))
+        elif str(d).strip().lower().replace("á", "a")[:3] in SEMANA_CURTA:
+            vistos.add(SEMANA_CURTA.index(str(d).strip().lower().replace("á", "a")[:3]))
     lista = sorted(vistos)
     if lista == list(range(7)):
         return "todos"
@@ -250,6 +250,8 @@ def agendar(pasta_robo, horarios=None, dias="todos"):
     if not os.path.exists(bat):
         return False, "RODAR.bat não encontrado na pasta do programa."
     horarios, dias = validar(horarios), validar_dias(dias)
+    if not dias_da_semana(dias):  # revisão da 0.7.32: nenhum dia marcado = sem leitura automática (XML vazio é inválido)
+        return desagendar()
     _apagar_tudo()
     arq = None
     try:

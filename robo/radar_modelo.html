@@ -1960,7 +1960,7 @@ window.LEXSUITE_RADAR = null;
       k_acima: "Acima de {min}", k_acima_det: "pelo valor da causa", k_soma: "Valor somado", k_soma_det: "{n} ação(ões) com valor", k_empresas: "Empresas",
       k_empresas_det: "{n} com mais de uma ação", k_sem_valor: "Sem valor no Diário", k_sem_valor_det: "o valor aparece no PJe",
       g_dia: "Ações por dia", g_mes: "Ações por mês", g_faixas: "Faixas de valor da causa", g_setores: "Setores", g_empresas: "Empresas com mais ações",
-      g_porte: "Porte da empresa", g_trib: "Tribunais", g_uf: "Estado da empresa", g_sit: "Situação no escritório", g_mostrar_todos: "Mostrar todos", g_ver_lista: "Ver na lista →", g_cor: "Escolher a cor", g_cores_orig: "Cores originais", g_vara: "Varas com mais ações",
+      g_porte: "Porte da empresa", g_trib: "Tribunais", g_uf: "Estado da empresa", g_sit: "Situação no escritório", g_mostrar_todos: "Mostrar todos", g_nenhum: "nenhum", g_ver_lista: "Ver na lista →", g_cor: "Escolher a cor", g_cores_orig: "Cores originais", g_vara: "Varas com mais ações",
       g_nota: "Os números seguem os filtros acima. Clique numa barra para ver essas ações na lista.", g_vazio: "Nenhuma ação com estes filtros.",
       fx_sem: "Sem valor", fx_ate: "Até {a}", fx_entre: "{a} a {b}", fx_acima: "Acima de {a}", sem_setor: "Sem setor (sem CNPJ)", sem_porte: "Sem porte (sem CNPJ)", sem_uf: "Sem estado (sem CNPJ)",
       g_acoes_n: "{n} ações", g_acoes_1: "1 ação", g_ver: "Ver na lista: {r}",
@@ -2057,7 +2057,7 @@ window.LEXSUITE_RADAR = null;
       k_acima: "Above {min}", k_acima_det: "by claim value", k_soma: "Total claim value", k_soma_det: "{n} lawsuit(s) with a value", k_empresas: "Companies",
       k_empresas_det: "{n} with more than one lawsuit", k_sem_valor: "No value in the gazette", k_sem_valor_det: "the value shows in PJe",
       g_dia: "Lawsuits per day", g_mes: "Lawsuits per month", g_faixas: "Claim value ranges", g_setores: "Sectors", g_empresas: "Companies with most lawsuits",
-      g_porte: "Company size", g_trib: "Courts", g_uf: "Company state", g_sit: "Status at the firm", g_mostrar_todos: "Show all", g_ver_lista: "See in the list →", g_cor: "Choose the colour", g_cores_orig: "Original colours", g_vara: "Court units with most lawsuits",
+      g_porte: "Company size", g_trib: "Courts", g_uf: "Company state", g_sit: "Status at the firm", g_mostrar_todos: "Show all", g_nenhum: "none", g_ver_lista: "See in the list →", g_cor: "Choose the colour", g_cores_orig: "Original colours", g_vara: "Court units with most lawsuits",
       g_nota: "Numbers follow the filters above. Click a bar to see those lawsuits in the list.", g_vazio: "No lawsuit with these filters.",
       fx_sem: "No value", fx_ate: "Up to {a}", fx_entre: "{a} to {b}", fx_acima: "Above {a}", sem_setor: "No sector (no tax ID)", sem_porte: "No size (no tax ID)", sem_uf: "No state (no tax ID)",
       g_acoes_n: "{n} lawsuits", g_acoes_1: "1 lawsuit", g_ver: "See in the list: {r}",
@@ -2231,7 +2231,8 @@ window.LEXSUITE_RADAR = null;
     if (k === "sit") return statusDe(i); return i.frente || "trabalhista";
   }
   function rotuloFacet(k, v) {
-    if (v === "__nao__") return t("nao_informado"); if (k === "data") return dataSemana(v); if (k === "sit") return t("st_" + v); if (k === "frente") return t("fr_" + v); return v;
+    // 0.7.32: "__nenhum__" = tudo desligado no gráfico do Painel
+    if (v === "__nao__") return t("nao_informado"); if (v === "__nenhum__") return t("g_nenhum"); if (k === "data") return dataSemana(v); if (k === "sit") return t("st_" + v); if (k === "frente") return t("fr_" + v); return v;
   }
   try { lang = localStorage.getItem("lexsuite:idioma") || "pt"; } catch (e) {}
   function t(k, v) { var s = (T[lang][k] != null ? T[lang][k] : T.pt[k]) || k; if (v) Object.keys(v).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); if (s.indexOf("{c}") >= 0 && !(v && "c" in v)) try { s = s.split("{c}").join(marcaCurto()); } catch (e) {} return s; }  // 0.7.32: {c} = nome curto da marca
