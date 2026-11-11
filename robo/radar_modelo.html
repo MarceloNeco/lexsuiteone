@@ -1997,7 +1997,7 @@ window.LEXSUITE_RADAR = null;
   };
   // 0.7.16: textos novos (PT e EN)
   Object.assign(T.pt, {
-    lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento", pf_lic_rot: "Licença:", lic_ativa: "ativa", lic_sem_resposta: "sem confirmação agora", lic_aceite: "aguardando o aceite dos termos", lic_bloqueada: "inativa", lic_sem_codigo: "sem código",
+    lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento", pf_lic_rot: "Licença:", lic_aceite_t: "Falta aceitar os termos", lic_bloq_t: "A licença não está ativa", agora_nao: "Agora não", lic_ver_perfil: "Ver a licença", lic_ativa: "ativa", lic_sem_resposta: "sem confirmação agora", lic_aceite: "aguardando o aceite dos termos", lic_bloqueada: "inativa", lic_sem_codigo: "sem código",
     rodar_crit_1: "Lê {n} de {k} tribunais ({l}), do último dia útil até hoje", rodar_crit_n: "Lê {n} de {k} tribunais ({l}), dos últimos {d} dias úteis até hoje", rodar_crit_alterar: "alterar", rodar_crit_mudou: "(marcado, ainda não salvo)",
     ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
     c_trib_lidos: "Tribunais que a leitura lê: {l}.", ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Se precisar de suporte, use o DIAGNOSTICO.bat: ele leva estas linhas, sem CPF.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo",
@@ -2068,7 +2068,7 @@ window.LEXSUITE_RADAR = null;
     valor_salvo: "✓ salvo", sit_salva: "✓"
   });
   Object.assign(T.en, {
-    lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date", pf_lic_rot: "Licence:", lic_ativa: "active", lic_sem_resposta: "not confirmed right now", lic_aceite: "waiting for the terms to be accepted", lic_bloqueada: "inactive", lic_sem_codigo: "no code",
+    lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date", pf_lic_rot: "Licence:", lic_aceite_t: "The terms still need to be accepted", lic_bloq_t: "The licence is not active", agora_nao: "Not now", lic_ver_perfil: "See the licence", lic_ativa: "active", lic_sem_resposta: "not confirmed right now", lic_aceite: "waiting for the terms to be accepted", lic_bloqueada: "inactive", lic_sem_codigo: "no code",
     rodar_crit_1: "Reads {n} of {k} courts ({l}), from the last working day to today", rodar_crit_n: "Reads {n} of {k} courts ({l}), the last {d} working days to today", rodar_crit_alterar: "change", rodar_crit_mudou: "(ticked, not saved yet)",
     ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
     c_trib_lidos: "Courts the reading covers: {l}.", ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). For support, run DIAGNOSTICO.bat: it takes these lines, without CPF.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file",
@@ -2342,10 +2342,18 @@ window.LEXSUITE_RADAR = null;
     tx_.title = t("rodar_crit_x"); rc_.appendChild(tx_);  // 0.7.30: o "Alterar configuração" fica logo ao lado (um botão só)
     if (mudou_) rc_.appendChild(el("span", "rc-nao-salvo", t("rodar_crit_mudou")));
   }
+  function avisoLicenca() {
+    var c_ = APP.conta || {}, c = el("div"); c.appendChild(el("h3", null, c_.aceite_link ? t("lic_aceite_t") : t("lic_bloq_t")));
+    c.appendChild(el("p", null, textoConta())); mostrarEstado({ erro: textoConta() });
+    var bts = [[t("agora_nao"), null]];
+    if (c_.aceite_link) bts.push([t("aceite_abrir"), function () { window.open(c_.aceite_link, "_blank", "noopener"); }, true]);
+    else bts.push([t("lic_ver_perfil"), function () { abrirPerfil(); }, true]);
+    abrirJanela(c, bts);
+  }
   function rodar() {
     if (selMudou() && Object.keys(sel).length) { salvarTribunais(true); return; }  // 0.7.30 (dono): marcou na mira e clicou em "Ler o Diário agora": salva e lê o que está marcado
     if (!Object.keys(sel).length) { $("painel").hidden = false; $("b-trib").setAttribute("aria-expanded", "true"); painel(); mostrarEstado({ erro: t("sem_trib") }); return; }
-    if (APP && APP.conta && !APP.conta.ok) { mostrarEstado({ erro: textoConta() }); abrirConfig(false); return; }
+    if (APP && APP.conta && !APP.conta.ok) { avisoLicenca(); return; }  // 0.7.30 (dono): janela com o motivo e o caminho, sem prender a pessoa
     $("estado").textContent = t("carregando");
     post("/rodar", { dias: null }).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo || t("falha") }); }).catch(function () { $("estado").textContent = t("falha"); });
   }
