@@ -291,7 +291,8 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         banco.registrar_rodada({"id": rodada_id, "quando": agora.isoformat(timespec="minutes"), "modo": "caderno",
                                 "conferidas": len(pubs), "novas_processos": 0, "novas_acoes": len(novos), "detalhes": detalhes})
         if not interrompida:  # contagem parcial não serve para avaliar a saúde das fontes (daria falso alarme)
-            saude.registrar(banco, saude.avaliar(pubs, novos, feitas, falhas, agora.date()), aviso)
+            ja = sum(int(t.get("ja_conferidos") or 0) for t in tentativas)  # 0.7.29: Diários já lidos antes não são alarme
+            saude.registrar(banco, saude.avaliar(pubs, novos, feitas, falhas, agora.date(), ja_conferidos=ja), aviso)
         registro.update({"lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj, "resultado": "interrompida" if interrompida else "ok"})
         if interrompida:
             registro["causa"] = "interrompida"

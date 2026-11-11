@@ -237,7 +237,7 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
     # caderno. Assim feriado (nacional, estadual) e recesso não fazem a leitura sair vazia.
     candidatas = dias_uteis(hoje, 10)[::-1]
     for sigla in tribunais:
-        contados, motivos, lidos_trib, inicio = 0, {}, [], time.perf_counter()
+        contados, motivos, lidos_trib, inicio, ja_conferidos = 0, {}, [], time.perf_counter(), 0
         pedidas, http, erro = [], "200", None
         try:
             for d in candidatas:
@@ -256,6 +256,7 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
                 if versao and banco.versao_caderno(sigla, d.isoformat()) == versao:
                     aviso(f"  Caderno {sigla} {config.data_curta(d, False)}: já conferido (versão {versao})")
                     lidos_trib.append(d)
+                    ja_conferidos += 1
                     continue
                 aviso(f"  Baixando o caderno {sigla} {config.data_curta(d, False)} (pode levar alguns minutos)...")
                 lote = djen.baixar_caderno(sigla, d.isoformat(), diagnostico, aviso, meta=meta)
@@ -282,17 +283,18 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
         if erro is None and causa == "ainda_nao_liberado_3h":
             http = "403"
         ate = config.data_curta(max(lidos_trib), False) if lidos_trib else ""
+        ate_en = config.data_curta(max(lidos_trib), False, en=True) if lidos_trib else ""  # 0.7.29: mês em inglês no texto em inglês
         if erro is not None:
             fez = f"parou neste tribunal; leu até {ate}" if ate else "não leu este tribunal; seguiu com os outros"
         elif causa == "ainda_nao_liberado_3h":
             fez = f"pulou hoje (só às 3h); leu até {ate}" if ate else "pulou hoje (só às 3h)"
         else:
             fez = f"leu até {ate}" if ate else "nenhum caderno novo"
-        fez_en = (f"stopped on this court; read up to {ate}" if ate else "could not read this court; went on with the others") if erro is not None else (
-            (f"skipped today (only after 3 a.m.); read up to {ate}" if ate else "skipped today (only after 3 a.m.)") if causa == "ainda_nao_liberado_3h"
-            else (f"read up to {ate}" if ate else "no new gazette"))
+        fez_en = (f"stopped on this court; read up to {ate_en}" if ate else "could not read this court; went on with the others") if erro is not None else (
+            (f"skipped today (only after 3 a.m.); read up to {ate_en}" if ate else "skipped today (only after 3 a.m.)") if causa == "ainda_nao_liberado_3h"
+            else (f"read up to {ate_en}" if ate else "no new gazette"))
         tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": http, "causa": causa,
-                           "fez": fez, "fez_en": fez_en, "duracao": round(time.perf_counter() - inicio, 1),
+                           "fez": fez, "fez_en": fez_en, "duracao": round(time.perf_counter() - inicio, 1), "ja_conferidos": ja_conferidos,
                            "leu_ate": str(max(lidos_trib))[:10] if lidos_trib else "",  # revisão da 0.7.28: ISO; a tela mostra no idioma dela
                            "detalhe": f"{erro.__class__.__name__}: {erro}"[:300] if erro else ""})
     if primeiro_erro is not None and all(t["causa"] not in ("ok", "ainda_nao_liberado_3h") for t in tentativas[-len(tribunais):]):

@@ -28,8 +28,12 @@ def escape(texto):
     return str(texto).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 
+SEM_JANELA = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+
+
 def _rodar(args):
-    r = subprocess.run(args, capture_output=True, text=True, timeout=30, shell=False)  # nosec B603
+    r = subprocess.run(args, capture_output=True, text=True, timeout=30, shell=False,  # nosec B603
+                       creationflags=SEM_JANELA)  # 0.7.29: chamado do pythonw, o schtasks piscaria uma janela preta
     return r.returncode == 0, (r.stderr or r.stdout or "").strip()[:200]
 
 
@@ -113,8 +117,27 @@ def tem_noite(horarios):
     return any(h >= "19:00" for h in validar(horarios))
 
 
-def xml_tarefa(bat, horarios, dias="todos", hoje=None):
-    """O XML da tarefa (formato do Agendador do Windows), com um gatilho por horário."""
+def executavel_oculto(pasta):
+    """0.7.29 (dono: sem janela preta): o pythonw.exe do Python portátil da pasta (ou o que vem junto do Python em uso),
+    ou "" se não houver. Com ele, a leitura automática e a tela rodam sem janela de prompt de comando."""
+    import sys
+    for c in (os.path.join(pasta, "python", "pythonw.exe"), os.path.join(os.path.dirname(sys.executable or ""), "pythonw.exe")):
+        if c and os.path.isfile(c):
+            return c
+    return ""
+
+
+def acao_oculta(pasta):
+    """(comando, argumentos) da leitura automática sem janela, ou None se não houver pythonw."""
+    exe = executavel_oculto(pasta)
+    if not exe:
+        return None
+    return exe, f'"{os.path.join(pasta, "lexsuite_robo.py")}" radar --agendado'
+
+
+def xml_tarefa(bat, horarios, dias="todos", hoje=None, oculta=None):
+    """O XML da tarefa (formato do Agendador do Windows), com um gatilho por horário. 0.7.29: com `oculta`
+    ((pythonw, argumentos)), a tarefa chama o Python sem janela, direto, em vez do RODAR.bat."""
     hoje = hoje or dt.date.today()
     gatilhos = []
     for h in validar(horarios):
@@ -139,7 +162,8 @@ def xml_tarefa(bat, horarios, dias="todos", hoje=None):
             "<AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>false</Hidden>"
             "<RunOnlyIfIdle>false</RunOnlyIfIdle><WakeToRun>false</WakeToRun><ExecutionTimeLimit>PT4H</ExecutionTimeLimit>"
             "<Priority>7</Priority></Settings>"
-            f'<Actions Context="Author"><Exec><Command>{escape(bat)}</Command><Arguments>--agendado</Arguments>'
+            f'<Actions Context="Author"><Exec><Command>{escape(oculta[0] if oculta else bat)}</Command>'
+            f'<Arguments>{escape(oculta[1] if oculta else "--agendado")}</Arguments>'
             f"<WorkingDirectory>{escape(pasta)}</WorkingDirectory></Exec></Actions></Task>")
 
 
@@ -162,10 +186,9 @@ def _apagar_tudo():
     _rodar(["schtasks", "/delete", "/f", "/tn", TAREFA])
     for nome in ANTIGAS:
         _rodar(["schtasks", "/delete", "/f", "/tn", nome])
-    ok, saida = _rodar(["schtasks", "/query", "/fo", "csv", "/nh"])
-    if ok:
-        for nome in set(re.findall(r'"\\?(' + re.escape(TAREFA) + r' \d\dh\d\d)"', saida)):
-            _rodar(["schtasks", "/delete", "/f", "/tn", nome])
+    saida = _saida_inteira(["schtasks", "/query", "/fo", "csv", "/nh"])  # 0.7.29: a lista inteira (antes, só 200 letras)
+    for nome in set(re.findall(r'"\\?(' + re.escape(TAREFA) + r' \d\dh\d\d)"', saida)):
+        _rodar(["schtasks", "/delete", "/f", "/tn", nome])
 
 
 def descricao(horarios, dias="todos"):
@@ -187,7 +210,7 @@ def agendar(pasta_robo, horarios=None, dias="todos"):
     try:
         fd, arq = tempfile.mkstemp(suffix=".xml", prefix="lexsuite-tarefa-")
         with os.fdopen(fd, "w", encoding="utf-16") as f:
-            f.write(xml_tarefa(bat, horarios, dias))
+            f.write(xml_tarefa(bat, horarios, dias, oculta=acao_oculta(pasta_robo)))
         ok, msg = _rodar(["schtasks", "/create", "/f", "/tn", TAREFA, "/xml", arq])
     except OSError as e:
         ok, msg = False, str(e)
@@ -200,8 +223,10 @@ def agendar(pasta_robo, horarios=None, dias="todos"):
     if ok:
         return True, f"Agendado: {descricao(horarios, dias)}. Se o computador estiver desligado na hora, a leitura acontece quando ele ligar."
     # Jeito antigo (sem compensar horário perdido): uma tarefa por horário.
+    oc = acao_oculta(pasta_robo)
+    tr = f'"{oc[0]}" {oc[1]}' if oc and len(f'"{oc[0]}" {oc[1]}') <= 260 else f'"{bat}" --agendado'  # o /tr aceita até 261 letras
     for h in horarios:
-        args = ["schtasks", "/create", "/f", "/tn", _simples(h), "/st", h, "/tr", f'"{bat}" --agendado']
+        args = ["schtasks", "/create", "/f", "/tn", _simples(h), "/st", h, "/tr", tr]
         args[5:5] = ["/sc", "weekly", "/d", "MON,TUE,WED,THU,FRI"] if dias == "uteis" else ["/sc", "daily"]
         ok2, msg2 = _rodar(args)
         if not ok2:
@@ -219,6 +244,58 @@ def migrar_antigas(pasta_robo, cfg):
         return ""
     horarios, dias = do_config(cfg)
     return agendar(pasta_robo, horarios, dias)[1]
+
+
+def _saida_inteira(args):
+    """A saída inteira de um comando (o _rodar corta em 200 letras), em texto, seja UTF-16 ou não."""
+    try:
+        r = subprocess.run(args, capture_output=True, timeout=30, shell=False, creationflags=SEM_JANELA)  # nosec B603
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    if r.returncode != 0:
+        return ""
+    bruto = r.stdout or b""
+    if bruto.startswith((b"\xff\xfe", b"\xfe\xff")) or b"\x00" in bruto[:200]:
+        return bruto.decode("utf-16", "replace")
+    try:
+        return bruto.decode("utf-8")
+    except UnicodeDecodeError:
+        return bruto.decode("cp850", "replace")
+
+
+def comando_da_tarefa(xml):
+    """O <Command> do XML de uma tarefa (o XML do schtasks não muda com o idioma do Windows)."""
+    m = re.search(r"<Command>(.*?)</Command>", str(xml or ""), re.S)
+    return m.group(1).strip() if m else ""
+
+
+def migrar_para_oculta(pasta_robo, cfg):
+    """0.7.29: a leitura automática criada até a 0.7.28 chama o RODAR.bat (abre janela preta). Se houver o pythonw,
+    recria a tarefa, com os mesmos horários do config, chamando o Python sem janela. Lê o comando pelo XML da tarefa
+    (igual em qualquer idioma do Windows): qualquer comando que não seja o pythonw é recriado. Tarefa do próprio
+    usuário, sem administrador. Devolve a mensagem, ou "" se não havia o que migrar."""
+    if not disponivel() or not acao_oculta(pasta_robo):
+        return ""
+    nomes = [TAREFA] + sorted(set(re.findall(r'"\\?(' + re.escape(TAREFA) + r' \d\dh\d\d)"',
+                                             _saida_inteira(["schtasks", "/query", "/fo", "csv", "/nh"]))))
+    for nome in nomes:
+        cmd = comando_da_tarefa(_saida_inteira(["schtasks", "/query", "/tn", nome, "/xml"]))
+        if cmd and "pythonw" not in cmd.lower():
+            horarios, dias = do_config(cfg)
+            return agendar(pasta_robo, horarios, dias)[1]
+    return ""
+
+
+def caixa_erro(titulo, texto):
+    """0.7.29: caixa de aviso do Windows (sem janela preta, um erro antes de a tela abrir não teria onde aparecer)."""
+    if not disponivel():
+        return False
+    try:
+        import ctypes
+        ctypes.windll.user32.MessageBoxW(0, str(texto), str(titulo), 0x10 | 0x40000)  # erro + sempre na frente
+        return True
+    except (OSError, AttributeError):
+        return False
 
 
 def desagendar():

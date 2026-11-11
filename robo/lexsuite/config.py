@@ -23,9 +23,10 @@ PADRAO = {
 
 
 MESES = ("JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ")
+MESES_EN = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
 
 
-def data_curta(d, ano=True):
+def data_curta(d, ano=True, en=False):
     """0.7.28 (dono): data com o mês em letras, para não confundir dia e mês: 10/NOV/2026 (ou 10/NOV). Aceita date,
     datetime ou texto ISO; o que não for data volta como veio."""
     import datetime as _dt
@@ -37,7 +38,7 @@ def data_curta(d, ano=True):
         except ValueError:
             return d
     try:
-        return f"{d.day:02d}/{MESES[d.month - 1]}" + (f"/{d.year:04d}" if ano else "")
+        return f"{d.day:02d}/{(MESES_EN if en else MESES)[d.month - 1]}" + (f"/{d.year:04d}" if ano else "")
     except (AttributeError, IndexError):
         return str(d)
 

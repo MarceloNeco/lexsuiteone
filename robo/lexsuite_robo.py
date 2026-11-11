@@ -21,10 +21,85 @@ import json
 import os
 import re
 import sys
+import threading
 
 from lexsuite import VERSAO, avisar, banco as bd, cnpj, classificar as cl, config, datajud, djen, monitor, pauta, prazos, radar, rede, saidas
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
+REGISTRO = os.path.join(AQUI, "saida", "registro.txt")
+REGISTRO_MAX, REGISTRO_N = 1_000_000, 3  # 0.7.29: até 3 arquivos de 1 MB (registro.txt, registro-1.txt, registro-2.txt)
+
+
+class Registro:
+    """0.7.29 (dono: sem janela preta): o que ia para a janela preta vai também para saida/registro.txt. Sem console
+    (pythonw.exe), só para o arquivo. Nunca derruba o programa."""
+
+    encoding = "utf-8"
+
+    _TRAVA = threading.Lock()  # uma só para stdout e stderr (revisão): a rotação não corre em paralelo
+
+    def __init__(self, caminho, eco=None):
+        self.caminho, self.eco, self._trava = caminho, eco, Registro._TRAVA
+
+    def _girar(self):
+        if os.path.exists(self.caminho) and os.path.getsize(self.caminho) > REGISTRO_MAX:
+            base = self.caminho[:-4]
+            for i in range(REGISTRO_N - 1, 0, -1):
+                antigo, novo = (f"{base}-{i - 1}.txt" if i > 1 else self.caminho), f"{base}-{i}.txt"
+                if os.path.exists(antigo):
+                    os.replace(antigo, novo)
+
+    def write(self, texto):
+        if self.eco is not None:
+            try:
+                self.eco.write(texto)
+            except (OSError, ValueError, UnicodeError):
+                pass
+        if texto:
+            with self._trava:
+                try:
+                    os.makedirs(os.path.dirname(self.caminho), exist_ok=True)
+                    self._girar()
+                    with open(self.caminho, "a", encoding="utf-8", errors="replace") as f:
+                        f.write(texto)
+                except OSError:
+                    pass
+        return len(texto or "")
+
+    def flush(self):
+        if self.eco is not None:
+            try:
+                self.eco.flush()
+            except (OSError, ValueError):
+                pass
+
+    def isatty(self):
+        return False
+
+
+def ultimas_linhas_registro(n=200, caminho=None):
+    """As últimas `n` linhas do registro (o atual e, se faltar, o anterior)."""
+    caminho = caminho or REGISTRO
+    linhas = []
+    for c in (caminho[:-4] + "-1.txt", caminho):
+        try:
+            with open(c, encoding="utf-8", errors="replace") as f:
+                linhas.extend(f.read().splitlines())
+        except OSError:
+            pass
+    return "\n".join(linhas[-n:])
+
+
+def sem_console():
+    """True quando o programa roda sem janela preta (pythonw.exe): print não aparece em lugar nenhum."""
+    return sys.__stdout__ is None or os.path.basename(sys.executable).lower().startswith("pythonw")
+
+
+def ligar_registro(comando):
+    sys.stdout = Registro(REGISTRO, sys.__stdout__)
+    sys.stderr = Registro(REGISTRO, sys.__stderr__)
+    print(f"\n===== {dt.datetime.now():%Y-%m-%d %H:%M:%S} · {comando} · versão {VERSAO}"
+          f"{' · sem janela' if sem_console() else ''} =====", flush=True)
 
 
 CONFIG_PADRAO = config.PADRAO
@@ -476,6 +551,13 @@ def cmd_agendar(a):
         raise SystemExit(1)
 
 
+def cmd_parar(a):
+    """0.7.29: "Encerrar o RADAR" (DIAGNOSTICO.bat), para quando a tela travou e não há janela preta para fechar."""
+    from lexsuite import app
+    if not app.encerrar_aberto(AQUI):
+        print("  O RADAR não estava aberto neste computador. / RADAR was not running.")
+
+
 def cmd_app(a):
     """Tela local no navegador: escolher os tribunais, rodar e ver a lista (ABRIR.bat)."""
     from lexsuite import app
@@ -523,6 +605,7 @@ def cmd_diagnostico(a):
     if not leads:
         raise SystemExit("  O banco ainda não tem ações guardadas. Rode o RODAR.bat (radar) primeiro.")
     texto = dg.relatorio_radar(leads, amostras=a.amostras)
+    texto += "\n\n== Registro do programa (últimas linhas, sem CPF) ==\n" + dg.mascarar(ultimas_linhas_registro(200))  # 0.7.29
     with open(caminho, "w", encoding="utf-8") as f:
         f.write(texto)
     print(f"  {len(leads)} ações analisadas. Relatório: {caminho} ({os.path.getsize(caminho) // 1024} KB).")
@@ -590,8 +673,40 @@ def main(argv=None):
     s = sub.add_parser("diagnostico", help="relatório do que o radar guardou, sem dado pessoal (para calibrar a regra de ação nova)")
     s.add_argument("--amostras", type=int, default=40, help="quantos trechos de exemplo por grupo (padrão 40)")
     s.set_defaults(f=cmd_diagnostico)
+    s = sub.add_parser("parar", help="encerra o RADAR aberto neste computador (tela e leitura), quando a tela travou")
+    s.set_defaults(f=cmd_parar)
     a = p.parse_args(argv)
-    a.f(a)
+    if a.comando not in ("app", "radar", "parar"):
+        return a.f(a)
+    ligar_registro(a.comando)  # 0.7.29: tela, leitura e encerrar ficam no registro (e na janela, quando ela existe)
+    try:
+        return a.f(a)
+    except SystemExit as e:
+        if e.code not in (None, 0):
+            print(str(e.code) if not isinstance(e.code, int) else f"  Saiu com código {e.code}.", flush=True)
+            _avisar_erro(a.comando, str(e.code))
+        raise
+    except Exception:  # noqa: BLE001 - 0.7.29: sem janela preta, o erro vai para o registro e para um aviso do Windows
+        import traceback
+        traceback.print_exc()
+        _avisar_erro(a.comando, "")
+        return 1
+
+
+def _avisar_erro(comando, detalhe):
+    """Sem janela preta, ninguém veria o erro: a tela não abriu (caixa do Windows) ou a leitura parou (aviso)."""
+    if not sem_console():
+        return
+    from lexsuite import agendar, app
+    m = app.marca(AQUI)
+    if comando == "radar":  # SystemExit traz a frase pronta (ex.: robô pausado pelo suporte, fora do Brasil); erro de programa, não
+        agendar.notificar(m.get("nome", "RADAR JUDICIAL"), (f"A leitura não rodou: {str(detalhe).strip()[:180]}" if detalhe else
+                                                            "A leitura parou com erro. Veja em Configuração → Ver registro. / The reading stopped with an error."))
+    elif comando == "app":
+        agendar.caixa_erro(m.get("nome", "RADAR JUDICIAL"),
+                           f"O {m.get('curto', 'RADAR')} não conseguiu abrir.\n\n{str(detalhe).strip()[:300]}\n\nO detalhe ficou em:\n{REGISTRO}\n\n"
+                           f"Tente de novo pelo atalho. Se continuar, rode o DIAGNOSTICO.bat e mande o arquivo ao suporte.\n\n"
+                           f"/ {m.get('curto', 'RADAR')} could not open. Details in the file above.")
 
 
 if __name__ == "__main__":

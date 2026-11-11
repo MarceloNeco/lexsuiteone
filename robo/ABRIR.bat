@@ -18,6 +18,17 @@ if not exist "python\python.exe" (
     exit /b 1
   )
 )
-echo  Abrindo o RADAR. A janela preta que vai abrir precisa ficar aberta enquanto voce usa a tela (pode minimizar).
-start "LexSuiteONE" "%PY%" lexsuite_robo.py app
+rem 0.7.29 (dono): sem janela preta. A tela abre sozinha; para sair, menu Sair na tela.
+rem Suporte: ABRIR.bat --ver abre com a janela preta, como antes.
+if /i "%~1"=="--ver" (
+  echo  Abrindo o RADAR com a janela preta (modo suporte^). Deixe esta janela aberta enquanto usa a tela.
+  start "LexSuiteONE" "%PY%" lexsuite_robo.py app
+  exit /b 0
+)
+set "PYW=%PY%"
+if exist "python\pythonw.exe" set "PYW=python\pythonw.exe"
+if not exist "python\pythonw.exe" (
+  where pythonw >nul 2>nul && set "PYW=pythonw"
+)
+start "" "%PYW%" lexsuite_robo.py app
 exit /b 0

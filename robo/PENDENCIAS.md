@@ -162,6 +162,30 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.29 (11/Nov) — pronta no ramo
+
+Feito: sem janela preta (opção a da Arquitetura, "pode" do dono em 11/Nov); ressalvas 1 a 7, 9 e 10 da segunda revisão
+da 0.7.28 (a 8 é decisão do dono: clicar fora fecha); falso alarme da Saúde. Fica: conferir com o dono os "13.339
+processos no último dia"; ícone perto do relógio (opção c) só se o escritório sentir falta; a ideia de mandar o
+registro para a nuvem espera desenho da Arquitetura. Precisa do teste do dono no Windows: (1) depois de atualizar, abrir pelo
+atalho uma vez (o atalho passa a abrir sem janela; a tarefa antiga do Agendador, que chamava o RODAR.bat, é recriada
+para o pythonw: conferir no Agendador de Tarefas, "LexSuiteONE Radar", aba Ações); (2) clicar de novo no atalho; (3)
+☰ → Sair; (4) leitura automática sem janela e o aviso no fim; (5) DIAGNOSTICO.bat, opção 2; (6) Configuração → Ver
+registro. Revisão interna: migração pelo XML da tarefa (igual em qualquer idioma), "Encerrar" só mata o processo cujo
+pid a própria tela informa, leitura e "Salvar regras" se excluem dentro da mesma trava.
+
+## Anotado em 10/Nov à noite (para a 0.7.29)
+
+- Saúde: com todos os cadernos "já conferido", "0 publicações lidas" vira `[atenção] DJEN` (falso alarme visto pelo dono
+  na leitura atrasada das 20:00). `saude.avaliar` precisa saber que os cadernos já tinham sido lidos e dizer "ok, nada novo".
+- Duas janelas pretas (dono, 10/Nov à noite): a leitura automática abre a sua e, ao abrir a tela, vem a do programa.
+  Proposta, esperando o "pode": a leitura automática roda minimizada (só na barra de tarefas; `RODAR.bat --agendado`
+  se reabre com `start /min`), avisa no fim como hoje, e a janela da tela diz que a leitura está na outra janela.
+- Conferir com o dono os "13.339 processos no último dia" (TRT2 e TRT15) vistos na tela da 0.7.27: parece alto para um dia.
+- Ideia do dono (regra zero, não implementar sem desenho da Arquitetura e "pode"): quando a leitura falha sem internet,
+  guardar o registro e mandar para a nuvem quando a conexão voltar. Hoje o registro fica só no computador (aba
+  "Histórico de leituras", banco local e abas Log/Saúde da planilha).
+
 ## 0.7.28 (10/Nov)
 
 Teste do dono no Windows (0.7.27), tudo feito: mês em letras e fuso; critério da leitura compacto com "alterar";

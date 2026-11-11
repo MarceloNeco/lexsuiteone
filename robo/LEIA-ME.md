@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.28 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.29 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -57,12 +57,24 @@ A aba Arquivo mostra os últimos 90 dias e todo processo trabalhado; limite de 6
   **Log** (cada rodada), **Saúde** (o que o robô percebeu: Diário fora do ar, formato mudou, Receita sem resposta) e
   **Sobre** (versão, computador, pasta).
 
-Também fica ali a página `Retrato da última leitura.html` (antes `Lista para abrir no celular.html`), uma foto da lista na última leitura que abre em qualquer lugar. Para editar no Google Planilhas,
-abra o `.xlsx` e edite direto (modo de compatibilidade com Office); o Drive leva a mudança de volta para o
-computador. Se a planilha estiver aberta e travada na hora de uma rodada, o robô tenta de novo a cada 2 minutos e grava sozinho quando ela for fechada.
+Também fica ali a página `Retrato da última leitura.html` (antes `Lista para abrir no celular.html`), uma foto da lista na última leitura que abre em qualquer lugar. No Google Planilhas,
+abra o `.xlsx` para consultar (modo de compatibilidade com Office). As regras do escritório (exclusões, valor mínimo)
+se mudam no programa: Configuração → Regras do escritório. Se a planilha estiver aberta e travada na hora de uma rodada, o robô tenta de novo a cada 2 minutos e grava sozinho quando ela for fechada.
 
 ## A tela
 
+- **0.7.29 (dono): sem janela preta.** A tela e a leitura automática rodam sem janela de prompt de comando
+  (`pythonw.exe` do Python portátil): o atalho abre o programa direto, a tarefa do Windows é recriada sozinha para chamar
+  o Python sem janela, e o que aparecia na janela preta fica em `saida/registro.txt` (Configuração → **Ver registro**).
+  Erro antes de a tela abrir: caixa de aviso do Windows; leitura que para com erro: aviso no canto da tela. Sair: ☰ →
+  Sair, ou sozinho 3 minutos depois de fechar a tela; se travar: `DIAGNOSTICO.bat`, opção 2. Suporte: `ABRIR.bat --ver`.
+  Também: "Salvar regras" recusado durante uma leitura (ela regravaria as regras antigas), "Salvar" da Configuração
+  pergunta pelas regras não salvas, Esc com mudança pergunta, nome digitado entra junto ao salvar, cópias "antes de
+  salvar regras" no mesmo segundo não se sobrescrevem, números inteiros onde só cabe inteiro, Saúde sem falso alarme
+  quando os Diários já tinham sido conferidos, mês em inglês no histórico em inglês, manual sem "edite a planilha à mão".
+  Teste do dono (11/Nov): sem "Ver a lista" e "Abrir a planilha" debaixo da última leitura (a lista está logo abaixo e
+  a planilha tem o botão no alto); o filtro de tribunais mostra todos os da mira (os novos com 0 até a leitura) e tirar
+  um tribunal da mira o tira do filtro; o painel da mira mostra as 4 fases do RADAR, com a 1ª em destaque.
 - **0.7.28 (teste do dono no Windows):** datas com o mês em letras em todo o programa (10/NOV/2026) e fuso ao lado
   da hora, como "(Brasília)"; critério do "Ler o Diário agora" curto, com o atalho "alterar"; filtros em azul-marinho e
   ordenação em dourado, com "Limpar filtros" sempre ao lado (apagado quando não há filtro); a lista lembra os últimos
