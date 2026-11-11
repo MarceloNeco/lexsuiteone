@@ -2231,6 +2231,9 @@ window.LEXSUITE_RADAR = null;
       }
     }).catch(function () { falhasBatimento += 1; if (falhasBatimento >= 5) telaFechada(); });
   }, 10000);
+  window.addEventListener("pagehide", function () {  // 0.7.29 (dono): janela fechada no X: o próximo clique no atalho abre a tela de novo
+    if (MODO === "app") try { fetch("/tela-fechada", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json", "X-LexSuite": "1" }, body: "{}" }); } catch (e) {}
+  });
   function sairDoRadar() {
     var c = el("div"); c.appendChild(el("h3", null, t("sair_t"))); c.appendChild(el("p", null, t("sair_x")));
     abrirJanela(c, [[t("cancelar"), null], [t("sair"), function () {

@@ -173,7 +173,9 @@ os tribunais estão ok; ao atualizar da 0.7.28 o programa novo passa a tela para
 sozinha; registro sem repetir mensagem; diagnóstico sem e-mail nem nome da pasta do usuário; "Encerrar" só desta
 pasta; nome digitado habilita "Salvar regras"; "Abrir o arquivo" sem registro avisa; stdin fechado nos subprocessos).
 Fica: 14 (abaixo de 360 px, já era assim). Também: Painel com "Ver como: Barras | Pizza" (teste no `larguras.js`),
-"Licença: ✓ ativa" no Perfil com cor por estado.
+"Licença: ✓ ativa" no Perfil com cor por estado. Teste do dono: janela fechada no X e clique no atalho em seguida não
+abria a tela (o programa ainda a achava aberta): a tela avisa ao fechar (`/tela-fechada`) e o segundo clique confere
+em 13 s se a tela atendeu o "já estava aberto"; se não atendeu, abre de novo.
 
 ### Itens que eram da 0.7.30
 

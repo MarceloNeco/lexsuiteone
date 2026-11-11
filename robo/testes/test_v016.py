@@ -1050,6 +1050,7 @@ class JaAberto0728(unittest.TestCase):
             estado()  # a tela pergunta: agora está ativa
             self.assertTrue(app.procurar_aberto([porta], detalhe=True)[1])
             with mock.patch.object(app, "procurar_aberto", return_value=(f"http://127.0.0.1:{porta}/", True)), \
+                    mock.patch.object(app, "tela_atendeu", return_value=True), \
                     mock.patch.object(app, "abrir_janela") as abrir, mock.patch("time.sleep"):
                 ditos = []
                 app.servir(pasta, aviso=ditos.append)
@@ -1057,6 +1058,23 @@ class JaAberto0728(unittest.TestCase):
             self.assertIn("já está aberto", " ".join(ditos))
             self.assertTrue(estado().get("chamado"))   # a tela recebe o aviso uma vez
             self.assertFalse(estado().get("chamado"))
+            # 0.7.29 (dono): janela fechada no X: ninguém atende o chamado, e o segundo clique abre a tela de novo
+            url = f"http://127.0.0.1:{porta}/"
+            self.assertTrue(app.chamar_tela(url))
+            self.assertFalse(app.tela_atendeu(url, espera_s=0.5, dormir=lambda s_: None))
+            pare = threading.Event()
+            def tela_viva():
+                while not pare.is_set():
+                    estado(); pare.wait(0.05)
+            th = threading.Thread(target=tela_viva); th.start()
+            try:
+                self.assertTrue(app.tela_atendeu(url, espera_s=3, dormir=time.sleep if not isinstance(time.sleep, mock.Mock) else None))
+            finally:
+                pare.set(); th.join()
+            c = http.client.HTTPConnection("127.0.0.1", porta, timeout=10)  # pagehide: a tela avisa que fechou
+            c.request("POST", "/tela-fechada", body="{}", headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+            c.getresponse().read(); c.close()
+            self.assertFalse(app.procurar_aberto([porta], detalhe=True)[1])
         finally:
             srv.shutdown(); srv.server_close()
 
@@ -1296,11 +1314,14 @@ class V0729Revisao(unittest.TestCase):
             alheio.kill(); alheio.wait()
 
     def test_saude_com_tribunal_fora_do_ar_continua_alarmando(self):
-        import inspect
-        from lexsuite import radar
-        fonte = inspect.getsource(radar)
-        self.assertIn('todos_ok = all(t.get("causa") in ("ok", "ainda_nao_liberado_3h") for t in tentativas)', fonte)
-        self.assertIn("if todos_ok else 0", fonte)
+        import datetime as _d
+        from lexsuite import radar, saude
+        ruim = [{"tribunal": "TRT2", "causa": "fora_do_ar", "ja_conferidos": 0}, {"tribunal": "TRT4", "causa": "ok", "ja_conferidos": 2}]
+        bom = [{"tribunal": "TRT2", "causa": "ok", "ja_conferidos": 1}, {"tribunal": "TRT4", "causa": "ainda_nao_liberado_3h", "ja_conferidos": 2}]
+        self.assertEqual(radar.ja_conferidos_para_saude(ruim), 0); self.assertEqual(radar.ja_conferidos_para_saude(bom), 3)
+        hoje = _d.date(2026, 11, 10)
+        self.assertEqual(saude.avaliar([], [], hoje=hoje, ja_conferidos=radar.ja_conferidos_para_saude(ruim))[0]["situacao"], "atenção")
+        self.assertEqual(saude.avaliar([], [], hoje=hoje, ja_conferidos=radar.ja_conferidos_para_saude(bom))[0]["situacao"], "ok")
 
     def test_agendar_cria_a_tarefa_com_o_pythonw(self):
         from unittest import mock

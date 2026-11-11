@@ -530,6 +530,7 @@ class Tratador(BaseHTTPRequestHandler):
             if self.headers.get("X-LexSuite-Sonda") == "1":
                 d["pid"] = os.getpid()  # 0.7.29: o "Encerrar o RADAR" só encerra o processo que respondeu por esta porta
                 d["pasta"] = s.pasta  # ...e só o desta pasta (outra instalação no mesmo computador fica)
+                d["chamado_pendente"] = bool(getattr(s, "chamado", 0))  # 0.7.29: a tela ainda não atendeu o "já estava aberto"
             if self.headers.get("X-LexSuite-Sonda") != "1" and getattr(s, "chamado", 0):
                 d["chamado"] = True; s.chamado = 0  # 0.7.28: alguém clicou no atalho de novo; a tela avisa e vem para a frente
             return self._responder(d)
@@ -593,6 +594,9 @@ class Tratador(BaseHTTPRequestHandler):
         if not self._host_local() or not self._da_propria_pagina():
             return self._responder({"erro": "pedido recusado"}, status=403)
         import time as _t
+        if caminho == "/tela-fechada":  # 0.7.29 (dono): fechou a janela no X; o próximo clique no atalho abre a tela de novo
+            self.server.ultimo_pedido = min(self.server.ultimo_pedido, _t.monotonic() - 30)
+            return self._responder({"ok": True})
         self.server.ultimo_pedido = _t.monotonic()
         if caminho == "/sair":  # 0.7.16: "Sair do RADAR" fecha a tela e a janela preta (se não houver leitura nesta janela)
             if self.server.estado.rodando or self.server.hist.get("rodando"):
@@ -1195,6 +1199,22 @@ def atualizar_atalho(pasta):
         return False
 
 
+def tela_atendeu(url, espera_s=13, dormir=None):
+    """0.7.29 (dono): a tela pergunta a cada 10 s; se em 13 s ninguém atendeu o "já estava aberto", a janela foi fechada
+    (no X, sem "Sair") e quem chamou abre a tela de novo."""
+    import time as _t
+    dormir = dormir or _t.sleep
+    try:
+        p = int(url.rstrip("/").rsplit(":", 1)[1])
+    except (ValueError, IndexError):
+        return False
+    for _ in range(int(espera_s * 2)):
+        dormir(0.5)
+        if not _estado_sonda(p).get("chamado_pendente", True):
+            return True
+    return False
+
+
 def chamar_tela(url):
     """0.7.28: pede à tela já aberta que mostre "O RADAR já estava aberto aqui" e venha para a frente."""
     import http.client
@@ -1363,8 +1383,9 @@ def encerrar_aberto(pasta, aviso=print, espera_s=15, dormir=None, portas=None):
     pid_arq, porta_arq = _ler_pid(pasta)
     url = procurar_aberto(portas or ([porta_arq] + [p for p in PORTAS if p != porta_arq] if porta_arq else None))
     porta = int(url.rstrip("/").rsplit(":", 1)[1]) if url else 0
-    if url and not _mesma_pasta(_estado_sonda(porta).get("pasta") or pasta, pasta):
-        url = ""  # é o RADAR de outra pasta: não é este que se pediu para encerrar
+    pasta_tela = _estado_sonda(porta).get("pasta") if url else ""
+    if url and not (pasta_tela and _mesma_pasta(pasta_tela, pasta)):
+        url = ""  # é o RADAR de outra pasta (ou não disse qual): não é este que se pediu para encerrar
     if url:
         achou = True
         _pedir_local(porta, "/interromper")
@@ -1495,7 +1516,7 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
         ja, ativa = procurar_aberto(detalhe=True)
         if ja:
             import time
-            if ativa and chamar_tela(ja):  # 0.7.28 (dono): a tela já está aberta; não abre outra, ela avisa e vem para a frente
+            if ativa and chamar_tela(ja) and tela_atendeu(ja):  # 0.7.28 (dono): a tela já está aberta; não abre outra, ela avisa e vem para a frente
                 m_ = marca(pasta)  # revisão da 0.7.28: o nome vem da marca, não fixo
                 aviso(f"  O {m_['curto']} já está aberto neste computador. Procure a janela \"{m_['nome']}\" na barra de tarefas;")
                 aviso(f"  ela mostra o aviso \"O {m_['curto']} já estava aberto aqui\". Esta janela fecha sozinha.")

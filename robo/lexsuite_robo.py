@@ -101,7 +101,7 @@ def ultimas_linhas_registro(n=200, caminho=None):
 def mascarar_registro(texto):
     """Revisão da 0.7.29: tira e-mail e o nome da pessoa na pasta do Windows (C:\\Users\\<nome>) das linhas do registro."""
     t = re.sub(r"[\w.+-]+@[\w-]+\.[\w.-]+", "[e-mail]", str(texto or ""))
-    return re.sub(r"(?i)([a-z]:\\(?:users|usuários|usuarios)\\)[^\\/\r\n]+", r"\1[usuário]", t)
+    return re.sub(r"(?i)([a-z]:[\\/](?:users|usuários|usuarios)[\\/])[^\\/\r\n]+", r"\1[usuário]", t)
 
 
 def sem_console():

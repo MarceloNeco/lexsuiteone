@@ -292,8 +292,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         banco.registrar_rodada({"id": rodada_id, "quando": agora.isoformat(timespec="minutes"), "modo": "caderno",
                                 "conferidas": len(pubs), "novas_processos": 0, "novas_acoes": len(novos), "detalhes": detalhes})
         if not interrompida:  # contagem parcial não serve para avaliar a saúde das fontes (daria falso alarme)
-            todos_ok = all(t.get("causa") in ("ok", "ainda_nao_liberado_3h") for t in tentativas)
-            ja = sum(int(t.get("ja_conferidos") or 0) for t in tentativas) if todos_ok else 0  # 0.7.29: Diários já lidos não são alarme (tribunal com erro continua sendo)
+            ja = ja_conferidos_para_saude(tentativas)
             saude.registrar(banco, saude.avaliar(pubs, novos, feitas, falhas, agora.date(), ja_conferidos=ja), aviso)
         registro.update({"lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj, "resultado": "interrompida" if interrompida else "ok"})
         if interrompida:
@@ -418,6 +417,13 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, novas_r
         aviso(f"  Não consegui gravar a planilha compartilhada ({e.__class__.__name__}: {e}).")
         banco.registrar("saude", {"fonte": "Pasta compartilhada", "situacao": "erro", "detalhe": f"{e.__class__.__name__}: {e}"[:200]})
     return False
+
+
+def ja_conferidos_para_saude(tentativas):
+    """0.7.29: Diários já lidos antes não são alarme; mas, se algum tribunal falhou, a Saúde continua alarmando (0)."""
+    if not all(t.get("causa") in ("ok", "ainda_nao_liberado_3h") for t in tentativas or []):
+        return 0
+    return sum(int(t.get("ja_conferidos") or 0) for t in tentativas or [])
 
 
 TRAVA_REGRAVAR = threading.RLock()  # revisão da 0.7.29: "Salvar regras", "Gravar a planilha agora", a regravação depois
