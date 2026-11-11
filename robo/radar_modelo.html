@@ -368,7 +368,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .frente-tag { color: var(--tinta-3); font-size: .74rem; letter-spacing: .04em; text-transform: uppercase; }
 .ajuda { all: unset; box-sizing: border-box; cursor: pointer; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--linha-2); color: var(--tinta-2); font-size: .72rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; position: relative; }
 .ajuda:focus-visible { outline: 2px solid var(--latao); }
-.balao { position: absolute; z-index: 40; max-width: min(380px, 86vw); background: var(--folha); color: var(--tinta); border: 1px solid var(--linha-2); border-radius: 10px; box-shadow: 0 8px 28px rgba(15,29,51,.18); padding: 10px 12px; font-size: .82rem; line-height: 1.45; text-align: left; white-space: normal; }
+.balao { position: absolute; z-index: 90; max-width: min(380px, 86vw); background: var(--folha); color: var(--tinta); border: 1px solid var(--linha-2); border-radius: 10px; box-shadow: 0 8px 28px rgba(15,29,51,.18); padding: 10px 12px; font-size: .82rem; line-height: 1.45; text-align: left; white-space: normal; }
 .balao dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 10px; } .balao dt { font-weight: 700; }
 /* menu ☰ */
 .b-menu { all: unset; cursor: pointer; color: #fff; font-size: 1.4rem; line-height: 1; padding: 6px 10px; border-radius: 8px; margin-right: 6px; }
@@ -3563,7 +3563,7 @@ window.LEXSUITE_RADAR = null;
       [t("menu_ver"), [["painel", "v_painel"], ["lista", "v_lista"], ["arquivo", "v_arquivo"], ["historico", "v_historico"]].map(function (v) { return [t(v[1]), function () { trocarVisao(v[0]); }, visao === v[0]]; })],
       [t("menu_planilha"), [[t("planilha_abrir"), abrirPlanilhaComAviso], [t("gerar_copia"), gerarCopia], [t("pasta_abrir"), function () { abrirPlanilha("pasta"); }]]],
       [t("menu_contatos"), [[t("colar_logada"), colarContatos]]],
-      [t("menu_programa"), [[t("config"), function () { abrirConfig(true, null, true); }], [t("rg_titulo"), editarPreferencias], [t("perfil"), function () { abrirPerfil(true); }], [t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }],
+      [t("menu_programa"), [[t("config"), function () { abrirConfig(true); }], [t("rg_titulo"), editarPreferencias], [t("perfil"), function () { abrirPerfil(false); }], [t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }],
         [t("termos_t"), function () { abrirConfig(true, "c-termos-wrap"); }], [t("abrir_aba"), function () { post("/abrir-em-aba", {}); }], [t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); }]]]
     ];
   }
