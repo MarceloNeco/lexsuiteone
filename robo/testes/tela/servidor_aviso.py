@@ -40,7 +40,7 @@ b = bd.Banco(os.path.join(pasta, "lexsuite.db"))
 hoje = dt.datetime(2026, 11, 10, 9, 0)
 for k in range(12):
     lead = {"processo": f"0000{k:03d}-11.2026.5.02.0001", "tribunal": "TRT2", "vara": f"{k % 7 + 1}ª Vara do Trabalho de São Paulo", "empresas": [f"Empresa Fictícia {k} Ltda"],
-            "data_publicacao": "2026-11-09", "visto_em": hoje.isoformat(timespec="seconds"), "valor_causa": 50000 + k * 10000, "classe": "ATOrd", "rito": "Ordinário", "cnpjs": ["11222333000181"], "empresa_receita": {}}
+            "data_publicacao": hoje.date().isoformat(), "visto_em": hoje.isoformat(timespec="seconds"), "valor_causa": 50000 + k * 10000, "classe": "ATOrd", "rito": "Ordinário", "cnpjs": ["11222333000181"], "empresa_receita": {}}
     b.guardar_lead(lead, hoje.date().isoformat())
 c2 = json.loads(open(os.path.join(pasta, "config.json"), encoding="utf-8").read().replace("Infinity", "0").replace("NaN", "0"))
 compartilhar.criar_se_faltar(c2, VERSAO, ROBO, lambda *a: None)

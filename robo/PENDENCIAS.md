@@ -162,6 +162,42 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.30 (11/Nov) — pronta para publicar
+
+Revisão interna (revisor): sem bloqueio. Feitas: memória dos períodos com o estado e a licença de agora (5 minutos; não
+guarda resposta que chegou depois de uma gravação); "Ler o Diário agora" com tribunais marcados confere a licença antes
+e mostra o motivo se o programa recusar; comentário sem nome de ferramenta de IA. Fica para depois: o aviso de fim de
+leitura (`monitor.py`) ainda conta pela data em que o programa viu (a lista e o Painel contam pela data do Diário);
+`robo/MANUTENCAO.md` cita nomes de ferramentas de IA desde antes (o dono decide).
+
+O que entrou (barra de controles da lista e o resto do teste do dono, 11/Nov):
+
+- Filtro de período pela DATA DO PROCESSO no Diário (não quando o programa leu); "Período" de hoje vira "período de
+  leitura"; "último dia" = do último dia útil até agora (o dono pediu recomendação se ficar grande).
+- "Tribunais: N de 24" e o "alterar" ao lado de "Ler o Diário agora" fazem a mesma coisa: juntar num lugar só.
+- "Ordem de chegada" (quando o programa achou, agrupado por leitura) x "Mais recentes primeiro" (data do Diário):
+  nomes confundem.
+- Feito no ramo (0.7.30), a partir do protótipo do dono: três blocos. "Configuração da leitura" (o que o programa lê,
+  "Alterar configuração" = um botão só para a mira, "Ler o Diário agora", última e próxima leitura); "Filtros da lista"
+  (busca, Data do processo, Situação, Valor, "Mais filtros" que abre os menos usados, filtros salvos, Limpar) com a
+  ordenação e o "Baixar a lista (.csv)" em dourado no mesmo bloco, fixo no alto no computador (no celular rola junto).
+  "Data do processo" conta pela data no Diário (1 = do último dia útil até hoje; 3 a 90 dias); a 1ª carga da tela usa
+  o período salvo (antes pedia sempre 1 dia).
+- Ajustes do dono (11/Nov): filtros numa linha só no notebook ("Data: ..." dentro da opção, busca mais curta); filtros
+  salvos sempre à vista ("Filtros salvos (nenhum ainda)") com o link "★ Salvar"; "Limpar filtros (n)" pílula branca e
+  vermelha; ✕ no filtro ligado tira sem abrir; "Marcar todos" em cada lista de filtro; "Configuração da leitura" em uma
+  faixa baixa; abas com destaque cinza e a barrinha dourada deslizando; Painel com "Tribunal: Todos | TRT2 | TRT15"
+  (o mesmo filtro da barra) e o título "Filtros do painel".
+- Modo escuro (dono, 11/Nov; pesquisa do `pesquisador`: Material 3, Apple HIG, WCAG 2.2 1.4.11): Perfil → Aparência
+  "Claro | Escuro | Igual ao sistema" (padrão: o sistema), com miniaturas, sem sol e lua; marinho escuro (não preto),
+  superfícies que clareiam com a elevação, latão clareado (#c8a45c) para não virar mostarda, selos e gráficos com tons
+  próprios do escuro; cores fixas viraram variáveis. Faixa de versão nova: confere de novo a cada 30 minutos com a
+  tela aberta (antes só ao abrir). Ressalvas da segunda revisão da 0.7.29: 2 (já feito), 3, 4, 5, 6, 7, 9 feitas; 1 e
+  8 e 11 ficam para o fechamento da 0.7.30; 10 não se aplica mais (a 0.7.29 já saiu).
+- Feito no ramo (0.7.30): marcar tribunais na mira e clicar "Ler o Diário agora" salva e lê o que está marcado (antes
+  lia a mira antiga sem avisar); o texto ao lado do botão acompanha o marcado, com "(marcado, ainda não salvo)"; o
+  "alterar" não é mais cortado pelas reticências; círculo girando ao lado da barra de progresso.
+
 ## 0.7.29 de novo (11/Nov): revisão da Operação + o que estava como 0.7.30
 
 Revisão da 0.7.29 (Operação): bloqueio feito ("Encerrar o RADAR" só encerra à força o processo que a própria tela

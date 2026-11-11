@@ -212,7 +212,9 @@ class TestMonitor(unittest.TestCase):
         self.assertEqual(len(novos), 1)
         novos[0]["visto_em"] = "2026-10-22T19:12:00"
         banco.guardar_lead(novos[0], "2026-10-22")
-        pag = radar.montar_radar({"radar": {"tribunais": ["TRT2", "TRT15"]}}, banco, dt.datetime(2026, 10, 22, 21, 0))
+        # 0.7.30 (dono): o período conta pela data do processo no Diário (20/10), não por quando o programa o viu (22/10)
+        self.assertEqual(len(radar.montar_radar({"radar": {"tribunais": ["TRT2", "TRT15"]}}, banco, dt.datetime(2026, 10, 22, 21, 0))["itens"]), 0)
+        pag = radar.montar_radar({"radar": {"tribunais": ["TRT2", "TRT15"]}}, banco, dt.datetime(2026, 10, 22, 21, 0), dias=3)
         self.assertEqual(len(pag["itens"]), 1)
         self.assertEqual(pag["dia"], "2026-10-20")
         self.assertEqual(pag["itens"][0]["link_pje"], "https://pje.trt2.jus.br/consultaprocessual/")
@@ -312,7 +314,7 @@ class RadarExecutar(unittest.TestCase):
         self.assertEqual((sit["lidas"], sit["novas"], sit["com_cnpj"]), (1, 1, 1))
         self.assertTrue(os.path.exists(os.path.join(pasta, "saida", "radar", "radar.html")))
         self.assertTrue(os.path.exists(os.path.join(pasta, "saida", "radar", "radar.csv")))
-        pagina = radar.montar_radar({"radar": {"tribunais": ["TRT2"]}}, banco, dt.datetime(2026, 10, 24, 20, 0), dias=1)
+        pagina = radar.montar_radar({"radar": {"tribunais": ["TRT2"]}}, banco, dt.datetime(2026, 10, 24, 20, 0), dias=7)  # Diário de 20/10
         self.assertEqual(len(pagina["itens"]), 1)
         self.assertEqual(pagina["itens"][0]["empresa"]["porte_legivel"], "Microempresa (até R$ 360 mil/ano)")
         self.assertEqual(pagina["itens"][0]["diario_em"], "2026-10-20")

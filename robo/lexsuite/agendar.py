@@ -320,7 +320,7 @@ def notificar(titulo, texto):
     env = dict(os.environ, LEXSUITE_AVISO_TITULO=str(titulo)[:60], LEXSUITE_AVISO_TEXTO=str(texto)[:250])
     try:
         subprocess.Popen(["powershell", "-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden", "-Command", _AVISO_PS],  # nosec B603 B607
-                         env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                          creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         return True
     except OSError:

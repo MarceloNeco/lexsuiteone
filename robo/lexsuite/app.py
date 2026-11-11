@@ -535,7 +535,7 @@ class Tratador(BaseHTTPRequestHandler):
                 d["chamado"] = True; s.chamado = 0  # 0.7.28: alguém clicou no atalho de novo; a tela avisa e vem para a frente
             return self._responder(d)
         if u.path == "/chamar" and self.headers.get("X-LexSuite-Sonda") == "1":
-            s.chamado = _t.monotonic()
+            s.chamado = 0 if "cancelar" in (u.query or "") else _t.monotonic()  # revisão da 0.7.29: chamado sem tela não fica pendente
             return self._responder({"ok": True})
         if u.path == "/manual":
             manual = os.path.join(s.pasta, "MANUAL-DO-ESCRITORIO.html")
@@ -1215,13 +1215,14 @@ def tela_atendeu(url, espera_s=13, dormir=None):
     return False
 
 
-def chamar_tela(url):
-    """0.7.28: pede à tela já aberta que mostre "O RADAR já estava aberto aqui" e venha para a frente."""
+def chamar_tela(url, cancelar=False):
+    """0.7.28: pede à tela já aberta que mostre "O RADAR já estava aberto aqui" e venha para a frente. Com `cancelar`,
+    desfaz o pedido (a tela tinha sido fechada no X; a janela nova não deve dizer "já estava aberto")."""
     import http.client
     try:
         p = int(url.rstrip("/").rsplit(":", 1)[1])
         c = http.client.HTTPConnection("127.0.0.1", p, timeout=1)
-        c.request("GET", "/chamar", headers={"X-LexSuite": "1", "X-LexSuite-Sonda": "1", "Host": f"127.0.0.1:{p}"})
+        c.request("GET", "/chamar?cancelar=1" if cancelar else "/chamar", headers={"X-LexSuite": "1", "X-LexSuite-Sonda": "1", "Host": f"127.0.0.1:{p}"})
         c.getresponse().read(); c.close()
         return True
     except (OSError, ValueError, IndexError):
@@ -1256,7 +1257,7 @@ def gravar_pid(pasta, porta):
     try:
         os.makedirs(os.path.join(pasta, "saida"), exist_ok=True)
         with open(_arquivo_pid(pasta), "w", encoding="utf-8") as f:
-            json.dump({"pid": os.getpid(), "porta": int(porta)}, f)
+            json.dump({"pid": os.getpid(), "porta": int(porta), "pasta": os.path.abspath(pasta)}, f)  # 0.7.30: e de qual pasta
     except OSError:
         pass
 
@@ -1334,7 +1335,7 @@ def _imagem_do_processo(pid):
 
 def _e_python(pid):
     """Revisão da 0.7.29 (bloqueio): só se encerra à força um processo cujo executável é o Python."""
-    nome = os.path.basename(_imagem_do_processo(pid)).lower()
+    nome = str(_imagem_do_processo(pid) or "").replace("\\", "/").rsplit("/", 1)[-1].lower()  # caminho do Windows ou não
     return nome in ("python.exe", "pythonw.exe") or (os.name != "nt" and nome.startswith("python"))
 
 
@@ -1348,7 +1349,12 @@ def _dono_da_porta(porta):
                            stdin=subprocess.DEVNULL, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     except (OSError, subprocess.SubprocessError):
         return 0
-    for linha in (r.stdout or b"").decode("ascii", "replace").splitlines():
+    return pid_no_netstat((r.stdout or b"").decode("ascii", "replace"), porta)
+
+
+def pid_no_netstat(texto, porta):
+    """O pid que escuta em 127.0.0.1:porta na saída do `netstat -ano` (igual em qualquer idioma: só números e endereços)."""
+    for linha in str(texto or "").splitlines():
         partes = linha.split()
         if len(partes) >= 5 and partes[1] == f"127.0.0.1:{int(porta)}" and partes[2] in ("0.0.0.0:0", "*:*"):
             try:
@@ -1362,6 +1368,8 @@ def _ler_pid(pasta):
     try:
         with open(_arquivo_pid(pasta), encoding="utf-8") as f:
             d = json.load(f)
+        if d.get("pasta") and not _mesma_pasta(d["pasta"], pasta):  # revisão da 0.7.29: programa.pid copiado de outra pasta
+            return 0, 0
         return int(d.get("pid") or 0), int(d.get("porta") or 0)
     except (OSError, ValueError, TypeError, AttributeError):
         return 0, 0
@@ -1405,7 +1413,7 @@ def encerrar_aberto(pasta, aviso=print, espera_s=15, dormir=None, portas=None):
             if pid_tela and pid_tela == pid_arq and porta == porta_arq and processo_vivo(pid_tela) and _e_python(pid_tela):
                 saiu = _encerrar_processo(pid_tela)
         aviso("  Tela do RADAR encerrada. / RADAR screen closed." if saiu else MSG_NAO_ENCERROU)
-    elif pid_arq and processo_vivo(pid_arq) and _e_python(pid_arq):  # tela travada, sem responder (revisão, item 2)
+    elif pid_arq and processo_vivo(pid_arq) and _e_python(pid_arq) and not _estado_sonda(porta_arq):  # tela travada (não responde)
         achou = True
         if porta_arq and _dono_da_porta(porta_arq) == pid_arq and _encerrar_processo(pid_arq):
             aviso("  Tela do RADAR (travada) encerrada. / Stuck RADAR screen closed.")
@@ -1516,7 +1524,10 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
         ja, ativa = procurar_aberto(detalhe=True)
         if ja:
             import time
-            if ativa and chamar_tela(ja) and tela_atendeu(ja):  # 0.7.28 (dono): a tela já está aberta; não abre outra, ela avisa e vem para a frente
+            atendeu = ativa and chamar_tela(ja) and tela_atendeu(ja)
+            if ativa and not atendeu:
+                chamar_tela(ja, cancelar=True)
+            if atendeu:  # 0.7.28 (dono): a tela já está aberta; não abre outra, ela avisa e vem para a frente
                 m_ = marca(pasta)  # revisão da 0.7.28: o nome vem da marca, não fixo
                 aviso(f"  O {m_['curto']} já está aberto neste computador. Procure a janela \"{m_['nome']}\" na barra de tarefas;")
                 aviso(f"  ela mostra o aviso \"O {m_['curto']} já estava aberto aqui\". Esta janela fecha sozinha.")
