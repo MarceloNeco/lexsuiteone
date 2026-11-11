@@ -135,7 +135,7 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.29 pronta para publicar** (11/Nov): sem janela preta (opção a, pergunta 15) e ressalvas da segunda revisão da 0.7.28. Espera o "pode a 0.7.29" do dono. Publicadas: 0.7.20, 0.7.22 a 0.7.28.
+- **0.7.30 pronta para publicar** (11/Nov): tela em blocos (leitura, filtros fixos no alto, ordenação), Data do processo pela data do Diário, Painel (período com memória, tribunal, barras por tribunal, pizza), modo escuro, licença com selo, versão nova com a tela aberta, rolagem travada com janela aberta, ressalvas das revisões da 0.7.28 e 0.7.29, manual e site. Testes 216 OK (root e usuário comum), Bandit, marca, `larguras.js` 50, `aviso_e_lupa.sh` 387, revisor sem bloqueio. Roteiro de teste do dono no Drive. Publicadas: 0.7.20, 0.7.22 a 0.7.29.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
