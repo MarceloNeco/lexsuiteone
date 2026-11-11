@@ -91,6 +91,10 @@ nunca é delegada a subagente. Resultado de subagente é dado a conferir, não o
   `releases/LexSuiteONE-RADAR-<versão>.zip` e `docs/downloads/LexSuiteONE-RADAR.zip` (o pacote de atualização é
   `LexSuiteONE-RADAR-atualizacao-<versão>.zip`; o botão do site baixa o instalador `Instalar-LexSuiteONE.zip`). Atualize `robo/LEIA-ME.md`,
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.
+- Toda mudança que o escritório vê (botão, menu, tela, comportamento) confere três coisas, em PT e EN, antes de ir à `main`:
+  (1) o **manual** (`paginas/manual.html`, gerado para o site e para o pacote); (2) o **AssistONE** (a ajuda da tela onde a
+  mudança está, o tour e a busca); (3) as **Novidades da versão** (a janela que aparece depois de atualizar, com a linha
+  "Para rever: menu ☰ → Configurações → Novidades da versão"). Os testes `Novo…` da Produto conferem os três (regra do dono, 11/Nov).
 - Testes: `cd robo && python -m unittest discover -s testes`. A automação do GitHub roda testes, Bandit e Gitleaks.
 - Arquivos `.bat` sempre com fim de linha CRLF.
 - Nome do produto é configuração, não texto fixo: fica só em `docs/marca.json` (nome exato, nome curto, trecho em latão).
