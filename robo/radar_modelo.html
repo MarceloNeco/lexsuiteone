@@ -438,6 +438,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .bloco-leitura .rodar-criterio { justify-content: flex-start; font-size: .86rem; color: var(--tinta-2); }
 .bloco-leitura .estado { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 16px; font-size: .82rem; }
 .bloco-leitura .estado > .progresso-linha, .bloco-leitura .estado > .andando, .bloco-leitura .estado > .log, .bloco-leitura .estado > .erro, .bloco-leitura .estado > details { flex: 1 1 100%; }
+.bloco-leitura .estado > * { min-width: 0; max-width: 100%; }  /* revisão: mensagem longa quebra a linha no celular */
 @media (max-width: 760px) { .bloco-leitura { grid-template-columns: 1fr; } .bl-dir { flex-wrap: wrap; } .bl-dir > * { flex: 1 1 auto; justify-content: center; } }
 .so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .salvos-grupo { display: inline-flex; align-items: center; gap: 6px; }
