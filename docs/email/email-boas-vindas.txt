@@ -7,7 +7,7 @@ https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip
 
 [CODIGO-INICIO]
 Seu código de cliente: {{codigo}}
-A tela pede esse código na instalação. Ele identifica o escritório; não é senha.
+Guarde este e-mail: o código ativa o {{marca.nome}} em cada computador do escritório, na instalação e se for preciso reinstalar. Ele identifica o escritório; não é senha, mas fica só com a equipe.
 
 [CODIGO-FIM]
 Antes de instalar, aceite os termos. Sua licença já está ativa, mas o programa só libera a leitura depois do aceite. Leia os termos de uso, a política de privacidade e o termo de tratamento de dados e confirme (leva 3 minutos; o código e o e-mail já vão preenchidos, e o aceite fica registrado):
@@ -27,9 +27,11 @@ Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informaçõe
 
 Segurança e dados: o {{marca.curto}} não pede nem guarda senha, não contorna captcha e só instala atualizações assinadas digitalmente. Organiza dados da empresa processada e, com a fonte, dos sócios, administradores e do empresário individual (inclusive MEI); não organiza dados do autor da ação nem de testemunhas (termos, seção 4). A relação de processos, as fichas, os contatos e as planilhas ficam no seu computador e na pasta do escritório. À SolverONE vão só: a conferência da licença, o cadastro de quem usa (nome, e-mail e função) e o documento do escritório (CNPJ, CPF ou passaporte), o aceite dos termos, avisos técnicos de erro sem conteúdo de processo e quantidades de processos por situação, dia, tribunal, área e faixa de valor, sem nome, número de processo ou CNPJ (termos, seções 6 e 7). A Configuração mostra exatamente o que foi enviado.
 
+Site do {{marca.nome}}: https://judicial.solverone.com.br (manual, termos e o instalador sempre na versão mais nova).
+
 Dúvidas? Escreva para {{contato}}. Este e-mail saiu de um endereço automático e não recebe respostas.
 
-In English: your {{marca.nome}} is ready. Accept the terms first (link above), then download the installer, double-click INSTALAR.bat and follow the assistant: client code, your name, e-mail and role, the spreadsheet folder (on the computer or, if the firm prefers, on Google Drive) and the courts. No black window stays open; to quit, use the ☰ menu and "Exit". Lawsuit data stays on your computer and in the firm's folder; SolverONE only receives the licence check, who uses it, the terms acceptance, technical error notices and counts by status, without names, case numbers or tax IDs (terms, sections 6 and 7). Sharing the folder with SolverONE is optional, for support only.
+In English: your {{marca.nome}} is ready. Accept the terms first (link above), then download the installer, double-click INSTALAR.bat and follow the assistant: client code, your name, e-mail and role, the spreadsheet folder (on the computer or, if the firm prefers, on Google Drive) and the courts. No black window stays open; to quit, use the ☰ menu and "Exit". Lawsuit data stays on your computer and in the firm's folder; SolverONE only receives the licence check, who uses it, the terms acceptance, technical error notices and counts by status, without names, case numbers or tax IDs (terms, sections 6 and 7). Sharing the folder with SolverONE is optional, for support only. Keep this e-mail: the client code activates {{marca.nome}} on each of the firm's computers. Website: https://judicial.solverone.com.br
 
 Marcelo Freitas
 SolverONE
