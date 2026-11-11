@@ -220,12 +220,8 @@ migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e as f
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- Nada em andamento. **Trava da KR Law (`exigir_aceite`) fica desligada até depois da visita de quinta 12/Nov** (decisão do
-  dono, 09/Nov): o Leandro instala sem travar; a Arquitetura liga depois, quando o dono disser. Licença nova nasce com a
-  trava ligada (padrão), e a página de aceite já está no ar.
-- Depois: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com credencial na `lex-conta`,
-  desenho do site `paginas/app/` para a Produto, trilha de auditoria (pedido da Produto de 08/Nov, item 2), ampliar o
-  check de `lex_eventos` numa sessão no desktop.
+- Nada em andamento. **Trava do aceite ligada nas duas licenças** (KR Law e teste do dono) desde 11/Nov, a pedido do dono.
+  Próximos: SQL da 0.8, pareamento com credencial na `lex-conta`, trilha de auditoria, check de `lex_eventos` no desktop.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -233,6 +229,15 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 11/Nov: **termo único e trava ligada** (pedido da Produto "Termos e aceite" + decisão do dono): `2026-11-11-sol-termo-unico.sql`
+  aplicado (`sol_termos.ativo`; `lexsuiteone-uso` inativo; `lexsuiteone-termos` fica na versão **1.0** (decisão do dono, 11/Nov: ninguém usou ainda; o número só sobe depois do primeiro cliente), hash do texto;
+  aceite vindo do programa exige só o nome; `exigir_aceite = true` na KR Law e na licença de teste, com evento e log);
+  **`lex-conta` v14** (escritório e pessoa no mesmo termo; `termos.pessoa.link = aceite.html?ler=1`; link da trava usa o
+  e-mail da pessoa do computador quando a ficha não tem responsável). Página 1.2 publicada: código e e-mail viram texto
+  cinza sem foco, código mascarado como no Perfil (`LEX-••••-XXXX`), seção 2 com o texto do termo único, `?ler=uso` mostra o
+  texto inteiro. Por que a conta de teste lia sem aceite: trava desligada + 0.7.28 sem `suporta_aceite_uso`; não havia aceite.
+  Desenho: `documentacao/DESENHO-TERMOS-UNICO-2026-11-11.md`. Prompt para a Produto revisar e-mail e manual:
+  `documentacao/PROMPT-REVISAO-EMAIL-E-MANUAL-2026-11-11.md`.
 - 10/Nov: **modo leitura da página de aceite** (`?ler=1` e `?ler=uso`, pedido da Produto): sem a coluna do formulário, a
   página inteira rola, índice fixo ao lado do texto (até 80 caracteres), busca no alto com destaque, contador "3 de 7" e
   setas (Enter/Shift+Enter), texto de abertura próprio do modo leitura; no `?ler=uso` só as seções 3 a 5, no cartão da
@@ -337,7 +342,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Colar na conversa do RootifyONE o `documentacao/PROMPT-ROOTIFYONE-2026-11-09.md` atual (itens 3, 3b e 3c), se ainda não colou.
+- Testar a trava na licença de teste: fechar e abrir o programa (0.7.28 já mostra a mensagem com o link), aceitar pelo link
+  com o e-mail cadastrado no programa, fechar e abrir de novo.
+- Colar na conversa da Produto o `documentacao/PROMPT-REVISAO-EMAIL-E-MANUAL-2026-11-11.md`.
+- Colar na conversa do RootifyONE o `documentacao/PROMPT-ROOTIFYONE-2026-11-09.md` atual (itens 3, 3b, 3c e 3d), se ainda não colou.
 - Depois da visita de quinta: dizer "liga a trava da KR Law" (a Arquitetura liga `exigir_aceite` e registra).
 - Perguntas 10 a 14 da lista única (item 82 e trava da pessoa; a Produto consolida).
 
@@ -423,6 +431,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | 09/Nov | Arquitetura | Produto | **Aceite dos termos no programa (0.7.14)**: a `lex-conta` v8 responde `ok:false, motivo:"aceite_pendente"` (com `mensagem` e `aceite.link`) enquanto o responsável não aceitar os termos; a 0.7.13 mostra isso como "A licença deste escritório não está ativa. Antes do primeiro uso… <link>. Fale com judicial@" (legível, mas tosco). Pedido: (1) `conta.py`: `MOTIVOS["aceite_pendente"] = "Falta o aceite dos termos pelo responsável do escritório."` e a tela mostrar `mensagem` com o link clicável (abre o navegador); (2) `instalador/INSTALAR.bat`: tratar `aceite_pendente` como "Falta aceitar os termos: abra o link do e-mail de boas-vindas" em vez de cair em "sem internet"; (3) Configuração: mostrar "Termos aceitos por … em … (v…)" a partir de `aceite` da resposta. Contrato em `documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`, seção 5a | sim (Produto, 09/Nov): `MOTIVOS["aceite_pendente"]`, link (só `*.solverone.com.br`) na faixa da tela, "Termos aceitos por… em… (versão…)" na Configuração, instalador avisa e continua a instalação |
 | 09/Nov | Arquitetura | conversa do RootifyONE (via dono) | **Prompt completo de sincronia** em `documentacao/PROMPT-ROOTIFYONE-2026-11-09.md` (substitui as linhas anteriores: contrato dos campos, `admin_lex_dispensar_aceite`, selo, interruptor com motivo, etapa da jornada, bloco Termos, prévia com `{{email}}`/`{{nome}}`, o que esperar e o que nunca fazer) | não |
 | 09/Nov | Arquitetura | conversa do RootifyONE (via dono) | **Acréscimo ao aplicado de hoje**: `admin_lex_listar` também devolve `exigir_aceite` (boolean) e `admin_lex_salvar` aceita `exigir_aceite` (interruptor "Exigir aceite dos termos antes do uso" na ficha, com (?) explicando: a licença fica ativa, o programa só libera depois do aceite). A prévia do e-mail de boas-vindas deve preencher `{{email}}` (e-mail do responsável) e `{{nome}}` (já preenche) também dentro do link do aceite | não |
+| 11/Nov | Arquitetura | Produto | **Termo único (decisão do dono, 11/Nov)**: a caixa do cadastro passa a dizer "Li e aceito os termos do RADAR JUDICIAL (versão X)" com o link `termos.pessoa.link` (agora `aceite.html?ler=1`, o mesmo texto do escritório); o envio `aceite_uso {versao, fuso}` continua igual e a nuvem grava no termo único; a Configuração mostra "Termos (versão X): escritório aceito por … em …; você aceitou em …". Quando a versão com `suporta_aceite_uso: true` sair, a trava por pessoa passa a valer para todos na primeira abertura (decisão 13). `?ler=uso` continua funcionando (mostra o texto inteiro) | não |
 | 09/Nov | Arquitetura | Produto | **Termos em duas camadas no programa** (decisão do dono, 09/Nov; contrato em `documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`, seção 5c; versão a combinar, provavelmente 0.7.15): (1) **cadastro da pessoa**: caixa obrigatória "Li e aceito os termos de uso (versão X)" com o link do texto (`termos.pessoa.link`, hoje `aceite.html?ler=uso`); a versão X vem de `termos.pessoa.versao_vigente` da última resposta da `lex-conta` (ou do `cadastrar` anterior); ao enviar o cadastro, mandar `aceite_uso: {versao: X, fuso: <fuso IANA do Windows, ex. America/Sao_Paulo>}`; se a resposta trouxer `termos.pessoa.erro_aceite`, mostrar e pedir de novo; (2) **`verificar`** passa a mandar `suporta_aceite_uso: true` (a partir daí a nuvem trava com `motivo: aceite_uso_pendente` quem não aceitou a versão vigente; o programa abre a tela de cadastro com a caixa); tratar também `aceite_pendente` (escritório) com `MOTIVOS` próprio e link clicável (pedido anterior); (3) **Configuração**, bloco "Termos": "Termos do escritório: versão {termos.escritorio.versao_vigente}; aceito por {nome} em {aceito_em no fuso} (protocolo …)" ou "pendente"/"dispensado pela SolverONE" (`exigido: false`); "Termos de uso: versão {termos.pessoa.versao_vigente}; você aceitou em {aceito_em} (versão {versao})" ou "você precisa aceitar a versão nova"; links para os textos; (4) guardar em `config.json` a última resposta `termos` para mostrar sem internet; (5) testes: resposta com `precisa_aceitar: true` abre o cadastro; `cadastrar` manda `aceite_uso`; versão nova pede de novo. Mensagem PT/EN. Nada disso trava o 0.7.13/0.7.14 instalado | não |
 | 09/Nov | Arquitetura | conversa do RootifyONE (via dono) | **Pedido nº 2 respondido**: desenho em `documentacao/DECISAO-B2B-QUEM-FAZ-O-QUE-2026-11-09.md`, seção 5d, e instruções no `documentacao/PROMPT-ROOTIFYONE-2026-11-09.md`, item 3c. Texto mora no site do produto; vigência no banco; o dono publica a versão pelo RootifyONE (`admin_sol_termo_publicar` com `p_reaceite`); pessoa sempre aceita de novo; escritório só se o dono ligar | sim (Arquitetura) |
 | 09/Nov | Arquitetura | Produto | **Item 91 (busca na área logada com extensão de IA)**: nenhuma regra de dado muda. Vale a regra dos contatos (decisão de 08/Nov): tudo que for encontrado entra na ficha e na planilha **com fonte e data da consulta**; só advogados usam; nada de pessoa física que não responda pela empresa (autor, testemunhas) nem sai do programa. **Valor da causa e data de ajuizamento**: entram na ficha e na planilha como dado do processo (fonte "área logada, <tribunal>, <data>"); no retorno à SolverONE continuam só como **faixa de valor** e dia, nunca o valor exato; os termos v1.0 já dizem que esses dados "não são obtidos automaticamente; o advogado pode buscá-los com a própria credencial" e que a extensão de IA é escolha e responsabilidade do escritório. Limite de 30 processos por dia na área logada (decisão de 09/Nov) vale para o lote. O texto montado para a extensão não pode conter o código de cliente nem dados de outras pessoas do escritório | não |
