@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v13 (publicada no Supabase como v13; o número aqui acompanha o da publicação. v12 + "hoje" em America/Sao_Paulo para a validade da licença): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v14 (publicada no Supabase como v14. v13 + termo único: escritório e pessoa aceitam o mesmo texto 'lexsuiteone-termos'; a pessoa lê em ?ler=1): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -25,8 +25,8 @@ const LINK_ACEITE = "https://judicial.solverone.com.br/aceite.html";
 // não faz pedido externo; a lex-conta lê aqui, guarda 5 minutos e devolve só {id: ligado} na ação verificar.
 const DADOS = "https://solverone.com.br/solverone-dados/recursos/";
 const APP_ID = "radar-judicial";
-const TERMO_ESCRITORIO = "lexsuiteone-termos";   // contrato + tratamento de dados: o responsável aceita uma vez (libera a licença)
-const TERMO_PESSOA = "lexsuiteone-uso";          // termos de uso: cada pessoa aceita no cadastro do programa, por versão
+const TERMO_ESCRITORIO = "lexsuiteone-termos";   // texto único (11/Nov): o responsável aceita pelo link (libera a licença)
+const TERMO_PESSOA = "lexsuiteone-termos";       // e cada pessoa aceita o MESMO texto no cadastro do programa, por versão
 const REMETENTE = "SolverONE <nao-responda@solverone.com.br>";
 const AVISOS_POR_DIA = 20;
 // Retorno dos processos à SolverONE (decisão do dono, 09/Nov): só contagens por situação. Situações do programa:
@@ -288,7 +288,8 @@ Deno.serve(async (req) => {
   const escPendente = !esc.aceito || (esc.reaceite_obrigatorio === true && esc.precisa_aceitar === true);
   if (ok && conta.exigir_aceite && acao === "verificar" && escPendente) {
     ok = false; motivo = "aceite_pendente";
-    const link = `${LINK_ACEITE}#codigo=${codigo}` + (conta.email_responsavel || conta.email_boas_vindas ? `&email=${encodeURIComponent(String(conta.email_responsavel || conta.email_boas_vindas))}` : "");
+    const emailLink = conta.email_responsavel || conta.email_boas_vindas || email;   // sem responsável na ficha, vale o e-mail da pessoa deste computador
+    const link = `${LINK_ACEITE}#codigo=${codigo}` + (emailLink ? `&email=${encodeURIComponent(String(emailLink))}` : "");
     mensagem = esc.aceito
       ? `Os termos mudaram (versão ${esc.versao_vigente ?? ""}): o responsável do escritório precisa aceitar a versão nova (leva 3 minutos): ${link}`
       : `Antes do primeiro uso, o responsável do escritório precisa aceitar os termos (leva 3 minutos): ${link}`;
@@ -299,6 +300,7 @@ Deno.serve(async (req) => {
     escritorio: { ...esc, exigido: !!conta.exigir_aceite, pendente: !!conta.exigir_aceite && escPendente },
     pessoa: tPes ? { ...(tPes as Record<string, unknown>) } : { termo: TERMO_PESSOA, aceito: false, precisa_aceitar: true },
   };
+  (termos.pessoa as Record<string, unknown>).link = `${LINK_ACEITE}?ler=1`;   // leitura do texto único para a caixa do cadastro
   if (aceiteUsoErro) (termos.pessoa as Record<string, unknown>).erro_aceite = aceiteUsoErro;
   // A pessoa deste computador ainda não aceitou a versão vigente dos termos de uso: trava só quando o programa declara que
   // sabe pedir o aceite (suporta_aceite_uso: true, a partir da versão que a Produto fizer); programa antigo só recebe o aviso.

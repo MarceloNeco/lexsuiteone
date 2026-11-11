@@ -40,6 +40,7 @@ p, li { margin: 0 0 10px; } .mudo { color: var(--tinta-2); }
 .fim { text-align: center; color: var(--tinta-3); font-size: .9rem; padding: 10px 0 0; border-top: 1px dashed var(--fio); margin-top: 16px; }
 label { display: block; font-weight: 600; margin: 14px 0 6px; } label small { display: block; font-weight: 400; color: var(--tinta-3); }
 input.fixo { background: var(--papel-2); color: var(--tinta-2); }
+.fixo-texto { background: var(--papel-2); color: var(--tinta-2); border: 1px solid var(--fio); border-radius: 10px; padding: 12px 14px; cursor: default; user-select: none; letter-spacing: .02em; }
 input[type=text], input[type=email] { width: 100%; font: inherit; padding: 12px 14px; border: 1px solid var(--fio); border-radius: 10px; background: var(--papel); }
 .marca { display: flex; gap: 12px; align-items: flex-start; font-weight: 500; margin-top: 16px; } .marca input { width: 22px; height: 22px; margin-top: 3px; flex: none; }
 button { font: 700 1.05rem var(--f); background: var(--latao); color: var(--noite); border: 0; border-radius: 12px; padding: 14px 22px; cursor: pointer; margin-top: 18px; min-height: 48px; }
@@ -52,7 +53,7 @@ body.leitura .grade { grid-template-columns: minmax(0, 1fr); }
 body.leitura .lado { display: none; }
 body.leitura .termos { height: auto; overflow: visible; grid-template-columns: minmax(200px, 16rem) minmax(0, 80ch); }
 body.leitura .termos > nav.indice { top: 76px; }
-body.leitura.so-uso .cartao { max-width: calc(80ch + 2 * clamp(16px, 2vw, 28px) + 42px); } body.leitura.so-uso .termos { grid-template-columns: minmax(0, 80ch); } body.leitura.so-uso .termos > section, body.leitura.so-uso .termos > .fim { grid-column: 1; }
+
 .busca { display: none; align-items: center; gap: 10px; background: var(--papel); border: 1px solid var(--fio); border-radius: 999px; padding: 4px 6px 4px 16px; margin: 14px 0 4px; max-width: 80ch; position: sticky; top: 8px; z-index: 3; box-shadow: 0 2px 10px rgba(16,32,56,.08); }
 body.leitura .busca { display: flex; }
 .busca input { flex: 1; min-width: 0; border: 0; outline: 0; font: inherit; padding: 8px 0; background: transparent; }
@@ -69,7 +70,7 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
   <div class="topo"><h1>Termos do {{marca.nome}}</h1>
   <p id="quem" class="aviso info" hidden></p>
   <label class="busca" id="busca-caixa"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#6b7489" stroke-width="2.2"/><path d="M15.5 15.5 21 21" stroke="#6b7489" stroke-width="2.2" stroke-linecap="round"/></svg><input id="busca" type="search" placeholder="Procurar nos termos (ex.: sócios, planilha, prazo)" aria-label="Procurar nos termos"><span id="achados"></span><button type="button" id="anterior" aria-label="Resultado anterior" title="Anterior (Shift+Enter)" disabled>▲</button><button type="button" id="proximo" aria-label="Próximo resultado" title="Próximo (Enter)" disabled>▼</button></label>
-  <p class="mudo" id="intro">Sua licença já está ativa; o {{marca.nome}} só libera a leitura depois deste aceite. Leia os termos até o fim, confira seus dados e confirme. O aceite fica registrado com data e hora e vale como assinatura eletrônica simples entre particulares (MP 2.200-2/2001, art. 10, §2º; Código Civil, art. 107). Versão dos termos: <b id="versao">1.1</b>, de 09/Nov/2026.</p></div>
+  <p class="mudo" id="intro">Sua licença já está ativa; o {{marca.nome}} só libera a leitura depois deste aceite. Leia os termos até o fim, confira seus dados e confirme. O aceite fica registrado com data e hora e vale como assinatura eletrônica simples entre particulares (MP 2.200-2/2001, art. 10, §2º; Código Civil, art. 107). Versão dos termos: <b id="versao">1.2</b>, de 11/Nov/2026.</p></div>
 
   <div class="grade">
   <div class="cartao">
@@ -86,7 +87,7 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
       
       <section id="s2"><h2>2. Duas aceitações: escritório e pessoa</h2>
       <p><b>Escritório.</b> O responsável indicado pelo escritório aceita, uma vez e em nome do escritório, todos os documentos desta página. Esse aceite libera a licença.</p>
-      <p><b>Pessoa.</b> Cada pessoa que usa o programa aceita, com o próprio nome e e-mail, os Termos de uso (seções 3 a 5) na primeira vez que o usa. Sem esse aceite, a pessoa não lê o Diário, mesmo com a licença liberada.</p>
+      <p><b>Pessoa.</b> Cada pessoa que usa o programa aceita estes mesmos termos, com o próprio nome e e-mail, na primeira vez que o usa e a cada versão nova, na tela de cadastro do programa. Sem esse aceite, a pessoa não lê o Diário, mesmo com a licença liberada. O aceite do escritório fica registrado com o e-mail de quem o fez.</p>
       <p>Quando estes termos mudarem, a versão nova é publicada nesta página e o programa pede um aceite novo, do escritório e de cada pessoa, conforme o que mudou.</p>
       </section>
       
@@ -152,7 +153,7 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
       <section id="s11"><h2>11. Contato</h2>
       <p>Dúvidas sobre o serviço: judicial@solverone.com.br. Privacidade e dados pessoais: privacidade@solverone.com.br.</p>
       </section>
-      <p class="fim">Fim dos termos · versão 1.1 · 09/Nov/2026 · SolverONE · LexSuiteONE</p>
+      <p class="fim">Fim dos termos · versão 1.2 · 11/Nov/2026 · SolverONE · LexSuiteONE</p>
     </div>
   </div>
   <div class="lado">
@@ -195,12 +196,12 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
   var FUSO = ""; try { FUSO = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
   // Modo leitura (?ler=uso, ?ler=1): só o texto. É o link que o programa mostra na caixa "li e aceito" do cadastro de cada pessoa.
   if (q.get("ler")) {
-    document.body.classList.add("leitura"); if (q.get("ler") === "uso") document.body.classList.add("so-uso");
+    document.body.classList.add("leitura");
     document.getElementById("form").hidden = true;
     document.getElementById("intro").textContent = q.get("ler") === "uso"
-      ? "Termos de uso do {{marca.nome}} (seções 3 a 5), versão " + VERSAO + ". Cada pessoa que usa o programa aceita estes termos na tela de cadastro, na primeira vez e a cada versão nova."
-      : "Leitura dos termos do {{marca.nome}}, versão " + VERSAO + ", de 09/Nov/2026. O aceite em nome do escritório é feito pelo link do e-mail de boas-vindas; cada pessoa aceita os Termos de uso no cadastro do programa.";
-    if (q.get("ler") === "uso") { ["s1","s2","s6","s7","s8","s9","s10","s11"].forEach(function (id) { var el = document.getElementById(id); if (el) el.hidden = true; }); var nav = termos.querySelector("nav.indice"); if (nav) nav.hidden = true; }   // a pessoa aceita as seções 3 a 5
+      ? "Termos do {{marca.nome}}, versão " + VERSAO + ". Cada pessoa que usa o programa aceita estes mesmos termos na tela de cadastro, na primeira vez e a cada versão nova."
+      : "Leitura dos termos do {{marca.nome}}, versão " + VERSAO + ", de 11/Nov/2026. O aceite em nome do escritório é feito pelo link do e-mail de boas-vindas; cada pessoa aceita os Termos de uso no cadastro do programa.";
+    // termo único (11/Nov): ?ler=uso mostra o mesmo texto inteiro; a pessoa aceita estes mesmos termos no cadastro do programa
   }
   // Busca dentro dos termos (modo leitura): destaca, mostra "3 de 7", setas e Enter/Shift+Enter andam pelos resultados.
   (function () {
@@ -232,10 +233,15 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
     .then(function (r) { return r.ok ? r.json() : null; }).then(function (t) { if (t && t.versao && t.versao !== VERSAO) { var antiga = VERSAO; VERSAO = t.versao; var v = document.getElementById("versao"); if (v) v.textContent = t.versao; if (q.get("ler")) { var it = document.getElementById("intro"); it.textContent = it.textContent.replace("versão " + antiga, "versão " + t.versao); } } }).catch(function () {});
   function normCodigo(c) { c = String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); return c.length === 11 && c.indexOf("LEX") === 0 ? c.slice(0, 3) + "-" + c.slice(3, 7) + "-" + c.slice(7, 11) : String(c || "").toUpperCase(); }
   var campoCodigo = document.getElementById("codigo"), campoEmail = document.getElementById("email"), campoNome = document.getElementById("nome");
-  function fixar(campo) { campo.readOnly = true; campo.setAttribute("aria-readonly", "true"); campo.classList.add("fixo"); campo.title = "Veio do e-mail de boas-vindas; não se altera aqui."; }
+  function mascaraCodigo(c) { var p_ = String(c || "").split("-"); return p_.length === 3 ? p_[0] + "-••••-" + p_[2] : String(c || "").slice(0, 4) + "••••"; }   // mesma máscara do Perfil do programa
+  function fixar(campo, mostrar) {   // o campo vira texto cinza: sem foco, sem cursor, fora do Tab; o valor real fica no input escondido
+    campo.readOnly = true; campo.tabIndex = -1; campo.classList.add("fixo"); campo.hidden = true;
+    var tx = document.createElement("div"); tx.className = "fixo-texto"; tx.id = campo.id + "-texto"; tx.textContent = mostrar || campo.value; tx.title = "Veio do e-mail de boas-vindas; não se altera aqui.";
+    campo.parentNode.insertBefore(tx, campo.nextSibling);
+  }
   // Pelo link do e-mail: código e e-mail vêm preenchidos e fixos (identificam a licença e o responsável); o nome vem
   // preenchido mas pode ser corrigido, porque o cadastro às vezes está errado.
-  if (q.get("codigo")) { campoCodigo.value = normCodigo(q.get("codigo")); fixar(campoCodigo); }
+  if (q.get("codigo")) { campoCodigo.value = normCodigo(q.get("codigo")); fixar(campoCodigo, mascaraCodigo(campoCodigo.value)); }
   if (q.get("email")) { campoEmail.value = String(q.get("email")).trim().toLowerCase(); fixar(campoEmail); }
   if (q.get("nome")) campoNome.value = String(q.get("nome")).trim().slice(0, 120);
   var quem = document.getElementById("quem");
