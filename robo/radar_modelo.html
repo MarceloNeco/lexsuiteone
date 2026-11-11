@@ -3774,8 +3774,8 @@ window.LEXSUITE_RADAR = null;
     desenharTema(); if (visao === "painel") desenhar();  // os gráficos pegam as cores do tema
   }
   /* revisão da 0.7.30: impressão sempre no claro (letra clara em papel branco não se lê) */
-  window.addEventListener("beforeprint", function () { document.documentElement.setAttribute("data-theme", "light"); });
-  window.addEventListener("afterprint", function () { var v = temaAtual(), r = document.documentElement; if (v === "escuro") r.setAttribute("data-theme", "dark"); else if (v !== "claro") r.removeAttribute("data-theme"); });
+  window.addEventListener("beforeprint", function () { document.documentElement.setAttribute("data-theme", "light"); if (visao === "painel") desenhar(); });  // os gráficos pegam as cores do claro
+  window.addEventListener("afterprint", function () { var v = temaAtual(), r = document.documentElement; if (v === "escuro") r.setAttribute("data-theme", "dark"); else if (v !== "claro") r.removeAttribute("data-theme"); if (visao === "painel") desenhar(); });
   function desenharTema() {  // 0.7.30 (dono): aparência no Perfil, sóbria (sem sol e lua), com uma miniatura de cada modo
     var box = $("pf-tema"); if (!box) return; box.textContent = "";
     box.appendChild(el("h4", "conf-sec", t("tema_t")));
@@ -4204,7 +4204,7 @@ window.LEXSUITE_RADAR = null;
   $("pf-veu").addEventListener("click", fecharPerfil);
   $("perfil").addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !$("janela").open && !editando) { ev.stopPropagation(); fecharPerfil(); } });
   document.addEventListener("keydown", function (ev) {  /* revisão da 0.7.30: Esc fecha o Perfil mesmo com o foco fora dele (ex.: no botão das iniciais) */
-    var pf_ = $("perfil"); if (ev.key === "Escape" && !pf_.hidden && !pf_.classList.contains("pagina") && !$("janela").open && !editando) fecharPerfil();
+    var pf_ = $("perfil"); if (ev.key === "Escape" && !pf_.hidden && !pf_.classList.contains("pagina") && !$("janela").open && !editando && $("gaveta").hidden && $("busca-global").hidden) fecharPerfil();  // uma camada por vez
   });
   $("c-veu").addEventListener("click", function () { fecharConfig(false); });
   ["input", "change"].forEach(function (ev) { $("config").addEventListener(ev, marcarSalvarC); });
