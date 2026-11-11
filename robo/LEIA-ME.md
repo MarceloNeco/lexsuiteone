@@ -63,6 +63,9 @@ se mudam no programa: Configuração → Regras do escritório. Se a planilha es
 
 ## A tela
 
+- **0.7.30, revisão da Operação (11/Nov):** menu ☰ legível no modo escuro; no celular, "Mais filtros" aberto não
+  alarga a página; "último dia útil" pula feriado nacional; Esc fecha o Perfil; impressão sempre no claro; contraste
+  mínimo em todo texto (claro e escuro), conferido pelo `larguras.js`.
 - **0.7.30 (teste do dono, 11/Nov):** tela em três blocos: "Configuração da leitura" numa faixa baixa (o que o programa
   lê, "Alterar configuração", "Ler o Diário agora", que salva e lê os tribunais marcados), "Filtros" numa linha só no
   computador, fixos no alto ao rolar (busca, Data do processo, Situação, Valor, "Mais filtros" com todos os outros,
@@ -161,7 +164,7 @@ se mudam no programa: Configuração → Regras do escritório. Se a planilha es
   entravam: dois TRTs davam 20 mil "novos"); uma planilha por frente; cópias de segurança e armazenamento; leitura só
   das abas editáveis (a planilha grande dava "ValueError"); Configuração em janela própria com ✕ e Salvar; "Buscar na
   área logada" com a resposta padronizada `RESPOSTA PARA O RADAR v1` (qualquer extensão de IA); valor da causa e data
-  de ajuizamento guardados no programa; ✓ ao salvar; "Sair do RADAR" e janela preta que fecha sozinha 3 minutos depois
+  de ajuizamento guardados no programa; ✓ ao salvar; "Sair do RADAR" e encerramento sozinho 3 minutos depois de fechar a tela (desde a 0.7.29 sem janela preta)
   da tela; carregamento ao atualizar; termos das duas camadas na Configuração; nada é compartilhado com a SolverONE.
 - **0.7.15:** botão **Interromper** durante a leitura (para num ponto seguro; as ações já gravadas ficam) e aviso de
   "leitura das 08h00 feita agora" quando o computador estava desligado na hora marcada.

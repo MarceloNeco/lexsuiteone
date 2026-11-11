@@ -1444,3 +1444,112 @@ class Painel0730(unittest.TestCase):
         self.assertIn("preventScroll: true", h)
         s = open(os.path.join(_ROBO_, "..", "paginas", "index.html"), encoding="utf-8").read()
         self.assertNotIn("Pessoas físicas não aparecem", s)
+
+
+class Revisao0730(unittest.TestCase):
+    """Revisão da 0.7.30 (Operação): as ressalvas da 0.7.29 sem teste que as protegesse; cada um falha se a trava sair."""
+    setUp = _regras_util("setUp"); tearDown = _regras_util("tearDown"); pedir = _regras_util("pedir")
+    base = _regras_util("base"); arquivo = _regras_util("arquivo"); salvar = _regras_util("salvar")
+    exclusoes_no_disco = _regras_util("exclusoes_no_disco")
+
+    def _encerrar(self, pid_porta):
+        import json as _j
+        from unittest import mock
+        from lexsuite import app
+        pasta = tempfile.mkdtemp(); os.makedirs(os.path.join(pasta, "saida"))
+        with open(os.path.join(pasta, "saida", "programa.pid"), "w", encoding="utf-8") as f:
+            _j.dump({"pid": 4321, "porta": 8765, "pasta": pasta}, f)
+        with mock.patch.object(app, "procurar_aberto", return_value="http://127.0.0.1:8765/"), \
+                mock.patch.object(app, "_estado_sonda", return_value={"pid": pid_porta, "pasta": pasta}), \
+                mock.patch.object(app, "_pid_na_porta", return_value=pid_porta), mock.patch.object(app, "processo_vivo", return_value=True), \
+                mock.patch.object(app, "_imagem_do_processo", return_value="C:\\Py\\pythonw.exe"), \
+                mock.patch.object(app, "_pedir_local", return_value={"ok": False}), \
+                mock.patch.object(app, "leitura_em_outro_processo", return_value=None), \
+                mock.patch.object(app, "_encerrar_processo", return_value=True) as kill:
+            app.encerrar_aberto(pasta, aviso=lambda *_: None, dormir=lambda s: None, espera_s=2)
+        return kill
+
+    def test_tela_que_nao_sai_so_e_encerrada_se_o_pid_bate(self):  # (a)
+        self._encerrar(5555).assert_not_called()       # outro processo na porta: não mata
+        self._encerrar(4321).assert_called_once_with(4321)
+
+    def test_regravar_segura_a_trava(self):  # (b)
+        import threading as _th
+        from unittest import mock
+        from lexsuite import radar
+        livre = []
+        def dentro(*a, **k):
+            th = _th.Thread(target=lambda: livre.append(radar.TRAVA_REGRAVAR.acquire(blocking=False))); th.start(); th.join()
+            if livre[-1]:
+                radar.TRAVA_REGRAVAR.release()
+        with mock.patch.object(radar, "_regravar_planilha", side_effect=dentro):
+            radar.regravar_planilha({}, None, "", "0")
+        self.assertEqual(livre, [False])
+
+    def test_chamado_cancelado_nao_fica_pendente(self):  # (c)
+        from lexsuite import app
+        porta = self.srv.server_address[1]; url = f"http://127.0.0.1:{porta}/"
+        self.assertTrue(app.chamar_tela(url)); self.assertTrue(app._estado_sonda(porta).get("chamado_pendente"))
+        self.assertTrue(app.chamar_tela(url, cancelar=True)); self.assertFalse(app._estado_sonda(porta).get("chamado_pendente"))
+
+    def test_servir_cancela_o_chamado_que_a_tela_nao_atendeu(self):  # (c)
+        from unittest import mock
+        from lexsuite import app
+        with mock.patch.object(app, "procurar_aberto", return_value=("http://127.0.0.1:8765/", True)), \
+                mock.patch.object(app, "chamar_tela", return_value=True) as ch, mock.patch.object(app, "tela_atendeu", return_value=False), \
+                mock.patch("time.sleep"):
+            app.servir(tempfile.mkdtemp(), abrir=False, aviso=lambda *_: None)
+        self.assertIn(mock.call("http://127.0.0.1:8765/", cancelar=True), ch.call_args_list)
+
+    def test_programa_pid_diz_a_pasta(self):  # (d)
+        import json as _j
+        from lexsuite import app
+        d = tempfile.mkdtemp(); app.gravar_pid(d, 8765)
+        self.assertEqual(_j.load(open(os.path.join(d, "saida", "programa.pid"), encoding="utf-8"))["pasta"], os.path.abspath(d))
+
+    def test_aviso_sem_entrada(self):  # (e)
+        from unittest import mock
+        from lexsuite import agendar
+        with mock.patch.object(agendar, "disponivel", return_value=True), mock.patch.object(agendar.subprocess, "Popen") as po:
+            agendar.notificar("t", "x")
+        self.assertIs(po.call_args.kwargs.get("stdin"), agendar.subprocess.DEVNULL)
+
+    def test_periodo_pela_data_do_diario(self):  # (f) e (8)
+        from lexsuite import banco as bd
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        b.guardar_lead({"processo": "1", "data_publicacao": "2026-11-10"}, primeira_vez="2026-11-11")
+        b.guardar_lead({"processo": "2", "data_publicacao": "2026-10-01"}, primeira_vez="2026-11-11")  # lido hoje, Diário velho
+        b.guardar_lead({"processo": "3"}, primeira_vez="2026-11-10")
+        b.con.execute("UPDATE leads SET data = '' WHERE processo = '3'")
+        b.guardar_lead({"processo": "4", "data_publicacao": "2026-10-01"}, primeira_vez="2026-11-10")
+        b.con.execute("UPDATE leads SET data = '10/11/2026' WHERE processo = '4'")  # fora do formato: vale quando foi lido
+        nums = sorted(x["processo"] for x in b.todos_leads(desde_diario="2026-11-09"))
+        self.assertEqual(nums, ["1", "3", "4"])
+
+    def test_ultimo_dia_util(self):  # (g) e (4)
+        import datetime as _dt
+        from lexsuite import radar
+        f = lambda h: radar.inicio_periodo(_dt.date.fromisoformat(h), 1)
+        self.assertEqual(f("2026-11-11"), "2026-11-10")  # dia comum
+        self.assertEqual(f("2026-11-16"), "2026-11-13")  # segunda: sexta
+        self.assertEqual(f("2026-11-03"), "2026-10-30")  # terça depois de Finados
+        self.assertEqual(f("2026-11-23"), "2026-11-19")  # segunda depois da Consciência Negra
+        self.assertEqual(f("2027-02-10"), "2027-02-05")  # quarta de Cinzas
+        self.assertEqual(f("2027-01-07"), "2026-12-31")  # recesso: no máximo uma semana
+        self.assertEqual(radar.inicio_periodo(_dt.date(2026, 11, 11), 7), "2026-11-04")
+
+    def test_licenca_inativa_nao_diz_ativa(self):  # (h)
+        from unittest import mock
+        from lexsuite import conta
+        with mock.patch.object(conta, "bloqueio", return_value="A licença deste escritório não está ativa."):
+            s = conta.situacao({"conta": {"codigo": "LEX-AAAA-BBBB", "resposta": "inativa"}})
+        self.assertEqual(s["estado"], "inativa"); self.assertFalse(s["ok"])
+        s = conta.situacao({"conta": {"codigo": "LEX-AAAA-BBBB", "resposta": "sem_resposta", "ultima_ok": "2026-11-10"}})
+        self.assertEqual(s["estado"], "sem_resposta")
+
+    def test_tela_escuro_e_celular(self):  # bloqueios 1 e 2
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertNotIn("color: var(--noite, #0f1d33)", h)
+        self.assertIn(".gaveta button.gv-sair { color: var(--erro);", h)
+        self.assertIn(".bloco-leitura, .barra-lista { grid-template-columns: minmax(0, 1fr); }", h)
+        self.assertIn('addEventListener("beforeprint"', h)

@@ -15,7 +15,7 @@ import time
 
 from . import classificar as cl
 from . import cnpj as receita
-from . import compartilhar, config, conta, djen, monitor, preferencias, saidas, saude, tribunais
+from . import compartilhar, config, conta, djen, monitor, prazos, preferencias, saidas, saude, tribunais
 
 
 class Interrompida(Exception):
@@ -130,8 +130,12 @@ def inicio_periodo(hoje, dias):
     """0.7.30 (dono): primeiro dia do período pela data do processo. 1 = "do último dia útil até agora" (numa segunda,
     a sexta; num dia comum, ontem); N = os últimos N dias corridos."""
     if int(dias) <= 1:
+        # revisão da 0.7.30: pula também feriado nacional (Finados, Consciência Negra, Carnaval...), pela mesma tabela
+        # dos prazos; no máximo 7 dias para trás (no recesso de fim de ano não se volta até 19/12)
         d = hoje - dt.timedelta(days=1)
-        while d.weekday() >= 5:
+        for _ in range(6):
+            if prazos.dia_util(d):
+                break
             d -= dt.timedelta(days=1)
         return d.isoformat()
     return (hoje - dt.timedelta(days=int(dias))).isoformat()
