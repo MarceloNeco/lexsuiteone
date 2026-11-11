@@ -2261,6 +2261,8 @@ window.LEXSUITE_RADAR = null;
     }
   }
   function post(caminho, corpo) {
+    // 0.7.30: qualquer gravação (situação, valor, regras, tribunais...) deixa velho o que estava na memória dos períodos
+    if (!(caminho === "/config" && Object.keys(corpo || {}).join(",") === "dias_na_pagina") && typeof cacheDados === "object") cacheDados = {};
     return fetch(caminho, { method: "POST", headers: { "Content-Type": "application/json", "X-LexSuite": "1" }, body: JSON.stringify(corpo || {}) }).then(function (r) { return r.json(); })
       .then(function (j) { if (j && lang === "en" && j.motivo_en) j.motivo = j.motivo_en; return j; });  // 0.7.23: motivo no idioma da tela
   }
