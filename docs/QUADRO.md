@@ -234,6 +234,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 11/Nov (4): a mesma regra registrada, a pedido do dono, na planilha do Drive "0-SolverONE DIRETRIZES E BACKLOG v12
+  2026-11-11": aba "DIRETRIZ GERAL", linha **nº 211** ("Definição de pronto: conteúdo das orientações", 0 Ground Rule,
+  0-Crítico, Todos) e aba "LexSuiteONE", item nº 3 (✅ Feito no RADAR).
 - 11/Nov (3): **definição de pronto como regra geral da SolverONE** (dono, 11/Nov): seção nova na diretriz geral do
   `rootify-one` (`.claude/skills/diretrizes-gerais-apps/SKILL.md`, "Definição de pronto: conteúdo das orientações") e
   resumo no `CLAUDE.md` de lá, via PR #113 do rootify-one (só documentos); no `CLAUDE.md` daqui, item (4) "qualquer outra
