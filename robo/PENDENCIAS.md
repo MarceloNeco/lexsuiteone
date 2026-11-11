@@ -164,6 +164,19 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 ## 0.7.30 (11/Nov) — pronta para publicar
 
+Revisão da Operação (11/Nov, commit `1b8b691`): 2 bloqueios corrigidos. (1) Menu ☰ ilegível no modo escuro (também com
+"Igual ao sistema" e o Windows no escuro): itens com a cor do texto do tema, "Sair" com a cor de erro do tema, títulos da
+busca geral também; (2) celular de 360 a 640 px com "Mais filtros" aberto: a página não alarga mais (coluna da barra
+com `minmax(0, 1fr)`). O `larguras.js` passa a cobrir os dois casos (falham na versão antiga) e mede o contraste de todo
+texto da Lista, do Painel, da Configuração e do Perfil no claro e no escuro (74 verificações). Também: "último dia útil"
+pula feriado nacional (Finados, Consciência Negra, Carnaval), no máximo 7 dias para trás; Esc fecha o Perfil com o foco
+fora dele; impressão sempre no claro; data do Diário fora do formato vale como "quando foi lido"; contraste no escuro
+(CSV, pasta, situação Novo, Sazonalidade, AssistONE) e o cinza secundário do claro (4,5:1); "1 processo" no singular;
+busca e "Filtros salvos (0)" sem corte no notebook; e-mail cita o documento do escritório; manual diz "a cada 30
+minutos"; "O autor da ação e as testemunhas não aparecem" também no aviso por e-mail e nas páginas antigas; testes das 8
+ressalvas da 0.7.29 (cada um falha se a trava sair). Fica para depois: aviso de fim de leitura e `minimo_acoes` pela
+data do Diário (abaixo).
+
 Revisão interna (revisor): sem bloqueio. Feitas: memória dos períodos com o estado e a licença de agora (5 minutos; não
 guarda resposta que chegou depois de uma gravação); "Ler o Diário agora" com tribunais marcados confere a licença antes
 e mostra o motivo se o programa recusar; comentário sem nome de ferramenta de IA. Fica para depois: o aviso de fim de

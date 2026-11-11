@@ -376,7 +376,9 @@ class Banco:
         if desde:
             sql, args = sql + " AND primeira_vez >= ?", args + (desde,)
         if desde_diario:  # 0.7.30 (dono): pela data do processo no Diário (sem data, vale quando o programa o viu)
-            sql, args = sql + " AND coalesce(nullif(data, ''), substr(primeira_vez, 1, 10)) >= ?", args + (desde_diario,)
+            # revisão da 0.7.30: data fora do formato AAAA-MM-DD (não deveria haver) vale como "quando foi lido", não some
+            sql, args = sql + (" AND (CASE WHEN data GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' THEN substr(data, 1, 10)"
+                               " ELSE substr(primeira_vez, 1, 10) END) >= ?"), args + (desde_diario,)
         saida = []
         for dados, status, quando, motivo, frente, limpo, status_em in self.con.execute(sql + " ORDER BY primeira_vez DESC", args):
             lead = json.loads(dados)

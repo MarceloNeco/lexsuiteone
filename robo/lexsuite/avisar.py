@@ -53,7 +53,7 @@ def resumo_html(painel):
 <p><b>{len(leads)}</b> ações novas contra empresas · <b>{len(altas)}</b> com prioridade alta.</p>
 <table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px">
 <tr><th>Prioridade</th><th>Nota</th><th>Empresa(s)</th><th>Processo</th><th>Rito</th></tr>{linhas}</table>
-<p style="color:#666;font-size:12px">Fonte: DJEN e DataJud (CNJ), dados públicos. Pessoas físicas não aparecem.</p></div>"""
+<p style="color:#666;font-size:12px">Fonte: DJEN e DataJud (CNJ), dados públicos. O autor da ação e as testemunhas não aparecem (termos, seção 4).</p></div>"""
 
 
 # --- Monitor ---------------------------------------------------------------
