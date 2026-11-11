@@ -442,7 +442,17 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .bloco-leitura .estado { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 16px; font-size: .82rem; }
 .bloco-leitura .estado > .progresso-linha, .bloco-leitura .estado > .andando, .bloco-leitura .estado > .log, .bloco-leitura .estado > .erro, .bloco-leitura .estado > details { flex: 1 1 100%; }
 .bloco-leitura .estado > * { min-width: 0; max-width: 100%; }  /* revisão: mensagem longa quebra a linha no celular */
-@media (max-width: 760px) { .bloco-leitura { grid-template-columns: 1fr; } .bl-dir { flex-wrap: wrap; } .bl-dir > * { flex: 1 1 auto; justify-content: center; } }
+/* teste do dono (0.7.30): botões à esquerda e o texto (fino) ao lado deles, para a faixa ocupar menos altura */
+.bloco-leitura { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "cab cab" "bot txt" "bot est"; column-gap: 20px; row-gap: 2px; }
+.bloco-leitura .bl-esq { display: contents; }
+.bloco-leitura .bl-cab { grid-area: cab; margin-bottom: 4px; } .bloco-leitura .rodar-criterio { grid-area: txt; align-self: end; } .bloco-leitura .estado { grid-area: est; align-self: start; }
+.bloco-leitura .bl-dir { grid-area: bot; align-self: center; }
+#b-trib i { display: inline-block; transition: transform .2s ease; } #b-trib[aria-expanded="true"] i { transform: rotate(180deg); }
+#painel:not([hidden]) { animation: painel-abre .22s ease-out; } #painel.fechando { animation: painel-fecha .18s ease-in forwards; }
+@keyframes painel-abre { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@keyframes painel-fecha { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { #b-trib i { transition: none; } #painel:not([hidden]), #painel.fechando { animation: none; } }
+@media (max-width: 760px) { .bloco-leitura { grid-template-columns: minmax(0, 1fr); grid-template-areas: "cab" "txt" "est" "bot"; } .bl-dir { flex-wrap: wrap; margin-top: 6px; } .bl-dir > * { flex: 1 1 auto; justify-content: center; } }
 .so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .salvos-grupo { display: inline-flex; align-items: center; gap: 6px; }
 .link-salvar { all: unset; cursor: pointer; color: var(--latao-texto); font-weight: 700; font-size: .84rem; white-space: nowrap; }
@@ -460,7 +470,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .bloco-leitura .barra { gap: 10px; }
 .bloco-leitura .estado { margin: 0; }
 .barra-lista { margin: 10px 0 12px; }
-.bloco-leitura, .barra-lista { grid-template-columns: minmax(0, 1fr); } .bloco-leitura > *, .barra-lista > *, .filtros-avancados { min-width: 0; }  /* revisão da 0.7.30: "Mais filtros" aberto não alarga a página no celular */
+.barra-lista { grid-template-columns: minmax(0, 1fr); } .bloco-leitura > *, .barra-lista > *, .filtros-avancados { min-width: 0; }  /* revisão da 0.7.30: "Mais filtros" aberto não alarga a página no celular */
 .barra-lista[hidden] { display: none; }
 .filtros-extra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .filtros-extra .multi > button, .filtros-extra select, .filtros-extra .chip { border-color: var(--f-borda); background: var(--f-bg); color: var(--f-tinta); }
@@ -4148,7 +4158,14 @@ window.LEXSUITE_RADAR = null;
   $("b-pasta").addEventListener("click", function () { abrirPlanilha("pasta"); });
   document.querySelectorAll(".pilula button").forEach(function (b) { b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("lexsuite:idioma", lang); } catch (e) {} tudo();
     if (!$("wizard").hidden) { var pv = $("w-papel").value; preencherPapeis($("w-papel"), "", null); $("w-papel").value = pv; desenharWizard(); } }); });
-  $("b-trib").addEventListener("click", function () { var p = $("painel"); p.hidden = !p.hidden; this.setAttribute("aria-expanded", String(!p.hidden)); if (!p.hidden) { $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); fecharPerfil(); painel(); } });
+  $("b-trib").addEventListener("click", function () {
+    var p = $("painel"), bt_ = this;
+    if (!p.hidden) {  // teste do dono (0.7.30): fecha com movimento (a seta gira junto), sem sumir de repente
+      bt_.setAttribute("aria-expanded", "false"); p.classList.add("fechando");
+      setTimeout(function () { p.classList.remove("fechando"); if (bt_.getAttribute("aria-expanded") === "false") p.hidden = true; }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180);
+      return;
+    }
+    p.hidden = false; this.setAttribute("aria-expanded", "true"); if (!p.hidden) { $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); fecharPerfil(); painel(); } });
   document.querySelectorAll(".abas button").forEach(function (b) { b.addEventListener("click", function () { aba = b.getAttribute("data-aba"); barraApp(); }); });
   $("b-todos").addEventListener("click", function () { (APP.tribunais || []).forEach(function (x) { if (aba !== "regiao" || x.ramo === ramo) sel[x.sigla] = true; }); painel(); });
   $("b-config").addEventListener("click", function () { abrirConfig(false); });
