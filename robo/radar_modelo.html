@@ -80,7 +80,7 @@ header { display: contents; }
 @media (max-width: 640px) { .painel-cab { flex-direction: column; align-items: stretch; } .painel-arte { flex-basis: auto; height: 150px; } .fases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .nota-registro { font-size: .82rem; color: var(--tinta-3); margin: 4px 0 0; }
 /* Assistente (0.7.10): opções explicadas, código só para ler, função com dica, frentes, destino da planilha. */
-.wiz input[readonly], .campo-conf input[readonly] { background: var(--papel-2); color: var(--tinta-2); cursor: default; }
+.wiz input[readonly], .campo-conf input[readonly] { background: var(--papel-2); color: var(--tinta-2); cursor: not-allowed; } .campo-conf input[readonly]:focus { outline: none; box-shadow: none; }
 .w-opcoes { display: grid; gap: 8px; margin: 6px 0 10px; }
 .w-opcao { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--linha-2); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
 .w-opcao:has(input:checked) { border-color: var(--latao); background: var(--latao-wash); }
@@ -1927,7 +1927,7 @@ window.LEXSUITE_RADAR = null;
       ag_expl: "Clique nos horários em que o programa lê o Diário sozinho. Cada horário é uma leitura (não é início e fim). Para um horário que não está aqui, use \u201cOutro horário\u201d.",
       ret_titulo: "O que a SolverONE recebe", ret_quando: "Última conferência ({q}): {n} linha(s).", ret_nada: "Nada enviado ainda (vai na próxima leitura).", ret_frase: "Só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou contato.", ret_ver: "Ver a tabela enviada",
       rodando_auto: "Leitura automática em andamento (começou às {h}).", c_tela: "Onde a tela abre", c_aba: "Abrir pelo atalho numa aba do navegador (junto das outras abas), em vez de uma janela própria", abrir_aba: "Abrir numa aba do navegador",
-      aceite_abrir: "Abrir a página de aceite dos termos", aceite_banner: "Falta aceitar os termos: ", aceite_abrir_curto: "abrir a página de aceite", aceite_duvidas: ". Dúvidas: {c}", termos: "Termos de uso", termos_ok: "aceitos por {n} em {d} (versão {v})", termos_falta: "falta o aceite do responsável do escritório (link no e-mail de boas-vindas)",
+      aceite_abrir: "Abrir a página de aceite dos termos", aceite_banner: "Falta aceitar os termos: ", aceite_abrir_curto: "abrir a página de aceite", aceite_duvidas: ". Dúvidas: {c}", aceite_duvidas_p: "Dúvidas: {c}", termos: "Termos de uso", termos_ok: "aceitos por {n} em {d} (versão {v})", termos_falta: "falta o aceite do responsável do escritório (link no e-mail de boas-vindas)",
       atrasada: "Fazendo agora a leitura das {h}, que não rodou na hora porque o computador estava desligado ou em repouso.", interromper: "Interromper", interromper_q: "Interromper a leitura?",
       interromper_x: "A leitura para no próximo ponto seguro: entre um Diário e outro ou entre uma consulta à Receita e outra (se estiver baixando um Diário grande, pode levar alguns minutos). Nada fica pela metade: as ações já gravadas ficam, e o resto é lido na próxima leitura.", continuar_lendo: "Continuar lendo", parando: "Parando no próximo ponto seguro...",
       c_interrompida: "Interrompida",
@@ -2024,7 +2024,7 @@ window.LEXSUITE_RADAR = null;
       ag_expl: "Click the times when the program reads the gazette by itself. Each time is one reading (not a start and end). For a time not listed, use \u201cAnother time\u201d.",
       ret_titulo: "What SolverONE receives", ret_quando: "Last check ({q}): {n} row(s).", ret_nada: "Nothing sent yet (goes with the next reading).", ret_frase: "Only counts by status, day, court, practice area and value range; no name, case number or contact.", ret_ver: "See the table sent",
       rodando_auto: "Automatic reading in progress (started at {h}).", c_tela: "Where the screen opens", c_aba: "Open from the shortcut in a browser tab (next to the other tabs), instead of its own window", abrir_aba: "Open in a browser tab",
-      aceite_abrir: "Open the terms acceptance page", aceite_banner: "The terms still need to be accepted: ", aceite_abrir_curto: "open the acceptance page", aceite_duvidas: ". Questions: {c}", termos: "Terms of use", termos_ok: "accepted by {n} on {d} (version {v})", termos_falta: "the firm\u2019s responsible person has not accepted yet (link in the welcome e-mail)",
+      aceite_abrir: "Open the terms acceptance page", aceite_banner: "The terms still need to be accepted: ", aceite_abrir_curto: "open the acceptance page", aceite_duvidas: ". Questions: {c}", aceite_duvidas_p: "Questions: {c}", termos: "Terms of use", termos_ok: "accepted by {n} on {d} (version {v})", termos_falta: "the firm\u2019s responsible person has not accepted yet (link in the welcome e-mail)",
       atrasada: "Running now the {h} reading, which did not run on time because the computer was off or asleep.", interromper: "Stop", interromper_q: "Stop the reading?",
       interromper_x: "The reading stops at the next safe point: between two gazettes or between two Federal Revenue lookups (if a large gazette is downloading, it may take a few minutes). Nothing is left half-done: lawsuits already saved stay, and the rest is read in the next reading.", continuar_lendo: "Keep reading", parando: "Stopping at the next safe point...",
       c_interrompida: "Stopped",
@@ -2066,7 +2066,7 @@ window.LEXSUITE_RADAR = null;
     planilha_em_uso: "Não consegui marcar a planilha como “somente leitura”: ela parece estar aberta para edição em outro lugar (por exemplo, alguém com ela aberta no Excel) ou falta permissão na pasta. Pedi ao Excel para abrir só para leitura; feche a outra para o {c} voltar a atualizá-la.",
     bg_c_pasta: "Onde ficam as planilhas (pasta)", bg_c_agenda: "Leitura automática (horários)",
     bg_ph_off: "Empresa, processo, CNPJ ou cidade", bg_titulo: "Procurar", bg_ph: "Empresa, processo, CNPJ, cidade, opção do programa ou assunto do manual", bg_opcoes: "Telas e opções", bg_acoes: "Ações", bg_manual: "No manual", bg_nada: "Nada encontrado. Tente outra palavra.",
-    termos_ler_todos: "Ler os termos (abre no navegador)", termos_aceitar_esc: "Aceitar em nome do escritório", termos_aceitar_esc_x: "Só o responsável pela licença aceita em nome do escritório. A página abre no navegador com o código, o seu nome e o seu e-mail já preenchidos; confira e confirme.",
+    termos_ler_todos: "Ler os termos", termos_aceitar: "Aceitar os termos", termos_versao: "Termos (versão {v})", termos_aceitar_esc: "Aceitar em nome do escritório", termos_aceitar_esc_x: "Só o responsável pela licença aceita em nome do escritório. A página abre no navegador com o código, o seu nome e o seu e-mail já preenchidos; confira e confirme.",
     pasta_fica: "As planilhas ficam em:", pasta_drive_x: "Sincroniza com a nuvem pelo Google Drive para computador: dá para abrir no celular e com a equipe.", pasta_local_x: "Fica só neste computador; ninguém mais vê. Bom para começar.", pasta_outra_x: "Para a equipe abrir de outros computadores, escolha uma pasta de rede, do OneDrive ou do Google Drive para computador. Também vale outra pasta deste computador.",
     escolhendo: "A janela de pastas do Windows abriu. Se não aparecer, procure atrás desta tela ou na barra de tarefas.",
     g_sinal: "Como a ação nova foi reconhecida", sinal_antigo: "Guardada antes da 0.7.16 (regra antiga)",
@@ -2100,8 +2100,8 @@ window.LEXSUITE_RADAR = null;
     arm_feito: "Pronto.", arm_ajuda: "A planilha é a vitrine; o arquivo completo fica no programa. Acima de 80% do limite o RADAR avisa; a 100% guarda uma cópia e enxuga a aba Arquivo sozinho. Ficam as 6 cópias mais recentes. Com pouco espaço no disco, o RADAR não faz cópia nova e avisa. As cópias ficam na mesma pasta das planilhas: se a pasta for compartilhada, quem tem acesso a ela também vê as cópias.",
     arm_ver: "Ver armazenamento",
     termos_t: "Termos e condições", termos_esc: "Escritório (licença, privacidade e tratamento de dados)", termos_pes: "Você (termos de uso)",
-    termos_aceito: "aceito em {d} por {n} (versão {v})", termos_vigente: "versão vigente {v}", termos_nao: "ainda não aceito", termos_ler: "ler os termos",
-    termos_sem: "A situação dos termos aparece depois da próxima conferência da licença.", termos_antiga: "aceito na versão {v}: há versão nova ({w})",
+    termos_aceito: "aceitos por {n} em {d}", termos_vigente: "versão vigente {v}", termos_nao: "ainda não aceitos", termos_ler: "ler os termos",
+    termos_sem: "A situação dos termos aparece depois da próxima conferência da licença.", termos_antiga: "aceitos na versão {v}; a versão {w} precisa de novo aceite",
     w_termos: "Li e aceito os termos de uso", w_termos_falta: "Para continuar, marque que leu e aceita os termos de uso.",
     arq_parcial: "Mostrando as {m} ações mais recentes de {n}. Para achar uma mais antiga, use a busca (ela procura em tudo o que o programa guarda).",
     arq_busca: "Busca no programa: {n} ação(ões) com \"{q}\".",
@@ -2137,7 +2137,7 @@ window.LEXSUITE_RADAR = null;
     planilha_em_uso: "I could not mark the spreadsheet “read-only”: it seems to be open for editing elsewhere (for example, someone with it open in Excel) or the folder is not writable. I asked Excel to open it read-only; close the other one so {c} can update it again.",
     bg_c_pasta: "Where spreadsheets live (folder)", bg_c_agenda: "Automatic reading (times)",
     bg_ph_off: "Company, case number, CNPJ or city", bg_titulo: "Search", bg_ph: "Company, case number, CNPJ, city, program option or manual topic", bg_opcoes: "Screens and options", bg_acoes: "Lawsuits", bg_manual: "In the manual", bg_nada: "Nothing found. Try another word.",
-    termos_ler_todos: "Read the terms (opens in the browser)", termos_aceitar_esc: "Accept on behalf of the firm", termos_aceitar_esc_x: "Only the licence holder accepts on behalf of the firm. The page opens in the browser with the code, your name and your e-mail filled in; check and confirm.",
+    termos_ler_todos: "Read the terms", termos_aceitar: "Accept the terms", termos_versao: "Terms (version {v})", termos_aceitar_esc: "Accept on behalf of the firm", termos_aceitar_esc_x: "Only the licence holder accepts on behalf of the firm. The page opens in the browser with the code, your name and your e-mail filled in; check and confirm.",
     pasta_fica: "The spreadsheets live in:", pasta_drive_x: "Syncs to the cloud through Google Drive for desktop: open it on the phone and with the team.", pasta_local_x: "Stays on this computer only; nobody else sees it. Good to start with.", pasta_outra_x: "So the team can open it from other computers, choose a network, OneDrive or Google Drive for desktop folder. Another folder on this computer also works.",
     escolhendo: "The Windows folder picker opened. If you do not see it, look behind this screen or on the taskbar.",
     g_sinal: "How the new lawsuit was recognised", sinal_antigo: "Saved before 0.7.16 (old rule)",
@@ -2171,8 +2171,8 @@ window.LEXSUITE_RADAR = null;
     arm_feito: "Done.", arm_ajuda: "The spreadsheet is the shop window; the full archive stays in the program. Above 80% of the limit RADAR warns; at 100% it saves a backup and trims the Archive sheet by itself. The 6 newest backups are kept. With little disk space, RADAR makes no new backup and warns. Backups stay in the spreadsheets folder: if that folder is shared, whoever can open it also sees the backups.",
     arm_ver: "See storage",
     termos_t: "Terms and conditions", termos_esc: "Firm (licence, privacy and data processing)", termos_pes: "You (terms of use)",
-    termos_aceito: "accepted on {d} by {n} (version {v})", termos_vigente: "current version {v}", termos_nao: "not accepted yet", termos_ler: "read the terms",
-    termos_sem: "The terms status shows after the next licence check.", termos_antiga: "accepted version {v}: a new version exists ({w})",
+    termos_aceito: "accepted by {n} on {d}", termos_vigente: "current version {v}", termos_nao: "not accepted yet", termos_ler: "read the terms",
+    termos_sem: "The terms status shows after the next licence check.", termos_antiga: "accepted in version {v}; version {w} needs a new acceptance",
     w_termos: "I have read and accept the terms of use", w_termos_falta: "To continue, tick that you have read and accept the terms of use.",
     arq_parcial: "Showing the {m} most recent lawsuits out of {n}. To find an older one, use the search (it searches everything the program keeps).",
     arq_busca: "Program search: {n} lawsuit(s) with \"{q}\".",
@@ -2295,7 +2295,8 @@ window.LEXSUITE_RADAR = null;
       (e.mensagens || []).slice(-4, -1).forEach(function (m) { box.appendChild(el("span", "log", m.hora + "  " + datasNoTexto(m.texto))); });
       return;
     }
-    if (e.erro) {
+    var licFaixa_ = !!(APP && APP.conta && APP.conta.codigo && !APP.conta.ok);  // teste do dono (0.7.30): a faixa vermelha do alto já diz o motivo da licença
+    if (e.erro && !(licFaixa_ && /licen|termos|licence|terms/i.test(e.erro))) {
       var inf = e.erro_info || {}, txtErro = inf[lang] || inf.pt || e.erro;
       box.appendChild(inf.causa === "interrompida" ? el("span", "aviso-leve", txtErro) : el("span", "erro", t("erro", { e: txtErro })));
       if (inf.detalhe) { var det = el("details"); det.appendChild(el("summary", null, t("ver_detalhes"))); det.appendChild(el("code", null, inf.detalhe)); box.appendChild(det); }
@@ -2406,9 +2407,10 @@ window.LEXSUITE_RADAR = null;
   }
   function avisoLicenca() {
     var c_ = APP.conta || {}, c = el("div"); c.appendChild(el("h3", null, c_.aceite_link ? t("lic_aceite_t") : t("lic_bloq_t")));
-    c.appendChild(el("p", null, textoConta())); mostrarEstado({ erro: textoConta() });
+    // teste do dono (0.7.30): só a janela, curta; a faixa vermelha do alto já diz o motivo (sem repetir em vermelho na linha da leitura)
+    c.appendChild(el("p", null, c_.aceite_link ? t("aceite_duvidas_p", { c: c_.contato || "judicial@solverone.com.br" }) : textoConta()));
     var bts = [[t("agora_nao"), null]];
-    if (c_.aceite_link) bts.push([t("aceite_abrir"), function () { window.open(c_.aceite_link, "_blank", "noopener"); }, true]);
+    if (c_.aceite_link) bts.push([t("termos_aceitar"), function () { window.open(c_.aceite_link, "_blank", "noopener"); }, true]);
     else bts.push([t("lic_ver_perfil"), function () { abrirPerfil(); }, true]);
     abrirJanela(c, bts);
   }
@@ -2543,32 +2545,23 @@ window.LEXSUITE_RADAR = null;
     var x1 = el("button", "primario", t("arm_limpar")); x1.type = "button"; x1.addEventListener("click", limparPlanilha); b.appendChild(x1);
     var x2 = el("button", "chip", t("arm_ver")); x2.type = "button"; x2.addEventListener("click", function () { abrirConfig(true, "c-arm-wrap"); }); b.appendChild(x2);
   }
-  function desenharTermosConfig() {
+  function desenharTermosConfig() {  // teste do dono (0.7.30): um termo, uma linha, um botão (Aceitar os termos ou Ler os termos)
     var box = $("c-termos"); box.textContent = ""; var tm = (APP && APP.conta && APP.conta.termos) || {}, ac = (APP && APP.conta && APP.conta.aceite) || {};
-    var dl = el("dl", "conf-info");
-    var camada = function (rot, b, velho) {
-      dl.appendChild(el("dt", null, rot)); var dd = el("dd");
-      var txt = b && b.aceito ? (b.versao && b.versao_vigente && b.versao !== b.versao_vigente ? t("termos_antiga", { v: b.versao, w: b.versao_vigente }) : t("termos_aceito", { d: dataHora(b.aceito_em) || b.aceito_em || "—", n: b.nome || "—", v: b.versao || "—" }))
-        : (velho && velho.aceito ? t("termos_aceito", { d: dataHora(velho.aceito_em) || velho.aceito_em || "—", n: velho.nome || "—", v: velho.versao || "—" }) : t("termos_nao"));
-      dd.appendChild(document.createTextNode(txt + (b && b.versao_vigente ? " · " + t("termos_vigente", { v: b.versao_vigente }) : "") + " "));
-
-      dl.appendChild(dd);
-    };
-    camada(t("termos_esc"), tm.escritorio, ac); camada(t("termos_pes"), tm.pessoa, null);
-    box.appendChild(dl); if (!tm.escritorio && !tm.pessoa) box.appendChild(el("p", "agenda-info", t("termos_sem")));
-    // 0.7.19: um documento só (os termos completos, com índice); o aceite em nome do escritório só aparece se faltar
-    var base_ = ((tm.escritorio && tm.escritorio.link) || ac.link || "").split(/[?#]/)[0];
+    var e_ = tm.escritorio || {}, vig = e_.versao_vigente || (tm.pessoa || {}).versao_vigente || "";
+    var aceito = !!(e_.aceito || (!tm.escritorio && ac.aceito)), b_ = e_.aceito ? e_ : ac;
+    var antiga = aceito && b_.versao && vig && b_.versao !== vig;
+    var txt = !aceito ? t("termos_nao") : antiga ? t("termos_antiga", { v: b_.versao, w: vig })
+      : t("termos_aceito", { d: dataHora(b_.aceito_em) || b_.aceito_em || "—", n: b_.nome || "—", v: b_.versao || vig || "—" });
+    var dl = el("dl", "conf-info"); dl.appendChild(el("dt", null, vig ? t("termos_versao", { v: vig }) : t("termos"))); dl.appendChild(el("dd", null, txt)); box.appendChild(dl);
+    var base_ = ((e_.link) || ac.link || "").split(/[?#]/)[0];
     if (!/^https:\/\/judicial\.solverone\.com\.br\//.test(base_)) base_ = "https://judicial.solverone.com.br/aceite.html";  // só o nosso site
-    var acoes_ = el("div", "conf-acoes"), ler = el("a", "chip", t("termos_ler_todos")); ler.href = base_ + "?ler=1"; ler.target = "_blank"; ler.rel = "noopener noreferrer"; acoes_.appendChild(ler);
-    var escOk = (tm.escritorio && tm.escritorio.aceito) || ac.aceito;
-    if (!escOk) {
+    var acoes_ = el("div", "conf-acoes"), a_;
+    if (!aceito || antiga) {  // falta o aceite (ou a versão mudou): o único botão é aceitar; o texto inteiro está na própria página
       var u_ = (APP && APP.usuario) || {}, ct_ = (APP && APP.conta) || {};
       // 0.7.20: fragmento (#) não vai ao servidor nem a logs; a página do aceite lê e apaga da barra
-      var q_ = "#codigo=" + encodeURIComponent(ct_.codigo || "") + "&email=" + encodeURIComponent(u_.email || "") + "&nome=" + encodeURIComponent(u_.nome || "");
-      var acc = el("a", "primario", t("termos_aceitar_esc")); acc.href = base_ + q_; acc.target = "_blank"; acc.rel = "noopener noreferrer"; acoes_.appendChild(acc);
-      acoes_.appendChild(ajuda(t("termos_aceitar_esc_x")));
-    }
-    box.appendChild(acoes_);
+      a_ = el("a", "primario", t("termos_aceitar")); a_.href = base_ + "#codigo=" + encodeURIComponent(ct_.codigo || "") + "&email=" + encodeURIComponent(u_.email || "") + "&nome=" + encodeURIComponent(u_.nome || "");
+    } else { a_ = el("a", "chip", t("termos_ler_todos")); a_.href = base_ + "?ler=1"; }
+    a_.target = "_blank"; a_.rel = "noopener noreferrer"; acoes_.appendChild(a_); box.appendChild(acoes_);
   }
   var focoAntes_ = null;  // revisão da 0.7.28: ao fechar Configuração ou Perfil, o foco volta ao botão de onde veio
   function guardarFoco() { var a = document.activeElement; if (a && a !== document.body && !($("config").contains(a) || $("perfil").contains(a) || $("janela").contains(a))) focoAntes_ = a; }
@@ -2581,9 +2574,9 @@ window.LEXSUITE_RADAR = null;
     tl_.textContent = t("c_trib_lidos", { l: trs_c.length > 6 ? t("n_tribunais", { n: num(trs_c.length) }) : (trs_c.join(", ") || "—") }) + " ";
     var ta_ = el("button", "btn-txt", t("rodar_crit_alterar")); ta_.type = "button"; tl_.appendChild(ta_);
     ta_.addEventListener("click", function () { fecharConfig(); if ($("config").hidden) { $("b-trib").click(); $("b-trib").scrollIntoView({ behavior: "smooth", block: "center" }); } });
-    var fixo = !!(APP && APP.conta && APP.conta.codigo && APP.conta.ok);  // código válido e salvo: só para ler
+    var fixo = !!(APP && APP.conta && APP.conta.codigo && (APP.conta.ok || ["aceite_pendente", "desativado", "vencido"].indexOf(APP.conta.estado) >= 0));  // código que a SolverONE reconheceu: só para ler (teste do dono: também com o aceite pendente)
     $("c-codigo").value = fixo ? mascaraCodigo(APP.conta.codigo) : ((APP && APP.conta && APP.conta.codigo) || "");  // 0.7.19: confirmado aparece mascarado
-    $("c-codigo").readOnly = fixo; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
+    $("c-codigo").readOnly = fixo; $("c-codigo").tabIndex = fixo ? -1 : 0; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
     p.hidden = !abrir; $("b-config").setAttribute("aria-expanded", String(abrir));
     if (!abrir) return;
     $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false"); fecharPerfil();
@@ -2665,8 +2658,6 @@ window.LEXSUITE_RADAR = null;
     par(t("licenca"), textoConta() || "—");
     if (APP.conta && APP.conta.ok) par(t("lic_validade"), validadeTexto(APP.conta.validade));
     var ac = (APP.conta && APP.conta.aceite) || {};
-    if (ac.aceito) par(t("termos"), t("termos_ok", { n: ac.nome || "—", d: dataHora(ac.aceito_em) || ac.aceito_em || "—", v: ac.versao || "—" }));
-    else if (ac.link) par(t("termos"), t("termos_falta"));
     par(t("c_versao"), APP.versao); par(t("c_pasta_robo"), APP.pasta_robo);
     par(t("c_controle"), APP.config.planilha || (APP.config.pasta_base ? t("c_controle_falta") : t("c_sem_pasta")));
     par(t("c_chave"), APP.atualizacao && APP.atualizacao.chave ? APP.atualizacao.impressao : t("c_chave_falta"));
