@@ -162,7 +162,15 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## Próxima (dono, 11/Nov à noite): barra de controles da lista
+## 0.7.30 (11/Nov) — pronta para publicar
+
+Revisão interna (revisor): sem bloqueio. Feitas: memória dos períodos com o estado e a licença de agora (5 minutos; não
+guarda resposta que chegou depois de uma gravação); "Ler o Diário agora" com tribunais marcados confere a licença antes
+e mostra o motivo se o programa recusar; comentário sem nome de ferramenta de IA. Fica para depois: o aviso de fim de
+leitura (`monitor.py`) ainda conta pela data em que o programa viu (a lista e o Painel contam pela data do Diário);
+`robo/MANUTENCAO.md` cita nomes de ferramentas de IA desde antes (o dono decide).
+
+O que entrou (barra de controles da lista e o resto do teste do dono, 11/Nov):
 
 - Filtro de período pela DATA DO PROCESSO no Diário (não quando o programa leu); "Período" de hoje vira "período de
   leitura"; "último dia" = do último dia útil até agora (o dono pediu recomendação se ficar grande).
