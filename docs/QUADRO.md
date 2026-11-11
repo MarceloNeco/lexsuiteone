@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (nada)
+- **0.7.32 em revisão (11/Nov)**: o dono mandou publicar (commit `7086e6c`, automação verde, execução 520); revisão do que mudou desde a 0.7.31 publicada (gráficos interativos do Painel, filtros do Painel separados, leitura automática por dias da semana, Configuração reorganizada com "Trocar licença", Novidades da versão, ressalvas da revisão da 0.7.31), com atenção a um ponto: o padrão dos dias da leitura automática passou de "todo dia" para "segunda a sexta" e o `config.py` aplica o padrão em instalações que não têm essa chave (um cliente existente não pode mudar de comportamento sozinho, nem a tela divergir do Agendador do Windows); também "Trocar licença" (a pessoa não pode ficar presa nem perder dado), AssistONE e manual em PT e EN; testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.31. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
