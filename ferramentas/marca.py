@@ -123,6 +123,18 @@ def instalador_zip():
     return buf.getvalue()
 
 
+def manual_sem_arquivos(texto):
+    """Teste do dono (0.7.30): o manual de dentro do programa não tem o favicon.svg ao lado (o pacote não leva imagens);
+    o ícone e o logo vão embutidos no próprio HTML, como na tela."""
+    from urllib.parse import quote
+    svg = (DESTINO / "favicon.svg").read_text(encoding="utf-8").strip()
+    uri = "data:image/svg+xml," + quote(svg, safe=" :/=")
+    texto = texto.replace('<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">\n', "")
+    texto = texto.replace('<link rel="preload" href="fontes/figtree.woff2" as="font" type="font/woff2" crossorigin>\n', "")
+    texto = texto.replace('@font-face { font-family: "Figtree"; src: url("fontes/figtree.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }\n', "")  # a fonte do site não vai no pacote
+    return texto.replace('href="/favicon.svg"', f'href="{uri}"').replace('src="favicon.svg"', f'src="{uri}"')
+
+
 def gerar(m):
     """{caminho: conteúdo (str ou bytes)} de tudo o que é gerado."""
     saida = {}
@@ -133,7 +145,7 @@ def gerar(m):
     for origem in sorted(PAGINAS.glob("*.html")):
         # O site mostra a versão publicada; o manual que vai no pacote, a versão do código.
         saida[DESTINO / origem.name] = gerar_pagina(origem, versao_publicada())
-    saida[MANUAL_ROBO] = gerar_pagina(PAGINAS / "manual.html", versao())
+    saida[MANUAL_ROBO] = manual_sem_arquivos(gerar_pagina(PAGINAS / "manual.html", versao()))
     saida[MARCA_ROBO] = json.dumps(m, ensure_ascii=False, indent=1) + "\n"
     saida[INSTALAR_TXT] = instalar_txt(m)
     saida[INSTALADOR_ZIP] = instalador_zip()

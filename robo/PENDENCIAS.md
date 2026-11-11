@@ -162,6 +162,34 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.31 (teste do dono na 0.7.29/0.7.30, 11/Nov) — pronta para publicar (o dono: "joga na 31")
+
+Feito no ramo: faixa e janela do aceite curtas ("Falta aceitar os termos: abrir a página de aceite. Dúvidas: …", sem o
+link por extenso nem o código); sem linha vermelha repetida quando o motivo é a licença; código travado e mascarado
+quando a SolverONE o reconhece (também com o aceite pendente); Termos com uma linha e um botão (Aceitar os termos ou Ler
+os termos); Sazonalidade com um botão ("Buscar estatísticas" já lê; "Continuar (mais 30 Diários)"), "Últimos N meses",
+aviso de que só soma totais e legenda da cor dourada; "Publicado no Diário" no lugar de "Data do processo";
+Configuração da leitura mais baixa (botões à esquerda, texto ao lado); setas que giram e mira e "Mais filtros" abrem e
+fecham com movimento; Configuração e Perfil pelo menu em janela, rolando com a roda do mouse; (?) na frente da janela;
+tirar o último horário pergunta e desliga a leitura automática, e a tela inicial avisa "Leitura automática desligada.
+Configurar"; frase das 19h mais simples; manual genérico (sem o nome da pessoa nem do escritório), com ícone e logo
+embutidos (antes apontava para arquivos do site e a imagem quebrava) e sem a fonte do site; "Perfil" só no botão das
+iniciais (saiu do grupo Programa do menu); manual explica que o código fica travado depois de confirmado.
+
+Proposto ao dono, esperando decisão:
+- **0.7.32 (gráficos)**: dica ao passar o mouse (nome, número, %); filtrar no próprio gráfico clicando na legenda (os
+  desligados ficam apagados, "Mostrar todos"); "Ver na lista →" por cartão; filtros do Painel separados dos da Lista;
+  cor escolhida no quadradinho da legenda, com "Cores originais".
+- **Configuração reorganizada**: menu "Programa" vira "Configurações", na ordem da janela; ordem: Critérios da lista (ou
+  "Regras do escritório"), Onde ficam as planilhas, Leitura automática (com Filtros salvos perto), armazenamento,
+  Assistente (AssistONE), Licença e termos no fim (código mascarado, "Trocar licença" com confirmação), Ver registro por
+  último; texto dos critérios sem a frase "escrito à mão" (benchmark: Kaspersky, ESET, Office, JetBrains, ADVBOX).
+- **Dias da semana na leitura automática**: chips Dom a Sáb (padrão Seg a Sex); sem dia = desligada; texto "Lê nos dias
+  marcados às …"; mexe na tarefa do Windows (`agendar.py`: `ScheduleByWeek`/`/d` com a lista de dias) e na compensação.
+
+Roadmap (dono, 11/Nov): **duas versões do manual conforme a licença** (nuvem ou instalada neste computador), quando
+houver a modalidade em nuvem; hoje só existe a instalada.
+
 ## 0.7.30 (11/Nov) — pronta para publicar
 
 Revisão da Operação (11/Nov, commit `1b8b691`): 2 bloqueios corrigidos. (1) Menu ☰ ilegível no modo escuro (também com

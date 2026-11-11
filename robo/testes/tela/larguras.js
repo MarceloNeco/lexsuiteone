@@ -6,6 +6,10 @@ const { chromium, devices } = require('playwright');
 const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
 (async () => {
   const b = await chromium.launch(); const falhas = []; let n = 0;
+  // 0.7.31: a janela "Novidades da versão" já vista (senão ela abre por cima e o roteiro não clica em nada)
+  const VERSAO = (require('fs').readFileSync(require('path').join(__dirname, '..', '..', 'lexsuite', '__init__.py'), 'utf8').match(/VERSAO = "([^"]+)"/) || [])[1] || '';
+  const novoContexto = b.newContext.bind(b);
+  b.newContext = async (o) => { const c = await novoContexto(o); await c.addInitScript((v) => { try { localStorage.setItem('lexsuite:novidades-vistas', v); } catch (e) {} }, VERSAO); return c; };
   const ok = (c, m) => { n++; if (!c) falhas.push(m); else console.log('  ✓ ' + m); };
   const tamanhos = [['celular', null], ['tablet', [768, 1024]], ['notebook', [1366, 768]], ['monitor', [1920, 1080]], ['monitor-grande', [2560, 1440]]];  // 0.7.29: + 768 px
   for (const [nome, vp] of tamanhos) {
@@ -99,6 +103,16 @@ const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
     ok(ruins.size === 0, `${tema}: texto com contraste suficiente ${[...ruins].slice(0, 4).join(' | ')}`);
     await ctx.close();
   }
+  // teste do dono (0.7.30): Configuração pelo menu ☰ abre em janela, rola com a roda do mouse, e o (?) abre na frente
+  { const ctx = await b.newContext({ viewport: { width: 1366, height: 700 } }); const p = await ctx.newPage();
+    await p.goto('http://127.0.0.1:' + porta + '/'); await p.waitForTimeout(1300); await p.click('.dgo-aone-x').catch(() => {});
+    await p.click('#b-menu'); await p.waitForTimeout(400); await p.locator('.gv-item', { hasText: /^Configuração/ }).first().click(); await p.waitForTimeout(700);
+    await p.mouse.move(683, 450); await p.mouse.wheel(0, 600); await p.waitForTimeout(400);
+    const y = await p.evaluate(() => document.getElementById('config').scrollTop); const pag = await p.evaluate(() => document.getElementById('config').classList.contains('pagina'));
+    ok(!pag && y > 100, `Configuração pelo menu abre em janela e rola com a roda do mouse (${y})`);
+    await p.click('#c-l-codigo').catch(() => {}); const aj = p.locator('#config .ajuda').first(); await aj.scrollIntoViewIfNeeded(); await aj.click(); await p.waitForTimeout(300);
+    const z = await p.evaluate(() => { const q = document.querySelector('.balao'); if (!q) return 'sem balão'; const r = q.getBoundingClientRect(); const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return q.contains(e) ? 'na frente' : 'atrás'; });
+    ok(z === 'na frente', `o (?) da Configuração abre na frente da janela (${z})`); await ctx.close(); }
   await b.close();
   console.log(falhas.length ? 'FALHOU:\n - ' + falhas.join('\n - ') : `OK (${n} verificações)`);
   process.exit(falhas.length ? 1 : 0);

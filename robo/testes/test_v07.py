@@ -403,7 +403,7 @@ class Wizard(AppV07):
         c = http.client.HTTPConnection("127.0.0.1", self.porta, timeout=10)
         c.request("GET", "/manual"); r = c.getresponse(); html = r.read().decode("utf-8"); c.close()
         self.assertEqual(r.status, 200)
-        self.assertIn("Olá, Leandro. Este manual é do KR Law.", html)
+        self.assertNotIn("Leandro", html); self.assertNotIn("KR Law", html)  # teste do dono (0.7.30): manual genérico, sem nome
         self.assertIn("Para você, advogado ou advogada", html)
         self.assertNotIn("<!--OLA-->", html)
         # papel inválido não entra; nome com HTML é escapado no manual
@@ -412,7 +412,7 @@ class Wizard(AppV07):
         self.assertEqual(d["app"]["usuario"]["papel"], "")
         c = http.client.HTTPConnection("127.0.0.1", self.porta, timeout=10)
         c.request("GET", "/manual"); html = c.getresponse().read().decode("utf-8"); c.close()
-        self.assertIn("Olá, &lt;b&gt;x&lt;/b&gt;.", html)
+        self.assertNotIn("<b>x</b>", html); self.assertNotIn("&lt;b&gt;x", html)
 
     def test_perfil_manda_a_funcao_vazia_e_a_tela_tem_o_perfil(self):
         # 0.7.9: o perfil muda um dado por vez; tirar a função também precisa chegar à licença na nuvem.
@@ -835,7 +835,8 @@ class V0714b(unittest.TestCase):
         conta.verificar(cfg, "0.7.14", dt.date(2026, 11, 9), pedir=lambda u, c, **k: resp)
         sit = conta.situacao(cfg)
         self.assertFalse(sit["ok"])
-        self.assertIn("aceite dos termos", sit["texto"])
+        self.assertEqual(sit["texto"], "Falta aceitar os termos. Dúvidas: judicial@solverone.com.br.")  # teste do dono (0.7.30): curto, sem o link por extenso
+        self.assertNotIn("http", sit["texto"] + sit["texto_en"]); self.assertEqual(sit["contato"], "judicial@solverone.com.br")
         self.assertTrue(sit["aceite_link"].startswith("https://judicial.solverone.com.br/"))
         resp["aceite"]["link"] = "https://exemplo-ruim.example/aceite"  # link de fora do site da SolverONE não vale
         conta.verificar(cfg, "0.7.14", dt.date(2026, 11, 9), pedir=lambda u, c, **k: resp)
