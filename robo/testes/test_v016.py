@@ -1350,7 +1350,7 @@ class V0729Revisao(unittest.TestCase):
     def test_painel_barras_ou_pizza(self):
         h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
         self.assertIn("function grafPizza(", h); self.assertIn("lexsuite:graf-tipo", h)
-        self.assertEqual(h.count("g_pizza:"), 2); self.assertEqual(h.count("grade.appendChild(grafLinhas("), 8)
+        self.assertEqual(h.count("g_pizza:"), 2); self.assertEqual(h.count("grade.appendChild(grafLinhas("), 9)  # 0.7.31: + Situação no escritório
         self.assertIn("function mesCurto(", h); self.assertNotIn('m.mes.slice(5) + "/"', h)
         self.assertIn("pizza", open(os.path.join(_ROBO_, "testes", "tela", "larguras.js"), encoding="utf-8").read())
 
