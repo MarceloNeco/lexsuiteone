@@ -10,8 +10,8 @@ PADRAO = {
     "usuario": {"nome": "", "papel": ""},
     "radar": {"tribunais": [f"TRT{n}" for n in range(1, 25)], "dias_para_tras": 1, "dias_na_pagina": 1,
               "valor_minimo": 100000, "teto_capital_gigante": 50000000, "receita": True, "porta": 8765, "guardar_dias": 365,
-              # Leitura automática (Agendador do Windows): horários "HH:MM" e dias ("todos" ou "uteis").
-              "horarios": ["20:00", "08:00"], "dias": "todos", "avisar_ao_terminar": True},
+              # Leitura automática (Agendador do Windows): horários "HH:MM" e dias ("todos", "uteis" ou a lista 0 = segunda ... 6 = domingo).
+              "horarios": ["20:00", "08:00"], "dias": "uteis", "avisar_ao_terminar": True},  # 0.7.32 (dono): padrão de segunda a sexta
     # Pasta compartilhada (Google Drive para computador, OneDrive...): o robô grava ali a planilha e lê o controle.
     "compartilhar": {"pasta": "", "subpasta": "LexSuiteONE", "planilha": True},
     # Atualização assinada: pela subpasta "atualizacao" da pasta compartilhada e, se houver, por um endereço fixo.

@@ -583,6 +583,8 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 @keyframes roda { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .roda { animation-duration: 4s; } }
 .horas-prontas { display: flex; flex-wrap: wrap; gap: 6px; }
+.dias-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; } .dias-linha > span { min-width: 64px; font-size: .86rem; color: var(--tinta-2); }
+.dias-semana button { min-width: 52px; }
 .horas-prontas button { border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 6px 12px; min-height: 34px; font-weight: 600; cursor: pointer; }
 .horas-prontas button[aria-pressed="true"] { background: var(--marinho); color: #fff; border-color: var(--marinho); }
 .grupo { font-size: .76rem; font-weight: 600; letter-spacing: .04em; color: var(--tinta-3); padding: 12px 18px 4px; border-top: 1px solid var(--linha); }
@@ -764,12 +766,12 @@ footer a:hover { text-decoration: underline; }
       <p class="agenda-info" id="c-trib-lidos"></p>
       <label class="conf-acoes"><input type="checkbox" id="c-agendar"> <span id="c-l-agendar"></span></label>
       <p class="agenda-info" id="c-horas-expl"></p>
-      <div class="horas-prontas" id="c-horas-prontas" role="group"></div>
+      <div class="dias-linha"><span id="c-l-dias"></span><div class="horas-prontas dias-semana" id="c-dias" role="group"></div></div>
+      <div class="dias-linha"><span id="c-l-horas"></span><div class="horas-prontas" id="c-horas-prontas" role="group"></div></div>
       <div class="agenda-horas" id="c-horas" role="list"></div>
       <div class="agenda-nova">
         <label class="conf-acoes"><span id="c-l-hora-nova"></span> <input type="time" id="c-hora-nova" step="300"></label>
         <button type="button" class="chip" id="c-hora-add"></button>
-        <select id="c-dias" aria-label="Dias"></select>
       </div>
       <p class="agenda-info" id="c-agenda-info" aria-live="polite"></p>
       <p class="agenda-info alerta" id="c-agenda-alerta" hidden></p>
@@ -1877,7 +1879,7 @@ window.LEXSUITE_RADAR = null;
       w4_t: "Tudo pronto", w4_x: "A primeira leitura leva de alguns minutos (poucos tribunais) a uma hora (os 24 TRTs); o andamento aparece aqui na tela, e o Windows avisa quando terminar. O manual fica no alto da tela.",
       w_rotina: "Leituras automáticas", w_nome_falta: "Informe o nome do escritório.", w_pasta_falta: "Escolha uma pasta ou marque \"Nenhuma\".", c_pasta: "Pasta das planilhas", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
       c_nenhuma: "Pasta padrão do {c} (neste computador)", c_outra_op: "Outra pasta (rede, OneDrive, Google Drive ou deste computador)", c_salvar: "Salvar", c_atualizar: "Verificar atualização",
-      c_versao: "Versão instalada", c_pasta_robo: "Pasta do programa", c_controle: "A planilha está em", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Ler sozinho, com o computador ligado", c_agendar_nao: "Leitura automática só no Windows.", w_agendar: "Ler sozinho {d} (dá para mudar em Configuração).", ag_titulo: "Leitura automática", ag_nova: "Outro horário", ag_add: "Acrescentar", ag_tirar: "Tirar o horário {h}", ag_todos: "Todos os dias", ag_uteis: "De segunda a sexta", ag_todo_dia: "todo dia", ag_seg_sex: "de segunda a sexta", ag_as: "às {h}", ag_e: " e ", ag_max: "No máximo 6 horários.", ag_ja: "Esse horário já está na lista.", ag_um: "Deixe pelo menos um horário (ou desmarque Ler sozinho).", nov_menu: "Novidades da versão", nov_t: "Novidades da versão {v}", nov_ok: "Entendi", nov_sem: "Esta versão traz correções pequenas.", ag_desligar_t: "Desligar a leitura automática?", ag_desligar_p: "Sem horário, o RADAR só lê quando você clicar em \u201cLer o Diário agora\u201d. A tela inicial avisa que está desligada.", ag_manter: "Manter", ag_desligar: "Desligar", ag_desligada: "Leitura automática desligada.", ag_configurar: "Configurar", ag_hora_inv: "Escolha a hora.", ag_compensa: "Se o computador estiver desligado ou dormindo na hora, a leitura acontece assim que ele ligar.", ag_noite: "O Diário do dia termina de sair à noite (por volta das 19h). Para lê-lo no mesmo dia, deixe um horário depois das 19h.", ag_avisar: "Mostrar um aviso no canto da tela ao terminar cada leitura", proxima: "Próxima leitura automática: {q}.", hoje: "hoje", amanha: "amanhã", ag_salvar_dica: "Os horários valem depois de Salvar.", ag_le: "Lê {d}.", cod_instalador: "Veio do instalador. Para trocar o código, use Configuração depois.", papel_escolha: "Escolha uma opção", papel_outra: "Outra", papel_sem: "Prefiro não informar", papel_outro_l: "Qual é a sua função?", papel_dica: "Ajuda a SolverONE a adaptar o {c} ao trabalho de cada função. Se preferir, escolha \"Prefiro não informar\".", papel_falta: "Escolha a sua função no escritório (ou \"Prefiro não informar\").", papel_outro_falta: "Escreva qual é a sua função.",
+      c_versao: "Versão instalada", c_pasta_robo: "Pasta do programa", c_controle: "A planilha está em", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Ler sozinho, com o computador ligado", c_agendar_nao: "Leitura automática só no Windows.", w_agendar: "Ler sozinho {d} (dá para mudar em Configuração).", ag_titulo: "Leitura automática", ag_nova: "Outro horário", ag_add: "Acrescentar", ag_tirar: "Tirar o horário {h}", ag_todos: "Todos os dias", ag_dias_rot: "Dias", ag_horas_rot: "Horários", ag_dia_0: "Seg", ag_dia_1: "Ter", ag_dia_2: "Qua", ag_dia_3: "Qui", ag_dia_4: "Sex", ag_dia_5: "Sáb", ag_dia_6: "Dom", ag_nos_dias: "{d}", ag_sem_dia: "Nenhum dia marcado: a leitura automática fica desligada ao salvar.", ag_uteis: "De segunda a sexta", ag_todo_dia: "todo dia", ag_seg_sex: "de segunda a sexta", ag_as: "às {h}", ag_e: " e ", ag_max: "No máximo 6 horários.", ag_ja: "Esse horário já está na lista.", ag_um: "Deixe pelo menos um horário (ou desmarque Ler sozinho).", nov_menu: "Novidades da versão", nov_t: "Novidades da versão {v}", nov_ok: "Entendi", nov_sem: "Esta versão traz correções pequenas.", ag_desligar_t: "Desligar a leitura automática?", ag_desligar_p: "Sem horário, o RADAR só lê quando você clicar em \u201cLer o Diário agora\u201d. A tela inicial avisa que está desligada.", ag_manter: "Manter", ag_desligar: "Desligar", ag_desligada: "Leitura automática desligada.", ag_configurar: "Configurar", ag_hora_inv: "Escolha a hora.", ag_compensa: "Se o computador estiver desligado ou dormindo na hora, a leitura acontece assim que ele ligar.", ag_noite: "O Diário do dia termina de sair à noite (por volta das 19h). Para lê-lo no mesmo dia, deixe um horário depois das 19h.", ag_avisar: "Mostrar um aviso no canto da tela ao terminar cada leitura", proxima: "Próxima leitura automática: {q}.", hoje: "hoje", amanha: "amanhã", ag_salvar_dica: "Os horários valem depois de Salvar.", ag_le: "Lê {d}.", cod_instalador: "Veio do instalador. Para trocar o código, use Configuração depois.", papel_escolha: "Escolha uma opção", papel_outra: "Outra", papel_sem: "Prefiro não informar", papel_outro_l: "Qual é a sua função?", papel_dica: "Ajuda a SolverONE a adaptar o {c} ao trabalho de cada função. Se preferir, escolha \"Prefiro não informar\".", papel_falta: "Escolha a sua função no escritório (ou \"Prefiro não informar\").", papel_outro_falta: "Escreva qual é a sua função.",
       op_drive: "No Google Drive deste computador", op_drive_x: "A planilha fica no seu Google Drive: dá para abrir em qualquer lugar e compartilhar com a equipe do escritório.", op_drive_nao: "Não achei o Google Drive para computador aqui. Para a planilha ir ao Drive, instale-o (google.com/drive/download) com a conta do escritório e abra o RADAR de novo; enquanto isso, use \"Só neste computador\".",
       op_outra: "Outra pasta (rede, OneDrive, Google Drive ou deste computador)", op_outra_x: "Para a equipe abrir de outros computadores. Se a pasta não existir, o {c} cria.", op_escolher: "Escolher pasta…", op_local: "Pasta padrão do {c} (neste computador)", op_local_x: "As planilhas ficam em {p}, só neste computador. Dá para passar para uma pasta compartilhada depois, em Configuração.",
       criar_pasta: "Criar a pasta", pasta_criada: "Pasta criada.", pasta_nao_existe: "Essa pasta ainda não existe. Clique em \"Criar a pasta\" ou siga em frente: o {c} cria ao avançar.",
@@ -1974,7 +1976,7 @@ window.LEXSUITE_RADAR = null;
       w4_t: "All set", w4_x: "The first reading takes from a few minutes (few courts) to an hour (all 24); progress shows here on screen, and Windows tells you when it is done. The manual is at the top of the screen.",
       w_rotina: "Automatic readings", w_nome_falta: "Enter the firm's name.", w_pasta_falta: "Choose a folder or pick \"None\".", c_pasta: "Spreadsheets folder", c_outra: "Folder path", c_testar: "Test folder",
       c_nenhuma: "{c} default folder (on this computer)", c_outra_op: "Another folder (network, OneDrive, Google Drive or this computer)", c_salvar: "Save", c_atualizar: "Check for updates",
-      c_versao: "Installed version", c_pasta_robo: "Program folder", c_controle: "The spreadsheet is at", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Read by itself, with the computer on", c_agendar_nao: "Automatic reading only on Windows.", w_agendar: "Read by itself {d} (you can change it in Settings).", ag_titulo: "Automatic reading", ag_nova: "Another time", ag_add: "Add", ag_tirar: "Remove time {h}", ag_todos: "Every day", ag_uteis: "Monday to Friday", ag_todo_dia: "every day", ag_seg_sex: "Monday to Friday", ag_as: "at {h}", ag_e: " and ", ag_max: "At most 6 times.", ag_ja: "That time is already on the list.", ag_um: "Keep at least one time (or untick Read by itself).", nov_menu: "What\u2019s new", nov_t: "What\u2019s new in version {v}", nov_ok: "Got it", nov_sem: "This version brings small fixes.", ag_desligar_t: "Turn off automatic reading?", ag_desligar_p: "With no time set, RADAR only reads when you click \u201cRead the gazette now\u201d. The home screen shows that it is off.", ag_manter: "Keep", ag_desligar: "Turn off", ag_desligada: "Automatic reading is off.", ag_configurar: "Set up", ag_hora_inv: "Pick the time.", ag_compensa: "If the computer is off or asleep at that time, the reading runs as soon as it is back on.", ag_noite: "The day\u2019s gazette finishes coming out in the evening (around 7 pm). To read it the same day, keep a time after 7 pm.", ag_avisar: "Show a notice in the corner of the screen when each reading ends", proxima: "Next automatic reading: {q}.", hoje: "today", amanha: "tomorrow", ag_salvar_dica: "The times apply after Save.", ag_le: "Reads {d}.", cod_instalador: "It came from the installer. To change the code, use Settings later.", papel_escolha: "Choose an option", papel_outra: "Other", papel_sem: "Prefer not to say", papel_outro_l: "What is your role?", papel_dica: "Helps SolverONE adapt {c} to each role. If you prefer, choose \"Prefer not to say\".", papel_falta: "Choose your role at the firm (or \"Prefer not to say\").", papel_outro_falta: "Type your role.",
+      c_versao: "Installed version", c_pasta_robo: "Program folder", c_controle: "The spreadsheet is at", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Read by itself, with the computer on", c_agendar_nao: "Automatic reading only on Windows.", w_agendar: "Read by itself {d} (you can change it in Settings).", ag_titulo: "Automatic reading", ag_nova: "Another time", ag_add: "Add", ag_tirar: "Remove time {h}", ag_todos: "Every day", ag_dias_rot: "Days", ag_horas_rot: "Times", ag_dia_0: "Mon", ag_dia_1: "Tue", ag_dia_2: "Wed", ag_dia_3: "Thu", ag_dia_4: "Fri", ag_dia_5: "Sat", ag_dia_6: "Sun", ag_nos_dias: "on {d}", ag_sem_dia: "No day selected: automatic reading is turned off when you save.", ag_uteis: "Monday to Friday", ag_todo_dia: "every day", ag_seg_sex: "Monday to Friday", ag_as: "at {h}", ag_e: " and ", ag_max: "At most 6 times.", ag_ja: "That time is already on the list.", ag_um: "Keep at least one time (or untick Read by itself).", nov_menu: "What\u2019s new", nov_t: "What\u2019s new in version {v}", nov_ok: "Got it", nov_sem: "This version brings small fixes.", ag_desligar_t: "Turn off automatic reading?", ag_desligar_p: "With no time set, RADAR only reads when you click \u201cRead the gazette now\u201d. The home screen shows that it is off.", ag_manter: "Keep", ag_desligar: "Turn off", ag_desligada: "Automatic reading is off.", ag_configurar: "Set up", ag_hora_inv: "Pick the time.", ag_compensa: "If the computer is off or asleep at that time, the reading runs as soon as it is back on.", ag_noite: "The day\u2019s gazette finishes coming out in the evening (around 7 pm). To read it the same day, keep a time after 7 pm.", ag_avisar: "Show a notice in the corner of the screen when each reading ends", proxima: "Next automatic reading: {q}.", hoje: "today", amanha: "tomorrow", ag_salvar_dica: "The times apply after Save.", ag_le: "Reads {d}.", cod_instalador: "It came from the installer. To change the code, use Settings later.", papel_escolha: "Choose an option", papel_outra: "Other", papel_sem: "Prefer not to say", papel_outro_l: "What is your role?", papel_dica: "Helps SolverONE adapt {c} to each role. If you prefer, choose \"Prefer not to say\".", papel_falta: "Choose your role at the firm (or \"Prefer not to say\").", papel_outro_falta: "Type your role.",
       op_drive: "In this computer\u2019s Google Drive", op_drive_x: "The spreadsheet lives in your Google Drive: open it anywhere and share it with the firm\u2019s team.", op_drive_nao: "Google Drive for desktop was not found here. For the spreadsheet to go to Drive, install it (google.com/drive/download) with the firm\u2019s account and open RADAR again; meanwhile, use \"This computer only\".",
       op_outra: "Another folder (network, OneDrive, Google Drive or this computer)", op_outra_x: "So the team can open it from other computers. If the folder does not exist, {c} creates it.", op_escolher: "Choose folder…", op_local: "{c} default folder (on this computer)", op_local_x: "The spreadsheets stay in {p}, on this computer only. You can move to a shared folder later, in Settings.",
       criar_pasta: "Create the folder", pasta_criada: "Folder created.", pasta_nao_existe: "This folder does not exist yet. Click \"Create the folder\" or go on: {c} creates it when you continue.",
@@ -2504,7 +2506,7 @@ window.LEXSUITE_RADAR = null;
     if (id) window.scrollTo(0, 0);
   }
   function estadoConfig() {
-    return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), $("c-dias").value, $("c-avisar").checked, $("c-aba").checked]);
+    return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), JSON.stringify(diasValor(cDias)), $("c-avisar").checked, $("c-aba").checked]);
   }
   function marcarSalvarC() { if (!$("config").hidden) $("c-salvar").disabled = estadoConfig() === snapC; }
   var regrasSujo = false, salvarRegrasAgora = null;  // revisão da 0.7.28: fechar a Configuração pergunta também pelas regras
@@ -2598,7 +2600,7 @@ window.LEXSUITE_RADAR = null;
     $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false"); fecharPerfil();
     $("c-msg").textContent = ""; $("c-teste-txt").textContent = "";
     var ag = APP && APP.config.agendavel; $("c-agendar").disabled = !ag; $("c-agendar").checked = !!(APP && APP.config.agendado) || (ag && !(APP && APP.config.pasta));
-    cHoras = ((APP && APP.config.horarios) || ["20:00", "08:00"]).slice(); cDias = (APP && APP.config.dias) || "todos";
+    cHoras = ((APP && APP.config.horarios) || ["20:00", "08:00"]).slice(); cDias = diasLista((APP && APP.config.dias) || "todos");
     $("c-avisar").checked = !(APP && APP.config.avisar_ao_terminar === false); $("c-aba").checked = !!(APP && APP.config.abrir_em_aba);
     $("c-l-tela").textContent = t("c_tela"); $("c-l-aba").textContent = t("c_aba"); $("c-hora-nova").value = "";
     desenharAgenda();
@@ -2704,7 +2706,7 @@ window.LEXSUITE_RADAR = null;
     var cod = $("c-codigo").value.trim().toUpperCase(); if (!$("c-codigo").readOnly && cod && !(APP && APP.conta && APP.conta.codigo === cod)) corpo.codigo = cod;
     if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
     if ($("c-agendar").checked && !cHoras.length) { $("c-msg").textContent = t("ag_um"); return; }
-    corpo.horarios = cHoras.slice(); corpo.dias = $("c-dias").value; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
+    corpo.horarios = cHoras.slice(); corpo.dias = diasValor(cDias); if (!cDias.length) corpo.agendar = false; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
     post("/config", corpo).then(function (r) {
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
       $("c-msg").textContent = t("c_salvo") + (r.agendar_msg ? " " + r.agendar_msg : ""); snapC = estadoConfig(); fecharConfig(); mostrarAviso(t("c_salvo")); carregar();
@@ -2847,10 +2849,18 @@ window.LEXSUITE_RADAR = null;
     }).catch(function () { $("w-msg").textContent = t("falha"); });
   }
   /* ---------- leitura automática: horários, dias, próxima ---------- */
-  var cHoras = [], cDias = "todos";
+  var cHoras = [], cDias = [0, 1, 2, 3, 4, 5, 6];
+  /* 0.7.32 (dono): dias da semana um a um (0 = segunda ... 6 = domingo, como no programa); na tela, de domingo a sábado */
+  function diasLista(v) { return v === "todos" ? [0, 1, 2, 3, 4, 5, 6] : v === "uteis" ? [0, 1, 2, 3, 4] : (Array.isArray(v) ? v.filter(function (d) { return d >= 0 && d <= 6; }) : [0, 1, 2, 3, 4, 5, 6]); }
+  function diasValor(l) { var s_ = l.slice().sort(); var j_ = s_.join(","); return j_ === "0,1,2,3,4,5,6" ? "todos" : j_ === "0,1,2,3,4" ? "uteis" : s_; }
   function fmtHora(h) { return lang === "pt" ? String(h).replace(":", "h") : String(h); }
   function listaHoras(l) { l = l.map(fmtHora); return l.length < 2 ? (l[0] || "") : l.slice(0, -1).join(", ") + t("ag_e") + l[l.length - 1]; }
-  function descAgenda(horas, dias) { horas = (horas && horas.length ? horas : ["20:00", "08:00"]).slice().sort(); return (dias === "uteis" ? t("ag_seg_sex") : t("ag_todo_dia")) + " " + t("ag_as", { h: listaHoras(horas) }); }
+  function descAgenda(horas, dias) {
+    horas = (horas && horas.length ? horas : ["20:00", "08:00"]).slice().sort(); var v_ = diasValor(diasLista(dias)), q_;
+    if (v_ === "todos") q_ = t("ag_todo_dia"); else if (v_ === "uteis") q_ = t("ag_seg_sex");
+    else { var n_ = v_.map(function (d) { return t("ag_dia_" + d); }); q_ = t("ag_nos_dias", { d: n_.length === 1 ? n_[0] : n_.slice(0, -1).join(", ") + t("ag_e") + n_[n_.length - 1] }); }
+    return q_ + " " + t("ag_as", { h: listaHoras(horas) });
+  }
   function quandoProxima(iso) {
     var d = String(iso).slice(0, 10), h = String(iso).slice(11, 16), hoje = new Date(), amanha = new Date(hoje.getTime() + 864e5);
     function ymd(x) { return x.getFullYear() + "-" + ("0" + (x.getMonth() + 1)).slice(-2) + "-" + ("0" + x.getDate()).slice(-2); }
@@ -2861,11 +2871,16 @@ window.LEXSUITE_RADAR = null;
     var on = $("c-agendar").checked && !$("c-agendar").disabled;
     $("c-l-agenda").textContent = t("ag_titulo"); $("c-l-avisar").textContent = t("ag_avisar"); $("c-l-hora-nova").textContent = t("ag_nova"); $("c-hora-add").textContent = t("ag_add");
     $("c-l-agendar").textContent = $("c-agendar").disabled ? t("c_agendar_nao") : t("c_agendar");
-    var sd = $("c-dias"), v = cDias; sd.textContent = ""; [["todos", t("ag_todos")], ["uteis", t("ag_uteis")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; sd.appendChild(op); }); sd.value = v;
+    var sd = $("c-dias"); sd.textContent = ""; $("c-l-dias").textContent = t("ag_dias_rot"); $("c-l-horas").textContent = t("ag_horas_rot");
+    [6, 0, 1, 2, 3, 4, 5].forEach(function (d) {  // domingo e sábado nas pontas, como no calendário
+      var b = el("button", null, t("ag_dia_" + d)); b.type = "button"; b.setAttribute("aria-pressed", String(cDias.indexOf(d) >= 0)); b.disabled = !on;
+      b.addEventListener("click", function () { cDias = cDias.indexOf(d) >= 0 ? cDias.filter(function (x) { return x !== d; }) : cDias.concat([d]); $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); });
+      sd.appendChild(b);
+    });
     $("c-horas-expl").textContent = t("ag_expl");
     var confirmarSemHorario = function () {  // teste do dono (0.7.30): tirar o último horário pergunta e desliga a leitura automática
       var c_ = el("div"); c_.appendChild(el("h3", null, t("ag_desligar_t"))); c_.appendChild(el("p", null, t("ag_desligar_p")));
-      abrirJanela(c_, [[t("ag_manter"), null], [t("ag_desligar"), function () { $("c-agendar").checked = false; cHoras = []; $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); }, true]]);
+      abrirJanela(c_, [[t("ag_manter"), null], [t("ag_desligar"), function () { $("c-agendar").checked = false; $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); }, true]]);  // revisão da 0.7.31: os horários ficam guardados para religar
     };
     var pr = $("c-horas-prontas"); pr.textContent = "";
     ["06:00", "08:00", "12:00", "14:00", "18:00", "20:00", "22:00"].forEach(function (h) {
@@ -2878,7 +2893,8 @@ window.LEXSUITE_RADAR = null;
       pr.appendChild(b);
     });
     var box = $("c-horas"); box.textContent = "";
-    cHoras.sort().forEach(function (h) {
+    var PRONTAS_ = ["06:00", "08:00", "12:00", "14:00", "18:00", "20:00", "22:00"];
+    cHoras.sort().filter(function (h) { return PRONTAS_.indexOf(h) < 0; }).forEach(function (h) {  // 0.7.32 (dono): embaixo só os horários fora dos botões (sem repetir)
       var p = el("span", "hora-pilula", fmtHora(h)); p.setAttribute("role", "listitem");
       var x = el("button", null, "\u00D7"); x.type = "button"; x.setAttribute("aria-label", t("ag_tirar", { h: fmtHora(h) })); x.title = x.getAttribute("aria-label");
       x.addEventListener("click", function () { if (cHoras.length <= 1) { confirmarSemHorario(); return; } cHoras = cHoras.filter(function (y) { return y !== h; }); $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); });
@@ -2886,8 +2902,8 @@ window.LEXSUITE_RADAR = null;
     });
     ["c-horas", "c-dias", "c-hora-nova", "c-hora-add"].forEach(function (id) { $(id).disabled = !on; });
     box.style.opacity = on ? "" : ".55";
-    var info = on ? t("ag_le", { d: descAgenda(cHoras, sd.value) }) + " " + t("ag_compensa") : "";
-    var salvo = APP && JSON.stringify(cHoras.slice().sort()) === JSON.stringify((APP.config.horarios || []).slice().sort()) && cDias === (APP.config.dias || "todos");
+    var info = on ? (cDias.length ? t("ag_le", { d: descAgenda(cHoras, cDias) }) + " " + t("ag_compensa") : t("ag_sem_dia")) : "";
+    var salvo = APP && JSON.stringify(cHoras.slice().sort()) === JSON.stringify((APP.config.horarios || []).slice().sort()) && JSON.stringify(diasValor(cDias)) === JSON.stringify(diasValor(diasLista(APP.config.dias || "todos")));
     if (on && salvo && APP.config.proxima && APP.config.agendado) info += " " + t("proxima", { q: quandoProxima(APP.config.proxima) });
     $("c-agenda-info").textContent = info; $("c-agenda-info").hidden = !info;
     var semNoite = on && !cHoras.some(function (h) { return h >= "19:00"; });
@@ -4241,7 +4257,6 @@ window.LEXSUITE_RADAR = null;
   $("config").addEventListener("click", function () { setTimeout(marcarSalvarC, 0); });
   $("config").addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !$("janela").open) { ev.stopPropagation(); ev.preventDefault(); fecharConfig(false); } });  // 0.7.29: sem o preventDefault, a pergunta abria e fechava no mesmo Esc
   $("c-agendar").addEventListener("change", desenharAgenda);
-  $("c-dias").addEventListener("change", function () { cDias = this.value; $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); });
   $("c-hora-add").addEventListener("click", acrescentarHora);
   $("c-hora-nova").addEventListener("keydown", function (ev) { if (ev.key === "Enter") acrescentarHora(); });
   $("c-atualizar").addEventListener("click", verificarAtualizacao);

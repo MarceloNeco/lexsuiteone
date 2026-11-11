@@ -493,7 +493,7 @@ class AgendaTela079(AppV07):
     def test_config_guarda_horarios_e_dados_mostram(self):
         status, d = self.pedir("GET", "/dados")
         c = d["app"]["config"]
-        self.assertEqual((c["horarios"], c["dias"], c["avisar_ao_terminar"], c["tem_noite"]), (["08:00", "20:00"], "todos", True, True))
+        self.assertEqual((c["horarios"], c["dias"], c["avisar_ao_terminar"], c["tem_noite"]), (["08:00", "20:00"], "uteis", True, True))  # 0.7.32 (dono): padrão de segunda a sexta
         status, r = self.pedir("POST", "/config", {"horarios": ["07:30", "21:00", "lixo"], "dias": "uteis", "avisar_ao_terminar": False})
         self.assertTrue(r["ok"], r)
         status, d = self.pedir("GET", "/dados")

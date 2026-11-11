@@ -185,6 +185,7 @@ class TestArmazenamento(unittest.TestCase):
 
     def test_copia_de_seguranca_guarda_seis_e_recusa_com_disco_baixo(self):
         from lexsuite import armazenamento as ar, radar
+        self._disco(400)  # 0.7.32: não depende do disco da máquina que roda o teste
         b = _banco_com(3)
         self.assertTrue(radar.gravar_planilha(self.cfg, radar.montar_radar(self.cfg, b), b, "0.7.16", self.pasta, lambda *_: None))
         for k in range(8):
@@ -209,6 +210,7 @@ class TestArmazenamento(unittest.TestCase):
 
     def test_limite_faz_limpeza_com_copia_sozinho(self):
         from lexsuite import armazenamento as ar, radar, planilha, preferencias as pf
+        self._disco(400)
         b = _banco_com(1200, espalhar=30)
         os.makedirs(self.base)
         abas = pf.abas_padrao()
@@ -384,6 +386,10 @@ class V0717Revisao(unittest.TestCase):
 
     def test_limpeza_nao_repete_e_poda_poupa_as_feitas_a_mao(self):
         from lexsuite import armazenamento as ar, radar, planilha, preferencias as pf
+        import collections
+        from unittest import mock
+        U_ = collections.namedtuple("U", "total used free")
+        p_ = mock.patch.object(ar.shutil, "disk_usage", lambda _p: U_(500 * ar.GB, 100 * ar.GB, 400 * ar.GB)); p_.start(); self.addCleanup(p_.stop)  # 0.7.32: sem depender do disco da máquina
         pasta = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, pasta, True)
         base = os.path.join(pasta, "LexSuiteONE")
@@ -1554,3 +1560,50 @@ class Revisao0730(unittest.TestCase):
         self.assertIn(".barra-lista { grid-template-columns: minmax(0, 1fr); }", h); self.assertIn(".bloco-leitura { grid-template-columns: auto minmax(0, 1fr);", h)
         self.assertIn('addEventListener("beforeprint"', h)
         self.assertEqual(h.count("aceite_banner:"), 2); self.assertEqual(h.count("aceite_duvidas:"), 2)  # teste do dono: faixa do aceite curta, PT e EN
+
+
+class Novo0732(unittest.TestCase):
+    """0.7.32 (dono): dias da semana na leitura automática; regras de sincronia (manual, AssistONE, novidades)."""
+
+    def test_dias_da_semana(self):
+        import datetime as _dt
+        from lexsuite import agendar
+        self.assertEqual(agendar.validar_dias([0, 2, 4]), [0, 2, 4])
+        self.assertEqual(agendar.validar_dias(list(range(7))), "todos")
+        self.assertEqual(agendar.validar_dias([4, 3, 2, 1, 0]), "uteis")
+        self.assertEqual(agendar.validar_dias(["seg", "qua"]), [0, 2])
+        self.assertEqual(agendar.validar_dias([]), [])
+        self.assertEqual(agendar.validar_dias([True, 9, "x"]), [])
+        self.assertEqual(agendar.descricao(["20:00"], [0, 2, 4]), "nos dias segunda, quarta e sexta às 20h00")
+        self.assertEqual(agendar.descricao(["20:00"], [6]), "aos domingos às 20h00")
+        sexta = _dt.datetime(2026, 11, 13, 21, 0)
+        self.assertEqual(agendar.proxima(["20:00"], [0, 2], sexta), _dt.datetime(2026, 11, 16, 20, 0))
+        self.assertEqual(agendar.proxima(["20:00"], [5], sexta), _dt.datetime(2026, 11, 14, 20, 0))
+        x = agendar.xml_tarefa(r"C:\Lex\RODAR.bat", ["20:00"], [0, 2, 4], _dt.date(2026, 11, 8))
+        self.assertIn("<DaysOfWeek><Monday /><Wednesday /><Friday /></DaysOfWeek>", x)
+        self.assertIn("<ScheduleByDay>", agendar.xml_tarefa(r"C:\Lex\RODAR.bat", ["20:00"], "todos", _dt.date(2026, 11, 8)))
+
+    def test_padrao_de_segunda_a_sexta(self):
+        from lexsuite import config
+        self.assertEqual(config.PADRAO["radar"]["dias"], "uteis")
+
+    def test_novidades_da_versao_atual(self):  # regra do dono: toda versão traz as novidades em PT e EN
+        import re
+        from lexsuite import VERSAO
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        i = h.index('"' + VERSAO + '": {')
+        bloco = h[i:h.index("\n    }", i)]
+        pt = re.search(r"pt: \[(.*?)\],\s*en:", bloco, re.S).group(1); en = re.search(r"en: \[(.*?)\]\s*$", bloco, re.S).group(1)
+        self.assertGreater(pt.count('",'), 0); self.assertEqual(pt.count('", '), en.count('", '))
+
+    def test_assistone_aponta_para_o_que_existe(self):  # regra do dono: o AssistONE acompanha a tela
+        import re
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        alvos = set(re.findall(r'(?:seletor|destino): "#([a-z0-9-]+)"', h)) | set(re.findall(r'irPara\("#([a-z0-9-]+)"\)', h))
+        self.assertTrue(alvos)
+        faltam = [a for a in alvos if ('id="' + a + '"') not in h]
+        self.assertEqual(faltam, [])
+
+    def test_manual_fala_das_novidades(self):  # regra do dono: o manual acompanha a tela
+        m = open(os.path.join(_ROBO_, "MANUAL-DO-ESCRITORIO.html"), encoding="utf-8").read()
+        self.assertIn("Novidades da versão", m)
