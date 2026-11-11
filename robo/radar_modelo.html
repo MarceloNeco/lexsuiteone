@@ -430,7 +430,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .janela-x:hover, .janela-x:focus-visible { background: var(--papel-2, #f1f4f8); color: var(--tinta); }
 @media (max-width: 480px) { .janela .botoes { flex-direction: column-reverse; align-items: stretch; } .janela .botoes button { width: 100%; text-align: center; } }
 .janela textarea { width: 100%; min-height: 200px; font: .82rem/1.4 ui-monospace, Consolas, monospace; border: 1px solid var(--linha-2); border-radius: 8px; padding: 8px; }
-/* 0.7.30 (dono, inspirado no protótipo do Gemini): três blocos — leitura, filtros, ordenação; os filtros ficam fixos no alto no computador */
+/* 0.7.30 (dono, a partir do protótipo dele): três blocos — leitura, filtros, ordenação; os filtros ficam fixos no alto no computador */
 .bloco-leitura { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 18px; padding: 10px 16px; }
 .bl-esq { display: grid; gap: 3px; min-width: 0; }
 .bl-dir { display: flex; gap: 10px; align-items: center; }
@@ -2228,21 +2228,21 @@ window.LEXSUITE_RADAR = null;
 
   /* ---------- tela local: dados, tribunais, rodar ---------- */
   function cabecalhosApp() { return { "X-LexSuite": "1" }; }
-  var cacheDados = {}, carregandoPer = 0;  // 0.7.30 (dono): trocar o período usa o que já foi carregado (até uma leitura nova)
+  var cacheDados = {}, carregandoPer = 0, geracaoCache = 0;  // 0.7.30 (dono): trocar o período usa o que já foi carregado (até uma leitura nova)
   function trocarPeriodo(d) {
     d = Number(d) || 1; if (periodo === d && !carregandoPer) return;
     periodo = d; $("periodo").value = String(d);
     var c_ = cacheDados[d];
     post("/config", { dias_na_pagina: d });
-    if (c_ && Date.now() - c_.t < 15 * 60000) { aplicarDados(c_.d); return; }  // na memória: troca na hora
+    if (c_ && Date.now() - c_.t < 5 * 60000) { aplicarDados(Object.assign({}, c_.d, { app: APP || c_.d.app })); return; }  // na memória: troca na hora (estado e licença, os de agora)
     carregandoPer = d; desenhar(); carregar().then(function () { carregandoPer = 0; desenhar(); });
   }
   function carregar() {
     $("estado").textContent = t("carregando");
     // 0.7.30: a 1ª carga usa o período salvo (antes pedia 1 dia)
-    var pedido_ = APP ? periodo : 0;
+    var pedido_ = APP ? periodo : 0, ger_ = geracaoCache;
     return fetch("/dados" + (APP ? "?dias=" + periodo : ""), { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
-      cacheDados[pedido_ || Number((d.app && d.app.config && d.app.config.dias_na_pagina) || 1)] = { d: d, t: Date.now() };
+      if (ger_ === geracaoCache) cacheDados[pedido_ || Number((d.app && d.app.config && d.app.config.dias_na_pagina) || 1)] = { d: d, t: Date.now() };  // gravou algo no meio: não guarda
       aplicarDados(d);
     }).catch(function () { carregandoPer = 0; $("estado").textContent = t("falha"); });
   }
@@ -2262,7 +2262,7 @@ window.LEXSUITE_RADAR = null;
   }
   function post(caminho, corpo) {
     // 0.7.30: qualquer gravação (situação, valor, regras, tribunais...) deixa velho o que estava na memória dos períodos
-    if (!(caminho === "/config" && Object.keys(corpo || {}).join(",") === "dias_na_pagina") && typeof cacheDados === "object") cacheDados = {};
+    if (!(caminho === "/config" && Object.keys(corpo || {}).join(",") === "dias_na_pagina") && typeof cacheDados === "object") { cacheDados = {}; geracaoCache++; }
     return fetch(caminho, { method: "POST", headers: { "Content-Type": "application/json", "X-LexSuite": "1" }, body: JSON.stringify(corpo || {}) }).then(function (r) { return r.json(); })
       .then(function (j) { if (j && lang === "en" && j.motivo_en) j.motivo = j.motivo_en; return j; });  // 0.7.23: motivo no idioma da tela
   }
@@ -2381,7 +2381,7 @@ window.LEXSUITE_RADAR = null;
         mostrarEstado(e);
         if (e.rodando) { vigia = setTimeout(passo, 2000); return; }
         vigia = null; $("b-rodar").disabled = false; $("b-salvar-rodar").disabled = false;
-        cacheDados = {}; carregar();  // leitura nova: o que estava na memória ficou velho
+        cacheDados = {}; geracaoCache++; carregar();  // leitura nova: o que estava na memória ficou velho
       }).catch(function () { vigia = setTimeout(passo, 4000); });
     }
     vigia = setTimeout(passo, 1500);
@@ -2409,7 +2409,7 @@ window.LEXSUITE_RADAR = null;
     abrirJanela(c, bts);
   }
   function rodar() {
-    if (selMudou() && Object.keys(sel).length) { salvarTribunais(true); return; }  // 0.7.30 (dono): marcou na mira e clicou em "Ler o Diário agora": salva e lê o que está marcado
+    if (selMudou() && Object.keys(sel).length && !(APP && APP.conta && !APP.conta.ok)) { salvarTribunais(true); return; }  // revisão: licença conferida antes  // 0.7.30 (dono): marcou na mira e clicou em "Ler o Diário agora": salva e lê o que está marcado
     if (!Object.keys(sel).length) { $("painel").hidden = false; $("b-trib").setAttribute("aria-expanded", "true"); painel(); mostrarEstado({ erro: t("sem_trib") }); return; }
     if (APP && APP.conta && !APP.conta.ok) { avisoLicenca(); return; }  // 0.7.30 (dono): janela com o motivo e o caminho, sem prender a pessoa
     $("estado").textContent = t("carregando");
@@ -2418,7 +2418,7 @@ window.LEXSUITE_RADAR = null;
   function salvarTribunais(depoisRodar) {
     post("/config", { tribunais: Object.keys(sel), dias_na_pagina: periodo }).then(function () {
       $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
-      if (depoisRodar) { post("/rodar", {}).then(function (r) { if (r.ok) vigiar(); }); }
+      if (depoisRodar) { post("/rodar", {}).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo || t("falha") }); }); }  // revisão: o motivo da recusa aparece
       carregar();
     }).catch(function () { $("estado").textContent = t("falha"); });
   }

@@ -169,7 +169,7 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - "Tribunais: N de 24" e o "alterar" ao lado de "Ler o Diário agora" fazem a mesma coisa: juntar num lugar só.
 - "Ordem de chegada" (quando o programa achou, agrupado por leitura) x "Mais recentes primeiro" (data do Diário):
   nomes confundem.
-- Feito no ramo (0.7.30), a partir do protótipo do Gemini: três blocos. "Configuração da leitura" (o que o programa lê,
+- Feito no ramo (0.7.30), a partir do protótipo do dono: três blocos. "Configuração da leitura" (o que o programa lê,
   "Alterar configuração" = um botão só para a mira, "Ler o Diário agora", última e próxima leitura); "Filtros da lista"
   (busca, Data do processo, Situação, Valor, "Mais filtros" que abre os menos usados, filtros salvos, Limpar) com a
   ordenação e o "Baixar a lista (.csv)" em dourado no mesmo bloco, fixo no alto no computador (no celular rola junto).

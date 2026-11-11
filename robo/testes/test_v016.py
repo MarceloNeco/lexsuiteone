@@ -1438,7 +1438,7 @@ class Painel0730(unittest.TestCase):
     def test_tela(self):
         h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
         self.assertIn("lexsuite:graf-por-trib", h); self.assertEqual(h.count("g_por_trib:"), 2)
-        self.assertIn("cacheDados = {}; carregar();", h)  # leitura nova esvazia a memória
+        self.assertIn("cacheDados = {}; geracaoCache++; carregar();", h)  # leitura nova esvazia a memória
         self.assertIn("function trocarPeriodo(", h)
         self.assertIn("html:has(#janela[open])", h)
         self.assertIn("preventScroll: true", h)
