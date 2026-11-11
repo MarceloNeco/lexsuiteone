@@ -23,7 +23,9 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
   da SolverONE (RADAR JUDICIAL, RootifyONE, o site e os que vierem), sem exceção por tamanho.** Mexeu em feature, nova, alterada ou removida,
   a mudança só está pronta quando, no mesmo commit ou na mesma versão, estes três estão conferidos e atualizados, em PT e EN:
   (1) o **manual** (quando o aplicativo tem manual); (2) o **AssistONE** (a ajuda da tela onde a mudança está, o tour e a busca);
-  (3) as **Novidades da versão** (a janela que aparece depois de atualizar, com a linha "Para rever: menu ☰ → Configurações → Novidades da versão").
+  (3) as **Novidades da versão** (a janela que aparece depois de atualizar, com a linha "Para rever: menu ☰ → Configurações → Novidades da versão");
+  e (4) **qualquer outra orientação** atingida, onde quer que esteja: botões (?) e dicas de campo, textos de erro e de aviso, e-mail de
+  boas-vindas, LEIA-ME, roteiros, páginas do site, documentos. Vale também para correção de bug que mude o que a pessoa vê.
   Conferir é ler cada um contra o que o código faz de verdade e corrigir o que ficou velho; não basta existir nem estar nos dois idiomas.
   Texto que descreve o comportamento antigo, caminho de menu que mudou ou passo do tour apontando para o vazio é defeito, não detalhe.
   Aplicativo novo desenha manual, AssistONE e Novidades desde o começo. Os testes `Novo…` da Produto conferem o que dá para automatizar;
