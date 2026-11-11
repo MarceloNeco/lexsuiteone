@@ -308,6 +308,7 @@ button.barra-l:focus-visible { outline: 2px solid var(--latao); }
 .barra-l .n small { font-weight: 500; color: var(--tinta-3); margin-left: 6px; }
 .saz-cab { display: flex; gap: 8px; align-items: center; }
 .col.pico .pe { background: var(--latao); }
+.saz-legenda { display: flex; align-items: center; gap: 6px; } .saz-cor-pico { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--latao); flex: none; }
 .graf-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .graf-sep { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; color: var(--tinta-2); cursor: pointer; }
 .graf-sep input { accent-color: var(--marinho); width: 16px; height: 16px; }
@@ -2076,11 +2077,11 @@ window.LEXSUITE_RADAR = null;
     copia_t: "Cópia criada", abrir_copia: "Abrir a cópia", abrir_pasta_copia: "Abrir a pasta",
     g_ver_como: "Ver como", g_por_trib: "Separar por tribunal", g_barras: "Barras", g_pizza: "Pizza", g_outros: "Outros ({n})", g_sem_dados: "Sem dados neste período.",
     pp_t: "Estes números: {n} ações", pp_diarios: "Diários de {d} a {a}", pp_filtros: "com {n} filtro(s) da lista", pp_trib: "Tribunal:", pp_trib_todos: "Todos", pp_lidas: "Data do processo:", pp_1: "último dia útil", pp_n: "{d} dias",
-    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" e depois em \"Ler agora\" (30 Diários por vez) ou deixe para a leitura automática da noite. Guarda os totais e, só neste computador, o número dos processos já contados (para não contar duas vezes): nada entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
+    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" (lê 30 Diários por vez; o resto fica para a leitura da noite ou para \"Continuar\"). Guarda os totais e, só neste computador, o número dos processos já contados (para não contar duas vezes): nada entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
     saz_vazio: "Ainda não há meses suficientes. Escolha quantos meses buscar e clique em \"Buscar estatísticas\".", saz_semana: "Por dia da semana:", saz_pico: "Mês com mais ações: {m} ({n}).",
     saz_estado: "Diários antigos lidos: {l}; na fila: {f}; sem Diário: {s}; com erro: {e}.", saz_de_ate: "De {d} a {a}.", saz_meses_rot: "Meses para trás", saz_meses: "{m} mês(es) para trás",
-    saz_ja_fila: "Nada novo para buscar: os últimos {m} mês(es) já estão lidos ou na fila ({n} Diários). Clique em \"Ler agora\" ou deixe para a leitura da noite.", saz_ja_lidos: "Nada novo para buscar: os últimos {m} mês(es) já estão lidos. Para ir mais longe, escolha mais meses.",
-    saz_pedir: "Buscar estatísticas", saz_ler: "Ler agora (30 Diários)", saz_parar: "Parar", saz_na_fila: "{n} Diário(s) na fila. Clique em \"Ler agora\" ou deixe para a leitura da noite.",
+    saz_ja_fila: "Nada novo para buscar: os últimos {m} mês(es) já estão lidos ou na fila ({n} Diários). Clique em \"Continuar\" ou deixe para a leitura da noite.", saz_ja_lidos: "Nada novo para buscar: os últimos {m} mês(es) já estão lidos. Para ir mais longe, escolha mais meses.",
+    saz_pedir: "Buscar estatísticas", saz_ler: "Continuar (mais 30 Diários)", saz_so_totais: "Só os totais deste gráfico: não entra processo na Lista, no Arquivo nem na planilha.", saz_parar: "Parar", saz_na_fila: "{n} Diário(s) na fila. Clique em \"Continuar\" ou deixe para a leitura da noite.",
     saz_lendo: "Lendo o Diário {k} de {n}: {tr} {d}…",
     m_sit: "{n} situações", m_frente: "{n} frentes", m_trib: "{n} tribunais", m_data: "{n} datas", m_vara: "{n} varas", m_setor: "{n} setores", m_porte: "{n} portes", m_uf: "{n} estados",
     m_buscar: "Procurar na lista", m_limpar: "Limpar",
@@ -2147,11 +2148,11 @@ window.LEXSUITE_RADAR = null;
     copia_t: "Copy created", abrir_copia: "Open the copy", abrir_pasta_copia: "Open the folder",
     g_ver_como: "Show as", g_por_trib: "Split by court", g_barras: "Bars", g_pizza: "Pie", g_outros: "Others ({n})", g_sem_dados: "No data in this period.",
     pp_t: "These numbers: {n} lawsuits", pp_diarios: "gazettes from {d} to {a}", pp_filtros: "with {n} list filter(s)", pp_trib: "Court:", pp_trib_todos: "All", pp_lidas: "Lawsuit date:", pp_1: "last working day", pp_n: "{d} days",
-    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" and then \"Read now\" (30 gazettes at a time) or leave it for the night reading. It keeps the totals and, only on this computer, the numbers of lawsuits already counted (so none is counted twice): nothing goes to the List, the Archive or the spreadsheet, and none of it goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
+    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" (it reads 30 gazettes at a time; the rest is left for the night reading or for \"Continue\"). It keeps the totals and, only on this computer, the numbers of lawsuits already counted (so none is counted twice): nothing goes to the List, the Archive or the spreadsheet, and none of it goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
     saz_vazio: "Not enough months yet. Choose how many months to fetch and click \"Fetch statistics\".", saz_semana: "By weekday:", saz_pico: "Busiest month: {m} ({n}).",
     saz_estado: "Old gazettes read: {l}; queued: {f}; no gazette: {s}; with error: {e}.", saz_de_ate: "From {d} to {a}.", saz_meses_rot: "Months back", saz_meses: "{m} month(s) back",
-    saz_ja_fila: "Nothing new to fetch: the last {m} month(s) are already read or queued ({n} gazettes). Click \"Read now\" or leave it for tonight\u2019s reading.", saz_ja_lidos: "Nothing new to fetch: the last {m} month(s) are already read. To go further back, choose more months.",
-    saz_pedir: "Fetch statistics", saz_ler: "Read now (30 gazettes)", saz_parar: "Stop", saz_na_fila: "{n} gazette(s) queued. Click \"Read now\" or leave it for the night reading.",
+    saz_ja_fila: "Nothing new to fetch: the last {m} month(s) are already read or queued ({n} gazettes). Click \"Continue\" or leave it for tonight\u2019s reading.", saz_ja_lidos: "Nothing new to fetch: the last {m} month(s) are already read. To go further back, choose more months.",
+    saz_pedir: "Fetch statistics", saz_ler: "Continue (30 more gazettes)", saz_so_totais: "Only the totals of this chart: no lawsuit goes into the List, the Archive or the spreadsheet.", saz_parar: "Stop", saz_na_fila: "{n} gazette(s) queued. Click \"Continue\" or leave it for the night reading.",
     saz_lendo: "Reading gazette {k} of {n}: {tr} {d}…",
     m_sit: "{n} statuses", m_frente: "{n} practice areas", m_trib: "{n} courts", m_data: "{n} dates", m_vara: "{n} court units", m_setor: "{n} sectors", m_porte: "{n} sizes", m_uf: "{n} states",
     m_buscar: "Search the list", m_limpar: "Clear",
@@ -3818,7 +3819,8 @@ window.LEXSUITE_RADAR = null;
       });
       g.appendChild(c); requestAnimationFrame(function () { c.scrollLeft = c.scrollWidth; });  // revisão da 0.7.29: no celular abre no mês mais novo
       var sem = h.por_semana || [], nomes = lang === "pt" ? ["seg", "ter", "qua", "qui", "sex"] : ["Mon", "Tue", "Wed", "Thu", "Fri"], tot = sem.slice(0, 5).reduce(function (a, b) { return a + b; }, 0);
-      if (tot) g.appendChild(el("p", "nota-g", t("saz_semana") + " " + nomes.map(function (nm, ix) { return nm + " " + Math.round(100 * (sem[ix] || 0) / tot) + "%"; }).join(" · ") + ". " + t("saz_pico", { m: mesCurto(pico.mes), n: num(pico.novas) })));
+      var lp_ = el("p", "nota-g saz-legenda"); lp_.appendChild(el("i", "saz-cor-pico")); lp_.appendChild(document.createTextNode(t("saz_pico", { m: mesCurto(pico.mes), n: num(pico.novas) }))); g.appendChild(lp_);  // teste do dono (0.7.30): a cor dourada explicada no próprio gráfico
+      if (tot) g.appendChild(el("p", "nota-g", t("saz_semana") + " " + nomes.map(function (nm, ix) { return nm + " " + Math.round(100 * (sem[ix] || 0) / tot) + "%"; }).join(" · ") + "."));
     } else g.appendChild(el("p", "nota-g", t("saz_vazio")));
     var st = el("p", "nota-g");
     st.textContent = t("saz_estado", { l: num(h.lidos || 0), f: num(h.na_fila || 0), s: num(h.sem_diario || 0), e: num(h.erros || 0) }) + (h.desde ? " " + t("saz_de_ate", { d: dataCurta(h.desde), a: dataCurta(h.ate) }) : "");
@@ -3839,6 +3841,7 @@ window.LEXSUITE_RADAR = null;
         if (!r.ok) { histInfo = ""; var vi_ = g.querySelector(".saz-info"); if (vi_) vi_.remove(); msgH.textContent = r.motivo || t("falha"); return; }  // revisão: a mensagem velha sai
         var novos = Number(r.na_fila || 0), fila = Number(h.na_fila || 0) + novos;
         histInfo = novos ? t("saz_na_fila", { n: num(fila) }) : (fila ? t("saz_ja_fila", { m: sel_.value, n: num(fila) }) : t("saz_ja_lidos", { m: sel_.value }));
+        if (fila > 0) { histInfo = ""; msgH.hidden = true; bl.click(); return; }  // teste do dono (0.7.30): "Buscar estatísticas" já começa a ler (um botão só)
         carregar();
       }).catch(function () { bp.disabled = false; msgH.textContent = t("falha"); });
     });
@@ -3855,6 +3858,7 @@ window.LEXSUITE_RADAR = null;
     bl.addEventListener("click", function () { histRecado = null; histInfo = ""; post("/estatisticas/ler", {}).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } acompanhar(); }); });
     bx.addEventListener("click", function () { post("/estatisticas/parar", {}); bx.disabled = true; });
     ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); g.appendChild(ac); g.appendChild(msgH);
+    g.appendChild(el("p", "nota-g", t("saz_so_totais")));  // teste do dono (0.7.30): não confundir com "Ler o Diário agora"
     if (h.rodando && h.rodando.rodando) setTimeout(acompanhar, 0);
     return g;
   }
