@@ -136,7 +136,7 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- **0.7.30 pronta de novo** (11/Nov): bloqueios da revisão da Operação corrigidos (menu ☰ no escuro, celular com "Mais filtros"), mais itens 3 a 6 e 8 a 11; ver o pedido "Revisão da 0.7.30". Antes: tela em blocos (leitura, filtros fixos no alto, ordenação), Data do processo pela data do Diário, Painel (período com memória, tribunal, barras por tribunal, pizza), modo escuro, licença com selo, versão nova com a tela aberta, rolagem travada com janela aberta, ressalvas das revisões da 0.7.28 e 0.7.29, manual e site. Testes 216 OK (root e usuário comum), Bandit, marca, `larguras.js` 50, `aviso_e_lupa.sh` 387, revisor sem bloqueio. Roteiro de teste do dono no Drive. Publicadas: 0.7.20, 0.7.22 a 0.7.29.
+- (nenhum). **0.7.30 publicada** pela Operação (11/Nov, tag `v0.7.30`, commit `adb8a33`), depois da correção da revisão (menu ☰ no escuro, "Mais filtros" no celular). Próximo: o dono testa com o roteiro do Drive.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
