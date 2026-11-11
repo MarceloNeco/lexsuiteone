@@ -5,7 +5,7 @@
 -- Também: trava do aceite LIGADA nas duas licenças (pedido do dono, 11/Nov: "pode já deixar ligada").
 --
 -- O QUE FAZ:
---   1. sol_termos.ativo; o termo 'lexsuiteone-uso' fica inativo (histórico). 'lexsuiteone-termos' passa à versão 1.2
+--   1. sol_termos.ativo; o termo 'lexsuiteone-uso' fica inativo (histórico). 'lexsuiteone-termos' passa à versão 1.0 (decisão do dono, 11/Nov: ninguém usou ainda; o número só sobe depois do primeiro cliente)
 --      (seção 2 reescrita; ninguém tinha aceitado a 1.1), sem reaceite obrigatório; hash do texto publicado.
 --   2. sol_aceite_registrar: aceite vindo do programa (origem 'programa') exige só o nome (o cadastro do programa pede o
 --      nome como a pessoa escreveu); pelo link e pelo site continua nome e sobrenome.

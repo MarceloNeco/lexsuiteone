@@ -230,7 +230,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ### Feito (mais recente primeiro)
 - 11/Nov: **termo único e trava ligada** (pedido da Produto "Termos e aceite" + decisão do dono): `2026-11-11-sol-termo-unico.sql`
-  aplicado (`sol_termos.ativo`; `lexsuiteone-uso` inativo; `lexsuiteone-termos` na versão **1.2** sem reaceite, hash do texto;
+  aplicado (`sol_termos.ativo`; `lexsuiteone-uso` inativo; `lexsuiteone-termos` fica na versão **1.0** (decisão do dono, 11/Nov: ninguém usou ainda; o número só sobe depois do primeiro cliente), hash do texto;
   aceite vindo do programa exige só o nome; `exigir_aceite = true` na KR Law e na licença de teste, com evento e log);
   **`lex-conta` v14** (escritório e pessoa no mesmo termo; `termos.pessoa.link = aceite.html?ler=1`; link da trava usa o
   e-mail da pessoa do computador quando a ficha não tem responsável). Página 1.2 publicada: código e e-mail viram texto
