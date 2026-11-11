@@ -220,12 +220,12 @@ migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e as f
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- Nada em andamento. **Trava da KR Law (`exigir_aceite`) fica desligada até depois da visita de quinta 12/Nov** (decisão do
-  dono, 09/Nov): o Leandro instala sem travar; a Arquitetura liga depois, quando o dono disser. Licença nova nasce com a
-  trava ligada (padrão), e a página de aceite já está no ar.
-- Depois: SQL da 0.8 (lex_batimentos, lex_listas, lex_itens, funções do site), pareamento com credencial na `lex-conta`,
-  desenho do site `paginas/app/` para a Produto, trilha de auditoria (pedido da Produto de 08/Nov, item 2), ampliar o
-  check de `lex_eventos` numa sessão no desktop.
+- **Termos: termo único, aceite por pessoa, versão nova com trava** (pedido da Produto "Termos e aceite", 11/Nov; o dono
+  pediu o desenho e o "pode" antes de mexer em banco ou dado de cliente): `documentacao/DESENHO-TERMOS-UNICO-2026-11-11.md`.
+  Aguarda o "pode" para: inativar o termo `lexsuiteone-uso` + `lex-conta` v14; página 1.2 (campos fixos sem foco, código
+  mascarado, seção 2); ligar `exigir_aceite` na licença de teste do dono. Por que a conta de teste lê sem aceite: trava do
+  escritório desligada nas duas licenças (decisão de 09/Nov) e a 0.7.28 não declara `suporta_aceite_uso`; não há aceite registrado.
+- Trava da KR Law continua desligada até o dono mandar.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -337,7 +337,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
 ### Preciso do dono
-- Colar na conversa do RootifyONE o `documentacao/PROMPT-ROOTIFYONE-2026-11-09.md` atual (itens 3, 3b e 3c), se ainda não colou.
+- "Pode" para os 3 itens do desenho `documentacao/DESENHO-TERMOS-UNICO-2026-11-11.md` (termo único na nuvem; página 1.2;
+  trava ligada na licença de teste).
+- Colar na conversa do RootifyONE o `documentacao/PROMPT-ROOTIFYONE-2026-11-09.md` atual (itens 3, 3b, 3c e 3d), se ainda não colou.
 - Depois da visita de quinta: dizer "liga a trava da KR Law" (a Arquitetura liga `exigir_aceite` e registra).
 - Perguntas 10 a 14 da lista única (item 82 e trava da pessoa; a Produto consolida).
 
