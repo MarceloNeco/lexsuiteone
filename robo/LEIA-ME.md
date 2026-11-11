@@ -72,6 +72,9 @@ se mudam no programa: Configuração → Regras do escritório. Se a planilha es
   pergunta pelas regras não salvas, Esc com mudança pergunta, nome digitado entra junto ao salvar, cópias "antes de
   salvar regras" no mesmo segundo não se sobrescrevem, números inteiros onde só cabe inteiro, Saúde sem falso alarme
   quando os Diários já tinham sido conferidos, mês em inglês no histórico em inglês, manual sem "edite a planilha à mão".
+  Teste do dono (11/Nov): sem "Ver a lista" e "Abrir a planilha" debaixo da última leitura (a lista está logo abaixo e
+  a planilha tem o botão no alto); o filtro de tribunais mostra todos os da mira (os novos com 0 até a leitura) e tirar
+  um tribunal da mira o tira do filtro; o painel da mira mostra as 4 fases do RADAR, com a 1ª em destaque.
 - **0.7.28 (teste do dono no Windows):** datas com o mês em letras em todo o programa (10/NOV/2026) e fuso ao lado
   da hora, como "(Brasília)"; critério do "Ler o Diário agora" curto, com o atalho "alterar"; filtros em azul-marinho e
   ordenação em dourado, com "Limpar filtros" sempre ao lado (apagado quando não há filtro); a lista lembra os últimos
