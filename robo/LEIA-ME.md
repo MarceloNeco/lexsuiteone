@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.29 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.30 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,19 @@ se mudam no programa: Configuração → Regras do escritório. Se a planilha es
 
 ## A tela
 
+- **0.7.30 (teste do dono, 11/Nov):** tela em três blocos: "Configuração da leitura" numa faixa baixa (o que o programa
+  lê, "Alterar configuração", "Ler o Diário agora", que salva e lê os tribunais marcados), "Filtros" numa linha só no
+  computador, fixos no alto ao rolar (busca, Data do processo, Situação, Valor, "Mais filtros" com todos os outros,
+  filtros salvos sempre à vista com "★ Salvar", ✕ em cada filtro ligado, "Marcar todos", "Limpar filtros (N)" em
+  pílula vermelha) e a ordenação com "Baixar a lista (.csv)" em dourado. **Data do processo** conta pela data no
+  Diário (1 = do último dia útil até hoje; até 90 dias); o filtro de tribunais mostra só o que está na lista; a
+  Configuração diz os tribunais lidos com atalho para a mira. Painel: faixa com de quando são os números e o período
+  (troca na hora quando já carregado, com círculo girando quando carrega), tribunal à vista, "Separar por tribunal"
+  nas barras por dia (lembrado), "Ver como: Barras | Pizza", meses com letras, "Buscar estatísticas" responde ali.
+  Abas com destaque e barrinha deslizando; modo escuro sóbrio no Perfil (Claro, Escuro, Igual ao sistema); "Licença:
+  ✓ ativa" com cor por estado; sem licença ativa, "Ler o Diário agora" explica e leva aos termos; a faixa de versão
+  nova aparece também com a tela aberta (confere a cada 30 minutos); com janela aberta a página de trás não rola;
+  janela fechada no X e novo clique no atalho reabrem a tela. Ressalvas da segunda revisão da 0.7.29 feitas.
 - **0.7.29 (dono): sem janela preta.** A tela e a leitura automática rodam sem janela de prompt de comando
   (`pythonw.exe` do Python portátil): o atalho abre o programa direto, a tarefa do Windows é recriada sozinha para chamar
   o Python sem janela, e o que aparecia na janela preta fica em `saida/registro.txt` (Configuração → **Ver registro**).
@@ -73,8 +86,7 @@ se mudam no programa: Configuração → Regras do escritório. Se a planilha es
   salvar regras" no mesmo segundo não se sobrescrevem, números inteiros onde só cabe inteiro, Saúde sem falso alarme
   quando os Diários já tinham sido conferidos, mês em inglês no histórico em inglês, manual sem "edite a planilha à mão".
   Teste do dono (11/Nov): sem "Ver a lista" e "Abrir a planilha" debaixo da última leitura (a lista está logo abaixo e
-  a planilha tem o botão no alto); o filtro de tribunais mostra todos os da mira (os novos com 0 até a leitura) e tirar
-  um tribunal da mira o tira do filtro; o painel da mira mostra as 4 fases do RADAR, com a 1ª em destaque.
+  a planilha tem o botão no alto); o painel da mira mostra as 4 fases do RADAR, com a 1ª em destaque.
 - **0.7.28 (teste do dono no Windows):** datas com o mês em letras em todo o programa (10/NOV/2026) e fuso ao lado
   da hora, como "(Brasília)"; critério do "Ler o Diário agora" curto, com o atalho "alterar"; filtros em azul-marinho e
   ordenação em dourado, com "Limpar filtros" sempre ao lado (apagado quando não há filtro); a lista lembra os últimos

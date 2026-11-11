@@ -1335,7 +1335,7 @@ def _imagem_do_processo(pid):
 
 def _e_python(pid):
     """Revisão da 0.7.29 (bloqueio): só se encerra à força um processo cujo executável é o Python."""
-    nome = os.path.basename(_imagem_do_processo(pid)).lower()
+    nome = str(_imagem_do_processo(pid) or "").replace("\\", "/").rsplit("/", 1)[-1].lower()  # caminho do Windows ou não
     return nome in ("python.exe", "pythonw.exe") or (os.name != "nt" and nome.startswith("python"))
 
 
@@ -1349,7 +1349,12 @@ def _dono_da_porta(porta):
                            stdin=subprocess.DEVNULL, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     except (OSError, subprocess.SubprocessError):
         return 0
-    for linha in (r.stdout or b"").decode("ascii", "replace").splitlines():
+    return pid_no_netstat((r.stdout or b"").decode("ascii", "replace"), porta)
+
+
+def pid_no_netstat(texto, porta):
+    """O pid que escuta em 127.0.0.1:porta na saída do `netstat -ano` (igual em qualquer idioma: só números e endereços)."""
+    for linha in str(texto or "").splitlines():
         partes = linha.split()
         if len(partes) >= 5 and partes[1] == f"127.0.0.1:{int(porta)}" and partes[2] in ("0.0.0.0:0", "*:*"):
             try:

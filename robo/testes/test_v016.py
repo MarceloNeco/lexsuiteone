@@ -1367,3 +1367,80 @@ class Tema0730(unittest.TestCase):
         self.assertIn(':root[data-theme="dark"] { color-scheme: dark;', h)
         self.assertIn("--acao:", h); self.assertIn('corVar("--g-apagada"', h)
         self.assertNotIn("☀", h); self.assertNotIn("🌙", h)
+
+
+class Encerrar0730(unittest.TestCase):
+    """Revisão da 0.7.29 (item 1): cada trava do "Encerrar o RADAR" tem um teste que falha se for tirada."""
+
+    def _rodar(self, pasta, pid_arq=4321, porta_arq=8765, pasta_arq=None, sonda=None, dono=4321, imagem="C:\\\\Py\\\\pythonw.exe",
+               aberto=""):
+        import json as _j
+        from unittest import mock
+        from lexsuite import app
+        os.makedirs(os.path.join(pasta, "saida"), exist_ok=True)
+        with open(os.path.join(pasta, "saida", "programa.pid"), "w", encoding="utf-8") as f:
+            _j.dump({"pid": pid_arq, "porta": porta_arq, "pasta": pasta_arq or pasta}, f)
+        with mock.patch.object(app, "procurar_aberto", return_value=aberto), mock.patch.object(app, "_estado_sonda", return_value=sonda or {}), \
+                mock.patch.object(app, "_dono_da_porta", return_value=dono), mock.patch.object(app, "_imagem_do_processo", return_value=imagem), \
+                mock.patch.object(app, "processo_vivo", return_value=True), mock.patch.object(app, "_pedir_local", return_value={"ok": True}) as pedir, \
+                mock.patch.object(app, "leitura_em_outro_processo", return_value=None), mock.patch.object(app, "_encerrar_processo", return_value=True) as kill:
+            app.encerrar_aberto(pasta, aviso=lambda *_: None, dormir=lambda s: None)
+        return kill, pedir
+
+    def test_tela_travada_confirmada_e_encerrada(self):
+        kill, _ = self._rodar(tempfile.mkdtemp())
+        kill.assert_called_once_with(4321)
+
+    def test_nao_encerra_o_que_nao_e_python(self):
+        kill, _ = self._rodar(tempfile.mkdtemp(), imagem="C:\\\\Program Files\\\\Word\\\\WINWORD.EXE")
+        kill.assert_not_called()
+
+    def test_nao_encerra_se_a_porta_e_de_outro_processo(self):
+        kill, _ = self._rodar(tempfile.mkdtemp(), dono=9999)
+        kill.assert_not_called()
+
+    def test_nao_encerra_se_um_radar_responde_na_porta(self):
+        kill, _ = self._rodar(tempfile.mkdtemp(), sonda={"pid": 4321, "pasta": "/outra"})
+        kill.assert_not_called()
+
+    def test_programa_pid_copiado_de_outra_pasta(self):
+        kill, _ = self._rodar(tempfile.mkdtemp(), pasta_arq=tempfile.mkdtemp())
+        kill.assert_not_called()
+
+    def test_radar_de_outra_pasta_que_responde_nao_e_fechado(self):
+        kill, pedir = self._rodar(tempfile.mkdtemp(), aberto="http://127.0.0.1:8765/", sonda={"pid": 4321, "pasta": "/outra/pasta"})
+        pedir.assert_not_called(); kill.assert_not_called()
+
+    def test_mesma_pasta(self):
+        from lexsuite import app
+        d = tempfile.mkdtemp()
+        self.assertTrue(app._mesma_pasta(d, d + os.sep)); self.assertFalse(app._mesma_pasta(d, tempfile.mkdtemp()))
+
+    def test_netstat_em_varios_idiomas(self):
+        from lexsuite import app
+        for estado in ("LISTENING", "ABHÖREN", "ESCUTANDO", "À L'ÉCOUTE"):
+            txt = f"  TCP    127.0.0.1:8765         0.0.0.0:0              {estado}       4321\n  TCP    127.0.0.1:87650        0.0.0.0:0              {estado}       1111\n"
+            self.assertEqual(app.pid_no_netstat(txt, 8765), 4321, estado)
+        self.assertEqual(app.pid_no_netstat("  TCP    [::1]:8765   [::]:0   LISTENING   55\n", 8765), 0)
+        self.assertEqual(app.pid_no_netstat("", 8765), 0)
+
+    def test_licenca_pelo_campo(self):
+        from lexsuite import conta
+        s = conta.situacao({"conta": {"codigo": "LEX-AAAA-BBBB", "resposta": "ok", "ok": True, "ultima_ok": "2099-01-01"}})
+        self.assertIn(s.get("estado"), ("ativa", "sem_resposta", "inativa", "ok") + tuple(conta.MOTIVOS))
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertIn('c_.estado === "ativa"', h)
+
+
+class Painel0730(unittest.TestCase):
+    """0.7.30 (dono): barras por dia separadas por tribunal (lembrado), troca de período com memória, fundo travado."""
+
+    def test_tela(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertIn("lexsuite:graf-por-trib", h); self.assertEqual(h.count("g_por_trib:"), 2)
+        self.assertIn("cacheDados = {}; carregar();", h)  # leitura nova esvazia a memória
+        self.assertIn("function trocarPeriodo(", h)
+        self.assertIn("html:has(#janela[open])", h)
+        self.assertIn("preventScroll: true", h)
+        s = open(os.path.join(_ROBO_, "..", "paginas", "index.html"), encoding="utf-8").read()
+        self.assertNotIn("Pessoas físicas não aparecem", s)
