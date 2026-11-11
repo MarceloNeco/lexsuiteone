@@ -1071,13 +1071,11 @@ def abrir_no_windows(caminho):
 
 
 def personalizar_manual(html, cfg):
-    """Troca os marcadores do manual pela saudação e pelo bloco do papel da pessoa (texto escapado)."""
+    """Troca os marcadores do manual pelo bloco do papel da pessoa (texto escapado); sem saudação com nome."""
     import html as h
     u = cfg.get("usuario") or {}
-    nome, papel, escritorio = u.get("nome", ""), u.get("papel", ""), cfg.get("escritorio", "")
-    ola = ""
-    if nome:
-        ola = f"<p class=\"ola\">Olá, {h.escape(nome)}." + (f" Este manual é do {h.escape(escritorio)}." if escritorio else "") + "</p>"
+    papel = u.get("papel", "")
+    ola = ""  # teste do dono (0.7.30): o manual é genérico, sem o nome da pessoa nem do escritório
     bloco = ""
     if papel in PARA_VOCE:
         itens = "".join(f"<li>{h.escape(t)}</li>" for t in PARA_VOCE[papel])
