@@ -168,6 +168,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
   Desfeito (o filtro volta a mostrar só o que tem na lista; tirar da mira não mexe no filtro). O lugar único do que a
   leitura lê é a mira ("Tribunais: N de 24" e o "alterar" ao lado de "Ler o Diário agora"); a Configuração ganhou a
   linha "Tribunais que a leitura lê: ... alterar", que leva à mira.
+- Painel (dono): meses com letras (SET/2026) nos gráficos; "Buscar estatísticas" responde ali mesmo (entraram N na
+  fila, ou nada novo porque já está lido ou na fila); faixa no alto do Painel dizendo de quando são os números (N ações,
+  Diários de X a Y, filtros da lista) com o período (1, 3, 7, 15, 30 dias) no mesmo estilo.
+- Achado: o período da lista e do Painel conta pela data em que o programa VIU a ação (`primeira_vez`), não pela data
+  do Diário. A primeira leitura traz até 10 dias de Diários de uma vez, e tudo aparece como "último dia" (os 13.339).
+  Proposta ao dono: contar pela data do Diário. Mexe na regra do que a lista mostra: esperar o "pode".
 
 ## 0.7.29 (11/Nov) — pronta no ramo
 
