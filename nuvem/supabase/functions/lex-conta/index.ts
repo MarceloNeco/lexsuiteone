@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v14 (publicada no Supabase como v14. v13 + termo único: escritório e pessoa aceitam o mesmo texto 'lexsuiteone-termos'; a pessoa lê em ?ler=1): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v15 (publicada no Supabase como v15. v14 + ação 'conferir' (e-mail × domínio da licença, sem gravar) e 'cadastrar' recusa e-mail fora dos domínios liberados): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -122,6 +122,27 @@ Deno.serve(async (req) => {
     return json({ ok: true, protocolo: a.protocolo, aceito_em: a.aceito_em, escritorio: a.escritorio });
   }
 
+  // ---- Ativação por e-mail e código (0.7.32): confere, SEM gravar, se o código vale para este e-mail. ----
+  //      Regra: a licença tem domínios liberados (ficha no RootifyONE; o primeiro cadastro de domínio próprio preenche);
+  //      e-mail de domínio liberado → ok; licença ainda sem domínio → ok (vai liberar o domínio ao cadastrar, salvo
+  //      provedor público); outro domínio → dominio_nao_liberado, com a lista para a tela mostrar "@krlaw.com.br".
+  if (e.acao === "conferir") {
+    const codigo = texto(e.codigo, 13).toUpperCase();
+    const email = texto(e.email, 120).toLowerCase();
+    if (!CODIGO.test(codigo)) return json({ ok: false, motivo: "codigo_invalido" });
+    if (!EMAIL.test(email)) return json({ ok: false, motivo: "email_invalido" });
+    if (!(await pode(`cod:${codigo}:conferir`, 60, 3600))) return limite();
+    const { data: c } = await sb.from("lex_contas").select("codigo, escritorio, ativo, validade, dominios, exigir_aprovacao").eq("codigo", codigo).maybeSingle();
+    if (!c) return json({ ok: false, motivo: "codigo_desconhecido" });
+    const doms: string[] = Array.isArray(c.dominios) ? c.dominios : [];
+    const dom = dominioDe(email);
+    const { data: ja } = await sb.from("lex_usuarios").select("codigo, aprovacao").eq("email", email).maybeSingle();
+    if (ja && ja.codigo !== codigo) return json({ ok: false, motivo: "dados_invalidos" });
+    if (ja && ja.aprovacao === "recusado") return json({ ok: false, motivo: "email_recusado" });
+    if (doms.length && !doms.includes(dom)) return json({ ok: false, motivo: "dominio_nao_liberado", dominios: doms, escritorio: c.escritorio });
+    return json({ ok: true, escritorio: c.escritorio, dominios: doms, dominio_novo: doms.length === 0 && !PUBLICOS.has(dom) ? dom : null, ja_cadastrado: !!ja });
+  }
+
   // ---- Conferência da licença (padrão) e cadastro ----
   const codigo = texto(e.codigo, 13).toUpperCase();
   const instalacao = texto(e.instalacao, 16).toLowerCase();
@@ -188,6 +209,8 @@ Deno.serve(async (req) => {
 
     const dominio = dominioDe(novo);
     const doDominio = dominios.includes(dominio);
+    // Ativação por domínio (dono, 11/Nov): com domínios liberados na licença, e-mail de fora é recusado (antes ficava "aguardando").
+    if (dominios.length && !doDominio && ja?.aprovacao !== "aprovado") return json({ ok: false, motivo: "dominio_nao_liberado", dominios, escritorio: conta.escritorio });
     let aprovacao = ja?.aprovacao === "aprovado" ? "aprovado" : (doDominio || !temAprovada) ? "aprovado" : "aguardando";
     if (ja?.aprovacao === "aguardando" && !doDominio) aprovacao = "aguardando";
 

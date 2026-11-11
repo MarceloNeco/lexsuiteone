@@ -232,9 +232,9 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
   // Versão vigente vem do banco (sol_termos); o texto desta página tem de ser o da versão vigente.
   fetch(NUVEM + "/rest/v1/rpc/sol_termo_vigente", { method: "POST", headers: { apikey: CHAVE, Authorization: "Bearer " + CHAVE, "Content-Type": "application/json" }, body: JSON.stringify({ p_termo: TERMO }) })
     .then(function (r) { return r.ok ? r.json() : null; }).then(function (t) { if (t && t.versao && t.versao !== VERSAO) { var antiga = VERSAO; VERSAO = t.versao; var v = document.getElementById("versao"); if (v) v.textContent = t.versao; if (q.get("ler")) { var it = document.getElementById("intro"); it.textContent = it.textContent.replace("versão " + antiga, "versão " + t.versao); } } }).catch(function () {});
+  function mascaraCodigo(c) { var p_ = String(c || "").split("-"); return p_.length === 3 ? p_[0] + "-••••-" + p_[2] : String(c || "").slice(0, 4) + "••••"; }   // mesma máscara do Perfil do programa: inteiro só no e-mail de boas-vindas
   function normCodigo(c) { c = String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); return c.length === 11 && c.indexOf("LEX") === 0 ? c.slice(0, 3) + "-" + c.slice(3, 7) + "-" + c.slice(7, 11) : String(c || "").toUpperCase(); }
   var campoCodigo = document.getElementById("codigo"), campoEmail = document.getElementById("email"), campoNome = document.getElementById("nome");
-  function mascaraCodigo(c) { var p_ = String(c || "").split("-"); return p_.length === 3 ? p_[0] + "-••••-" + p_[2] : String(c || "").slice(0, 4) + "••••"; }   // mesma máscara do Perfil do programa
   function fixar(campo, mostrar) {   // o campo vira texto cinza: sem foco, sem cursor, fora do Tab; o valor real fica no input escondido
     campo.readOnly = true; campo.tabIndex = -1; campo.classList.add("fixo"); campo.hidden = true;
     var tx = document.createElement("div"); tx.className = "fixo-texto"; tx.id = campo.id + "-texto"; tx.textContent = mostrar || campo.value; tx.title = "Veio do e-mail de boas-vindas; não se altera aqui.";
@@ -252,7 +252,7 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
       var r = await fetch(NUVEM + "/rest/v1/rpc/sol_aceite_contexto", { method: "POST", headers: { apikey: CHAVE, Authorization: "Bearer " + CHAVE, "Content-Type": "application/json" }, body: JSON.stringify({ p_app: APP, p_licenca: c }) });
       var j = r.ok ? await r.json() : null;
       if (j && j.ok) {
-        quem.textContent = "Este aceite é dado em nome de " + j.escritorio + " (código " + c + ")." + (j.ja_aceito ? " Já existe um aceite registrado para este escritório; um novo aceite não faz mal." : ""); quem.hidden = false;
+        quem.textContent = "Este aceite é dado em nome de " + j.escritorio + " (código " + mascaraCodigo(c) + ")." + (j.ja_aceito ? " Já existe um aceite registrado para este escritório; um novo aceite não faz mal." : ""); quem.hidden = false;
         if (j.email_mascarado && !campoEmail.value) campoEmail.placeholder = j.email_mascarado + " (o e-mail do responsável, como no e-mail de boas-vindas)";
       }
       else quem.hidden = true;
