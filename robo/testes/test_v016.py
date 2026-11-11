@@ -1741,7 +1741,18 @@ class Revisao0732(unittest.TestCase):
         from lexsuite import config
         p_ = os.path.join(tempfile.mkdtemp(), "config.json")
         _j.dump({"radar": {"horarios": ["20:00"], "tribunais": ["TRT2"]}}, open(p_, "w", encoding="utf-8"))
-        self.assertEqual(config.carregar(p_, aviso=lambda *_: None)["radar"]["dias"], "todos")
+        c_ = config.carregar(p_, aviso=lambda *_: None)
+        self.assertEqual(c_["radar"]["dias"], "todos")
+        for k in config.PADRAO["radar"]:  # revisão da 0.7.32: os outros padrões continuam preenchidos
+            self.assertIn(k, c_["radar"])
+        for b_ in ("compartilhar", "atualizacao", "usuario"):
+            for k in config.PADRAO[b_]:
+                self.assertIn(k, c_[b_])
+        p3 = os.path.join(tempfile.mkdtemp(), "config.json")
+        _j.dump({"radar": {"tribunais": ["TRT2"]}, "compartilhar": {}}, open(p3, "w", encoding="utf-8"))
+        c3 = config.carregar(p3, aviso=lambda *_: None)
+        for k in config.PADRAO["radar"]:
+            self.assertIn(k, c3["radar"])
         p2 = os.path.join(tempfile.mkdtemp(), "config.json")
         self.assertEqual(config.carregar(p2, aviso=lambda *_: None)["radar"]["dias"], "uteis")  # instalação nova
 
