@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- **0.7.29 em espera (11/Nov)**: o dono mandou publicar (commit `5ab2b8b`, automação verde, execução 446); o revisor NÃO aprovou: 1 bloqueio ("Encerrar o RADAR" pode encerrar um processo alheio se o Windows reaproveitar o número do processo gravado em `saida/leitura.json`). O resto está verde (199 testes como root e como usuário comum, Bandit, `marca.py`, tela, pacote 45/44 com `.bat` em CRLF, atualização a partir da 0.7.28 sem tocar nos dados, `pythonw` sem erro com stdout e stderr fechados, Agendador com o XML idêntico). Pedido à Produto na tabela de pedidos. Nada foi publicado; a última versão no ar é a 0.7.28.
+- **0.7.29 em revisão de novo (11/Nov)**: a Produto marcou "pronta de novo" (commit `f7ee21c`, automação verde, execução 454); revisão só do que mudou desde o `5ab2b8b` (bloqueio do "Encerrar o RADAR", itens 2 a 13, e o que a Produto acrescentou: Painel com período e barras ou pizza, meses com letras, Licença com selo, filtro de tribunais só da lista, janela fechada no X reabre pelo atalho, atualização da 0.7.28 sem janela preta), testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.28. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
