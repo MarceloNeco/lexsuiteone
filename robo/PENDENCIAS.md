@@ -162,6 +162,15 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## Próxima (dono, 11/Nov à noite): barra de controles da lista
+
+- Filtro de período pela DATA DO PROCESSO no Diário (não quando o programa leu); "Período" de hoje vira "período de
+  leitura"; "último dia" = do último dia útil até agora (o dono pediu recomendação se ficar grande).
+- "Tribunais: N de 24" e o "alterar" ao lado de "Ler o Diário agora" fazem a mesma coisa: juntar num lugar só.
+- "Ordem de chegada" (quando o programa achou, agrupado por leitura) x "Mais recentes primeiro" (data do Diário):
+  nomes confundem.
+- O dono vai pedir ao Gemini uma proposta de layout para essa barra (prompt dado em 11/Nov) e trazer aqui.
+
 ## 0.7.29 de novo (11/Nov): revisão da Operação + o que estava como 0.7.30
 
 Revisão da 0.7.29 (Operação): bloqueio feito ("Encerrar o RADAR" só encerra à força o processo que a própria tela
