@@ -162,7 +162,21 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.31 (teste do dono na 0.7.29/0.7.30, 11/Nov) — pronta para publicar (o dono: "joga na 31")
+## 0.7.32 (dono, 11/Nov: "pode tudo") — pronta para publicar
+
+Feito: gráficos do Painel (dica ao passar o mouse com número e %, liga e desliga pela legenda com o item apagado,
+"Mostrar todos", "Ver na lista →", cor escolhida no quadradinho e "Cores originais"; filtros do Painel separados dos da
+Lista); leitura automática por dias da semana (Dom a Sáb, padrão de segunda a sexta nas instalações novas; nenhum dia
+desliga; desligar guarda os horários e confere a tarefa); Configuração reorganizada (A lista: Critérios da lista e
+filtros salvos; Onde ficam as planilhas; Leitura: automática e armazenamento; Tela: onde abre, Aparência espelhada do
+Perfil e o Assistente; Licença e termos com "Trocar licença"; Sobre e Ver registro no fim), menu "Configurações" na
+mesma ordem; "Novidades da versão" com a linha "Para rever…"; ressalvas da revisão da 0.7.31 (320 px em inglês,
+placeholder e fase no contraste, Esc na Configuração com o foco fora, manual sem `apple-touch-icon`, textos sem promessa
+de leitura da noite, `cod_instalador`, "1 ação", "o último mês", motivos `dominio_nao_liberado` e `email_recusado`,
+testes das travas do item 13). Regra do dono (11/Nov): toda mudança confere **manual, AssistONE e Novidades**, em PT e
+EN; os testes `Novo0732` conferem as Novidades da versão atual, os alvos do AssistONE e o manual.
+
+## 0.7.31 (teste do dono na 0.7.29/0.7.30, 11/Nov) — publicada em 11/Nov
 
 Feito no ramo: faixa e janela do aceite curtas ("Falta aceitar os termos: abrir a página de aceite. Dúvidas: …", sem o
 link por extenso nem o código); sem linha vermelha repetida quando o motivo é a licença; código travado e mascarado

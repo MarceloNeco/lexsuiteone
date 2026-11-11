@@ -1607,3 +1607,41 @@ class Novo0732(unittest.TestCase):
     def test_manual_fala_das_novidades(self):  # regra do dono: o manual acompanha a tela
         m = open(os.path.join(_ROBO_, "MANUAL-DO-ESCRITORIO.html"), encoding="utf-8").read()
         self.assertIn("Novidades da versão", m)
+
+    # --- revisão da 0.7.31, item 13: testes que pegam a retirada das travas ---
+    def test_aceite_pendente_em_ingles_curto(self):
+        from lexsuite import conta
+        cfg = {"conta": {"codigo": "LEX-AAAA-BBBB", "resposta": "aceite_pendente", "mensagem": "Antes do primeiro uso… https://x"}}
+        self.assertEqual(conta.bloqueio_en(cfg), "The terms still need to be accepted. Questions: judicial@solverone.com.br.")
+        self.assertNotIn("http", conta.bloqueio(cfg))
+
+    def test_codigo_trava_tambem_com_aceite_pendente(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertIn('["aceite_pendente", "desativado", "vencido"].indexOf(APP.conta.estado) >= 0', h)
+
+    def test_desligar_desmarca_ler_sozinho(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        i = h.index("var confirmarSemHorario = function"); trecho = h[i:i + 700]
+        self.assertIn('$("c-agendar").checked = false', trecho); self.assertNotIn("cHoras = []", trecho)
+
+    def test_motivos_do_cadastro_v15(self):
+        from lexsuite import conta
+        for m in ("dominio_nao_liberado", "email_recusado"):
+            self.assertIn(m, conta.MOTIVOS); self.assertIn(m, conta.MOTIVOS_EN)
+
+    def test_desligar_sem_horario_nao_troca_pelo_padrao(self):
+        from lexsuite import app
+        src = open(app.__file__, encoding="utf-8").read()
+        self.assertIn('if "horarios" in corpo and corpo["horarios"]:', src)
+        self.assertIn("ligar = ligar and bool(agendar.dias_da_semana(", src)
+
+    def test_graficos_do_painel(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        for x in ("function alternarNoGrafico(", "function cabGraf(", "lexsuite:filtro-painel", "lexsuite:cores", 'F = visao === "painel" ? FP : FL;', "g_cores_orig:"):
+            self.assertIn(x, h)
+        self.assertEqual(h.count("g_mostrar_todos:"), 2); self.assertEqual(h.count("nov_onde:"), 2)
+
+    def test_manual_sem_arquivos_do_site(self):
+        m = open(os.path.join(_ROBO_, "MANUAL-DO-ESCRITORIO.html"), encoding="utf-8").read()
+        for x in ("favicon.svg\"", "apple-touch-icon", "fontes/figtree"):
+            self.assertNotIn(x, m)

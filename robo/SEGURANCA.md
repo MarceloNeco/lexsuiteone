@@ -1,4 +1,4 @@
-# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.31)
+# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.32)
 
 Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
 licença (código, versão e só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou
