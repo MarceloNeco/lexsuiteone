@@ -235,6 +235,7 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .visao button[aria-selected="true"] { color: var(--tinta); background: var(--papel-2, #eef1f6); }
 .visao .indicador { position: absolute; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--latao); transition: left .28s ease, width .28s ease; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .visao .indicador { transition: none; } }
+@media (max-width: 480px) { .visao { overflow-x: auto; scrollbar-width: none; } .visao button { padding: 10px 11px 9px; font-size: .88rem; white-space: nowrap; } .visao .indicador { bottom: 0; } }  /* revisão: as abas cabem no celular de 360 px */
 .visao button:hover { color: var(--tinta); }
 .visao button:focus-visible { outline: 2px solid var(--latao); outline-offset: -2px; }
 .graficos { display: grid; gap: 16px; padding-bottom: 8px; }
@@ -470,7 +471,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .filtros-extra #f-salvos { max-width: 170px; }
 .filtros-extra .multi > button, .filtros-extra select { padding-left: 10px; }
 .filtros-extra .espaco { flex: 1 1 0; min-width: 0; }
-@media (max-width: 760px) { .bloco-leitura .rodar-criterio { order: -1; } .bloco-leitura .barra .seletor, .bloco-leitura .barra .primario { flex: 1 1 auto; justify-content: center; } }
+@media (max-width: 760px) { .bloco-leitura .barra .seletor, .bloco-leitura .barra .primario { flex: 1 1 auto; justify-content: center; } }
 .filtros-avancados { border-top: 1px dashed var(--linha); padding-top: 8px; }
 .filtros-avancados[hidden] { display: none; }
 .filtros-avancados .controles { padding-bottom: 0; }
