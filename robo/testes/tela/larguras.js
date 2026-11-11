@@ -131,6 +131,21 @@ const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
     const fl = await p.evaluate(() => document.getElementById('f-sit').textContent);
     ok(!/\(\d+\)/.test(fl.split('✕')[0]) || /Todas|All/.test(fl), `a Lista não herdou o filtro do Painel (${fl.slice(0, 30)})`);
     await ctx.close(); }
+  // revisão da 0.7.32 (bloqueio 1): com mais de 8 categorias, desligar uma tira só ela do total (o resto, inclusive o que não aparece, continua)
+  { const ctx = await b.newContext({ viewport: { width: 1366, height: 900 } });
+    await ctx.route('**/dados*', async r => { const resp = await r.fetch(); const j = await resp.json();
+      const ufs = ['SP', 'RJ', 'MG', 'PR', 'SC', 'RS', 'BA', 'PE', 'CE', 'GO', 'DF', 'ES'];
+      (j.itens || []).forEach((i, k) => { i.empresa = Object.assign({}, i.empresa || {}, { uf: ufs[k % ufs.length] }); }); await r.fulfill({ response: resp, json: j }); });
+    const p = await ctx.newPage(); await p.goto('http://127.0.0.1:' + porta + '/'); await p.waitForTimeout(1300); await p.click('.dgo-aone-x').catch(() => {});
+    await p.click('#v-painel'); await p.waitForTimeout(500);
+    const kpi = () => p.evaluate(() => Number((document.querySelector('.kpi') || {}).innerText.replace(/\D+/g, ' ').trim().split(' ')[0]));
+    const antes = await kpi();
+    const card = p.locator('.grade-graf > *', { hasText: /Estado da empresa|Company state/ }).first();
+    const n1 = Number((await card.locator('button.barra-l .n').first().innerText()).replace(/\D/g, ''));
+    await card.locator('button.barra-l').first().click(); await p.waitForTimeout(400);
+    const depois = await kpi();
+    ok(depois === antes - n1, `Painel com 12 estados: desligar um tira só ele (${antes} → ${depois}, esperado ${antes - n1})`);
+    await ctx.close(); }
   await b.close();
   console.log(falhas.length ? 'FALHOU:\n - ' + falhas.join('\n - ') : `OK (${n} verificações)`);
   process.exit(falhas.length ? 1 : 0);

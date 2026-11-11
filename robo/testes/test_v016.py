@@ -1573,7 +1573,7 @@ class Novo0732(unittest.TestCase):
         self.assertEqual(agendar.validar_dias([4, 3, 2, 1, 0]), "uteis")
         self.assertEqual(agendar.validar_dias(["seg", "qua"]), [0, 2])
         self.assertEqual(agendar.validar_dias([]), [])
-        self.assertEqual(agendar.validar_dias([True, 9, "x"]), [])
+        self.assertEqual(agendar.validar_dias([True, 9, "x"]), "todos")  # revisão da 0.7.32: só lixo não desliga
         self.assertEqual(agendar.descricao(["20:00"], [0, 2, 4]), "nos dias segunda, quarta e sexta às 20h00")
         self.assertEqual(agendar.descricao(["20:00"], [6]), "aos domingos às 20h00")
         sexta = _dt.datetime(2026, 11, 13, 21, 0)
@@ -1645,3 +1645,117 @@ class Novo0732(unittest.TestCase):
         m = open(os.path.join(_ROBO_, "MANUAL-DO-ESCRITORIO.html"), encoding="utf-8").read()
         for x in ("favicon.svg\"", "apple-touch-icon", "fontes/figtree"):
             self.assertNotIn(x, m)
+
+
+class Revisao0732(unittest.TestCase):
+    """Revisão da 0.7.32 (Operação): Trocar licença sem internet não grava código não conferido; gráfico conta tudo."""
+    setUp = _regras_util("setUp"); tearDown = _regras_util("tearDown"); pedir = _regras_util("pedir")
+
+    def _cfg(self):
+        import json as _j
+        return _j.load(open(os.path.join(self.pasta, "config.json"), encoding="utf-8"))
+
+    def _gravar_conta(self):
+        import json as _j
+        c = self._cfg(); c["conta"] = {"codigo": "LEX-AAAA-BBBB", "resposta": "ok", "ok": True, "ultima_ok": "2026-11-10"}
+        _j.dump(c, open(os.path.join(self.pasta, "config.json"), "w", encoding="utf-8"))
+
+    def test_trocar_licenca_sem_internet_mantem_o_codigo_bom(self):
+        from unittest import mock
+        from lexsuite import conta
+        self._gravar_conta()
+        def offline(cfg, versao, hoje=None, pedir=None, retorno=None):
+            c = cfg.setdefault("conta", {}); c.update({"resposta": "sem_resposta", "erro": "URLError"}); return c
+        with mock.patch.object(conta, "verificar", side_effect=offline):
+            r = self.pedir("POST", "/config", {"codigo": "LEX-ZZZZ-9999"})
+        self.assertFalse(r["ok"]); self.assertEqual(self._cfg()["conta"]["codigo"], "LEX-AAAA-BBBB")
+        self.assertEqual(self._cfg()["conta"].get("ultima_ok"), "2026-11-10")
+
+    def test_trocar_licenca_recusada_mantem_o_codigo_bom(self):
+        from unittest import mock
+        from lexsuite import conta
+        self._gravar_conta()
+        def recusa(cfg, versao, hoje=None, pedir=None, retorno=None):
+            c = cfg.setdefault("conta", {}); c.update({"resposta": "codigo_desconhecido", "ok": False}); return c
+        with mock.patch.object(conta, "verificar", side_effect=recusa):
+            r = self.pedir("POST", "/config", {"codigo": "LEX-ZZZZ-9999"})
+        self.assertFalse(r["ok"]); self.assertEqual(self._cfg()["conta"]["codigo"], "LEX-AAAA-BBBB")
+
+    def test_trocar_licenca_online_confere_o_novo(self):
+        from unittest import mock
+        from lexsuite import conta
+        self._gravar_conta()
+        visto = {}
+        def ok(cfg, versao, hoje=None, pedir=None, retorno=None):
+            c = cfg.setdefault("conta", {}); visto["ultima_ok_antes"] = c.get("ultima_ok"); c.update({"resposta": "ok", "ok": True, "ultima_ok": "2026-11-11"}); return c
+        with mock.patch.object(conta, "verificar", side_effect=ok):
+            r = self.pedir("POST", "/config", {"codigo": "LEX-CCCC-DDDD"})
+        self.assertTrue(r["ok"]); self.assertEqual(self._cfg()["conta"]["codigo"], "LEX-CCCC-DDDD")
+        self.assertIsNone(visto["ultima_ok_antes"])  # a confirmação do código antigo não vale para o novo
+
+    def test_grafico_alterna_com_a_lista_inteira(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertEqual(h.count("alternarNoGrafico(opc, l.k, linhas)"), 2)
+        self.assertNotIn("alternarNoGrafico(opc, l.k, fatias)", h); self.assertNotIn("alternarNoGrafico(opc, l.k, mostradas)", h)
+
+    # --- revisão da 0.7.32, item 8: testes que pegam a retirada das travas dos dias ---
+    def test_agendar_sem_dia_desliga(self):
+        from unittest import mock
+        from lexsuite import agendar
+        pasta = tempfile.mkdtemp(); open(os.path.join(pasta, "RODAR.bat"), "w").close()
+        with mock.patch.object(agendar, "disponivel", return_value=True), mock.patch.object(agendar, "desagendar", return_value=(True, "desligada")) as d, \
+                mock.patch.object(agendar, "_rodar") as r:
+            self.assertEqual(agendar.agendar(pasta, ["20:00"], []), (True, "desligada"))
+        d.assert_called_once(); r.assert_not_called()
+
+    def test_desagendar_confere_a_tarefa(self):
+        from unittest import mock
+        from lexsuite import agendar
+        with mock.patch.object(agendar, "disponivel", return_value=True), mock.patch.object(agendar, "_apagar_tudo"), \
+                mock.patch.object(agendar, "agendado", return_value=True):
+            ok, _ = agendar.desagendar()
+        self.assertFalse(ok)
+
+    def test_horario_perdido_respeita_os_dias(self):
+        import datetime as _dt
+        from lexsuite import agendar
+        sab = _dt.datetime(2026, 11, 14, 21, 0)  # sábado; o horário das 20h só vale de segunda a sexta
+        self.assertEqual(agendar.horario_perdido({"radar": {"horarios": ["20:00"], "dias": "uteis"}}, sab), "")
+        self.assertEqual(agendar.horario_perdido({"radar": {"horarios": ["20:00"], "dias": [5]}}, sab), "20:00")
+
+    def test_sabado_e_domingo_no_schtasks(self):
+        from unittest import mock
+        from lexsuite import agendar
+        pasta = tempfile.mkdtemp(); open(os.path.join(pasta, "RODAR.bat"), "w").close()
+        chamadas = []
+        def rodar(args):
+            chamadas.append(args); return (False, "x") if "/xml" in args else (True, "")
+        with mock.patch.object(agendar, "disponivel", return_value=True), mock.patch.object(agendar, "_rodar", side_effect=rodar), \
+                mock.patch.object(agendar, "_apagar_tudo"), mock.patch.object(agendar, "acao_oculta", return_value=None):
+            agendar.agendar(pasta, ["20:00"], [5, 6])
+        simples = [a for a in chamadas if "/xml" not in a][0]
+        self.assertIn("SAT,SUN", simples); self.assertIn("weekly", simples)
+
+    def test_config_antigo_sem_dias_continua_todo_dia(self):
+        import json as _j
+        from lexsuite import config
+        p_ = os.path.join(tempfile.mkdtemp(), "config.json")
+        _j.dump({"radar": {"horarios": ["20:00"], "tribunais": ["TRT2"]}}, open(p_, "w", encoding="utf-8"))
+        c_ = config.carregar(p_, aviso=lambda *_: None)
+        self.assertEqual(c_["radar"]["dias"], "todos")
+        for k in config.PADRAO["radar"]:  # revisão da 0.7.32: os outros padrões continuam preenchidos
+            self.assertIn(k, c_["radar"])
+        for b_ in ("compartilhar", "atualizacao", "usuario"):
+            for k in config.PADRAO[b_]:
+                self.assertIn(k, c_[b_])
+        p3 = os.path.join(tempfile.mkdtemp(), "config.json")
+        _j.dump({"radar": {"tribunais": ["TRT2"]}, "compartilhar": {}}, open(p3, "w", encoding="utf-8"))
+        c3 = config.carregar(p3, aviso=lambda *_: None)
+        for k in config.PADRAO["radar"]:
+            self.assertIn(k, c3["radar"])
+        p2 = os.path.join(tempfile.mkdtemp(), "config.json")
+        self.assertEqual(config.carregar(p2, aviso=lambda *_: None)["radar"]["dias"], "uteis")  # instalação nova
+
+    def test_lista_so_com_lixo_nao_desliga(self):
+        from lexsuite import agendar
+        self.assertEqual(agendar.validar_dias(["x", 9]), "todos"); self.assertEqual(agendar.validar_dias([]), [])

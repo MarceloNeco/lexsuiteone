@@ -203,7 +203,7 @@ se mudam no programa: Configuração → Regras do escritório. Se a planilha es
 ## Rodar sozinho
 
 - A opção "Ler sozinho" da Configuração cria a tarefa "LexSuiteONE Radar" no Agendador do Windows, com os horários
-  escolhidos (padrão 20h e 8h, até 6, todos os dias ou de segunda a sexta; se o computador estava desligado, roda quando
+  escolhidos (padrão 20h e 8h, até 6, nos dias da semana marcados, de início de segunda a sexta; se o computador estava desligado, roda quando
   ele ligar). Ela roda o `RODAR.bat`; ao terminar, um aviso no canto da tela diz quantas ações novas chegaram.
   `AGENDAR.bat` faz o mesmo à mão (botão direito, Executar como administrador), se precisar. O DJEN libera o diário a partir das 19h.
 - **`RODAR.bat`**: uma rodada sem a tela, com os tribunais salvos. Também grava `saida\radar\radar.html`.

@@ -27,10 +27,10 @@ MOTIVOS = {
     "desativado": "A licença deste escritório está desativada.",
     "vencido": "A licença deste escritório venceu.",
     "codigo_invalido": "O código de cliente tem o formato LEX-XXXX-XXXX (veja o e-mail de boas-vindas).",
-    "aceite_pendente": "Falta aceitar os termos.",
+    "aceite_pendente": "Falta aceitar os termos.",  # teste do dono (0.7.30): curto; o link vem num botão, não por extenso
     # revisão da 0.7.31: respostas da lex-conta v15 ao cadastro
     "dominio_nao_liberado": "Este e-mail não é de um domínio liberado na licença do escritório. Use o e-mail do escritório ou fale com judicial@solverone.com.br.",
-    "email_recusado": "A SolverONE não aceitou este e-mail para a licença. Confira o e-mail ou fale com judicial@solverone.com.br.",  # teste do dono (0.7.30): curto; o link vem num botão, não por extenso
+    "email_recusado": "A SolverONE não aceitou este e-mail para a licença. Confira o e-mail ou fale com judicial@solverone.com.br.",
 }
 
 

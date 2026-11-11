@@ -630,11 +630,24 @@ class Tratador(BaseHTTPRequestHandler):
                 cfg["escritorio"] = str(corpo["escritorio"] or "").strip()[:80]
             if "codigo" in corpo:
                 # Código de cliente: confere na hora com a SolverONE; código errado não é salvo.
-                cfg.setdefault("conta", {})["codigo"] = conta.normalizar(corpo["codigo"])
+                import copy as _copy
+                antes_conta = _copy.deepcopy(cfg.get("conta") or {})
+                novo_cod = conta.normalizar(corpo["codigo"])
+                mudou_cod = novo_cod != conta.normalizar(antes_conta.get("codigo"))
+                cfg.setdefault("conta", {})["codigo"] = novo_cod
+                if mudou_cod:  # revisão da 0.7.32 ("Trocar licença"): a confirmação do código antigo não vale para o novo
+                    for k_ in ("ultima_ok", "resposta", "mensagem", "aceite", "termos", "escritorio_licenca", "validade"):
+                        cfg["conta"].pop(k_, None)
                 c = conta.verificar(cfg, VERSAO)
                 if c.get("resposta") not in ("ok", "sem_resposta"):
-                    return self._responder({"ok": False, "motivo": conta.bloqueio(cfg), "motivo_en": conta.bloqueio_en(cfg), "conta": conta.situacao(cfg)})
+                    resp_ = {"ok": False, "motivo": conta.bloqueio(cfg), "motivo_en": conta.bloqueio_en(cfg), "conta": conta.situacao(cfg)}
+                    if mudou_cod and antes_conta.get("codigo"):
+                        cfg["conta"] = antes_conta; config.salvar(s.caminho_config, cfg)  # o código bom continua
+                        resp_["conta"] = conta.situacao(cfg)
+                    return self._responder(resp_)
                 if c.get("resposta") == "sem_resposta" and not c.get("ultima_ok"):
+                    if mudou_cod and antes_conta.get("codigo"):
+                        cfg["conta"] = antes_conta; config.salvar(s.caminho_config, cfg)
                     return self._responder({"ok": False, "motivo": "Não consegui falar com a SolverONE para confirmar o código. "
                                                                     "Confira a internet e tente de novo.",
                                             "motivo_en": "I could not reach SolverONE to confirm the code. Check the internet and try again.",
