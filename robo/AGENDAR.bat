@@ -4,7 +4,7 @@ cd /d "%~dp0"
 set "PY=python"
 if exist "python\python.exe" set "PY=python\python.exe"
 echo  Vou criar a leitura automatica no Agendador do Windows, com os horarios escolhidos na tela
-echo  (Configuracao). Sem escolha, o padrao e todo dia as 20h00 e as 08h00. Se o computador estiver
+echo  (Configuracao). Sem escolha, o padrao e de segunda a sexta as 20h00 e as 08h00. Se o computador estiver
 echo  desligado na hora, a leitura acontece quando ele ligar.
 echo.
 "%PY%" lexsuite_robo.py agendar

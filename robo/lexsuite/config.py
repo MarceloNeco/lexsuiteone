@@ -68,6 +68,8 @@ def carregar(caminho, aviso=print):
     for bloco in ("radar", "compartilhar", "atualizacao", "usuario"):
         if not isinstance(cfg.get(bloco), dict):
             cfg[bloco] = {}
+    if "horarios" in cfg["radar"] and "dias" not in cfg["radar"]:
+        cfg["radar"]["dias"] = "todos"  # revisão da 0.7.32: config antigo com horários e sem dias seguia "todo dia"; o padrão novo vale só para instalação nova
         for chave, valor in PADRAO[bloco].items():
             cfg[bloco].setdefault(chave, valor)
     # O instalador deixa o código de cliente já conferido e a identificação desta instalação (conta-inicial.json).

@@ -164,6 +164,18 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 ## 0.7.32 (dono, 11/Nov: "pode tudo") — pronta para publicar
 
+Revisão da Operação (11/Nov, `7086e6c`): 3 bloqueios corrigidos. (1) Painel: ligar e desligar usa a lista inteira do
+gráfico (antes, só as linhas desenhadas: o que estava em "Outros" ou além das 8 barras saía do total); `larguras.js` com
+12 estados confere. (2) "Trocar licença": código novo não herda a confirmação do antigo; recusado ou sem internet, o
+código bom volta e nada é gravado (testes `Revisao0732`). (3) Definition of done: AssistONE (tela do Painel, dica,
+Configuração e atalhos, tour com "Configurações", busca com dias da semana, trocar licença, gráficos, cores, aparência,
+novidades), rodapé do Painel, manual (Painel, Trocar licença no FAQ, ordem real da Configuração), Novidades, "Salvar
+critérios", "Critérios da lista" no lugar de "Regras do escritório". Médias e baixas: config antigo sem `dias` segue
+"todo dia"; foco volta ao item do gráfico; contraste do item apagado, da fase e do placeholder; textos sem "leitura da
+noite"; `AGENDAR.bat` e LEIA-ME com o padrão novo; testes das travas dos dias; barra sem animação com movimento
+reduzido; um item só não esvazia o Painel; "1 ação" na faixa; lista só com valores inválidos não desliga; Esc com Perfil
+e busca abertos fecha uma de cada vez.
+
 Feito: gráficos do Painel (dica ao passar o mouse com número e %, liga e desliga pela legenda com o item apagado,
 "Mostrar todos", "Ver na lista →", cor escolhida no quadradinho e "Cores originais"; filtros do Painel separados dos da
 Lista); leitura automática por dias da semana (Dom a Sáb, padrão de segunda a sexta nas instalações novas; nenhum dia

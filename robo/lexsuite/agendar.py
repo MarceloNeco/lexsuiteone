@@ -74,6 +74,8 @@ def validar_dias(dias):
         elif str(d).strip().lower().replace("á", "a")[:3] in SEMANA_CURTA:
             vistos.add(SEMANA_CURTA.index(str(d).strip().lower().replace("á", "a")[:3]))
     lista = sorted(vistos)
+    if dias and not lista:
+        return "todos"  # revisão da 0.7.32: lista só com valores inválidos não desliga em silêncio
     if lista == list(range(7)):
         return "todos"
     if lista == list(range(5)):
