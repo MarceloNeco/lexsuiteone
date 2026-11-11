@@ -18,11 +18,11 @@ Em um ou dois minutos o GitHub Pages republica e os robôs instalados passam a v
 `https://judicial.solverone.com.br/atualizacao/versao.json`. Eles só instalam se a assinatura bater com a
 `chave_publica.txt` que está no pacote deles.
 
-## Antes de disparar: a Definition of done (regra zero de qualidade)
+## Antes de disparar: a Definition of done (regra zero de qualidade, decisão do dono)
 
-A Operação só dispara a automação depois de conferir, no que mudou desde a última versão publicada, que manual, AssistONE (ajuda da tela, tour e busca)
-e Novidades da versão estão atualizados e dizem o que o programa faz agora, em PT e EN. Lacuna é bloqueio, como falha de teste: não se publica, anota-se
-o pedido à Produto no quadro. Vale para qualquer feature, de qualquer aplicativo da SolverONE (regra do dono, 11/Nov; ver `CLAUDE.md`).
+A Operação só dispara a automação depois de conferir, no que mudou desde a última versão publicada, que manual (quando existe), AssistONE (ajuda da tela, tour e busca)
+e Novidades da versão estão atualizados, em PT e EN. Lacuna é bloqueio, como falha de teste: não se publica, anota-se o pedido à Produto no quadro.
+A redação da regra é da Arquitetura (`CLAUDE.md`); este portão só a aplica na publicação.
 
 ## À mão, pelo site do GitHub (se um dia precisar)
 
