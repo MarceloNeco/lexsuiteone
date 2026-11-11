@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- **0.7.30 em espera (11/Nov)**: o dono mandou publicar (commit `1b8b691`, automação verde, execução 478); a revisão do que mudou desde a 0.7.29 encontrou 2 bloqueios, ambos só de CSS (menu ☰ ilegível no modo escuro; rolagem lateral no celular com "Mais filtros" aberto), então a 0.7.30 NÃO foi publicada (regra do dono: se não aprovar, não publique). Pedido "Revisão da 0.7.30" à Produto em "Pedidos entre sessões". Quando a Produto avisar "pronta de novo", reviso só o que mudou e publico se aprovar. Não mexo em arquivo de outra sessão.
+- **0.7.30 em segunda revisão (11/Nov)**: a Produto avisou "pronta de novo" (commit `29d611f`, automação verde, execução 483) com os 2 bloqueios corrigidos (menu ☰ no escuro; "Mais filtros" no celular) e as ressalvas; reviso só o que mudou desde a `1b8b691` (CSS, feriado no "último dia útil", data fora do ISO, Esc no Perfil, impressão no claro, contraste, textos, testes das ressalvas), testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.29. Só publico se o dono tiver mandado (ele mandou "publica a versão 0.7.30") e o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
