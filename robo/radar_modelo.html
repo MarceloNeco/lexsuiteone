@@ -213,9 +213,11 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 @media (max-width: 640px) { .campo-conf, .conf-info { grid-template-columns: 1fr; } }
 
 /* 0.7.12: Painel (gráficos) e Lista, nas cores da marca. Sem biblioteca nem pedido externo: barras em HTML e CSS. */
-.visao { display: flex; gap: 2px; border-bottom: 1px solid var(--linha); margin: 6px 0 14px; }
-.visao button { all: unset; box-sizing: border-box; cursor: pointer; padding: 10px 16px 9px; font-weight: 600; font-size: .92rem; color: var(--tinta-3); border-bottom: 2px solid transparent; }
-.visao button[aria-selected="true"] { color: var(--tinta); border-bottom-color: var(--latao); }
+.visao { position: relative; display: flex; gap: 2px; border-bottom: 1px solid var(--linha); margin: 6px 0 14px; }
+.visao button { all: unset; box-sizing: border-box; cursor: pointer; padding: 10px 18px 9px; font-weight: 600; font-size: .92rem; color: var(--tinta-3); border-radius: 8px 8px 0 0; transition: background .2s, color .2s; }
+.visao button[aria-selected="true"] { color: var(--tinta); background: var(--papel-2, #eef1f6); }
+.visao .indicador { position: absolute; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--latao); transition: left .28s ease, width .28s ease; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .visao .indicador { transition: none; } }
 .visao button:hover { color: var(--tinta); }
 .visao button:focus-visible { outline: 2px solid var(--latao); outline-offset: -2px; }
 .graficos { display: grid; gap: 16px; padding-bottom: 8px; }
@@ -390,6 +392,24 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 @media (max-width: 480px) { .janela .botoes { flex-direction: column-reverse; align-items: stretch; } .janela .botoes button { width: 100%; text-align: center; } }
 .janela textarea { width: 100%; min-height: 200px; font: .82rem/1.4 ui-monospace, Consolas, monospace; border: 1px solid var(--linha-2); border-radius: 8px; padding: 8px; }
 /* 0.7.30 (dono, inspirado no protótipo do Gemini): três blocos — leitura, filtros, ordenação; os filtros ficam fixos no alto no computador */
+.bloco-leitura { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 18px; padding: 10px 16px; }
+.bl-esq { display: grid; gap: 3px; min-width: 0; }
+.bl-dir { display: flex; gap: 10px; align-items: center; }
+.bloco-leitura .bl-cab { border-bottom: 0; padding-bottom: 0; }
+.bloco-leitura .rodar-criterio { justify-content: flex-start; font-size: .86rem; color: var(--tinta-2); }
+.bloco-leitura .estado { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 16px; font-size: .82rem; }
+.bloco-leitura .estado > .progresso-linha, .bloco-leitura .estado > .andando, .bloco-leitura .estado > .log, .bloco-leitura .estado > .erro, .bloco-leitura .estado > details { flex: 1 1 100%; }
+@media (max-width: 760px) { .bloco-leitura { grid-template-columns: 1fr; } .bl-dir { flex-wrap: wrap; } .bl-dir > * { flex: 1 1 auto; justify-content: center; } }
+.so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.salvos-grupo { display: inline-flex; align-items: center; gap: 6px; }
+.link-salvar { all: unset; cursor: pointer; color: var(--latao-texto); font-weight: 700; font-size: .84rem; white-space: nowrap; }
+.link-salvar:hover, .link-salvar:focus-visible { text-decoration: underline; }
+.multi.tem-x > button:first-child { padding-right: 34px; }
+.multi.tem-x > button.ligado + .multi-x { color: #fff; }
+.multi.tem-x > button:first-child::after { content: ""; }
+.multi > button.multi-x, .controles .multi > button.multi-x, .filtros-extra .multi > button.multi-x { all: unset; box-sizing: border-box; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font-size: .72rem; cursor: pointer; color: inherit; }
+.multi > button.multi-x::after { content: none; }
+.multi > button.multi-x:hover, .multi > button.multi-x:focus-visible { background: rgba(255, 255, 255, .25); outline: 1px solid currentColor; }
 .bloco-leitura, .barra-lista { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 12px 16px; display: grid; gap: 8px; }
 .bloco-leitura { background: var(--papel-2, #f1f4f8); margin-bottom: 4px; }
 .bl-cab { display: flex; align-items: center; gap: 8px; font-size: .74rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--tinta-2); padding-bottom: 6px; border-bottom: 1px solid var(--linha); }
@@ -405,7 +425,10 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .campo-data { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--tinta-3); }
 .campo-data select { border-color: #1b2b45 !important; font-weight: 600; }
 .filtros-extra #f-salvos { max-width: 200px; }
-.filtros-extra .busca { flex: 1 1 200px; min-width: 170px; }
+.filtros-extra { gap: 6px; }
+.filtros-extra .busca { flex: 1 1 160px; min-width: 140px; padding: 7px 14px; }
+.filtros-extra #f-salvos { max-width: 170px; }
+.filtros-extra .multi > button, .filtros-extra select { padding-left: 10px; }
 .filtros-extra .espaco { flex: 1 1 0; min-width: 0; }
 @media (max-width: 760px) { .bloco-leitura .rodar-criterio { order: -1; } .bloco-leitura .barra .seletor, .bloco-leitura .barra .primario { flex: 1 1 auto; justify-content: center; } }
 .filtros-avancados { border-top: 1px dashed var(--linha); padding-top: 8px; }
@@ -425,8 +448,8 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .controles .multi > button.ligado, .controles .chip[aria-pressed="true"] { border-color: #1b2b45; background: #1b2b45; color: #fff; font-weight: 600; }
 .controles .multi > button.ligado::after { color: #c9d3e3; }
 .registro-pre { max-height: 55vh; overflow: auto; margin: 8px 0 0; padding: 10px 12px; border-radius: 8px; background: #0f1d33; color: #e8edf5; font: 12px/1.45 ui-monospace, Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
-.limpar-filtros { all: unset; cursor: pointer; font-size: .84rem; font-weight: 700; color: #a3261b; padding: 6px 10px; border-radius: 999px; border: 1px dashed #e3b3ad; }
-.limpar-filtros:disabled { color: var(--tinta-3); border-color: var(--linha-2); cursor: default; font-weight: 500; }
+.limpar-filtros { all: unset; cursor: pointer; font-size: .82rem; font-weight: 700; color: #a3261b; background: #fff; padding: 6px 12px; border-radius: 999px; border: 1px solid #d9928a; white-space: nowrap; }  /* 0.7.30 (dono): pílula branca e vermelha, com o total */
+.limpar-filtros:disabled { color: var(--tinta-3); border-color: var(--linha-2); border-style: dashed; background: transparent; cursor: default; font-weight: 500; }
 .limpar-filtros:not(:disabled):hover, .limpar-filtros:focus-visible { background: #fdecea; }
 .ordenacao { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-bottom: 12px; }
 .ordenacao[hidden] { display: none; }
@@ -657,14 +680,15 @@ footer a:hover { text-decoration: underline; }
   <div class="banner" id="banner" hidden></div>
   <div class="banner arm" id="b-arm" hidden></div>
   <div class="bloco-leitura" id="bloco-leitura">
+    <div class="bl-esq">
     <div class="bl-cab"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="bl-leitura-t"></span></div>
-    <div class="barra">
-      <span class="rodar-criterio" id="rodar-criterio" hidden></span>
-      <span class="espaco"></span>
+    <span class="rodar-criterio" id="rodar-criterio" hidden></span>
+    <div class="estado" id="estado"></div>
+    </div>
+    <div class="bl-dir">
       <button type="button" class="seletor" id="b-trib" aria-expanded="false"><span id="b-trib-txt"></span><i>▼</i></button>
       <button type="button" class="primario" id="b-rodar"></button>
     </div>
-    <div class="estado" id="estado"></div>
   </div>
   <div class="veu" id="c-veu"></div>
   <div class="painel" id="config" hidden role="dialog" aria-modal="true" aria-labelledby="c-titulo">
@@ -754,13 +778,12 @@ footer a:hover { text-decoration: underline; }
   <div class="bl-cab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg><span id="bl-filtros-t"></span></div>
   <div class="filtros-extra" id="filtros-extra">
     <input type="search" class="busca" id="f-busca" autocomplete="off" spellcheck="false">
-    <label class="campo campo-data"><span id="l-periodo"></span><select id="periodo"></select></label>
+    <label class="campo campo-data"><span id="l-periodo" class="so-leitor"></span><select id="periodo"></select></label>
     <div class="multi" id="f-sit" data-rotulo="Situação"></div>
     <select id="f-valor-sel" aria-label="Valor da causa"></select>
     <button type="button" class="chip mais-filtros" id="b-mais-filtros" aria-expanded="false" aria-controls="filtros-avancados"></button>
     <span class="espaco"></span>
-    <select id="f-salvos" aria-label="Filtros salvos"></select>
-    <button type="button" class="btn-txt" id="b-salvar-filtro"></button>
+    <span class="salvos-grupo"><select id="f-salvos" aria-label="Filtros salvos"></select><button type="button" class="link-salvar" id="b-salvar-filtro"></button></span>
     <button type="button" class="limpar-filtros" id="b-limpar-filtros"></button>
   </div>
   <div class="filtros-avancados" id="filtros-avancados" hidden>
@@ -1806,7 +1829,7 @@ window.LEXSUITE_RADAR = null;
       w_destino: "A planilha vai ficar em:", w_sem_planilha: "Sem planilha por enquanto: a lista fica só nesta tela.", comp_t: "Falta um passo: compartilhar a pasta com a SolverONE (uma vez só)", comp_1: "Clique em \"Abrir a pasta\", logo abaixo.", comp_2: "Na janela que abrir, clique com o botão direito na pasta \"{s}\" e escolha Compartilhar (com o ícone do Google Drive).", comp_3: "Digite integracao@solverone.com.br, deixe como Editor e clique em Enviar.", comp_nota: "Sem isso o {c} funciona normalmente no escritório; a SolverONE só não vê o registro das leituras para ajudar quando algo der errado.", abrir_pasta_mae: "Abrir a pasta",
       c_chave: "Chave de atualização", c_chave_falta: "ausente: atualização desligada", c_atu_pasta: "Atualizações chegam por", c_salvo: "Salvo.",
       c_dica: "As planilhas (uma por frente: LexSuiteONE - Trabalhista.xlsx agora) ficam numa pasta própria, dentro da pasta escolhida acima, junto da pasta Cópias de segurança. A aba Radar traz a lista; Preferências e Exclusões são do escritório. Não é preciso compartilhar nada com a SolverONE.",
-      atu_ok: "Atualizado para a versão {v}. Reiniciando...", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia útil até hoje", pern: "{d} dias", rodar: "Ler o Diário agora", rodando: "Lendo o Diário...",
+      atu_ok: "Atualizado para a versão {v}. Reiniciando...", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia útil até hoje", data_op: "Data: {p}", salvos_vazio: "Filtros salvos (nenhum ainda)", salvos_x: "Escolha um filtro salvo para aplicar. Para guardar os filtros de agora, clique em ★ Salvar.", salvar_curto: "★ Salvar", m_todos: "Marcar todos", f_tirar: "Tirar este filtro", pern: "{d} dias", rodar: "Ler o Diário agora", rodando: "Lendo o Diário...",
       aba_regiao: "Por região", aba_uf: "Por estado", todos: "Selecionar todos", todos_ramo: "Selecionar todos ({r})", limpar: "Limpar", escolhidos: "{n} de {k} tribunais escolhidos", salvar: "Salvar", salvar_rodar: "Salvar e ler agora",
       dica: "Cada tribunal publica um diário por dia, de 5 a 150 MB. Dois tribunais levam uns 5 minutos; os 24, de 30 a 60 minutos na primeira vez. O computador precisa estar no Brasil.",
       ultima: "Última atualização em {q}: {s}", nunca: "Ainda não leu neste computador.", erro: "A leitura parou. {e}", ver_detalhes: "Ver detalhes técnicos", hist_abrir: "Histórico de leituras", hist_fechar: "Fechar o histórico", hist_vazio: "Nenhuma leitura registrada ainda.", hist_quando: "Quando", hist_origem: "Origem", hist_trib: "Tribunal", hist_dias: "Dias pedidos", hist_resp: "Resposta", hist_causa: "Situação", hist_fez: "O que o programa fez", hist_dur: "Duração", c_ok: "Lido", c_ainda_nao_liberado_3h: "Hoje só às 3h", c_nao_publicado: "Ainda não publicado", c_governo_fora: "Site do CNJ fora do ar", c_bloqueio_fora_do_brasil: "Fora do Brasil", c_sem_internet: "Sem internet", c_erro_do_programa: "Erro do programa", aviso_3h: "O Diário de hoje só fica disponível a partir das 3h da manhã. Li até o último dia já publicado ({d}); nada a fazer.", aviso_tribs: "{n} tribunal(is): {m}", carregando: "Carregando...", falha: "Não consegui falar com o programa. Ele pode ter sido encerrado: abra de novo pelo atalho.",
@@ -1903,7 +1926,7 @@ window.LEXSUITE_RADAR = null;
       w_destino: "The spreadsheet will be at:", w_sem_planilha: "No spreadsheet for now: the list stays on this screen only.", comp_t: "One step left: share the folder with SolverONE (only once)", comp_1: "Click \"Open the folder\", below.", comp_2: "In the window that opens, right-click the \"{s}\" folder and choose Share (with the Google Drive icon).", comp_3: "Type integracao@solverone.com.br, keep it as Editor and click Send.", comp_nota: "Without it {c} works normally at the firm; SolverONE just cannot see the reading log to help when something goes wrong.", abrir_pasta_mae: "Open the folder",
       c_chave: "Update key", c_chave_falta: "missing: updates disabled", c_atu_pasta: "Updates arrive via", c_salvo: "Saved.",
       c_dica: "The spreadsheets (one per practice area: LexSuiteONE - Trabalhista.xlsx for now) live in their own folder inside the folder chosen above, next to the Backups folder. The Radar sheet holds the list; Preferences and Exclusions belong to the firm. Nothing needs to be shared with SolverONE.",
-      atu_ok: "Updated to version {v}. Restarting...", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last working day to today", pern: "{d} days", rodar: "Read the gazette now", rodando: "Reading the gazette...",
+      atu_ok: "Updated to version {v}. Restarting...", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last working day to today", data_op: "Date: {p}", salvos_vazio: "Saved filters (none yet)", salvos_x: "Choose a saved filter to apply it. To keep the current filters, click ★ Save.", salvar_curto: "★ Save", m_todos: "Tick all", f_tirar: "Remove this filter", pern: "{d} days", rodar: "Read the gazette now", rodando: "Reading the gazette...",
       aba_regiao: "By region", aba_uf: "By state", todos: "Select all", todos_ramo: "Select all ({r})", limpar: "Clear", escolhidos: "{n} of {k} courts chosen", salvar: "Save", salvar_rodar: "Save and read now",
       dica: "Each court publishes one gazette a day, 5 to 150 MB. Two courts take about 5 minutes; all 24, 30 to 60 minutes the first time. The computer must be in Brazil.",
       ultima: "Last update at {q}: {s}", nunca: "Not read on this computer yet.", erro: "The reading stopped. {e}", ver_detalhes: "Show technical details", hist_abrir: "Reading history", hist_fechar: "Close the history", hist_vazio: "No reading recorded yet.", hist_quando: "When", hist_origem: "Source", hist_trib: "Court", hist_dias: "Days requested", hist_resp: "Response", hist_causa: "Status", hist_fez: "What the program did", hist_dur: "Duration", c_ok: "Read", c_ainda_nao_liberado_3h: "Today only after 3 a.m.", c_nao_publicado: "Not published yet", c_governo_fora: "CNJ site down", c_bloqueio_fora_do_brasil: "Outside Brazil", c_sem_internet: "No internet", c_erro_do_programa: "Program error", aviso_3h: "Today\u2019s gazette is only available from 3 a.m. I read up to the last published day ({d}); nothing to do.", aviso_tribs: "{n} court(s): {m}", carregando: "Loading...", falha: "Could not reach the program. It may have stopped: open it again from the shortcut.",
@@ -1987,7 +2010,7 @@ window.LEXSUITE_RADAR = null;
     rg_exc_t: "Empresas excluídas", rg_exc_x: "Clientes atuais, conflitos ou quem o escritório não quer prospectar. Pode ser o nome ou o CNPJ.", rg_exc_busca: "Procurar na lista de excluídas", rg_exc_nome: "Nome ou CNPJ da empresa", rg_exc_motivo: "Motivo (ex.: cliente atual)",
     rg_exc_add: "Acrescentar", rg_exc_tirar: "Tirar", rg_exc_vazio: "Nenhuma empresa excluída.", rg_exc_ja: "Essa empresa já está na lista.", rg_salvar: "Salvar regras", rg_pendente: "Há mudanças não salvas.", rg_salvo: "✓ Regras salvas na planilha (com cópia de segurança de antes).", rg_mudou: "As regras do escritório têm mudanças que ainda não foram salvas.", rg_de_novo: "Abrir as regras de novo", rg_vazio: "Preencha este campo antes de salvar.", rg_fora: "Número fora do permitido: use de {a} a {b}.",
     fs_titulo: "Filtros salvos", fs_x: "Ficam neste computador. Arquivar esconde da lista sem apagar.", fs_renomear: "Renomear", fs_arquivar: "Arquivar", fs_desarquivar: "Voltar para a lista", fs_arquivado: "arquivado", fs_apagar: "Apagar", fs_novo_nome: "Novo nome do filtro:", fs_existe: "Já existe um filtro com esse nome.", fs_apagar_q: "Apagar o filtro “{n}”?",
-    r_filtrar: "Mais filtros", bl_leitura: "Configuração da leitura", bl_filtros: "Filtros da lista", mais_filtros: "Mais filtros", mais_filtros_n: "Mais filtros ({n})", per_n2: "últimos {d} dias", r_ordenar: "Ordenar por", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "O filtro só mostra o que já está na lista. Para escolher o que o programa lê:",
+    r_filtrar: "Mais filtros", bl_leitura: "Configuração da leitura", bl_filtros: "Filtros da lista", bl_filtros_painel: "Filtros do painel", mais_filtros: "Mais filtros", mais_filtros_n: "Mais filtros ({n})", per_n2: "últimos {d} dias", r_ordenar: "Ordenar por", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "O filtro só mostra o que já está na lista. Para escolher o que o programa lê:",
     rodar_crit_x: "O que “Ler o Diário agora” lê: o Diário de hoje e dos últimos dias úteis com publicação, nos tribunais escolhidos. Diário já lido não é baixado de novo. Os filtros da lista não mudam o que é lido (lê tudo, para nada se perder); eles só escolhem o que aparece, e ficam guardados.",
     rodar_crit_0: "Lê {n} de {k} tribunais ({l}), só hoje",
     rodar_crit_nada: "Escolha os tribunais primeiro.",
@@ -2008,7 +2031,7 @@ window.LEXSUITE_RADAR = null;
     pf_outra_pessoa_x: "O e-mail e o escritório não se editam: são a sua identificação na licença. Se outra pessoa do escritório vai usar este computador, ela se cadastra com o e-mail dela, e a SolverONE confere se o domínio do e-mail é do escritório.",
     copia_t: "Cópia criada", abrir_copia: "Abrir a cópia", abrir_pasta_copia: "Abrir a pasta",
     g_ver_como: "Ver como", g_barras: "Barras", g_pizza: "Pizza", g_outros: "Outros ({n})", g_sem_dados: "Sem dados neste período.",
-    pp_t: "Estes números: {n} ações", pp_diarios: "Diários de {d} a {a}", pp_filtros: "com {n} filtro(s) da lista", pp_lidas: "Data do processo:", pp_1: "último dia útil", pp_n: "{d} dias",
+    pp_t: "Estes números: {n} ações", pp_diarios: "Diários de {d} a {a}", pp_filtros: "com {n} filtro(s) da lista", pp_trib: "Tribunal:", pp_trib_todos: "Todos", pp_lidas: "Data do processo:", pp_1: "último dia útil", pp_n: "{d} dias",
     saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" e depois em \"Ler agora\" (30 Diários por vez) ou deixe para a leitura automática da noite. Guarda os totais e, só neste computador, o número dos processos já contados (para não contar duas vezes): nada entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
     saz_vazio: "Ainda não há meses suficientes. Escolha quantos meses buscar e clique em \"Buscar estatísticas\".", saz_semana: "Por dia da semana:", saz_pico: "Mês com mais ações: {m} ({n}).",
     saz_estado: "Diários antigos lidos: {l}; na fila: {f}; sem Diário: {s}; com erro: {e}.", saz_de_ate: "De {d} a {a}.", saz_meses_rot: "Meses para trás", saz_meses: "{m} mês(es) para trás",
@@ -2058,7 +2081,7 @@ window.LEXSUITE_RADAR = null;
     rg_exc_t: "Excluded companies", rg_exc_x: "Current clients, conflicts or companies the firm does not want to approach. Name or CNPJ.", rg_exc_busca: "Search the excluded list", rg_exc_nome: "Company name or CNPJ", rg_exc_motivo: "Reason (e.g. current client)",
     rg_exc_add: "Add", rg_exc_tirar: "Remove", rg_exc_vazio: "No excluded companies.", rg_exc_ja: "This company is already in the list.", rg_salvar: "Save rules", rg_pendente: "There are unsaved changes.", rg_salvo: "✓ Rules saved to the spreadsheet (with a backup copy of before).", rg_mudou: "The firm rules have changes that were not saved yet.", rg_de_novo: "Open the rules again", rg_vazio: "Fill in this field before saving.", rg_fora: "Number out of range: use {a} to {b}.",
     fs_titulo: "Saved filters", fs_x: "Kept on this computer. Archive hides it from the list without deleting.", fs_renomear: "Rename", fs_arquivar: "Archive", fs_desarquivar: "Back to the list", fs_arquivado: "archived", fs_apagar: "Delete", fs_novo_nome: "New filter name:", fs_existe: "A filter with this name already exists.", fs_apagar_q: "Delete the filter “{n}”?",
-    r_filtrar: "More filters", bl_leitura: "Reading settings", bl_filtros: "List filters", mais_filtros: "More filters", mais_filtros_n: "More filters ({n})", per_n2: "last {d} days", r_ordenar: "Sort by", limpar_filtros_0: "Clear filters", trib_so_lidos: "The filter only shows what is already in the list. To choose what the program reads:",
+    r_filtrar: "More filters", bl_leitura: "Reading settings", bl_filtros: "List filters", bl_filtros_painel: "Dashboard filters", mais_filtros: "More filters", mais_filtros_n: "More filters ({n})", per_n2: "last {d} days", r_ordenar: "Sort by", limpar_filtros_0: "Clear filters", trib_so_lidos: "The filter only shows what is already in the list. To choose what the program reads:",
     rodar_crit_x: "What “Read the gazette now” reads: today\u2019s gazette and the last working days with publications, in the chosen courts. A gazette already read is not downloaded again. The list filters do not change what is read (everything is read, so nothing is lost); they only choose what shows, and they are remembered.",
     rodar_crit_0: "Reads {n} of {k} courts ({l}), today only",
     rodar_crit_nada: "Choose the courts first.",
@@ -2079,7 +2102,7 @@ window.LEXSUITE_RADAR = null;
     pf_outra_pessoa_x: "E-mail and firm cannot be edited: they identify you on the licence. If someone else from the firm will use this computer, they sign up with their own e-mail, and SolverONE checks that the e-mail domain belongs to the firm.",
     copia_t: "Copy created", abrir_copia: "Open the copy", abrir_pasta_copia: "Open the folder",
     g_ver_como: "Show as", g_barras: "Bars", g_pizza: "Pie", g_outros: "Others ({n})", g_sem_dados: "No data in this period.",
-    pp_t: "These numbers: {n} lawsuits", pp_diarios: "gazettes from {d} to {a}", pp_filtros: "with {n} list filter(s)", pp_lidas: "Lawsuit date:", pp_1: "last working day", pp_n: "{d} days",
+    pp_t: "These numbers: {n} lawsuits", pp_diarios: "gazettes from {d} to {a}", pp_filtros: "with {n} list filter(s)", pp_trib: "Court:", pp_trib_todos: "All", pp_lidas: "Lawsuit date:", pp_1: "last working day", pp_n: "{d} days",
     saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" and then \"Read now\" (30 gazettes at a time) or leave it for the night reading. It keeps the totals and, only on this computer, the numbers of lawsuits already counted (so none is counted twice): nothing goes to the List, the Archive or the spreadsheet, and none of it goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
     saz_vazio: "Not enough months yet. Choose how many months to fetch and click \"Fetch statistics\".", saz_semana: "By weekday:", saz_pico: "Busiest month: {m} ({n}).",
     saz_estado: "Old gazettes read: {l}; queued: {f}; no gazette: {s}; with error: {e}.", saz_de_ate: "From {d} to {a}.", saz_meses_rot: "Months back", saz_meses: "{m} month(s) back",
@@ -2943,7 +2966,8 @@ window.LEXSUITE_RADAR = null;
     if (MODO !== "app" || naWizard) return;
     $("l-periodo").textContent = t("periodo");
     var sp = $("periodo"); sp.textContent = "";
-    [1, 3, 7, 15, 30, 60, 90].forEach(function (d) { var o = el("option", null, d === 1 ? t("per1") : t("per_n2", { d: d })); o.value = d; sp.appendChild(o); }); sp.value = String(periodo);  // 0.7.30 (dono): pela data do processo
+    [1, 3, 7, 15, 30, 60, 90].forEach(function (d) { var o = el("option", null, t("data_op", { p: d === 1 ? t("per1") : t("per_n2", { d: d }) })); o.value = d; sp.appendChild(o); }); sp.value = String(periodo);  // 0.7.30 (dono): pela data do processo
+    sp.title = t("periodo");
     $("bl-leitura-t").textContent = t("bl_leitura"); $("bl-filtros-t").textContent = t("bl_filtros"); marcarMaisFiltros();
     $("b-rodar").textContent = t("rodar");
     document.querySelectorAll(".abas button").forEach(function (b) { b.textContent = t("aba_" + b.getAttribute("data-aba")); b.setAttribute("aria-pressed", String(aba === b.getAttribute("data-aba"))); });
@@ -3025,6 +3049,14 @@ window.LEXSUITE_RADAR = null;
   }
   function filtrosSalvos() { try { return JSON.parse(localStorage.getItem("lexsuite:filtros") || "{}") || {}; } catch (e) { return {}; } }
   function filtrosLigados() { var p = JSON.parse(FILTROS_PADRAO), n = 0; Object.keys(p).forEach(function (k) { var dif = MULTI.indexOf(k) >= 0 ? lista_(F[k]).length > 0 : F[k] !== p[k]; if (dif && !(k === "gig" && D.prefs && D.prefs.esconder_gigantes && F.gig)) n++; }); return n; }
+  function moverIndicador() {  // 0.7.30 (dono): a barrinha desliza até a aba escolhida
+    requestAnimationFrame(function () {
+      var vz = $("visao"), sel_ = vz && vz.querySelector('[aria-selected="true"]'); if (!sel_) return;
+      var ind = vz.querySelector(".indicador"); if (!ind) { ind = el("span", "indicador"); ind.setAttribute("aria-hidden", "true"); vz.appendChild(ind); }
+      ind.style.left = sel_.offsetLeft + "px"; ind.style.width = sel_.offsetWidth + "px";
+    });
+  }
+  window.addEventListener("resize", function () { moverIndicador(); });
   function marcarMaisFiltros() {  // 0.7.30 (dono): filtros menos usados ficam em "Mais filtros", com quantos estão ligados
     var p_ = JSON.parse(FILTROS_PADRAO), n_ = 0;
     ["contato", "frente", "gig", "exc", "cnpj", "trib", "data", "vara", "setor", "porte", "uf"].forEach(function (k) {
@@ -3052,7 +3084,12 @@ window.LEXSUITE_RADAR = null;
     var b = el("button", sel.length ? "ligado" : null); b.type = "button"; b.setAttribute("aria-expanded", String(multiAberto === k)); b.setAttribute("aria-haspopup", "true");
     b.textContent = !sel.length ? t(ROTULO_TODOS[k]) : sel.length === 1 ? rotuloFacet(k, sel[0]) + " (" + num(cont[sel[0]] || 0) + ")" : t(ROTULO_N[k], { n: sel.length });
     b.title = box.getAttribute("data-rotulo") || "";
-    box.appendChild(b);
+    box.appendChild(b); box.classList.toggle("tem-x", !!sel.length);
+    if (sel.length) {  // 0.7.30 (dono): ✕ tira o filtro sem abrir a lista
+      var bx_ = el("button", "multi-x", "✕"); bx_.type = "button"; bx_.title = t("f_tirar"); bx_.setAttribute("aria-label", t("f_tirar") + ": " + (box.getAttribute("data-rotulo") || k));
+      bx_.addEventListener("click", function (ev) { ev.stopPropagation(); F[k] = []; limite = 10; multiAberto = ""; cabecalho(); desenhar(); });
+      box.appendChild(bx_);
+    }
     var pn = el("div", "multi-painel"); pn.hidden = multiAberto !== k; pn.setAttribute("role", "group"); pn.setAttribute("aria-label", box.getAttribute("data-rotulo") || k);
     var lista = el("div", "multi-lista");
     var ordenar = function (a_, b_) { if (k === "data") return b_.localeCompare(a_); if (k === "trib") return Number(a_.replace(/\D/g, "")) - Number(b_.replace(/\D/g, "")); return rotuloFacet(k, a_).localeCompare(rotuloFacet(k, b_), loc()); };
@@ -3081,7 +3118,8 @@ window.LEXSUITE_RADAR = null;
       bs.addEventListener("input", function () { multiBusca[k] = bs.value; desenharLista(); }); pn.appendChild(bs);
     }
     desenharLista(); pn.appendChild(lista);
-    var rod = el("div", "multi-rodape"), bl = el("button", "btn-txt", t("m_limpar")), bf = el("button", "btn-txt", t("fechar")); bl.type = bf.type = "button";
+    var rod = el("div", "multi-rodape"), bt_ = el("button", "btn-txt", t("m_todos")), bl = el("button", "btn-txt", t("m_limpar")), bf = el("button", "btn-txt", t("fechar")); bl.type = bf.type = bt_.type = "button";
+    bt_.addEventListener("click", function () { F[k] = chaves.slice(); limite = 10; cabecalho(); desenhar(); }); rod.appendChild(bt_);  // 0.7.30 (dono): marcar todos de uma vez
     bl.addEventListener("click", function () { F[k] = []; limite = 10; cabecalho(); desenhar(); });
     bf.addEventListener("click", function () { multiAberto = ""; cabecalho(); b.focus(); });
     rod.appendChild(bl); rod.appendChild(bf); pn.appendChild(rod);
@@ -3718,6 +3756,21 @@ window.LEXSUITE_RADAR = null;
     tx.appendChild(el("span", null, ds.length ? t("pp_diarios", { d: dataCurta(ds[0]), a: dataCurta(ds[ds.length - 1]) }) : ""));
     var nf = filtrosLigados(); if (nf) tx.appendChild(el("span", "pp-filtros", t("pp_filtros", { n: nf })));
     c.appendChild(tx);
+    // 0.7.30 (dono): qual tribunal o Painel está analisando, à vista (é o mesmo filtro "Tribunal" da barra)
+    var trs = {}; (D.itens || []).forEach(function (i) { if (i.tribunal) trs[i.tribunal] = 1; }); lista_(F.trib).forEach(function (x) { trs[x] = 1; });
+    var tl = Object.keys(trs).sort(function (a, b) { return Number(a.replace(/\D/g, "")) - Number(b.replace(/\D/g, "")); });
+    if (tl.length > 1) {
+      var st = el("div", "pp-seg pp-trib"); st.setAttribute("role", "group"); st.setAttribute("aria-label", t("pp_trib"));
+      st.appendChild(el("span", "pp-rot", t("pp_trib")));
+      var marc = lista_(F.trib), bt0 = el("button", null, t("pp_trib_todos")); bt0.type = "button"; bt0.setAttribute("aria-pressed", String(!marc.length));
+      bt0.addEventListener("click", function () { F.trib = []; cabecalho(); desenhar(); }); st.appendChild(bt0);
+      tl.forEach(function (x) {
+        var b = el("button", null, x); b.type = "button"; b.setAttribute("aria-pressed", String(marc.indexOf(x) >= 0));
+        b.addEventListener("click", function () { var a = lista_(F.trib).slice(), ix = a.indexOf(x); if (ix >= 0) a.splice(ix, 1); else a.push(x); F.trib = a; cabecalho(); desenhar(); });
+        st.appendChild(b);
+      });
+      c.appendChild(st);
+    }
     if (MODO === "app") {
       var seg = el("div", "pp-seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", t("periodo"));
       seg.appendChild(el("span", "pp-rot", t("pp_lidas")));
@@ -3776,10 +3829,11 @@ window.LEXSUITE_RADAR = null;
   function desenhar() {
     marcarLimpar();
     if (MODO !== "app" && (visao === "arquivo" || visao === "historico")) visao = "lista";
+    moverIndicador();
     ["painel", "lista", "arquivo", "historico"].forEach(function (v) { var b = $("v-" + v); b.textContent = t("v_" + v); b.setAttribute("aria-selected", String(visao === v)); b.hidden = MODO !== "app" && (v === "arquivo" || v === "historico"); });
     $("graficos").hidden = visao !== "painel"; $("lista").hidden = visao === "painel" || visao === "historico";
     $("historico-aba").hidden = visao !== "historico";
-    $("barra-lista").hidden = visao === "historico"; $("controles").hidden = visao === "historico"; $("filtros-extra").hidden = visao === "historico"; $("ordenacao").hidden = visao === "historico" || visao === "painel";
+    $("barra-lista").hidden = visao === "historico"; $("bl-filtros-t").textContent = t(visao === "painel" ? "bl_filtros_painel" : "bl_filtros"); $("controles").hidden = visao === "historico"; $("filtros-extra").hidden = visao === "historico"; $("ordenacao").hidden = visao === "historico" || visao === "painel";
     var oc = ["ordem", "ordem2", "exportar"]; oc.forEach(function (id) { $(id).style.visibility = visao === "painel" ? "hidden" : ""; });
     desenharArquivoInfo(); desenharLote();
     if (visao === "historico") { $("mais").hidden = true; desenharHistorico(); return; }
@@ -3828,8 +3882,9 @@ window.LEXSUITE_RADAR = null;
     $("f-busca").placeholder = t("busca_ph"); $("f-busca").value = F.busca;
     var fs = $("f-salvos"), salvos = filtrosSalvos(); fs.textContent = ""; var s0 = el("option", null, t("salvos_ph")); s0.value = ""; fs.appendChild(s0);
     var vis_ = Object.keys(salvos).filter(function (k) { return !(salvos[k] && salvos[k].arquivado); }).sort(function (a, b) { return a.localeCompare(b, loc(), { sensitivity: "base" }); });
-    vis_.forEach(function (k) { var op = el("option", null, k); op.value = k; fs.appendChild(op); }); fs.hidden = !vis_.length;  // 0.7.28: ordem alfabética, arquivados escondidos
-    $("b-salvar-filtro").textContent = t("salvar_filtro");
+    vis_.forEach(function (k) { var op = el("option", null, k); op.value = k; fs.appendChild(op); });  // 0.7.28: ordem alfabética, arquivados escondidos
+    if (!vis_.length) { s0.textContent = t("salvos_vazio"); } fs.hidden = false; fs.title = t("salvos_x");  // 0.7.30 (dono): sempre à vista, para achar onde ficam
+    $("b-salvar-filtro").textContent = t("salvar_curto"); $("b-salvar-filtro").title = t("salvar_filtro");
     marcarLimpar();
     var so2 = $("ordem2"); so2.textContent = ""; [["", t("ord2_nada")], ["valor", t("ord2_valor")], ["recentes", t("ord2_recentes")], ["porte", t("ord2_porte")], ["empresa", t("ord2_empresa")], ["vara", t("ord2_vara")], ["situacao", t("ord2_situacao")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; so2.appendChild(op); }); so2.value = ordem2;
     $("f-cnpj").textContent = t("f_cnpj"); $("f-cnpj").setAttribute("aria-pressed", String(F.cnpj));
