@@ -5,7 +5,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 
 ## O que já existe e funciona
 
-- Robô v0.7.29 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 205 testes verdes,
+- Robô v0.7.30 (`robo/`), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 226 testes verdes,
   pacote em `releases/` e `docs/downloads/`. Tela local em 127.0.0.1, planilha `LexSuiteONE.xlsx` no Drive do escritório,
   atualização assinada (chave só na nuvem), manual personalizado, revisão de segurança (risco baixo). Na 0.7.9: horários
   de leitura escolhidos pelo escritório e leitura perdida compensada. Na 0.7.10 (publicada em 08/Nov, 16:39 UTC): domingo e
@@ -56,6 +56,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
   o atalho e a leitura automática usam `pythonw.exe` (sem console), o que ia para a janela vai para `saida/registro.txt` (Configuração → Ver registro),
   erro antes de abrir vira caixa do Windows, o `DIAGNOSTICO.bat` ganha "Encerrar o RADAR" e o `ABRIR.bat --ver` abre com janela (suporte); a janela
   fechada no X reabre pelo atalho; Painel com período e barras ou pizza, meses com letras e selo de licença. Sem mudança na regra de licença.
+  A 0.7.30 (publicada em 11/Nov; a primeira revisão barrou 2 defeitos de tela, menu ☰ ilegível no modo escuro e rolagem lateral no celular com "Mais filtros", corrigidos) traz a tela em blocos (leitura, filtros fixos no alto, ordenação), a "Data do processo" pela data em que saiu no Diário ("último dia útil", pulando fim de semana e feriado, ou 3 a 90 dias), o Painel com período lembrado, botões por tribunal, barras e pizza, o modo escuro (Perfil: Igual ao sistema, Claro ou Escuro), impressão no claro, o selo de licença com o estado, a faixa de versão nova com a tela aberta (a cada 30 minutos, só pela rota local) e a rolagem da página de trás travada com janela aberta; o Esc fecha uma camada por vez. Sem mudança na regra de licença. Defeitos conhecidos (aparência, vão para a 0.7.31): no computador, os botões da faixa de leitura vão para uma segunda linha; com o Perfil e a busca geral abertos, um Esc fecha as duas.
   **Falta o teste no Windows (só o dono pode fazer): ver "Preciso do dono" no quadro.**
 - Site https://judicial.solverone.com.br **no ar** (GitHub Pages, pasta `docs/`, HTTPS forçado). É gerado de `paginas/`
   por `python ferramentas/marca.py`: nunca edite `docs/index.html` nem `docs/404.html` à mão. Tem página inicial PT/EN
@@ -100,7 +101,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 - Repositório segue no GitHub pessoal até depois da visita; migração para a organização `solverone` sem impacto para o
   cliente (tudo que ele vê aponta para `judicial.solverone.com.br`). Roteiro em `robo/PENDENCIAS.md`.
 - Instalação no cliente (KR Law) na quinta-feira 12/Nov, na casa do Leandro, pelo dono. O pacote de quinta é a última
-  versão publicada (0.7.29 em 11/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
+  versão publicada (0.7.30 em 11/Nov). Roteiro da visita e quatro prompts (PJe, ficha de canais da empresa, Astrea, e-SAJ)
   em `docs/VISITA-KR-LAW.md`: rodam sozinhos, no Sonnet, na conta do escritório; param em login, token, certificado ou
   captcha e escrevem BLOQUEIO; o relatório final volta à sessão de Produto.
 - Publicação de versão (08/Nov): só a Operação publica, e só depois do dono escrever "publica a versão X" na conversa da
