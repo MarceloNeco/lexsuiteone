@@ -162,7 +162,7 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.31 (teste do dono na 0.7.29/0.7.30, 11/Nov) — no ramo, esperando "pode a 0.7.31"
+## 0.7.31 (teste do dono na 0.7.29/0.7.30, 11/Nov) — pronta para publicar (o dono: "joga na 31")
 
 Feito no ramo: faixa e janela do aceite curtas ("Falta aceitar os termos: abrir a página de aceite. Dúvidas: …", sem o
 link por extenso nem o código); sem linha vermelha repetida quando o motivo é a licença; código travado e mascarado
@@ -172,7 +172,9 @@ aviso de que só soma totais e legenda da cor dourada; "Publicado no Diário" no
 Configuração da leitura mais baixa (botões à esquerda, texto ao lado); setas que giram e mira e "Mais filtros" abrem e
 fecham com movimento; Configuração e Perfil pelo menu em janela, rolando com a roda do mouse; (?) na frente da janela;
 tirar o último horário pergunta e desliga a leitura automática, e a tela inicial avisa "Leitura automática desligada.
-Configurar"; frase das 19h mais simples; manual genérico (sem o nome da pessoa nem do escritório).
+Configurar"; frase das 19h mais simples; manual genérico (sem o nome da pessoa nem do escritório), com ícone e logo
+embutidos (antes apontava para arquivos do site e a imagem quebrava) e sem a fonte do site; "Perfil" só no botão das
+iniciais (saiu do grupo Programa do menu); manual explica que o código fica travado depois de confirmado.
 
 Proposto ao dono, esperando decisão:
 - **0.7.32 (gráficos)**: dica ao passar o mouse (nome, número, %); filtrar no próprio gráfico clicando na legenda (os

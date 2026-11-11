@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.30 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.31 (frente trabalhista)
 
 Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,11 @@ se mudam no programa: Configuração → Regras do escritório. Se a planilha es
 
 ## A tela
 
+- **0.7.31 (teste do dono na 0.7.30, 11/Nov):** termos e licença com textos curtos (sem o link por extenso nem o código),
+  código travado e mascarado, Termos com um botão; Sazonalidade com um botão e "Últimos N meses"; "Publicado no Diário";
+  Configuração da leitura mais baixa; setas que giram e painéis que abrem e fecham com movimento; Configuração e Perfil
+  em janela e rolando com a roda do mouse; (?) na frente; desligar a leitura automática com confirmação e aviso na tela
+  inicial; manual genérico, com o ícone embutido.
 - **0.7.30, revisão da Operação (11/Nov):** menu ☰ legível no modo escuro; no celular, "Mais filtros" aberto não
   alarga a página; "último dia útil" pula feriado nacional; Esc fecha o Perfil; impressão sempre no claro; contraste
   mínimo em todo texto (claro e escuro), conferido pelo `larguras.js`.

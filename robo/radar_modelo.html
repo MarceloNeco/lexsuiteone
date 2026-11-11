@@ -1946,7 +1946,7 @@ window.LEXSUITE_RADAR = null;
       k_acima: "Acima de {min}", k_acima_det: "pelo valor da causa", k_soma: "Valor somado", k_soma_det: "{n} ação(ões) com valor", k_empresas: "Empresas",
       k_empresas_det: "{n} com mais de uma ação", k_sem_valor: "Sem valor no Diário", k_sem_valor_det: "o valor aparece no PJe",
       g_dia: "Ações por dia", g_mes: "Ações por mês", g_faixas: "Faixas de valor da causa", g_setores: "Setores", g_empresas: "Empresas com mais ações",
-      g_porte: "Porte da empresa", g_trib: "Tribunais", g_uf: "Estado da empresa", g_vara: "Varas com mais ações",
+      g_porte: "Porte da empresa", g_trib: "Tribunais", g_uf: "Estado da empresa", g_sit: "Situação no escritório", g_vara: "Varas com mais ações",
       g_nota: "Os números seguem os filtros acima. Clique numa barra para ver essas ações na lista.", g_vazio: "Nenhuma ação com estes filtros.",
       fx_sem: "Sem valor", fx_ate: "Até {a}", fx_entre: "{a} a {b}", fx_acima: "Acima de {a}", sem_setor: "Sem setor (sem CNPJ)", sem_porte: "Sem porte (sem CNPJ)", sem_uf: "Sem estado (sem CNPJ)",
       g_acoes_n: "{n} ação(ões)", g_ver: "Ver na lista: {r}",
@@ -2043,7 +2043,7 @@ window.LEXSUITE_RADAR = null;
       k_acima: "Above {min}", k_acima_det: "by claim value", k_soma: "Total claim value", k_soma_det: "{n} lawsuit(s) with a value", k_empresas: "Companies",
       k_empresas_det: "{n} with more than one lawsuit", k_sem_valor: "No value in the gazette", k_sem_valor_det: "the value shows in PJe",
       g_dia: "Lawsuits per day", g_mes: "Lawsuits per month", g_faixas: "Claim value ranges", g_setores: "Sectors", g_empresas: "Companies with most lawsuits",
-      g_porte: "Company size", g_trib: "Courts", g_uf: "Company state", g_vara: "Court units with most lawsuits",
+      g_porte: "Company size", g_trib: "Courts", g_uf: "Company state", g_sit: "Status at the firm", g_vara: "Court units with most lawsuits",
       g_nota: "Numbers follow the filters above. Click a bar to see those lawsuits in the list.", g_vazio: "No lawsuit with these filters.",
       fx_sem: "No value", fx_ate: "Up to {a}", fx_entre: "{a} to {b}", fx_acima: "Above {a}", sem_setor: "No sector (no tax ID)", sem_porte: "No size (no tax ID)", sem_uf: "No state (no tax ID)",
       g_acoes_n: "{n} lawsuit(s)", g_ver: "See in the list: {r}",
@@ -3571,7 +3571,7 @@ window.LEXSUITE_RADAR = null;
       [t("menu_ver"), [["painel", "v_painel"], ["lista", "v_lista"], ["arquivo", "v_arquivo"], ["historico", "v_historico"]].map(function (v) { return [t(v[1]), function () { trocarVisao(v[0]); }, visao === v[0]]; })],
       [t("menu_planilha"), [[t("planilha_abrir"), abrirPlanilhaComAviso], [t("gerar_copia"), gerarCopia], [t("pasta_abrir"), function () { abrirPlanilha("pasta"); }]]],
       [t("menu_contatos"), [[t("colar_logada"), colarContatos]]],
-      [t("menu_programa"), [[t("config"), function () { abrirConfig(true); }], [t("rg_titulo"), editarPreferencias], [t("perfil"), function () { abrirPerfil(false); }], [t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }],
+      [t("menu_programa"), [[t("config"), function () { abrirConfig(true); }], [t("rg_titulo"), editarPreferencias], [t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }],
         [t("termos_t"), function () { abrirConfig(true, "c-termos-wrap"); }], [t("abrir_aba"), function () { post("/abrir-em-aba", {}); }], [t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); }]]]
     ];
   }
@@ -3953,6 +3953,7 @@ window.LEXSUITE_RADAR = null;
     else grade.appendChild(grafLinhas(t("g_vara"), contar(itens, function (i) { return i.vara ? [i.vara, i.vara] : null; }), { campo: "vara" }));
     grade.appendChild(grafLinhas(t("g_sinal"), contar(itens, function (i) { return i.sinal ? [i.sinal, i.sinal] : ["", t("sinal_antigo")]; }), { max: 8 }));
     grade.appendChild(grafLinhas(t("g_uf"), contar(itens, function (i) { var u = (i.empresa || {}).uf; return u ? [u, u] : ["", t("sem_uf")]; }), { campo: "uf" }));
+    grade.appendChild(grafLinhas(t("g_sit"), contar(itens, function (i) { var s_ = statusDe(i); return [s_, t("st_" + s_)]; }), { campo: "sit" }));  // teste do dono (0.7.30): como o escritório está tratando as ações
     alvo.appendChild(grade);
     alvo.appendChild(el("p", "nota-g", t("g_nota")));
     if (D && D.criterio && D.criterio.desde) alvo.appendChild(el("p", "nota-g", t("criterio_nota", { d: dataCurta(D.criterio.desde) })));
