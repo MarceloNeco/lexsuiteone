@@ -105,6 +105,11 @@ header { display: contents; }
 .engrenagem[aria-expanded="true"], .engrenagem:hover { background: #fff; color: var(--noite); }
 .banner.nova { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; background: var(--latao-wash); color: var(--latao-texto); border-color: var(--latao); }
 #config .nota-registro#c-mira { margin-bottom: 10px; }
+.progresso-linha { display: flex; align-items: center; gap: 10px; max-width: 560px; }
+.progresso-linha .progresso { flex: 1; margin: 0; }
+.girando { display: inline-block; color: var(--latao); font-size: 1.15rem; line-height: 1; animation: girar 1.1s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .girando { animation-duration: 3s; } }
 .progresso { height: 8px; border-radius: 999px; background: var(--linha); overflow: hidden; margin: 2px 0 6px; max-width: 520px; }
 .progresso i { display: block; height: 100%; background: var(--latao); border-radius: 999px; transition: width .6s ease; }
 .atalhos-fim { display: inline-flex; gap: 16px; margin-left: 10px; }
@@ -457,9 +462,12 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .nuvens { align-items: center; } .nuvem-nota { color: var(--tinta-3); font-size: .82rem; flex-basis: 100%; }
 .ajuda-topo .ajuda { border-color: rgba(255,255,255,.45); color: #e6eaf2; margin-left: -4px; } .ajuda-topo[hidden] { display: none; }
 #c-pasta-cartoes, #c-agendar-wrap, #c-arm-wrap, #c-termos-wrap, #c-aone-wrap, #c-codigo { scroll-margin-top: 90px; }  /* 0.7.25: não some sob o cabeçalho */
-.rodar-criterio { font-size: .82rem; color: var(--tinta-3); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }  /* 0.7.28: uma linha ao lado do botão */
+.rodar-criterio { font-size: .82rem; color: var(--tinta-3); display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; justify-content: flex-end; }  /* 0.7.28: uma linha ao lado do botão */
+.rodar-criterio .rc-txt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.rodar-criterio .btn-txt { flex: none; }
+.rodar-criterio .rc-nao-salvo { color: var(--latao-texto); font-weight: 600; }
 .rodar-criterio .btn-txt { font-size: .82rem; }
-@media (max-width: 760px) { .rodar-criterio { white-space: normal; flex: 1 1 100%; text-align: left; order: 5; } }
+@media (max-width: 760px) { .rodar-criterio { flex: 1 1 100%; justify-content: flex-start; order: 5; } .rodar-criterio .rc-txt { white-space: normal; } }
 .perigo { border: 1px solid #c4473a; background: #fdecea; color: #a3261b; border-radius: 999px; padding: 6px 16px; font-weight: 700; font-size: .86rem; cursor: pointer; box-shadow: 0 1px 3px rgba(163,38,27,.25); }
 .perigo:hover, .perigo:focus-visible { background: #f9d6d2; outline: 2px solid #c4473a; outline-offset: 1px; }
 .salvo-ok { color: #1e7d3c; font-weight: 700; margin-left: 6px; }
@@ -1928,7 +1936,7 @@ window.LEXSUITE_RADAR = null;
   // 0.7.16: textos novos (PT e EN)
   Object.assign(T.pt, {
     lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento", pf_lic_rot: "Licença:", lic_ativa: "ativa", lic_sem_resposta: "sem confirmação agora", lic_aceite: "aguardando o aceite dos termos", lic_bloqueada: "inativa", lic_sem_codigo: "sem código",
-    rodar_crit_1: "Lê: hoje e o último dia útil · {l}", rodar_crit_n: "Lê: hoje e os últimos {d} dias úteis · {l}", rodar_crit_alterar: "alterar",
+    rodar_crit_1: "Lê: hoje e o último dia útil · {l}", rodar_crit_n: "Lê: hoje e os últimos {d} dias úteis · {l}", rodar_crit_alterar: "alterar", rodar_crit_mudou: "(marcado, ainda não salvo)",
     ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
     c_trib_lidos: "Tribunais que a leitura lê: {l}.", ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Se precisar de suporte, use o DIAGNOSTICO.bat: ele leva estas linhas, sem CPF.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo",
     rg_titulo: "Regras do escritório", rg_intro: "O que o RADAR esconde ou destaca na lista. Fica gravado nas abas Preferências e Exclusões da planilha, com cópia de segurança antes; não é preciso abrir o Excel. O que for escrito à mão nessas abas é substituído ao salvar aqui.",
@@ -1999,7 +2007,7 @@ window.LEXSUITE_RADAR = null;
   });
   Object.assign(T.en, {
     lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date", pf_lic_rot: "Licence:", lic_ativa: "active", lic_sem_resposta: "not confirmed right now", lic_aceite: "waiting for the terms to be accepted", lic_bloqueada: "inactive", lic_sem_codigo: "no code",
-    rodar_crit_1: "Reads: today and the last working day · {l}", rodar_crit_n: "Reads: today and the last {d} working days · {l}", rodar_crit_alterar: "change",
+    rodar_crit_1: "Reads: today and the last working day · {l}", rodar_crit_n: "Reads: today and the last {d} working days · {l}", rodar_crit_alterar: "change", rodar_crit_mudou: "(ticked, not saved yet)",
     ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
     c_trib_lidos: "Courts the reading covers: {l}.", ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). For support, run DIAGNOSTICO.bat: it takes these lines, without CPF.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file",
     rg_titulo: "Firm rules", rg_intro: "What RADAR hides or highlights in the list. Saved in the spreadsheet\u2019s Preferences and Exclusions tabs, with a backup copy first; no need to open Excel. Anything typed by hand in those tabs is replaced when you save here.",
@@ -2144,7 +2152,8 @@ window.LEXSUITE_RADAR = null;
       var ultima = e.mensagens && e.mensagens.length ? e.mensagens[e.mensagens.length - 1].texto : "";
       var pct = Math.max(1, Math.min(99, Number(e.progresso) || 1)), barra = el("div", "progresso"), cheio = el("i");
       cheio.style.width = pct + "%"; barra.appendChild(cheio); barra.setAttribute("role", "progressbar"); barra.setAttribute("aria-valuemin", "0"); barra.setAttribute("aria-valuemax", "100"); barra.setAttribute("aria-valuenow", String(pct)); barra.setAttribute("aria-label", t("rodando"));
-      box.appendChild(barra);
+      var linhaB_ = el("div", "progresso-linha"); linhaB_.appendChild(barra);
+      var gira_ = el("span", "girando", "↻"); gira_.setAttribute("aria-hidden", "true"); linhaB_.appendChild(gira_); box.appendChild(linhaB_);  // 0.7.30 (dono): mostra que ainda está trabalhando
       if (e.atrasada) box.appendChild(el("span", "aviso-leve", t("atrasada", { h: fmtHora(e.atrasada) })));
       box.appendChild(el("span", "andando", (e.externa ? t("rodando_auto", { h: String(e.inicio || "").slice(11, 16) }) : t("rodando")) + " " + pct + "%" + (ultima ? " · " + ultima : "")));
       if (MODO === "app") {
@@ -2256,7 +2265,25 @@ window.LEXSUITE_RADAR = null;
     }
     vigia = setTimeout(passo, 1500);
   }
+  function selMudou() {  // 0.7.30 (dono): tribunais marcados na mira e ainda não salvos
+    var a = Object.keys(sel).sort().join(","), b = ((APP && APP.config && APP.config.tribunais) || []).slice().sort().join(",");
+    return MODO === "app" && !!APP && a !== b;
+  }
+  function desenharCriterio() {
+    var rc_ = $("rodar-criterio"); if (!rc_) return;
+    rc_.hidden = MODO !== "app" || !APP; rc_.textContent = ""; if (rc_.hidden) return;
+    var mudou_ = selMudou(), trs_ = mudou_ ? Object.keys(sel) : ((APP.config && APP.config.tribunais) || []);  // 0.7.21 (dono): o que "Ler o Diário agora" vai ler
+    trs_ = trs_.slice().sort(function (x, y) { return Number(x.replace(/\D/g, "")) - Number(y.replace(/\D/g, "")); });
+    var dpt_ = APP.config.dias_para_tras, lst_ = trs_.length > 4 ? trs_.slice(0, 4).join(", ") + " +" + (trs_.length - 4) : trs_.join(", ");
+    var tx_ = el("span", "rc-txt", trs_.length ? t(dpt_ === 0 ? "rodar_crit_0" : (dpt_ || 1) > 1 ? "rodar_crit_n" : "rodar_crit_1", { d: dpt_ || 1, l: lst_ }) : t("rodar_crit_nada"));
+    tx_.title = tx_.textContent; rc_.appendChild(tx_);
+    if (mudou_) rc_.appendChild(el("span", "rc-nao-salvo", t("rodar_crit_mudou")));
+    var alt_ = el("button", "btn-txt", t("rodar_crit_alterar")); alt_.type = "button"; alt_.title = t("rodar_crit_x");
+    alt_.addEventListener("click", function () { if ($("painel").hidden) $("b-trib").click(); $("b-trib").scrollIntoView({ behavior: "smooth", block: "center" }); });
+    rc_.appendChild(alt_);
+  }
   function rodar() {
+    if (selMudou() && Object.keys(sel).length) { salvarTribunais(true); return; }  // 0.7.30 (dono): marcou na mira e clicou em "Ler o Diário agora": salva e lê o que está marcado
     if (!Object.keys(sel).length) { $("painel").hidden = false; $("b-trib").setAttribute("aria-expanded", "true"); painel(); mostrarEstado({ erro: t("sem_trib") }); return; }
     if (APP && APP.conta && !APP.conta.ok) { mostrarEstado({ erro: textoConta() }); abrirConfig(false); return; }
     $("estado").textContent = t("carregando");
@@ -2270,6 +2297,7 @@ window.LEXSUITE_RADAR = null;
     }).catch(function () { $("estado").textContent = t("falha"); });
   }
   function painel() {
+    desenharCriterio();  // 0.7.30 (dono): o texto ao lado de "Ler o Diário agora" acompanha o que está marcado
     if (!APP) return;
     var alvo = $("painel-lista"); alvo.textContent = "";
     var todos = APP.tribunais || [], total = todos.length;
@@ -3730,15 +3758,7 @@ window.LEXSUITE_RADAR = null;
     var tribs = D.tribunais || [], tx = tribs.length <= 3 ? t("t1", { a: tribs.join(", ") }) : tribs.length <= 6 ? t("tn", { k: tribs.length, a: tribs.join(", ") }) : t("tk", { k: tribs.length });
     desenharMarca($("marca")); $("escritorio-nome").textContent = MODO === "app" ? "" : (D.escritorio || "");
     var temPlanilha = !!(APP && APP.config.planilha);
-    var rc_ = $("rodar-criterio"), trs_ = (APP && APP.config && APP.config.tribunais) || [];  // 0.7.21 (dono): o que "Ler o Diário agora" vai ler
-    rc_.hidden = MODO !== "app" || !APP; rc_.textContent = "";
-    if (!rc_.hidden) {  // 0.7.28 (dono): uma linha curta ao lado do botão, com atalho para mudar
-      var dpt_ = APP.config.dias_para_tras, lst_ = trs_.length > 4 ? trs_.slice(0, 4).join(", ") + " +" + (trs_.length - 4) : trs_.join(", ");
-      rc_.appendChild(document.createTextNode(trs_.length ? t(dpt_ === 0 ? "rodar_crit_0" : (dpt_ || 1) > 1 ? "rodar_crit_n" : "rodar_crit_1", { d: dpt_ || 1, l: lst_ }) + " · " : t("rodar_crit_nada") + " "));
-      var alt_ = el("button", "btn-txt", t("rodar_crit_alterar")); alt_.type = "button"; alt_.title = t("rodar_crit_x");
-      alt_.addEventListener("click", function () { $("b-trib").click(); $("b-trib").scrollIntoView({ behavior: "smooth", block: "center" }); });
-      rc_.appendChild(alt_); rc_.title = t("rodar_crit_x");
-    }
+    desenharCriterio();
     $("b-planilha").hidden = MODO !== "app"; $("b-planilha").textContent = t("planilha_abrir");
     var bpa = $("b-planilha-ajuda"); bpa.textContent = ""; bpa.hidden = MODO !== "app" || $("b-planilha").hidden; if (!bpa.hidden) bpa.appendChild(ajuda(t("planilha_ajuda")));
     $("b-planilha").title = temPlanilha ? APP.config.planilha : t("planilha_falta");
