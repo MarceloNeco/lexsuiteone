@@ -447,11 +447,11 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .bloco-leitura .bl-esq { display: contents; }
 .bloco-leitura .bl-cab { grid-area: cab; margin-bottom: 4px; } .bloco-leitura .rodar-criterio { grid-area: txt; align-self: end; } .bloco-leitura .estado { grid-area: est; align-self: start; }
 .bloco-leitura .bl-dir { grid-area: bot; align-self: center; }
-#b-trib i { display: inline-block; transition: transform .2s ease; } #b-trib[aria-expanded="true"] i { transform: rotate(180deg); }
-#painel:not([hidden]) { animation: painel-abre .22s ease-out; } #painel.fechando { animation: painel-fecha .18s ease-in forwards; }
+#b-trib i, .seta-gira { display: inline-block; font-style: normal; transition: transform .2s ease; } #b-trib[aria-expanded="true"] i, [aria-expanded="true"] > .seta-gira { transform: rotate(180deg); }
+#painel:not([hidden]), #filtros-avancados:not([hidden]) { animation: painel-abre .22s ease-out; } #painel.fechando, #filtros-avancados.fechando { animation: painel-fecha .18s ease-in forwards; }
 @keyframes painel-abre { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes painel-fecha { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-8px); } }
-@media (prefers-reduced-motion: reduce) { #b-trib i { transition: none; } #painel:not([hidden]), #painel.fechando { animation: none; } }
+@media (prefers-reduced-motion: reduce) { #b-trib i, .seta-gira { transition: none; } #painel:not([hidden]), #painel.fechando, #filtros-avancados:not([hidden]), #filtros-avancados.fechando { animation: none; } }
 @media (max-width: 760px) { .bloco-leitura { grid-template-columns: minmax(0, 1fr); grid-template-areas: "cab" "txt" "est" "bot"; } .bl-dir { flex-wrap: wrap; margin-top: 6px; } .bl-dir > * { flex: 1 1 auto; justify-content: center; } }
 .so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .salvos-grupo { display: inline-flex; align-items: center; gap: 6px; }
@@ -536,7 +536,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 #perfil .painel-rodape { position: sticky; bottom: 0; background: var(--folha); padding: 12px 0 16px; border-top: 1px solid var(--linha); }
 #pf-veu { z-index: 65; display: none; } #pf-veu:has(+ #perfil:not([hidden])) { display: block; }
 body.modo-pagina .miolo > :not(#app):not(footer), body.modo-pagina #app > :not(.pagina) { display: none !important; }
-body.modo-pagina #config.pagina:not([hidden]), body.modo-pagina #perfil.pagina:not([hidden]) { position: static; transform: none; width: auto; max-height: none; box-shadow: none; margin-top: 8px; }
+body.modo-pagina #config.pagina:not([hidden]), body.modo-pagina #perfil.pagina:not([hidden]) { position: static; transform: none; width: auto; max-height: none; box-shadow: none; margin-top: 8px; overflow: visible; overscroll-behavior: auto; }  /* teste do dono (0.7.30): como página, a roda do mouse e os dois dedos rolam a página */
 body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 
 .perfil-licenca { background: var(--papel-2); border-radius: 10px; padding: 10px 14px; display: grid; gap: 4px; font-size: .9rem; }
@@ -3139,7 +3139,7 @@ window.LEXSUITE_RADAR = null;
       if (!(k in p_)) return; var dif = MULTI.indexOf(k) >= 0 ? lista_(F[k]).length > 0 : F[k] !== p_[k]; if (dif && !(k === "gig" && D && D.prefs && D.prefs.esconder_gigantes && F.gig)) n_++;
     });
     var b_ = $("b-mais-filtros"); if (!b_) return; var aberto_ = !$("filtros-avancados").hidden;
-    b_.textContent = (n_ ? t("mais_filtros_n", { n: n_ }) : t("mais_filtros")) + (aberto_ ? " ▴" : " ▾"); b_.setAttribute("aria-expanded", String(aberto_)); b_.classList.toggle("ligado", n_ > 0);
+    b_.textContent = (n_ ? t("mais_filtros_n", { n: n_ }) : t("mais_filtros")) + " "; b_.appendChild(el("i", "seta-gira", "▾")); b_.setAttribute("aria-expanded", String(aberto_)); b_.classList.toggle("ligado", n_ > 0);  // a seta gira (teste do dono)
   }
   function marcarLimpar() {  // 0.7.28 (dono): sempre ao lado dos filtros; apagado quando não há filtro
     var nf = filtrosLigados(), b = $("b-limpar-filtros"); b.hidden = false; b.disabled = !nf; marcarMaisFiltros();
@@ -4212,7 +4212,11 @@ window.LEXSUITE_RADAR = null;
   $("c-registro").addEventListener("click", verRegistro);
   try { $("filtros-avancados").hidden = localStorage.getItem("lexsuite:mais-filtros") !== "1"; } catch (e) {}
   $("b-mais-filtros").addEventListener("click", function () {  // 0.7.30 (dono): abre e fecha os filtros menos usados
-    var av_ = $("filtros-avancados"); av_.hidden = !av_.hidden; try { localStorage.setItem("lexsuite:mais-filtros", av_.hidden ? "0" : "1"); } catch (e) {} marcarMaisFiltros();
+    var av_ = $("filtros-avancados"), bt_ = this, abrir_ = av_.hidden;
+    try { localStorage.setItem("lexsuite:mais-filtros", abrir_ ? "1" : "0"); } catch (e) {}
+    if (abrir_) { av_.hidden = false; marcarMaisFiltros(); return; }
+    bt_.setAttribute("aria-expanded", "false"); av_.classList.add("fechando");  // teste do dono (0.7.30): fecha com movimento, como a mira
+    setTimeout(function () { av_.classList.remove("fechando"); if (bt_.getAttribute("aria-expanded") === "false") av_.hidden = true; marcarMaisFiltros(); }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180);
   });  // 0.7.29 (sem janela preta): o que aparecia nela
   $("c-fechar").addEventListener("click", function () { fecharConfig(false); });
   $("pf-x").addEventListener("click", fecharPerfil);

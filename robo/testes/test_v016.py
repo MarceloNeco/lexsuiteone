@@ -1551,6 +1551,6 @@ class Revisao0730(unittest.TestCase):
         h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
         self.assertNotIn("color: var(--noite, #0f1d33)", h)
         self.assertIn(".gaveta button.gv-sair { color: var(--erro);", h)
-        self.assertIn(".bloco-leitura, .barra-lista { grid-template-columns: minmax(0, 1fr); }", h)
+        self.assertIn(".barra-lista { grid-template-columns: minmax(0, 1fr); }", h); self.assertIn(".bloco-leitura { grid-template-columns: auto minmax(0, 1fr);", h)
         self.assertIn('addEventListener("beforeprint"', h)
         self.assertEqual(h.count("aceite_banner:"), 2); self.assertEqual(h.count("aceite_duvidas:"), 2)  # teste do dono: faixa do aceite curta, PT e EN
