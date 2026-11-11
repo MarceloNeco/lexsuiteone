@@ -1,4 +1,4 @@
-# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.28)
+# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.29)
 
 Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
 licença (código, versão e só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou
@@ -9,6 +9,9 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
 
 - **Sem segredos no código ou no pacote.** Nenhuma senha, chave de API ou certificado. A chave privada que assina
   atualizações existe só dentro do serviço de assinatura da SolverONE (ninguém a tem); o pacote leva só a chave pública.
+- **Registro local (0.7.29).** Sem janela preta, o que aparecia nela vai para `saida/registro.txt` (até 3 arquivos de
+  1 MB, no computador; não sai dele). A tela mostra as últimas linhas em Configuração → Ver registro; o
+  `DIAGNOSTICO.bat` leva as últimas 200, com CPF mascarado, só quando o escritório gera e manda o relatório.
 - **Tela local.** O servidor escuta só em 127.0.0.1 (nunca na rede). Pedidos que mudam algo (POST) exigem o cabeçalho
   `X-LexSuite` que só a própria página manda, e a origem é conferida: outro site aberto no navegador não consegue
   mandar o robô rodar nem mudar a configuração. Sem cookies, sem sessão, sem login.

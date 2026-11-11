@@ -203,8 +203,11 @@ def copia_antes_das_regras(base, aviso=print, agora=None):
         return True, ""
     agora = agora or dt.datetime.now()
     destino = os.path.join(pasta_copias(base), f"{agora:%Y-%m-%d %Hh%Mm%S}{REGRAS}")
+    while os.path.exists(destino):  # 0.7.29: dois salvamentos no mesmo segundo não se sobrescrevem (o 2º vai para o segundo seguinte)
+        agora += dt.timedelta(seconds=1)
+        destino = os.path.join(pasta_copias(base), f"{agora:%Y-%m-%d %Hh%Mm%S}{REGRAS}")
     try:
-        os.makedirs(destino, exist_ok=True)
+        os.makedirs(destino)  # nova: se falhar adiante, só ela é apagada
         shutil.copyfile(origem, os.path.join(destino, os.path.basename(origem)))
     except OSError as e:
         shutil.rmtree(destino, ignore_errors=True)

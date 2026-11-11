@@ -162,7 +162,15 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## Para a 0.7.29 (Produto, anotado em 10/Nov à noite)
+## 0.7.29 (11/Nov) — pronta no ramo
+
+Feito: sem janela preta (opção a da Arquitetura, "pode" do dono em 11/Nov); ressalvas 1 a 7, 9 e 10 da segunda revisão
+da 0.7.28 (a 8 é decisão do dono: clicar fora fecha); falso alarme da Saúde. Fica: conferir com o dono os "13.339
+processos no último dia"; ícone perto do relógio (opção c) só se o escritório sentir falta; a ideia de mandar o
+registro para a nuvem espera desenho da Arquitetura. Precisa do teste do dono no Windows: atalho, leitura automática
+(a tarefa é recriada ao abrir a tela), Sair, DIAGNOSTICO.bat opção 2, Ver registro.
+
+## Anotado em 10/Nov à noite (para a 0.7.29)
 
 - Saúde: com todos os cadernos "já conferido", "0 publicações lidas" vira `[atenção] DJEN` (falso alarme visto pelo dono
   na leitura atrasada das 20:00). `saude.avaliar` precisa saber que os cadernos já tinham sido lidos e dizer "ok, nada novo".

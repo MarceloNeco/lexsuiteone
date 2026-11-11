@@ -1064,3 +1064,164 @@ class JaAberto0728(unittest.TestCase):
         h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
         self.assertIn("e.chamado", h)
         self.assertEqual(h.count("ja_aberto:"), 2)
+
+
+def _regras_util(nome):
+    return getattr(Regras0728, nome)
+
+
+class V0729(unittest.TestCase):
+    """0.7.29 (dono: sem janela preta) e ressalvas da segunda revisão da 0.7.28."""
+    setUp = _regras_util("setUp"); tearDown = _regras_util("tearDown"); pedir = _regras_util("pedir")
+    base = _regras_util("base"); arquivo = _regras_util("arquivo"); salvar = _regras_util("salvar")
+    exclusoes_no_disco = _regras_util("exclusoes_no_disco")
+
+    # --- sem janela preta ---
+    def test_registro_grava_e_gira(self):
+        import lexsuite_robo as lr
+        from unittest import mock
+        d = tempfile.mkdtemp(); arq = os.path.join(d, "saida", "registro.txt")
+        with mock.patch.object(lr, "REGISTRO_MAX", 50):
+            r = lr.Registro(arq, None)
+            for i in range(30):
+                r.write(f"linha {i:02d} da leitura\n")
+        self.assertTrue(os.path.exists(arq)); self.assertTrue(os.path.exists(arq[:-4] + "-1.txt"))
+        self.assertFalse(os.path.exists(arq[:-4] + "-3.txt"))  # no máximo 3 arquivos
+        self.assertIn("linha 29", lr.ultimas_linhas_registro(5, arq))
+
+    def test_erro_vai_para_o_registro_e_para_a_caixa(self):
+        import lexsuite_robo as lr
+        from unittest import mock
+        from lexsuite import agendar
+        d = tempfile.mkdtemp(); arq = os.path.join(d, "registro.txt")
+        velho_out, velho_err = sys.stdout, sys.stderr
+        try:
+            with mock.patch.object(lr, "REGISTRO", arq), mock.patch.object(lr, "cmd_app", side_effect=RuntimeError("porta presa")), \
+                    mock.patch.object(lr, "sem_console", return_value=True), mock.patch.object(agendar, "caixa_erro") as caixa:
+                self.assertEqual(lr.main(["app"]), 1)
+        finally:
+            sys.stdout, sys.stderr = velho_out, velho_err
+        texto = open(arq, encoding="utf-8").read()
+        self.assertIn("RuntimeError: porta presa", texto); self.assertIn("· app · versão", texto)
+        caixa.assert_called_once(); self.assertIn("registro.txt", caixa.call_args[0][1])
+
+    def test_tarefa_chama_o_pythonw_sem_bat(self):
+        from lexsuite import agendar
+        pasta = tempfile.mkdtemp(); os.makedirs(os.path.join(pasta, "python"))
+        bat = os.path.join(pasta, "RODAR.bat")
+        self.assertIsNone(agendar.acao_oculta(pasta))
+        self.assertIn(f"<Command>{bat}</Command><Arguments>--agendado</Arguments>", agendar.xml_tarefa(bat, ["20:00"]))
+        open(os.path.join(pasta, "python", "pythonw.exe"), "wb").close()
+        oc = agendar.acao_oculta(pasta)
+        x = agendar.xml_tarefa(bat, ["20:00"], oculta=oc)
+        self.assertIn("pythonw.exe</Command>", x); self.assertIn("lexsuite_robo.py&quot; radar --agendado</Arguments>", x)
+        self.assertNotIn("RODAR.bat", x)
+        self.assertTrue(agendar.precisa_migrar('"PC","LexSuiteONE Radar","...","C:\\LexSuiteONE\\RODAR.bat --agendado"'))
+        self.assertFalse(agendar.precisa_migrar('"PC","LexSuiteONE Radar","...","C:\\LexSuiteONE\\python\\pythonw.exe lexsuite_robo.py"'))
+        self.assertFalse(agendar.precisa_migrar('"PC","Outra tarefa","...","C:\\x\\RODAR.bat"'))
+
+    def test_bats_sem_janela(self):
+        def ler(n):
+            b = open(os.path.join(_ROBO_, n), "rb").read(); self.assertNotIn(b"\n", b.replace(b"\r\n", b"")); return b.decode()
+        a, r, d = ler("ABRIR.bat"), ler("RODAR.bat"), ler("DIAGNOSTICO.bat")
+        self.assertIn('start "" "%PYW%" lexsuite_robo.py app', a); self.assertIn('"--ver"', a)
+        self.assertIn('start "" "%PYW%" lexsuite_robo.py radar --agendado', r)
+        self.assertIn("lexsuite_robo.py parar", d)
+
+    def test_encerrar_a_tela_aberta(self):
+        import threading as _th
+        from lexsuite import app
+        porta = self.srv.server_address[1]
+        app.gravar_pid(self.pasta, porta)
+        ditos = []
+        self.assertTrue(app.encerrar_aberto(self.pasta, aviso=ditos.append, dormir=lambda s: None, portas=[porta]))
+        import time as _t
+        for _ in range(40):
+            if not app.procurar_aberto([porta]):
+                break
+            _t.sleep(0.1)
+        self.assertEqual(app.procurar_aberto([porta]), "")
+        self.assertIn("encerrada", " ".join(ditos))
+
+    def test_ver_registro(self):
+        os.makedirs(os.path.join(self.pasta, "saida"), exist_ok=True)
+        with open(os.path.join(self.pasta, "saida", "registro.txt"), "w", encoding="utf-8") as f:
+            f.write("20:39:36  Radar: lista de distribuição\n")
+        d = self.pedir("GET", "/registro")
+        self.assertIn("Radar: lista", d["texto"]); self.assertTrue(d["caminho"].endswith("registro.txt"))
+
+    # --- ressalvas da segunda revisão da 0.7.28 ---
+    def test_regras_recusadas_durante_a_leitura(self):
+        marca = self.pedir("GET", "/regras")["marca"]
+        self.assertTrue(self.srv.estado.comecar())
+        try:
+            r = self.salvar({}, [{"nome": "Empresa Fictícia Ltda"}], marca=marca)
+        finally:
+            self.srv.estado.terminar({"lidas": 0, "novas": 0})
+        self.assertFalse(r["ok"]); self.assertTrue(r.get("lendo")); self.assertTrue(r["motivo_en"])
+        self.assertTrue(self.salvar({}, [{"nome": "Empresa Fictícia Ltda"}], marca=marca)["ok"])
+
+    def test_leitura_espera_as_regras(self):
+        from lexsuite import app
+        with app._TRAVA_REGRAS:
+            self.assertFalse(self.srv.rodar())
+
+    def test_copia_que_falha_ou_planilha_que_muda_durante_a_copia(self):
+        from unittest import mock
+        from lexsuite import armazenamento, planilha
+        self.assertTrue(self.salvar({}, [{"nome": "Empresa Fictícia A Ltda"}], marca="nova")["ok"])
+        with mock.patch.object(armazenamento, "copia_antes_das_regras", return_value=(False, "Disco cheio.")):
+            r = self.salvar({}, [])
+        self.assertFalse(r["ok"]); self.assertEqual(self.exclusoes_no_disco(), ["Empresa Fictícia A Ltda"])
+        marca = self.pedir("GET", "/regras")["marca"]
+        real = armazenamento.copia_antes_das_regras
+        def copia_e_outro_pc_salva(base, *a, **k):
+            ok = real(base, *a, **k)
+            planilha.liberar_escrita(self.arquivo())
+            from lexsuite import compartilhar
+            compartilhar.gravar_radar  # noqa: B018 - só para lembrar: outro computador regravou as abas
+            from lexsuite import preferencias
+            pref, exc = preferencias.linhas_regras({}, [{"nome": "Empresa Fictícia B Ltda"}])
+            doc = planilha.ler_xlsx(self.arquivo())
+            for aba in doc["abas"]:
+                if aba["nome"] == "Exclusões":
+                    aba["linhas"] = exc
+            planilha.escrever_xlsx(self.arquivo(), doc["abas"])
+            return ok
+        with mock.patch.object(armazenamento, "copia_antes_das_regras", side_effect=copia_e_outro_pc_salva):
+            r = self.salvar({}, [], marca=marca)
+        self.assertFalse(r["ok"]); self.assertTrue(r.get("mudou"))
+        self.assertEqual(self.exclusoes_no_disco(), ["Empresa Fictícia B Ltda"])
+
+    def test_poda_e_copias_no_mesmo_segundo(self):
+        import datetime as _d
+        from lexsuite import armazenamento
+        self.assertTrue(self.salvar({}, [], marca="nova")["ok"])
+        base = self.base()
+        outra = os.path.join(armazenamento.pasta_copias(base), "2026-01-01 10h00m00 - antes de limpar"); os.makedirs(outra)
+        t = _d.datetime(2026, 11, 11, 9, 0, 0)
+        nomes = [os.path.basename(armazenamento.copia_antes_das_regras(base, aviso=lambda *_: None, agora=t)[1]) for _ in range(8)]
+        self.assertEqual(len(set(nomes[:6])), 6)  # o mesmo segundo não sobrescreve (depois da 6ª, a poda libera o nome mais velho)
+        regras = [c["nome"] for c in armazenamento.copias(base) if c["nome"].endswith(armazenamento.REGRAS)]
+        self.assertEqual(len(regras), armazenamento.COPIAS_GUARDADAS)
+        self.assertTrue(os.path.isdir(outra))  # as das regras não empurram as outras
+
+    def test_inteiros_e_saude_e_mes_em_ingles(self):
+        from lexsuite import preferencias, saude, config
+        pref, _ = preferencias.linhas_regras({"minimo_acoes": 2.5, "janela_dias": 10, "valor_minimo": 150500.5}, [])
+        v = {preferencias.CHAVES[l[0]]: l[1] for l in pref[1:]}
+        self.assertEqual(v["minimo_acoes"], preferencias.PADRAO["minimo_acoes"]); self.assertEqual(v["janela_dias"], 10)
+        self.assertEqual(v["valor_minimo"], 150500.5)
+        r = saude.avaliar([], [], hoje=__import__("datetime").date(2026, 11, 10), ja_conferidos=4)
+        self.assertEqual(r[0]["situacao"], "ok")
+        self.assertEqual(saude.avaliar([], [], hoje=__import__("datetime").date(2026, 11, 10))[0]["situacao"], "atenção")
+        self.assertEqual(config.data_curta("2026-02-03", False, en=True), "03/FEB")
+
+    def test_tela_0729(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertNotIn("janela preta", h.split('<script id="assistone-master">')[0].lower().replace("sem janela preta", ""))
+        self.assertEqual(h.count("ver_registro:"), 2)
+        self.assertIn("snapC = estadoConfig(); fecharConfig();", h)
+        self.assertIn("if (nNome.value.trim()) bAdd.click();", h)
+        import re
+        self.assertFalse(re.search(r"\n[ \t]+\n[ \t]+[a-z_0-9]+: \"", h))

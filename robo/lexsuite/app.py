@@ -40,13 +40,13 @@ PARA_VOCE = {
                        "Nada aqui usa inteligência artificial nem tem custo por uso: o robô lê fontes públicas e roda no seu computador."],
     "Advogado ou advogada": ["Clique na linha e a ficha abre: vara, rito, data do Diário, empresa, atividade, porte, capital social e contatos do cadastro público.",
                              "O valor da causa fica atrás do captcha do PJe: \"Abrir consulta no PJe\", cole o número, veja o valor e digite na ficha. Ele sai na planilha exportada.",
-                             "Use o status (visto, em contato, descartado) para não repassar a mesma empresa duas vezes; o filtro \"Acima de\" segue o valor mínimo da aba Preferências.",
+                             "Use o status (visto, em contato, descartado) para não repassar a mesma empresa duas vezes; o filtro \"Acima de\" segue o valor mínimo das Regras do escritório (Configuração).",
                              "Rito ordinário indica causa acima de 40 salários mínimos; sumaríssimo, até 40. É o primeiro corte de valor que o Diário permite."],
     "Estagiário ou estagiária": ["A rotina sugerida: de manhã, abrir a tela, conferir \"Última atualização\" e passar pela lista marcando o status de cada linha.",
                                  "Para as linhas com \"valor a conferir\", abrir a consulta no PJe, resolver o captcha e digitar o valor da causa na ficha.",
-                                 "Cadastrar na aba Exclusões da planilha as empresas que a equipe pedir para não aparecer (nome como está no Diário, ou CNPJ, e o motivo).",
+                                 "Cadastrar em Configuração → Regras do escritório as empresas que a equipe pedir para não aparecer (nome como está no Diário, ou CNPJ, e o motivo).",
                                  "Não é preciso mexer nas abas ocultas da planilha: elas são do suporte."],
-    "Equipe administrativa": ["A planilha (LexSuiteONE - Trabalhista.xlsx, na pasta escolhida) é sua: a aba Preferências ajusta a lista e a aba Exclusões guarda clientes e empresas que não devem aparecer.",
+    "Equipe administrativa": ["A planilha (LexSuiteONE - Trabalhista.xlsx, na pasta escolhida) é sua, para consultar. As regras (valor mínimo, clientes e empresas que não devem aparecer) se mudam em Configuração → Regras do escritório.",
                               "O RADAR lê sozinho nos horários de Configuração (de início, 20h e 8h); se o computador estava desligado, a leitura acontece quando ele ligar.",
                               "Se a planilha estiver aberta e travada na hora de uma rodada, o robô grava na próxima. Nada se perde.",
                               "Avise o suporte quando a tela mostrar \"robô desligado\", \"precisa atualizar\" ou quando a lista vier vazia dois dias úteis seguidos."],
@@ -343,8 +343,8 @@ class Servidor(ThreadingHTTPServer):
 
     def rodar(self, dias=None):
         """Começa uma rodada numa thread. Devolve False se já há uma rodando (aqui ou agendada, em outro processo)."""
-        if leitura_em_outro_processo(self.arquivo_andamento) or not self.estado.comecar():
-            return False
+        if _TRAVA_REGRAS.locked() or leitura_em_outro_processo(self.arquivo_andamento) or not self.estado.comecar():
+            return False  # 0.7.29: também enquanto as regras do escritório estão sendo gravadas
 
         def alvo():
             try:
@@ -563,6 +563,15 @@ class Tratador(BaseHTTPRequestHandler):
             return self._responder({"ok": True, "valores": {k: p.get(k) for k in preferencias.PADRAO}, "marca": marca_r,
                                     "exclusoes": p.get("exclusoes") or [], "limites": preferencias.LIMITES, "tem_pasta": True,
                                     "max_exclusoes": preferencias.MAX_EXCLUSOES})
+        if u.path == "/registro":  # 0.7.29 (sem janela preta): o que ia para a janela preta, na Configuração → Ver registro
+            arq = os.path.join(s.pasta, "saida", "registro.txt")
+            try:
+                with open(arq, "rb") as f:
+                    f.seek(max(0, os.path.getsize(arq) - 60000))
+                    texto = f.read().decode("utf-8", "replace")
+            except OSError:
+                texto = ""
+            return self._responder({"ok": True, "texto": "\n".join(texto.splitlines()[-400:]), "caminho": arq})
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
@@ -822,6 +831,11 @@ class Tratador(BaseHTTPRequestHandler):
             # revisão da 0.7.28 (bloqueio): só grava por cima do que a tela leu. Se a planilha não se lê agora, ou mudou
             # depois que a tela abriu (outra pessoa, outro computador, edição à mão), recusa e nada se perde.
             with _TRAVA_REGRAS:  # revisão da 0.7.28: conferir a marca, copiar e gravar sem outro salvamento no meio
+                if s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento) or (getattr(s, "hist", {}) or {}).get("rodando"):
+                    # revisão da 0.7.28 (Operação, item 1): a leitura regravaria a planilha com as regras de antes
+                    return self._responder({"ok": False, "lendo": True,
+                                            "motivo": "Há uma leitura em andamento: ela regravaria a planilha com as regras de antes. Espere terminar e salve de novo (o que você digitou continua aqui).",
+                                            "motivo_en": "A reading is in progress: it would rewrite the spreadsheet with the old rules. Wait for it to finish and save again (what you typed stays here)."})
                 marca_agora, _doc, _erro = preferencias.marca_regras(base)
                 if marca_agora is None:
                     return self._responder({"ok": False, "motivo": "Não consegui ler a planilha agora: ela pode estar aberta no Excel ou sincronizando. Nada foi alterado.",
@@ -917,6 +931,8 @@ class Tratador(BaseHTTPRequestHandler):
                 alvo = getattr(s, "ultima_copia", "") or ""
             elif corpo.get("o_que") == "pasta_copias":
                 alvo = os.path.dirname(getattr(s, "ultima_copia", "") or "") or (os.path.join(base, compartilhar.PASTA_COPIAS_TRABALHO) if base else "")
+            elif corpo.get("o_que") == "registro":  # 0.7.29: o arquivo do registro (abre no Bloco de Notas)
+                alvo = os.path.join(s.pasta, "saida", "registro.txt")
             elif corpo.get("o_que") == "copias":  # 0.7.16: a pasta das cópias de segurança
                 alvo = armazenamento.pasta_copias(base)
                 if alvo:
@@ -1140,7 +1156,11 @@ def abrir_janela(url, aba=False):
 _ATALHO_PS = ("$w = New-Object -ComObject WScript.Shell; "
               "foreach ($p in @([Environment]::GetFolderPath('Desktop'), [Environment]::GetFolderPath('Programs'))) { "
               "$f = Join-Path $p ($env:LEXSUITE_NOME + '.lnk'); if (Test-Path $f) { $s = $w.CreateShortcut($f); "
-              "$s.Description = $env:LEXSUITE_DESC; $s.Save() } }")
+              "$s.Description = $env:LEXSUITE_DESC; "
+              # 0.7.29 (dono: sem janela preta): o atalho DESTA pasta passa a abrir o pythonw direto, sem o ABRIR.bat
+              "if ($env:LEXSUITE_ALVO -and ($s.WorkingDirectory -eq $env:LEXSUITE_PASTA -or $s.TargetPath -like ($env:LEXSUITE_PASTA + '\\*'))) { "
+              "$s.TargetPath = $env:LEXSUITE_ALVO; $s.Arguments = $env:LEXSUITE_ARGS; $s.WorkingDirectory = $env:LEXSUITE_PASTA; $s.WindowStyle = 1 }; "
+              "$s.Save() } }")
 
 
 def atualizar_atalho(pasta):
@@ -1150,7 +1170,9 @@ def atualizar_atalho(pasta):
         return False
     import subprocess  # nosec B404 - só powershell, sem shell, comando fixo; nome e versão vão por variável de ambiente
     m = marca(pasta)
-    env = dict(os.environ, LEXSUITE_NOME=m["nome"], LEXSUITE_DESC=f"{m['nome']} {VERSAO} - LexSuiteONE")
+    oculto = agendar.executavel_oculto(pasta) if os.path.isfile(os.path.join(pasta, "python", "pythonw.exe")) else ""
+    env = dict(os.environ, LEXSUITE_NOME=m["nome"], LEXSUITE_DESC=f"{m['nome']} {VERSAO} - LexSuiteONE",
+               LEXSUITE_ALVO=oculto, LEXSUITE_ARGS=f'"{os.path.join(pasta, "lexsuite_robo.py")}" app', LEXSUITE_PASTA=os.path.normpath(pasta))
     try:
         subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", _ATALHO_PS], env=env, timeout=30,  # nosec B603 B607
                        capture_output=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
@@ -1191,16 +1213,100 @@ def procurar_aberto(portas=None, detalhe=False):
     return ("", False) if detalhe else ""
 
 
+def _arquivo_pid(pasta):
+    return os.path.join(pasta, "saida", "programa.pid")
+
+
+def gravar_pid(pasta, porta):
+    """0.7.29: sem janela preta, o "Encerrar o RADAR" precisa saber qual processo é a tela (se ela travar)."""
+    try:
+        os.makedirs(os.path.join(pasta, "saida"), exist_ok=True)
+        with open(_arquivo_pid(pasta), "w", encoding="utf-8") as f:
+            json.dump({"pid": os.getpid(), "porta": int(porta)}, f)
+    except OSError:
+        pass
+
+
+def apagar_pid(pasta, porta):
+    try:
+        with open(_arquivo_pid(pasta), encoding="utf-8") as f:
+            d = json.load(f)
+        if int(d.get("pid") or 0) == os.getpid() and int(d.get("porta") or 0) == int(porta):
+            os.remove(_arquivo_pid(pasta))
+    except (OSError, ValueError, TypeError, AttributeError):
+        pass
+
+
+def _pedir_local(porta, rota, metodo="POST"):
+    import http.client
+    try:
+        c = http.client.HTTPConnection("127.0.0.1", int(porta), timeout=5)
+        c.request(metodo, rota, body="{}" if metodo == "POST" else None,
+                  headers={"X-LexSuite": "1", "Host": f"127.0.0.1:{porta}", "Content-Type": "application/json"})
+        d = json.loads(c.getresponse().read() or b"{}"); c.close()
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError):
+        return None
+
+
+def _encerrar_processo(pid):
+    import signal
+    try:
+        if int(pid) in (0, os.getpid()):  # nunca a si mesmo
+            return False
+        os.kill(int(pid), signal.SIGTERM)  # no Windows: TerminateProcess
+        return True
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def encerrar_aberto(pasta, aviso=print, espera_s=15, dormir=None, portas=None):
+    """0.7.29 (dono: sem janela preta): "Encerrar o RADAR" do DIAGNOSTICO.bat. Pede à tela aberta para interromper a
+    leitura e sair; se ela não responder, encerra o processo dela. Também encerra uma leitura agendada que esteja
+    rodando noutro processo. Devolve True se havia algo para encerrar."""
+    import time as _t
+    dormir = dormir or _t.sleep
+    achou = False
+    url = procurar_aberto(portas)
+    if url:
+        achou = True
+        porta = int(url.rstrip("/").rsplit(":", 1)[1])
+        _pedir_local(porta, "/interromper")
+        for _ in range(int(espera_s)):
+            r = _pedir_local(porta, "/sair")
+            if r is None or r.get("ok"):
+                break
+            dormir(1)
+        dormir(1.5)
+        if procurar_aberto([porta]):  # não saiu: encerra o processo da tela (o do programa.pid desta porta)
+            try:
+                with open(_arquivo_pid(pasta), encoding="utf-8") as f:
+                    d = json.load(f)
+                if int(d.get("porta") or 0) == porta and processo_vivo(d.get("pid")):
+                    _encerrar_processo(d.get("pid"))
+            except (OSError, ValueError, TypeError, AttributeError):
+                pass
+        aviso("  Tela do RADAR encerrada. / RADAR screen closed.")
+    outra = leitura_em_outro_processo(os.path.join(pasta, "saida", "leitura.json"))
+    if outra and int(outra.get("pid") or 0) != os.getpid():
+        achou = True
+        if _encerrar_processo(outra.get("pid")):
+            aviso("  Leitura em andamento encerrada (a próxima automática acontece no horário). / Reading in progress stopped.")
+    return achou
+
+
 def reiniciar_depois(servidor, pasta):
     """Depois de atualizar: abre o programa novo (outra janela preta, sem abrir outra tela) e encerra este. A tela
     aberta no navegador espera o novo responder e recarrega sozinha."""
     import subprocess  # nosec B404 - só o próprio programa, sem shell, argumentos fixos
     import sys
     porta = servidor.server_address[1]
-    args = [sys.executable, os.path.join(pasta, "lexsuite_robo.py"), "app", "--sem-navegador", "--espera", "--porta", str(porta)]
+    exe = agendar.executavel_oculto(pasta) or sys.executable  # 0.7.29: o programa novo também sem janela preta
+    args = [exe, os.path.join(pasta, "lexsuite_robo.py"), "app", "--sem-navegador", "--espera", "--porta", str(porta)]
+    sem_janela = os.path.basename(exe).lower().startswith("pythonw")
     try:
         subprocess.Popen(args, cwd=pasta, close_fds=True,  # nosec B603
-                         creationflags=getattr(subprocess, "CREATE_NEW_CONSOLE", 0))
+                         creationflags=getattr(subprocess, "CREATE_NO_WINDOW" if sem_janela else "CREATE_NEW_CONSOLE", 0))
     except OSError:
         return False
     threading.Timer(0.8, servidor.shutdown).start()
@@ -1274,14 +1380,15 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
     servidor = criar(pasta, porta, espera=20 if espera else 0)
     url = f"http://127.0.0.1:{servidor.server_address[1]}/"
     aviso(f"  LexSuiteONE aberto em {url}")
-    aviso("  Deixe esta janela aberta enquanto usa a tela. Para encerrar, feche a janela (ou Ctrl+C).")
+    aviso("  Para encerrar: menu ☰ → Sair (ou feche a tela: o programa se encerra sozinho 3 minutos depois).")
     titulo_janela(f"{marca(pasta).get('nome', 'RADAR JUDICIAL')} - não feche esta janela")
+    gravar_pid(pasta, servidor.server_address[1])
     if abrir:
         threading.Timer(0.6, lambda: abrir_janela(url, aba=_prefere_aba(pasta))).start()
 
     def migrar():
         try:
-            msg = agendar.migrar_antigas(pasta, servidor.config())
+            msg = agendar.migrar_antigas(pasta, servidor.config()) or agendar.migrar_para_oculta(pasta, servidor.config())
             if msg:
                 aviso("  " + msg)
             atualizar_atalho(pasta)
@@ -1295,3 +1402,4 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
         pass
     finally:
         servidor.server_close()
+        apagar_pid(pasta, servidor.server_address[1])

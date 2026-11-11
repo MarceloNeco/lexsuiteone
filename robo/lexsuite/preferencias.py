@@ -158,6 +158,7 @@ LIMITES = {"valor_minimo": (0, 1e12), "minimo_acoes": (1, 100), "janela_dias": (
 
 
 MAX_EXCLUSOES = 5000
+INTEIROS = ("minimo_acoes", "janela_dias", "dias_arquivo", "limite_linhas")
 
 
 def marca_regras(pasta_base, frente="trabalhista"):
@@ -194,6 +195,8 @@ def linhas_regras(valores, exclusoes):
             mn, mx = LIMITES.get(chave, (0, 1e15))
             try:
                 v = n if mn <= float(n) <= mx else PADRAO[chave]
+                if chave in INTEIROS and v != int(v):  # 0.7.29: 2,5 ações ou 2,5 dias não existem (a tela só aceita inteiros)
+                    v = PADRAO[chave]
             except (TypeError, ValueError, OverflowError):
                 v = PADRAO[chave]
         pref.append([nomes[chave], v, linha[2]])
