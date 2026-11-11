@@ -180,6 +180,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
   vermelha; ✕ no filtro ligado tira sem abrir; "Marcar todos" em cada lista de filtro; "Configuração da leitura" em uma
   faixa baixa; abas com destaque cinza e a barrinha dourada deslizando; Painel com "Tribunal: Todos | TRT2 | TRT15"
   (o mesmo filtro da barra) e o título "Filtros do painel".
+- Modo escuro (dono, 11/Nov; pesquisa do `pesquisador`: Material 3, Apple HIG, WCAG 2.2 1.4.11): Perfil → Aparência
+  "Claro | Escuro | Igual ao sistema" (padrão: o sistema), com miniaturas, sem sol e lua; marinho escuro (não preto),
+  superfícies que clareiam com a elevação, latão clareado (#c8a45c) para não virar mostarda, selos e gráficos com tons
+  próprios do escuro; cores fixas viraram variáveis. Faixa de versão nova: confere de novo a cada 30 minutos com a
+  tela aberta (antes só ao abrir). Ressalvas da segunda revisão da 0.7.29: 2 (já feito), 3, 4, 5, 6, 7, 9 feitas; 1 e
+  8 e 11 ficam para o fechamento da 0.7.30; 10 não se aplica mais (a 0.7.29 já saiu).
 - Feito no ramo (0.7.30): marcar tribunais na mira e clicar "Ler o Diário agora" salva e lê o que está marcado (antes
   lia a mira antiga sem avisar); o texto ao lado do botão acompanha o marcado, com "(marcado, ainda não salvo)"; o
   "alterar" não é mais cortado pelas reticências; círculo girando ao lado da barra de progresso.

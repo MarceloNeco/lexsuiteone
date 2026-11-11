@@ -1353,3 +1353,17 @@ class V0729Revisao(unittest.TestCase):
         self.assertEqual(h.count("g_pizza:"), 2); self.assertEqual(h.count("grade.appendChild(grafLinhas("), 8)
         self.assertIn("function mesCurto(", h); self.assertNotIn('m.mes.slice(5) + "/"', h)
         self.assertIn("pizza", open(os.path.join(_ROBO_, "testes", "tela", "larguras.js"), encoding="utf-8").read())
+
+
+class Tema0730(unittest.TestCase):
+    """0.7.30 (dono): modo escuro sóbrio, escolhido no Perfil (Claro | Escuro | Igual ao sistema)."""
+
+    def test_tema(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        cab = h[:h.index("</head>")] if "</head>" in h else h[:5000]
+        self.assertIn('localStorage.getItem("lexsuite:tema")', cab)  # aplicado antes de desenhar
+        for k in ("tema_claro:", "tema_escuro:", "tema_sistema:"):
+            self.assertEqual(h.count(k), 2, k)
+        self.assertIn(':root[data-theme="dark"] { color-scheme: dark;', h)
+        self.assertIn("--acao:", h); self.assertIn('corVar("--g-apagada"', h)
+        self.assertNotIn("☀", h); self.assertNotIn("🌙", h)
