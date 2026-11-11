@@ -1186,9 +1186,20 @@ class V0729(unittest.TestCase):
         self.assertTrue(self.salvar({}, [{"nome": "Empresa Fictícia Ltda"}], marca=marca)["ok"])
 
     def test_leitura_espera_as_regras(self):
-        from lexsuite import app
-        with app._TRAVA_REGRAS:
+        import threading as _th
+        from lexsuite import app, radar
+        self.assertIs(app._TRAVA_REGRAS, radar.TRAVA_REGRAVAR)
+        tomou, soltar = _th.Event(), _th.Event()
+        def outra():  # outra thread gravando a planilha (Salvar regras, Gravar a planilha agora, limpeza)
+            with radar.TRAVA_REGRAVAR:
+                tomou.set(); soltar.wait(10)
+        th = _th.Thread(target=outra); th.start(); tomou.wait(5)
+        try:
             self.assertFalse(self.srv.rodar())
+            r = self.pedir("POST", "/rodar", {})
+            self.assertFalse(r["ok"]); self.assertIn("gravad", r["motivo"])
+        finally:
+            soltar.set(); th.join()
 
     def test_copia_que_falha_ou_planilha_que_muda_durante_a_copia(self):
         from unittest import mock
@@ -1249,3 +1260,74 @@ class V0729(unittest.TestCase):
         self.assertIn("if (nNome.value.trim()) bAdd.click();", h)
         import re
         self.assertFalse(re.search(r"\n[ \t]+\n[ \t]+[a-z_0-9]+: \"", h))
+
+
+class V0729Revisao(unittest.TestCase):
+    """Revisão da Operação da 0.7.29 (bloqueio: encerrar processo alheio) e itens 2 a 13; 0.7.30: pizza no Painel."""
+
+    def test_leitura_noutro_processo_nao_e_encerrada_a_forca(self):
+        import subprocess as sp, json as _j, datetime as _d
+        from lexsuite import app
+        pasta = tempfile.mkdtemp(); os.makedirs(os.path.join(pasta, "saida"))
+        alheio = sp.Popen([sys.executable, "-c", "import time; time.sleep(30)"])
+        try:
+            with open(os.path.join(pasta, "saida", "leitura.json"), "w", encoding="utf-8") as f:
+                _j.dump({"rodando": True, "pid": alheio.pid, "batida": _d.datetime.now().isoformat()}, f)
+            ditos = []
+            self.assertTrue(app.encerrar_aberto(pasta, aviso=ditos.append, dormir=lambda s: None, portas=[1]))
+            self.assertIsNone(alheio.poll())  # o processo alheio continua vivo
+            self.assertTrue(os.path.exists(os.path.join(pasta, "saida", "parar.json")))  # só o pedido de parada
+            self.assertIn("ponto seguro", " ".join(ditos))
+        finally:
+            alheio.kill(); alheio.wait()
+
+    def test_programa_pid_de_processo_alheio_nao_e_encerrado(self):
+        import subprocess as sp, json as _j
+        from lexsuite import app
+        pasta = tempfile.mkdtemp(); os.makedirs(os.path.join(pasta, "saida"))
+        alheio = sp.Popen(["sleep", "30"]) if shutil.which("sleep") else sp.Popen([sys.executable, "-c", "import time; time.sleep(30)"])
+        try:
+            with open(os.path.join(pasta, "saida", "programa.pid"), "w", encoding="utf-8") as f:
+                _j.dump({"pid": alheio.pid, "porta": 1}, f)
+            ditos = []
+            app.encerrar_aberto(pasta, aviso=ditos.append, dormir=lambda s: None, portas=[1])
+            self.assertIsNone(alheio.poll())
+        finally:
+            alheio.kill(); alheio.wait()
+
+    def test_saude_com_tribunal_fora_do_ar_continua_alarmando(self):
+        import inspect
+        from lexsuite import radar
+        fonte = inspect.getsource(radar)
+        self.assertIn('todos_ok = all(t.get("causa") in ("ok", "ainda_nao_liberado_3h") for t in tentativas)', fonte)
+        self.assertIn("if todos_ok else 0", fonte)
+
+    def test_agendar_cria_a_tarefa_com_o_pythonw(self):
+        from unittest import mock
+        from lexsuite import agendar
+        pasta = tempfile.mkdtemp(); os.makedirs(os.path.join(pasta, "python"))
+        open(os.path.join(pasta, "python", "pythonw.exe"), "wb").close(); open(os.path.join(pasta, "RODAR.bat"), "w").close()
+        vistos = []
+        def rodar(args):
+            if "/xml" in args:
+                vistos.append(open(args[args.index("/xml") + 1], encoding="utf-16").read())
+            return True, ""
+        with mock.patch.object(agendar, "disponivel", return_value=True), mock.patch.object(agendar, "_apagar_tudo"), \
+                mock.patch.object(agendar, "_rodar", side_effect=rodar):
+            self.assertTrue(agendar.agendar(pasta, ["20:00"], "todos")[0])
+        self.assertIn("pythonw.exe</Command>", vistos[0]); self.assertNotIn("RODAR.bat", vistos[0])
+
+    def test_registro_aceita_bytes_e_mascara_o_diagnostico(self):
+        import lexsuite_robo as lr
+        d = tempfile.mkdtemp(); arq = os.path.join(d, "registro.txt")
+        r = lr.Registro(arq, None); r.write(b"linha em bytes\n")
+        self.assertIn("linha em bytes", open(arq, encoding="utf-8").read())
+        m = lr.mascarar_registro(r"Página: C:\Users\Fulano de Tal\LexSuiteONE\saida e fulano@exemplo.com.br")
+        self.assertNotIn("Fulano", m); self.assertNotIn("@", m)
+
+    def test_painel_barras_ou_pizza(self):
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertIn("function grafPizza(", h); self.assertIn("lexsuite:graf-tipo", h)
+        self.assertEqual(h.count("g_pizza:"), 2); self.assertEqual(h.count("grade.appendChild(grafLinhas("), 8)
+        self.assertIn("function mesCurto(", h); self.assertNotIn('m.mes.slice(5) + "/"', h)
+        self.assertIn("pizza", open(os.path.join(_ROBO_, "testes", "tela", "larguras.js"), encoding="utf-8").read())

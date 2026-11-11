@@ -162,7 +162,20 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.30 (no ramo, 11/Nov)
+## 0.7.29 de novo (11/Nov): revisão da Operação + o que estava como 0.7.30
+
+Revisão da 0.7.29 (Operação): bloqueio feito ("Encerrar o RADAR" só encerra à força o processo que a própria tela
+informa, que é o do programa.pid, desta pasta e é o Python; a leitura noutro processo só recebe o pedido de parar e
+nunca é encerrada à força; tela travada só se o netstat confirmar que é ela na porta, senão a mensagem manda ao
+Gerenciador de Tarefas); 2 a 6 e 7, 8, 9, 10, 11, 12, 13 feitos (trava única `radar.TRAVA_REGRAVAR` para toda
+regravação da planilha; fases em 2 colunas abaixo de 900 px e 768 px no `larguras.js`; Saúde só silencia quando todos
+os tribunais estão ok; ao atualizar da 0.7.28 o programa novo passa a tela para o pythonw e a janela preta fecha
+sozinha; registro sem repetir mensagem; diagnóstico sem e-mail nem nome da pasta do usuário; "Encerrar" só desta
+pasta; nome digitado habilita "Salvar regras"; "Abrir o arquivo" sem registro avisa; stdin fechado nos subprocessos).
+Fica: 14 (abaixo de 360 px, já era assim). Também: Painel com "Ver como: Barras | Pizza" (teste no `larguras.js`),
+"Licença: ✓ ativa" no Perfil com cor por estado.
+
+### Itens que eram da 0.7.30
 
 - Dono corrigiu o pedido da 0.7.29: o filtro de tribunais é só para ver o que já está na lista; não acompanha a mira.
   Desfeito (o filtro volta a mostrar só o que tem na lista; tirar da mira não mexe no filtro). O lugar único do que a
