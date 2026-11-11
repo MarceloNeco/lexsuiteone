@@ -23,7 +23,7 @@
   </td></tr>
 <!--CODIGO-INICIO-->
   <tr><td style="padding:0 28px 18px;">
-    <div style="border:1px dashed #c9a063;border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.5;color:#121a2b;">Seu código de cliente: <b style="font-size:17px;letter-spacing:.06em;">{{codigo}}</b><br><span style="color:#4a5468;">A tela pede esse código na instalação. Ele identifica o escritório; não é senha.</span></div>
+    <div style="border:1px dashed #c9a063;border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.5;color:#121a2b;">Seu código de cliente: <b style="font-size:17px;letter-spacing:.06em;">{{codigo}}</b><br><span style="color:#4a5468;">Guarde este e-mail: o código ativa o {{marca.nome}} em cada computador do escritório.</span></div>
   </td></tr>
 <!--CODIGO-FIM-->
   <tr><td style="padding:0 28px 18px;">
@@ -51,10 +51,11 @@
   </td></tr>
   <tr><td style="padding:22px 28px 26px;">
     <p style="margin:0;font-size:15px;line-height:1.5;">Dúvidas? Escreva para <a href="mailto:{{contato}}" style="color:#8a6222;">{{contato}}</a>. Este e-mail saiu de um endereço automático e não recebe respostas.</p>
-    <p lang="en" style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#7a8396;"><b>In English:</b> your {{marca.nome}} is ready. Accept the terms first (link above), then download the installer, double-click INSTALAR.bat and follow the assistant: client code, your name, e-mail and role, the spreadsheet folder (on the computer or, if the firm prefers, on Google Drive) and the courts. No black window stays open; to quit, use the ☰ menu and "Exit". Lawsuit data stays on your computer and in the firm's folder; SolverONE only receives the licence check, who uses it, the terms acceptance, technical error notices and counts by status, without names, case numbers or tax IDs (terms, sections 6 and 7). Sharing the folder with SolverONE is optional, for support only.</p>
+    <p lang="en" style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#7a8396;"><b>In English:</b> your {{marca.nome}} is ready. Accept the terms first (link above), then download the installer, double-click INSTALAR.bat and follow the assistant: client code, your name, e-mail and role, the spreadsheet folder (on the computer or, if the firm prefers, on Google Drive) and the courts. No black window stays open; to quit, use the ☰ menu and "Exit". Lawsuit data stays on your computer and in the firm's folder; SolverONE only receives the licence check, who uses it, the terms acceptance, technical error notices and counts by status, without names, case numbers or tax IDs (terms, sections 6 and 7). Sharing the folder with SolverONE is optional, for support only. Keep this e-mail: the client code activates {{marca.nome}} on each of the firm's computers.</p>
     <p style="margin:14px 0 0;font-size:15px;line-height:1.5;">Marcelo Freitas<br><span style="color:#7a8396;">SolverONE</span></p>
   </td></tr>
   <tr><td style="background:#f4f6f9;border-top:1px solid #dbe1ea;padding:14px 28px;font-size:12px;line-height:1.5;color:#7a8396;">
+    {{marca.nome}}: <a href="https://judicial.solverone.com.br" style="color:#85601f;font-weight:700;">judicial.solverone.com.br</a><br>
     {{marca.nome}} é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque o seu escritório vai usar o {{marca.nome}}.
   </td></tr>
 </table>
