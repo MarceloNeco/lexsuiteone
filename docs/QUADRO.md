@@ -234,6 +234,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 11/Nov (3): **definição de pronto como regra geral da SolverONE** (dono, 11/Nov): seção nova na diretriz geral do
+  `rootify-one` (`.claude/skills/diretrizes-gerais-apps/SKILL.md`, "Definição de pronto: conteúdo das orientações") e
+  resumo no `CLAUDE.md` de lá, via PR #113 do rootify-one (só documentos); no `CLAUDE.md` daqui, item (4) "qualquer outra
+  orientação" ((?) de campo, dicas, avisos, e-mail, LEIA-ME, roteiros, site, documentos) e "vale para correção de bug".
 - 11/Nov (2): **ativação por e-mail e código** (desenho `documentacao/DESENHO-ATIVACAO-EMAIL-CODIGO-2026-11-11.md`) e
   **`lex-conta` v15**: ação `conferir {codigo, email}` (não grava; diz se o código vale para o e-mail, com `dominios` e
   `escritorio`) e `cadastrar` recusa e-mail fora dos domínios liberados (`dominio_nao_liberado`; antes ficava "aguardando").
