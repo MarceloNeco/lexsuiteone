@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (nada)
+- **0.7.31 em revisão (11/Nov)**: o dono mandou publicar (commit `5555cf0`, automação verde, execução 508); revisão do que mudou desde a 0.7.30 publicada (termos e licença curtos, código travado e mascarado, Termos e Sazonalidade com um botão, "Publicado no Diário", gráfico Situação, Novidades da versão, leitura automática desligável com aviso, Configuração e Perfil em janela, faixa de leitura mais baixa, manual genérico com ícone embutido), com atenção à regra de licença (só os textos do aceite podem ter mudado), ao "desligar a leitura automática" (tela e Agendador do Windows precisam concordar) e ao código travado (a pessoa não pode ficar presa com código errado); testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.30. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
