@@ -21,6 +21,7 @@ import json
 import os
 import re
 import sys
+import threading
 
 from lexsuite import VERSAO, avisar, banco as bd, cnpj, classificar as cl, config, datajud, djen, monitor, pauta, prazos, radar, rede, saidas
 
@@ -35,9 +36,10 @@ class Registro:
 
     encoding = "utf-8"
 
+    _TRAVA = threading.Lock()  # uma só para stdout e stderr (revisão): a rotação não corre em paralelo
+
     def __init__(self, caminho, eco=None):
-        import threading
-        self.caminho, self.eco, self._trava = caminho, eco, threading.Lock()
+        self.caminho, self.eco, self._trava = caminho, eco, Registro._TRAVA
 
     def _girar(self):
         if os.path.exists(self.caminho) and os.path.getsize(self.caminho) > REGISTRO_MAX:
@@ -697,9 +699,9 @@ def _avisar_erro(comando, detalhe):
         return
     from lexsuite import agendar, app
     m = app.marca(AQUI)
-    if comando == "radar":
-        agendar.notificar(m.get("nome", "RADAR JUDICIAL"), f"A leitura parou com erro. Veja em Configuração → Ver registro. "
-                                                            f"/ The reading stopped with an error.")
+    if comando == "radar":  # SystemExit traz a frase pronta (ex.: robô pausado pelo suporte, fora do Brasil); erro de programa, não
+        agendar.notificar(m.get("nome", "RADAR JUDICIAL"), (f"A leitura não rodou: {str(detalhe).strip()[:180]}" if detalhe else
+                                                            "A leitura parou com erro. Veja em Configuração → Ver registro. / The reading stopped with an error."))
     elif comando == "app":
         agendar.caixa_erro(m.get("nome", "RADAR JUDICIAL"),
                            f"O {m.get('curto', 'RADAR')} não conseguiu abrir.\n\n{str(detalhe).strip()[:300]}\n\nO detalhe ficou em:\n{REGISTRO}\n\n"

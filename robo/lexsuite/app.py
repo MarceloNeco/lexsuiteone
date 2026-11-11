@@ -162,7 +162,7 @@ class Estado:
         except OSError:
             pass
         self._eco("")
-        self._eco(f"  ===== Leitura começou às {dt.datetime.now():%H:%M} (não feche esta janela) =====")
+        self._eco(f"  ===== Leitura começou às {dt.datetime.now():%H:%M} =====")
         self._gravar_andamento()
         return True
 
@@ -343,8 +343,13 @@ class Servidor(ThreadingHTTPServer):
 
     def rodar(self, dias=None):
         """Começa uma rodada numa thread. Devolve False se já há uma rodando (aqui ou agendada, em outro processo)."""
-        if _TRAVA_REGRAS.locked() or leitura_em_outro_processo(self.arquivo_andamento) or not self.estado.comecar():
-            return False  # 0.7.29: também enquanto as regras do escritório estão sendo gravadas
+        if not _TRAVA_REGRAS.acquire(blocking=False):  # 0.7.29: não começa enquanto as regras estão sendo gravadas
+            return False
+        try:  # dentro da trava: o "Salvar regras" não pode passar entre a conferência e o começo da leitura
+            if leitura_em_outro_processo(self.arquivo_andamento) or not self.estado.comecar():
+                return False
+        finally:
+            _TRAVA_REGRAS.release()
 
         def alvo():
             try:
@@ -522,6 +527,8 @@ class Tratador(BaseHTTPRequestHandler):
         if u.path == "/estado":
             d = s.estado_atual()
             d["tela_ativa"] = _t.monotonic() - s.ultimo_pedido < 25  # a tela pergunta a cada 10 s
+            if self.headers.get("X-LexSuite-Sonda") == "1":
+                d["pid"] = os.getpid()  # 0.7.29: o "Encerrar o RADAR" só encerra o processo que respondeu por esta porta
             if self.headers.get("X-LexSuite-Sonda") != "1" and getattr(s, "chamado", 0):
                 d["chamado"] = True; s.chamado = 0  # 0.7.28: alguém clicou no atalho de novo; a tela avisa e vem para a frente
             return self._responder(d)
@@ -988,6 +995,9 @@ class Tratador(BaseHTTPRequestHandler):
                 dias = config.inteiro(corpo["dias"], None, 0, 10) if corpo.get("dias") is not None else None
             except (TypeError, ValueError, OverflowError):
                 dias = None
+            if _TRAVA_REGRAS.locked():  # 0.7.29: o motivo certo, em vez de "já está rodando"
+                return self._responder({"ok": False, "motivo": "As regras do escritório estão sendo gravadas: tente de novo em instantes.",
+                                        "motivo_en": "The firm rules are being saved: try again in a moment."})
             comecou = s.rodar(dias)
             return self._responder({"ok": comecou, "motivo": "" if comecou else "já está rodando", "motivo_en": "" if comecou else "already running"})
         return self._responder({"erro": "não existe"}, status=404)
@@ -1249,6 +1259,17 @@ def _pedir_local(porta, rota, metodo="POST"):
         return None
 
 
+def _pid_na_porta(porta):
+    import http.client
+    try:
+        c = http.client.HTTPConnection("127.0.0.1", int(porta), timeout=2)
+        c.request("GET", "/estado", headers={"X-LexSuite": "1", "X-LexSuite-Sonda": "1", "Host": f"127.0.0.1:{porta}"})
+        d = json.loads(c.getresponse().read() or b"{}"); c.close()
+        return int(d.get("pid") or 0) if isinstance(d, dict) else 0
+    except (OSError, ValueError, TypeError):
+        return 0
+
+
 def _encerrar_processo(pid):
     import signal
     try:
@@ -1277,16 +1298,23 @@ def encerrar_aberto(pasta, aviso=print, espera_s=15, dormir=None, portas=None):
             if r is None or r.get("ok"):
                 break
             dormir(1)
-        dormir(1.5)
-        if procurar_aberto([porta]):  # não saiu: encerra o processo da tela (o do programa.pid desta porta)
+        saiu = False
+        for _ in range(12):  # o programa sai meio segundo depois de responder ao /sair
+            dormir(0.5)
+            saiu = not procurar_aberto([porta])
+            if saiu:
+                break
+        if not saiu:  # não saiu: encerra o processo da tela, só se for o mesmo pid que ela informa E o do programa.pid
+            pid_tela = _pid_na_porta(porta)
             try:
                 with open(_arquivo_pid(pasta), encoding="utf-8") as f:
                     d = json.load(f)
-                if int(d.get("porta") or 0) == porta and processo_vivo(d.get("pid")):
-                    _encerrar_processo(d.get("pid"))
+                if pid_tela and int(d.get("porta") or 0) == porta and int(d.get("pid") or 0) == pid_tela and processo_vivo(pid_tela):
+                    saiu = _encerrar_processo(pid_tela)
             except (OSError, ValueError, TypeError, AttributeError):
                 pass
-        aviso("  Tela do RADAR encerrada. / RADAR screen closed.")
+        aviso("  Tela do RADAR encerrada. / RADAR screen closed." if saiu else
+              "  Não consegui encerrar a tela do RADAR: reinicie o computador. / Could not close RADAR: restart the computer.")
     outra = leitura_em_outro_processo(os.path.join(pasta, "saida", "leitura.json"))
     if outra and int(outra.get("pid") or 0) != os.getpid():
         achou = True
@@ -1381,7 +1409,7 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
     url = f"http://127.0.0.1:{servidor.server_address[1]}/"
     aviso(f"  LexSuiteONE aberto em {url}")
     aviso("  Para encerrar: menu ☰ → Sair (ou feche a tela: o programa se encerra sozinho 3 minutos depois).")
-    titulo_janela(f"{marca(pasta).get('nome', 'RADAR JUDICIAL')} - não feche esta janela")
+    titulo_janela(f"{marca(pasta).get('nome', 'RADAR JUDICIAL')} - LexSuiteONE")  # só aparece com ABRIR.bat --ver
     gravar_pid(pasta, servidor.server_address[1])
     if abrir:
         threading.Timer(0.6, lambda: abrir_janela(url, aba=_prefere_aba(pasta))).start()

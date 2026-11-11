@@ -1116,9 +1116,32 @@ class V0729(unittest.TestCase):
         x = agendar.xml_tarefa(bat, ["20:00"], oculta=oc)
         self.assertIn("pythonw.exe</Command>", x); self.assertIn("lexsuite_robo.py&quot; radar --agendado</Arguments>", x)
         self.assertNotIn("RODAR.bat", x)
-        self.assertTrue(agendar.precisa_migrar('"PC","LexSuiteONE Radar","...","C:\\LexSuiteONE\\RODAR.bat --agendado"'))
-        self.assertFalse(agendar.precisa_migrar('"PC","LexSuiteONE Radar","...","C:\\LexSuiteONE\\python\\pythonw.exe lexsuite_robo.py"'))
-        self.assertFalse(agendar.precisa_migrar('"PC","Outra tarefa","...","C:\\x\\RODAR.bat"'))
+        self.assertTrue(agendar.comando_da_tarefa(agendar.xml_tarefa(bat, ["20:00"])).endswith("RODAR.bat"))
+        self.assertTrue(agendar.comando_da_tarefa(x).endswith("pythonw.exe"))
+
+    def test_migra_a_tarefa_antiga_pelo_xml(self):
+        """Revisão: o XML do schtasks é igual em qualquer idioma do Windows (e vem em UTF-16)."""
+        from unittest import mock
+        from types import SimpleNamespace
+        from lexsuite import agendar
+        pasta = tempfile.mkdtemp(); os.makedirs(os.path.join(pasta, "python"))
+        open(os.path.join(pasta, "python", "pythonw.exe"), "wb").close()
+        bat = os.path.join(pasta, "RODAR.bat")
+        velha = agendar.xml_tarefa(bat, ["20:00", "08:00"]).encode("utf-16")
+        nova = agendar.xml_tarefa(bat, ["20:00"], oculta=agendar.acao_oculta(pasta)).encode("utf-16")
+        lista = '"\\LexSuiteONE Radar","11/11/2026 20:00:00","Pronto"\r\n"\\Outra","N/A","Pronto"\r\n'.encode("cp850")
+        def rodar_falso(xml):
+            def f(args, **k):
+                return SimpleNamespace(returncode=0, stdout=xml if "/xml" in args else lista, stderr=b"")
+            return f
+        with mock.patch.object(agendar, "disponivel", return_value=True), mock.patch.object(agendar.subprocess, "run", side_effect=rodar_falso(velha)), \
+                mock.patch.object(agendar, "agendar", return_value=(True, "Agendado")) as ag:
+            self.assertEqual(agendar.migrar_para_oculta(pasta, {"radar": {"horarios": ["20:00"]}}), "Agendado")
+        ag.assert_called_once()
+        with mock.patch.object(agendar, "disponivel", return_value=True), mock.patch.object(agendar.subprocess, "run", side_effect=rodar_falso(nova)), \
+                mock.patch.object(agendar, "agendar", return_value=(True, "Agendado")) as ag:
+            self.assertEqual(agendar.migrar_para_oculta(pasta, {}), "")
+        ag.assert_not_called()
 
     def test_bats_sem_janela(self):
         def ler(n):
@@ -1134,7 +1157,8 @@ class V0729(unittest.TestCase):
         porta = self.srv.server_address[1]
         app.gravar_pid(self.pasta, porta)
         ditos = []
-        self.assertTrue(app.encerrar_aberto(self.pasta, aviso=ditos.append, dormir=lambda s: None, portas=[porta]))
+        import time as _tm
+        self.assertTrue(app.encerrar_aberto(self.pasta, aviso=ditos.append, dormir=lambda s: _tm.sleep(min(s, 0.3)), portas=[porta]))
         import time as _t
         for _ in range(40):
             if not app.procurar_aberto([porta]):

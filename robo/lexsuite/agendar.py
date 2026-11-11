@@ -186,10 +186,9 @@ def _apagar_tudo():
     _rodar(["schtasks", "/delete", "/f", "/tn", TAREFA])
     for nome in ANTIGAS:
         _rodar(["schtasks", "/delete", "/f", "/tn", nome])
-    ok, saida = _rodar(["schtasks", "/query", "/fo", "csv", "/nh"])
-    if ok:
-        for nome in set(re.findall(r'"\\?(' + re.escape(TAREFA) + r' \d\dh\d\d)"', saida)):
-            _rodar(["schtasks", "/delete", "/f", "/tn", nome])
+    saida = _saida_inteira(["schtasks", "/query", "/fo", "csv", "/nh"])  # 0.7.29: a lista inteira (antes, só 200 letras)
+    for nome in set(re.findall(r'"\\?(' + re.escape(TAREFA) + r' \d\dh\d\d)"', saida)):
+        _rodar(["schtasks", "/delete", "/f", "/tn", nome])
 
 
 def descricao(horarios, dias="todos"):
@@ -247,26 +246,44 @@ def migrar_antigas(pasta_robo, cfg):
     return agendar(pasta_robo, horarios, dias)[1]
 
 
-def migrar_para_oculta(pasta_robo, cfg):
-    """0.7.29: a leitura automática criada até a 0.7.28 chama o RODAR.bat (abre janela preta). Se houver o pythonw,
-    recria a tarefa, com os mesmos horários do config, chamando o Python sem janela. Tarefa do próprio usuário, sem
-    administrador. Devolve a mensagem, ou "" se não havia o que migrar."""
-    if not disponivel() or not acao_oculta(pasta_robo):
-        return ""
-    try:  # a saída inteira (o _rodar corta em 200 letras): a linha da tarefa traz o comando que ela roda
-        r = subprocess.run(["schtasks", "/query", "/fo", "csv", "/nh", "/v"], capture_output=True, text=True, timeout=30,  # nosec B603 B607
-                           shell=False, errors="replace", creationflags=SEM_JANELA)
+def _saida_inteira(args):
+    """A saída inteira de um comando (o _rodar corta em 200 letras), em texto, seja UTF-16 ou não."""
+    try:
+        r = subprocess.run(args, capture_output=True, timeout=30, shell=False, creationflags=SEM_JANELA)  # nosec B603
     except (OSError, subprocess.SubprocessError):
         return ""
-    if r.returncode != 0 or not precisa_migrar(r.stdout):
+    if r.returncode != 0:
         return ""
-    horarios, dias = do_config(cfg)
-    return agendar(pasta_robo, horarios, dias)[1]
+    bruto = r.stdout or b""
+    if bruto.startswith((b"\xff\xfe", b"\xfe\xff")) or b"\x00" in bruto[:200]:
+        return bruto.decode("utf-16", "replace")
+    try:
+        return bruto.decode("utf-8")
+    except UnicodeDecodeError:
+        return bruto.decode("cp850", "replace")
 
 
-def precisa_migrar(saida_schtasks):
-    """True se alguma tarefa do RADAR ainda chama o RODAR.bat (aquela que abre a janela preta)."""
-    return any(TAREFA in linha and "rodar.bat" in linha.lower() for linha in str(saida_schtasks or "").splitlines())
+def comando_da_tarefa(xml):
+    """O <Command> do XML de uma tarefa (o XML do schtasks não muda com o idioma do Windows)."""
+    m = re.search(r"<Command>(.*?)</Command>", str(xml or ""), re.S)
+    return m.group(1).strip() if m else ""
+
+
+def migrar_para_oculta(pasta_robo, cfg):
+    """0.7.29: a leitura automática criada até a 0.7.28 chama o RODAR.bat (abre janela preta). Se houver o pythonw,
+    recria a tarefa, com os mesmos horários do config, chamando o Python sem janela. Lê o comando pelo XML da tarefa
+    (igual em qualquer idioma do Windows): qualquer comando que não seja o pythonw é recriado. Tarefa do próprio
+    usuário, sem administrador. Devolve a mensagem, ou "" se não havia o que migrar."""
+    if not disponivel() or not acao_oculta(pasta_robo):
+        return ""
+    nomes = [TAREFA] + sorted(set(re.findall(r'"\\?(' + re.escape(TAREFA) + r' \d\dh\d\d)"',
+                                             _saida_inteira(["schtasks", "/query", "/fo", "csv", "/nh"]))))
+    for nome in nomes:
+        cmd = comando_da_tarefa(_saida_inteira(["schtasks", "/query", "/tn", nome, "/xml"]))
+        if cmd and "pythonw" not in cmd.lower():
+            horarios, dias = do_config(cfg)
+            return agendar(pasta_robo, horarios, dias)[1]
+    return ""
 
 
 def caixa_erro(titulo, texto):
