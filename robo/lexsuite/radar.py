@@ -126,6 +126,17 @@ def item_de_lead(lead, cfg_radar, contatos=None):
     }
 
 
+def inicio_periodo(hoje, dias):
+    """0.7.30 (dono): primeiro dia do período pela data do processo. 1 = "do último dia útil até agora" (numa segunda,
+    a sexta; num dia comum, ontem); N = os últimos N dias corridos."""
+    if int(dias) <= 1:
+        d = hoje - dt.timedelta(days=1)
+        while d.weekday() >= 5:
+            d -= dt.timedelta(days=1)
+        return d.isoformat()
+    return (hoje - dt.timedelta(days=int(dias))).isoformat()
+
+
 def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None, prefs=None, visao="lista"):
     """Os dados da página: as ações guardadas nos últimos `dias` dias, dos tribunais escolhidos no config,
     com as preferências do escritório aplicadas (exclusões e mínimo de ações marcam, não apagam).
@@ -133,7 +144,7 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     r = cfg.get("radar") or {}
     agora = agora or dt.datetime.now()
     dias = config.inteiro(dias if dias is not None else r.get("dias_na_pagina", 1), 1, 1, 90)  # 0.7.26: config escrito à mão
-    desde = (agora.date() - dt.timedelta(days=dias)).isoformat()
+    desde = inicio_periodo(agora.date(), dias)  # 0.7.30 (dono): pela DATA DO PROCESSO no Diário, não por quando o programa o leu
     escolhidos = tribunais.validar(r.get("tribunais") or ["TRT2", "TRT15"])
     prefs = prefs or preferencias.carregar(compartilhar.pasta_base(cfg))
     r = dict(r, teto_capital_gigante=prefs.get("teto_capital_gigante") or r.get("teto_capital_gigante"))
@@ -142,7 +153,7 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     por_processo = {}
     for c in banco.contatos():
         por_processo.setdefault(c["processo"], []).append(c)
-    for lead in banco.todos_leads(desde=None if arquivo else desde):
+    for lead in banco.todos_leads(desde_diario=None if arquivo else desde):
         if lead.get("fonte", "DJEN") != "DJEN":
             continue
         if cl.segundo_grau(lead.get("vara")) and (lead.get("status") or "novo") == "novo" and not lead.get("manual") \

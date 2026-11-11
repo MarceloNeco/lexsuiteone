@@ -723,7 +723,7 @@ class TelaSemComentarioQueEngoleCodigo(unittest.TestCase):
     return, ou atribuição seguida de ";" (revisão da 0.7.24: um comando só também conta)."""
     PADROES = (r"[A-Za-z_$][\w$.]*\([^)]*\)\s*(;|$)", r"\b(var|let|const|if|for|while|return)\b[^;]*[;{]", r"[\w$.\]]+\s*=[^=>][^;]*;",
                r"[\w$\]]\s*(\+\+|--)\s*;", r"[\w$.\]]+\s*[+\-*/]=", r"\b(break|continue)\s*;",
-               r"\}\s*(catch|finally|else)\b", r"\}\s*\)?\s*;?\s*$")  # 0.7.26; revisão da 0.7.28: "} catch (e) {}" e "}" no fim: i++, z += 1, a.f(c) sem ";", break
+               r"\}\s*(catch|finally|else)\b", r"\}\s*\)?\s*;?\s*$", r"\.then\s*\(", r"\{\s*headers\s*:")  # 0.7.30: ".then(" e "{ headers:" depois de //  # 0.7.26; revisão da 0.7.28: "} catch (e) {}" e "}" no fim: i++, z += 1, a.f(c) sem ";", break
 
     @classmethod
     def ruins(cls, texto):
@@ -747,7 +747,8 @@ class TelaSemComentarioQueEngoleCodigo(unittest.TestCase):
         for ex in ("a.appendChild(b); // nota  a.appendChild(c);", "x(); // nota  if (x) { y(); }",
                    "x(); // nota  var z = 1;", "x(); // nota  z = 1;", "x(); // nota i++;", "x(); // nota z += 1;",
                    "x(); // nota a.f(c)", "x(); // nota break;", 'var s = "x"// nota z = 1;',
-                   "try { x(); // nota } catch (e) {}", "if (a) { x(); // nota }"):
+                   "try { x(); // nota } catch (e) {}", "if (a) { x(); // nota }",
+                   'return fetch("/x")  // nota .then(function (r) {'):
             self.assertTrue(self.ruins(ex), ex)
         self.assertFalse(self.ruins("x(); // nota em prosa (com parênteses); e ponto e vírgula"))
 

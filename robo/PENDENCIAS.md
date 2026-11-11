@@ -169,7 +169,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - "Tribunais: N de 24" e o "alterar" ao lado de "Ler o Diário agora" fazem a mesma coisa: juntar num lugar só.
 - "Ordem de chegada" (quando o programa achou, agrupado por leitura) x "Mais recentes primeiro" (data do Diário):
   nomes confundem.
-- O dono vai pedir ao Gemini uma proposta de layout para essa barra (prompt dado em 11/Nov) e trazer aqui.
+- Feito no ramo (0.7.30), a partir do protótipo do Gemini: três blocos. "Configuração da leitura" (o que o programa lê,
+  "Alterar configuração" = um botão só para a mira, "Ler o Diário agora", última e próxima leitura); "Filtros da lista"
+  (busca, Data do processo, Situação, Valor, "Mais filtros" que abre os menos usados, filtros salvos, Limpar) com a
+  ordenação e o "Baixar a lista (.csv)" em dourado no mesmo bloco, fixo no alto no computador (no celular rola junto).
+  "Data do processo" conta pela data no Diário (1 = do último dia útil até hoje; 3 a 90 dias); a 1ª carga da tela usa
+  o período salvo (antes pedia sempre 1 dia).
 - Feito no ramo (0.7.30): marcar tribunais na mira e clicar "Ler o Diário agora" salva e lê o que está marcado (antes
   lia a mira antiga sem avisar); o texto ao lado do botão acompanha o marcado, com "(marcado, ainda não salvo)"; o
   "alterar" não é mais cortado pelas reticências; círculo girando ao lado da barra de progresso.

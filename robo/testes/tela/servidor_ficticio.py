@@ -33,7 +33,8 @@ modo = sys.argv[1] if len(sys.argv) > 1 else "pronto"
 if modo == "pronto":
     cfg = {"escritorio": "Escritório Fictício Advocacia", "conta": {"codigo": "LEX-AAAA-BBBB", "instalacao": "0123456789abcdef", "resposta": "ok", "ok": True, "ultima_ok": "2099-01-01"},
            "usuario": {"nome": "Ana Souza Lima", "email": "ana@example.com", "papel": "Advogado ou advogada"},
-           "documento_escritorio": {"tipo": "cnpj", "numero": "12345678000195"}, "compartilhar": {"pasta": drive}}
+           "documento_escritorio": {"tipo": "cnpj", "numero": "12345678000195"}, "compartilhar": {"pasta": drive},
+           "radar": {"dias_na_pagina": 90}}  # 0.7.30: o período conta pela data do processo; os fictícios são de 02 a 06/NOV/2026
     with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
         json.dump(cfg, f)
 # FICTICIO_LEADS: lista fictícia para ver a tela

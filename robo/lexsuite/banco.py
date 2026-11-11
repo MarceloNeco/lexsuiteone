@@ -369,12 +369,14 @@ class Banco:
         self.con.commit()
         self.con.execute("VACUUM")
 
-    def todos_leads(self, vara=None, desde=None):
+    def todos_leads(self, vara=None, desde=None, desde_diario=None):
         sql, args = "SELECT dados, status, primeira_vez, motivo, frente, bruto_limpo, status_em FROM leads WHERE coalesce(fora_criterio, 0) = 0", ()
         if vara:
             sql, args = sql + " AND vara = ?", args + (vara,)
         if desde:
             sql, args = sql + " AND primeira_vez >= ?", args + (desde,)
+        if desde_diario:  # 0.7.30 (dono): pela data do processo no Diário (sem data, vale quando o programa o viu)
+            sql, args = sql + " AND coalesce(nullif(data, ''), substr(primeira_vez, 1, 10)) >= ?", args + (desde_diario,)
         saida = []
         for dados, status, quando, motivo, frente, limpo, status_em in self.con.execute(sql + " ORDER BY primeira_vez DESC", args):
             lead = json.loads(dados)
