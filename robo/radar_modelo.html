@@ -3619,6 +3619,7 @@ window.LEXSUITE_RADAR = null;
     (MODO === "app" ? [[t("bg_c_pasta"), "c-pasta-cartoes"], [t("bg_c_agenda"), "c-agendar-wrap"], ["AssistONE", "c-aone-wrap"], [t("c_s_licenca"), "c-codigo"]] : []).forEach(function (x) {
       if (!q || semAcento(x[0] + " " + t("config")).indexOf(q) >= 0) opc.push([x[0], t("config"), function () { abrirConfig(true, x[1]); }]);
     });
+    if (MODO === "app" && (!q || semAcento(t("perfil")).indexOf(q) >= 0)) opc.push([t("perfil"), "", function () { abrirPerfil(false); }]);  // 0.7.31: o Perfil saiu do menu (fica nas iniciais), mas a lupa ainda acha
     (MODO === "app" ? gruposMenu() : [[gruposMenu()[0][0], gruposMenu()[0][1].slice(0, 2)]]).forEach(function (gr) { gr[1].forEach(function (it) { if (!q || semAcento(it[0] + " " + gr[0]).indexOf(q) >= 0) opc.push([it[0], gr[0], it[1]]); }); });
     bloco(t("bg_opcoes"), opc);
     if (q.length >= 2) {

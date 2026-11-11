@@ -6,6 +6,10 @@ const { chromium, devices } = require('playwright');
 const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
 (async () => {
   const b = await chromium.launch(); const falhas = []; let n = 0;
+  // 0.7.31: a janela "Novidades da versão" já vista (senão ela abre por cima e o roteiro não clica em nada)
+  const VERSAO = (require('fs').readFileSync(require('path').join(__dirname, '..', '..', 'lexsuite', '__init__.py'), 'utf8').match(/VERSAO = "([^"]+)"/) || [])[1] || '';
+  const novoContexto = b.newContext.bind(b);
+  b.newContext = async (o) => { const c = await novoContexto(o); await c.addInitScript((v) => { try { localStorage.setItem('lexsuite:novidades-vistas', v); } catch (e) {} }, VERSAO); return c; };
   const ok = (c, m) => { n++; if (!c) falhas.push(m); else console.log('  ✓ ' + m); };
   const tamanhos = [['celular', null], ['tablet', [768, 1024]], ['notebook', [1366, 768]], ['monitor', [1920, 1080]], ['monitor-grande', [2560, 1440]]];  // 0.7.29: + 768 px
   for (const [nome, vp] of tamanhos) {
