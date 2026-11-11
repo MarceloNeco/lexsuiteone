@@ -113,6 +113,24 @@ const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
     await p.click('#c-l-codigo').catch(() => {}); const aj = p.locator('#config .ajuda').first(); await aj.scrollIntoViewIfNeeded(); await aj.click(); await p.waitForTimeout(300);
     const z = await p.evaluate(() => { const q = document.querySelector('.balao'); if (!q) return 'sem balão'; const r = q.getBoundingClientRect(); const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return q.contains(e) ? 'na frente' : 'atrás'; });
     ok(z === 'na frente', `o (?) da Configuração abre na frente da janela (${z})`); await ctx.close(); }
+  // 0.7.32: 320 px em inglês sem rolagem lateral; gráfico do Painel desliga pela legenda (apagado) sem mexer na Lista; faixa de leitura baixa
+  { const ctx = await b.newContext({ viewport: { width: 320, height: 700 }, isMobile: true, hasTouch: true });
+    await ctx.addInitScript(() => { try { localStorage.setItem('lexsuite:idioma', 'en'); } catch (e) {} });
+    const p = await ctx.newPage(); await p.goto('http://127.0.0.1:' + porta + '/'); await p.waitForTimeout(1300);
+    for (const aba of ['lista', 'painel']) { await p.click('#v-' + aba); await p.waitForTimeout(400); const r = await p.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]); ok(r[0] <= r[1] + 1, `320px en/${aba}: nada sai da tela (${r[0]} de ${r[1]})`); }
+    await ctx.close(); }
+  { const ctx = await b.newContext({ viewport: { width: 1366, height: 900 } }); const p = await ctx.newPage();
+    await p.goto('http://127.0.0.1:' + porta + '/'); await p.waitForTimeout(1300); await p.click('.dgo-aone-x').catch(() => {});
+    const h = await p.evaluate(() => Math.round(document.getElementById('bloco-leitura').getBoundingClientRect().height)); ok(h <= 120, `faixa de leitura baixa no notebook (${h} px)`);
+    await p.click('#v-painel'); await p.waitForTimeout(500);
+    const card = p.locator('.grade-graf > *', { hasText: /Situação no escritório|Status at the firm/ }).first();
+    await card.locator('button.barra-l').first().click(); await p.waitForTimeout(400);
+    const r = await card.evaluate(c => ({ apagadas: c.querySelectorAll('.barra-l.desligada').length, todas: c.querySelectorAll('.barra-l').length, mostrar: !!c.querySelector('.graf-acoes') }));
+    ok(r.apagadas === 1 && r.todas >= 2 && r.mostrar, `Painel: item desligado fica apagado no gráfico (${r.apagadas} de ${r.todas})`);
+    await p.click('#v-lista'); await p.waitForTimeout(400);
+    const fl = await p.evaluate(() => document.getElementById('f-sit').textContent);
+    ok(!/\(\d+\)/.test(fl.split('✕')[0]) || /Todas|All/.test(fl), `a Lista não herdou o filtro do Painel (${fl.slice(0, 30)})`);
+    await ctx.close(); }
   await b.close();
   console.log(falhas.length ? 'FALHOU:\n - ' + falhas.join('\n - ') : `OK (${n} verificações)`);
   process.exit(falhas.length ? 1 : 0);

@@ -653,7 +653,7 @@ class Tratador(BaseHTTPRequestHandler):
                                              aceite_uso=corpo.get("aceite_uso") if isinstance(corpo.get("aceite_uso"), dict) else None)
                 if not ok:
                     return self._responder({"ok": False, "motivo": motivo, "conta": conta.situacao(cfg)})
-            if "horarios" in corpo:
+            if "horarios" in corpo and corpo["horarios"]:  # revisão da 0.7.31: lista vazia não troca os horários pelo padrão
                 r["horarios"] = agendar.validar(corpo["horarios"])
             if "dias" in corpo:
                 r["dias"] = agendar.validar_dias(corpo["dias"])
@@ -693,6 +693,7 @@ class Tratador(BaseHTTPRequestHandler):
             mudou_horario = "horarios" in corpo or "dias" in corpo
             if agendar.disponivel() and ("agendar" in corpo or (mudou_horario and agendar.agendado())):
                 ligar = corpo["agendar"] if "agendar" in corpo else True
+                ligar = ligar and bool(agendar.dias_da_semana(r.get("dias")))  # 0.7.32 (dono): nenhum dia marcado = desligada
                 ok, msg = agendar.agendar(s.pasta, *agendar.do_config(cfg)) if ligar else agendar.desagendar()
                 resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg})
             return self._responder(resposta)

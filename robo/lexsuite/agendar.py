@@ -21,6 +21,11 @@ TAREFA = "LexSuiteONE Radar"
 ANTIGAS = ("LexSuiteONE Radar (noite)", "LexSuiteONE Radar (manha)")
 HORA = re.compile(r"^([01]?\d|2[0-3]):([0-5]\d)$")
 DIAS_UTEIS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+# 0.7.32 (dono): dias da semana escolhidos um a um (0 = segunda ... 6 = domingo, como em `date.weekday()`)
+SEMANA_XML = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+SEMANA_SCHTASKS = ("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN")
+SEMANA_PT = ("segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo")
+SEMANA_CURTA = ("seg", "ter", "qua", "qui", "sex", "sab", "dom")
 
 
 def escape(texto):
@@ -53,7 +58,33 @@ def validar(horarios):
 
 
 def validar_dias(dias):
-    return dias if dias in DIAS else "todos"
+    """"todos", "uteis" (segunda a sexta) ou a lista de dias (0 = segunda ... 6 = domingo; aceita também "seg", "ter"...).
+    A lista com os 7 vira "todos"; segunda a sexta vira "uteis"; lista vazia fica vazia (leitura automática sem dia).
+    Qualquer outra coisa: "todos" (o comportamento de antes)."""
+    if dias in DIAS:
+        return dias
+    if not isinstance(dias, (list, tuple)):
+        return "todos"
+    vistos = set()
+    for d in dias:
+        if isinstance(d, bool):
+            continue
+        if isinstance(d, int) and 0 <= d <= 6:
+            vistos.add(d)
+        elif str(d).strip().lower().replace("á", "a")[:3] in SEMANA_CURTA:
+            vistos.add(SEMANA_CURTA.index(str(d).strip().lower().replace("á", "a")[:3]))
+    lista = sorted(vistos)
+    if lista == list(range(7)):
+        return "todos"
+    if lista == list(range(5)):
+        return "uteis"
+    return lista
+
+
+def dias_da_semana(dias):
+    """O conjunto de dias (0 = segunda ... 6 = domingo) em que a leitura roda."""
+    v = validar_dias(dias)
+    return set(range(7)) if v == "todos" else set(range(5)) if v == "uteis" else set(v)
 
 
 def do_config(cfg):
@@ -82,7 +113,7 @@ def horario_perdido(cfg, agora=None, tolerancia_min=15, ultima_leitura=""):
     horarios, dias = do_config(cfg)
     ultimo = None
     for dia in (agora.date(), agora.date() - dt.timedelta(days=1)):
-        if dias == "uteis" and dia.weekday() >= 5:
+        if dia.weekday() not in dias_da_semana(dias):
             continue
         for h in horarios:
             hh, mm = (int(x) for x in h.split(":"))
@@ -102,7 +133,7 @@ def proxima(horarios, dias="todos", agora=None):
     horarios = validar(horarios)
     for d in range(0, 8):
         dia = agora.date() + dt.timedelta(days=d)
-        if dias == "uteis" and dia.weekday() >= 5:
+        if dia.weekday() not in dias_da_semana(dias):
             continue
         for h in horarios:
             hh, mm = (int(x) for x in h.split(":"))
@@ -142,9 +173,10 @@ def xml_tarefa(bat, horarios, dias="todos", hoje=None, oculta=None):
     gatilhos = []
     for h in validar(horarios):
         quando = f"{hoje.isoformat()}T{h}:00"
-        if validar_dias(dias) == "uteis":
+        semana = dias_da_semana(dias)
+        if semana != set(range(7)):
             agenda = ("<ScheduleByWeek><WeeksInterval>1</WeeksInterval><DaysOfWeek>"
-                      + "".join(f"<{d} />" for d in DIAS_UTEIS) + "</DaysOfWeek></ScheduleByWeek>")
+                      + "".join(f"<{SEMANA_XML[d]} />" for d in sorted(semana)) + "</DaysOfWeek></ScheduleByWeek>")
         else:
             agenda = "<ScheduleByDay><DaysInterval>1</DaysInterval></ScheduleByDay>"
         gatilhos.append(f"<CalendarTrigger><StartBoundary>{quando}</StartBoundary><Enabled>true</Enabled>{agenda}</CalendarTrigger>")
@@ -194,7 +226,20 @@ def _apagar_tudo():
 def descricao(horarios, dias="todos"):
     h = [x.replace(":", "h") for x in validar(horarios)]
     lista = h[0] if len(h) == 1 else ", ".join(h[:-1]) + " e " + h[-1]
-    return ("de segunda a sexta" if validar_dias(dias) == "uteis" else "todo dia") + " às " + lista
+    v = validar_dias(dias)
+    if v == "todos":
+        quando = "todo dia"
+    elif v == "uteis":
+        quando = "de segunda a sexta"
+    elif not v:
+        quando = "em nenhum dia"
+    else:
+        nomes = [SEMANA_PT[d] for d in v]
+        quando = "às " + nomes[0] + "s" if len(nomes) == 1 else ", ".join(nomes[:-1]) + " e " + nomes[-1]
+        quando = quando if len(nomes) == 1 else "nos dias " + quando
+        if len(nomes) == 1:
+            quando = ("aos " if v[0] >= 5 else "às ") + nomes[0] + "s"
+    return quando + " às " + lista
 
 
 def agendar(pasta_robo, horarios=None, dias="todos"):
@@ -205,6 +250,8 @@ def agendar(pasta_robo, horarios=None, dias="todos"):
     if not os.path.exists(bat):
         return False, "RODAR.bat não encontrado na pasta do programa."
     horarios, dias = validar(horarios), validar_dias(dias)
+    if not dias_da_semana(dias):  # revisão da 0.7.32: nenhum dia marcado = sem leitura automática (XML vazio é inválido)
+        return desagendar()
     _apagar_tudo()
     arq = None
     try:
@@ -227,7 +274,8 @@ def agendar(pasta_robo, horarios=None, dias="todos"):
     tr = f'"{oc[0]}" {oc[1]}' if oc and len(f'"{oc[0]}" {oc[1]}') <= 260 else f'"{bat}" --agendado'  # o /tr aceita até 261 letras
     for h in horarios:
         args = ["schtasks", "/create", "/f", "/tn", _simples(h), "/st", h, "/tr", tr]
-        args[5:5] = ["/sc", "weekly", "/d", "MON,TUE,WED,THU,FRI"] if dias == "uteis" else ["/sc", "daily"]
+        semana = dias_da_semana(dias)
+        args[5:5] = ["/sc", "daily"] if semana == set(range(7)) else ["/sc", "weekly", "/d", ",".join(SEMANA_SCHTASKS[d] for d in sorted(semana))]
         ok2, msg2 = _rodar(args)
         if not ok2:
             return False, f"Não consegui criar a leitura automática ({msg2 or msg}). Tente o AGENDAR.bat como administrador."
@@ -302,6 +350,8 @@ def desagendar():
     if not disponivel():
         return False, "Agendamento automático só no Windows."
     _apagar_tudo()
+    if agendado():  # revisão da 0.7.31: só diz "desligada" se a tarefa saiu mesmo
+        return False, "Não consegui desligar a leitura automática. Tente de novo ou apague a tarefa \"LexSuiteONE Radar\" no Agendador de Tarefas."
     return True, "Leitura automática desligada."
 
 

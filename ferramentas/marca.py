@@ -130,6 +130,7 @@ def manual_sem_arquivos(texto):
     svg = (DESTINO / "favicon.svg").read_text(encoding="utf-8").strip()
     uri = "data:image/svg+xml," + quote(svg, safe=" :/=")
     texto = texto.replace('<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">\n', "")
+    texto = texto.replace('<link rel="apple-touch-icon" href="/apple-touch-icon.png">\n', "")  # revisão da 0.7.31: o pacote não leva esse arquivo
     texto = texto.replace('<link rel="preload" href="fontes/figtree.woff2" as="font" type="font/woff2" crossorigin>\n', "")
     texto = texto.replace('@font-face { font-family: "Figtree"; src: url("fontes/figtree.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }\n', "")  # a fonte do site não vai no pacote
     return texto.replace('href="/favicon.svg"', f'href="{uri}"').replace('src="favicon.svg"', f'src="{uri}"')

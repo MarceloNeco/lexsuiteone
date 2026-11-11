@@ -73,7 +73,8 @@ header { display: contents; }
 .fases .fase-n { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: .78rem; font-weight: 700; background: var(--papel-2, #f1f4f8); color: var(--tinta-2); margin-bottom: 4px; }
 .fases li.aqui { border-color: var(--latao); background: var(--latao-wash, #fbf6ea); }
 .fases li.aqui b { color: var(--tinta); }
-.fases li.aqui .fase-n { background: var(--latao); color: #fff; }
+.fases li.aqui .fase-n { background: var(--latao-texto); color: #fff; }
+::placeholder { color: var(--tinta-3); opacity: 1; }
 .fases li.aqui small { color: var(--latao-texto); font-weight: 600; }
 .painel-cab p b { display: block; color: var(--tinta); font-size: 1.1rem; margin-bottom: 4px; }
 .painel-arte { flex: 0 0 260px; height: 146px; border-radius: 10px; background: #0e1c2c url(data:image/webp;base64,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) no-repeat center / contain; }
@@ -256,6 +257,10 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 button.leg-item { cursor: pointer; }
 button.leg-item:hover, button.leg-item:focus-visible { background: var(--papel-2, #f1f4f8); }
 .leg-cor { width: 12px; height: 12px; border-radius: 3px; }
+.legenda li { display: grid; grid-template-columns: 16px minmax(0, 1fr); align-items: center; gap: 4px; } .legenda li .leg-item { grid-template-columns: minmax(0, 1fr) auto; }
+button.leg-cor { all: unset; box-sizing: border-box; width: 14px; height: 14px; border-radius: 3px; cursor: pointer; outline-offset: 2px; } button.leg-cor:hover, button.leg-cor:focus-visible { outline: 2px solid var(--latao); }
+.legenda li.desligada .leg-item, .barra-l.desligada { opacity: .4; } .barra-l.desligada .rot { text-decoration: line-through; }
+.graf-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; } .graf-cab h3 { margin: 0 0 8px; } .graf-acoes { display: inline-flex; gap: 12px; font-size: .8rem; }
 .leg-rot { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .leg-n { color: var(--tinta); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .grade-graf { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
@@ -309,6 +314,7 @@ button.barra-l:focus-visible { outline: 2px solid var(--latao); }
 .saz-cab { display: flex; gap: 8px; align-items: center; }
 .col.pico .pe { background: var(--latao); }
 .novidades { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 6px; }
+.campo-data, .campo-data select, #periodo { max-width: 100%; min-width: 0; }
 .saz-legenda { display: flex; align-items: center; gap: 6px; } .saz-cor-pico { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--latao); flex: none; }
 .graf-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .graf-sep { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; color: var(--tinta-2); cursor: pointer; }
@@ -583,6 +589,8 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 @keyframes roda { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .roda { animation-duration: 4s; } }
 .horas-prontas { display: flex; flex-wrap: wrap; gap: 6px; }
+.dias-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; } .dias-linha > span { min-width: 64px; font-size: .86rem; color: var(--tinta-2); }
+.dias-semana button { min-width: 52px; }
 .horas-prontas button { border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 6px 12px; min-height: 34px; font-weight: 600; cursor: pointer; }
 .horas-prontas button[aria-pressed="true"] { background: var(--marinho); color: #fff; border-color: var(--marinho); }
 .grupo { font-size: .76rem; font-weight: 600; letter-spacing: .04em; color: var(--tinta-3); padding: 12px 18px 4px; border-top: 1px solid var(--linha); }
@@ -749,39 +757,44 @@ footer a:hover { text-decoration: underline; }
   <div class="painel" id="config" hidden role="dialog" aria-modal="true" aria-labelledby="c-titulo">
     <div class="conf-cab"><h3 id="c-titulo"></h3><button type="button" class="conf-x" id="c-fechar">✕</button></div>
     <p class="nota-registro" id="c-mira"></p>
-    <h4 class="conf-sec" id="c-s-licenca"></h4>
-    <label class="campo-conf"><span id="c-l-codigo"></span><input id="c-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
-    <p class="nota-registro" id="c-codigo-nota" hidden></p>
+    <h4 class="conf-sec" id="c-s-lista"></h4>
+    <fieldset class="agenda" id="c-regras-wrap"><legend id="c-l-regras"></legend><div id="c-regras"></div></fieldset>
     <h4 class="conf-sec" id="c-s-pasta"></h4>
     <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta" hidden></select><span class="opcoes-cartao pasta-cartoes" id="c-pasta-cartoes" role="radiogroup"></span></label>
     <p class="agenda-info" id="c-pasta-nota"></p>
     <label class="campo-conf" id="c-outra-wrap" hidden><span id="c-l-outra"></span><input id="c-outra" type="text" spellcheck="false"></label>
     <div class="conf-acoes nuvens" id="c-nuvens-wrap" hidden><span id="c-nuvens"></span></div>
     <div class="conf-acoes"><button type="button" class="chip" id="c-escolher" hidden></button><button type="button" class="chip" id="c-testar" hidden></button><button type="button" class="chip" id="c-criar" hidden></button><span id="c-teste-txt"></span></div>
-    <fieldset class="agenda" id="c-regras-wrap"><legend id="c-l-regras"></legend><div id="c-regras"></div></fieldset>
+    <h4 class="conf-sec" id="c-s-leitura"></h4>
     <fieldset class="agenda" id="c-agendar-wrap">
       <legend id="c-l-agenda"></legend>
       <p class="agenda-info" id="c-trib-lidos"></p>
       <label class="conf-acoes"><input type="checkbox" id="c-agendar"> <span id="c-l-agendar"></span></label>
       <p class="agenda-info" id="c-horas-expl"></p>
-      <div class="horas-prontas" id="c-horas-prontas" role="group"></div>
+      <div class="dias-linha"><span id="c-l-dias"></span><div class="horas-prontas dias-semana" id="c-dias" role="group"></div></div>
+      <div class="dias-linha"><span id="c-l-horas"></span><div class="horas-prontas" id="c-horas-prontas" role="group"></div></div>
       <div class="agenda-horas" id="c-horas" role="list"></div>
       <div class="agenda-nova">
         <label class="conf-acoes"><span id="c-l-hora-nova"></span> <input type="time" id="c-hora-nova" step="300"></label>
         <button type="button" class="chip" id="c-hora-add"></button>
-        <select id="c-dias" aria-label="Dias"></select>
       </div>
       <p class="agenda-info" id="c-agenda-info" aria-live="polite"></p>
       <p class="agenda-info alerta" id="c-agenda-alerta" hidden></p>
       <label class="conf-acoes"><input type="checkbox" id="c-avisar"> <span id="c-l-avisar"></span></label>
     </fieldset>
+    <fieldset class="agenda" id="c-filtros-wrap"><legend id="c-l-filtros"></legend><div id="c-filtros"></div></fieldset>
+    <fieldset class="agenda" id="c-arm-wrap"><legend id="c-l-arm"></legend><div id="c-arm"></div></fieldset>
+    <h4 class="conf-sec" id="c-s-tela"></h4>
     <fieldset class="agenda">
       <legend id="c-l-tela"></legend>
       <label class="conf-acoes"><input type="checkbox" id="c-aba"> <span id="c-l-aba"></span></label>
     </fieldset>
-    <fieldset class="agenda" id="c-arm-wrap"><legend id="c-l-arm"></legend><div id="c-arm"></div></fieldset>
-    <fieldset class="agenda" id="c-aone-wrap"><legend>AssistONE</legend><div id="c-aone"></div></fieldset>
-    <fieldset class="agenda" id="c-filtros-wrap"><legend id="c-l-filtros"></legend><div id="c-filtros"></div></fieldset>
+    <fieldset class="agenda" id="c-tema-wrap"><legend id="c-l-tema"></legend><div id="c-tema"></div></fieldset>
+    <fieldset class="agenda" id="c-aone-wrap"><legend id="c-l-aone"></legend><div id="c-aone"></div></fieldset>
+    <h4 class="conf-sec" id="c-s-licenca"></h4>
+    <label class="campo-conf"><span id="c-l-codigo"></span><input id="c-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
+    <p class="nota-registro" id="c-codigo-nota" hidden></p>
+    <div class="conf-acoes"><button type="button" class="chip" id="c-trocar-lic" hidden></button></div>
     <fieldset class="agenda" id="c-termos-wrap"><legend id="c-l-termos"></legend><div id="c-termos"></div></fieldset>
     <h4 class="conf-sec" id="c-s-sobre"></h4>
     <dl class="conf-info" id="c-info"></dl>
@@ -1858,7 +1871,7 @@ window.LEXSUITE_RADAR = null;
   var T = {
     pt: { marca: "RADAR JUDICIAL",
       mira_t: "A mira do escritório", mira_trib: "Escolha os tribunais que o {c} acompanha. A frente trabalhista cobre os 24 TRTs; o valor mínimo e quem fica de fora estão em Configuração → Regras do escritório.",
-      fase1: "O escritório define a mira", fase2: "Leitura diária do DJEN", fase3: "Cada processo, uma ficha", fase4: "Acompanhamento e prioridade", fase_aqui: "Você está aqui", mira_conf: "O código de cliente, onde fica a planilha, as leituras automáticas e a versão do programa. Quem usa este computador fica no perfil (as iniciais no alto da tela).", ver_lista: "Ver a lista", planilha_aberta: "A planilha estava aberta no Excel (ou faltou permissão para gravar na pasta) e não foi atualizada. A lista está salva: feche a planilha (ou confira a pasta) e clique em", gravar_planilha: "Gravar a planilha agora", planilha_gravada: "Planilha atualizada.", tambem: "Também no processo: {e}", cnpj_conferir: "O Diário traz o CNPJ {c}, mas na Receita ele é de outro nome: pode ser de outra parte do processo. Confira no PJe antes de usar.", f_cnpj: "Só com CNPJ confirmado", f_todas_datas: "Todas as datas", f_todas_varas: "Todas as varas", f_todos_setores: "Todos os setores", f_todos_portes: "Todos os portes", f_todas_ufs: "Todos os estados", ord_recentes: "Mais recentes primeiro", ord_porte: "Maior porte primeiro", ord_empresa: "Empresa (A a Z)", porte_micro: "Microempresa", porte_peq: "Pequena", porte_grande: "Média ou grande", cod_fixo: "Código confirmado. Para trocar, fale com judicial@solverone.com.br.", nova_txt: "Versão {v} disponível (a sua é a {a}). Seus dados, a lista e a configuração continuam.", nova_btn: "Atualizar agora", nova_ok: "Atualizado. Reiniciando o {c}...", nova_volta: "Pronto: versão {v}.", abrindo_planilha: "Abrindo a planilha no Excel (pode levar alguns segundos e abrir atrás desta janela).", abrindo_pasta: "Abrindo a pasta das planilhas no Explorador do Windows (se não aparecer, olhe a barra de tarefas).", cod: "Código de cliente", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Número", doc_tipo: "Documento do escritório", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (sem CNPJ)", tipo_pass: "Passaporte (não brasileiro)", doc_invalido: "Número inválido: confira os dígitos.", doc_ok: "Número válido.", cnpj_achado: "Encontrado na Receita: {s}. O nome do escritório foi preenchido; dá para ajustar.", cnpj_nao_achado: "CNPJ válido, mas não encontrado na base pública (ou sem internet). Escreva o nome do escritório.", cnpj_buscando: "Consultando o cadastro público da Receita...", seu_nome: "Seu nome", seu_email: "Seu e-mail", cad_falta: "Preencha o código, o documento do escritório, o nome do escritório, o seu nome e o seu e-mail.", cod_falta: "Informe o código de cliente (está no e-mail de boas-vindas).", registro: "O seu nome, o seu e-mail e o documento do escritório ficam registrados na licença do escritório, para a SolverONE falar com você sobre o serviço. Cada e-mail pertence a um escritório só e fica fixo no perfil; se outra pessoa for usar este computador, use “Outra pessoa vai usar este computador” no perfil.", sem_trib: "Escolha pelo menos um tribunal e clique em Salvar e ler agora.", conferindo: "Conferindo o código com a SolverONE...",
+      fase1: "O escritório define a mira", fase2: "Leitura diária do DJEN", fase3: "Cada processo, uma ficha", fase4: "Acompanhamento e prioridade", fase_aqui: "Você está aqui", mira_conf: "O código de cliente, onde fica a planilha, as leituras automáticas e a versão do programa. Quem usa este computador fica no perfil (as iniciais no alto da tela).", ver_lista: "Ver a lista", planilha_aberta: "A planilha estava aberta no Excel (ou faltou permissão para gravar na pasta) e não foi atualizada. A lista está salva: feche a planilha (ou confira a pasta) e clique em", gravar_planilha: "Gravar a planilha agora", planilha_gravada: "Planilha atualizada.", tambem: "Também no processo: {e}", cnpj_conferir: "O Diário traz o CNPJ {c}, mas na Receita ele é de outro nome: pode ser de outra parte do processo. Confira no PJe antes de usar.", f_cnpj: "Só com CNPJ confirmado", f_todas_datas: "Todas as datas", f_todas_varas: "Todas as varas", f_todos_setores: "Todos os setores", f_todos_portes: "Todos os portes", f_todas_ufs: "Todos os estados", ord_recentes: "Mais recentes primeiro", ord_porte: "Maior porte primeiro", ord_empresa: "Empresa (A a Z)", porte_micro: "Microempresa", porte_peq: "Pequena", porte_grande: "Média ou grande", cod_fixo: "Código confirmado. Para trocar, use \"Trocar licença\".", nova_txt: "Versão {v} disponível (a sua é a {a}). Seus dados, a lista e a configuração continuam.", nova_btn: "Atualizar agora", nova_ok: "Atualizado. Reiniciando o {c}...", nova_volta: "Pronto: versão {v}.", abrindo_planilha: "Abrindo a planilha no Excel (pode levar alguns segundos e abrir atrás desta janela).", abrindo_pasta: "Abrindo a pasta das planilhas no Explorador do Windows (se não aparecer, olhe a barra de tarefas).", cod: "Código de cliente", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Número", doc_tipo: "Documento do escritório", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (sem CNPJ)", tipo_pass: "Passaporte (não brasileiro)", doc_invalido: "Número inválido: confira os dígitos.", doc_ok: "Número válido.", cnpj_achado: "Encontrado na Receita: {s}. O nome do escritório foi preenchido; dá para ajustar.", cnpj_nao_achado: "CNPJ válido, mas não encontrado na base pública (ou sem internet). Escreva o nome do escritório.", cnpj_buscando: "Consultando o cadastro público da Receita...", seu_nome: "Seu nome", seu_email: "Seu e-mail", cad_falta: "Preencha o código, o documento do escritório, o nome do escritório, o seu nome e o seu e-mail.", cod_falta: "Informe o código de cliente (está no e-mail de boas-vindas).", registro: "O seu nome, o seu e-mail e o documento do escritório ficam registrados na licença do escritório, para a SolverONE falar com você sobre o serviço. Cada e-mail pertence a um escritório só e fica fixo no perfil; se outra pessoa for usar este computador, use “Outra pessoa vai usar este computador” no perfil.", sem_trib: "Escolha pelo menos um tribunal e clique em Salvar e ler agora.", conferindo: "Conferindo o código com a SolverONE...",
       planilha_abrir: "Abrir a planilha", pasta_abrir: "Abrir a pasta das planilhas no Windows", planilha_falta: "A planilha ainda não existe: faça uma leitura ou confira a pasta das planilhas em Configuração.",
       csv_dica: "Arquivo simples com a lista desta tela, para importar em outros sistemas (ex.: Astrea). A planilha completa está na pasta das planilhas.", licenca: "Licença",
       h1: "Novos processos contra empresas",
@@ -1877,7 +1890,7 @@ window.LEXSUITE_RADAR = null;
       w4_t: "Tudo pronto", w4_x: "A primeira leitura leva de alguns minutos (poucos tribunais) a uma hora (os 24 TRTs); o andamento aparece aqui na tela, e o Windows avisa quando terminar. O manual fica no alto da tela.",
       w_rotina: "Leituras automáticas", w_nome_falta: "Informe o nome do escritório.", w_pasta_falta: "Escolha uma pasta ou marque \"Nenhuma\".", c_pasta: "Pasta das planilhas", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
       c_nenhuma: "Pasta padrão do {c} (neste computador)", c_outra_op: "Outra pasta (rede, OneDrive, Google Drive ou deste computador)", c_salvar: "Salvar", c_atualizar: "Verificar atualização",
-      c_versao: "Versão instalada", c_pasta_robo: "Pasta do programa", c_controle: "A planilha está em", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Ler sozinho, com o computador ligado", c_agendar_nao: "Leitura automática só no Windows.", w_agendar: "Ler sozinho {d} (dá para mudar em Configuração).", ag_titulo: "Leitura automática", ag_nova: "Outro horário", ag_add: "Acrescentar", ag_tirar: "Tirar o horário {h}", ag_todos: "Todos os dias", ag_uteis: "De segunda a sexta", ag_todo_dia: "todo dia", ag_seg_sex: "de segunda a sexta", ag_as: "às {h}", ag_e: " e ", ag_max: "No máximo 6 horários.", ag_ja: "Esse horário já está na lista.", ag_um: "Deixe pelo menos um horário (ou desmarque Ler sozinho).", nov_menu: "Novidades da versão", nov_t: "Novidades da versão {v}", nov_ok: "Entendi", nov_sem: "Esta versão traz correções pequenas.", ag_desligar_t: "Desligar a leitura automática?", ag_desligar_p: "Sem horário, o RADAR só lê quando você clicar em \u201cLer o Diário agora\u201d. A tela inicial avisa que está desligada.", ag_manter: "Manter", ag_desligar: "Desligar", ag_desligada: "Leitura automática desligada.", ag_configurar: "Configurar", ag_hora_inv: "Escolha a hora.", ag_compensa: "Se o computador estiver desligado ou dormindo na hora, a leitura acontece assim que ele ligar.", ag_noite: "O Diário do dia termina de sair à noite (por volta das 19h). Para lê-lo no mesmo dia, deixe um horário depois das 19h.", ag_avisar: "Mostrar um aviso no canto da tela ao terminar cada leitura", proxima: "Próxima leitura automática: {q}.", hoje: "hoje", amanha: "amanhã", ag_salvar_dica: "Os horários valem depois de Salvar.", ag_le: "Lê {d}.", cod_instalador: "Veio do instalador. Para trocar o código, use Configuração depois.", papel_escolha: "Escolha uma opção", papel_outra: "Outra", papel_sem: "Prefiro não informar", papel_outro_l: "Qual é a sua função?", papel_dica: "Ajuda a SolverONE a adaptar o {c} ao trabalho de cada função. Se preferir, escolha \"Prefiro não informar\".", papel_falta: "Escolha a sua função no escritório (ou \"Prefiro não informar\").", papel_outro_falta: "Escreva qual é a sua função.",
+      c_versao: "Versão instalada", c_pasta_robo: "Pasta do programa", c_controle: "A planilha está em", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Ler sozinho, com o computador ligado", c_agendar_nao: "Leitura automática só no Windows.", w_agendar: "Ler sozinho {d} (dá para mudar em Configuração).", ag_titulo: "Leitura automática", ag_nova: "Outro horário", ag_add: "Acrescentar", ag_tirar: "Tirar o horário {h}", ag_todos: "Todos os dias", ag_dias_rot: "Dias", ag_horas_rot: "Horários", ag_dia_0: "Seg", ag_dia_1: "Ter", ag_dia_2: "Qua", ag_dia_3: "Qui", ag_dia_4: "Sex", ag_dia_5: "Sáb", ag_dia_6: "Dom", ag_nos_dias: "{d}", ag_sem_dia: "Nenhum dia marcado: a leitura automática fica desligada ao salvar.", ag_uteis: "De segunda a sexta", ag_todo_dia: "todo dia", ag_seg_sex: "de segunda a sexta", ag_as: "às {h}", ag_e: " e ", ag_max: "No máximo 6 horários.", ag_ja: "Esse horário já está na lista.", ag_um: "Deixe pelo menos um horário (ou desmarque Ler sozinho).", nov_menu: "Novidades da versão", nov_t: "Novidades da versão {v}", nov_ok: "Entendi", nov_sem: "Esta versão traz correções pequenas.", nov_onde: "Para rever: menu ☰ → Configurações → Novidades da versão.", ag_desligar_t: "Desligar a leitura automática?", ag_desligar_p: "Sem horário, o {c} só lê quando você clicar em \u201cLer o Diário agora\u201d. A tela inicial avisa que está desligada.", ag_manter: "Manter", ag_desligar: "Desligar", ag_desligada: "Leitura automática desligada.", ag_configurar: "Configurar", ag_hora_inv: "Escolha a hora.", ag_compensa: "Se o computador estiver desligado ou dormindo na hora, a leitura acontece assim que ele ligar.", ag_noite: "O Diário do dia termina de sair à noite (por volta das 19h). Para lê-lo no mesmo dia, deixe um horário depois das 19h.", ag_avisar: "Mostrar um aviso no canto da tela ao terminar cada leitura", proxima: "Próxima leitura automática: {q}.", hoje: "hoje", amanha: "amanhã", ag_salvar_dica: "Os horários valem depois de Salvar.", ag_le: "Lê {d}.", cod_instalador: "Veio do instalador. Depois de confirmado, fica travado; para trocar, Configuração → Trocar licença.", papel_escolha: "Escolha uma opção", papel_outra: "Outra", papel_sem: "Prefiro não informar", papel_outro_l: "Qual é a sua função?", papel_dica: "Ajuda a SolverONE a adaptar o {c} ao trabalho de cada função. Se preferir, escolha \"Prefiro não informar\".", papel_falta: "Escolha a sua função no escritório (ou \"Prefiro não informar\").", papel_outro_falta: "Escreva qual é a sua função.",
       op_drive: "No Google Drive deste computador", op_drive_x: "A planilha fica no seu Google Drive: dá para abrir em qualquer lugar e compartilhar com a equipe do escritório.", op_drive_nao: "Não achei o Google Drive para computador aqui. Para a planilha ir ao Drive, instale-o (google.com/drive/download) com a conta do escritório e abra o RADAR de novo; enquanto isso, use \"Só neste computador\".",
       op_outra: "Outra pasta (rede, OneDrive, Google Drive ou deste computador)", op_outra_x: "Para a equipe abrir de outros computadores. Se a pasta não existir, o {c} cria.", op_escolher: "Escolher pasta…", op_local: "Pasta padrão do {c} (neste computador)", op_local_x: "As planilhas ficam em {p}, só neste computador. Dá para passar para uma pasta compartilhada depois, em Configuração.",
       criar_pasta: "Criar a pasta", pasta_criada: "Pasta criada.", pasta_nao_existe: "Essa pasta ainda não existe. Clique em \"Criar a pasta\" ou siga em frente: o {c} cria ao avançar.",
@@ -1928,7 +1941,7 @@ window.LEXSUITE_RADAR = null;
       ler_resposta: "Ler a resposta", colar_res: "{a} contato(s) entraram; {r} linha(s) recusada(s).", colar_rep: "{n} já estavam guardados.", linha_n: "Linha {n}",
       aviso_pl_t: "A planilha abre só para leitura", aviso_pl: "Ela é regravada pelo programa a cada leitura. Filtrar e ordenar funciona normalmente. Para anotar ou mexer, use \u201cGerar uma cópia\u201d: a cópia fica na pasta Cópias e o programa nunca mexe nela.",
       nao_mostrar: "Não mostrar de novo neste computador", gerar_copia: "Gerar uma cópia", entendi_abrir: "Entendi, abrir", copia_ok: "Cópia criada: {c}",
-      menu_ver: "Ver", menu_planilha: "Planilha", menu_contatos: "Área logada", menu_programa: "Programa", config: "Configuração", perfil: "Perfil",
+      menu_ver: "Ver", menu_planilha: "Planilha", menu_contatos: "Área logada", menu_programa: "Configurações", config: "Configuração", perfil: "Perfil",
       arq_info: "{n} ações guardadas desde {d}; o banco ocupa {mb} MB neste computador.", arq_limpar: "Limpar o que tem mais de {m} meses",
       arq_limpar_x: "Apaga só o detalhe das ações com mais de {m} meses (o trecho do Diário). Ficam o resumo (empresa, tribunal, valor, situação) e as estatísticas.", limpar: "Limpar", arq_limpo: "{n} ação(ões) resumida(s).",
       arq_ajuda: "O Arquivo guarda tudo o que o programa já leu, de todos os tribunais, inclusive o que foi arquivado. A Lista mostra só o que está em aberto nos tribunais marcados.",
@@ -1947,15 +1960,15 @@ window.LEXSUITE_RADAR = null;
       k_acima: "Acima de {min}", k_acima_det: "pelo valor da causa", k_soma: "Valor somado", k_soma_det: "{n} ação(ões) com valor", k_empresas: "Empresas",
       k_empresas_det: "{n} com mais de uma ação", k_sem_valor: "Sem valor no Diário", k_sem_valor_det: "o valor aparece no PJe",
       g_dia: "Ações por dia", g_mes: "Ações por mês", g_faixas: "Faixas de valor da causa", g_setores: "Setores", g_empresas: "Empresas com mais ações",
-      g_porte: "Porte da empresa", g_trib: "Tribunais", g_uf: "Estado da empresa", g_sit: "Situação no escritório", g_vara: "Varas com mais ações",
+      g_porte: "Porte da empresa", g_trib: "Tribunais", g_uf: "Estado da empresa", g_sit: "Situação no escritório", g_mostrar_todos: "Mostrar todos", g_nenhum: "nenhum", g_ver_lista: "Ver na lista →", g_cor: "Escolher a cor", g_cores_orig: "Cores originais", g_vara: "Varas com mais ações",
       g_nota: "Os números seguem os filtros acima. Clique numa barra para ver essas ações na lista.", g_vazio: "Nenhuma ação com estes filtros.",
       fx_sem: "Sem valor", fx_ate: "Até {a}", fx_entre: "{a} a {b}", fx_acima: "Acima de {a}", sem_setor: "Sem setor (sem CNPJ)", sem_porte: "Sem porte (sem CNPJ)", sem_uf: "Sem estado (sem CNPJ)",
-      g_acoes_n: "{n} ação(ões)", g_ver: "Ver na lista: {r}",
+      g_acoes_n: "{n} ações", g_acoes_1: "1 ação", g_ver: "Ver na lista: {r}",
       link_manual: "Manual", rodape1: "Fontes: lista de distribuição do DJEN (CNJ) e cadastro público da Receita Federal. Gerado em {q}.",
       rodape2: "O autor da ação e as testemunhas não aparecem (termos, seção 4). Nada aqui usa inteligência artificial. {m}, da LexSuiteONE, um produto SolverONE. Versão {v}." },
     en: { marca: "RADAR JUDICIAL",
       mira_t: "The firm\u2019s target", mira_trib: "Choose the courts the {c} follows. The labor practice covers the 24 regional labor courts; the minimum value and who stays out are in Settings \u2192 Firm rules.",
-      fase1: "The firm sets its target", fase2: "Daily DJEN reading", fase3: "One profile per lawsuit", fase4: "Follow-up and priority", fase_aqui: "You are here", mira_conf: "The client code, where the spreadsheet lives, the automatic readings and the program version. Who uses this computer is in the profile (the initials at the top).", ver_lista: "See the list", planilha_aberta: "The spreadsheet was open in Excel (or the folder was not writable) and was not updated. The list is saved: close the spreadsheet (or check the folder) and click", gravar_planilha: "Save the spreadsheet now", planilha_gravada: "Spreadsheet updated.", tambem: "Also in the case: {e}", cnpj_conferir: "The gazette shows tax ID {c}, but the Federal Revenue lists it under another name: it may belong to another party. Check in PJe before using it.", f_cnpj: "Confirmed tax ID only", f_todas_datas: "All dates", f_todas_varas: "All court units", f_todos_setores: "All sectors", f_todos_portes: "All sizes", f_todas_ufs: "All states", ord_recentes: "Most recent first", ord_porte: "Largest first", ord_empresa: "Company (A to Z)", porte_micro: "Microempresa", porte_peq: "Pequena", porte_grande: "Média ou grande", cod_fixo: "Code confirmed. To change it, write to judicial@solverone.com.br.", nova_txt: "Version {v} is available (yours is {a}). Your data, the list and the settings stay.", nova_btn: "Update now", nova_ok: "Updated. Restarting {c}...", nova_volta: "Done: version {v}.", abrindo_planilha: "Opening the spreadsheet in Excel (it may take a few seconds and open behind this window).", abrindo_pasta: "Opening the spreadsheet folder in File Explorer (if it does not show, check the taskbar).", cod: "Client code", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Number", doc_tipo: "Firm\u2019s document", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (no CNPJ)", tipo_pass: "Passport (non-Brazilian)", doc_invalido: "Invalid number: check the digits.", doc_ok: "Valid number.", cnpj_achado: "Found at the Federal Revenue: {s}. The firm name was filled in; you can adjust it.", cnpj_nao_achado: "Valid CNPJ, but not found in the public registry (or no internet). Type the firm name.", cnpj_buscando: "Checking the Federal Revenue public registry...", seu_nome: "Your name", seu_email: "Your e-mail", cad_falta: "Fill in the code, the firm, the CNPJ, your name and your e-mail.", cod_falta: "Enter the client code (it is in the welcome e-mail).", registro: "Your name, your e-mail and the firm\u2019s document are registered under the firm\u2019s licence so SolverONE can contact you about the service. Each e-mail belongs to one firm only and stays fixed in the profile; if someone else will use this computer, use “Someone else will use this computer” in the profile.", sem_trib: "Choose at least one court and click Save and read now.", conferindo: "Checking the code with SolverONE...",
+      fase1: "The firm sets its target", fase2: "Daily DJEN reading", fase3: "One profile per lawsuit", fase4: "Follow-up and priority", fase_aqui: "You are here", mira_conf: "The client code, where the spreadsheet lives, the automatic readings and the program version. Who uses this computer is in the profile (the initials at the top).", ver_lista: "See the list", planilha_aberta: "The spreadsheet was open in Excel (or the folder was not writable) and was not updated. The list is saved: close the spreadsheet (or check the folder) and click", gravar_planilha: "Save the spreadsheet now", planilha_gravada: "Spreadsheet updated.", tambem: "Also in the case: {e}", cnpj_conferir: "The gazette shows tax ID {c}, but the Federal Revenue lists it under another name: it may belong to another party. Check in PJe before using it.", f_cnpj: "Confirmed tax ID only", f_todas_datas: "All dates", f_todas_varas: "All court units", f_todos_setores: "All sectors", f_todos_portes: "All sizes", f_todas_ufs: "All states", ord_recentes: "Most recent first", ord_porte: "Largest first", ord_empresa: "Company (A to Z)", porte_micro: "Microempresa", porte_peq: "Pequena", porte_grande: "Média ou grande", cod_fixo: "Code confirmed. To change it, use \"Change licence\".", nova_txt: "Version {v} is available (yours is {a}). Your data, the list and the settings stay.", nova_btn: "Update now", nova_ok: "Updated. Restarting {c}...", nova_volta: "Done: version {v}.", abrindo_planilha: "Opening the spreadsheet in Excel (it may take a few seconds and open behind this window).", abrindo_pasta: "Opening the spreadsheet folder in File Explorer (if it does not show, check the taskbar).", cod: "Client code", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Number", doc_tipo: "Firm\u2019s document", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (no CNPJ)", tipo_pass: "Passport (non-Brazilian)", doc_invalido: "Invalid number: check the digits.", doc_ok: "Valid number.", cnpj_achado: "Found at the Federal Revenue: {s}. The firm name was filled in; you can adjust it.", cnpj_nao_achado: "Valid CNPJ, but not found in the public registry (or no internet). Type the firm name.", cnpj_buscando: "Checking the Federal Revenue public registry...", seu_nome: "Your name", seu_email: "Your e-mail", cad_falta: "Fill in the code, the firm, the CNPJ, your name and your e-mail.", cod_falta: "Enter the client code (it is in the welcome e-mail).", registro: "Your name, your e-mail and the firm\u2019s document are registered under the firm\u2019s licence so SolverONE can contact you about the service. Each e-mail belongs to one firm only and stays fixed in the profile; if someone else will use this computer, use “Someone else will use this computer” in the profile.", sem_trib: "Choose at least one court and click Save and read now.", conferindo: "Checking the code with SolverONE...",
       planilha_abrir: "Open the spreadsheet", pasta_abrir: "Open the spreadsheet folder in Windows", planilha_falta: "The spreadsheet does not exist yet: run a reading or check the spreadsheet folder in Settings.",
       csv_dica: "A plain file with the list on this screen, to import into other systems (e.g. Astrea). The full spreadsheet is in the spreadsheet folder.", licenca: "Licence",
       h1: "New lawsuits against companies",
@@ -1974,7 +1987,7 @@ window.LEXSUITE_RADAR = null;
       w4_t: "All set", w4_x: "The first reading takes from a few minutes (few courts) to an hour (all 24); progress shows here on screen, and Windows tells you when it is done. The manual is at the top of the screen.",
       w_rotina: "Automatic readings", w_nome_falta: "Enter the firm's name.", w_pasta_falta: "Choose a folder or pick \"None\".", c_pasta: "Spreadsheets folder", c_outra: "Folder path", c_testar: "Test folder",
       c_nenhuma: "{c} default folder (on this computer)", c_outra_op: "Another folder (network, OneDrive, Google Drive or this computer)", c_salvar: "Save", c_atualizar: "Check for updates",
-      c_versao: "Installed version", c_pasta_robo: "Program folder", c_controle: "The spreadsheet is at", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Read by itself, with the computer on", c_agendar_nao: "Automatic reading only on Windows.", w_agendar: "Read by itself {d} (you can change it in Settings).", ag_titulo: "Automatic reading", ag_nova: "Another time", ag_add: "Add", ag_tirar: "Remove time {h}", ag_todos: "Every day", ag_uteis: "Monday to Friday", ag_todo_dia: "every day", ag_seg_sex: "Monday to Friday", ag_as: "at {h}", ag_e: " and ", ag_max: "At most 6 times.", ag_ja: "That time is already on the list.", ag_um: "Keep at least one time (or untick Read by itself).", nov_menu: "What\u2019s new", nov_t: "What\u2019s new in version {v}", nov_ok: "Got it", nov_sem: "This version brings small fixes.", ag_desligar_t: "Turn off automatic reading?", ag_desligar_p: "With no time set, RADAR only reads when you click \u201cRead the gazette now\u201d. The home screen shows that it is off.", ag_manter: "Keep", ag_desligar: "Turn off", ag_desligada: "Automatic reading is off.", ag_configurar: "Set up", ag_hora_inv: "Pick the time.", ag_compensa: "If the computer is off or asleep at that time, the reading runs as soon as it is back on.", ag_noite: "The day\u2019s gazette finishes coming out in the evening (around 7 pm). To read it the same day, keep a time after 7 pm.", ag_avisar: "Show a notice in the corner of the screen when each reading ends", proxima: "Next automatic reading: {q}.", hoje: "today", amanha: "tomorrow", ag_salvar_dica: "The times apply after Save.", ag_le: "Reads {d}.", cod_instalador: "It came from the installer. To change the code, use Settings later.", papel_escolha: "Choose an option", papel_outra: "Other", papel_sem: "Prefer not to say", papel_outro_l: "What is your role?", papel_dica: "Helps SolverONE adapt {c} to each role. If you prefer, choose \"Prefer not to say\".", papel_falta: "Choose your role at the firm (or \"Prefer not to say\").", papel_outro_falta: "Type your role.",
+      c_versao: "Installed version", c_pasta_robo: "Program folder", c_controle: "The spreadsheet is at", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Read by itself, with the computer on", c_agendar_nao: "Automatic reading only on Windows.", w_agendar: "Read by itself {d} (you can change it in Settings).", ag_titulo: "Automatic reading", ag_nova: "Another time", ag_add: "Add", ag_tirar: "Remove time {h}", ag_todos: "Every day", ag_dias_rot: "Days", ag_horas_rot: "Times", ag_dia_0: "Mon", ag_dia_1: "Tue", ag_dia_2: "Wed", ag_dia_3: "Thu", ag_dia_4: "Fri", ag_dia_5: "Sat", ag_dia_6: "Sun", ag_nos_dias: "on {d}", ag_sem_dia: "No day selected: automatic reading is turned off when you save.", ag_uteis: "Monday to Friday", ag_todo_dia: "every day", ag_seg_sex: "Monday to Friday", ag_as: "at {h}", ag_e: " and ", ag_max: "At most 6 times.", ag_ja: "That time is already on the list.", ag_um: "Keep at least one time (or untick Read by itself).", nov_menu: "What\u2019s new", nov_t: "What\u2019s new in version {v}", nov_ok: "Got it", nov_sem: "This version brings small fixes.", nov_onde: "To see it again: ☰ menu → Settings → What\u2019s new.", ag_desligar_t: "Turn off automatic reading?", ag_desligar_p: "With no time set, {c} only reads when you click \u201cRead the gazette now\u201d. The home screen shows that it is off.", ag_manter: "Keep", ag_desligar: "Turn off", ag_desligada: "Automatic reading is off.", ag_configurar: "Set up", ag_hora_inv: "Pick the time.", ag_compensa: "If the computer is off or asleep at that time, the reading runs as soon as it is back on.", ag_noite: "The day\u2019s gazette finishes coming out in the evening (around 7 pm). To read it the same day, keep a time after 7 pm.", ag_avisar: "Show a notice in the corner of the screen when each reading ends", proxima: "Next automatic reading: {q}.", hoje: "today", amanha: "tomorrow", ag_salvar_dica: "The times apply after Save.", ag_le: "Reads {d}.", cod_instalador: "It came from the installer. Once confirmed it is locked; to change it, Settings → Change licence.", papel_escolha: "Choose an option", papel_outra: "Other", papel_sem: "Prefer not to say", papel_outro_l: "What is your role?", papel_dica: "Helps SolverONE adapt {c} to each role. If you prefer, choose \"Prefer not to say\".", papel_falta: "Choose your role at the firm (or \"Prefer not to say\").", papel_outro_falta: "Type your role.",
       op_drive: "In this computer\u2019s Google Drive", op_drive_x: "The spreadsheet lives in your Google Drive: open it anywhere and share it with the firm\u2019s team.", op_drive_nao: "Google Drive for desktop was not found here. For the spreadsheet to go to Drive, install it (google.com/drive/download) with the firm\u2019s account and open RADAR again; meanwhile, use \"This computer only\".",
       op_outra: "Another folder (network, OneDrive, Google Drive or this computer)", op_outra_x: "So the team can open it from other computers. If the folder does not exist, {c} creates it.", op_escolher: "Choose folder…", op_local: "{c} default folder (on this computer)", op_local_x: "The spreadsheets stay in {p}, on this computer only. You can move to a shared folder later, in Settings.",
       criar_pasta: "Create the folder", pasta_criada: "Folder created.", pasta_nao_existe: "This folder does not exist yet. Click \"Create the folder\" or go on: {c} creates it when you continue.",
@@ -2025,7 +2038,7 @@ window.LEXSUITE_RADAR = null;
       ler_resposta: "Read the answer", colar_res: "{a} contact(s) added; {r} line(s) refused.", colar_rep: "{n} were already saved.", linha_n: "Line {n}",
       aviso_pl_t: "The spreadsheet opens read-only", aviso_pl: "The program rewrites it at every reading. Filtering and sorting work normally. To take notes or edit, use \u201cMake a copy\u201d: the copy goes to the Copies folder and the program never touches it.",
       nao_mostrar: "Do not show again on this computer", gerar_copia: "Make a copy", entendi_abrir: "Got it, open", copia_ok: "Copy created: {c}",
-      menu_ver: "View", menu_planilha: "Spreadsheet", menu_contatos: "Logged-in area", menu_programa: "Program", config: "Settings", perfil: "Profile",
+      menu_ver: "View", menu_planilha: "Spreadsheet", menu_contatos: "Logged-in area", menu_programa: "Settings", config: "Settings", perfil: "Profile",
       arq_info: "{n} lawsuits saved since {d}; the database takes {mb} MB on this computer.", arq_limpar: "Clean up what is older than {m} months",
       arq_limpar_x: "Deletes only the detail of lawsuits older than {m} months (the gazette excerpt). The summary (company, court, value, status) and the statistics stay.", limpar: "Clean up", arq_limpo: "{n} lawsuit(s) summarized.",
       arq_ajuda: "The Archive keeps everything the program has read, from every court, including archived items. The List shows only open items in the selected courts.",
@@ -2044,10 +2057,10 @@ window.LEXSUITE_RADAR = null;
       k_acima: "Above {min}", k_acima_det: "by claim value", k_soma: "Total claim value", k_soma_det: "{n} lawsuit(s) with a value", k_empresas: "Companies",
       k_empresas_det: "{n} with more than one lawsuit", k_sem_valor: "No value in the gazette", k_sem_valor_det: "the value shows in PJe",
       g_dia: "Lawsuits per day", g_mes: "Lawsuits per month", g_faixas: "Claim value ranges", g_setores: "Sectors", g_empresas: "Companies with most lawsuits",
-      g_porte: "Company size", g_trib: "Courts", g_uf: "Company state", g_sit: "Status at the firm", g_vara: "Court units with most lawsuits",
+      g_porte: "Company size", g_trib: "Courts", g_uf: "Company state", g_sit: "Status at the firm", g_mostrar_todos: "Show all", g_nenhum: "none", g_ver_lista: "See in the list →", g_cor: "Choose the colour", g_cores_orig: "Original colours", g_vara: "Court units with most lawsuits",
       g_nota: "Numbers follow the filters above. Click a bar to see those lawsuits in the list.", g_vazio: "No lawsuit with these filters.",
       fx_sem: "No value", fx_ate: "Up to {a}", fx_entre: "{a} to {b}", fx_acima: "Above {a}", sem_setor: "No sector (no tax ID)", sem_porte: "No size (no tax ID)", sem_uf: "No state (no tax ID)",
-      g_acoes_n: "{n} lawsuit(s)", g_ver: "See in the list: {r}",
+      g_acoes_n: "{n} lawsuits", g_acoes_1: "1 lawsuit", g_ver: "See in the list: {r}",
       link_manual: "Manual", rodape1: "Sources: DJEN distribution lists (CNJ) and the Federal Revenue public registry. Generated {q}.",
       rodape2: "The claimant and witnesses never appear (terms, section 4). Nothing here uses artificial intelligence. {m}, by LexSuiteONE, a SolverONE product. Version {v}." }
   };
@@ -2057,7 +2070,7 @@ window.LEXSUITE_RADAR = null;
     rodar_crit_1: "Lê {n} de {k} tribunais ({l}), do último dia útil até hoje", rodar_crit_n: "Lê {n} de {k} tribunais ({l}), dos últimos {d} dias úteis até hoje", rodar_crit_alterar: "alterar", rodar_crit_mudou: "(marcado, ainda não salvo)",
     ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
     c_trib_lidos: "Tribunais que a leitura lê: {l}.", ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Se precisar de suporte, use o DIAGNOSTICO.bat: ele leva estas linhas, sem CPF.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo",
-    rg_titulo: "Regras do escritório", rg_intro: "O que o RADAR esconde ou destaca na lista. Fica gravado nas abas Preferências e Exclusões da planilha, com cópia de segurança antes; não é preciso abrir o Excel. O que for escrito à mão nessas abas é substituído ao salvar aqui.",
+    rg_titulo: "Critérios da lista", rg_intro: "O que o {c} destaca ou deixa de fora da lista. Fica guardado na própria planilha (abas Preferências e Exclusões), com cópia de segurança antes de salvar. Altere só aqui.",
     rg_sem_pasta: "Escolha primeiro onde ficam as planilhas (acima).", rg_valor: "Valor mínimo da causa (R$)", rg_valor_x: "Usado no filtro “Acima de” e no destaque. Ações abaixo continuam na lista.",
     rg_min: "Mínimo de ações da mesma empresa", rg_min_x: "Ex.: 3 = só destacar empresa com 3 ou mais ações novas na janela de dias. 1 = todas.", rg_janela: "Janela do mínimo de ações (dias)", rg_janela_x: "Quantos dias para trás contar as ações da mesma empresa.",
     rg_teto: "Capital social que indica jurídico próprio (R$)", rg_teto_x: "Acima disso a empresa é marcada “jurídico próprio provável” e vai para o fim da lista.", rg_esc_gig: "Esconder jurídico próprio provável", rg_esc_gig_x: "Esconde da lista as empresas acima do capital social indicado.",
@@ -2088,11 +2101,11 @@ window.LEXSUITE_RADAR = null;
     copia_t: "Cópia criada", abrir_copia: "Abrir a cópia", abrir_pasta_copia: "Abrir a pasta",
     g_ver_como: "Ver como", g_por_trib: "Separar por tribunal", g_barras: "Barras", g_pizza: "Pizza", g_outros: "Outros ({n})", g_sem_dados: "Sem dados neste período.",
     pp_t: "Estes números: {n} ações", pp_diarios: "Diários de {d} a {a}", pp_filtros: "com {n} filtro(s) da lista", pp_trib: "Tribunal:", pp_trib_todos: "Todos", pp_lidas: "Publicado no Diário:", pp_1: "último dia útil", pp_n: "{d} dias",
-    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" (lê 30 Diários por vez; o resto fica para a leitura da noite ou para \"Continuar\"). Guarda os totais e, só neste computador, o número dos processos já contados (para não contar duas vezes): nada entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
+    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" (lê 30 Diários por vez; o resto, 30 por noite depois da leitura automática, se ligada, ou com \"Continuar\"). Guarda os totais e, só neste computador, o número dos processos já contados (para não contar duas vezes): nada entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
     saz_vazio: "Ainda não há meses suficientes. Escolha quantos meses buscar e clique em \"Buscar estatísticas\".", saz_semana: "Por dia da semana:", saz_pico: "Mês com mais ações: {m} ({n}).",
     saz_estado: "Diários antigos lidos: {l}; na fila: {f}; sem Diário: {s}; com erro: {e}.", saz_de_ate: "De {d} a {a}.", saz_meses_rot: "Últimos meses", saz_meses: "Últimos {m} meses", saz_mes1: "Último mês",
-    saz_ja_fila: "Nada novo para buscar: os últimos {m} meses já estão lidos ou esperando ({n} Diários antigos). Clique em \"Continuar\" ou deixe para a leitura da noite.", saz_ja_lidos: "Nada novo para buscar: os últimos {m} mês(es) já estão lidos. Para ir mais longe, escolha mais meses.",
-    saz_pedir: "Buscar estatísticas", saz_ler: "Continuar (mais 30 Diários)", saz_so_totais: "Só os totais deste gráfico: não entra processo na Lista, no Arquivo nem na planilha.", saz_parar: "Parar", saz_na_fila: "Faltam {n} Diários antigos para completar o gráfico. \"Continuar\" lê mais 30 agora; os outros o RADAR lê sozinho, 30 por noite, depois da leitura automática.",
+    saz_ja_fila: "Nada novo para buscar: {p} ou esperando ({n} Diários antigos). Clique em \"Continuar\" ou deixe para a leitura da noite.", saz_per1: "o último mês já está lido", saz_pern: "os últimos {m} meses já estão lidos", saz_ja_lidos: "Nada novo para buscar: {p}. Para ir mais longe, escolha mais meses.",
+    saz_pedir: "Buscar estatísticas", saz_ler: "Continuar (mais 30 Diários)", saz_so_totais: "Só os totais deste gráfico: não entra processo na Lista, no Arquivo nem na planilha.", saz_parar: "Parar", saz_na_fila: "Faltam {n} Diários antigos para completar o gráfico. \"Continuar\" lê mais 30 agora; os outros o {c} lê sozinho, 30 por noite, depois da leitura automática (se ligada).",
     saz_lendo: "Lendo para o gráfico: Diário antigo {k} de {n} ({tr} {d})…",
     m_sit: "{n} situações", m_frente: "{n} frentes", m_trib: "{n} tribunais", m_data: "{n} datas", m_vara: "{n} varas", m_setor: "{n} setores", m_porte: "{n} portes", m_uf: "{n} estados",
     m_buscar: "Procurar na lista", m_limpar: "Limpar",
@@ -2101,7 +2114,7 @@ window.LEXSUITE_RADAR = null;
     sair_ok: "Pode fechar esta janela. O RADAR foi encerrado.", sair_rodando: "Há uma leitura em andamento: espere terminar ou clique em Interromper.",
     fechado_t: "O RADAR foi fechado", fechado_x: "A tela ficou fechada ou escondida por alguns minutos e o programa se encerrou para não ficar aberto à toa. Abra de novo pelo atalho da área de trabalho.",
     atualizando: "Atualizando para a versão {v}… a tela volta sozinha em alguns segundos.", reiniciando: "Reiniciando o programa…",
-    c_s_licenca: "Licença e código", c_s_pasta: "Onde ficam as planilhas", c_s_sobre: "Sobre este computador e o que a SolverONE recebe",
+    c_s_licenca: "Licença e termos", c_s_lista: "A lista", c_s_leitura: "Leitura", c_s_tela: "Tela", c_l_aone: "Assistente (AssistONE)", lic_trocar: "Trocar licença", lic_trocar_t: "Trocar o código de cliente?", lic_trocar_p: "O {c} deixa de usar o código atual neste computador. Digite o novo código (está no e-mail de boas-vindas) e salve: a SolverONE confere.", lic_trocar_ok: "Trocar", c_s_pasta: "Onde ficam as planilhas", c_s_sobre: "Sobre este computador e o que a SolverONE recebe",
     c_pasta_nota: "Mudar a pasta não move as planilhas que já existem: o RADAR cria as novas na pasta escolhida na próxima leitura, e as antigas ficam onde estão.",
     c_fechar: "Fechar", c_mudou_t: "Salvar as mudanças?", c_mudou: "Você mudou a Configuração e ainda não salvou.", c_descartar: "Descartar", c_continuar: "Continuar editando",
     arm_t: "Armazenamento neste computador", arm_planilha: "Planilha {f}", arm_linhas: "{n} de {l} linhas ({p}%)", arm_banco: "Banco do programa ({n} ações guardadas)",
@@ -2128,7 +2141,7 @@ window.LEXSUITE_RADAR = null;
     rodar_crit_1: "Reads {n} of {k} courts ({l}), from the last working day to today", rodar_crit_n: "Reads {n} of {k} courts ({l}), the last {d} working days to today", rodar_crit_alterar: "change", rodar_crit_mudou: "(ticked, not saved yet)",
     ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
     c_trib_lidos: "Courts the reading covers: {l}.", ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). For support, run DIAGNOSTICO.bat: it takes these lines, without CPF.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file",
-    rg_titulo: "Firm rules", rg_intro: "What RADAR hides or highlights in the list. Saved in the spreadsheet\u2019s Preferences and Exclusions tabs, with a backup copy first; no need to open Excel. Anything typed by hand in those tabs is replaced when you save here.",
+    rg_titulo: "List criteria", rg_intro: "What {c} highlights or leaves out of the list. Kept in the spreadsheet itself (Preferences and Exclusions tabs), with a backup copy before saving. Change it only here.",
     rg_sem_pasta: "First choose where the spreadsheets live (above).", rg_valor: "Minimum claim value (R$)", rg_valor_x: "Used by the “Above” filter and the highlight. Lower lawsuits stay in the list.",
     rg_min: "Minimum lawsuits per company", rg_min_x: "E.g. 3 = only highlight companies with 3 or more new lawsuits in the day window. 1 = all.", rg_janela: "Window for the minimum (days)", rg_janela_x: "How many days back to count the same company\u2019s lawsuits.",
     rg_teto: "Share capital that suggests in-house counsel (R$)", rg_teto_x: "Above it the company is marked “likely in-house counsel” and goes to the end of the list.", rg_esc_gig: "Hide likely in-house counsel", rg_esc_gig_x: "Hides companies above the given share capital.",
@@ -2159,11 +2172,11 @@ window.LEXSUITE_RADAR = null;
     copia_t: "Copy created", abrir_copia: "Open the copy", abrir_pasta_copia: "Open the folder",
     g_ver_como: "Show as", g_por_trib: "Split by court", g_barras: "Bars", g_pizza: "Pie", g_outros: "Others ({n})", g_sem_dados: "No data in this period.",
     pp_t: "These numbers: {n} lawsuits", pp_diarios: "gazettes from {d} to {a}", pp_filtros: "with {n} list filter(s)", pp_trib: "Court:", pp_trib_todos: "All", pp_lidas: "Published in the gazette:", pp_1: "last working day", pp_n: "{d} days",
-    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" (it reads 30 gazettes at a time; the rest is left for the night reading or for \"Continue\"). It keeps the totals and, only on this computer, the numbers of lawsuits already counted (so none is counted twice): nothing goes to the List, the Archive or the spreadsheet, and none of it goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
+    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" (it reads 30 gazettes at a time; the rest, 30 per night after the automatic reading if it is on, or with \"Continue\"). It keeps the totals and, only on this computer, the numbers of lawsuits already counted (so none is counted twice): nothing goes to the List, the Archive or the spreadsheet, and none of it goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
     saz_vazio: "Not enough months yet. Choose how many months to fetch and click \"Fetch statistics\".", saz_semana: "By weekday:", saz_pico: "Busiest month: {m} ({n}).",
     saz_estado: "Old gazettes read: {l}; queued: {f}; no gazette: {s}; with error: {e}.", saz_de_ate: "From {d} to {a}.", saz_meses_rot: "Last months", saz_meses: "Last {m} months", saz_mes1: "Last month",
-    saz_ja_fila: "Nothing new to fetch: the last {m} months are already read or waiting ({n} old gazettes). Click \"Continue\" or leave it for tonight\u2019s reading.", saz_ja_lidos: "Nothing new to fetch: the last {m} month(s) are already read. To go further back, choose more months.",
-    saz_pedir: "Fetch statistics", saz_ler: "Continue (30 more gazettes)", saz_so_totais: "Only the totals of this chart: no lawsuit goes into the List, the Archive or the spreadsheet.", saz_parar: "Stop", saz_na_fila: "{n} old gazettes are left to complete the chart. \"Continue\" reads 30 more now; RADAR reads the rest by itself, 30 per night, after the automatic reading.",
+    saz_ja_fila: "Nothing new to fetch: {p} already read or waiting ({n} old gazettes). Click \"Continue\" or leave it for tonight\u2019s reading.", saz_per1: "the last month is", saz_pern: "the last {m} months are", saz_ja_lidos: "Nothing new to fetch: {p} already read. To go further back, choose more months.",
+    saz_pedir: "Fetch statistics", saz_ler: "Continue (30 more gazettes)", saz_so_totais: "Only the totals of this chart: no lawsuit goes into the List, the Archive or the spreadsheet.", saz_parar: "Stop", saz_na_fila: "{n} old gazettes are left to complete the chart. \"Continue\" reads 30 more now; {c} reads the rest by itself, 30 per night, after the automatic reading (if it is on).",
     saz_lendo: "Reading for the chart: old gazette {k} of {n} ({tr} {d})…",
     m_sit: "{n} statuses", m_frente: "{n} practice areas", m_trib: "{n} courts", m_data: "{n} dates", m_vara: "{n} court units", m_setor: "{n} sectors", m_porte: "{n} sizes", m_uf: "{n} states",
     m_buscar: "Search the list", m_limpar: "Clear",
@@ -2172,7 +2185,7 @@ window.LEXSUITE_RADAR = null;
     sair_ok: "You can close this window. RADAR has exited.", sair_rodando: "A reading is in progress: wait for it to finish or click Stop.",
     fechado_t: "RADAR was closed", fechado_x: "The screen was closed or hidden for a few minutes and the program exited so it does not stay open for nothing. Open it again from the desktop shortcut.",
     atualizando: "Updating to version {v}… the screen comes back by itself in a few seconds.", reiniciando: "Restarting the program…",
-    c_s_licenca: "Licence and code", c_s_pasta: "Where the spreadsheets live", c_s_sobre: "About this computer and what SolverONE receives",
+    c_s_licenca: "Licence and terms", c_s_lista: "The list", c_s_leitura: "Reading", c_s_tela: "Screen", c_l_aone: "Assistant (AssistONE)", lic_trocar: "Change licence", lic_trocar_t: "Change the client code?", lic_trocar_p: "{c} stops using the current code on this computer. Type the new code (it is in the welcome e-mail) and save: SolverONE checks it.", lic_trocar_ok: "Change", c_s_pasta: "Where the spreadsheets live", c_s_sobre: "About this computer and what SolverONE receives",
     c_pasta_nota: "Changing the folder does not move existing spreadsheets: RADAR creates new ones in the chosen folder on the next reading, and the old ones stay where they are.",
     c_fechar: "Close", c_mudou_t: "Save changes?", c_mudou: "You changed the Settings and did not save yet.", c_descartar: "Discard", c_continuar: "Keep editing",
     arm_t: "Storage on this computer", arm_planilha: "Spreadsheet {f}", arm_linhas: "{n} of {l} rows ({p}%)", arm_banco: "Program database ({n} lawsuits saved)",
@@ -2204,6 +2217,13 @@ window.LEXSUITE_RADAR = null;
     var ult_ = MODO === "app" && JSON.parse(localStorage.getItem("lexsuite:filtro-atual") || "null");
     if (ult_ && ult_.F) { Object.keys(F).forEach(function (k) { if (k !== "busca" && k !== "data" && k in ult_.F) F[k] = MULTI.indexOf(k) >= 0 ? [].concat(ult_.F[k] || []) : ult_.F[k]; }); ordem = ult_.ordem || ordem; ordem2 = ult_.ordem2 || ""; }
   } catch (e) {}
+  /* 0.7.32 (dono): o Painel tem os seus filtros e a Lista os dela; "Ver na lista →" leva os do Painel para a Lista */
+  var FL = F, FP = JSON.parse(FILTROS_PADRAO);
+  try {
+    var ultP_ = MODO === "app" && JSON.parse(localStorage.getItem("lexsuite:filtro-painel") || "null");
+    if (ultP_ && ultP_.F) Object.keys(FP).forEach(function (k) { if (k !== "busca" && k !== "data" && k in ultP_.F) FP[k] = MULTI.indexOf(k) >= 0 ? [].concat(ultP_.F[k] || []) : ultP_.F[k]; });
+  } catch (e) {}
+  if (visao === "painel") F = FP;
   function lista_(x) { return Array.isArray(x) ? x : (x ? [x] : []); }
   function valorFacet(i, k) {
     if (k === "trib") return i.tribunal || ""; if (k === "data") return diaDe(i); if (k === "vara") return i.vara || "";
@@ -2211,10 +2231,11 @@ window.LEXSUITE_RADAR = null;
     if (k === "sit") return statusDe(i); return i.frente || "trabalhista";
   }
   function rotuloFacet(k, v) {
-    if (v === "__nao__") return t("nao_informado"); if (k === "data") return dataSemana(v); if (k === "sit") return t("st_" + v); if (k === "frente") return t("fr_" + v); return v;
+    // 0.7.32: "__nenhum__" = tudo desligado no gráfico do Painel
+    if (v === "__nao__") return t("nao_informado"); if (v === "__nenhum__") return t("g_nenhum"); if (k === "data") return dataSemana(v); if (k === "sit") return t("st_" + v); if (k === "frente") return t("fr_" + v); return v;
   }
   try { lang = localStorage.getItem("lexsuite:idioma") || "pt"; } catch (e) {}
-  function t(k, v) { var s = (T[lang][k] != null ? T[lang][k] : T.pt[k]) || k; if (v) Object.keys(v).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); return s; }
+  function t(k, v) { var s = (T[lang][k] != null ? T[lang][k] : T.pt[k]) || k; if (v) Object.keys(v).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); if (s.indexOf("{c}") >= 0 && !(v && "c" in v)) try { s = s.split("{c}").join(marcaCurto()); } catch (e) {} return s; }  // 0.7.32: {c} = nome curto da marca
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
   function $(id) { return document.getElementById(id); }
   function loc() { return lang === "pt" ? "pt-BR" : "en-US"; }
@@ -2504,7 +2525,7 @@ window.LEXSUITE_RADAR = null;
     if (id) window.scrollTo(0, 0);
   }
   function estadoConfig() {
-    return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), $("c-dias").value, $("c-avisar").checked, $("c-aba").checked]);
+    return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), JSON.stringify(diasValor(cDias)), $("c-avisar").checked, $("c-aba").checked]);
   }
   function marcarSalvarC() { if (!$("config").hidden) $("c-salvar").disabled = estadoConfig() === snapC; }
   var regrasSujo = false, salvarRegrasAgora = null;  // revisão da 0.7.28: fechar a Configuração pergunta também pelas regras
@@ -2592,13 +2613,15 @@ window.LEXSUITE_RADAR = null;
     ta_.addEventListener("click", function () { fecharConfig(); if ($("config").hidden) { $("b-trib").click(); $("b-trib").scrollIntoView({ behavior: "smooth", block: "center" }); } });
     var fixo = !!(APP && APP.conta && APP.conta.codigo && (APP.conta.ok || ["aceite_pendente", "desativado", "vencido"].indexOf(APP.conta.estado) >= 0));  // código que a SolverONE reconheceu: só para ler (teste do dono: também com o aceite pendente)
     $("c-codigo").value = fixo ? mascaraCodigo(APP.conta.codigo) : ((APP && APP.conta && APP.conta.codigo) || "");  // 0.7.19: confirmado aparece mascarado
-    $("c-codigo").readOnly = fixo; $("c-codigo").tabIndex = fixo ? -1 : 0; $("c-codigo-nota").hidden = !fixo; $("c-codigo-nota").textContent = t("cod_fixo");
+    $("c-codigo").readOnly = fixo; $("c-codigo").tabIndex = fixo ? -1 : 0; $("c-codigo-nota").hidden = !fixo;
+    // 0.7.32: trocar o código só por este botão, com confirmação
+    $("c-trocar-lic").hidden = !fixo; $("c-trocar-lic").textContent = t("lic_trocar"); $("c-codigo-nota").textContent = t("cod_fixo");
     p.hidden = !abrir; $("b-config").setAttribute("aria-expanded", String(abrir));
     if (!abrir) return;
     $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false"); fecharPerfil();
     $("c-msg").textContent = ""; $("c-teste-txt").textContent = "";
     var ag = APP && APP.config.agendavel; $("c-agendar").disabled = !ag; $("c-agendar").checked = !!(APP && APP.config.agendado) || (ag && !(APP && APP.config.pasta));
-    cHoras = ((APP && APP.config.horarios) || ["20:00", "08:00"]).slice(); cDias = (APP && APP.config.dias) || "todos";
+    cHoras = ((APP && APP.config.horarios) || ["20:00", "08:00"]).slice(); cDias = diasLista((APP && APP.config.dias) || "todos");
     $("c-avisar").checked = !(APP && APP.config.avisar_ao_terminar === false); $("c-aba").checked = !!(APP && APP.config.abrir_em_aba);
     $("c-l-tela").textContent = t("c_tela"); $("c-l-aba").textContent = t("c_aba"); $("c-hora-nova").value = "";
     desenharAgenda();
@@ -2618,6 +2641,8 @@ window.LEXSUITE_RADAR = null;
     infoConfig();
     $("c-s-licenca").textContent = t("c_s_licenca"); $("c-s-pasta").textContent = t("c_s_pasta"); $("c-s-sobre").textContent = t("c_s_sobre");
     $("c-pasta-nota").textContent = t("c_pasta_nota"); $("c-l-arm").textContent = t("arm_t"); $("c-l-termos").textContent = t("termos_t");
+    $("c-s-lista").textContent = t("c_s_lista"); $("c-s-leitura").textContent = t("c_s_leitura"); $("c-s-tela").textContent = t("c_s_tela");
+    $("c-l-aone").textContent = t("c_l_aone"); $("c-l-tema").textContent = t("tema_t"); desenharTemaEm("c-tema");
     $("c-fechar").setAttribute("aria-label", t("c_fechar")); $("c-fechar").title = t("c_fechar");
     desenharArmConfig(); desenharTermosConfig();
     desenharFiltrosSalvos(); desenharRegras();
@@ -2704,7 +2729,7 @@ window.LEXSUITE_RADAR = null;
     var cod = $("c-codigo").value.trim().toUpperCase(); if (!$("c-codigo").readOnly && cod && !(APP && APP.conta && APP.conta.codigo === cod)) corpo.codigo = cod;
     if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
     if ($("c-agendar").checked && !cHoras.length) { $("c-msg").textContent = t("ag_um"); return; }
-    corpo.horarios = cHoras.slice(); corpo.dias = $("c-dias").value; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
+    corpo.horarios = cHoras.slice(); corpo.dias = diasValor(cDias); if (!cDias.length) corpo.agendar = false; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
     post("/config", corpo).then(function (r) {
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
       $("c-msg").textContent = t("c_salvo") + (r.agendar_msg ? " " + r.agendar_msg : ""); snapC = estadoConfig(); fecharConfig(); mostrarAviso(t("c_salvo")); carregar();
@@ -2847,10 +2872,18 @@ window.LEXSUITE_RADAR = null;
     }).catch(function () { $("w-msg").textContent = t("falha"); });
   }
   /* ---------- leitura automática: horários, dias, próxima ---------- */
-  var cHoras = [], cDias = "todos";
+  var cHoras = [], cDias = [0, 1, 2, 3, 4, 5, 6];
+  /* 0.7.32 (dono): dias da semana um a um (0 = segunda ... 6 = domingo, como no programa); na tela, de domingo a sábado */
+  function diasLista(v) { return v === "todos" ? [0, 1, 2, 3, 4, 5, 6] : v === "uteis" ? [0, 1, 2, 3, 4] : (Array.isArray(v) ? v.filter(function (d) { return d >= 0 && d <= 6; }) : [0, 1, 2, 3, 4, 5, 6]); }
+  function diasValor(l) { var s_ = l.slice().sort(); var j_ = s_.join(","); return j_ === "0,1,2,3,4,5,6" ? "todos" : j_ === "0,1,2,3,4" ? "uteis" : s_; }
   function fmtHora(h) { return lang === "pt" ? String(h).replace(":", "h") : String(h); }
   function listaHoras(l) { l = l.map(fmtHora); return l.length < 2 ? (l[0] || "") : l.slice(0, -1).join(", ") + t("ag_e") + l[l.length - 1]; }
-  function descAgenda(horas, dias) { horas = (horas && horas.length ? horas : ["20:00", "08:00"]).slice().sort(); return (dias === "uteis" ? t("ag_seg_sex") : t("ag_todo_dia")) + " " + t("ag_as", { h: listaHoras(horas) }); }
+  function descAgenda(horas, dias) {
+    horas = (horas && horas.length ? horas : ["20:00", "08:00"]).slice().sort(); var v_ = diasValor(diasLista(dias)), q_;
+    if (v_ === "todos") q_ = t("ag_todo_dia"); else if (v_ === "uteis") q_ = t("ag_seg_sex");
+    else { var n_ = v_.map(function (d) { return t("ag_dia_" + d); }); q_ = t("ag_nos_dias", { d: n_.length === 1 ? n_[0] : n_.slice(0, -1).join(", ") + t("ag_e") + n_[n_.length - 1] }); }
+    return q_ + " " + t("ag_as", { h: listaHoras(horas) });
+  }
   function quandoProxima(iso) {
     var d = String(iso).slice(0, 10), h = String(iso).slice(11, 16), hoje = new Date(), amanha = new Date(hoje.getTime() + 864e5);
     function ymd(x) { return x.getFullYear() + "-" + ("0" + (x.getMonth() + 1)).slice(-2) + "-" + ("0" + x.getDate()).slice(-2); }
@@ -2861,11 +2894,16 @@ window.LEXSUITE_RADAR = null;
     var on = $("c-agendar").checked && !$("c-agendar").disabled;
     $("c-l-agenda").textContent = t("ag_titulo"); $("c-l-avisar").textContent = t("ag_avisar"); $("c-l-hora-nova").textContent = t("ag_nova"); $("c-hora-add").textContent = t("ag_add");
     $("c-l-agendar").textContent = $("c-agendar").disabled ? t("c_agendar_nao") : t("c_agendar");
-    var sd = $("c-dias"), v = cDias; sd.textContent = ""; [["todos", t("ag_todos")], ["uteis", t("ag_uteis")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; sd.appendChild(op); }); sd.value = v;
+    var sd = $("c-dias"); sd.textContent = ""; $("c-l-dias").textContent = t("ag_dias_rot"); $("c-l-horas").textContent = t("ag_horas_rot");
+    [6, 0, 1, 2, 3, 4, 5].forEach(function (d) {  // domingo e sábado nas pontas, como no calendário
+      var b = el("button", null, t("ag_dia_" + d)); b.type = "button"; b.setAttribute("aria-pressed", String(cDias.indexOf(d) >= 0)); b.disabled = !on;
+      b.addEventListener("click", function () { cDias = cDias.indexOf(d) >= 0 ? cDias.filter(function (x) { return x !== d; }) : cDias.concat([d]); $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); });
+      sd.appendChild(b);
+    });
     $("c-horas-expl").textContent = t("ag_expl");
     var confirmarSemHorario = function () {  // teste do dono (0.7.30): tirar o último horário pergunta e desliga a leitura automática
       var c_ = el("div"); c_.appendChild(el("h3", null, t("ag_desligar_t"))); c_.appendChild(el("p", null, t("ag_desligar_p")));
-      abrirJanela(c_, [[t("ag_manter"), null], [t("ag_desligar"), function () { $("c-agendar").checked = false; cHoras = []; $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); }, true]]);
+      abrirJanela(c_, [[t("ag_manter"), null], [t("ag_desligar"), function () { $("c-agendar").checked = false; $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); }, true]]);  // revisão da 0.7.31: os horários ficam guardados para religar
     };
     var pr = $("c-horas-prontas"); pr.textContent = "";
     ["06:00", "08:00", "12:00", "14:00", "18:00", "20:00", "22:00"].forEach(function (h) {
@@ -2878,7 +2916,8 @@ window.LEXSUITE_RADAR = null;
       pr.appendChild(b);
     });
     var box = $("c-horas"); box.textContent = "";
-    cHoras.sort().forEach(function (h) {
+    var PRONTAS_ = ["06:00", "08:00", "12:00", "14:00", "18:00", "20:00", "22:00"];
+    cHoras.sort().filter(function (h) { return PRONTAS_.indexOf(h) < 0; }).forEach(function (h) {  // 0.7.32 (dono): embaixo só os horários fora dos botões (sem repetir)
       var p = el("span", "hora-pilula", fmtHora(h)); p.setAttribute("role", "listitem");
       var x = el("button", null, "\u00D7"); x.type = "button"; x.setAttribute("aria-label", t("ag_tirar", { h: fmtHora(h) })); x.title = x.getAttribute("aria-label");
       x.addEventListener("click", function () { if (cHoras.length <= 1) { confirmarSemHorario(); return; } cHoras = cHoras.filter(function (y) { return y !== h; }); $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); });
@@ -2886,8 +2925,8 @@ window.LEXSUITE_RADAR = null;
     });
     ["c-horas", "c-dias", "c-hora-nova", "c-hora-add"].forEach(function (id) { $(id).disabled = !on; });
     box.style.opacity = on ? "" : ".55";
-    var info = on ? t("ag_le", { d: descAgenda(cHoras, sd.value) }) + " " + t("ag_compensa") : "";
-    var salvo = APP && JSON.stringify(cHoras.slice().sort()) === JSON.stringify((APP.config.horarios || []).slice().sort()) && cDias === (APP.config.dias || "todos");
+    var info = on ? (cDias.length ? t("ag_le", { d: descAgenda(cHoras, cDias) }) + " " + t("ag_compensa") : t("ag_sem_dia")) : "";
+    var salvo = APP && JSON.stringify(cHoras.slice().sort()) === JSON.stringify((APP.config.horarios || []).slice().sort()) && JSON.stringify(diasValor(cDias)) === JSON.stringify(diasValor(diasLista(APP.config.dias || "todos")));
     if (on && salvo && APP.config.proxima && APP.config.agendado) info += " " + t("proxima", { q: quandoProxima(APP.config.proxima) });
     $("c-agenda-info").textContent = info; $("c-agenda-info").hidden = !info;
     var semNoite = on && !cHoras.some(function (h) { return h >= "19:00"; });
@@ -3152,7 +3191,7 @@ window.LEXSUITE_RADAR = null;
   }
   function marcarLimpar() {  // 0.7.28 (dono): sempre ao lado dos filtros; apagado quando não há filtro
     var nf = filtrosLigados(), b = $("b-limpar-filtros"); b.hidden = false; b.disabled = !nf; marcarMaisFiltros();
-    if (MODO === "app") try { localStorage.setItem("lexsuite:filtro-atual", JSON.stringify({ F: Object.assign({}, F, { busca: "" }), ordem: ordem, ordem2: ordem2 })); } catch (e) {}  // revisão da 0.7.28: o texto da busca não fica guardado
+    if (MODO === "app") try { if (F === FP) localStorage.setItem("lexsuite:filtro-painel", JSON.stringify({ F: Object.assign({}, F, { busca: "" }) })); else localStorage.setItem("lexsuite:filtro-atual", JSON.stringify({ F: Object.assign({}, F, { busca: "" }), ordem: ordem, ordem2: ordem2 })); } catch (e) {}  // revisão da 0.7.28: o texto da busca não fica guardado
     b.textContent = nf ? t("limpar_filtros", { n: nf }) : t("limpar_filtros_0");
     $("r-filtrar").textContent = t("r_filtrar"); $("r-ordenar").textContent = t("r_ordenar");
   }
@@ -3572,8 +3611,10 @@ window.LEXSUITE_RADAR = null;
       [t("menu_ver"), [["painel", "v_painel"], ["lista", "v_lista"], ["arquivo", "v_arquivo"], ["historico", "v_historico"]].map(function (v) { return [t(v[1]), function () { trocarVisao(v[0]); }, visao === v[0]]; })],
       [t("menu_planilha"), [[t("planilha_abrir"), abrirPlanilhaComAviso], [t("gerar_copia"), gerarCopia], [t("pasta_abrir"), function () { abrirPlanilha("pasta"); }]]],
       [t("menu_contatos"), [[t("colar_logada"), colarContatos]]],
-      [t("menu_programa"), [[t("config"), function () { abrirConfig(true); }], [t("rg_titulo"), editarPreferencias], [t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }],
-        [t("termos_t"), function () { abrirConfig(true, "c-termos-wrap"); }], [t("nov_menu"), function () { mostrarNovidades(true); }], [t("abrir_aba"), function () { post("/abrir-em-aba", {}); }], [t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); }]]]
+      // 0.7.32 (dono): "Configurações", na mesma ordem da janela
+      [t("menu_programa"), [[t("config"), function () { abrirConfig(true); }], [t("rg_titulo"), editarPreferencias], [t("c_s_pasta"), function () { abrirConfig(true, "c-pasta-cartoes"); }],
+        [t("ag_titulo"), function () { abrirConfig(true, "c-agendar-wrap"); }], [t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }], [t("tema_t"), function () { abrirConfig(true, "c-tema-wrap"); }],
+        [t("c_s_licenca"), function () { abrirConfig(true, "c-s-licenca"); }], [t("nov_menu"), function () { mostrarNovidades(true); }], [t("abrir_aba"), function () { post("/abrir-em-aba", {}); }], [t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); }]]]
     ];
   }
   function montarMenu() {
@@ -3669,14 +3710,17 @@ window.LEXSUITE_RADAR = null;
   /* ---------- 0.7.12: o painel (mesmos itens da lista, com os mesmos filtros) ---------- */
   function trocarVisao(v) {
     visao = ["painel", "lista", "arquivo", "historico"].indexOf(v) >= 0 ? v : "painel"; try { localStorage.setItem("lexsuite:visao", visao); } catch (e) {}
+    F = visao === "painel" ? FP : FL;  // 0.7.32: cada um com os seus filtros
     limite = 10; selecionados = {}; fecharBalao();
     if (visao === "arquivo" && !DA && MODO === "app") { carregarArquivo(); }
     cabecalho(); desenhar();
   }
   function filtrarPor(campo, valor) {
+    // 0.7.32: "Ver na lista" leva os filtros do Painel (com o item clicado, se houver)
+    if (F === FP) { Object.keys(FL).forEach(function (k) { FL[k] = MULTI.indexOf(k) >= 0 ? [].concat(FP[k] || []) : FP[k]; }); F = FL; }
     if (campo === "valor") { F.valor = true; }
-    else if (MULTI.indexOf(campo) >= 0) { F[campo] = valor ? [valor] : []; }
-    else { F[campo] = valor; }
+    else if (campo && MULTI.indexOf(campo) >= 0) { F[campo] = valor ? [valor] : []; }
+    else if (campo) { F[campo] = valor; }
     limite = 10; visao = "lista"; try { localStorage.setItem("lexsuite:visao", visao); } catch (e) {}
     cabecalho(); desenhar(); $("visao").scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -3689,8 +3733,42 @@ window.LEXSUITE_RADAR = null;
   }
   var tipoGraf = "barras"; try { tipoGraf = localStorage.getItem("lexsuite:graf-tipo") === "pizza" ? "pizza" : "barras"; } catch (e) {}
   function corVar(n, padrao) { try { return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || padrao; } catch (e) { return padrao; } }  // 0.7.30: segue o tema
+  /* 0.7.32 (dono): gráficos do Painel que se filtram neles mesmos (como no Grafana), com dica ao passar o mouse e cor escolhida */
+  function coresSalvas() { try { return JSON.parse(localStorage.getItem("lexsuite:cores") || "{}") || {}; } catch (e) { return {}; } }
+  function corPropria(opc, l) { return (l && l.k !== "" && l.k != null && !l.outros) ? coresSalvas()[(opc.campo || opc.idCor || "") + "|" + l.k] || null : null; }
+  function paraHex(c) { var m_ = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(c || ""); if (m_) return "#" + [m_[1], m_[2], m_[3]].map(function (x) { return ("0" + Number(x).toString(16)).slice(-2); }).join(""); return /^#[0-9a-f]{6}$/i.test(c || "") ? c : "#3d5a80"; }
+  function escolherCor(opc, l, atual) {
+    var inp = document.createElement("input"); inp.type = "color"; inp.value = paraHex(atual); inp.style.position = "fixed"; inp.style.opacity = "0"; inp.style.pointerEvents = "none"; document.body.appendChild(inp);
+    inp.addEventListener("change", function () { var c_ = coresSalvas(); c_[(opc.campo || opc.idCor || "") + "|" + l.k] = inp.value; try { localStorage.setItem("lexsuite:cores", JSON.stringify(c_)); } catch (e) {} inp.remove(); desenhar(); });
+    inp.addEventListener("blur", function () { setTimeout(function () { if (inp.parentNode) inp.remove(); }, 300); });
+    inp.click();
+  }
+  function noPainel(opc) { return !!(opc.campo && visao === "painel" && F === FP); }
+  function desligadaNoGrafico(opc, l) { var sel = opc.campo ? lista_(F[opc.campo]) : []; return !!(sel.length && l.k !== "" && l.k != null && !l.outros && sel.indexOf(l.k) < 0); }
+  function alternarNoGrafico(opc, k, linhas) {  // liga e desliga como uma caixa de marcar: o desligado fica apagado, não some
+    var todas = linhas.filter(function (l) { return l.k !== "" && l.k != null && !l.outros; }).map(function (l) { return l.k; });
+    var sel = lista_(F[opc.campo]).slice();
+    if (!sel.length) sel = todas.filter(function (x) { return x !== k; });
+    else if (sel.indexOf(k) >= 0) sel = sel.filter(function (x) { return x !== k; });
+    else sel.push(k);
+    if (todas.every(function (x) { return sel.indexOf(x) >= 0; })) sel = [];
+    else if (!sel.length) sel = ["__nenhum__"];
+    F[opc.campo] = sel; marcarLimpar(); desenhar();
+  }
+  function cabGraf(tit, opc) {  // título do cartão, com "Mostrar todos" (quando algo está desligado) e "Ver na lista →"
+    var c_ = el("div", "graf-cab"); c_.appendChild(el("h3", null, tit));
+    if (noPainel(opc)) {
+      var ac_ = el("span", "graf-acoes");
+      if (lista_(F[opc.campo]).length) { var mt = el("button", "btn-txt", t("g_mostrar_todos")); mt.type = "button"; mt.addEventListener("click", function () { F[opc.campo] = []; marcarLimpar(); desenhar(); }); ac_.appendChild(mt); }
+      var vl = el("button", "btn-txt", t("g_ver_lista")); vl.type = "button"; vl.addEventListener("click", function () { filtrarPor(null); }); ac_.appendChild(vl);
+      c_.appendChild(ac_);
+    }
+    return c_;
+  }
+  function acoesN(n) { return Number(n) === 1 ? t("g_acoes_1") : t("g_acoes_n", { n: num(n) }); }
+  function dicaLinha(l, total, opc) { return l.r + ": " + acoesN(l.n) + (total ? " (" + num(Math.round(100 * l.n / total)) + "%)" : "") + (opc.comValor && l.v ? " · " + reaisCurto(l.v) : ""); }
   function grafPizza(tit, linhas, opc) {  // 0.7.30 (dono): pizza sóbria (anel), legenda sempre visível, nada sai da tela
-    opc = opc || {}; var g = el("div", "graf graf-pizza"); g.appendChild(el("h3", null, tit));
+    opc = opc || {}; var g = el("div", "graf graf-pizza"); g.appendChild(cabGraf(tit, opc));
     var lim = Math.min(opc.max || 8, 6), base = linhas.filter(function (l) { return l.n > 0; }), fatias = base.slice(0, lim), resto = base.slice(lim);
     if (resto.length) fatias = fatias.concat([{ k: "", r: t("g_outros", { n: num(resto.length) }), n: resto.reduce(function (a, l) { return a + l.n; }, 0), semFiltro: true, outros: true }]);
     var total = fatias.reduce(function (a, l) { return a + l.n; }, 0);
@@ -3698,7 +3776,7 @@ window.LEXSUITE_RADAR = null;
     var NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 120 120"); svg.setAttribute("class", "anel"); svg.setAttribute("aria-hidden", "true");
     var R = 46, C = 2 * Math.PI * R, ini = 0, corN = 0;
     var CORES_PIZZA = ["--g1", "--g2", "--g3", "--g4", "--g5", "--g6"].map(function (v, i) { return corVar(v, ["#1b2b45", "#3d5a80", "#7d93b3", "#a87a2e", "#cdb27a", "#5f6b7d"][i]); });
-    var corDe = function (l) { return l.apagada ? corVar("--g-apagada", "#c9ced8") : l.outros ? corVar("--g-outros", "#dfe3ea") : CORES_PIZZA[corN++ % CORES_PIZZA.length]; };
+    var corDe = function (l) { var base_ = l.apagada ? corVar("--g-apagada", "#c9ced8") : l.outros ? corVar("--g-outros", "#dfe3ea") : CORES_PIZZA[corN++ % CORES_PIZZA.length]; return corPropria(opc, l) || base_; };
     var leg = el("ul", "legenda");
     fatias.forEach(function (l) {
       var cor = corDe(l), frac = l.n / total, arco = document.createElementNS(NS, "circle");
@@ -3706,12 +3784,17 @@ window.LEXSUITE_RADAR = null;
       arco.setAttribute("stroke", cor); arco.setAttribute("stroke-width", "18");
       arco.setAttribute("stroke-dasharray", (frac * C).toFixed(2) + " " + C.toFixed(2)); arco.setAttribute("stroke-dashoffset", (-ini * C).toFixed(2));
       arco.setAttribute("transform", "rotate(-90 60 60)"); svg.appendChild(arco); ini += frac;
-      var clicavel = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro), li = el("li");
-      var item = el(clicavel ? "button" : "span", "leg-item"); if (clicavel) { item.type = "button"; item.title = t("g_ver", { r: l.r }); item.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
-      var sw = el("i", "leg-cor"); sw.style.background = cor; item.appendChild(sw);
+      var desl_ = desligadaNoGrafico(opc, l); if (desl_) arco.setAttribute("opacity", "0.25");
+      var tt_ = document.createElementNS(NS, "title"); tt_.textContent = dicaLinha(l, total, opc); arco.appendChild(tt_);  // dica ao passar o mouse na fatia
+      var clicavel = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro), li = el("li", desl_ ? "desligada" : null);
+      var item = el(clicavel ? "button" : "span", "leg-item"); item.title = dicaLinha(l, total, opc);
+      if (clicavel) { item.type = "button"; if (noPainel(opc)) { item.setAttribute("aria-pressed", String(!desl_)); item.addEventListener("click", function () { alternarNoGrafico(opc, l.k, fatias); }); } else item.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
+      var sw = el(l.outros ? "i" : "button", "leg-cor"); sw.style.background = cor;
+      if (!l.outros) { sw.type = "button"; sw.title = t("g_cor"); sw.setAttribute("aria-label", t("g_cor") + ": " + l.r); sw.addEventListener("click", function (ev) { ev.stopPropagation(); escolherCor(opc, l, cor); }); }
+      li.appendChild(sw);
       var rt = el("span", "leg-rot", l.r); rt.title = l.r; item.appendChild(rt);
       item.appendChild(el("span", "leg-n", num(l.n) + " · " + num(Math.round(100 * frac)) + "%"));
-      item.setAttribute("aria-label", l.r + ": " + t("g_acoes_n", { n: num(l.n) }) + " (" + Math.round(100 * frac) + "%)");
+      item.setAttribute("aria-label", l.r + ": " + acoesN(l.n) + " (" + Math.round(100 * frac) + "%)");
       li.appendChild(item); leg.appendChild(li);
     });
     var meio = document.createElementNS(NS, "text"); meio.setAttribute("x", "60"); meio.setAttribute("y", "64"); meio.setAttribute("text-anchor", "middle"); meio.setAttribute("class", "anel-total"); meio.textContent = num(total); svg.appendChild(meio);
@@ -3727,19 +3810,23 @@ window.LEXSUITE_RADAR = null;
       b.addEventListener("click", function () { tipoGraf = o[0]; try { localStorage.setItem("lexsuite:graf-tipo", o[0]); } catch (e) {} desenhar(); });
       c.appendChild(b);
     });
+    if (Object.keys(coresSalvas()).length) {  // 0.7.32 (dono): volta às cores do sistema
+      var co_ = el("button", "btn-txt", t("g_cores_orig")); co_.type = "button"; co_.addEventListener("click", function () { try { localStorage.removeItem("lexsuite:cores"); } catch (e) {} desenhar(); }); c.appendChild(co_);
+    }
     return c;
   }
   function grafBarras(tit, linhas, opc) {
-    opc = opc || {}; var g = el("div", "graf" + (opc.largo ? " largo" : "")); g.appendChild(el("h3", null, tit));
-    var max = Math.max.apply(null, linhas.map(function (l) { return l.n; }).concat([1])), b = el("div", "barras");
-    linhas.slice(0, opc.max || 8).forEach(function (l) {
-      var clicavel = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro);
-      var row = el(clicavel ? "button" : "div", "barra-l" + (l.ouro ? " ouro" : "") + (l.apagada ? " apagada" : ""));
-      if (clicavel) { row.type = "button"; row.title = t("g_ver", { r: l.r }); row.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
+    opc = opc || {}; var g = el("div", "graf" + (opc.largo ? " largo" : "")); g.appendChild(cabGraf(tit, opc));
+    var max = Math.max.apply(null, linhas.map(function (l) { return l.n; }).concat([1])), b = el("div", "barras"), totalB = linhas.reduce(function (a, l) { return a + l.n; }, 0), mostradas = linhas.slice(0, opc.max || 8);
+    mostradas.forEach(function (l) {
+      var clicavel = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro), desl_ = desligadaNoGrafico(opc, l);
+      var row = el(clicavel ? "button" : "div", "barra-l" + (l.ouro ? " ouro" : "") + (l.apagada ? " apagada" : "") + (desl_ ? " desligada" : ""));
+      row.title = dicaLinha(l, totalB, opc);  // dica ao passar o mouse
+      if (clicavel) { row.type = "button"; if (noPainel(opc)) { row.setAttribute("aria-pressed", String(!desl_)); row.addEventListener("click", function () { alternarNoGrafico(opc, l.k, mostradas); }); } else row.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
       var r = el("span", "rot", l.r); r.title = l.r; row.appendChild(r);
-      var tr_ = el("span", "trilho"), en = el("span", "enche"), alvoW = (100 * l.n / max).toFixed(1) + "%"; en.style.width = "0%"; requestAnimationFrame(function () { requestAnimationFrame(function () { en.style.width = alvoW; }); }); tr_.appendChild(en); row.appendChild(tr_);
+      var tr_ = el("span", "trilho"), en = el("span", "enche"); var cp_ = corPropria(opc, l); if (cp_) en.style.background = cp_; var alvoW = (100 * l.n / max).toFixed(1) + "%"; en.style.width = "0%"; requestAnimationFrame(function () { requestAnimationFrame(function () { en.style.width = alvoW; }); }); tr_.appendChild(en); row.appendChild(tr_);
       var n = el("span", "n", num(l.n)); if (opc.comValor && l.v) n.appendChild(el("small", null, reaisCurto(l.v))); row.appendChild(n);
-      row.setAttribute("aria-label", l.r + ": " + t("g_acoes_n", { n: num(l.n) }) + (opc.comValor && l.v ? ", " + reaisCurto(l.v) : ""));
+      row.setAttribute("aria-label", l.r + ": " + acoesN(l.n) + (opc.comValor && l.v ? ", " + reaisCurto(l.v) : ""));
       b.appendChild(row);
     });
     g.appendChild(b); if (opc.nota) g.appendChild(el("p", "nota-g", opc.nota)); return g;
@@ -3765,7 +3852,7 @@ window.LEXSUITE_RADAR = null;
     dias.forEach(function (d) {
       var col = el(porMes ? "div" : "button", "col"); if (!porMes) { col.type = "button"; col.addEventListener("click", function () { filtrarPor("data", d.k); }); }
       var rot = porMes ? mesCurto(d.k) : dataSemana(d.k);
-      col.setAttribute("aria-label", rot + ": " + t("g_acoes_n", { n: num(d.n) })); col.title = col.getAttribute("aria-label");
+      col.setAttribute("aria-label", rot + ": " + acoesN(d.n)); col.title = col.getAttribute("aria-label");
       col.appendChild(el("span", "n", num(d.n)));
       var pe = el("span", "pe"), alvoH = Math.max(2, Math.round(100 * d.n / max)) + "%"; pe.style.height = "0%"; requestAnimationFrame(function () { requestAnimationFrame(function () { pe.style.height = alvoH; }); }); col.appendChild(pe);
       if (separar && porDiaT[d.k]) {
@@ -3791,9 +3878,10 @@ window.LEXSUITE_RADAR = null;
   /* revisão da 0.7.30: impressão sempre no claro (letra clara em papel branco não se lê) */
   window.addEventListener("beforeprint", function () { document.documentElement.setAttribute("data-theme", "light"); if (visao === "painel") desenhar(); });  // os gráficos pegam as cores do claro
   window.addEventListener("afterprint", function () { var v = temaAtual(), r = document.documentElement; if (v === "escuro") r.setAttribute("data-theme", "dark"); else if (v !== "claro") r.removeAttribute("data-theme"); if (visao === "painel") desenhar(); });
-  function desenharTema() {  // 0.7.30 (dono): aparência no Perfil, sóbria (sem sol e lua), com uma miniatura de cada modo
-    var box = $("pf-tema"); if (!box) return; box.textContent = "";
-    box.appendChild(el("h4", "conf-sec", t("tema_t")));
+  function desenharTema() { ["pf-tema", "c-tema"].forEach(desenharTemaEm); }  // 0.7.32 (dono): a mesma escolha no Perfil e na Configuração
+  function desenharTemaEm(id_) {  // 0.7.30 (dono): aparência sóbria (sem sol e lua), com uma miniatura de cada modo
+    var box = $(id_); if (!box) return; box.textContent = "";
+    if (id_ === "pf-tema") box.appendChild(el("h4", "conf-sec", t("tema_t")));
     var g = el("div", "tema-opcoes"); g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", t("tema_t"));
     [["claro", t("tema_claro")], ["escuro", t("tema_escuro")], ["sistema", t("tema_sistema")]].forEach(function (o) {
       var b = el("button", "tema-op"); b.type = "button"; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", String(temaAtual() === o[0]));
@@ -3832,7 +3920,7 @@ window.LEXSUITE_RADAR = null;
       var c = el("div", "colunas");
       meses.forEach(function (m) {
         var col = el("div", "col" + (m === pico ? " pico" : "")), rot = mesCurto(m.mes);
-        col.setAttribute("aria-label", rot + ": " + t("g_acoes_n", { n: num(m.novas) })); col.title = col.getAttribute("aria-label");
+        col.setAttribute("aria-label", rot + ": " + acoesN(m.novas)); col.title = col.getAttribute("aria-label");
         col.appendChild(el("span", "n", num(m.novas)));
         var pe = el("span", "pe"); pe.style.height = Math.max(2, Math.round(100 * m.novas / max)) + "%"; col.appendChild(pe);
         col.appendChild(el("span", "d", rot)); c.appendChild(col);
@@ -3859,8 +3947,8 @@ window.LEXSUITE_RADAR = null;
       post("/estatisticas/pedir", { meses: sel_.value }).then(function (r) {
         bp.disabled = false;
         if (!r.ok) { histInfo = ""; var vi_ = g.querySelector(".saz-info"); if (vi_) vi_.remove(); msgH.textContent = r.motivo || t("falha"); return; }  // revisão: a mensagem velha sai
-        var novos = Number(r.na_fila || 0), fila = Number(h.na_fila || 0) + novos;
-        histInfo = novos ? t("saz_na_fila", { n: num(fila) }) : (fila ? t("saz_ja_fila", { m: sel_.value, n: num(fila) }) : t("saz_ja_lidos", { m: sel_.value }));
+        var novos = Number(r.na_fila || 0), fila = Number(h.na_fila || 0) + novos, perSaz_ = sel_.value === "1" ? t("saz_per1") : t("saz_pern", { m: sel_.value });
+        histInfo = novos ? t("saz_na_fila", { n: num(fila) }) : (fila ? t("saz_ja_fila", { p: perSaz_, n: num(fila) }) : t("saz_ja_lidos", { p: perSaz_ }));
         if (fila > 0) { histInfo = ""; msgH.hidden = true; bl.click(); return; }  // teste do dono (0.7.30): "Buscar estatísticas" já começa a ler (um botão só)
         carregar();
       }).catch(function () { bp.disabled = false; msgH.textContent = t("falha"); });
@@ -3940,22 +4028,24 @@ window.LEXSUITE_RADAR = null;
     if (MODO === "app") alvo.appendChild(grafSazonal());
     alvo.appendChild(escolhaGraf());
     var grade = el("div", "grade-graf");
+    // 0.7.32 (dono): cada gráfico conta sem o filtro dele mesmo, para mostrar apagado (e não esconder) o que foi desligado
+    var cxP_ = contextoFiltros(), semCampo = function (c) { return visao === "painel" ? base().filter(function (i) { return passaFiltros(i, c, cxP_.min, cxP_.esconder, cxP_.q); }) : itens; };
     var fx = [[null, null], [0, 50000], [50000, 100000], [100000, 300000], [300000, 1000000], [1000000, Infinity]];
     var faixas = fx.map(function (f, ix) {
       var n = itens.filter(function (i) { var v = valorDe(i).v; return ix === 0 ? v == null : (v != null && v >= f[0] && v < f[1]); }).length;
       var r = ix === 0 ? t("fx_sem") : ix === 1 ? t("fx_ate", { a: reaisCurto(f[1]) }) : f[1] === Infinity ? t("fx_acima", { a: reaisCurto(f[0]) }) : t("fx_entre", { a: reaisCurto(f[0]), b: reaisCurto(f[1]) });
       return { k: "", r: r, n: n, ouro: ix > 0 && f[1] > min, apagada: ix === 0 };
     });
-    grade.appendChild(grafLinhas(t("g_faixas"), faixas, { max: 6, nota: t("k_acima", { min: reaisCurto(min) }) + ": " + num(acima) }));
-    grade.appendChild(grafLinhas(t("g_setores"), contar(itens, function (i) { return i.setor ? [i.setor, i.setor] : ["", t("sem_setor")]; }), { campo: "setor", comValor: true }));
-    grade.appendChild(grafLinhas(t("g_empresas"), emp.map(function (e) { return { k: "", r: e.r, n: e.n, v: e.v }; }), { comValor: true }));
-    grade.appendChild(grafLinhas(t("g_porte"), contar(itens, function (i) { var p_ = porteCurto(i); return p_ ? [p_, p_] : ["", t("sem_porte")]; }), { campo: "porte" }));
-    var tribs = contar(itens, function (i) { return i.tribunal ? [i.tribunal, i.tribunal] : null; });
+    grade.appendChild(grafLinhas(t("g_faixas"), faixas, { idCor: "faixas", max: 6, nota: t("k_acima", { min: reaisCurto(min) }) + ": " + num(acima) }));
+    grade.appendChild(grafLinhas(t("g_setores"), contar(semCampo("setor"), function (i) { return i.setor ? [i.setor, i.setor] : ["", t("sem_setor")]; }), { campo: "setor", comValor: true }));
+    grade.appendChild(grafLinhas(t("g_empresas"), emp.map(function (e) { return { k: "", r: e.r, n: e.n, v: e.v }; }), { comValor: true }));  // sem filtro (empresa não é filtro da lista)
+    grade.appendChild(grafLinhas(t("g_porte"), contar(semCampo("porte"), function (i) { var p_ = porteCurto(i); return p_ ? [p_, p_] : ["", t("sem_porte")]; }), { campo: "porte" }));
+    var tribs = contar(semCampo("trib"), function (i) { return i.tribunal ? [i.tribunal, i.tribunal] : null; });
     if (tribs.length > 1) grade.appendChild(grafLinhas(t("g_trib"), tribs, { campo: "trib", comValor: true, max: 24 }));
-    else grade.appendChild(grafLinhas(t("g_vara"), contar(itens, function (i) { return i.vara ? [i.vara, i.vara] : null; }), { campo: "vara" }));
-    grade.appendChild(grafLinhas(t("g_sinal"), contar(itens, function (i) { return i.sinal ? [i.sinal, i.sinal] : ["", t("sinal_antigo")]; }), { max: 8 }));
-    grade.appendChild(grafLinhas(t("g_uf"), contar(itens, function (i) { var u = (i.empresa || {}).uf; return u ? [u, u] : ["", t("sem_uf")]; }), { campo: "uf" }));
-    grade.appendChild(grafLinhas(t("g_sit"), contar(itens, function (i) { var s_ = statusDe(i); return [s_, t("st_" + s_)]; }), { campo: "sit" }));  // teste do dono (0.7.30): como o escritório está tratando as ações
+    else grade.appendChild(grafLinhas(t("g_vara"), contar(semCampo("vara"), function (i) { return i.vara ? [i.vara, i.vara] : null; }), { campo: "vara" }));
+    grade.appendChild(grafLinhas(t("g_sinal"), contar(itens, function (i) { return i.sinal ? [i.sinal, i.sinal] : ["", t("sinal_antigo")]; }), { idCor: "sinal", max: 8 }));
+    grade.appendChild(grafLinhas(t("g_uf"), contar(semCampo("uf"), function (i) { var u = (i.empresa || {}).uf; return u ? [u, u] : ["", t("sem_uf")]; }), { campo: "uf" }));
+    grade.appendChild(grafLinhas(t("g_sit"), contar(semCampo("sit"), function (i) { var s_ = statusDe(i); return [s_, t("st_" + s_)]; }), { campo: "sit" }));  // teste do dono (0.7.30): como o escritório está tratando as ações
     alvo.appendChild(grade);
     alvo.appendChild(el("p", "nota-g", t("g_nota")));
     if (D && D.criterio && D.criterio.desde) alvo.appendChild(el("p", "nota-g", t("criterio_nota", { d: dataCurta(D.criterio.desde) })));
@@ -4230,6 +4320,13 @@ window.LEXSUITE_RADAR = null;
     setTimeout(function () { av_.classList.remove("fechando"); if (bt_.getAttribute("aria-expanded") === "false") av_.hidden = true; marcarMaisFiltros(); }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180);
   });  // 0.7.29 (sem janela preta): o que aparecia nela
   $("c-fechar").addEventListener("click", function () { fecharConfig(false); });
+  $("c-trocar-lic").addEventListener("click", function () {
+    var c_ = el("div"); c_.appendChild(el("h3", null, t("lic_trocar_t"))); c_.appendChild(el("p", null, t("lic_trocar_p")));
+    abrirJanela(c_, [[t("cancelar"), null], [t("lic_trocar_ok"), function () {
+      var cd = $("c-codigo"); cd.readOnly = false; cd.tabIndex = 0; cd.value = ""; $("c-codigo-nota").hidden = true; $("c-trocar-lic").hidden = true;
+      setTimeout(function () { cd.focus(); }, 50); $("c-msg").textContent = t("ag_salvar_dica");
+    }, true]]);
+  });
   $("pf-x").addEventListener("click", fecharPerfil);
   $("pf-veu").addEventListener("click", fecharPerfil);
   $("perfil").addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !$("janela").open && !editando) { ev.stopPropagation(); fecharPerfil(); } });
@@ -4239,9 +4336,11 @@ window.LEXSUITE_RADAR = null;
   $("c-veu").addEventListener("click", function () { fecharConfig(false); });
   ["input", "change"].forEach(function (ev) { $("config").addEventListener(ev, marcarSalvarC); });
   $("config").addEventListener("click", function () { setTimeout(marcarSalvarC, 0); });
+  document.addEventListener("keydown", function (ev) {  // revisão da 0.7.31: Esc fecha a Configuração mesmo com o foco fora dela (uma camada por vez)
+    if (ev.key === "Escape" && !$("config").hidden && !$("config").classList.contains("pagina") && !$("janela").open && $("gaveta").hidden && $("busca-global").hidden && !$("config").contains(document.activeElement)) { ev.preventDefault(); fecharConfig(false); }
+  });
   $("config").addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !$("janela").open) { ev.stopPropagation(); ev.preventDefault(); fecharConfig(false); } });  // 0.7.29: sem o preventDefault, a pergunta abria e fechava no mesmo Esc
   $("c-agendar").addEventListener("change", desenharAgenda);
-  $("c-dias").addEventListener("change", function () { cDias = this.value; $("c-msg").textContent = t("ag_salvar_dica"); desenharAgenda(); });
   $("c-hora-add").addEventListener("click", acrescentarHora);
   $("c-hora-nova").addEventListener("keydown", function (ev) { if (ev.key === "Enter") acrescentarHora(); });
   $("c-atualizar").addEventListener("click", verificarAtualizacao);
@@ -4331,7 +4430,7 @@ window.LEXSUITE_RADAR = null;
           { termo: { pt: "Estatísticas dos meses anteriores", en: "Previous months statistics" }, sinonimos: ["sazonalidade", "historico", "meses", "pico", "seasonality"], destino: function () { trocarVisao("painel"); setTimeout(irPara(".saz, #graficos"), 200); }, icone: "›", descricao: { pt: "Painel → Sazonalidade", en: "Dashboard → Seasonality" } },
           { termo: { pt: "Gerar uma cópia da planilha", en: "Make a copy of the spreadsheet" }, sinonimos: ["copia", "editar", "excel", "copy"], destino: gerarCopia, icone: "›", descricao: { pt: "Cópia para anotar, na pasta Cópias da planilha", en: "Copy to annotate, in the spreadsheet copies folder" } },
           { termo: { pt: "Abrir a planilha", en: "Open the spreadsheet" }, sinonimos: ["excel", "xlsx"], destino: abrirPlanilhaComAviso, icone: "›", descricao: { pt: "Abre no Excel, só para leitura", en: "Opens in Excel, read-only" } },
-          { termo: { pt: "Regras do escritório (exclusões e preferências)", en: "Firm rules (exclusions and preferences)" }, sinonimos: ["excluir", "exclusoes", "valor minimo", "preferencia", "cliente", "regras"], destino: editarPreferencias, icone: "›", descricao: { pt: "Regras do escritório na planilha", en: "The firm's rules in the spreadsheet" } },
+          { termo: { pt: "Critérios da lista (exclusões e preferências)", en: "List criteria (exclusions and preferences)" }, sinonimos: ["regras", "criterios", "excluir", "exclusoes", "valor minimo", "preferencia", "cliente", "regras"], destino: editarPreferencias, icone: "›", descricao: { pt: "Critérios da lista, guardados na planilha", en: "The list criteria, kept in the spreadsheet" } },
           { termo: { pt: "Trazer dados da área logada", en: "Bring in logged-in area data" }, sinonimos: ["contato", "valor da causa", "telefone", "email", "area logada", "colar", "pje"], destino: colarContatos, icone: "›", descricao: { pt: "Valor da causa, contatos e partes que o advogado vê com o próprio login", en: "Claim value, contacts and parties the lawyer sees with their own login" } },
           { termo: { pt: "Manual", en: "Manual" }, sinonimos: ["ajuda", "help", "como"], destino: function () { window.open("/manual", "_blank", "noopener"); }, icone: "›", descricao: { pt: "O manual completo do escritório", en: "The firm's full manual" } },
           { termo: { pt: "Perfil e licença", en: "Profile and licence" }, sinonimos: ["licenca", "codigo", "usuario", "nome"], destino: function () { abrirPerfil(false); }, icone: "›", descricao: { pt: "Quem usa este computador", en: "Who uses this computer" } }
@@ -4341,10 +4440,23 @@ window.LEXSUITE_RADAR = null;
   }
 
   /* 0.7.31 (dono): "Novidades da versão": depois de atualizar, aparece uma vez o que mudou; o menu ☰ mostra de novo */
+  /* revisão da 0.7.31: idioma e tema guardados também contam como "já usava" */
   var USADO_ANTES = (function () {  // havia escolhas guardadas deste programa antes de abrir a tela? (sim = atualização, não = instalação nova)
-    try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas" && k_ !== "lexsuite:idioma" && k_ !== "lexsuite:tema"; }); } catch (e) { return false; }
+    try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {
+    "0.7.32": {
+      pt: ["Gráficos do Painel: passe o mouse para ver o número e a %; clique num item da legenda para tirá-lo ou devolvê-lo (fica apagado); \u201cMostrar todos\u201d e \u201cVer na lista →\u201d em cada gráfico; escolha a cor no quadradinho da legenda (\u201cCores originais\u201d volta ao padrão).",
+        "O Painel tem os seus filtros e a Lista os dela.",
+        "Leitura automática por dias da semana (Dom a Sáb; de início, de segunda a sexta). Nenhum dia marcado desliga a leitura.",
+        "Configuração reorganizada: A lista (Critérios da lista e filtros salvos), Onde ficam as planilhas, Leitura, Tela (com Aparência e o assistente), Licença e termos (com \u201cTrocar licença\u201d). O menu segue a mesma ordem.",
+        "Textos no singular quando é 1 (\u201c1 ação\u201d) e ajustes de contraste e do teclado (Esc)."],
+      en: ["Dashboard charts: hover to see the number and %; click a legend item to take it out or bring it back (it stays faded); \u201cShow all\u201d and \u201cSee in the list →\u201d on each chart; pick the colour in the legend square (\u201cOriginal colours\u201d resets it).",
+        "The Dashboard has its own filters and the List has its own.",
+        "Automatic reading by weekday (Sun to Sat; Monday to Friday by default). No day selected turns reading off.",
+        "Settings reorganised: The list (List criteria and saved filters), Where the spreadsheets live, Reading, Screen (with Appearance and the assistant), Licence and terms (with \u201cChange licence\u201d). The menu follows the same order.",
+        "Singular texts for 1 (\u201c1 lawsuit\u201d) and contrast and keyboard (Esc) fixes."]
+    },
     "0.7.31": {
       pt: ["Termos e licença com textos curtos: \u201cFalta aceitar os termos\u201d, com um botão só. O código de cliente aparece mascarado e não se edita.",
         "Novo gráfico no Painel: Situação no escritório (Novo, Visto, Em contato, Virou cliente…).",
@@ -4373,6 +4485,7 @@ window.LEXSUITE_RADAR = null;
     var c_ = el("div"); c_.appendChild(el("h3", null, t("nov_t", { v: v_ })));
     if (n_) { var ul_ = el("ul", "novidades"); (n_[lang] || n_.pt).forEach(function (x) { ul_.appendChild(el("li", null, x)); }); c_.appendChild(ul_); }
     else c_.appendChild(el("p", null, t("nov_sem")));
+    c_.appendChild(el("p", "nota-registro", t("nov_onde")));  // 0.7.32 (dono): onde rever
     abrirJanela(c_, [[t("nov_ok"), null, true]]);
   }
   if (MODO === "app") carregar().then(function () { verVersaoNova(); if (!$("wizard") || $("wizard").hidden) mostrarNovidades(false); }); else tudo();
