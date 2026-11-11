@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (nada)
+- **0.7.29 em revisão (11/Nov)**: o dono mandou publicar (commit `5ab2b8b`, automação verde, execução 446); revisão do que mudou desde a 0.7.28 (é uma versão com mudança de comportamento no Windows: programa e leitura automática sem janela preta, `pythonw`, registro em arquivo, Agendador, `.bat`), testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.28. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
