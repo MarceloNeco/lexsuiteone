@@ -86,6 +86,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 
 ## Decisões do dono que valem
 
+- **Definition of done, regra zero de qualidade (11/Nov)**: qualquer commit, de qualquer feature, de qualquer aplicativo da SolverONE, só está pronto com o manual (quando existe), o AssistONE (ajuda da tela, tour e busca) e as Novidades da versão conferidos e atualizados, em PT e EN, contra o que o código faz de verdade. Lacuna é bloqueio: a Operação não publica. Texto em `CLAUDE.md` e `docs/PUBLICAR.md`.
 - Nome (08/Nov): **RADAR JUDICIAL** é o produto, da suíte LexSuiteONE ("IA" em latão). É configuração em `docs/marca.json`
   e pode mudar sem mexer em código. Endereço `judicial.solverone.com.br`. A tela e o aviso do Windows já leem o nome de
   `marca.json` (`robo/lexsuite/app.py`); a planilha e o e-mail de aviso ainda não (ver "Nome do produto" em
