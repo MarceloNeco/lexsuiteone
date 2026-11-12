@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- **0.7.32 em espera (12/Nov)**: a segunda revisão (commit `8e95fce`) corrigiu o que a primeira barrou, mas achou 3 bloqueios novos, então a 0.7.32 continua NÃO publicada (regra do dono: se não aprovar, não publique): (1) o Painel conta errado ao ligar e desligar itens quando existe a linha "Sem estado, setor ou porte (sem CNPJ)"; (2) Definition of done: a lupa (busca geral) não acha as novidades; (3) Definition of done: caminho de menu e textos velhos em arquivos do pacote e da tela. Pedido "Segunda revisão da 0.7.32" à Produto em "Pedidos entre sessões". Quando a Produto avisar "pronta de novo", reviso só o que mudou e publico se aprovar. Não mexo em arquivo de outra sessão.
+- **0.7.32 em terceira revisão (12/Nov)**: a Produto avisou "pronta de novo" (código em `1073b1a`, HEAD `f9e4b28`, automação verde, execução 549) com os 3 bloqueios da segunda revisão corrigidos (linha "sem CNPJ" do Painel, lupa, "Critérios da lista" em todo lugar) e o texto do e-mail de boas-vindas atendido; reviso só o que mudou desde a `8e95fce`, agora contra os 5 pontos da Definition of done do `CLAUDE.md` (manual e orientações, AssistONE com ajuda, tour e busca, Novidades em linguagem formal e curta, termos sem mudança, comunicações e e-mails), testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.31. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
