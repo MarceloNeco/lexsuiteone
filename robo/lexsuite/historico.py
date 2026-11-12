@@ -197,13 +197,16 @@ def tentar_de_novo_os_erros(banco):
 def por_mes(banco, tribunais=None):
     """Totais por mês (todas as fontes: leitura normal e meses anteriores), para o gráfico de sazonalidade."""
     tribs = [t.upper() for t in tribunais or []]
-    saida = {}
+    saida, por_trib = {}, {}
     for e in banco.estatisticas():
         if tribs and (e["tribunal"] or "").upper() not in tribs:
             continue
         mes = e["data"][:7]
         saida[mes] = saida.get(mes, 0) + int(e["novas"] or 0)
-    return [{"mes": m, "novas": n} for m, n in sorted(saida.items())]
+        tr = (e["tribunal"] or "").upper()
+        if tr:  # 0.7.36 (dono): barras empilhadas por tribunal (o único atributo que as estatísticas mensais guardam sempre)
+            por_trib.setdefault(mes, {})[tr] = por_trib.setdefault(mes, {}).get(tr, 0) + int(e["novas"] or 0)
+    return [{"mes": m, "novas": n, "por_tribunal": por_trib.get(m, {})} for m, n in sorted(saida.items())]
 
 
 def por_dia_da_semana(banco, tribunais=None):

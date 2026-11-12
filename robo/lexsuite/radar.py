@@ -381,6 +381,15 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} ações novas contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
                 "en": f"{len(pubs)} notices read; {len(novos)} new lawsuits against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}
+    if not pubs and not interrompida and all(t["causa"] in ("ok", "ainda_nao_liberado_3h", "nao_publicado") for t in tentativas):
+        # 0.7.36 (dono): "0 publicações lidas" parecia falha; quando nada é novo, a tela diz por quê
+        ate = max((str(t.get("leu_ate") or "")[:10] for t in tentativas), default="")
+        ate_br = f"{ate[8:10]}/{ate[5:7]}" if len(ate) == 10 else ""
+        situacao["pt"] = (f"Nada novo: os cadernos até {ate_br} já tinham sido lidos." if ate_br else "Nada novo: os Diários já publicados tinham sido lidos.") + \
+            " O Diário de hoje sai por volta das 19h."
+        situacao["en"] = (f"Nothing new: the issues up to {ate_br} had already been read." if ate_br else "Nothing new: the gazettes already published had been read.") + \
+            " Today's gazette comes out around 7 pm."
+        situacao["nada_novo"] = True
     from . import causas
     for t in tentativas:  # avisos que não são erro (Diário de hoje só às 3h) e tribunais que falharam
         if t["causa"] == "ok":
@@ -505,7 +514,7 @@ def gravar_saida(cfg, banco, pasta, agora, situacao, aviso=print, versao="", pre
     saidas.gravar_radar(os.path.join(pasta, "radar.html"), pagina)
     saidas.gravar_json(os.path.join(pasta, "radar.json"), pagina)
     saidas.gravar_csv(os.path.join(pasta, "radar.csv"), [linha_csv(i) for i in pagina["itens"]], COLUNAS_RADAR)
-    aviso(f"  {len(pagina['itens'])} ações na lista. Página: {os.path.join(pasta, 'radar.html')}")
+    aviso(f"  Montando a lista: {len(pagina['itens'])} processos.")  # 0.7.36 (dono): sem caminho de arquivo na tela
     return pagina
 
 

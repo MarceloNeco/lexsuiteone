@@ -132,7 +132,7 @@ class Estado:
         if m and int(m.group(2)):
             self.progresso = max(self.progresso, 60 + int(35 * int(m.group(1)) / int(m.group(2))))
             return
-        if "publicações lidas" in texto or "Planilha" in texto or "planilha" in texto:
+        if "publicações lidas" in texto or "Nada novo" in texto or "Planilha" in texto or "planilha" in texto:
             self.progresso = max(self.progresso, 95)
 
     def _eco(self, linha):
@@ -369,6 +369,9 @@ class Servidor(ThreadingHTTPServer):
             if e.get("resultado") == "ok" or e.get("lidas"):
                 achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} ações novas contra empresas.",
                          "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new lawsuits against companies."}
+                if not e.get("lidas"):  # 0.7.36 (dono): leitura sem nada novo não parece falha
+                    achou.update({"pt": "Nada novo: os Diários já publicados tinham sido lidos. O Diário de hoje sai por volta das 19h.",
+                                  "en": "Nothing new: the gazettes already published had been read. Today's gazette comes out around 7 pm."})
                 break
         self._ultima_cache = (marca_, achou)
         return achou

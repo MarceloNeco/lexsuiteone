@@ -225,6 +225,53 @@ class Exclusoes0736(unittest.TestCase):
         self.assertNotIn("rg_copiar_q", h)
 
 
+class Graficos0736(unittest.TestCase):
+    """LISTA 2 e itens 23 a 30: barras empilhadas com escolha, pizza que se refaz, dicas em blocos, retorno do Buscar estatísticas."""
+
+    def setUp(self):
+        self.h = ler("radar_modelo.html")
+
+    def test_barras_empilhadas_com_escolha(self):
+        self.assertIn('seletorSeparar("lexsuite:graf-separar", ["nada", "trib", "sit", "faixa", "setor"], dim)', self.h)
+        self.assertIn('seletorSeparar("lexsuite:saz-separar", ["nada", "trib"], dimS)', self.h)
+        self.assertIn('g_dica_pilha: "{r}: {n} — {p}"', self.h)
+        self.assertNotIn('el("div", "col" + (m === pico ? " pico" : ""))', self.h)  # sem o dourado nas barras
+
+    def test_pizza_se_refaz_e_tudo_clicavel(self):
+        self.assertIn("var ligado = function (l) { return !desligadaNoGrafico(opc, l) && !ocultos[chaveF(l)]; };", self.h)
+        self.assertIn("transition: stroke-dasharray .55s ease", self.h); self.assertIn("prefers-reduced-motion: reduce) { .anel circle { transition: none; } }", self.h)
+        self.assertIn('item.title = t("g_some_so_aqui")', self.h)
+
+    def test_dicas_em_blocos(self):
+        self.assertIn("function emBlocos(txt)", self.h)
+        self.assertIn('saz_ajuda: "**Para que serve**', self.h); self.assertIn('g_dia_ajuda: "**Para que serve**', self.h)
+        self.assertIn('emBlocos(t("g_dia_ajuda"))', self.h)
+
+    def test_buscar_estatisticas_responde_na_hora(self):
+        self.assertIn('saz_em_dia: "✓ As estatísticas já estão em dia: {p}."', self.h)
+        self.assertIn('el("span", "txt-azul", t("saz_em_dia", { p: perSaz_ }))', self.h)
+        self.assertIn('var msgH = el("span", "nota-g saz-retorno")', self.h)
+
+    def test_faixa_da_leitura_numa_linha_sem_caminho(self):
+        self.assertIn(".estado .rodando-linha { display: flex; flex-wrap: nowrap;", self.h)
+        self.assertNotIn("ações na lista. Página:", ler("lexsuite", "radar.py"))
+
+    def test_nada_novo(self):
+        self.assertIn('"Nada novo: os cadernos até', ler("lexsuite", "radar.py"))
+        self.assertIn('"Nada novo" in texto', ler("lexsuite", "app.py"))
+
+
+class SazonalPorTribunal(unittest.TestCase):
+    def test_por_mes_traz_cada_tribunal(self):
+        from lexsuite import historico
+        class B:
+            def estatisticas(self):
+                return [{"data": "2026-10-01", "tribunal": "TRT2", "novas": 3}, {"data": "2026-10-02", "tribunal": "TRT15", "novas": 2},
+                        {"data": "2026-11-01", "tribunal": "TRT2", "novas": 1}]
+        m = historico.por_mes(B())
+        self.assertEqual(m[0], {"mes": "2026-10", "novas": 5, "por_tribunal": {"TRT2": 3, "TRT15": 2}})
+
+
 class UltimaTentativa(Servidor):
     def test_regras_dizem_as_areas_em_uso_e_copiam_para_as_escolhidas(self):
         c = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=20)

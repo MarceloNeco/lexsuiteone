@@ -183,9 +183,11 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .lic-ativa, .txt-verde { color: #2f6b3a; font-weight: 700; } .txt-azul { color: #1f5aa6; font-weight: 700; } :root[data-theme="dark"] .lic-ativa, :root[data-theme="dark"] .txt-verde { color: #7fc48b; } :root[data-theme="dark"] .txt-azul { color: #8db8f0; } @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lic-ativa, :root:not([data-theme="light"]) .txt-verde { color: #7fc48b; } :root:not([data-theme="light"]) .txt-azul { color: #8db8f0; } }
 .estado .andando { color: var(--latao-texto); font-weight: 600; }
 .estado .log { color: var(--tinta-3); font-size: .8rem; }
-.estado .rodando-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; }
-.estado .rodando-linha .progresso-linha { flex: 0 1 320px; min-width: 180px; }
-.estado .rodando-linha .andando { flex: 1 1 260px; }
+.estado .rodando-linha { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px 14px; }
+.estado .rodando-linha .progresso-linha { flex: 0 1 320px; min-width: 160px; }
+.estado .rodando-linha .andando { flex: 1 1 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }  /* 0.7.36 (dono): uma linha, Interromper sempre no mesmo lugar */
+.estado .rodando-linha > button, .estado .rodando-linha > .aviso-leve { flex: none; }
+@media (max-width: 600px) { .estado .rodando-linha { flex-wrap: wrap; } .estado .rodando-linha .andando { white-space: normal; } }
 .estado .log-det summary { cursor: pointer; color: var(--tinta-3); font-size: .8rem; width: max-content; }
 .estado .log-det .log { display: block; }
 .estado .erro { color: var(--erro); }
@@ -334,7 +336,11 @@ button.barra-l:focus-visible { outline: 2px solid var(--latao); }
 .col.pico .pe { background: var(--latao); }
 .novidades { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 6px; }
 .campo-data, .campo-data select, #periodo { max-width: 100%; min-width: 0; }
-.saz-legenda { display: flex; align-items: center; gap: 6px; } .saz-cor-pico { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--latao); flex: none; }
+.saz-legenda { display: flex; align-items: center; gap: 6px; }
+.anel circle { transition: stroke-dasharray .55s ease, stroke-dashoffset .55s ease; } @media (prefers-reduced-motion: reduce) { .anel circle { transition: none; } }
+.legenda li.desligada .leg-rot { text-decoration: line-through; opacity: .55; }
+.ajuda-blocos { display: grid; gap: 10px; max-width: 420px; line-height: 1.45; } .ajuda-bloco p { margin: 2px 0 0; } .ajuda-tit { display: block; color: var(--latao-texto); font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; }
+.graf-separar { margin-left: auto; } .graf-cab { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; } .saz-cor-pico { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--latao); flex: none; }
 .graf-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .graf-sep { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; color: var(--tinta-2); cursor: pointer; }
 .graf-sep input { accent-color: var(--marinho); width: 16px; height: 16px; }
@@ -618,7 +624,7 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .pasta-conferida { margin: 8px 0 0; } .pasta-conferida .pasta-sub { color: var(--tinta-3); } .abrir-linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .abrir-pasta-link { font-weight: 600; }
 .pasta-ok { color: var(--ok-t); font-weight: 600; } .pasta-erro { color: var(--er-t); font-weight: 600; }
-.saz-recado { color: var(--verm); font-weight: 600; }
+.saz-recado { color: var(--verm); font-weight: 600; } .saz-retorno { color: var(--tinta-2); align-self: center; }
 @media (max-width: 1240px) { body:has(#config:not([hidden])) #dgo-aone, body:has(#perfil:not([hidden])) #dgo-aone { --dgo-aone-sobe: 76px; --dgo-aone-sobe-pc: 76px; } }
 .nuvens { align-items: center; } .nuvem-nota { color: var(--tinta-3); font-size: .82rem; flex-basis: 100%; }
 .ajuda-topo .ajuda { border-color: rgba(255,255,255,.45); color: #e6eaf2; margin-left: -4px; } .ajuda-topo[hidden] { display: none; }
@@ -2171,12 +2177,12 @@ window.LEXSUITE_RADAR = null;
     pf_fixo: "Fixo: identifica você na licença do escritório.", pf_outra_pessoa: "Outra pessoa vai usar este computador",
     pf_outra_pessoa_x: "O e-mail e o escritório não se editam: são a sua identificação na licença. Se outra pessoa do escritório vai usar este computador, ela se cadastra com o e-mail dela, e a SolverONE confere se o domínio do e-mail é do escritório.",
     copia_t: "Cópia criada", abrir_copia: "Abrir a cópia", abrir_pasta_copia: "Abrir a pasta",
-    g_ver_como: "Ver como", g_por_trib: "Separar por tribunal", g_barras: "Barras", g_pizza: "Pizza", g_outros: "Outros ({n})", g_sem_dados: "Sem dados neste período.",
+    g_ver_como: "Ver como", g_por_trib: "Separar por tribunal", g_some_so_aqui: "Clique para tirar ou devolver; some só deste gráfico.", g_sep: "Separar por:", g_sep_nada: "Nada", g_sep_trib: "Tribunal", g_sep_sit: "Situação", g_sep_faixa: "Faixa de valor", g_sep_setor: "Setor", g_outros_pilha: "Outros", g_dica_pilha: "{r}: {n} — {p}", g_barras: "Barras", g_pizza: "Pizza", g_outros: "Outros ({n})", g_sem_dados: "Sem dados neste período.",
     pp_t: "Estes números: {n} ações", pp_t1: "Estes números: 1 ação", pp_diarios: "Diários de {d} a {a}", pp_filtros: "com {n} filtro(s) da lista", pp_trib: "Tribunal:", pp_trib_todos: "Todos", pp_lidas: "Publicado no Diário:", pp_1: "último dia útil", pp_n: "{d} dias",
-    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Escolha quantos meses e clique em \"Buscar estatísticas\": o {c} lê os Diários desses meses, do mais novo para o mais antigo, um dia de cada tribunal por vez, com uma pausa curta entre eles para não sobrecarregar o CNJ (12 meses com 3 tribunais são cerca de 760 Diários, perto de uma hora). A barra mostra o andamento geral e cada mês. \"Pausar\" para agora e guarda o que já foi lido; \"Continuar a busca\" segue de onde parou. \"Continuar à noite\" deixa terminar sozinho depois da próxima leitura automática. Só soma totais: nenhum processo entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
+    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "**Para que serve**\nMostra em que meses e em que dias da semana entram mais processos novos. Ajuda a planejar a equipe e a perceber os picos.\n\n**Como buscar**\nEscolha quantos meses quer ver e clique em **Buscar estatísticas**. O {c} lê os Diários desses meses, do mais recente para o mais antigo. Com 3 tribunais, 12 meses levam **cerca de 1 hora**.\n\n**Pausar e continuar**\n**Pausar** para e guarda o que já foi lido. **Continuar a busca** segue de onde parou. **Continuar à noite** termina sozinho depois da leitura automática da noite.\n\n**Separar por tribunal**\nDivide cada barra pelos tribunais. Passe o mouse sobre a barra para ver o total e cada parte.\n\n**O que entra aqui**\nSó os totais. **Nenhum processo entra na Lista, no Arquivo ou na planilha**, e nada disso vai para a SolverONE. Se o tribunal não tiver mais o Diário de um dia antigo, o dia aparece como \u201csem Diário\u201d.", g_dia_ajuda: "**Para que serve**\nMostra quantos processos novos contra empresas entraram em cada dia, no período escolhido nos filtros do Painel. Clique numa barra para ver só aquele dia.\n\n**Separar as barras**\nEscolha **Tribunal, Situação, Faixa de valor ou Setor** para ver cada barra dividida em partes. Passe o mouse sobre a barra para ver o total e cada parte.\n\n**De onde vêm os números**\nDe cada leitura do Diário. Os totais de cada dia ficam guardados, mesmo depois que o processo sai do Arquivo.",
     saz_vazio: "Ainda não há meses suficientes. Escolha quantos meses buscar e clique em \"Buscar estatísticas\".", saz_semana: "Por dia da semana:", saz_pico: "Mês com mais ações: {m} ({n}).",
     saz_estado: "Diários antigos lidos: {l}; na fila: {f}; sem Diário: {s}; com erro: {e}.", saz_de_ate: "De {d} a {a}.", saz_meses_rot: "Últimos meses", saz_meses: "Últimos {m} meses", saz_mes1: "Último mês",
-    saz_per1: "o último mês já está lido", saz_pern: "os últimos {m} meses já estão lidos", saz_ja_lidos: "Nada novo para buscar: {p}. Para ir mais longe, escolha mais meses.",
+    saz_per1: "o último mês já está lido", saz_pern: "os últimos {m} meses já estão lidos", saz_ja_lidos: "Nada novo para buscar: {p}. Para ir mais longe, escolha mais meses.", saz_em_dia: "✓ As estatísticas já estão em dia: {p}.",
     saz_pedir: "Buscar estatísticas", saz_ler: "Continuar a busca", saz_noite: "Continuar à noite", saz_aguardando: "aguardando", saz_lendo2: "Buscando estatísticas: {p}% ({k} de {n} Diários), agora {m}.", saz_pausado: "Busca pausada. Clique em \"Continuar a busca\" para seguir de onde parou.", saz_noite_ok: "Busca pausada: ela termina sozinha depois da próxima leitura automática.", saz_noite_sem_auto: "Busca pausada. Para terminar sozinha à noite, ligue a leitura automática em Configurações.", saz_ocupado_t: "Busca de estatísticas em andamento", saz_ocupado: "O {c} está buscando as estatísticas dos meses anteriores ({p}). Para ler o Diário agora, a busca é pausada e continua depois, de onde parou.", saz_ver_painel: "Ver no Painel", saz_pausar_ler: "Pausar e ler o Diário", saz_so_totais: "Só os totais deste gráfico: não entra processo na Lista, no Arquivo nem na planilha.", saz_parar: "Pausar", saz_lendo: "Lendo para o gráfico: Diário antigo {k} de {n} ({tr} {d})…",
     m_sit: "{n} situações", m_frente: "{n} frentes", m_trib: "{n} tribunais", m_data: "{n} datas", m_vara: "{n} varas", m_setor: "{n} setores", m_porte: "{n} portes", m_uf: "{n} estados",
     m_buscar: "Procurar na lista", m_limpar: "Limpar",
@@ -2185,7 +2191,7 @@ window.LEXSUITE_RADAR = null;
     sair_ok: "Pode fechar esta janela. O RADAR foi encerrado.", sair_rodando: "Há uma leitura em andamento: espere terminar ou clique em Interromper.",
     fechado_t: "O RADAR foi encerrado", fechado_x: "Pode fechar esta janela. Para usar de novo, abra pelo atalho da área de trabalho.",
     atualizando: "Atualizando para a versão {v}… a tela volta sozinha em alguns segundos.", reiniciando: "Reiniciando o programa…",
-    c_s_licenca: "Licença e termos", c_s_lista: "Processos", c_s_leitura: "Leitura do Diário", c_s_tela: "Tela", c_l_aone: "Assistente (AssistONE)", lic_trocar: "Trocar licença", lic_conferir: "Conferir agora", lic_conferida_ok: "Licença conferida com a SolverONE agora: ativa.", lic_conferida_pre: "Licença conferida com a SolverONE agora:", lic_ativa: "ativa", lic_ocupado: "Há uma leitura em andamento; ela confere a licença sozinha.", conferindo_lic: "Conferindo a licença com a SolverONE…", lic_conferindo_btn: "Conferindo…", lic_sem_internet: "Sem conexão com a SolverONE: não foi possível conferir agora. Tente de novo em instantes.", lic_trocar_t: "Trocar o código de cliente?", lic_trocar_p: "Digite o novo código (está no e-mail de boas-vindas) e salve. O {c} só troca se a SolverONE confirmar o código novo; até lá, e sem internet, o atual continua valendo.", lic_trocar_ok: "Trocar", lic_salvar_dica: "Digite o código novo e clique em Salvar.", c_s_pasta: "Pasta das planilhas", c_s_sobre: "Sobre este computador",
+    c_s_licenca: "Licença e termos", c_s_lista: "Processos", c_s_leitura: "Leitura do Diário", c_s_tela: "Tela", c_l_aone: "Assistente (AssistONE)", lic_trocar: "Trocar licença", lic_conferir: "Conferir agora", lic_conferida_ok: "Licença conferida com a SolverONE agora: ativa.", lic_conferida_pre: "Licença conferida com a SolverONE agora:", lic_ocupado: "Há uma leitura em andamento; ela confere a licença sozinha.", conferindo_lic: "Conferindo a licença com a SolverONE…", lic_conferindo_btn: "Conferindo…", lic_sem_internet: "Sem conexão com a SolverONE: não foi possível conferir agora. Tente de novo em instantes.", lic_trocar_t: "Trocar o código de cliente?", lic_trocar_p: "Digite o novo código (está no e-mail de boas-vindas) e salve. O {c} só troca se a SolverONE confirmar o código novo; até lá, e sem internet, o atual continua valendo.", lic_trocar_ok: "Trocar", lic_salvar_dica: "Digite o código novo e clique em Salvar.", c_s_pasta: "Pasta das planilhas", c_s_sobre: "Sobre este computador",
     c_pasta_nota: "Mudar a pasta não move as planilhas que já existem: o RADAR cria as novas na pasta escolhida na próxima leitura, e as antigas ficam onde estão.",
     c_fechar: "Fechar", c_mudou_t: "Salvar as mudanças?", c_mudou: "Você mudou as Configurações e ainda não salvou.", c_descartar: "Descartar", c_continuar: "Continuar editando",
     arm_t: "Armazenamento", arm_planilha: "Planilha {f}", arm_linhas: "{n} de {l} linhas ({p}%)", arm_banco: "Banco do programa ({n} ações guardadas)",
@@ -2241,12 +2247,12 @@ window.LEXSUITE_RADAR = null;
     pf_fixo: "Fixed: identifies you on the firm's licence.", pf_outra_pessoa: "Someone else will use this computer",
     pf_outra_pessoa_x: "E-mail and firm cannot be edited: they identify you on the licence. If someone else from the firm will use this computer, they sign up with their own e-mail, and SolverONE checks that the e-mail domain belongs to the firm.",
     copia_t: "Copy created", abrir_copia: "Open the copy", abrir_pasta_copia: "Open the folder",
-    g_ver_como: "Show as", g_por_trib: "Split by court", g_barras: "Bars", g_pizza: "Pie", g_outros: "Others ({n})", g_sem_dados: "No data in this period.",
+    g_ver_como: "Show as", g_por_trib: "Split by court", g_some_so_aqui: "Click to remove or bring back; it only leaves this chart.", g_sep: "Split by:", g_sep_nada: "None", g_sep_trib: "Court", g_sep_sit: "Status", g_sep_faixa: "Value range", g_sep_setor: "Sector", g_outros_pilha: "Others", g_dica_pilha: "{r}: {n} — {p}", g_barras: "Bars", g_pizza: "Pie", g_outros: "Others ({n})", g_sem_dados: "No data in this period.",
     pp_t: "These numbers: {n} lawsuits", pp_t1: "These numbers: 1 lawsuit", pp_diarios: "gazettes from {d} to {a}", pp_filtros: "with {n} list filter(s)", pp_trib: "Court:", pp_trib_todos: "All", pp_lidas: "Published in the gazette:", pp_1: "last working day", pp_n: "{d} days",
-    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. Choose how many months and click \"Fetch statistics\": {c} reads the gazettes of those months, newest first, one day of each court at a time, with a short pause between them so as not to overload the CNJ (12 months with 3 courts are about 760 gazettes, close to one hour). The bar shows the overall progress and each month. \"Pause\" stops now and keeps what was read; \"Continue fetching\" resumes where it stopped. \"Continue tonight\" lets it finish by itself after the next automatic reading. It only adds up totals: no lawsuit goes into the List, the Archive or the spreadsheet, and none of this goes to SolverONE. If the CNJ does not deliver an old gazette, the day is marked \"no gazette\".",
+    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "**What it is for**\nShows in which months and on which weekdays more new cases come in. Helps plan the team and spot peaks.\n\n**How to fetch**\nChoose how many months to see and click **Fetch statistics**. {c} reads the gazettes of those months, from the newest to the oldest. With 3 courts, 12 months take **about 1 hour**.\n\n**Pause and continue**\n**Pause** stops and keeps what was already read. **Continue** resumes where it stopped. **Continue tonight** finishes by itself after the night automatic reading.\n\n**Split by court**\nDivides each bar by court. Hover over a bar to see the total and each part.\n\n**What goes in here**\nOnly totals. **No case goes into the List, the Archive or the spreadsheet**, and none of this goes to SolverONE. If the court no longer has an old day\u2019s gazette, the day shows as \u201cno gazette\u201d.", g_dia_ajuda: "**What it is for**\nShows how many new cases against companies came in each day, in the period chosen in the Dashboard filters. Click a bar to see only that day.\n\n**Split the bars**\nChoose **Court, Status, Value range or Sector** to see each bar divided into parts. Hover over a bar to see the total and each part.\n\n**Where the numbers come from**\nFrom each gazette reading. Each day\u2019s totals are kept, even after the case leaves the Archive.",
     saz_vazio: "Not enough months yet. Choose how many months to fetch and click \"Fetch statistics\".", saz_semana: "By weekday:", saz_pico: "Busiest month: {m} ({n}).",
     saz_estado: "Old gazettes read: {l}; queued: {f}; no gazette: {s}; with error: {e}.", saz_de_ate: "From {d} to {a}.", saz_meses_rot: "Last months", saz_meses: "Last {m} months", saz_mes1: "Last month",
-    saz_per1: "the last month is", saz_pern: "the last {m} months are", saz_ja_lidos: "Nothing new to fetch: {p} already read. To go further back, choose more months.",
+    saz_per1: "the last month is", saz_pern: "the last {m} months are", saz_ja_lidos: "Nothing new to fetch: {p} already read. To go further back, choose more months.", saz_em_dia: "✓ Statistics are up to date: {p} already read.",
     saz_pedir: "Fetch statistics", saz_ler: "Continue fetching", saz_noite: "Continue tonight", saz_aguardando: "waiting", saz_lendo2: "Fetching statistics: {p}% ({k} of {n} gazettes), now {m}.", saz_pausado: "Fetching paused. Click \"Continue fetching\" to resume where it stopped.", saz_noite_ok: "Fetching paused: it finishes by itself after the next automatic reading.", saz_noite_sem_auto: "Fetching paused. To let it finish tonight, turn on automatic reading in Settings.", saz_ocupado_t: "Statistics fetch in progress", saz_ocupado: "{c} is fetching the statistics of previous months ({p}). To read the gazette now, the fetch is paused and resumes later, where it stopped.", saz_ver_painel: "See in the Dashboard", saz_pausar_ler: "Pause and read the gazette", saz_so_totais: "Only the totals of this chart: no lawsuit goes into the List, the Archive or the spreadsheet.", saz_parar: "Pause", saz_lendo: "Reading for the chart: old gazette {k} of {n} ({tr} {d})…",
     m_sit: "{n} statuses", m_frente: "{n} practice areas", m_trib: "{n} courts", m_data: "{n} dates", m_vara: "{n} court units", m_setor: "{n} sectors", m_porte: "{n} sizes", m_uf: "{n} states",
     m_buscar: "Search the list", m_limpar: "Clear",
@@ -2255,7 +2261,7 @@ window.LEXSUITE_RADAR = null;
     sair_ok: "You can close this window. RADAR has exited.", sair_rodando: "A reading is in progress: wait for it to finish or click Stop.",
     fechado_t: "RADAR has closed", fechado_x: "You can close this window. To use it again, open it from the desktop shortcut.",
     atualizando: "Updating to version {v}… the screen comes back by itself in a few seconds.", reiniciando: "Restarting the program…",
-    c_s_licenca: "Licence and terms", c_s_lista: "Cases", c_s_leitura: "Gazette reading", c_s_tela: "Screen", c_l_aone: "Assistant (AssistONE)", lic_trocar: "Change licence", lic_conferir: "Check now", lic_conferida_ok: "Licence checked with SolverONE just now: active.", lic_conferida_pre: "Licence checked with SolverONE just now:", lic_ativa: "active", lic_ocupado: "A reading is running; it checks the licence by itself.", conferindo_lic: "Checking the licence with SolverONE…", lic_conferindo_btn: "Checking…", lic_sem_internet: "No connection to SolverONE: the check could not be done now. Try again shortly.", lic_trocar_t: "Change the client code?", lic_trocar_p: "Type the new code (it is in the welcome e-mail) and save. {c} only changes it if SolverONE confirms the new code; until then, and without internet, the current one stays valid.", lic_trocar_ok: "Change", lic_salvar_dica: "Type the new code and click Save.", c_s_pasta: "Spreadsheet folder", c_s_sobre: "About this computer",
+    c_s_licenca: "Licence and terms", c_s_lista: "Cases", c_s_leitura: "Gazette reading", c_s_tela: "Screen", c_l_aone: "Assistant (AssistONE)", lic_trocar: "Change licence", lic_conferir: "Check now", lic_conferida_ok: "Licence checked with SolverONE just now: active.", lic_conferida_pre: "Licence checked with SolverONE just now:", lic_ocupado: "A reading is running; it checks the licence by itself.", conferindo_lic: "Checking the licence with SolverONE…", lic_conferindo_btn: "Checking…", lic_sem_internet: "No connection to SolverONE: the check could not be done now. Try again shortly.", lic_trocar_t: "Change the client code?", lic_trocar_p: "Type the new code (it is in the welcome e-mail) and save. {c} only changes it if SolverONE confirms the new code; until then, and without internet, the current one stays valid.", lic_trocar_ok: "Change", lic_salvar_dica: "Type the new code and click Save.", c_s_pasta: "Spreadsheet folder", c_s_sobre: "About this computer",
     c_pasta_nota: "Changing the folder does not move existing spreadsheets: RADAR creates new ones in the chosen folder on the next reading, and the old ones stay where they are.",
     c_fechar: "Close", c_mudou_t: "Save changes?", c_mudou: "You changed the Settings and did not save yet.", c_descartar: "Discard", c_continuar: "Keep editing",
     arm_t: "Storage", arm_planilha: "Spreadsheet {f}", arm_linhas: "{n} of {l} rows ({p}%)", arm_banco: "Program database ({n} lawsuits saved)",
@@ -2415,7 +2421,9 @@ window.LEXSUITE_RADAR = null;
       // 0.7.35 (dono): barra, andamento e Interromper numa linha só; as mensagens anteriores ficam em "ver detalhes"
       var fila_ = el("div", "rodando-linha"); fila_.appendChild(linhaB_); box.appendChild(fila_);
       if (e.atrasada) box.appendChild(el("span", "aviso-leve", t("atrasada", { h: fmtHora(e.atrasada) })));
-      fila_.appendChild(el("span", "andando", (e.externa ? t("rodando_auto", { h: String(e.inicio || "").slice(11, 16) }) : t("rodando")) + " " + pct + "%" + (ultima ? " · " + ultima : "")));
+      ultima = String(ultima || "").replace(/\s*(Página|Page):\s*\S.*$/, "").replace(/[A-Za-z]:\\[^\s]*/g, "").trim();  // 0.7.36 (dono): sem caminho de arquivo
+      var and_ = (e.externa ? t("rodando_auto", { h: String(e.inicio || "").slice(11, 16) }) : t("rodando")) + " " + pct + "%" + (ultima ? " · " + ultima : "");
+      var sp_ = el("span", "andando", and_); sp_.title = and_; fila_.appendChild(sp_);  // uma linha; o texto inteiro ao passar o mouse
       if (MODO === "app") {
         if (e.parando) fila_.appendChild(el("span", "aviso-leve", t("parando")));
         else {
@@ -2471,6 +2479,21 @@ window.LEXSUITE_RADAR = null;
   var historicoDiv = document.createElement("div");
   historicoDiv.className = "historico";
   var histMostrar = 50;
+  function emBlocos(txt) {  // 0.7.36 (dono): dica do (?) em blocos curtos, subtítulo em negrito, espaço entre parágrafos, **destaques**
+    var box_ = el("div", "ajuda-blocos");
+    String(txt || "").split("\n\n").forEach(function (bl) {
+      var linhas_ = bl.split("\n"), sec_ = el("div", "ajuda-bloco");
+      linhas_.forEach(function (ln, ix) {
+        var tit_ = ix === 0 && /^\*\*[^*]+\*\*$/.test(ln.trim()), p_ = el(tit_ ? "b" : "p", tit_ ? "ajuda-tit" : null);
+        ln.replace(tit_ ? /^\*\*|\*\*$/g : /$^/, "").split(/(\*\*[^*]+\*\*)/).forEach(function (pd) {
+          if (!pd) return; if (/^\*\*[^*]+\*\*$/.test(pd)) p_.appendChild(el("b", null, pd.slice(2, -2))); else p_.appendChild(document.createTextNode(pd));
+        });
+        sec_.appendChild(p_);
+      });
+      box_.appendChild(sec_);
+    });
+    return box_;
+  }
   function emLinhas(txt) {  // 0.7.36 (dono): "Título: a; b; c." vira um título e uma linha por item, no quadrinho do (?)
     var i_ = txt.indexOf(": "), box_ = el("div", "ajuda-linhas");
     if (i_ < 0) { box_.textContent = txt; return box_; }
@@ -4185,38 +4208,50 @@ window.LEXSUITE_RADAR = null;
   document.addEventListener("scroll", function () { if (dicaGraf) dicaGraf.hidden = true; }, true);
   function acoesN(n) { return Number(n) === 1 ? t("g_acoes_1") : t("g_acoes_n", { n: num(n) }); }
   function dicaLinha(l, total, opc) { return l.r + ": " + acoesN(l.n) + (total ? " (" + num(Math.round(100 * l.n / total)) + "%)" : "") + (opc.comValor && l.v ? " · " + reaisCurto(l.v) : ""); }
+  // 0.7.36 (dono): a pizza se refaz só com o que está ligado (o centro mostra o total que sobrou), com movimento até a nova divisão;
+  // todo item é clicável: onde é filtro do Painel continua filtrando, onde não é (empresas, sinal, faixas, "Outros") some só deste gráfico
+  var pizzaOculta = {}, pizzaAntes = {};
   function grafPizza(tit, linhas, opc) {  // 0.7.30 (dono): pizza sóbria (anel), legenda sempre visível, nada sai da tela
     opc = opc || {}; var g = el("div", "graf graf-pizza"); g.appendChild(cabGraf(tit, opc));
+    var chaveG = opc.idCor || opc.campo || tit, ocultos = pizzaOculta[chaveG] = pizzaOculta[chaveG] || {};
     var lim = Math.min(opc.max || 8, 6), base = linhas.filter(function (l) { return l.n > 0; }), fatias = base.slice(0, lim), resto = base.slice(lim);
-    if (resto.length) fatias = fatias.concat([{ k: "", r: t("g_outros", { n: num(resto.length) }), n: resto.reduce(function (a, l) { return a + l.n; }, 0), semFiltro: true, outros: true }]);
-    var total = fatias.reduce(function (a, l) { return a + l.n; }, 0);
-    if (!total) { g.appendChild(el("p", "nota-g", t("g_sem_dados"))); return g; }
+    if (resto.length) fatias = fatias.concat([{ k: "__outros__", r: t("g_outros", { n: num(resto.length) }), n: resto.reduce(function (a, l) { return a + l.n; }, 0), semFiltro: true, outros: true }]);
+    var chaveF = function (l) { return String(l.k === "" || l.k == null ? "r:" + l.r : l.k); };
+    var ligado = function (l) { return !desligadaNoGrafico(opc, l) && !ocultos[chaveF(l)]; };
+    var total = fatias.reduce(function (a, l) { return a + (ligado(l) ? l.n : 0); }, 0), totalTodos = fatias.reduce(function (a, l) { return a + l.n; }, 0);
+    if (!totalTodos) { g.appendChild(el("p", "nota-g", t("g_sem_dados"))); return g; }
     var NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 120 120"); svg.setAttribute("class", "anel"); svg.setAttribute("aria-hidden", "true");
-    var R = 46, C = 2 * Math.PI * R, ini = 0, corN = 0;
+    var R = 46, C = 2 * Math.PI * R, ini = 0, corN = 0, antes = pizzaAntes[chaveG] || {}, agora = {};
     var CORES_PIZZA = ["--g1", "--g2", "--g3", "--g4", "--g5", "--g6"].map(function (v, i) { return corVar(v, ["#1b2b45", "#3d5a80", "#7d93b3", "#a87a2e", "#cdb27a", "#5f6b7d"][i]); });
     var corDe = function (l) { var base_ = l.apagada ? corVar("--g-apagada", "#c9ced8") : l.outros ? corVar("--g-outros", "#dfe3ea") : CORES_PIZZA[corN++ % CORES_PIZZA.length]; return corPropria(opc, l) || base_; };
     var leg = el("ul", "legenda");
     fatias.forEach(function (l) {
-      var cor = corDe(l), frac = l.n / total, arco = document.createElementNS(NS, "circle");
+      var cor = corDe(l), kf = chaveF(l), liga_ = ligado(l), frac = liga_ && total ? l.n / total : 0, arco = document.createElementNS(NS, "circle");
       arco.setAttribute("cx", "60"); arco.setAttribute("cy", "60"); arco.setAttribute("r", String(R)); arco.setAttribute("fill", "none");
-      arco.setAttribute("stroke", cor); arco.setAttribute("stroke-width", "18");
-      arco.setAttribute("stroke-dasharray", (frac * C).toFixed(2) + " " + C.toFixed(2)); arco.setAttribute("stroke-dashoffset", (-ini * C).toFixed(2));
-      arco.setAttribute("transform", "rotate(-90 60 60)"); svg.appendChild(arco); ini += frac;
-      var desl_ = desligadaNoGrafico(opc, l); if (desl_) arco.setAttribute("opacity", "0.25");
+      arco.setAttribute("stroke", cor); arco.setAttribute("stroke-width", "18"); arco.setAttribute("transform", "rotate(-90 60 60)");
+      var de_ = antes[kf] || [ini, 0]; agora[kf] = [ini, frac];
+      arco.style.strokeDasharray = (de_[1] * C).toFixed(2) + " " + C.toFixed(2); arco.style.strokeDashoffset = (-de_[0] * C).toFixed(2);
+      (function (a_, i_, f_) { requestAnimationFrame(function () { requestAnimationFrame(function () { a_.style.strokeDasharray = (f_ * C).toFixed(2) + " " + C.toFixed(2); a_.style.strokeDashoffset = (-i_ * C).toFixed(2); }); }); })(arco, ini, frac);
+      svg.appendChild(arco); ini += frac;
       arco.setAttribute("data-dica", dicaLinha(l, total, opc));  // 0.7.33 (dono): etiqueta grande ao passar o mouse na fatia
-      var clicavel = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro), li = el("li", desl_ ? "desligada" : null);
-      var item = el(clicavel ? "button" : "span", "leg-item"); item.setAttribute("data-dica", dicaLinha(l, total, opc));
-      if (clicavel) { item.type = "button"; if (noPainel(opc)) { item.setAttribute("aria-pressed", String(!desl_)); item.setAttribute("data-gk", (opc.campo + "|" + l.k).replace(/["\\]/g, "")); item.addEventListener("click", function () { alternarNoGrafico(opc, l.k, linhas); }); } else item.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
+      var filtra_ = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro), li = el("li", liga_ ? null : "desligada");
+      var item = el("button", "leg-item"); item.type = "button"; item.setAttribute("data-dica", liga_ ? dicaLinha(l, total, opc) : l.r);
+      item.setAttribute("aria-pressed", String(liga_));
+      if (filtra_ && noPainel(opc)) { item.setAttribute("data-gk", (opc.campo + "|" + l.k).replace(/["\\]/g, "")); item.addEventListener("click", function () { alternarNoGrafico(opc, l.k, linhas); }); }
+      else if (filtra_) item.addEventListener("click", function () { filtrarPor(opc.campo, l.k); });
+      else { item.title = t("g_some_so_aqui"); item.addEventListener("click", function () { if (ocultos[kf]) delete ocultos[kf]; else ocultos[kf] = 1; desenhar(); }); }
       var sw = el(l.outros ? "i" : "button", "leg-cor"); sw.style.background = cor;
       if (!l.outros) { sw.type = "button"; sw.title = t("g_cor"); sw.setAttribute("aria-label", t("g_cor") + ": " + l.r); sw.addEventListener("click", function (ev) { ev.stopPropagation(); escolherCor(opc, l, cor); }); }
       li.appendChild(sw);
       var rt = el("span", "leg-rot", l.r); item.appendChild(rt);
-      item.appendChild(el("span", "leg-n", num(l.n) + " · " + num(Math.round(100 * frac)) + "%"));
-      item.setAttribute("aria-label", l.r + ": " + acoesN(l.n) + " (" + Math.round(100 * frac) + "%)");
+      item.appendChild(el("span", "leg-n", num(l.n) + (liga_ ? " · " + num(Math.round(100 * frac)) + "%" : "")));
+      item.setAttribute("aria-label", l.r + ": " + acoesN(l.n) + (liga_ ? " (" + Math.round(100 * frac) + "%)" : ""));
       li.appendChild(item); leg.appendChild(li);
     });
+    pizzaAntes[chaveG] = agora;
     var meio = document.createElementNS(NS, "text"); meio.setAttribute("x", "60"); meio.setAttribute("y", "64"); meio.setAttribute("text-anchor", "middle"); meio.setAttribute("class", "anel-total"); meio.textContent = num(total); svg.appendChild(meio);
     var corpo = el("div", "pizza-corpo"); corpo.appendChild(svg); corpo.appendChild(leg); g.appendChild(corpo);
+    if (Object.keys(ocultos).length) { var mo_ = el("button", "btn-txt", t("g_mostrar_todos")); mo_.type = "button"; mo_.addEventListener("click", function () { pizzaOculta[chaveG] = {}; desenhar(); }); g.appendChild(mo_); }
     if (opc.nota) g.appendChild(el("p", "nota-g", opc.nota)); return g;
   }
   function grafLinhas(tit, linhas, opc) { return tipoGraf === "pizza" ? grafPizza(tit, linhas, opc) : grafBarras(tit, linhas, opc); }
@@ -4249,40 +4284,72 @@ window.LEXSUITE_RADAR = null;
     });
     g.appendChild(b); if (opc.nota) g.appendChild(el("p", "nota-g", opc.nota)); return g;
   }
+  // 0.7.36 (dono): barras empilhadas com um seletor visível no alto (uma escolha por vez), cores sóbrias e, ao passar o mouse, o total e cada parte
+  var FX_FAIXAS = [[null, null], [0, 50000], [50000, 100000], [100000, 300000], [300000, 1000000], [1000000, Infinity]];
+  function faixaIdx(i) { var v = valorDe(i).v; if (v == null) return 0; for (var ix = 1; ix < FX_FAIXAS.length; ix++) if (v >= FX_FAIXAS[ix][0] && v < FX_FAIXAS[ix][1]) return ix; return 0; }
+  function faixaRot(ix) { var f = FX_FAIXAS[ix]; return ix === 0 ? t("fx_sem") : ix === 1 ? t("fx_ate", { a: reaisCurto(f[1]) }) : f[1] === Infinity ? t("fx_acima", { a: reaisCurto(f[0]) }) : t("fx_entre", { a: reaisCurto(f[0]), b: reaisCurto(f[1]) }); }
+  function lerSeparar(chave, padrao) { try { return localStorage.getItem(chave) || padrao; } catch (e) { return padrao; } }
+  function seletorSeparar(chave, opcoes, atual) {
+    var seg = el("div", "pp-seg graf-separar"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", t("g_sep")); seg.appendChild(el("span", "pp-rot", t("g_sep")));
+    opcoes.forEach(function (o) {
+      var b = el("button", null, t("g_sep_" + o)); b.type = "button"; b.setAttribute("aria-pressed", String(o === atual));
+      b.addEventListener("click", function () { try { localStorage.setItem(chave, o); } catch (e) {} desenhar(); }); seg.appendChild(b);
+    });
+    return seg;
+  }
+  function partesDe(dim, itens) {  // [{k, r}] na ordem certa de cada dimensão
+    if (dim === "trib") { var tr_ = {}; itens.forEach(function (i) { if (i.tribunal) tr_[i.tribunal] = 1; }); return Object.keys(tr_).sort(function (a, b) { return Number(a.replace(/\D/g, "")) - Number(b.replace(/\D/g, "")); }).map(function (x) { return { k: x, r: x }; }); }
+    if (dim === "sit") return SITS.filter(function (s_) { return itens.some(function (i) { return statusDe(i) === s_; }); }).map(function (s_) { return { k: s_, r: t("st_" + s_) }; });
+    if (dim === "faixa") return FX_FAIXAS.map(function (f, ix) { return { k: String(ix), r: faixaRot(ix) }; }).filter(function (p_) { return itens.some(function (i) { return String(faixaIdx(i)) === p_.k; }); });
+    if (dim === "setor") {
+      var c_ = {}; itens.forEach(function (i) { var k = i.setor || "__nao__"; c_[k] = (c_[k] || 0) + 1; });
+      var ks = Object.keys(c_).sort(function (a, b) { return c_[b] - c_[a]; }), top = ks.slice(0, 6).map(function (k) { return { k: k, r: k === "__nao__" ? t("sem_setor") : k }; });
+      if (ks.length > 6) top.push({ k: "__outros__", r: t("g_outros_pilha") }); return top;
+    }
+    return [];
+  }
+  function chaveDe(dim, i, partes) {
+    if (dim === "trib") return i.tribunal || ""; if (dim === "sit") return statusDe(i); if (dim === "faixa") return String(faixaIdx(i));
+    if (dim === "setor") { var k = i.setor || "__nao__"; return partes.some(function (p_) { return p_.k === k; }) ? k : "__outros__"; } return "";
+  }
+  function coresPartes(partes) {
+    var pal = ["--g1", "--g2", "--g3", "--g4", "--g5", "--g6"], c_ = {};
+    partes.forEach(function (p_, ix) { c_[p_.k] = (p_.k === "__outros__" || p_.k === "__nao__" || p_.k === "0") ? corVar("--g-neutro", "#b8c0cc") : corVar(pal[ix % pal.length], "#2b62ad"); });
+    return c_;
+  }
+  function empilhar(pe, col, rot, total, contagem, partes, cores) {  // divide a barra e escreve a etiqueta grande
+    pe.classList.add("pilha"); var txt_ = [];
+    partes.forEach(function (p_) { var q = contagem[p_.k] || 0; if (!q) return; var seg = el("i"); seg.style.flex = String(q); seg.style.background = cores[p_.k]; pe.appendChild(seg); txt_.push(p_.r + ": " + num(q)); });
+    var dica_ = t("g_dica_pilha", { r: rot, n: acoesN(total), p: txt_.join(", ") }); col.setAttribute("data-dica", dica_); col.setAttribute("aria-label", dica_); col.removeAttribute("title");
+  }
+  function legendaPartes(partes, cores, contagemTotal) {
+    var lg = el("div", "graf-legenda");
+    partes.forEach(function (p_) { var it = el("span"), sw = el("i"); sw.style.background = cores[p_.k]; it.appendChild(sw); it.appendChild(document.createTextNode(p_.r + (contagemTotal ? " · " + num(contagemTotal[p_.k] || 0) : ""))); lg.appendChild(it); });
+    return lg;
+  }
   function grafDias(itens) {
     var dias = contar(itens, function (i) { var d = diaDe(i); return d ? [d, d] : null; }).sort(function (a, b) { return a.k.localeCompare(b.k); });
     var porMes = dias.length > 31;
     if (porMes) dias = contar(itens, function (i) { var d = diaDe(i); return d ? [d.slice(0, 7), d.slice(0, 7)] : null; }).sort(function (a, b) { return a.k.localeCompare(b.k); });
-    var g = el("div", "graf largo"), cabG = el("div", "graf-cab"); cabG.appendChild(el("h3", null, t(porMes ? "g_mes" : "g_dia"))); g.appendChild(cabG);
-    // 0.7.30 (dono): a mesma barra, dividida por tribunal (empilhada), com uma caixa para ligar e desligar; a escolha fica lembrada
-    var tribsG = {}; itens.forEach(function (i) { if (i.tribunal) tribsG[i.tribunal] = 1; });
-    var ordemT = Object.keys(tribsG).sort(function (a, b) { return Number(a.replace(/\D/g, "")) - Number(b.replace(/\D/g, "")); });
-    var separar = false; try { separar = localStorage.getItem("lexsuite:graf-por-trib") === "1"; } catch (e) {}
-    if (ordemT.length > 1) {
-      var lbS = el("label", "graf-sep"), cbS = el("input"); cbS.type = "checkbox"; cbS.checked = separar;
-      cbS.addEventListener("change", function () { try { localStorage.setItem("lexsuite:graf-por-trib", cbS.checked ? "1" : "0"); } catch (e) {} desenhar(); });
-      lbS.appendChild(cbS); lbS.appendChild(document.createTextNode(" " + t("g_por_trib"))); cabG.appendChild(lbS);
-    } else separar = false;
-    var coresT = {}, paletaT = ["--g1", "--g2", "--g3", "--g4", "--g5", "--g6"];
-    ordemT.forEach(function (x, ix) { coresT[x] = corVar(paletaT[ix % paletaT.length], "#2b62ad"); });
-    var porDiaT = {}; if (separar) itens.forEach(function (i) { var d0 = diaDe(i); if (!d0 || !i.tribunal) return; var k0 = porMes ? d0.slice(0, 7) : d0; porDiaT[k0] = porDiaT[k0] || {}; porDiaT[k0][i.tribunal] = (porDiaT[k0][i.tribunal] || 0) + 1; });
+    var g = el("div", "graf largo"), cabG = el("div", "graf-cab"), h3_ = el("h3", null, t(porMes ? "g_mes" : "g_dia")); h3_.appendChild(document.createTextNode(" ")); h3_.appendChild(ajuda(function () { return emBlocos(t("g_dia_ajuda")); })); cabG.appendChild(h3_); g.appendChild(cabG);
+    // quem marcou a caixa de separar por tribunal na 0.7.30 continua assim
+    var dim = lerSeparar("lexsuite:graf-separar", lerSeparar("lexsuite:graf-por-trib", "0") === "1" ? "trib" : "nada"); if (["nada", "trib", "sit", "faixa", "setor"].indexOf(dim) < 0) dim = "nada";
+    cabG.appendChild(seletorSeparar("lexsuite:graf-separar", ["nada", "trib", "sit", "faixa", "setor"], dim));
+    var partes = dim === "nada" ? [] : partesDe(dim, itens), cores = coresPartes(partes), porDia = {}, tot_ = {};
+    if (partes.length) itens.forEach(function (i) { var d0 = diaDe(i); if (!d0) return; var k0 = porMes ? d0.slice(0, 7) : d0, kp = chaveDe(dim, i, partes); porDia[k0] = porDia[k0] || {}; porDia[k0][kp] = (porDia[k0][kp] || 0) + 1; tot_[kp] = (tot_[kp] || 0) + 1; });
     var max = Math.max.apply(null, dias.map(function (d) { return d.n; }).concat([1])), c = el("div", "colunas");
     dias.forEach(function (d) {
       var col = el(porMes ? "div" : "button", "col"); if (!porMes) { col.type = "button"; col.addEventListener("click", function () { filtrarPor("data", d.k); }); }
       var rot = porMes ? mesCurto(d.k) : dataSemana(d.k);
-      col.setAttribute("aria-label", rot + ": " + acoesN(d.n)); col.title = col.getAttribute("aria-label");
+      col.setAttribute("aria-label", rot + ": " + acoesN(d.n)); col.setAttribute("data-dica", col.getAttribute("aria-label"));
       col.appendChild(el("span", "n", num(d.n)));
       var pe = el("span", "pe"), alvoH = Math.max(2, Math.round(100 * d.n / max)) + "%"; pe.style.height = "0%"; requestAnimationFrame(function () { requestAnimationFrame(function () { pe.style.height = alvoH; }); }); col.appendChild(pe);
-      if (separar && porDiaT[d.k]) {
-        pe.classList.add("pilha"); var partes_ = [];
-        ordemT.forEach(function (x) { var q = porDiaT[d.k][x] || 0; if (!q) return; var seg = el("i"); seg.style.flex = String(q); seg.style.background = coresT[x]; seg.title = x + ": " + num(q); pe.appendChild(seg); partes_.push(x + " " + num(q)); });
-        col.title = col.getAttribute("aria-label") + " — " + partes_.join(" · ");
-      }
+      if (partes.length && porDia[d.k]) empilhar(pe, col, rot, d.n, porDia[d.k], partes, cores);
       var lab = el("span", "d"); if (porMes) lab.textContent = rot; else { var p_ = rot.split(", "); lab.appendChild(el("b", null, p_[0])); lab.appendChild(document.createTextNode((p_[1] || "").slice(0, 6))); }
       col.appendChild(lab); c.appendChild(col);
     });
     g.appendChild(c);
-    if (separar) { var lg = el("div", "graf-legenda"); ordemT.forEach(function (x) { var it = el("span"), sw = el("i"); sw.style.background = coresT[x]; it.appendChild(sw); it.appendChild(document.createTextNode(x)); lg.appendChild(it); }); g.appendChild(lg); }
+    if (partes.length) g.appendChild(legendaPartes(partes, cores, tot_));
     return g;
   }
   /* 0.7.18: estatísticas dos meses anteriores (sazonalidade e picos), só totais, lidas aos poucos */
@@ -4332,21 +4399,29 @@ window.LEXSUITE_RADAR = null;
   var histPct = null;  // 0.7.33: andamento da busca de estatísticas, para o aviso do "Ler o Diário agora"
   function grafSazonal() {
     var h = (D && D.historico) || {}, g = el("div", "graf largo"), cab = el("div", "saz-cab");
-    cab.appendChild(el("h3", null, t("saz_t"))); cab.appendChild(ajuda(t("saz_ajuda"))); g.appendChild(cab);
+    cab.appendChild(el("h3", null, t("saz_t"))); cab.appendChild(ajuda(function () { return emBlocos(t("saz_ajuda", { c: marcaCurto() })); })); g.appendChild(cab);
     var meses = h.por_mes || [];
     if (meses.length) {
       var max = Math.max.apply(null, meses.map(function (m) { return m.novas; }).concat([1])), pico = meses.reduce(function (a, m) { return m.novas > a.novas ? m : a; }, meses[0]);
+      // 0.7.36 (dono): separar por tribunal (o que as estatísticas mensais guardam); sem o dourado nas barras
+      var dimS = lerSeparar("lexsuite:saz-separar", "nada"); if (dimS !== "trib") dimS = "nada";
+      var trS = {}; meses.forEach(function (m) { Object.keys(m.por_tribunal || {}).forEach(function (x) { trS[x] = (trS[x] || 0) + m.por_tribunal[x]; }); });
+      var partesS = Object.keys(trS).sort(function (a, b) { return Number(a.replace(/\D/g, "")) - Number(b.replace(/\D/g, "")); }).map(function (x) { return { k: x, r: x }; });
+      if (partesS.length > 1) cab.appendChild(seletorSeparar("lexsuite:saz-separar", ["nada", "trib"], dimS)); else dimS = "nada";
+      var coresS = coresPartes(partesS);
       var c = el("div", "colunas");
       meses.forEach(function (m) {
-        var col = el("div", "col" + (m === pico ? " pico" : "")), rot = mesCurto(m.mes);
-        col.setAttribute("aria-label", rot + ": " + acoesN(m.novas)); col.title = col.getAttribute("aria-label");
+        var col = el("div", "col"), rot = mesCurto(m.mes);
+        col.setAttribute("aria-label", rot + ": " + acoesN(m.novas)); col.setAttribute("data-dica", col.getAttribute("aria-label"));
         col.appendChild(el("span", "n", num(m.novas)));
         var pe = el("span", "pe"); pe.style.height = Math.max(2, Math.round(100 * m.novas / max)) + "%"; col.appendChild(pe);
+        if (dimS === "trib" && m.por_tribunal) empilhar(pe, col, rot, m.novas, m.por_tribunal, partesS, coresS);
         col.appendChild(el("span", "d", rot)); c.appendChild(col);
       });
       g.appendChild(c); requestAnimationFrame(function () { c.scrollLeft = c.scrollWidth; });  // revisão da 0.7.29: no celular abre no mês mais novo
       var sem = h.por_semana || [], nomes = lang === "pt" ? ["seg", "ter", "qua", "qui", "sex"] : ["Mon", "Tue", "Wed", "Thu", "Fri"], tot = sem.slice(0, 5).reduce(function (a, b) { return a + b; }, 0);
-      var lp_ = el("p", "nota-g saz-legenda"); lp_.appendChild(el("i", "saz-cor-pico")); lp_.appendChild(document.createTextNode(t("saz_pico", { m: mesCurto(pico.mes), n: num(pico.novas) }))); g.appendChild(lp_);  // teste do dono (0.7.30): a cor dourada explicada no próprio gráfico
+      if (dimS === "trib") g.appendChild(legendaPartes(partesS, coresS, trS));
+      var lp_ = el("p", "nota-g saz-legenda"); lp_.appendChild(document.createTextNode(t("saz_pico", { m: mesCurto(pico.mes), n: num(pico.novas) }))); g.appendChild(lp_);  // teste do dono (0.7.30): a cor dourada explicada no próprio gráfico
       if (tot) g.appendChild(el("p", "nota-g", t("saz_semana") + " " + nomes.map(function (nm, ix) { return nm + " " + Math.round(100 * (sem[ix] || 0) / tot) + "%"; }).join(" · ") + "."));
     } else g.appendChild(el("p", "nota-g", t("saz_vazio")));
     var st = el("p", "nota-g");
@@ -4373,15 +4448,16 @@ window.LEXSUITE_RADAR = null;
     var bp = el("button", "primario", t("saz_pedir")), bl = el("button", "primario", t("saz_ler")), bx = el("button", "chip", t("saz_parar")), bn = el("button", "chip", t("saz_noite"));
     bp.type = bl.type = bx.type = bn.type = "button";
     bl.hidden = !(h.na_fila > 0 || h.erros > 0); bp.hidden = !bl.hidden; bx.hidden = true; bn.hidden = !(h.na_fila > 0);  // com a fila parada, o botão é "Continuar a busca"; 0.7.35 (dono): "Continuar à noite" também aparece parada
-    var msgH = el("p", "nota-g saz-recado"); msgH.setAttribute("aria-live", "polite"); msgH.hidden = true;  // 0.7.30 (dono): o retorno aparece aqui, não lá no alto
+    var msgH = el("span", "nota-g saz-retorno"); msgH.setAttribute("aria-live", "polite"); msgH.hidden = true;  // 0.7.36 (dono): ao lado do botão; "Carregando…" sem vermelho  // 0.7.30 (dono): o retorno aparece aqui, não lá no alto
     bp.addEventListener("click", function () {
       histRecado = null; histInfo = ""; bp.disabled = true; msgH.hidden = false; msgH.textContent = t("carregando");
       post("/estatisticas/pedir", { meses: sel_.value }).then(function (r) {
         bp.disabled = false;
-        if (!r.ok) { histInfo = ""; var vi_ = g.querySelector(".saz-info"); if (vi_) vi_.remove(); msgH.textContent = r.motivo || t("falha"); return; }  // revisão: a mensagem velha sai
+        if (!r.ok) { histInfo = ""; var vi_ = g.querySelector(".saz-info"); if (vi_) vi_.remove(); msgH.textContent = ""; msgH.appendChild(el("span", "erro", r.motivo || t("falha"))); return; }  // revisão: a mensagem velha sai
         var novos = Number(r.na_fila || 0), fila = Number(h.na_fila || 0) + novos, perSaz_ = sel_.value === "1" ? t("saz_per1") : t("saz_pern", { m: sel_.value });
         if (fila > 0) { histInfo = ""; msgH.hidden = true; bl.click(); return; }  // "Buscar estatísticas" já começa a ler a fila inteira
-        histInfo = t("saz_ja_lidos", { p: perSaz_ }); carregar();
+        // 0.7.36 (dono): nada novo: resposta na hora, ao lado do botão, sem recarregar a página inteira; a frase velha sai
+        var vi2_ = g.querySelector(".saz-info"); if (vi2_) vi2_.remove(); histInfo = ""; msgH.textContent = ""; msgH.appendChild(el("span", "txt-azul", t("saz_em_dia", { p: perSaz_ })));
       }).catch(function () { bp.disabled = false; msgH.textContent = t("falha"); });
     });
     sel_.addEventListener("change", function () { bp.hidden = false; });  // outro período: "Buscar estatísticas" de novo
@@ -4406,7 +4482,7 @@ window.LEXSUITE_RADAR = null;
       histInfo = APP && APP.config && APP.config.agendado ? t("saz_noite_ok") : t("saz_noite_sem_auto");
       msgH.hidden = false; msgH.textContent = histInfo;  // 0.7.35: com a busca parada, o recado aparece na hora
     });
-    ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); ac.appendChild(bn); g.appendChild(ac); g.appendChild(msgH);
+    ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); ac.appendChild(bn); ac.appendChild(msgH); g.appendChild(ac);
     g.appendChild(el("p", "nota-g", t("saz_so_totais")));  // teste do dono (0.7.30): não confundir com "Ler o Diário agora"
     // revisão da 0.7.33: ao voltar ao Painel durante a busca, o cartão pergunta ao programa e retoma a barra e o Pausar
     if (vigiaHist || (h.rodando && h.rodando.rodando)) setTimeout(acompanhar, 0);
