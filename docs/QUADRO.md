@@ -292,11 +292,6 @@ migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e as f
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- **Contas de teste na produção (pedido do dono, 12/Nov, para os testes de hoje e amanhã)**: desenho curto em
-  `documentacao/DESENHO-CONTAS-DE-TESTE-2026-11-12.md` e SQL pronto em `nuvem/supabase/2026-11-12-contas-de-teste.sql` (campo
-  `teste` em `lex_contas`, `assinaturas` e `sol_feedback`; `admin_lex_listar/salvar/criar` leem e gravam; `admin_sol_retorno` e
-  `admin_feedback_painel` deixam as contas de teste de fora; a licença de teste do dono nasce marcada). **Esperando o "pode aplicar"
-  do dono** (avisado em chat: mexe só na licença de teste e em funções; a KR Law não muda). Parte da tela pedida ao RootifyONE (3g).
 - **Staging e CI/CD (iniciativa do dono, 12/Nov; prioridade DEPOIS da KR Law)**: desenho da parte do RADAR pronto em
   `documentacao/DESENHO-STAGING-RADAR-2026-11-12.md`, levado ao dono; espera o "pode" dele e o padrão geral da conversa de
   diretrizes. Nada implementado. Até lá, o processo de publicação não muda (Operação avisada no quadro).
@@ -309,6 +304,11 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 12/Nov (10): **contas de teste na produção aplicadas** (`nuvem/supabase/2026-11-12-contas-de-teste.sql`, "pode aplicar" do dono):
+  coluna `teste` em `lex_contas`, `assinaturas` e `sol_feedback` (gatilho marca sozinho pela licença ou pessoa); `admin_lex_listar`
+  devolve, `admin_lex_salvar` grava, `admin_lex_criar` ganhou a versão com `p_teste`; `admin_sol_retorno` e `admin_feedback_painel`
+  excluem contas de teste (`sem_contas_de_teste: true`); a licença "Teste Marcelo (SolverONE)" marcada, a KR Law não. Conferências
+  todas verdadeiras; gatilho provado com um chamado de teste desfeito. Tela: pedido ao RootifyONE (prompt, item 3g).
 - 12/Nov (9): **desenho de staging e CI/CD do RADAR** (`documentacao/DESENHO-STAGING-RADAR-2026-11-12.md`): canais staging e
   produção com o mesmo pacote assinado (`publicar.yml` com destino + `promover.yml` com aprovação do dono por GitHub Environment,
   sem recompilar; desfazer com manifesto `substituir`); licença com `canal` e resposta `ambiente` (etiqueta STAGING vinda da nuvem);
