@@ -37,7 +37,7 @@ Cada item: o que o dono viu, se era esperado e para onde vai. Tudo o que é "0.7
 | 31 | Lupa: o grupo de resultados se chama "Ações"; com a decisão "Processos", deveria ser "Processos" | Não: termo antigo | 0.7.36: "Processos" na lupa e em todo texto que a pessoa vê (gráficos "Ações por dia", "ações novas", Sazonalidade, cartões do Painel, manual, AssistONE); "ação" só onde for termo jurídico necessário. Conferência de termos na revisão |
 | 32 | Lupa sem nada digitado já mostra a lista inteira de telas e opções (com "Sobre este computador" duas vezes) | Não: atrapalha | 0.7.36: vazia, a lupa mostra só uma linha de dica ("Digite o nome de uma empresa, um número de processo, um CNPJ ou uma opção, como "pasta" ou "licença""); resultados só depois de digitar; sem itens repetidos |
 | 33 | Lupa: "sair" não acha nada, mas Sair está no menu | Não: defeito (o menu não entrou inteiro no índice da lupa) | 0.7.36: todo item do menu ☰ e das Configurações entra na lupa (Sair, Novidades, Manual, Chamados, Perfil…), com teste automático que compara o menu com o índice |
-| 34 | Lupa: "abri" traz processos cujo nome não tem "abri" | Não: a busca de processos olha também o texto da publicação (ex.: "abril") | 0.7.36: na lupa, processos são procurados só por empresa, número, CNPJ e cidade; com menos de 3 letras, só telas e opções |
+| 34 | Lupa: "abri" traz processos cujo nome não tem "abri" | Não: a busca acha o pedaço no meio da palavra (ex.: "F**abri**cadora", nome fantasia, vara) | 0.7.36: a palavra digitada tem de bater com o começo de uma palavra (empresa, nome fantasia, número, CNPJ, cidade); número e CNPJ continuam aceitando qualquer trecho |
 
 ## Textos propostos para os (?) dos gráficos (item 27)
 
