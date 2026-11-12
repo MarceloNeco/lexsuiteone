@@ -4477,7 +4477,8 @@ window.LEXSUITE_RADAR = null;
       };
     }).catch(function () {});
   }
-  function mostrarCarregando(txt, roda) { $("carregando").classList.remove("abertura"); $("carregando-txt").textContent = txt;  // revisão 0.7.35: a abertura não esconde um aviso $("carregando").querySelector(".roda").hidden = roda === false; $("carregando").hidden = false; }
+  // revisão 0.7.35: a tela de abertura não esconde um aviso (programa encerrado durante a 1ª carga)
+  function mostrarCarregando(txt, roda) { $("carregando").classList.remove("abertura"); $("carregando-txt").textContent = txt; $("carregando").querySelector(".roda").hidden = roda === false; $("carregando").hidden = false; }
   function reiniciarDepois(versao) {
     reiniciando = true; mostrarCarregando(versao ? t("atualizando", { v: versao }) : t("reiniciando"));
     post("/reiniciar", {}).catch(function () {}).then(function () {
