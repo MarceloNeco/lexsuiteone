@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (nada)
+- **0.7.33 em revisão (12/Nov)**: a Produto avisou "pronta" (código em `b6d1de4`, automação verde, execução 580; **46 arquivos no download completo e 45 na atualização**, novo `lexsuite/documento.py`) e o dono mandou publicar. É uma versão grande (critérios e empresas excluídas por pessoa, neste computador e por área, com migração das abas Preferências e Exclusões da planilha; planilha regravada sem essas abas; CNPJ alfanumérico; chamados pelo AssistONE com a nuvem `lex-conta` v17; Sazonalidade com a fila inteira e Pausar), então a revisão do que mudou desde a 0.7.32 publicada (`4f3aeba`) é feita em duas frentes em paralelo: dados e nuvem (migração sem perda, mesmos critérios da 0.7.32, CNPJ, o que o chamado envia, regra de licença intacta, pacote 46/45 e atualização a partir da 0.7.32) e tela e orientações (Novidades, manual, AssistONE, lupa, e-mail, site, telas e acessibilidade), contra os 5 pontos da Definition of done do `CLAUDE.md`, sem nenhuma saída para a internet. Só publico se as duas aprovarem. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
