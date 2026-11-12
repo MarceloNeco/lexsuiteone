@@ -148,6 +148,12 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 12/Nov: **lex-conta v18 publicada** (correção urgente, com o "pode aplicar" do dono; só a Produto mexeu, a Arquitetura
+  revisa depois): a página de aceite nunca conseguia registrar o aceite, porque a v17 não respondia à pré-verificação do
+  navegador (OPTIONS devolvia 405) e não mandava cabeçalhos CORS; nenhum aceite de radar-judicial em `sol_aceites` até hoje.
+  A v18 responde OPTIONS com 204 e libera só `https://judicial.solverone.com.br`; nada mais mudou (código em
+  `nuvem/supabase/functions/lex-conta/index.ts`). Conferido: pré-verificação 204 com os cabeçalhos, e um Chromium na
+  própria página de aceite chega à função (resposta normal, sem bloqueio). Falta o dono confirmar um aceite real.
 - 12/Nov: por engano, dois commits de junção ("sync" e "Merge remote-tracking branch… into claude/…", `50e9e5e` e
   `4b0092d`) entraram na `main` junto com o quadro; o conteúdo é igual ao da `main`, só a história ficou com eles. Não
   reescrevo a história; os próximos envios voltam a ser lineares.

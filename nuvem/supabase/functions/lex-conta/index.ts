@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v17 (publicada no Supabase como v17. v16 + ações 'chamado' e 'chamado_anexo': chamados do AssistONE na central de feedback do RootifyONE): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v18 (publicada no Supabase como v18: v17 + CORS para a página de aceite. v17: v16 + ações 'chamado' e 'chamado_anexo': chamados do AssistONE na central de feedback do RootifyONE): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -38,8 +38,13 @@ const ANEXO_MAX_BYTES = 5 * 1024 * 1024, ANEXOS_POR_CHAMADO = 2, ANEXO_PRAZO_MS 
 // Retorno dos processos à SolverONE (decisão do dono, 09/Nov): só contagens por situação. Situações do programa:
 const SITUACOES = new Set(["novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado"]);
 
+// v18 (12/Nov, correção urgente): a página de aceite (judicial.solverone.com.br) chama esta função pelo navegador, que
+// antes pergunta (OPTIONS) se o site pode chamar. Sem resposta a isso e sem estes cabeçalhos, o navegador bloqueava o
+// aceite ("Sem conexão"). Só o site do produto é liberado; o programa instalado chama sem navegador e não muda.
+const CORS = { "Access-Control-Allow-Origin": "https://judicial.solverone.com.br", "Access-Control-Allow-Headers": "content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Max-Age": "3600", "Vary": "Origin" };
 function json(corpo: unknown, status = 200) {
-  return new Response(JSON.stringify(corpo), { status, headers: { "Content-Type": "application/json; charset=utf-8" } });
+  return new Response(JSON.stringify(corpo), { status, headers: { "Content-Type": "application/json; charset=utf-8", ...CORS } });
 }
 const texto = (v: unknown, max: number) => String(v ?? "").trim().slice(0, max);
 const dominioDe = (email: string) => email.split("@")[1] ?? "";
@@ -77,6 +82,7 @@ function motivoAceite(m: unknown) {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   if (req.method !== "POST") return json({ ok: false, motivo: "metodo" }, 405);
   let e: Record<string, unknown>;
   try { e = await req.json(); } catch { return json({ ok: false, motivo: "dados_invalidos" }, 400); }
