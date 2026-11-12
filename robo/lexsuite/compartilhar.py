@@ -120,7 +120,7 @@ def _sobre(cfg, versao, chave_impressao, ultima):
             ["Suporte", preferencias.SUPORTE]]
 
 
-def _abas_editaveis(caminho, aviso=print, novas=None):
+def _abas_editaveis(caminho, aviso=print):
     """Lê da planilha existente as abas que o escritório edita, para preservá-las. Devolve (abas, ok).
     ok=False quando o arquivo existe mas não pôde ser lido (em uso, corrompido): aí NÃO se regrava."""
     if not os.path.exists(caminho):
@@ -136,16 +136,9 @@ def _abas_editaveis(caminho, aviso=print, novas=None):
         existente = atuais.get(padrao["nome"])
         if existente and existente["linhas"]:
             linhas = [list(l) for l in existente["linhas"]]
-            if padrao["nome"] == "Preferências":  # 0.7.16: ajustes novos entram no fim, sem mexer no que o escritório editou
-                tem = {str(l[0]).strip() for l in linhas if l}
-                linhas += [list(l) for l in padrao["linhas"][1:] if l[0] not in tem]
             abas.append({"nome": padrao["nome"], "linhas": linhas, "oculta": padrao.get("oculta", False), "larguras": padrao.get("larguras")})
         else:
             abas.append(padrao)
-    if novas:  # 0.7.28: regras editadas na tela substituem as abas Preferências e Exclusões (a Controle fica como está)
-        for a in abas:
-            if a["nome"] in novas:
-                a["linhas"] = [list(l) for l in novas[a["nome"]]]
     return abas, True
 
 
@@ -188,7 +181,7 @@ def _destacar(linhas, chaves, minimo):
 
 
 def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao="", pasta_robo="", aviso=print, arquivo=None,
-                 frente="trabalhista", itens=None, aviso_tamanho="", processos=None, novas_regras=None):
+                 frente="trabalhista", itens=None, aviso_tamanho="", processos=None, criterios=None):
     """Regrava a planilha da frente (0.7.16: uma por frente): aba Radar (a lista), Arquivo, Contatos, as abas editáveis
     preservadas (Preferências, Exclusões, Controle oculta) e as abas Histórico, Saúde e Sobre. Também copia a página HTML.
     `itens`: as linhas da aba Radar (padrão: as da página). `processos`: só os contatos desses processos.
@@ -203,7 +196,7 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
         aviso(f"  A planilha {preferencias.NOME_ANTIGO} está aberta: feche-a para o RADAR trocar o nome e gravar. A lista está salva.")
         return ""
     caminho = os.path.join(base, preferencias.NOMES_FRENTE.get(frente) or NOME_RADAR)
-    editaveis, ok = _abas_editaveis(caminho, aviso, novas_regras)
+    editaveis, ok = _abas_editaveis(caminho, aviso)
     if not ok:
         return ""
     linhas = _linhas_lista(pagina.get("itens") or [] if itens is None else itens, colunas, linha_csv)
@@ -250,6 +243,9 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     abas.append({"nome": "Contatos", "linhas": contatos, "visual": True, "filtro": True,
                  "aviso": "Contatos encontrados (Receita, área logada ou digitados), sempre com a fonte e a data. Os da Receita também estão na aba Radar.",
                  "larguras": [26, 34, 11, 34, 10, 20, 11, 10, 12, 12, 40]})
+    if criterios is not None:  # 0.7.33: com que critérios esta pessoa gravou (só leitura; o programa não lê esta aba)
+        abas.append({"nome": "Critérios desta leitura", "linhas": preferencias.linhas_criterios(criterios, (cfg.get("usuario") or {}).get("nome", "")),
+                     "visual": True, "larguras": [52, 40]})
     planilha.escrever_xlsx(caminho, abas + [dict(a, visual=True) for a in editaveis] + [
         {"nome": NOME_COMO_USAR, "linhas": como_usar(produto), "visual": True, "larguras": [24, 70, 70]},
         {"nome": NOME_HISTORICO, "linhas": log, "visual": True, "filtro": True, "larguras": [24, 16, 10, 22, 10, 26, 40, 10, 8, 60]},

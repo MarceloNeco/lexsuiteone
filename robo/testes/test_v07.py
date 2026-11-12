@@ -28,7 +28,8 @@ class Preferencias(unittest.TestCase):
         tamanho = os.path.getsize(caminho)
         compartilhar.criar_se_faltar(cfg, "0.7.1", "", lambda *_: None)  # nunca sobrescreve
         self.assertEqual(os.path.getsize(caminho), tamanho)
-        p = preferencias.carregar(base)
+        dados = tempfile.mkdtemp()  # 0.7.33: pasta do programa (criterios.json); a planilha já não guarda critérios
+        p = preferencias.carregar(base, pasta=dados)
         self.assertEqual((p["valor_minimo"], p["minimo_acoes"], p["esconder_excluidas"], p["controle"]["ativo"]), (100000, 1, True, True))
         self.assertEqual(p["exclusoes"], [])  # a linha de exemplo não conta
         self.assertEqual(preferencias.bloqueio(p, "0.7.0"), "")
@@ -40,7 +41,10 @@ class Preferencias(unittest.TestCase):
             {"nome": "Exclusões", "linhas": [["Nome ou CNPJ", "Motivo"], ["Transportadora Exemplo LTDA", "cliente atual"], ["11.222.333/0001-81", ""]]},
             {"nome": "Controle", "linhas": [["Chave", "Valor"], ["ativo", "sim"], ["validade", "2020-01-01"], ["versao_minima", "0.9.0"], ["mensagem", "Fale com o suporte."]], "oculta": True},
         ])
-        p = preferencias.carregar(base)
+        p = preferencias.carregar(base, pasta=dados)  # o criterios.json já existe: a planilha não é relida
+        self.assertEqual((p["valor_minimo"], p["minimo_acoes"], p["esconder_gigantes"]), (100000, 1, False))
+        os.remove(preferencias.caminho_criterios(dados))  # sem o arquivo, a migração (uma vez) traz o que estava na planilha
+        p = preferencias.carregar(base, pasta=dados)
         self.assertEqual((p["valor_minimo"], p["minimo_acoes"], p["esconder_gigantes"]), (150000, 2, True))
         self.assertIn("validade terminou em 2020-01-01", preferencias.bloqueio(p, "0.7.0", dt.date(2026, 11, 12)))
         p["controle"]["validade"] = ""
@@ -163,21 +167,19 @@ class Compartilhada(unittest.TestCase):
         caminho = compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "abcd", "", lambda *_: None)
         doc = planilha.ler_xlsx(caminho)
         nomes = [(a["nome"], a["oculta"]) for a in doc["abas"]]
-        self.assertEqual(nomes, [("Radar", False), ("Contatos", False), ("Preferências", False), ("Exclusões", False), ("Controle", True), ("Como usar", False), ("Histórico de leituras", False), ("Saúde", True), ("Sobre", True)])
+        self.assertEqual(nomes, [("Radar", False), ("Contatos", False), ("Controle", True), ("Como usar", False), ("Histórico de leituras", False), ("Saúde", True), ("Sobre", True)])  # 0.7.33: sem Preferências e Exclusões
         self.assertIn("regravada", doc["abas"][0]["linhas"][0][0])  # 0.7.14: linha de aviso no topo; cabeçalho na 2
         col = doc["abas"][0]["linhas"][1].index("Excluída (motivo)")
         self.assertEqual(doc["abas"][0]["linhas"][2][col], "Exclusão: cliente")
-        log = doc["abas"][6]["linhas"]  # 0.7.13: Log visível; a rodada antiga aparece como "resumo da rodada"
+        log = doc["abas"][4]["linhas"]  # 0.7.13: Log visível; a rodada antiga aparece como "resumo da rodada"
         self.assertTrue(any(l[1] == "resumo da rodada" and "10 publicações" in str(l[6]) for l in log[1:]))
-        self.assertIn(["Escritório", "Escritório Teste"], doc["abas"][8]["linhas"])
-        # o escritório edita Exclusões; a próxima regravação preserva
+        self.assertIn(["Escritório", "Escritório Teste"], doc["abas"][6]["linhas"])
+        # a aba Controle editada pelo suporte é preservada na regravação
         abas = [{"nome": a["nome"], "linhas": a["linhas"], "oculta": a["oculta"]} for a in doc["abas"]]
-        abas[3]["linhas"] = [["Nome ou CNPJ", "Motivo"], ["Cliente Preservado Ltda", "cliente"]]
+        abas[2]["linhas"] = [["Chave", "Valor"], ["ativo", "sim"], ["mensagem", "Aviso preservado"]]
         planilha.escrever_xlsx(caminho, abas)
         compartilhar.gravar_radar(cfg, pagina, banco, "0.7.0", radar.COLUNAS_RADAR, radar.linha_csv, "abcd", "", lambda *_: None)
-        doc2 = planilha.ler_xlsx(caminho)
-        self.assertEqual(doc2["abas"][3]["linhas"][1][0], "Cliente Preservado Ltda")
-        self.assertEqual(preferencias.carregar(os.path.dirname(caminho))["exclusoes"][0]["nome"], "Cliente Preservado Ltda")
+        self.assertEqual(preferencias.carregar(os.path.dirname(caminho), pasta="")["controle"]["mensagem"], "Aviso preservado")
         # planilha corrompida (em uso): não regrava, não perde nada
         planilha.liberar_escrita(caminho)  # 0.7.21: a de consulta fica marcada somente leitura (usuário comum não grava)
         with open(caminho, "wb") as f:

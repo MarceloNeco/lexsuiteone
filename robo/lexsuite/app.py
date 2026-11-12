@@ -555,23 +555,17 @@ class Tratador(BaseHTTPRequestHandler):
                 s.versao_cache = (time.monotonic(), {"disponivel": bool(r.get("disponivel") and r.get("ok")), "versao": r.get("versao", ""),
                                                      "atual": VERSAO})
             return self._responder(s.versao_cache[1])
-        if u.path == "/regras":  # 0.7.28 (dono): regras do escritório editadas na tela
+        if u.path == "/regras":  # 0.7.33 (dono): critérios desta pessoa, neste computador, por área (criterios.json)
             cfg = s.config()
-            base = compartilhar.pasta_base(cfg)
-            if not base:
-                return self._responder({"ok": True, "tem_pasta": False})
-            # só a planilha trabalhista: é a que o POST regrava (as outras frentes somam na leitura do Diário)
-            marca_r, doc, erro = preferencias.marca_regras(base)
-            if marca_r is None:  # revisão da 0.7.28 (bloqueio): sem ler a planilha, a tela NÃO mostra o formulário padrão
-                return self._responder({"ok": False, "tem_pasta": True, "erro_leitura": erro,
-                                        "motivo": "Não consegui ler os critérios da lista na planilha (pode estar aberta no Excel, "
-                                                  "ainda sincronizando no Drive ou danificada). Feche o Excel, espere o Drive terminar e abra de novo.",
-                                        "motivo_en": "Could not read the list criteria from the spreadsheet (it may be open in Excel, still "
-                                                     "syncing in Drive or damaged). Close Excel, wait for Drive and open this again."})
-            p = preferencias.carregar(base, doc=doc) if doc else preferencias.padrao()
-            return self._responder({"ok": True, "valores": {k: p.get(k) for k in preferencias.PADRAO}, "marca": marca_r,
-                                    "exclusoes": p.get("exclusoes") or [], "limites": preferencias.LIMITES, "tem_pasta": True,
-                                    "max_exclusoes": preferencias.MAX_EXCLUSOES})
+            area = ((parse_qs(u.query).get("area") or [""])[0] or "").strip()
+            if area not in preferencias.AREAS:
+                area = "trabalhista"
+            if not os.path.exists(preferencias.caminho_criterios(s.pasta)):
+                preferencias.migrar(s.pasta, compartilhar.pasta_base(cfg), cfg.get("radar"))
+            erro = (preferencias.ler_criterios(s.pasta) or {}).get("erro", "")
+            valores, exc = preferencias.criterios_da_area(s.pasta, area)
+            return self._responder({"ok": True, "area": area, "areas": list(preferencias.AREAS), "valores": valores, "exclusoes": exc,
+                                    "limites": preferencias.LIMITES, "max_exclusoes": preferencias.MAX_EXCLUSOES, "erro_leitura": erro})
         if u.path == "/registro":  # 0.7.29 (sem janela preta): o que ia para a janela preta, na Configuração → Ver registro
             arq = os.path.join(s.pasta, "saida", "registro.txt")
             try:
@@ -841,55 +835,26 @@ class Tratador(BaseHTTPRequestHandler):
                             s.hist.pop("parar", None)
             threading.Thread(target=ler, daemon=True, name="estatisticas-antigas").start()
             return self._responder({"ok": True})
-        if caminho == "/regras":  # 0.7.28 (dono): grava as regras do escritório nas abas da planilha
-            cfg = s.config()
-            base = compartilhar.pasta_base(cfg)
-            if not base:
-                return self._responder({"ok": False, "motivo": "Escolha primeiro a pasta das planilhas em Configuração.",
-                                        "motivo_en": "Choose the spreadsheet folder in Settings first."})
-            valores, exc, marca_tela = corpo.get("valores"), corpo.get("exclusoes"), corpo.get("marca")
-            if not isinstance(valores, dict) or not isinstance(exc, list) or not isinstance(marca_tela, str):  # revisão da 0.7.28
+        if caminho == "/regras":  # 0.7.33 (dono): grava os critérios desta pessoa (criterios.json), por área
+            area, valores, exc, todas = corpo.get("area") or "trabalhista", corpo.get("valores"), corpo.get("exclusoes"), bool(corpo.get("todas"))
+            if not isinstance(valores, dict) or not isinstance(exc, list) or area not in preferencias.AREAS:
                 return self._responder({"ok": False, "motivo": "Pedido incompleto: abra os critérios de novo.",
                                         "motivo_en": "Incomplete request: open the criteria again."}, status=400)
             if len(exc) > preferencias.MAX_EXCLUSOES:
                 return self._responder({"ok": False, "motivo": f"São {len(exc)} empresas excluídas; o limite é {preferencias.MAX_EXCLUSOES}. Tire algumas e salve de novo.",
                                         "motivo_en": f"There are {len(exc)} excluded companies; the limit is {preferencias.MAX_EXCLUSOES}. Remove some and save again."})
-            # revisão da 0.7.28 (bloqueio): só grava por cima do que a tela leu. Se a planilha não se lê agora, ou mudou
-            # depois que a tela abriu (outra pessoa, outro computador, edição à mão), recusa e nada se perde.
-            with _TRAVA_REGRAS:  # revisão da 0.7.28: conferir a marca, copiar e gravar sem outro salvamento no meio
-                if s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento) or (getattr(s, "hist", {}) or {}).get("rodando"):
-                    # revisão da 0.7.28 (Operação, item 1): a leitura regravaria a planilha com as regras de antes
-                    return self._responder({"ok": False, "lendo": True,
-                                            "motivo": "Há uma leitura em andamento: ela regravaria a planilha com os critérios de antes. Espere terminar e salve de novo (o que você digitou continua aqui).",
-                                            "motivo_en": "A reading is in progress: it would rewrite the spreadsheet with the old criteria. Wait for it to finish and save again (what you typed stays here)."})
-                marca_agora, _doc, _erro = preferencias.marca_regras(base)
-                if marca_agora is None:
-                    return self._responder({"ok": False, "motivo": "Não consegui ler a planilha agora: ela pode estar aberta no Excel ou sincronizando. Nada foi alterado.",
-                                            "motivo_en": "Could not read the spreadsheet now: it may be open in Excel or syncing. Nothing was changed."})
-                if marca_agora != marca_tela:
-                    return self._responder({"ok": False, "mudou": True,
-                                            "motivo": "Os critérios na planilha mudaram depois que você abriu esta tela (outra pessoa, outro computador ou edição à mão). Nada foi alterado: abra os critérios de novo e refaça a mudança.",
-                                            "motivo_en": "The criteria in the spreadsheet changed after you opened this screen (someone else, another computer or a manual edit). Nothing was changed: open the criteria again and redo the change."})
-                pref, exc_l = preferencias.linhas_regras(valores, exc)
-                copia_ok, onde = armazenamento.copia_antes_das_regras(base)
-                if not copia_ok:
-                    return self._responder({"ok": False, "motivo": onde + " Nada foi alterado.",
-                                            "motivo_en": "Could not save the backup copy before saving. Nothing was changed."})
-                if preferencias.marca_regras(base)[0] != marca_tela:  # outro computador mudou a planilha durante a cópia
-                    return self._responder({"ok": False, "mudou": True, "motivo": "A planilha mudou agora mesmo (outro computador). Nada foi alterado: abra os critérios de novo.",
-                                            "motivo_en": "The spreadsheet just changed (another computer). Nothing was changed: open the criteria again."})
-                recados = []
+            ruins = [str(e.get("nome") or "") for e in exc if isinstance(e, dict) and str(e.get("nome") or "").strip()
+                     and not preferencias.exclusao_valida(e.get("nome"))]
+            if ruins:  # 0.7.33 (dono): CPF ou CNPJ digitado tem de ser válido
+                return self._responder({"ok": False, "motivo": "CPF ou CNPJ inválido: " + ", ".join(ruins[:3]) + ". Confira os números e salve de novo.",
+                                        "motivo_en": "Invalid CPF or CNPJ: " + ", ".join(ruins[:3]) + ". Check the numbers and save again."})
+            with _TRAVA_REGRAS:
                 try:
-                    compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, recados.append)
-                    ok = os.path.exists(preferencias.caminho(base, "trabalhista")) and radar.regravar_planilha(
-                        cfg, bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append, novas_regras={"Preferências": pref, "Exclusões": exc_l})
+                    preferencias.salvar_area(s.pasta, area, valores, exc, todas=todas)
                 except OSError:
-                    ok = False
-                if not ok:
-                    return self._responder({"ok": False, "motivo": "Não consegui gravar: a planilha pode estar aberta no Excel. Feche-a e salve de novo.",
-                                            "motivo_en": "Could not save: the spreadsheet may be open in Excel. Close it and save again."})
-                return self._responder({"ok": True, "exclusoes": len(exc_l) - 1, "marca": preferencias.marca_regras(base)[0] or "",
-                                        "copia": os.path.basename(onde)})
+                    return self._responder({"ok": False, "motivo": "Não consegui gravar os critérios neste computador (pasta do programa sem permissão).",
+                                            "motivo_en": "Could not save the criteria on this computer (no permission in the program folder)."})
+            return self._responder({"ok": True, "area": area, "todas": todas})
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)

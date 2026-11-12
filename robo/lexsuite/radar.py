@@ -150,8 +150,17 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     dias = config.inteiro(dias if dias is not None else r.get("dias_na_pagina", 1), 1, 1, 90)  # 0.7.26: config escrito à mão
     desde = inicio_periodo(agora.date(), dias)  # 0.7.30 (dono): pela DATA DO PROCESSO no Diário, não por quando o programa o leu
     escolhidos = tribunais.validar(r.get("tribunais") or ["TRT2", "TRT15"])
-    prefs = prefs or preferencias.carregar(compartilhar.pasta_base(cfg))
-    r = dict(r, teto_capital_gigante=prefs.get("teto_capital_gigante") or r.get("teto_capital_gigante"))
+    # 0.7.33: critérios desta pessoa, por área (criterios.json); `prefs` passado vale para todas as áreas (testes)
+    base_c = compartilhar.pasta_base(cfg)
+    por_area = {}
+    def prefs_de(area):
+        if prefs is not None:
+            return prefs
+        if area not in por_area:
+            por_area[area] = preferencias.carregar(base_c, frente=area, banco=banco, cfg_radar=cfg.get("radar"))
+        return por_area[area]
+    p_trab = prefs_de("trabalhista")
+    r = dict(r, teto_capital_gigante=p_trab.get("teto_capital_gigante") or r.get("teto_capital_gigante"))
     itens = []
     arquivo = visao == "arquivo"
     por_processo = {}
@@ -165,31 +174,38 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
             continue
         if not arquivo and ((lead.get("tribunal") or "").upper() not in escolhidos or lead.get("status") == "arquivado"):
             continue
-        item = item_de_lead(lead, r, por_processo)
-        if not prefs.get("mostrar_socios", True):
+        p_item = prefs_de(lead.get("frente") or "trabalhista")
+        item = item_de_lead(lead, dict(r, teto_capital_gigante=p_item.get("teto_capital_gigante") or r.get("teto_capital_gigante")), por_processo)
+        if not p_item.get("mostrar_socios", True):
             item["empresa"]["socios"] = []  # minimização: nomes de pessoas só se o escritório pedir
         itens.append(item)
     # Quantas ações cada empresa teve na janela do "mínimo de ações" (conta processos distintos).
-    contagem = None
-    if int(prefs.get("minimo_acoes") or 1) > 1:
-        janela = (agora.date() - dt.timedelta(days=int(prefs.get("janela_dias") or 30))).isoformat()
-        vistos = collections.defaultdict(set)
-        for lead in banco.todos_leads(desde=janela):
-            for nome in lead.get("empresas") or []:
-                vistos[cl.chave_nome(nome)].add(lead.get("processo"))
-        contagem = {k: len(v) for k, v in vistos.items()}
-    preferencias.aplicar(itens, prefs, contagem)
+    grupos = collections.defaultdict(list)
+    for it in itens:
+        grupos[it.get("frente") or "trabalhista"].append(it)
+    for area, itens_a in grupos.items():
+        p_a = prefs_de(area)
+        contagem = None
+        if int(p_a.get("minimo_acoes") or 1) > 1:
+            janela = (agora.date() - dt.timedelta(days=int(p_a.get("janela_dias") or 30))).isoformat()
+            vistos = collections.defaultdict(set)
+            for lead in banco.todos_leads(desde=janela):
+                for nome in lead.get("empresas") or []:
+                    vistos[cl.chave_nome(nome)].add(lead.get("processo"))
+            contagem = {k: len(v) for k, v in vistos.items()}
+        preferencias.aplicar(itens_a, p_a, contagem)
     itens.sort(key=lambda i: (-(i["valor_causa"] or 0), i["visto_em"]))
     dia = max([i["distribuida_em"][:10] for i in itens if i["distribuida_em"]] or [agora.date().isoformat()])
     return {
         "dia": dia, "gerado_em": agora.strftime("%Y-%m-%d %H:%M"), "exemplo": bool(exemplo), "dias": dias,
         "escritorio": cfg.get("escritorio", ""), "tribunais": escolhidos, "visao": visao,
-        "valor_minimo": float(prefs.get("valor_minimo") or r.get("valor_minimo") or 100000),
+        "valor_minimo": float(p_trab.get("valor_minimo") or 0),  # 0.7.33: 0 = sem mínimo
+        "valor_minimo_area": {a: float(prefs_de(a).get("valor_minimo") or 0) for a in sorted(set(grupos) | {"trabalhista"})},
         "situacao": situacao or {}, "itens": itens,
         "excluidas": sum(1 for i in itens if i.get("excluida")),
-        "prefs": {"esconder_excluidas": bool(prefs.get("esconder_excluidas", True)), "esconder_gigantes": bool(prefs.get("esconder_gigantes")),
-                  "minimo_acoes": int(prefs.get("minimo_acoes") or 1), "janela_dias": int(prefs.get("janela_dias") or 30),
-                  "origem": prefs.get("origem", "padrão"), "erro": prefs.get("erro", ""), "controle": prefs.get("controle") or {}},
+        "prefs": {"esconder_excluidas": bool(p_trab.get("esconder_excluidas", True)), "esconder_gigantes": bool(p_trab.get("esconder_gigantes")),
+                  "minimo_acoes": int(p_trab.get("minimo_acoes") or 1), "janela_dias": int(p_trab.get("janela_dias") or 30),
+                  "origem": p_trab.get("origem", "padrão"), "erro": p_trab.get("erro", ""), "controle": p_trab.get("controle") or {}},
     }
 
 
@@ -218,7 +234,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
             compartilhar.criar_se_faltar(cfg, versao, pasta_base or "", aviso)
         except OSError as e:
             aviso(f"  Não consegui criar a planilha ({e.__class__.__name__}); sigo com o padrão.")
-    prefs = preferencias.carregar(base_compartilhada)
+    prefs = preferencias.carregar(base_compartilhada, banco=banco, cfg_radar=r)
     if prefs.get("erro"):
         aviso("  " + prefs["erro"])
     # Licença: pergunta à SolverONE e guarda a resposta; depois, o controle da planilha (aba Controle).
@@ -357,7 +373,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
             "pt": f"{t['tribunal']}: {causas.mensagem(t['causa'], 'pt')}", "en": f"{t['tribunal']}: {causas.mensagem(t['causa'], 'en')}"})
     aviso("  " + situacao["pt"])
     if pasta_base:
-        pagina = gravar_saida(cfg, banco, os.path.join(pasta_base, "saida", "radar"), agora, situacao, aviso, versao, prefs)
+        pagina = gravar_saida(cfg, banco, os.path.join(pasta_base, "saida", "radar"), agora, situacao, aviso, versao)  # 0.7.33: critérios por área
         if base_compartilhada and (cfg.get("compartilhar") or {}).get("planilha", True):
             if not gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso):
                 situacao["aviso_planilha"] = True
@@ -368,7 +384,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     return situacao
 
 
-def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, novas_regras=None):
+def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
     """Grava as planilhas (0.7.16: uma por frente). Se uma estiver aberta no Excel (o Windows trava o arquivo), avisa com
     clareza: nada se perde, a lista está no computador e a planilha é regravada depois. Antes, confere o disco e o
     tamanho: a 80% do limite avisa; a 100% faz a cópia de segurança e enxuga a aba Arquivo sozinho. Devolve True se
@@ -394,19 +410,21 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, novas_r
         ordem = [f for f in preferencias.NOMES_FRENTE if f in frentes] or ["trabalhista"]
         tudo_ok, limpou = True, False
         for frente in ordem:
-            prefs = preferencias.carregar(base, frente=frente, trocar=novas_regras if frente == "trabalhista" else None)  # revisão da 0.7.28: limite e dias novos já valem
-            limite = int(prefs.get("limite_linhas") or 60000)
+            prefs = preferencias.carregar(base, frente=frente, banco=banco, cfg_radar=cfg.get("radar"))
+            # 0.7.33 (decisão de 12/Nov): a planilha compartilhada é o registro do escritório, completa; dias do Arquivo e
+            # limite de linhas são os padrões, e os critérios de cada pessoa valem na tela e no saida/ dela
+            limite = int(preferencias.PADRAO["limite_linhas"])
             radar_f = [i for i in lista if armazenamento.frente_do(i) == frente]
             todos_f = [i for i in todos if armazenamento.frente_do(i) == frente]
             na_lista = {i.get("processo") for i in radar_f}  # o que já está na aba Radar não se repete no Arquivo
-            arquivo = [i for i in armazenamento.selecionar_arquivo(todos_f, prefs.get("dias_arquivo") or 90, armazenamento.corte(banco, frente))
+            arquivo = [i for i in armazenamento.selecionar_arquivo(todos_f, preferencias.PADRAO["dias_arquivo"], armazenamento.corte(banco, frente))
                        if i.get("processo") not in na_lista]
             if len(radar_f) + len(arquivo) >= limite and not limpou and not armazenamento.limpeza_recente(banco):
                 aviso(f"  A planilha {armazenamento.FRENTE_LEGIVEL.get(frente, frente)} chegou ao limite de {limite} linhas: "
                       "guardo uma cópia de segurança e enxugo a aba Arquivo (nada sai do programa).")
                 armazenamento.limpar(cfg, banco, pasta_base, versao, aviso, automatico=True)
                 limpou = True
-                arquivo = [i for i in armazenamento.selecionar_arquivo(todos_f, prefs.get("dias_arquivo") or 90, armazenamento.corte(banco, frente))
+                arquivo = [i for i in armazenamento.selecionar_arquivo(todos_f, preferencias.PADRAO["dias_arquivo"], armazenamento.corte(banco, frente))
                            if i.get("processo") not in na_lista]
             radar_f, arquivo, cortou = armazenamento.caber(radar_f, arquivo, limite)
             if cortou:
@@ -418,7 +436,7 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, novas_r
             processos = {i.get("processo") for i in radar_f + arquivo} if len(ordem) > 1 else None
             caminho = compartilhar.gravar_radar(cfg, pagina, banco, versao, COLUNAS_RADAR, linha_csv, impressao, pasta_base,
                                                 aviso, arquivo=arquivo, frente=frente, itens=radar_f, aviso_tamanho=texto,
-                                                processos=processos, novas_regras=novas_regras if frente == "trabalhista" else None)
+                                                processos=processos, criterios=prefs)
             if not caminho:  # planilha em uso ou ilegível: gravar_radar já avisou e não regravou nada
                 tudo_ok = False
                 continue
@@ -451,20 +469,15 @@ TRAVA_REGRAVAR = threading.RLock()  # revisão da 0.7.29: "Salvar regras", "Grav
 # da planilha aberta e a limpeza nunca se cruzam (uma leria as abas antes da outra gravar e desfaria a mudança)
 
 
-def regravar_planilha(cfg, banco, pasta_base, versao, aviso=print, novas_regras=None):
+def regravar_planilha(cfg, banco, pasta_base, versao, aviso=print):
     with TRAVA_REGRAVAR:
-        return _regravar_planilha(cfg, banco, pasta_base, versao, aviso, novas_regras)
+        return _regravar_planilha(cfg, banco, pasta_base, versao, aviso)
 
 
-def _regravar_planilha(cfg, banco, pasta_base, versao, aviso=print, novas_regras=None):
-    """Botão "Gravar a planilha agora" (depois de fechar o Excel): grava a lista atual sem ler o Diário de novo.
-    0.7.28: com `novas_regras` ({"Preferências": linhas, "Exclusões": linhas}), grava também as regras do escritório
-    editadas na tela, e a lista já sai com elas."""
-    prefs = None
-    if novas_regras:  # revisão da 0.7.28: com a aba Controle e as Exclusões das outras frentes, lidas do disco
-        prefs = preferencias.carregar(compartilhar.pasta_base(cfg), trocar=novas_regras)
-    pagina = montar_radar(cfg, banco, None, False, None, prefs=prefs)
-    return gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso, novas_regras=novas_regras)
+def _regravar_planilha(cfg, banco, pasta_base, versao, aviso=print):
+    """Botão "Gravar a planilha agora" (depois de fechar o Excel): grava a lista atual sem ler o Diário de novo."""
+    pagina = montar_radar(cfg, banco, None, False, None)
+    return gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso)
 
 
 def gravar_saida(cfg, banco, pasta, agora, situacao, aviso=print, versao="", prefs=None):

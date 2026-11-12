@@ -1,6 +1,10 @@
-"""Preferências e controle do escritório: as abas Preferências, Exclusões e Controle (oculta) da planilha única
-<pasta compartilhada>/LexSuiteONE/LexSuiteONE.xlsx. O escritório edita essas abas; o robô lê antes de cada rodada
-e as preserva quando regrava a planilha (ver compartilhar.gravar_radar).
+"""Critérios da lista e controle do escritório.
+
+0.7.33 (decisão do dono, 12/Nov; desenho da Arquitetura, documentacao/DESENHO-CRITERIOS-CHAMADOS-CNPJ-2026-11-12.md, seção 1):
+os critérios da lista (valor mínimo, mínimo de ações, jurídico próprio, sócios, Arquivo, limite) e as empresas excluídas são
+de cada pessoa, neste computador, por área (trabalhista, tributário, cível, empresarial), no arquivo `criterios.json` ao lado
+do `config.json`. A planilha compartilhada não guarda nem é lida para isso; na primeira abertura da 0.7.33, as abas
+Preferências e Exclusões das planilhas viram o `criterios.json` (uma vez só). A aba Controle (oculta) continua na planilha.
 """
 
 import datetime as dt
@@ -115,16 +119,13 @@ def planilhas_existentes(pasta_base):
     return saida
 
 
-ABAS_EDITAVEIS = ("Preferências", "Exclusões", "Controle")
+ABAS_EDITAVEIS = ("Controle",)  # 0.7.33: Preferências e Exclusões saíram da planilha (critérios por pessoa)
+ABAS_ANTIGAS = ("Preferências", "Exclusões")  # lidas uma vez só, na migração
 
 
 def abas_padrao():
-    """As três abas como nascem na primeira vez (o escritório edita depois)."""
-    return [
-        {"nome": "Preferências", "linhas": [list(l) for l in LINHAS_PREFERENCIAS], "larguras": [46, 16, 80]},
-        {"nome": "Exclusões", "linhas": [list(l) for l in LINHAS_EXCLUSOES], "larguras": [48, 50]},
-        {"nome": "Controle", "linhas": [list(l) for l in LINHAS_CONTROLE], "oculta": True, "larguras": [18, 36, 70]},
-    ]
+    """A aba Controle (oculta) como nasce na primeira vez. 0.7.33: as abas Preferências e Exclusões não existem mais."""
+    return [{"nome": "Controle", "linhas": [list(l) for l in LINHAS_CONTROLE], "oculta": True, "larguras": [18, 36, 70]}]
 
 
 def _sim(v):
@@ -162,121 +163,241 @@ MAX_EXCLUSOES = 5000
 INTEIROS = ("minimo_acoes", "janela_dias", "dias_arquivo", "limite_linhas")
 
 
-def marca_regras(pasta_base, frente="trabalhista"):
-    """Revisão da 0.7.28: (marca, doc, erro) das abas Preferências e Exclusões como estão agora na planilha da frente.
-    A tela recebe a marca ao abrir as regras e a devolve ao salvar: se a planilha mudou nesse meio tempo (outra pessoa,
-    outro computador, edição à mão) ou não pôde ser lida quando a tela abriu, o salvamento é recusado e nada se perde.
-    Sem arquivo: marca "nova". Arquivo que não se lê: marca None e o erro."""
-    import hashlib
-    import json
-    c = caminho(pasta_base, frente)
-    if not c or not os.path.exists(c):
-        return "nova", None, ""
-    try:
-        doc = planilha.ler_xlsx(c, so_abas=ABAS_EDITAVEIS)
-    except Exception as e:  # noqa: BLE001 - corrompida, em uso, sincronizando: quem chama recusa
-        return None, None, e.__class__.__name__
-    abas = {cl.sem_acento(a["nome"]).strip().lower(): a["linhas"] for a in doc["abas"]}
-    conteudo = json.dumps([abas.get("preferencias", []), abas.get("exclusoes", [])], default=str, ensure_ascii=False)
-    return hashlib.sha256(conteudo.encode("utf-8")).hexdigest()[:32], doc, ""
+AREAS = tuple(NOMES_FRENTE)  # trabalhista, tributario, civel, empresarial
+ARQUIVO_CRITERIOS = "criterios.json"
 
 
-def linhas_regras(valores, exclusoes):
-    """0.7.28 (dono): as regras editadas na tela do RADAR viram as linhas das abas Preferências e Exclusões (o escritório
-    não precisa mais editar a planilha). Valores fora do limite voltam ao padrão; texto é cortado. Devolve (pref, exc)."""
-    nomes = {v: k for k, v in CHAVES.items()}
-    pref = [list(LINHAS_PREFERENCIAS[0])]
-    for linha in LINHAS_PREFERENCIAS[1:]:
-        chave = CHAVES[linha[0]]
-        v = (valores or {}).get(chave, PADRAO[chave])
+def valores_validos(valores):
+    """Os critérios como a tela os manda (ou como estão no arquivo), dentro dos limites; fora do limite volta ao padrão.
+    0.7.33: valor mínimo vazio ou 0 = sem mínimo (antes virava 100 mil)."""
+    saida = {}
+    for chave, pad in PADRAO.items():
+        v = (valores or {}).get(chave, pad)
         if chave.startswith(("esconder", "mostrar")):
-            v = "sim" if (v is True or _sim(v)) else "não"
-        else:
-            n = _numero(v, PADRAO[chave])
-            mn, mx = LIMITES.get(chave, (0, 1e15))
-            try:
-                v = n if mn <= float(n) <= mx else PADRAO[chave]
-                if chave in INTEIROS and v != int(v):  # 0.7.29: 2,5 ações ou 2,5 dias não existem (a tela só aceita inteiros)
-                    v = PADRAO[chave]
-            except (TypeError, ValueError, OverflowError):
-                v = PADRAO[chave]
-        pref.append([nomes[chave], v, linha[2]])
-    exc = [list(LINHAS_EXCLUSOES[0])]
-    vistos = set()
-    for e in (exclusoes or [])[:MAX_EXCLUSOES]:
+            saida[chave] = v is True or (not isinstance(v, bool) and _sim(v))
+            continue
+        if chave == "valor_minimo" and (v is None or str(v).strip() == ""):
+            saida[chave] = 0
+            continue
+        n = _numero(v, pad)
+        mn, mx = LIMITES.get(chave, (0, 1e15))
+        try:
+            n = n if mn <= float(n) <= mx else pad
+            if chave in INTEIROS and n != int(n):  # 0.7.29: 2,5 ações ou 2,5 dias não existem
+                n = pad
+        except (TypeError, ValueError, OverflowError):
+            n = pad
+        saida[chave] = int(n) if isinstance(n, float) and n == int(n) else n
+    return saida
+
+
+def e_documento(texto):
+    """O texto parece um CPF ou CNPJ digitado (e não um nome): sem espaço, só números, letras e . / -, com 8 ou mais números."""
+    t = str(texto or "").strip()
+    return bool(re.fullmatch(r"[0-9A-Za-z./\-]+", t)) and len(re.sub(r"\D", "", t)) >= 8
+
+
+def exclusao_valida(nome):
+    """0.7.33 (dono): nome é livre; CPF ou CNPJ (inclusive o alfanumérico) tem de ser válido. Devolve (nome, cnpj) ou None."""
+    nome = str(nome or "").strip()[:160]
+    if not nome:
+        return None
+    if not e_documento(nome):
+        return nome, None
+    if documento.valido(nome):
+        return documento.formatar(nome), documento.limpar(nome)
+    if documento.cpf_valido(nome):
+        return documento.formatar_cpf(nome), None
+    return None
+
+
+def exclusoes_validas(lista):
+    """Lista de exclusões limpa: sem repetidas, sem documento inválido, até MAX_EXCLUSOES."""
+    saida, vistos = [], set()
+    for e in (lista or [])[:MAX_EXCLUSOES]:
         if not isinstance(e, dict):  # revisão da 0.7.28: item que não é {nome, motivo} é ignorado
             continue
-        nome = str(e.get("nome") or "").strip()[:160]
-        if not nome or nome.lower() in vistos:
+        ok = exclusao_valida(e.get("nome"))
+        if not ok or ok[0].lower() in vistos:
             continue
-        vistos.add(nome.lower())
-        exc.append([nome, str(e.get("motivo") or "").strip()[:200]])
-    return pref, exc
+        vistos.add(ok[0].lower())
+        saida.append({"nome": ok[0], "cnpj": ok[1], "motivo": str(e.get("motivo") or "").strip()[:200],
+                      "desde": str(e.get("desde") or dt.date.today().isoformat())[:10]})
+    return saida
+
+
+def pasta_dados(banco):
+    """A pasta do programa (a do config.json e do lexsuite.db), pelo banco; '' se o banco é só em memória."""
+    c = getattr(banco, "caminho", "") or ""
+    if not c or c == ":memory:" or c.startswith("file:"):
+        return ""
+    return os.path.dirname(os.path.abspath(c))
+
+
+def caminho_criterios(pasta):
+    return os.path.join(pasta, ARQUIVO_CRITERIOS) if pasta else ""
+
+
+def ler_criterios(pasta):
+    """O criterios.json desta pessoa ({"versao", "areas": {...}}), None se não existe; JSON quebrado = padrões e "erro"."""
+    import json
+    c = caminho_criterios(pasta)
+    if not c or not os.path.exists(c):
+        return None
+    try:
+        with open(c, encoding="utf-8") as f:
+            d = json.load(f)
+        if not isinstance(d, dict) or not isinstance(d.get("areas"), dict):
+            raise ValueError("formato")
+        return d
+    except (OSError, ValueError) as e:
+        return {"versao": 1, "areas": {}, "erro": e.__class__.__name__}
+
+
+def gravar_criterios(pasta, dados):
+    """Grava o criterios.json de forma atômica, com a cópia criterios.json.anterior antes (mesmo padrão do config.json)."""
+    import json
+    import shutil
+    c = caminho_criterios(pasta)
+    if not c:
+        return False
+    dados = {"versao": 1, "atualizado_em": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
+             "origem": dados.get("origem", "tela"), "areas": dados.get("areas") or {}}
+    if os.path.exists(c):
+        try:
+            shutil.copy2(c, c + ".anterior")
+        except OSError:
+            pass
+    tmp = c + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(dados, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, c)
+    return True
+
+
+def criterios_da_area(pasta, area):
+    """(valores, exclusoes) desta pessoa para a área; o que falta vem do padrão."""
+    d = ler_criterios(pasta) or {"areas": {}}
+    a = (d.get("areas") or {}).get(area if area in AREAS else "trabalhista") or {}
+    return valores_validos(a), exclusoes_validas(a.get("exclusoes") or [])
+
+
+def salvar_area(pasta, area, valores, exclusoes, todas=False):
+    """Grava os critérios de uma área (ou de todas, com "Copiar para as outras áreas")."""
+    d = ler_criterios(pasta) or {"areas": {}}
+    areas = dict(d.get("areas") or {}) if not d.get("erro") else {}
+    bloco = dict(valores_validos(valores), exclusoes=exclusoes_validas(exclusoes))
+    for a in (AREAS if todas else (area if area in AREAS else "trabalhista",)):
+        areas[a] = dict(bloco, exclusoes=[dict(e) for e in bloco["exclusoes"]])
+    return gravar_criterios(pasta, {"origem": "tela", "areas": areas})
+
+
+def _ler_abas_antigas(caminho_planilha):
+    """Preferências e Exclusões de uma planilha da 0.7.32 ou anterior: (valores, exclusoes)."""
+    doc = planilha.ler_xlsx(caminho_planilha, so_abas=ABAS_ANTIGAS)
+    abas = {cl.sem_acento(a["nome"]).strip().lower(): a["linhas"] for a in doc["abas"]}
+    valores, exc = {}, []
+    for linha in abas.get("preferencias", [])[1:]:
+        if len(linha) >= 2 and str(linha[0]).strip() in CHAVES:
+            chave = CHAVES[str(linha[0]).strip()]
+            valores[chave] = _sim(linha[1]) if chave.startswith(("esconder", "mostrar")) else _numero(linha[1], PADRAO[chave])
+    for linha in abas.get("exclusoes", [])[1:]:
+        nome = str(linha[0] if linha else "").strip()
+        if nome and not nome.lower().startswith("(exemplo"):
+            exc.append({"nome": nome, "motivo": str(linha[1]).strip() if len(linha) > 1 else ""})
+    return valores, exc
+
+
+def migrar(pasta, pasta_base, cfg_radar=None, aviso=None):
+    """Uma vez só por computador (0.7.33): sem criterios.json, as abas Preferências e Exclusões das planilhas de cada área
+    viram os critérios desta pessoa; sem planilha, o valor mínimo e o teto de jurídico próprio do config.json, se houver.
+    Devolve quantas exclusões migraram por área, ou None quando não havia o que fazer (arquivo já existe ou sem pasta)."""
+    if not pasta or os.path.exists(caminho_criterios(pasta)):
+        return None
+    r = cfg_radar or {}
+    base_cfg = {k: r[k] for k in ("valor_minimo", "teto_capital_gigante") if r.get(k) not in (None, "")}
+    areas, origem, contagem = {}, "config" if base_cfg else "padrão", {}
+    for frente, c in planilhas_existentes(pasta_base):
+        try:
+            valores, exc = _ler_abas_antigas(c)
+        except Exception:  # noqa: BLE001 - planilha ilegível: esta área começa com o padrão
+            continue
+        if valores or exc:
+            areas[frente] = dict(valores_validos(dict(base_cfg, **valores)), exclusoes=exclusoes_validas(exc))
+            contagem[frente] = len(areas[frente]["exclusoes"])
+            origem = "planilha"
+    for a in AREAS:
+        areas.setdefault(a, dict(valores_validos(base_cfg), exclusoes=[]))
+    try:
+        gravar_criterios(pasta, {"origem": origem, "areas": areas})
+    except OSError:
+        return None
+    if aviso:
+        aviso("  Critérios da lista migrados para este computador (" + origem + "): "
+              + ", ".join(f"{a} {n} excluída(s)" for a, n in contagem.items()) if contagem else
+              "  Critérios da lista agora ficam neste computador (" + origem + ").")
+    return contagem
 
 
 def padrao():
     p = dict(PADRAO)
     p.update({"exclusoes": [], "controle": {"ativo": True, "validade": "", "versao_minima": "", "mensagem": "",
-                                            "suporte": SUPORTE}, "origem": "padrão", "erro": ""})
+                                            "suporte": SUPORTE}, "origem": "padrão", "erro": "", "area": "trabalhista"})
     return p
 
 
-def carregar(pasta_base, doc=None, frente="trabalhista", trocar=None):
-    """Lê as abas editáveis da planilha da frente. Sem pasta ou sem arquivo, devolve o padrão; se não conseguir ler,
-    diz o erro. `doc` pode ser a planilha já lida (evita ler duas vezes). 0.7.16: as Exclusões das planilhas das outras
-    frentes também valem (cliente é cliente em todas). Revisão da 0.7.28: `trocar` ({"Preferências": linhas,
-    "Exclusões": linhas}) são as regras que acabaram de ser salvas na tela: valem no lugar dessas abas, e a aba Controle
-    e as Exclusões das outras frentes continuam sendo lidas do disco."""
+def carregar(pasta_base, frente="trabalhista", pasta=None, banco=None, cfg_radar=None):
+    """Os critérios desta pessoa para a área (criterios.json; na primeira vez, migrados da planilha) e a aba Controle da
+    planilha da área. Sem arquivo e sem pasta do programa, o padrão."""
     prefs = padrao()
-    c = caminho(pasta_base, frente)
-    if doc is None:
-        for outra_frente, outro in planilhas_existentes(pasta_base):
-            if outra_frente == frente:
-                continue
-            try:
-                outra = planilha.ler_xlsx(outro, so_abas=("Exclusões",))
-            except Exception:  # noqa: BLE001 - a outra planilha ilegível não impede esta
-                continue
-            for a in outra["abas"]:
-                if cl.sem_acento(a["nome"]).strip().lower() == "exclusoes":
-                    for linha in a["linhas"][1:]:
-                        nome = str(linha[0] if linha else "").strip()
-                        if nome and not nome.lower().startswith("(exemplo"):
-                            prefs["exclusoes"].append({"nome": nome, "motivo": str(linha[1]).strip() if len(linha) > 1 else ""})
-        existe = bool(c) and os.path.exists(c)
-        if not existe and not trocar:
-            return prefs
+    prefs["area"] = frente if frente in AREAS else "trabalhista"
+    pasta = pasta if pasta is not None else pasta_dados(banco)
+    if pasta:
+        if not os.path.exists(caminho_criterios(pasta)):
+            migrar(pasta, pasta_base, cfg_radar)
+        d = ler_criterios(pasta)
+        if d is not None:
+            if d.get("erro"):
+                prefs["erro"] = ("Não consegui ler os critérios da lista deste computador (criterios.json); nesta leitura valem os "
+                                 "padrões. / Could not read this computer's list criteria; defaults apply this time.")
+            valores, exc = criterios_da_area(pasta, prefs["area"])
+            prefs.update(valores)
+            prefs["exclusoes"] = exc
+            prefs["origem"] = "computador"
+    c = caminho(pasta_base, frente) if pasta_base else ""
+    if c and not os.path.exists(c) and frente != "trabalhista":
+        c = caminho(pasta_base, "trabalhista")
+    if c and os.path.exists(c):
         try:
-            doc = planilha.ler_xlsx(c, so_abas=ABAS_EDITAVEIS) if existe else {"abas": []}
-        except Exception as e:  # planilha corrompida ou em uso: o robô segue com o padrão e avisa
-            prefs["erro"] = (f"Não consegui ler as abas Preferências e Exclusões de {os.path.basename(c)} (arquivo corrompido ou bloqueado). "
-                             "Nesta leitura valem as preferências padrão. / Could not read the Preferences and Exclusions tabs; "
-                             f"default preferences apply this time. ({e.__class__.__name__})")
-            return prefs
-        if trocar:
-            doc = {"abas": [a for a in doc["abas"] if cl.sem_acento(a["nome"]).strip().lower() not in ("preferencias", "exclusoes")]
-                   + [{"nome": n, "linhas": l} for n, l in trocar.items()]}
-    abas = {cl.sem_acento(a["nome"]).strip().lower(): a["linhas"] for a in doc["abas"]}
-    for linha in abas.get("preferencias", [])[1:]:
-        if len(linha) >= 2 and str(linha[0]).strip() in CHAVES:
-            chave = CHAVES[str(linha[0]).strip()]
-            prefs[chave] = _sim(linha[1]) if chave.startswith(("esconder", "mostrar")) else _numero(linha[1], PADRAO[chave])
-    for linha in abas.get("exclusoes", [])[1:]:
-        nome = str(linha[0] if linha else "").strip()
-        if nome and not nome.lower().startswith("(exemplo"):
-            prefs["exclusoes"].append({"nome": nome, "motivo": str(linha[1]).strip() if len(linha) > 1 else ""})
-    for linha in abas.get("controle", [])[1:]:
-        chave = cl.sem_acento(str(linha[0] if linha else "")).strip().lower()
-        valor = linha[1] if len(linha) > 1 else ""
-        if chave == "ativo":
-            prefs["controle"]["ativo"] = _sim(valor) if str(valor).strip() else True
-        elif chave in ("validade", "versao_minima", "mensagem", "suporte"):
-            prefs["controle"][chave] = str(valor if valor is not None else "").strip()
+            doc = planilha.ler_xlsx(c, so_abas=ABAS_EDITAVEIS)
+        except Exception:  # noqa: BLE001 - planilha em uso ou corrompida: o controle fica no padrão
+            doc = {"abas": []}
+        for a in doc["abas"]:
+            if cl.sem_acento(a["nome"]).strip().lower() != "controle":
+                continue
+            for linha in a["linhas"][1:]:
+                chave = cl.sem_acento(str(linha[0] if linha else "")).strip().lower()
+                valor = linha[1] if len(linha) > 1 else ""
+                if chave == "ativo":
+                    prefs["controle"]["ativo"] = _sim(valor) if str(valor).strip() else True
+                elif chave in ("validade", "versao_minima", "mensagem", "suporte"):
+                    prefs["controle"][chave] = str(valor if valor is not None else "").strip()
     # integracao@ é só para sistemas (não é lido por pessoas); planilhas antigas que o trazem como suporte passam a judicial@.
     if prefs["controle"].get("suporte", "").strip().lower() in ("", SISTEMAS):
         prefs["controle"]["suporte"] = SUPORTE
-    prefs["origem"] = c
     return prefs
+
+
+def linhas_criterios(prefs, pessoa=""):
+    """0.7.33: aba só de leitura "Critérios desta leitura" (quem gravou e com que critérios). Não é lida pelo programa."""
+    return [["Critério", "Valor"],
+            ["Área", prefs.get("area", "")], ["Gravada por", pessoa or "este computador"],
+            ["Valor mínimo da causa para destaque (R$)", prefs.get("valor_minimo") or "sem mínimo"],
+            ["Capital social que indica jurídico próprio (R$)", prefs.get("teto_capital_gigante")],
+            ["Empresas excluídas (quantidade)", len(prefs.get("exclusoes") or [])],
+            ["", ""],
+            ["Os critérios são de cada pessoa, no computador dela: mude em Configurações → Critérios da lista. "
+             "Esta aba não é lida pelo programa. / Criteria belong to each person, on their computer.", ""]]
 
 
 def bloqueio(prefs, versao_atual, hoje=None):
