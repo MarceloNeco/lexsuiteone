@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (nada)
+- **0.7.36 em revisão (12/Nov, noite)**: a Produto avisou "pronta para revisão" (código em `4d10104`, automação verde, execução 634): os 34 itens do teste do dono na 0.7.35, os itens 1 a 4b da lista da 0.7.36 e as ressalvas (1) a (6) da segunda revisão da 0.7.35; os mesmos 46 e 45 arquivos. A Produto anotou "não publicar antes do teste do dono" (roteiro em `documentacao/ROTEIRO-TESTE-0.7.36.md`); o dono mandou depois revisar e, se aprovar, publicar, para levá-la ao escritório amanhã (ordem mais recente, vale a dele). Revisão em duas frentes em paralelo, sem nenhuma saída para a internet: dados e pacote (`/regras` e `copiar_area`, exclusões com CNPJ, privacidade da rota `/cnpj` e do CPF, faixa do Painel e "Nada novo", `por_tribunal`, `ocupado` da rota de licença, mesma lista da 0.7.35, pacote 46 e 45 e atualização a partir da 0.7.35) e tela e orientações (cada passo do roteiro do dono, as 5 ressalvas da 0.7.35, Configurações em quatro seções, empresas excluídas, gráficos empilhados e pizza, lupa e AssistONE, o termo "Processos", manual, Novidades, e-mail, acessibilidade), contra os 5 pontos da Definition of done do `CLAUDE.md`. Só publico a 0.7.36 se as duas aprovarem. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
