@@ -1,7 +1,8 @@
 # Avaliação dos prompts da visita à KR Law (12/Nov/2026, Produto)
 
 Conferido contra `docs/VISITA-KR-LAW.md` (última mudança 10/Nov, 15:48 UTC), o programa atual (0.7.32 publicada,
-0.7.33 em revisão) e a documentação oficial da extensão Claude in Chrome, lida hoje. Nada foi alterado ainda.
+0.7.33 em revisão) e a documentação oficial da extensão Claude in Chrome, lida hoje. **Aplicado em 12/Nov** com o "pode"
+do dono: `docs/VISITA-KR-LAW.md`, `documentacao/visita-kr-law/` e os Google Docs da pasta da visita.
 
 ## 1. Links (conferido hoje)
 
@@ -22,7 +23,7 @@ Para mandar ao Leandro: use o link do GitHub. Os Google Docs servem só para voc
 - As conversas do painel novo da extensão ficam no histórico da conta e abrem no claude.ai, no celular e no
   computador. Com a sua conta, os relatórios já estão com você. Não é preciso compartilhar nem copiar nada.
 - O certificado digital do Leandro funciona em qualquer perfil, porque fica no Windows ou no token.
-- Teste hoje, antes de ir: entre no claude.ai com a sua conta ("Brasino") e confira se o plano é pago (Pro ou acima),
+- Teste hoje, antes de ir: entre no claude.ai com a sua conta e confira se o plano é pago (Pro ou acima),
   porque a extensão exige plano pago. Se não conseguir entrar, use a conta dele (item 3).
 
 ## 3. Se for a conta do Leandro

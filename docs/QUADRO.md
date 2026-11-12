@@ -154,6 +154,12 @@ Arquitetura (pedido no quadro).
   `marca.py` em dia, revisor (bloqueios de texto corrigidos).
 
 ### Feito (mais recente primeiro)
+- 12/Nov: **prompts da visita à KR Law revisados** (pedido do dono; só texto interno): `docs/VISITA-KR-LAW.md` com a
+  versão 0.7.33, a conta Claude do dono num perfil novo do Chrome do Leandro, modo "Skip all approvals" da extensão, 1
+  download por prompt, relatórios no claude.ai do dono, critérios ajustados pelo Leandro por área e "Configurações" no
+  plural; os 4 prompts com login (1A TRT2, 1B TRT15, 3 Astrea, 4B TJSP) separados em `documentacao/visita-kr-law/`, com a
+  lista de links `00-LINKS-DA-VISITA.md`; avaliação em `documentacao/AVALIACAO-PROMPTS-VISITA-2026-11-12.md`. Google Docs
+  novos na pasta da visita do Drive do dono; os de 10/Nov foram para `_antigos`.
 - 09/Nov (noite): **0.7.16 completa** (itens 89 a 101, `documentacao/DESENHO-PLANILHA-GRANDE.md`): planilha por frente
   (`LexSuiteONE - Trabalhista.xlsx`, migração do nome), leitura só das abas editáveis, Arquivo da planilha com 90 dias +
   trabalhados sem repetir a aba Radar, limite de 60 mil linhas (aviso a 80%, limpeza com cópia a 100%), `Cópias de
