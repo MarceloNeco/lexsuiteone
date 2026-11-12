@@ -8,7 +8,7 @@ import shutil
 
 from . import config, planilha, preferencias
 
-NOME_RADAR = preferencias.NOME_ARQUIVO  # uma planilha só: Radar + Preferências + Exclusões + (ocultas) Controle, Log, Saúde, Sobre
+NOME_RADAR = preferencias.NOME_ARQUIVO  # 0.7.33: Radar, Arquivo, Contatos, Critérios desta leitura, Como usar, Histórico + (ocultas) Controle, Saúde, Sobre
 NOME_PAGINA = "Retrato da última leitura.html"  # cópia da tela (0.7.14; antes "Lista para abrir no celular.html")
 NOMES_PAGINA_ANTIGOS = ("LexSuiteONE - Radar.html", "Lista para abrir no celular.html")
 NOME_PAGINA_ANTIGO = NOMES_PAGINA_ANTIGOS[0]
@@ -182,8 +182,8 @@ def _destacar(linhas, chaves, minimo):
 
 def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao="", pasta_robo="", aviso=print, arquivo=None,
                  frente="trabalhista", itens=None, aviso_tamanho="", processos=None, criterios=None):
-    """Regrava a planilha da frente (0.7.16: uma por frente): aba Radar (a lista), Arquivo, Contatos, as abas editáveis
-    preservadas (Preferências, Exclusões, Controle oculta) e as abas Histórico, Saúde e Sobre. Também copia a página HTML.
+    """Regrava a planilha da frente (0.7.16: uma por frente): aba Radar (a lista), Arquivo, Contatos, Critérios desta
+    leitura (0.7.33), a aba Controle oculta preservada e as abas Histórico, Saúde e Sobre. Também copia a página HTML.
     `itens`: as linhas da aba Radar (padrão: as da página). `processos`: só os contatos desses processos.
     Devolve o caminho da planilha, ou '' se não houver pasta ou se a planilha estiver em uso."""
     base = pasta_base(cfg)
@@ -328,12 +328,12 @@ def como_usar(produto="RADAR JUDICIAL"):
          "Click the small arrow in the header (Court, Sector, Size, City...) and tick what you want to see."],
         ["Ordenar pelo valor", "Na setinha de \"Valor da causa\", escolha \"Classificar do maior para o menor\".",
          "On the \"Valor da causa\" arrow, choose \"Sort largest to smallest\"."],
-        ["Destaque em latão", "O valor da causa com fundo latão claro está acima do valor mínimo escolhido na Configuração.",
-         "A claim value with a light brass background is above the minimum value set in Settings."],
-        ["Excluir uma empresa", "No programa: Configuração → Critérios da lista (empresas excluídas, valor mínimo e os outros "
-         "critérios). O programa grava nas abas Preferências e Exclusões, com cópia de segurança antes. Não edite essas abas aqui.",
-         "In the program: Settings → List criteria (excluded companies, minimum value and the other criteria). The program writes "
-         "the Preferences and Exclusions tabs, with a backup copy first. Do not edit those tabs here."],
+        ["Destaque em latão", "O valor da causa com fundo latão claro está acima do valor mínimo de quem gravou (aba Critérios desta leitura).",
+         "A claim value with a light brass background is above the minimum value of whoever saved it (Criteria of this reading tab)."],
+        ["Excluir uma empresa", "No programa: Configurações → Critérios da lista → Empresas excluídas. Os critérios são de cada "
+         "pessoa, no computador dela, por área; a planilha não guarda critérios e traz só a aba Critérios desta leitura, para consulta.",
+         "In the program: Settings → List criteria → Excluded companies. Criteria belong to each person, on their computer, by area; "
+         "the spreadsheet keeps no criteria and only has the Criteria of this reading tab, for reference."],
         ["Planilha aberta", "Se a planilha estiver aberta no Excel na hora da leitura, o programa avisa e grava depois. "
          "Feche e use o botão \"Gravar a planilha agora\".",
          "If the file is open in Excel during a reading, the program warns you and writes it later. Close it and use "

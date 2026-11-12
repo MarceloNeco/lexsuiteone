@@ -194,7 +194,11 @@ def valores_validos(valores):
 def e_documento(texto):
     """O texto parece um CPF ou CNPJ digitado (e não um nome): sem espaço, só números, letras e . / -, com 8 ou mais números."""
     t = str(texto or "").strip()
-    return bool(re.fullmatch(r"[0-9A-Za-z./\-]+", t)) and len(re.sub(r"\D", "", t)) >= 8
+    if not re.fullmatch(r"[0-9A-Za-z./\-]+", t):
+        return False
+    limpo = re.sub(r"[^0-9A-Za-z]", "", t)
+    # só números (CPF, CNPJ), ou 14 caracteres com os 2 últimos números (CNPJ com letras); "ACME12345678" é nome
+    return limpo.isdigit() and len(limpo) >= 8 or (len(limpo) == 14 and limpo[-2:].isdigit() and sum(c.isdigit() for c in limpo) >= 6)
 
 
 def exclusao_valida(nome):

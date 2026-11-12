@@ -215,8 +215,8 @@ _TRAVA_CHAMADOS = threading.Lock()
 MOTIVOS_CHAMADO = {
     "limite": ("Limite de chamados de hoje atingido (5 por computador). Tente amanhã ou escreva para judicial@solverone.com.br.",
                "Today's ticket limit was reached (5 per computer). Try tomorrow or write to judicial@solverone.com.br."),
-    "codigo_invalido": ("Para abrir um chamado, o código de cliente precisa estar conferido (Configurações → Licença e código).",
-                        "To open a ticket, the client code must be confirmed (Settings → Licence and code)."),
+    "codigo_invalido": ("Para abrir um chamado, o código de cliente precisa estar conferido (Configurações → Licença e termos).",
+                        "To open a ticket, the client code must be confirmed (Settings → Licence and terms)."),
     "desativado": ("A licença está desativada. Escreva para judicial@solverone.com.br.", "The licence is deactivated. Write to judicial@solverone.com.br."),
     "dados_invalidos": ("Pedido incompleto: escolha o assunto e escreva a mensagem.", "Incomplete request: choose the subject and write the message."),
 }
@@ -933,8 +933,9 @@ class Tratador(BaseHTTPRequestHandler):
             for k in ("tela", "titulo_tela", "funcao", "idioma", "fuso"):
                 if corpo.get("com_tela", True) is not False or k in ("idioma", "fuso"):
                     dados[k] = str(corpo.get(k) or "")[:200]
-            enviar_pendentes(s.pasta, s.config())
             r = conta.enviar_chamado(s.config(), VERSAO, dados)
+            if not r.get("sem_internet"):  # com internet, os que ficaram na fila saem junto (sem internet, não espera duas vezes)
+                enviar_pendentes(s.pasta, s.config())
             if r.get("ok"):
                 guardar_chamado(s.pasta, dados, r.get("numero"))
                 return self._responder({"ok": True, "numero": r.get("numero")})
