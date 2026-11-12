@@ -153,6 +153,33 @@ class Configuracoes0736(unittest.TestCase):
         self.assertIn('"faixa-falha"', self.h)
 
 
+class Pasta0736(unittest.TestCase):
+    """Itens 18 a 22: conferência numa linha própria, recado de abrir que some, um botão por serviço, cartões claros."""
+
+    def setUp(self):
+        self.h = ler("radar_modelo.html")
+
+    def test_conferencia_e_recado_separados(self):
+        self.assertIn('id="c-abrir-msg"', self.h); self.assertIn('var tx_ = $("c-abrir-msg");', self.h)
+        self.assertIn('class="pasta-conferida" id="c-teste-txt"', self.h)
+
+    def test_um_botao_por_servico_sem_parenteses(self):
+        self.assertIn('["gdrive", "onedrive"].forEach(function (tipo) {', self.h)
+        self.assertNotIn('(nm_ ? " (" + nm_ + ")" : "")', self.h)
+        self.assertIn('nuvem_de: "OneDrive de {o}"', self.h); self.assertIn('nuvem_pessoal: "OneDrive pessoal"', self.h)
+
+    def test_escolher_primeiro_e_abrir_diferente(self):
+        bloco = self.h[self.h.index('id="c-nuvens-wrap"'):][:400]
+        self.assertLess(bloco.index('id="c-escolher"'), bloco.index('id="c-nuvens"'))
+        self.assertIn('class="btn-txt abrir-pasta-link" id="c-abrir-pasta"', self.h)
+
+    def test_cartoes_claros_sem_caminho_repetido(self):
+        self.assertIn('c_nenhuma: "Pasta padrão (recomendada)"', self.h)
+        self.assertIn('pasta_outra_x: "Rede, OneDrive ou Google Drive para computador. Só as planilhas vão para lá; o programa continua em {p}."', self.h)
+        self.assertNotIn('var cam_ = outra_ ? ($("c-outra").value || "") : o.value;', self.h)
+        self.assertIn('pasta_sub: "(o {c} cria a subpasta', self.h)
+
+
 class UltimaTentativa(Servidor):
     def test_dados_trazem_a_ultima_tentativa(self):
         c = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=20)
