@@ -244,7 +244,7 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     for e in banco.execucoes("radar", 200):  # rodadas antigas (antes da 0.7.13) e o resumo de cada rodada
         log.append([e.get("quando", ""), "resumo da rodada", ", ".join(e.get("tribunais") or []), "", "",
                     "Lido" if e.get("resultado") == "ok" else (rotulo.get(e.get("causa", ""), "Parou")),
-                    f"{e.get('lidas', '')} publicações, {e.get('novas', '')} ações novas, {e.get('com_cnpj', '')} com CNPJ",
+                    f"{e.get('lidas', '')} publicações, {e.get('novas', '')} processos novos, {e.get('com_cnpj', '')} com CNPJ",
                     e.get("duracao", ""), e.get("versao", ""), causas.mensagem(e["causa"]) if e.get("causa") else (e.get("erro") or "")])
     saude = [["Quando", "Fonte", "Situação", "Detalhe"]]
     for e in banco.execucoes("saude", 300):
@@ -349,7 +349,7 @@ def como_usar(produto="RADAR JUDICIAL"):
     """Aba visível com o passo a passo da planilha, em português e inglês. Não tem dado de cliente."""
     return [
         ["Assunto / Topic", "Como fazer", "How to"],
-        ["O que é esta planilha", f"O {produto} grava aqui, sozinho, a lista de ações novas a cada leitura. Não precisa "
+        ["O que é esta planilha", f"O {produto} grava aqui, sozinho, a lista de processos novos a cada leitura. Não precisa "
          "copiar nem compartilhar nada: a planilha se atualiza no lugar.",
          f"{produto} writes the list of new lawsuits here by itself after every reading. Nothing to copy or share: "
          "the file updates in place."],
@@ -359,7 +359,7 @@ def como_usar(produto="RADAR JUDICIAL"):
          "On the \"Valor da causa\" arrow, choose \"Sort largest to smallest\"."],
         ["Destaque em latão", "O valor da causa com fundo latão claro está acima do valor mínimo de quem gravou (aba Critérios desta leitura).",
          "A claim value with a light brass background is above the minimum value of whoever saved it (Criteria of this reading tab)."],
-        ["Excluir uma empresa", "No programa: Configurações → Critérios da lista → Empresas excluídas. Os critérios são de cada "
+        ["Excluir uma empresa", "No programa: Configurações → Destaques e exclusões → Empresas excluídas. Os critérios são de cada "
          "pessoa, no computador dela, por área; a planilha não guarda critérios e traz só a aba Critérios desta leitura, para consulta.",
          "In the program: Settings → List criteria → Excluded companies. Criteria belong to each person, on their computer, by area; "
          "the spreadsheet keeps no criteria and only has the Criteria of this reading tab, for reference."],

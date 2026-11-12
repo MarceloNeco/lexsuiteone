@@ -33,12 +33,12 @@ Estranhou algo: print e uma frase para a Produto.
 
 ## Parte 2 · Simular um cliente novo (depois que a Parte 1 passar)
 
-Usa uma **licença nova de teste** e um e-mail novo que cai na sua caixa: `mafreitas1979+teste2@gmail.com` (o Gmail entrega
+Usa uma **licença nova de teste** e um e-mail novo que cai na sua caixa: o seu e-mail com "+teste2" antes do @ (ex.: `seunome+teste2@gmail.com`) (o Gmail entrega
 na mesma caixa; para o sistema é outro e-mail).
 
 **No RootifyONE**
 1. RADAR JUDICIAL → Licenças → **+ Criar licença**: escritório "Teste 2 (SolverONE)", e-mail do responsável =
-   `mafreitas1979+teste2@gmail.com`, domínio em branco.
+   o seu e-mail com "+teste2" antes do @ (ex.: `seunome+teste2@gmail.com`), domínio em branco.
 2. Lápis ✏️ da licença nova → **Preparar e-mail de boas-vindas** → Enviar agora → Enviar.
 
 **No computador (zerar o RADAR atual, como se nunca tivesse sido instalado)**
@@ -49,7 +49,7 @@ na mesma caixa; para o sistema é outro e-mail).
 
 **Como cliente**
 6. Abra o e-mail de boas-vindas → **Baixar o RADAR JUDICIAL** → abra o arquivo → INSTALAR.bat → cole o código.
-7. Siga o assistente (nome, e-mail `mafreitas1979+teste2@gmail.com`, pasta, tribunais).
+7. Siga o assistente (nome, e-mail o seu e-mail com "+teste2" antes do @ (ex.: `seunome+teste2@gmail.com`), pasta, tribunais).
 8. **Teste do pior caso:** não aceite os termos antes. Clique em "Ler o Diário agora": aparece "Falta aceitar os termos".
    Clique em **Aceitar os termos**, role o texto até o fim, marque, confirme e **volte ao programa**: em segundos ele deve
    liberar sozinho (ou clique em **Já aceitei**). Depois, "Ler o Diário agora" lê normalmente.

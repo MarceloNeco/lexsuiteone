@@ -481,7 +481,7 @@ def linhas_criterios(prefs, pessoa=""):
             ["Capital social que indica jurídico próprio (R$) / Share capital suggesting in-house counsel", prefs.get("teto_capital_gigante")],
             ["Empresas excluídas (quantidade) / Excluded companies (count)", len(prefs.get("exclusoes") or [])],
             ["", ""],
-            ["Os critérios são de cada pessoa, no computador dela: mude em Configurações → Critérios da lista. Esta aba não é lida pelo programa.", ""],
+            ["Os critérios são de cada pessoa, no computador dela: mude em Configurações → Destaques e exclusões. Esta aba não é lida pelo programa.", ""],
             ["Criteria belong to each person, on their computer: change them in Settings → List criteria. The program does not read this tab.", ""]]
 
 
