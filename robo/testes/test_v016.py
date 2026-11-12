@@ -666,7 +666,7 @@ class V0720(unittest.TestCase):
                     if not srv.hist.get("rodando"):
                         break
                     time.sleep(0.05)
-                self.assertEqual(srv.hist.get("ultimo"), {"lidos": 0})
+                self.assertEqual(srv.hist.get("ultimo"), {"lidos": 0, "sem_diario": 0, "erros": 0, "novas": 0})  # 0.7.33: a soma dos lotes
         finally:
             srv.shutdown(); srv.server_close()
 

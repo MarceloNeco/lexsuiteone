@@ -518,8 +518,9 @@ def cmd_radar(a):
                 hora = dt.datetime.now().hour
                 sit_h = historico.situacao(banco)
                 if (hora >= 18 or hora < 7) and (sit_h["na_fila"] or sit_h["erros"]):
-                    historico.processar(banco, limite=int(cfg["radar"].get("estatisticas_por_vez") or historico.POR_VEZ),
-                                        aviso=estado.aviso, parar=estado.parar)  # estado.aviso mantém a batida de leitura.json
+                    # 0.7.33 (dono): à noite termina a fila inteira (Continuar à noite), em lotes, com a mesma pausa
+                    historico.processar_tudo(banco, aviso=estado.aviso, parar=estado.parar,
+                                             lote=int(cfg["radar"].get("estatisticas_por_vez") or historico.POR_VEZ))
             except Exception as e:  # noqa: BLE001 - as estatísticas antigas nunca atrapalham a leitura
                 print(f"  Estatísticas antigas: não deu certo agora ({e.__class__.__name__}); tento na próxima noite. / Will retry next night.", flush=True)
         estado.terminar(situacao)

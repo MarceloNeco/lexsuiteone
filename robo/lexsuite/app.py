@@ -871,8 +871,9 @@ class Tratador(BaseHTTPRequestHandler):
                     def andamento(k, total, trib, data):
                         if minha():
                             s.hist.update({"k": k, "total": total, "tribunal": trib, "data": data})
+                    # 0.7.33 (dono): lê a fila inteira (em lotes, com a pausa entre Diários); Pausar para e guarda o resto
                     por_vez = int((cfg.get("radar") or {}).get("estatisticas_por_vez") or _hist.POR_VEZ)
-                    r_ = _hist.processar(b2, limite=por_vez, aviso=print, parar=lambda: bool(minha() and s.hist.get("parar")), andamento=andamento)
+                    r_ = _hist.processar_tudo(b2, aviso=print, parar=lambda: bool(minha() and s.hist.get("parar")), andamento=andamento, lote=por_vez)
                     if minha():
                         s.hist.update({"ultimo": r_})
                 except Exception as e:  # noqa: BLE001 - a tela mostra a mensagem certa, no idioma dela (4.1)

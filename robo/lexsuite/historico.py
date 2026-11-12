@@ -13,7 +13,8 @@ import time
 
 from . import djen, frentes
 
-POR_VEZ = 30
+POR_VEZ = 30  # tamanho de cada lote (a leitura pedida pela tela emenda lotes até acabar a fila; 0.7.33)
+TUDO = 100000  # 0.7.33 (dono, 12/Nov): "Buscar estatísticas" e a leitura da noite leem a fila inteira, com a mesma pausa
 PAUSA_S = 2.0
 MESES_PADRAO = 3
 
@@ -54,9 +55,39 @@ def situacao(banco):
     novas = banco.con.execute("SELECT coalesce(sum(novas), 0) FROM historico").fetchone()[0]
     faixa = banco.con.execute("SELECT min(data), max(data) FROM historico WHERE situacao = 'lido'").fetchone()
     ped = banco.execucoes("historico_pedido", 1)
+    meses = {}
+    for mes, sit, n in banco.con.execute("SELECT substr(data, 1, 7), situacao, count(*) FROM historico GROUP BY 1, 2"):
+        m = meses.setdefault(mes, {"mes": mes, "total": 0, "feitos": 0})
+        m["total"] += n
+        if sit in ("lido", "sem_diario"):
+            m["feitos"] += n
     return {"na_fila": r.get("fila", 0) + r.get("lendo", 0), "lidos": r.get("lido", 0), "sem_diario": r.get("sem_diario", 0),
             "erros": r.get("erro", 0), "novas": int(novas or 0), "desde": faixa[0] or "", "ate": faixa[1] or "",
-            "pedido": ped[0] if ped else {}}
+            "pedido": ped[0] if ped else {},
+            "meses": sorted(meses.values(), key=lambda m: m["mes"], reverse=True)}  # 0.7.33: andamento mês a mês, do mais novo
+
+
+def processar_tudo(banco, aviso=print, parar=None, pausa=PAUSA_S, andamento=None, lote=POR_VEZ):
+    """0.7.33 (dono): lê a fila inteira em lotes de `lote`, até acabar, parar a pedido ou o site cair. Os erros voltam à
+    fila só uma vez (no começo); andamento(k, total, tribunal, data) conta do começo ao fim."""
+    total = banco.con.execute("SELECT count(*) FROM historico WHERE situacao IN ('fila', 'lendo', 'erro')").fetchone()[0]
+    soma = {"lidos": 0, "sem_diario": 0, "erros": 0, "novas": 0}
+    feitos, primeiro = 0, True
+    while True:
+        base = feitos
+        r = processar(banco, limite=lote, aviso=aviso, parar=parar, pausa=pausa, repetir_erros=primeiro,
+                      andamento=(lambda k, _t, tr, d: andamento(base + k, total, tr, d)) if andamento else None)
+        primeiro = False
+        n = r.get("lidos", 0) + r.get("sem_diario", 0) + r.get("erros", 0)
+        feitos += n
+        for k in soma:
+            soma[k] += r.get(k, 0)
+        if r.get("parou"):
+            soma["parou"] = r["parou"]
+            break
+        if n == 0 or (parar and parar()):
+            break
+    return soma
 
 
 def _ano_minimo(data):
@@ -87,7 +118,7 @@ def _causa(e):
     return causa, {"pt": causas.mensagem(causa), "en": causas.mensagem(causa, "en")}
 
 
-def processar(banco, limite=None, aviso=print, parar=None, pausa=PAUSA_S, andamento=None):
+def processar(banco, limite=None, aviso=print, parar=None, pausa=PAUSA_S, andamento=None, repetir_erros=True):
     """Lê até `limite` Diários da fila (do mais novo para o mais antigo). Devolve {lidos, sem_diario, erros, novas, parou?}.
     0.7.19 (revisão da Operação): cada Diário é reservado ("lendo") antes de ler, para dois leitores nunca contarem o
     mesmo Diário; reservas com mais de 1 hora voltam para a fila; site fora do ar para a fila só depois de 3 Diários
@@ -97,7 +128,8 @@ def processar(banco, limite=None, aviso=print, parar=None, pausa=PAUSA_S, andame
     agora_ = dt.datetime.now()
     banco.con.execute("UPDATE historico SET situacao = 'fila' WHERE situacao = 'lendo' AND (quando IS NULL OR quando < ?)",
                       ((agora_ - dt.timedelta(hours=1)).isoformat(timespec="seconds"),))
-    tentar_de_novo_os_erros(banco)  # o que deu erro volta para a fila a cada nova rodada
+    if repetir_erros:  # o que deu erro volta para a fila a cada nova rodada (0.7.33: só no primeiro lote, senão não acaba)
+        tentar_de_novo_os_erros(banco)
     fila = banco.con.execute("SELECT tribunal, data FROM historico WHERE situacao = 'fila' ORDER BY data DESC, tribunal LIMIT ?",
                              (limite,)).fetchall()
     vistos = banco.processos_vistos() | {p for (p,) in banco.con.execute("SELECT processo FROM historico_processos")}

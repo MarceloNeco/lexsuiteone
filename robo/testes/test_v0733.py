@@ -149,5 +149,50 @@ class Chamados(unittest.TestCase):
         i = h.index("function alvoTrilha("); trecho = h[i:i + 600]
         self.assertNotIn("textContent", trecho); self.assertNotIn("aria-label", trecho)  # nunca o texto da tela nem nomes
 
+
+class SazonalidadeTudo(unittest.TestCase):
+    """0.7.33 (dono): "Buscar estatísticas" lê a fila inteira (em lotes), com andamento por mês; erros não viram laço."""
+
+    def test_le_a_fila_inteira_em_lotes_e_para_a_pedido(self):
+        import datetime as dt
+        from lexsuite import banco as bd, djen, historico as h
+        with tempfile.TemporaryDirectory() as tmp:
+            b = bd.Banco(os.path.join(tmp, "t.db"))
+            n = h.pedir(b, 3, ["TRT2"], hoje=dt.date(2026, 11, 12))
+            self.assertGreater(n, 40)
+            passos = []
+            with mock.patch.object(djen, "meta_caderno", side_effect=lambda t, d, *a, **k: None):
+                r = h.processar_tudo(b, aviso=lambda *_: None, pausa=0, lote=7, andamento=lambda k, tot, tr, d: passos.append((k, tot)))
+            self.assertEqual(r["sem_diario"], n); self.assertEqual(h.situacao(b)["na_fila"], 0)
+            self.assertEqual(passos[-1], (n, n))  # andamento contado do começo ao fim, atravessando os lotes
+            meses = h.situacao(b)["meses"]
+            self.assertEqual([m["mes"] for m in meses], sorted([m["mes"] for m in meses], reverse=True))
+            self.assertTrue(all(m["feitos"] == m["total"] for m in meses))
+
+    def test_erro_sempre_nao_vira_laco_e_pausar_guarda_o_resto(self):
+        import datetime as dt
+        from lexsuite import banco as bd, djen, historico as h
+        with tempfile.TemporaryDirectory() as tmp:
+            b = bd.Banco(os.path.join(tmp, "t.db"))
+            n = h.pedir(b, 1, ["TRT2"], hoje=dt.date(2026, 11, 12))
+            def falha(*a, **k):
+                raise ValueError("Diário com defeito")
+            with mock.patch.object(djen, "meta_caderno", side_effect=falha):
+                r = h.processar_tudo(b, aviso=lambda *_: None, pausa=0, lote=5)
+            self.assertEqual(r["erros"], n)  # cada Diário tentado uma vez; o laço termina
+            parar = {"v": False}
+            def meta(t, d, *a, **k):
+                parar["v"] = True; return None
+            with mock.patch.object(djen, "meta_caderno", side_effect=meta):
+                r = h.processar_tudo(b, aviso=lambda *_: None, pausa=0, lote=5, parar=lambda: parar["v"])
+            self.assertEqual(r["sem_diario"], 1); self.assertEqual(h.situacao(b)["na_fila"], n - 1)
+
+    def test_tela_tem_pausar_e_continuar_a_noite(self):
+        with open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8") as f:
+            h = f.read()
+        for k in ("saz_noite:", "saz_pausar_ler:", "saz_ocupado:", "function avisoBuscaEstatisticas", "desenharMeses(e.meses)"):
+            self.assertIn(k, h)
+        self.assertNotIn("mais 30 Diários", h)
+
 if __name__ == "__main__":
     unittest.main()

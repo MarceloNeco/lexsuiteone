@@ -312,6 +312,7 @@ button.barra-l:focus-visible { outline: 2px solid var(--latao); }
 .barra-l.apagada .enche { background: var(--linha-2); }
 .barra-l .n { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 2.5rem; text-align: right; }
 .barra-l .n small { font-weight: 500; color: var(--tinta-3); margin-left: 6px; }
+.saz-meses { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 6px 0 10px; font-size: .86rem; color: var(--tinta-3); } .saz-mes.feito { color: var(--ok, #1e7a46); } .saz-mes.lendo b { color: var(--latao-texto, #7a5a1a); }
 .saz-cab { display: flex; gap: 8px; align-items: center; }
 .col.pico .pe { background: var(--latao); }
 .novidades { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 6px; }
@@ -2114,11 +2115,11 @@ window.LEXSUITE_RADAR = null;
     copia_t: "Cópia criada", abrir_copia: "Abrir a cópia", abrir_pasta_copia: "Abrir a pasta",
     g_ver_como: "Ver como", g_por_trib: "Separar por tribunal", g_barras: "Barras", g_pizza: "Pizza", g_outros: "Outros ({n})", g_sem_dados: "Sem dados neste período.",
     pp_t: "Estes números: {n} ações", pp_t1: "Estes números: 1 ação", pp_diarios: "Diários de {d} a {a}", pp_filtros: "com {n} filtro(s) da lista", pp_trib: "Tribunal:", pp_trib_todos: "Todos", pp_lidas: "Publicado no Diário:", pp_1: "último dia útil", pp_n: "{d} dias",
-    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Junta as leituras normais e os meses anteriores que o RADAR lê aos poucos: escolha quantos meses, clique em \"Buscar estatísticas\" (lê 30 Diários por vez; o resto, 30 a cada leitura automática, se ligada, ou com \"Continuar\"). Guarda os totais e, só neste computador, o número dos processos já contados (para não contar duas vezes): nada entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
+    saz_t: "Sazonalidade: ações novas por mês", saz_ajuda: "Mostra os meses e os dias da semana com mais ações novas, para planejar a equipe e ver picos. Escolha quantos meses e clique em \"Buscar estatísticas\": o {c} lê os Diários desses meses, do mais novo para o mais antigo, um dia de cada tribunal por vez, com uma pausa curta entre eles para não sobrecarregar o CNJ (12 meses com 3 tribunais são cerca de 760 Diários, perto de uma hora). A barra mostra o andamento geral e cada mês. \"Pausar\" para agora e guarda o que já foi lido; \"Continuar a busca\" segue de onde parou. \"Continuar à noite\" deixa terminar sozinho depois da próxima leitura automática. Só soma totais: nenhum processo entra na Lista, no Arquivo nem na planilha, e nada disso vai à SolverONE. Se o CNJ não entregar um Diário antigo, o dia fica \"sem Diário\".",
     saz_vazio: "Ainda não há meses suficientes. Escolha quantos meses buscar e clique em \"Buscar estatísticas\".", saz_semana: "Por dia da semana:", saz_pico: "Mês com mais ações: {m} ({n}).",
     saz_estado: "Diários antigos lidos: {l}; na fila: {f}; sem Diário: {s}; com erro: {e}.", saz_de_ate: "De {d} a {a}.", saz_meses_rot: "Últimos meses", saz_meses: "Últimos {m} meses", saz_mes1: "Último mês",
     saz_ja_fila: "Nada novo para buscar: {p} ou esperando ({n} Diários antigos). Clique em \"Continuar\"; se a leitura automática estiver ligada, o resto vai 30 a cada leitura automática.", saz_per1: "o último mês já está lido", saz_pern: "os últimos {m} meses já estão lidos", saz_ja_lidos: "Nada novo para buscar: {p}. Para ir mais longe, escolha mais meses.",
-    saz_pedir: "Buscar estatísticas", saz_ler: "Continuar (mais 30 Diários)", saz_so_totais: "Só os totais deste gráfico: não entra processo na Lista, no Arquivo nem na planilha.", saz_parar: "Parar", saz_na_fila: "Faltam {n} Diários antigos para completar o gráfico. \"Continuar\" lê mais 30 agora; os outros o {c} lê sozinho, 30 a cada leitura automática (se ligada).",
+    saz_pedir: "Buscar estatísticas", saz_ler: "Continuar a busca", saz_noite: "Continuar à noite", saz_aguardando: "aguardando", saz_lendo2: "Buscando estatísticas: {p}% ({k} de {n} Diários), agora {m}.", saz_pausado: "Busca pausada. Clique em \"Continuar a busca\" para seguir de onde parou.", saz_noite_ok: "Busca pausada: ela termina sozinha depois da próxima leitura automática.", saz_noite_sem_auto: "Busca pausada. Para terminar sozinha à noite, ligue a leitura automática em Configurações.", saz_ocupado_t: "Busca de estatísticas em andamento", saz_ocupado: "O {c} está buscando as estatísticas dos meses anteriores ({p}). Para ler o Diário agora, a busca é pausada e continua depois, de onde parou.", saz_ver_painel: "Ver no Painel", saz_pausar_ler: "Pausar e ler o Diário", saz_so_totais: "Só os totais deste gráfico: não entra processo na Lista, no Arquivo nem na planilha.", saz_parar: "Pausar", saz_na_fila: "Faltam {n} Diários antigos para completar o gráfico. \"Continuar\" lê mais 30 agora; os outros o {c} lê sozinho, 30 a cada leitura automática (se ligada).",
     saz_lendo: "Lendo para o gráfico: Diário antigo {k} de {n} ({tr} {d})…",
     m_sit: "{n} situações", m_frente: "{n} frentes", m_trib: "{n} tribunais", m_data: "{n} datas", m_vara: "{n} varas", m_setor: "{n} setores", m_porte: "{n} portes", m_uf: "{n} estados",
     m_buscar: "Procurar na lista", m_limpar: "Limpar",
@@ -2185,11 +2186,11 @@ window.LEXSUITE_RADAR = null;
     copia_t: "Copy created", abrir_copia: "Open the copy", abrir_pasta_copia: "Open the folder",
     g_ver_como: "Show as", g_por_trib: "Split by court", g_barras: "Bars", g_pizza: "Pie", g_outros: "Others ({n})", g_sem_dados: "No data in this period.",
     pp_t: "These numbers: {n} lawsuits", pp_t1: "These numbers: 1 lawsuit", pp_diarios: "gazettes from {d} to {a}", pp_filtros: "with {n} list filter(s)", pp_trib: "Court:", pp_trib_todos: "All", pp_lidas: "Published in the gazette:", pp_1: "last working day", pp_n: "{d} days",
-    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. It combines normal readings with previous months that RADAR reads little by little: choose how many months, click \"Fetch statistics\" (it reads 30 gazettes at a time; the rest, 30 at each automatic reading if it is on, or with \"Continue\"). It keeps the totals and, only on this computer, the numbers of lawsuits already counted (so none is counted twice): nothing goes to the List, the Archive or the spreadsheet, and none of it goes to SolverONE. If CNJ does not serve an old gazette, the day is marked \"no gazette\".",
+    saz_t: "Seasonality: new lawsuits per month", saz_ajuda: "Shows the months and weekdays with the most new lawsuits, to plan the team and spot peaks. Choose how many months and click \"Fetch statistics\": {c} reads the gazettes of those months, newest first, one day of each court at a time, with a short pause between them so as not to overload the CNJ (12 months with 3 courts are about 760 gazettes, close to one hour). The bar shows the overall progress and each month. \"Pause\" stops now and keeps what was read; \"Continue fetching\" resumes where it stopped. \"Continue tonight\" lets it finish by itself after the next automatic reading. It only adds up totals: no lawsuit goes into the List, the Archive or the spreadsheet, and none of this goes to SolverONE. If the CNJ does not deliver an old gazette, the day is marked \"no gazette\".",
     saz_vazio: "Not enough months yet. Choose how many months to fetch and click \"Fetch statistics\".", saz_semana: "By weekday:", saz_pico: "Busiest month: {m} ({n}).",
     saz_estado: "Old gazettes read: {l}; queued: {f}; no gazette: {s}; with error: {e}.", saz_de_ate: "From {d} to {a}.", saz_meses_rot: "Last months", saz_meses: "Last {m} months", saz_mes1: "Last month",
     saz_ja_fila: "Nothing new to fetch: {p} already read or waiting ({n} old gazettes). Click \"Continue\"; if automatic reading is on, the rest goes 30 at each automatic reading.", saz_per1: "the last month is", saz_pern: "the last {m} months are", saz_ja_lidos: "Nothing new to fetch: {p} already read. To go further back, choose more months.",
-    saz_pedir: "Fetch statistics", saz_ler: "Continue (30 more gazettes)", saz_so_totais: "Only the totals of this chart: no lawsuit goes into the List, the Archive or the spreadsheet.", saz_parar: "Stop", saz_na_fila: "{n} old gazettes are left to complete the chart. \"Continue\" reads 30 more now; {c} reads the rest by itself, 30 at each automatic reading (if it is on).",
+    saz_pedir: "Fetch statistics", saz_ler: "Continue fetching", saz_noite: "Continue tonight", saz_aguardando: "waiting", saz_lendo2: "Fetching statistics: {p}% ({k} of {n} gazettes), now {m}.", saz_pausado: "Fetching paused. Click \"Continue fetching\" to resume where it stopped.", saz_noite_ok: "Fetching paused: it finishes by itself after the next automatic reading.", saz_noite_sem_auto: "Fetching paused. To let it finish tonight, turn on automatic reading in Settings.", saz_ocupado_t: "Statistics fetch in progress", saz_ocupado: "{c} is fetching the statistics of previous months ({p}). To read the gazette now, the fetch is paused and resumes later, where it stopped.", saz_ver_painel: "See in the Dashboard", saz_pausar_ler: "Pause and read the gazette", saz_so_totais: "Only the totals of this chart: no lawsuit goes into the List, the Archive or the spreadsheet.", saz_parar: "Pause", saz_na_fila: "{n} old gazettes are left to complete the chart. \"Continue\" reads 30 more now; {c} reads the rest by itself, 30 at each automatic reading (if it is on).",
     saz_lendo: "Reading for the chart: old gazette {k} of {n} ({tr} {d})…",
     m_sit: "{n} statuses", m_frente: "{n} practice areas", m_trib: "{n} courts", m_data: "{n} dates", m_vara: "{n} court units", m_setor: "{n} sectors", m_porte: "{n} sizes", m_uf: "{n} states",
     m_buscar: "Search the list", m_limpar: "Clear",
@@ -2486,8 +2487,23 @@ window.LEXSUITE_RADAR = null;
     if (selMudou() && Object.keys(sel).length && !(APP && APP.conta && !APP.conta.ok)) { salvarTribunais(true); return; }  // revisão: licença conferida antes  // 0.7.30 (dono): marcou na mira e clicou em "Ler o Diário agora": salva e lê o que está marcado
     if (!Object.keys(sel).length) { $("painel").hidden = false; $("b-trib").setAttribute("aria-expanded", "true"); painel(); mostrarEstado({ erro: t("sem_trib") }); return; }
     if (APP && APP.conta && !APP.conta.ok) { avisoLicenca(); return; }  // 0.7.30 (dono): janela com o motivo e o caminho, sem prender a pessoa
+    if (vigiaHist || (D && D.historico && D.historico.rodando && D.historico.rodando.rodando)) { avisoBuscaEstatisticas(); return; }  // 0.7.33 (dono)
     $("estado").textContent = t("carregando");
     post("/rodar", { dias: null }).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo || t("falha") }); }).catch(function () { $("estado").textContent = t("falha"); });
+  }
+  function avisoBuscaEstatisticas() {  // 0.7.33 (dono): a busca de estatísticas usa o mesmo caminho; a pessoa escolhe
+    var c_ = el("div"); c_.appendChild(el("h3", null, t("saz_ocupado_t"))); c_.appendChild(el("p", null, t("saz_ocupado", { p: histPct != null ? histPct + "%" : "…" })));
+    abrirJanela(c_, [[t("cancelar"), null], [t("saz_ver_painel"), function () { trocarVisao("painel"); setTimeout(function () { var s_ = document.querySelector(".saz-cab"); if (s_) s_.scrollIntoView({ behavior: "smooth", block: "start" }); }, 200); }],
+      [t("saz_pausar_ler"), function () {
+        post("/estatisticas/parar", {}); $("estado").textContent = t("carregando"); var tent_ = 0;
+        (function espera() {
+          fetch("/estatisticas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (e) {
+            if (e.rodando && e.rodando.rodando && tent_++ < 40) { setTimeout(espera, 1000); return; }
+            clearInterval(vigiaHist); vigiaHist = null; histPct = null; if (D && D.historico) D.historico.rodando = {};
+            post("/rodar", { dias: null }).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo || t("falha") }); });
+          }).catch(function () { mostrarEstado({ erro: t("falha") }); });
+        })();
+      }, true]]);
   }
   function salvarTribunais(depoisRodar) {
     post("/config", { tribunais: Object.keys(sel), dias_na_pagina: periodo }).then(function () {
@@ -4074,6 +4090,7 @@ window.LEXSUITE_RADAR = null;
   function mascaraCodigo(c) { var p_ = String(c || "").split("-"); return p_.length === 3 ? p_[0] + "-••••-" + p_[2] : String(c || "").slice(0, 4) + "••••"; }
   var histRecado = null, histInfo = "";
   function textoLang(x) { return typeof x === "string" ? x : ((x && (x[lang] || x.pt)) || ""); }
+  var histPct = null;  // 0.7.33: andamento da busca de estatísticas, para o aviso do "Ler o Diário agora"
   function grafSazonal() {
     var h = (D && D.historico) || {}, g = el("div", "graf largo"), cab = el("div", "saz-cab");
     cab.appendChild(el("h3", null, t("saz_t"))); cab.appendChild(ajuda(t("saz_ajuda"))); g.appendChild(cab);
@@ -4099,11 +4116,24 @@ window.LEXSUITE_RADAR = null;
     // 0.7.19 (ressalva 4.1 da Operação): o motivo da parada ou do erro fica na tela, no idioma escolhido, até a próxima tentativa
     if (histRecado) g.appendChild(el("p", "nota-g saz-recado", textoLang(histRecado)));
     else if (histInfo) g.appendChild(el("p", "nota-g saz-info", histInfo));  // 0.7.30: retorno do "Buscar estatísticas" (informação, não erro)
+    // 0.7.33 (dono): barra com a porcentagem geral e, embaixo, cada mês (do mais novo ao mais antigo) com a sua porcentagem
     var bar = el("div", "progresso"), bi_ = el("i"); bar.appendChild(bi_); bar.hidden = true; g.appendChild(bar);
+    var mesesEl = el("div", "saz-meses"); mesesEl.setAttribute("aria-live", "polite"); g.appendChild(mesesEl);
+    function desenharMeses(ms) {
+      mesesEl.textContent = "";
+      (ms || []).forEach(function (m) {
+        if (!m.total) return;
+        var pct = Math.round(100 * m.feitos / m.total), sp = el("span", "saz-mes" + (pct >= 100 ? " feito" : pct > 0 ? " lendo" : ""));
+        sp.appendChild(el("b", null, mesCurto(m.mes))); sp.appendChild(document.createTextNode(" " + (pct >= 100 ? "✓" : pct > 0 ? pct + "%" : t("saz_aguardando"))));
+        mesesEl.appendChild(sp);
+      });
+    }
+    if ((h.na_fila || 0) > 0 || (h.rodando && h.rodando.rodando)) desenharMeses(h.meses);
     var ac = el("div", "conf-acoes"), sel_ = el("select"); sel_.setAttribute("aria-label", t("saz_meses_rot"));
     [1, 3, 6, 12].forEach(function (m) { var o = el("option", null, m === 1 ? t("saz_mes1") : t("saz_meses", { m: m })); o.value = String(m); sel_.appendChild(o); }); sel_.value = String((h.pedido && h.pedido.meses) || 3);
-    var bp = el("button", "chip", t("saz_pedir")), bl = el("button", "primario", t("saz_ler")), bx = el("button", "chip", t("saz_parar")); bp.type = bl.type = bx.type = "button";
-    bl.hidden = !(h.na_fila > 0 || h.erros > 0); bx.hidden = true;  // 0.7.19 (4.6): com erros também dá para tentar de novo
+    var bp = el("button", "primario", t("saz_pedir")), bl = el("button", "primario", t("saz_ler")), bx = el("button", "chip", t("saz_parar")), bn = el("button", "chip", t("saz_noite"));
+    bp.type = bl.type = bx.type = bn.type = "button";
+    bl.hidden = !(h.na_fila > 0 || h.erros > 0); bp.hidden = !bl.hidden; bx.hidden = bn.hidden = true;  // com a fila parada, o botão é "Continuar a busca"
     var msgH = el("p", "nota-g saz-recado"); msgH.setAttribute("aria-live", "polite"); msgH.hidden = true;  // 0.7.30 (dono): o retorno aparece aqui, não lá no alto
     bp.addEventListener("click", function () {
       histRecado = null; histInfo = ""; bp.disabled = true; msgH.hidden = false; msgH.textContent = t("carregando");
@@ -4111,24 +4141,32 @@ window.LEXSUITE_RADAR = null;
         bp.disabled = false;
         if (!r.ok) { histInfo = ""; var vi_ = g.querySelector(".saz-info"); if (vi_) vi_.remove(); msgH.textContent = r.motivo || t("falha"); return; }  // revisão: a mensagem velha sai
         var novos = Number(r.na_fila || 0), fila = Number(h.na_fila || 0) + novos, perSaz_ = sel_.value === "1" ? t("saz_per1") : t("saz_pern", { m: sel_.value });
-        histInfo = novos ? t("saz_na_fila", { n: num(fila) }) : (fila ? t("saz_ja_fila", { p: perSaz_, n: num(fila) }) : t("saz_ja_lidos", { p: perSaz_ }));
-        if (fila > 0) { histInfo = ""; msgH.hidden = true; bl.click(); return; }  // teste do dono (0.7.30): "Buscar estatísticas" já começa a ler (um botão só)
-        carregar();
+        if (fila > 0) { histInfo = ""; msgH.hidden = true; bl.click(); return; }  // "Buscar estatísticas" já começa a ler a fila inteira
+        histInfo = t("saz_ja_lidos", { p: perSaz_ }); carregar();
       }).catch(function () { bp.disabled = false; msgH.textContent = t("falha"); });
     });
+    sel_.addEventListener("change", function () { bp.hidden = false; });  // outro período: "Buscar estatísticas" de novo
     var acompanhar = function () {
-      bar.hidden = false; bx.hidden = false; bl.disabled = true; bp.disabled = true; clearInterval(vigiaHist);
+      bar.hidden = false; bx.hidden = bn.hidden = false; bx.disabled = bn.disabled = false; bl.hidden = bp.hidden = true; clearInterval(vigiaHist);
       vigiaHist = setInterval(function () {
         fetch("/estatisticas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (e) {
           var rd = e.rodando || {};
-          if (rd.rodando) { bi_.style.width = Math.round(100 * (rd.k || 0) / Math.max(1, rd.total || 1)) + "%"; st.textContent = t("saz_lendo", { k: rd.k || 0, n: rd.total || 0, tr: rd.tribunal || "", d: dataCurta(rd.data || "") }); return; }
-          clearInterval(vigiaHist); vigiaHist = null; histRecado = (e.ultimo && e.ultimo.parou) || e.erro || null; if (histRecado) mostrarAviso(textoLang(histRecado)); carregar();
+          if (rd.rodando) {
+            histPct = Math.round(100 * (rd.k || 0) / Math.max(1, rd.total || 1)); bi_.style.width = histPct + "%";
+            st.textContent = t("saz_lendo2", { p: histPct, k: num(rd.k || 0), n: num(rd.total || 0), m: rd.data ? mesCurto(String(rd.data).slice(0, 7)) : "" });
+            desenharMeses(e.meses); return;
+          }
+          clearInterval(vigiaHist); vigiaHist = null; histPct = null; histRecado = (e.ultimo && e.ultimo.parou) || e.erro || null; if (histRecado) mostrarAviso(textoLang(histRecado)); carregar();
         }).catch(function () {});
       }, 2000);
     };
     bl.addEventListener("click", function () { histRecado = null; histInfo = ""; post("/estatisticas/ler", {}).then(function (r) { if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; } acompanhar(); }); });
-    bx.addEventListener("click", function () { post("/estatisticas/parar", {}); bx.disabled = true; });
-    ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); g.appendChild(ac); g.appendChild(msgH);
+    bx.addEventListener("click", function () { post("/estatisticas/parar", {}); bx.disabled = bn.disabled = true; histInfo = t("saz_pausado"); });
+    bn.addEventListener("click", function () {
+      post("/estatisticas/parar", {}); bx.disabled = bn.disabled = true;
+      histInfo = APP && APP.config && APP.config.agendado ? t("saz_noite_ok") : t("saz_noite_sem_auto");
+    });
+    ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); ac.appendChild(bn); g.appendChild(ac); g.appendChild(msgH);
     g.appendChild(el("p", "nota-g", t("saz_so_totais")));  // teste do dono (0.7.30): não confundir com "Ler o Diário agora"
     if (h.rodando && h.rodando.rodando) setTimeout(acompanhar, 0);
     return g;
