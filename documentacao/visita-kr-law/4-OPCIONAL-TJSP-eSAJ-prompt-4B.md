@@ -5,7 +5,7 @@ Cópia do prompt de [`docs/VISITA-KR-LAW.md`](https://github.com/MarceloNeco/lex
 
 | | |
 |---|---|
-| Onde roda | Janela B, depois do 3, se o Leandro quiser, no perfil "Visita SolverONE" do Chrome do Leandro, extensão Claude in Chrome |
+| Onde roda | Janela B, depois do 3, se o Leandro quiser, na janela anônima do Chrome do Leandro (ou no perfil "Visita SolverONE"), extensão Claude in Chrome |
 | Login | Leandro, com o certificado digital, quando aparecer `PAUSA PARA LOGIN` |
 | Trocar no texto | o número de um processo do escritório no TJSP, se houver |
 | Antes de colar | Conversa nova na extensão; modo "Skip all approvals"; modelo Sonnet, se aparecer a escolha |

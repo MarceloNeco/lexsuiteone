@@ -1,13 +1,13 @@
-# Prompt 1A · PJe do TRT2 (Justiça do Trabalho, São Paulo capital e Grande SP)
+# Prompt 1B · PJe do TRT15 (Justiça do Trabalho, Campinas e interior de SP)
 
 Cópia do prompt de [`docs/VISITA-KR-LAW.md`](https://github.com/MarceloNeco/lexsuiteone/blob/main/docs/VISITA-KR-LAW.md)
 (revisão de 12/Nov/2026), que é a fonte. Precisa do login do advogado.
 
 | | |
 |---|---|
-| Onde roda | Janela A, primeiro, no perfil "Visita SolverONE" do Chrome do Leandro, extensão Claude in Chrome |
+| Onde roda | Janela A, depois do 1A, na janela anônima do Chrome do Leandro (ou no perfil "Visita SolverONE"), extensão Claude in Chrome |
 | Login | Leandro, com o certificado digital, quando aparecer `PAUSA PARA LOGIN` |
-| Trocar no texto | o número de um processo do escritório no TRT2 |
+| Trocar no texto | o número de um processo do escritório no TRT15 |
 | Antes de colar | Conversa nova na extensão; modo "Skip all approvals"; modelo Sonnet, se aparecer a escolha |
 | Quanto tempo | Até 45 minutos; ela para sozinha e escreve `RELATÓRIO FINAL` |
 | Única interação | O login (e, se pedir, confirmar o download de 1 arquivo); depois do login, digitar `continue` |
@@ -15,12 +15,12 @@ Cópia do prompt de [`docs/VISITA-KR-LAW.md`](https://github.com/MarceloNeco/lex
 
 Para copiar: botão de copiar no canto do bloco cinza abaixo.
 
-## O prompt: Prompt 1A · PJe do TRT2, da página inicial à área logada (na visita, com o login do advogado)
+## O prompt: Prompt 1B · PJe do TRT15, da página inicial à área logada (na visita, com o login do advogado)
 
-Como usar: na janela da extensão, abra uma conversa nova e cole o texto abaixo (troque o número do processo). A extensão abre sozinha a página inicial do TRT2, mapeia o caminho até a tela de login e escreve `PAUSA PARA LOGIN`. Aí o Leandro faz o login com o certificado nessa mesma aba e escreve "continue". Modo da extensão: "Skip all approvals"; ela só pede confirmação no download. Pode rodar em paralelo com o Prompt 3 (Astrea), cada um na sua janela.
+Como usar: igual ao 1A, com o processo de referência do TRT15. É o mesmo sistema (PJe da Justiça do Trabalho) num site e num login separados; o relatório mostra o que muda entre os dois. Os outros 22 TRTs usam o mesmo sistema, com endereço próprio e, às vezes, outra versão: por isso TRT2 e TRT15 bastam como amostra.
 
 ```
-Comece abrindo, nesta aba, a página inicial do Tribunal Regional do Trabalho da 2ª Região: https://www.trt2.jus.br. Sua tarefa tem duas partes. Parte A, sem login: mapear a jornada pública, da página inicial até a tela de entrada do PJe. Parte B, depois que o advogado fizer o login: mapear, somente lendo, como se consulta um processo e como se baixam os documentos dele, e anotar onde aparecem os dados de contato da empresa ré (endereço, e-mail e telefone), para que um robô e prompts especialistas possam fazer isso depois. Processo de referência: 0000000-00.0000.5.02.0000 (troque pelo número real).
+Comece abrindo, nesta aba, a página inicial do Tribunal Regional do Trabalho da 15ª Região: https://www.trt15.jus.br. Sua tarefa tem duas partes. Parte A, sem login: mapear a jornada pública, da página inicial até a tela de entrada do PJe. Parte B, depois que o advogado fizer o login: mapear, somente lendo, como se consulta um processo e como se baixam os documentos dele, e anotar onde aparecem os dados de contato da empresa ré (endereço, e-mail e telefone), para que um robô e prompts especialistas possam fazer isso depois. Processo de referência: 0000000-00.0000.5.15.0000 (troque pelo número real).
 
 Como trabalhar (você roda numa extensão do navegador, sozinho, e não salva arquivos):
 - Ninguém acompanha você. Não faça perguntas no meio do caminho: decida sozinho pelas regras daqui. Se faltar uma informação, anote "faltou: ..." e siga.
