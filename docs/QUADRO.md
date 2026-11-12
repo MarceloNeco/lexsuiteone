@@ -148,6 +148,9 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 12/Nov: por engano, dois commits de junção ("sync" e "Merge remote-tracking branch… into claude/…", `50e9e5e` e
+  `4b0092d`) entraram na `main` junto com o quadro; o conteúdo é igual ao da `main`, só a história ficou com eles. Não
+  reescrevo a história; os próximos envios voltam a ser lineares.
 - **Lista da 0.7.34 (teste do dono na 0.7.33, 12/Nov; nada disso bloqueia a visita):** tela de abertura "RADAR JUDICIAL ·
   carregando" e abertura mais rápida com muitos processos (medir antes); Novidades e demais janelas usando a largura do
   computador (botão de fechar sempre visível); cabeçalho fixo com o ☰ sem cobrir os filtros fixos; em Configurações → Pasta
