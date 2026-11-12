@@ -173,6 +173,11 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .estado .ok { color: var(--tinta-2); }
 .estado .andando { color: var(--latao-texto); font-weight: 600; }
 .estado .log { color: var(--tinta-3); font-size: .8rem; }
+.estado .rodando-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; }
+.estado .rodando-linha .progresso-linha { flex: 0 1 320px; min-width: 180px; }
+.estado .rodando-linha .andando { flex: 1 1 260px; }
+.estado .log-det summary { cursor: pointer; color: var(--tinta-3); font-size: .8rem; width: max-content; }
+.estado .log-det .log { display: block; }
 .estado .erro { color: var(--erro); }
 /* 0.7.13: aviso que não é erro (Diário de hoje só às 3h), detalhe técnico recolhido e histórico de leituras */
 .estado .aviso-leve { color: var(--latao-texto); }
@@ -213,6 +218,8 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .painel h3 { margin: 0; font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3); }
 .campo-conf { display: grid; grid-template-columns: minmax(9rem, 12rem) 1fr; gap: 6px 14px; align-items: center; font-size: .9rem; }
 .campo-conf > span { color: var(--tinta-3); }
+.campo-conf.so-campo { grid-template-columns: 1fr; }  /* 0.7.35 (dono): o título da seção já diz "Pasta das planilhas"; os cartões usam a largura toda */
+.so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .campo-conf input, .campo-conf select { border: 1px solid var(--linha-2); background: var(--papel); border-radius: 8px; padding: 7px 10px; min-height: 36px; font-size: .9rem; min-width: 0; width: 100%; }
 .conf-acoes { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: .86rem; color: var(--tinta-2); }
 .conf-acoes select { background: var(--folha); color: var(--tinta); border: 1px solid var(--linha-2); border-radius: 8px; padding: 4px 8px; }
@@ -441,6 +448,9 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .janela-x { all: unset; cursor: pointer; position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: var(--tinta-3); font-size: 1rem; }
 .janela-x:hover, .janela-x:focus-visible { background: var(--papel-2, #f1f4f8); color: var(--tinta); }
 @media (max-width: 480px) { .janela .botoes { flex-direction: column-reverse; align-items: stretch; } .janela .botoes button { width: 100%; text-align: center; } }
+/* 0.7.35 (dono): janelas longas usam a largura do computador e os botões ficam sempre à vista */
+.janela .botoes { position: sticky; bottom: 0; background: var(--folha); padding-top: 8px; margin-bottom: -2px; }
+@media (min-width: 900px) { .janela.larga { max-width: min(960px, 92vw); } .janela.larga .novidades { columns: 2; column-gap: 36px; } .janela.larga .novidades li { break-inside: avoid; margin-bottom: 6px; } }
 .janela textarea { width: 100%; min-height: 200px; font: .82rem/1.4 ui-monospace, Consolas, monospace; border: 1px solid var(--linha-2); border-radius: 8px; padding: 8px; }
 /* 0.7.30 (dono, a partir do protótipo dele): três blocos — leitura, filtros, ordenação; os filtros ficam fixos no alto no computador */
 .bloco-leitura { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 18px; padding: 10px 16px; }
@@ -593,6 +603,7 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .salvo-ok { color: #1e7d3c; font-weight: 700; margin-left: 6px; }
 .carregando { position: fixed; inset: 0; z-index: 95; background: rgba(15,29,51,.9); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; font-size: 1.1rem; text-align: center; padding: 20px; }
 .carregando[hidden] { display: none; }
+.carregando.abertura { background: #0f1d33; }  /* 0.7.35 (dono): tela de abertura, no lugar da tela vazia enquanto o programa carrega */
 .roda { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,.25); border-top-color: var(--latao); border-radius: 50%; animation: roda 1s linear infinite; }
 @keyframes roda { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .roda { animation-duration: 4s; } }
@@ -685,7 +696,7 @@ footer a:hover { text-decoration: underline; }
   <input type="search" id="bg-q" autocomplete="off" spellcheck="false"><div class="bg-res" id="bg-res" aria-live="polite"></div></div>
 </div>
 <div class="veu" id="veu" hidden></div>
-<div class="carregando" id="carregando" hidden role="status" aria-live="polite"><div class="roda" aria-hidden="true"></div><p id="carregando-txt"></p></div>
+<div class="carregando abertura" id="carregando" role="status" aria-live="polite"><div class="roda" aria-hidden="true"></div><p id="carregando-txt"><b>RADAR JUDICIAL</b><br>Carregando… / Loading…</p></div>
 <dialog class="janela" id="janela"><div class="conteudo" id="janela-conteudo"></div></dialog>
 <div class="miolo">
 
@@ -768,11 +779,11 @@ footer a:hover { text-decoration: underline; }
     <h4 class="conf-sec" id="c-s-lista"></h4>
     <fieldset class="agenda" id="c-regras-wrap"><legend id="c-l-regras"></legend><div id="c-regras"></div></fieldset>
     <h4 class="conf-sec" id="c-s-pasta"></h4>
-    <label class="campo-conf"><span id="c-l-pasta"></span><select id="c-pasta" hidden></select><span class="opcoes-cartao pasta-cartoes" id="c-pasta-cartoes" role="radiogroup"></span></label>
+    <label class="campo-conf so-campo"><span id="c-l-pasta" class="so-leitor"></span><select id="c-pasta" hidden></select><span class="opcoes-cartao pasta-cartoes" id="c-pasta-cartoes" role="radiogroup"></span></label>
     <p class="agenda-info" id="c-pasta-nota"></p>
     <label class="campo-conf" id="c-outra-wrap" hidden><span id="c-l-outra"></span><input id="c-outra" type="text" spellcheck="false"></label>
     <div class="conf-acoes nuvens" id="c-nuvens-wrap" hidden><span id="c-nuvens"></span></div>
-    <div class="conf-acoes"><button type="button" class="chip" id="c-escolher" hidden></button><button type="button" class="chip" id="c-testar" hidden></button><button type="button" class="chip" id="c-criar" hidden></button><span id="c-teste-txt"></span></div>
+    <div class="conf-acoes"><button type="button" class="chip" id="c-escolher" hidden></button><button type="button" class="chip" id="c-testar" hidden></button><button type="button" class="chip" id="c-criar" hidden></button><button type="button" class="chip" id="c-abrir-pasta"></button><span id="c-teste-txt"></span></div>
     <h4 class="conf-sec" id="c-s-leitura"></h4>
     <fieldset class="agenda" id="c-agendar-wrap">
       <legend id="c-l-agenda"></legend>
@@ -802,7 +813,7 @@ footer a:hover { text-decoration: underline; }
     <h4 class="conf-sec" id="c-s-licenca"></h4>
     <label class="campo-conf"><span id="c-l-codigo"></span><input id="c-codigo" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="LEX-XXXX-XXXX"></label>
     <p class="nota-registro" id="c-codigo-nota" hidden></p>
-    <div class="conf-acoes"><button type="button" class="chip" id="c-trocar-lic" hidden></button></div>
+    <div class="conf-acoes"><button type="button" class="chip" id="c-conferir-lic" hidden></button><button type="button" class="chip" id="c-trocar-lic" hidden></button></div>
     <fieldset class="agenda" id="c-termos-wrap"><legend id="c-l-termos"></legend><div id="c-termos"></div></fieldset>
     <h4 class="conf-sec" id="c-s-sobre"></h4>
     <dl class="conf-info" id="c-info"></dl>
@@ -1886,7 +1897,7 @@ window.LEXSUITE_RADAR = null;
     pt: { marca: "RADAR JUDICIAL",
       mira_t: "A mira do escritório", mira_trib: "Escolha os tribunais que o {c} acompanha. A frente trabalhista cobre os 24 TRTs; o valor mínimo e quem fica de fora estão em Configurações → Critérios da lista.",
       fase1: "O escritório define a mira", fase2: "Leitura diária do DJEN", fase3: "Cada processo, uma ficha", fase4: "Acompanhamento e prioridade", fase_aqui: "Você está aqui", mira_conf: "O código de cliente, onde fica a planilha, as leituras automáticas e a versão do programa. Quem usa este computador fica no perfil (as iniciais no alto da tela).", ver_lista: "Ver a lista", planilha_aberta: "A planilha estava aberta no Excel (ou faltou permissão para gravar na pasta) e não foi atualizada. A lista está salva: feche a planilha (ou confira a pasta) e clique em", gravar_planilha: "Gravar a planilha agora", planilha_gravada: "Planilha atualizada.", tambem: "Também no processo: {e}", cnpj_novo: "CNPJ novo (com letras): os dados da Receita ainda não estão disponíveis nas fontes públicas. O {c} tenta de novo em 7 dias.", cnpj_conferir: "O Diário traz o CNPJ {c}, mas na Receita ele é de outro nome: pode ser de outra parte do processo. Confira no PJe antes de usar.", f_cnpj: "Só com CNPJ confirmado", f_todas_datas: "Todas as datas", f_todas_varas: "Todas as varas", f_todos_setores: "Todos os setores", f_todos_portes: "Todos os portes", f_todas_ufs: "Todos os estados", ord_recentes: "Mais recentes primeiro", ord_porte: "Maior porte primeiro", ord_empresa: "Empresa (A a Z)", porte_micro: "Microempresa", porte_peq: "Pequena", porte_grande: "Média ou grande", cod_fixo: "Código confirmado. Para trocar, use \"Trocar licença\".", nova_txt: "Versão {v} disponível (a sua é a {a}). Seus dados, a lista e a configuração continuam.", nova_btn: "Atualizar agora", nova_ok: "Atualizado. Reiniciando o {c}...", nova_volta: "Pronto: versão {v}.", abrindo_planilha: "Abrindo a planilha no Excel (pode levar alguns segundos e abrir atrás desta janela).", abrindo_pasta: "Abrindo a pasta das planilhas no Explorador do Windows (se não aparecer, olhe a barra de tarefas).", cod: "Código de cliente", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Número", doc_tipo: "Documento do escritório", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (sem CNPJ)", tipo_pass: "Passaporte (não brasileiro)", doc_invalido: "Número inválido: confira os dígitos.", doc_ok: "Número válido.", cnpj_achado: "Encontrado na Receita: {s}. O nome do escritório foi preenchido; dá para ajustar.", cnpj_nao_achado: "CNPJ válido, mas não encontrado na base pública (ou sem internet). Escreva o nome do escritório.", cnpj_buscando: "Consultando o cadastro público da Receita...", seu_nome: "Seu nome", seu_email: "Seu e-mail", cad_falta: "Preencha o código, o documento do escritório, o nome do escritório, o seu nome e o seu e-mail.", cod_falta: "Informe o código de cliente (está no e-mail de boas-vindas).", registro: "O seu nome, o seu e-mail e o documento do escritório ficam registrados na licença do escritório, para a SolverONE falar com você sobre o serviço. Cada e-mail pertence a um escritório só e fica fixo no perfil; se outra pessoa for usar este computador, use “Outra pessoa vai usar este computador” no perfil.", sem_trib: "Escolha pelo menos um tribunal e clique em Salvar e ler agora.", conferindo: "Conferindo o código com a SolverONE...",
-      planilha_abrir: "Abrir a planilha", pasta_abrir: "Abrir a pasta das planilhas no Windows", planilha_falta: "A planilha ainda não existe: faça uma leitura ou confira a pasta das planilhas em Configurações.",
+      planilha_abrir: "Abrir a planilha", pasta_abrir: "Abrir a pasta das planilhas no Windows", abrir_pasta_win: "Abrir a pasta no Windows", planilha_falta: "A planilha ainda não existe: faça uma leitura ou confira a pasta das planilhas em Configurações.",
       csv_dica: "Arquivo simples com a lista desta tela, para importar em outros sistemas (ex.: Astrea). A planilha completa está na pasta das planilhas.", licenca: "Licença",
       h1: "Novos processos contra empresas",
       resumo1: "{n} processo {p} em {t}. {v} com valor acima de {min}; {s} ainda sem valor.", resumo: "{n} processos {p} em {t}. {v} com valor acima de {min}; {s} ainda sem valor.", p1: "com data no Diário do último dia útil até hoje", pn: "com data no Diário dos últimos {d} dias", t1: "{a}", tn: "{k} tribunais ({a})", tk: "{k} tribunais",
@@ -1915,7 +1926,7 @@ window.LEXSUITE_RADAR = null;
       atu_ok: "Atualizado para a versão {v}. Reiniciando...", atu_nada: "Nada a atualizar: {m}", atu_erro: "Atualização recusada: {m}", per1: "último dia útil até hoje", data_op: "No Diário: {p}", salvos_vazio: "Filtros salvos (0)", salvos_x: "Escolha um filtro salvo para aplicar. Para guardar os filtros de agora, clique em ★ Salvar.", salvar_curto: "★ Salvar", m_todos: "Marcar todos", f_tirar: "Tirar este filtro", pern: "{d} dias", rodar: "Ler o Diário agora", rodando: "Lendo o Diário...",
       aba_regiao: "Por região", aba_uf: "Por estado", todos: "Selecionar todos", todos_ramo: "Selecionar todos ({r})", limpar: "Limpar", escolhidos: "{n} de {k} tribunais escolhidos", salvar: "Salvar", salvar_rodar: "Salvar e ler agora",
       dica: "Cada tribunal publica um diário por dia, de 5 a 150 MB. Dois tribunais levam uns 5 minutos; os 24, de 30 a 60 minutos na primeira vez. O computador precisa estar no Brasil.",
-      ultima: "Última atualização em {q}: {s}", nunca: "Ainda não leu neste computador.", erro: "A leitura parou. {e}", ver_detalhes: "Ver detalhes técnicos", hist_abrir: "Histórico de leituras", hist_fechar: "Fechar o histórico", hist_vazio: "Nenhuma leitura registrada ainda.", hist_quando: "Quando", hist_origem: "Origem", hist_trib: "Tribunal", hist_dias: "Dias pedidos", hist_resp: "Resposta", hist_causa: "Situação", hist_fez: "O que o programa fez", hist_dur: "Duração", c_ok: "Lido", c_ainda_nao_liberado_3h: "Hoje só às 3h", c_nao_publicado: "Ainda não publicado", c_governo_fora: "Site do CNJ fora do ar", c_bloqueio_fora_do_brasil: "Fora do Brasil", c_sem_internet: "Sem internet", c_erro_do_programa: "Erro do programa", aviso_3h: "O Diário de hoje só fica disponível a partir das 3h da manhã. Li até o último dia já publicado ({d}); nada a fazer.", aviso_tribs: "{n} tribunal(is): {m}", carregando: "Carregando...", falha: "Não consegui falar com o programa. Ele pode ter sido encerrado: abra de novo pelo atalho.",
+      ultima: "Última atualização em {q}: {s}", nunca: "Ainda não leu neste computador.", erro: "A leitura parou. {e}", ver_detalhes: "Ver detalhes técnicos", ver_mensagens: "Mensagens anteriores", hist_abrir: "Histórico de leituras", hist_fechar: "Fechar o histórico", hist_vazio: "Nenhuma leitura registrada ainda.", hist_quando: "Quando", hist_origem: "Origem", hist_trib: "Tribunal", hist_dias: "Dias pedidos", hist_resp: "Resposta", hist_causa: "Situação", hist_fez: "O que o programa fez", hist_dur: "Duração", c_ok: "Lido", c_ainda_nao_liberado_3h: "Hoje só às 3h", c_nao_publicado: "Ainda não publicado", c_governo_fora: "Site do CNJ fora do ar", c_bloqueio_fora_do_brasil: "Fora do Brasil", c_sem_internet: "Sem internet", c_erro_do_programa: "Erro do programa", aviso_3h: "O Diário de hoje só fica disponível a partir das 3h da manhã. Li até o último dia já publicado ({d}); nada a fazer.", aviso_tribs: "{n} tribunal(is): {m}", carregando: "Carregando...", falha: "Não consegui falar com o programa. Ele pode ter sido encerrado: abra de novo pelo atalho.",
       f_valor: "Acima de {min}", f_gig: "Sem jurídico próprio provável", trib_todos: "Todos os tribunais", ord_valor: "Maior valor primeiro", ord_hora: "Ordem de chegada", exportar: "Baixar a lista (.csv)",
       mostrando: "Mostrando {a} de {b}", mais: "Mostrar mais {n}", grupo_hora: "{h}, {t}",
       conferir: "valor a conferir", conferir_sub: "no PJe, atrás do captcha", manual: "digitado",
@@ -1983,7 +1994,7 @@ window.LEXSUITE_RADAR = null;
     en: { marca: "RADAR JUDICIAL",
       mira_t: "The firm\u2019s target", mira_trib: "Choose the courts the {c} follows. The labor practice covers the 24 regional labor courts; the minimum value and who stays out are in Settings \u2192 List criteria.",
       fase1: "The firm sets its target", fase2: "Daily DJEN reading", fase3: "One profile per lawsuit", fase4: "Follow-up and priority", fase_aqui: "You are here", mira_conf: "The client code, where the spreadsheet lives, the automatic readings and the program version. Who uses this computer is in the profile (the initials at the top).", ver_lista: "See the list", planilha_aberta: "The spreadsheet was open in Excel (or the folder was not writable) and was not updated. The list is saved: close the spreadsheet (or check the folder) and click", gravar_planilha: "Save the spreadsheet now", planilha_gravada: "Spreadsheet updated.", tambem: "Also in the case: {e}", cnpj_novo: "New tax ID (with letters): Federal Revenue data is not yet available from public sources. {c} tries again in 7 days.", cnpj_conferir: "The gazette shows tax ID {c}, but the Federal Revenue lists it under another name: it may belong to another party. Check in PJe before using it.", f_cnpj: "Confirmed tax ID only", f_todas_datas: "All dates", f_todas_varas: "All court units", f_todos_setores: "All sectors", f_todos_portes: "All sizes", f_todas_ufs: "All states", ord_recentes: "Most recent first", ord_porte: "Largest first", ord_empresa: "Company (A to Z)", porte_micro: "Microempresa", porte_peq: "Pequena", porte_grande: "Média ou grande", cod_fixo: "Code confirmed. To change it, use \"Change licence\".", nova_txt: "Version {v} is available (yours is {a}). Your data, the list and the settings stay.", nova_btn: "Update now", nova_ok: "Updated. Restarting {c}...", nova_volta: "Done: version {v}.", abrindo_planilha: "Opening the spreadsheet in Excel (it may take a few seconds and open behind this window).", abrindo_pasta: "Opening the spreadsheet folder in File Explorer (if it does not show, check the taskbar).", cod: "Client code", cod_ex: "LEX-XXXX-XXXX", cnpj_esc: "Number", doc_tipo: "Firm\u2019s document", tipo_cnpj: "CNPJ", tipo_cpf: "CPF (no CNPJ)", tipo_pass: "Passport (non-Brazilian)", doc_invalido: "Invalid number: check the digits.", doc_ok: "Valid number.", cnpj_achado: "Found at the Federal Revenue: {s}. The firm name was filled in; you can adjust it.", cnpj_nao_achado: "Valid CNPJ, but not found in the public registry (or no internet). Type the firm name.", cnpj_buscando: "Checking the Federal Revenue public registry...", seu_nome: "Your name", seu_email: "Your e-mail", cad_falta: "Fill in the code, the firm, the CNPJ, your name and your e-mail.", cod_falta: "Enter the client code (it is in the welcome e-mail).", registro: "Your name, your e-mail and the firm\u2019s document are registered under the firm\u2019s licence so SolverONE can contact you about the service. Each e-mail belongs to one firm only and stays fixed in the profile; if someone else will use this computer, use “Someone else will use this computer” in the profile.", sem_trib: "Choose at least one court and click Save and read now.", conferindo: "Checking the code with SolverONE...",
-      planilha_abrir: "Open the spreadsheet", pasta_abrir: "Open the spreadsheet folder in Windows", planilha_falta: "The spreadsheet does not exist yet: run a reading or check the spreadsheet folder in Settings.",
+      planilha_abrir: "Open the spreadsheet", pasta_abrir: "Open the spreadsheet folder in Windows", abrir_pasta_win: "Open the folder in Windows", planilha_falta: "The spreadsheet does not exist yet: run a reading or check the spreadsheet folder in Settings.",
       csv_dica: "A plain file with the list on this screen, to import into other systems (e.g. Astrea). The full spreadsheet is in the spreadsheet folder.", licenca: "Licence",
       h1: "New lawsuits against companies",
       resumo1: "{n} lawsuit {p} in {t}. {v} above {min}; {s} still without an amount.", resumo: "{n} lawsuits {p} in {t}. {v} above {min}; {s} still without an amount.", p1: "dated in the gazette from the last working day to today", pn: "dated in the gazette in the last {d} days", t1: "{a}", tn: "{k} courts ({a})", tk: "{k} courts",
@@ -2012,7 +2023,7 @@ window.LEXSUITE_RADAR = null;
       atu_ok: "Updated to version {v}. Restarting...", atu_nada: "Nothing to update: {m}", atu_erro: "Update refused: {m}", per1: "last working day to today", data_op: "In the gazette: {p}", salvos_vazio: "Saved filters (0)", salvos_x: "Choose a saved filter to apply it. To keep the current filters, click ★ Save.", salvar_curto: "★ Save", m_todos: "Tick all", f_tirar: "Remove this filter", pern: "{d} days", rodar: "Read the gazette now", rodando: "Reading the gazette...",
       aba_regiao: "By region", aba_uf: "By state", todos: "Select all", todos_ramo: "Select all ({r})", limpar: "Clear", escolhidos: "{n} of {k} courts chosen", salvar: "Save", salvar_rodar: "Save and read now",
       dica: "Each court publishes one gazette a day, 5 to 150 MB. Two courts take about 5 minutes; all 24, 30 to 60 minutes the first time. The computer must be in Brazil.",
-      ultima: "Last update at {q}: {s}", nunca: "Not read on this computer yet.", erro: "The reading stopped. {e}", ver_detalhes: "Show technical details", hist_abrir: "Reading history", hist_fechar: "Close the history", hist_vazio: "No reading recorded yet.", hist_quando: "When", hist_origem: "Source", hist_trib: "Court", hist_dias: "Days requested", hist_resp: "Response", hist_causa: "Status", hist_fez: "What the program did", hist_dur: "Duration", c_ok: "Read", c_ainda_nao_liberado_3h: "Today only after 3 a.m.", c_nao_publicado: "Not published yet", c_governo_fora: "CNJ site down", c_bloqueio_fora_do_brasil: "Outside Brazil", c_sem_internet: "No internet", c_erro_do_programa: "Program error", aviso_3h: "Today\u2019s gazette is only available from 3 a.m. I read up to the last published day ({d}); nothing to do.", aviso_tribs: "{n} court(s): {m}", carregando: "Loading...", falha: "Could not reach the program. It may have stopped: open it again from the shortcut.",
+      ultima: "Last update at {q}: {s}", nunca: "Not read on this computer yet.", erro: "The reading stopped. {e}", ver_detalhes: "Show technical details", ver_mensagens: "Earlier messages", hist_abrir: "Reading history", hist_fechar: "Close the history", hist_vazio: "No reading recorded yet.", hist_quando: "When", hist_origem: "Source", hist_trib: "Court", hist_dias: "Days requested", hist_resp: "Response", hist_causa: "Status", hist_fez: "What the program did", hist_dur: "Duration", c_ok: "Read", c_ainda_nao_liberado_3h: "Today only after 3 a.m.", c_nao_publicado: "Not published yet", c_governo_fora: "CNJ site down", c_bloqueio_fora_do_brasil: "Outside Brazil", c_sem_internet: "No internet", c_erro_do_programa: "Program error", aviso_3h: "Today\u2019s gazette is only available from 3 a.m. I read up to the last published day ({d}); nothing to do.", aviso_tribs: "{n} court(s): {m}", carregando: "Loading...", falha: "Could not reach the program. It may have stopped: open it again from the shortcut.",
       f_valor: "Above {min}", f_gig: "Without likely in-house counsel", trib_todos: "All courts", ord_valor: "Highest value first", ord_hora: "Arrival order", exportar: "Download the list (.csv)",
       mostrando: "Showing {a} of {b}", mais: "Show {n} more", grupo_hora: "{h}, {t}",
       conferir: "value to check", conferir_sub: "in PJe, behind the captcha", manual: "typed",
@@ -2108,7 +2119,7 @@ window.LEXSUITE_RADAR = null;
     termos_ler_todos: "Ler os termos", termos_aceitar: "Aceitar os termos", termos_versao: "Termos (versão {v})", termos_aceitar_esc: "Aceitar em nome do escritório", termos_aceitar_esc_x: "Só o responsável pela licença aceita em nome do escritório. A página abre no navegador com o código, o seu nome e o seu e-mail já preenchidos; confira e confirme.",
     pasta_fica: "As planilhas ficam em:", pasta_drive_x: "Sincroniza com a nuvem pelo Google Drive para computador: dá para abrir no celular e com a equipe.", pasta_local_x: "Fica só neste computador; ninguém mais vê. Bom para começar.", pasta_outra_x: "Para a equipe abrir de outros computadores, escolha uma pasta de rede, do OneDrive ou do Google Drive para computador. Também vale outra pasta deste computador.",
     escolhendo: "A janela de pastas do Windows abriu. Se não aparecer, procure atrás desta tela ou na barra de tarefas.",
-    g_sinal: "Como a ação nova foi reconhecida", sinal_antigo: "Guardada antes da 0.7.16 (regra antiga)",
+    g_sinal: "Como a ação nova foi reconhecida", sinal_antigo: "Sem sinal registrado",
     voltar: "Voltar", pf_licenca: "Licença do escritório", pf_codigo: "Código:", pf_escritorio_lic: "Escritório:", pf_situacao: "Situação:", pf_validade: "(até {d})",
     pf_fixo: "Fixo: identifica você na licença do escritório.", pf_outra_pessoa: "Outra pessoa vai usar este computador",
     pf_outra_pessoa_x: "O e-mail e o escritório não se editam: são a sua identificação na licença. Se outra pessoa do escritório vai usar este computador, ela se cadastra com o e-mail dela, e a SolverONE confere se o domínio do e-mail é do escritório.",
@@ -2125,9 +2136,9 @@ window.LEXSUITE_RADAR = null;
     criterio_nota: "Desde {d}, \"ação nova\" conta só a lista de distribuição, a audiência inicial, una ou de conciliação, a notificação inicial (ou \"notifique-se a reclamada\") e a citação inicial, em varas de 1º grau (antes entravam intimações comuns e recursos). Números de antes e de depois não se comparam.",
     sair: "Sair do RADAR", sair_t: "Sair do RADAR?", sair_x: "Fecha esta tela e encerra o programa. As leituras automáticas continuam marcadas no Windows.",
     sair_ok: "Pode fechar esta janela. O RADAR foi encerrado.", sair_rodando: "Há uma leitura em andamento: espere terminar ou clique em Interromper.",
-    fechado_t: "O RADAR foi fechado", fechado_x: "A tela ficou fechada ou escondida por alguns minutos e o programa se encerrou para não ficar aberto à toa. Abra de novo pelo atalho da área de trabalho.",
+    fechado_t: "O RADAR foi encerrado", fechado_x: "Pode fechar esta janela. Para usar de novo, abra pelo atalho da área de trabalho.",
     atualizando: "Atualizando para a versão {v}… a tela volta sozinha em alguns segundos.", reiniciando: "Reiniciando o programa…",
-    c_s_licenca: "Licença e termos", c_s_lista: "A lista", c_s_leitura: "Leitura", c_s_tela: "Tela", c_l_aone: "Assistente (AssistONE)", lic_trocar: "Trocar licença", lic_trocar_t: "Trocar o código de cliente?", lic_trocar_p: "Digite o novo código (está no e-mail de boas-vindas) e salve. O {c} só troca se a SolverONE confirmar o código novo; até lá, e sem internet, o atual continua valendo.", lic_trocar_ok: "Trocar", lic_salvar_dica: "Digite o código novo e clique em Salvar.", c_s_pasta: "Pasta das planilhas", c_s_sobre: "Sobre este computador",
+    c_s_licenca: "Licença e termos", c_s_lista: "A lista", c_s_leitura: "Leitura", c_s_tela: "Tela", c_l_aone: "Assistente (AssistONE)", lic_trocar: "Trocar licença", lic_conferir: "Conferir agora", lic_conferida_ok: "Licença conferida com a SolverONE agora: ativa.", lic_trocar_t: "Trocar o código de cliente?", lic_trocar_p: "Digite o novo código (está no e-mail de boas-vindas) e salve. O {c} só troca se a SolverONE confirmar o código novo; até lá, e sem internet, o atual continua valendo.", lic_trocar_ok: "Trocar", lic_salvar_dica: "Digite o código novo e clique em Salvar.", c_s_pasta: "Pasta das planilhas", c_s_sobre: "Sobre este computador",
     c_pasta_nota: "Mudar a pasta não move as planilhas que já existem: o RADAR cria as novas na pasta escolhida na próxima leitura, e as antigas ficam onde estão.",
     c_fechar: "Fechar", c_mudou_t: "Salvar as mudanças?", c_mudou: "Você mudou as Configurações e ainda não salvou.", c_descartar: "Descartar", c_continuar: "Continuar editando",
     arm_t: "Armazenamento", arm_planilha: "Planilha {f}", arm_linhas: "{n} de {l} linhas ({p}%)", arm_banco: "Banco do programa ({n} ações guardadas)",
@@ -2178,7 +2189,7 @@ window.LEXSUITE_RADAR = null;
     termos_ler_todos: "Read the terms", termos_aceitar: "Accept the terms", termos_versao: "Terms (version {v})", termos_aceitar_esc: "Accept on behalf of the firm", termos_aceitar_esc_x: "Only the licence holder accepts on behalf of the firm. The page opens in the browser with the code, your name and your e-mail filled in; check and confirm.",
     pasta_fica: "The spreadsheets live in:", pasta_drive_x: "Syncs to the cloud through Google Drive for desktop: open it on the phone and with the team.", pasta_local_x: "Stays on this computer only; nobody else sees it. Good to start with.", pasta_outra_x: "So the team can open it from other computers, choose a network, OneDrive or Google Drive for desktop folder. Another folder on this computer also works.",
     escolhendo: "The Windows folder picker opened. If you do not see it, look behind this screen or on the taskbar.",
-    g_sinal: "How the new lawsuit was recognised", sinal_antigo: "Saved before 0.7.16 (old rule)",
+    g_sinal: "How the new lawsuit was recognised", sinal_antigo: "No recorded signal",
     voltar: "Back", pf_licenca: "Firm licence", pf_codigo: "Code:", pf_escritorio_lic: "Firm:", pf_situacao: "Status:", pf_validade: "(until {d})",
     pf_fixo: "Fixed: identifies you on the firm's licence.", pf_outra_pessoa: "Someone else will use this computer",
     pf_outra_pessoa_x: "E-mail and firm cannot be edited: they identify you on the licence. If someone else from the firm will use this computer, they sign up with their own e-mail, and SolverONE checks that the e-mail domain belongs to the firm.",
@@ -2195,9 +2206,9 @@ window.LEXSUITE_RADAR = null;
     criterio_nota: "Since {d}, a \"new lawsuit\" counts only the distribution list, the first (or single, or conciliation) hearing, the first notice and the first summons, in first-instance courts (ordinary notices and appeals used to count). Numbers before and after are not comparable.",
     sair: "Exit RADAR", sair_t: "Exit RADAR?", sair_x: "Closes this screen and stops the program. Automatic readings stay scheduled in Windows.",
     sair_ok: "You can close this window. RADAR has exited.", sair_rodando: "A reading is in progress: wait for it to finish or click Stop.",
-    fechado_t: "RADAR was closed", fechado_x: "The screen was closed or hidden for a few minutes and the program exited so it does not stay open for nothing. Open it again from the desktop shortcut.",
+    fechado_t: "RADAR has closed", fechado_x: "You can close this window. To use it again, open it from the desktop shortcut.",
     atualizando: "Updating to version {v}… the screen comes back by itself in a few seconds.", reiniciando: "Restarting the program…",
-    c_s_licenca: "Licence and terms", c_s_lista: "The list", c_s_leitura: "Reading", c_s_tela: "Screen", c_l_aone: "Assistant (AssistONE)", lic_trocar: "Change licence", lic_trocar_t: "Change the client code?", lic_trocar_p: "Type the new code (it is in the welcome e-mail) and save. {c} only changes it if SolverONE confirms the new code; until then, and without internet, the current one stays valid.", lic_trocar_ok: "Change", lic_salvar_dica: "Type the new code and click Save.", c_s_pasta: "Spreadsheet folder", c_s_sobre: "About this computer",
+    c_s_licenca: "Licence and terms", c_s_lista: "The list", c_s_leitura: "Reading", c_s_tela: "Screen", c_l_aone: "Assistant (AssistONE)", lic_trocar: "Change licence", lic_conferir: "Check now", lic_conferida_ok: "Licence checked with SolverONE just now: active.", lic_trocar_t: "Change the client code?", lic_trocar_p: "Type the new code (it is in the welcome e-mail) and save. {c} only changes it if SolverONE confirms the new code; until then, and without internet, the current one stays valid.", lic_trocar_ok: "Change", lic_salvar_dica: "Type the new code and click Save.", c_s_pasta: "Spreadsheet folder", c_s_sobre: "About this computer",
     c_pasta_nota: "Changing the folder does not move existing spreadsheets: RADAR creates new ones in the chosen folder on the next reading, and the old ones stay where they are.",
     c_fechar: "Close", c_mudou_t: "Save changes?", c_mudou: "You changed the Settings and did not save yet.", c_descartar: "Discard", c_continuar: "Keep editing",
     arm_t: "Storage", arm_planilha: "Spreadsheet {f}", arm_linhas: "{n} of {l} rows ({p}%)", arm_banco: "Program database ({n} lawsuits saved)",
@@ -2313,9 +2324,10 @@ window.LEXSUITE_RADAR = null;
     var pedido_ = APP ? periodo : 0, ger_ = geracaoCache;
     return fetch("/dados" + (APP ? "?dias=" + periodo : ""), { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
       if (ger_ === geracaoCache) cacheDados[pedido_ || Number((d.app && d.app.config && d.app.config.dias_na_pagina) || 1)] = { d: d, t: Date.now() };  // gravou algo no meio: não guarda
-      aplicarDados(d);
-    }).catch(function () { carregandoPer = 0; $("estado").textContent = t("falha"); });
+      aplicarDados(d); fimAbertura();
+    }).catch(function () { carregandoPer = 0; fimAbertura(); $("estado").textContent = t("falha"); });
   }
+  function fimAbertura() { var c_ = $("carregando"); if (c_ && c_.classList.contains("abertura")) { c_.classList.remove("abertura"); c_.hidden = true; } }
   function aplicarDados(d) {
     {
       D = d; APP = d.app || null; if (typeof avisarRecursos === "function") setTimeout(avisarRecursos, 0); var noAssistente = !$("wizard").hidden;  // no assistente, a escolha ainda não salva fica
@@ -2336,6 +2348,7 @@ window.LEXSUITE_RADAR = null;
     return fetch(caminho, { method: "POST", headers: { "Content-Type": "application/json", "X-LexSuite": "1" }, body: JSON.stringify(corpo || {}) }).then(function (r) { return r.json(); })
       .then(function (j) { if (j && lang === "en" && j.motivo_en) j.motivo = j.motivo_en; return j; });  // 0.7.23: motivo no idioma da tela
   }
+  var logAberto = false;
   function mostrarEstado(e) {
     var box = $("estado"); box.textContent = "";
     if (!e) return;
@@ -2344,21 +2357,28 @@ window.LEXSUITE_RADAR = null;
       var pct = Math.max(1, Math.min(99, Number(e.progresso) || 1)), barra = el("div", "progresso"), cheio = el("i");
       cheio.style.width = pct + "%"; barra.appendChild(cheio); barra.setAttribute("role", "progressbar"); barra.setAttribute("aria-valuemin", "0"); barra.setAttribute("aria-valuemax", "100"); barra.setAttribute("aria-valuenow", String(pct)); barra.setAttribute("aria-label", t("rodando"));
       var linhaB_ = el("div", "progresso-linha"); linhaB_.appendChild(barra);
-      var gira_ = el("span", "girando", "↻"); gira_.setAttribute("aria-hidden", "true"); linhaB_.appendChild(gira_); box.appendChild(linhaB_);  // 0.7.30 (dono): mostra que ainda está trabalhando
+      var gira_ = el("span", "girando", "↻"); gira_.setAttribute("aria-hidden", "true"); linhaB_.appendChild(gira_);  // 0.7.30 (dono): mostra que ainda está trabalhando
+      // 0.7.35 (dono): barra, andamento e Interromper numa linha só; as mensagens anteriores ficam em "ver detalhes"
+      var fila_ = el("div", "rodando-linha"); fila_.appendChild(linhaB_); box.appendChild(fila_);
       if (e.atrasada) box.appendChild(el("span", "aviso-leve", t("atrasada", { h: fmtHora(e.atrasada) })));
-      box.appendChild(el("span", "andando", (e.externa ? t("rodando_auto", { h: String(e.inicio || "").slice(11, 16) }) : t("rodando")) + " " + pct + "%" + (ultima ? " · " + ultima : "")));
+      fila_.appendChild(el("span", "andando", (e.externa ? t("rodando_auto", { h: String(e.inicio || "").slice(11, 16) }) : t("rodando")) + " " + pct + "%" + (ultima ? " · " + ultima : "")));
       if (MODO === "app") {
-        if (e.parando) box.appendChild(el("span", "aviso-leve", t("parando")));
+        if (e.parando) fila_.appendChild(el("span", "aviso-leve", t("parando")));
         else {
           var bi = el("button", "perigo", "■ " + t("interromper")); bi.type = "button";
           bi.addEventListener("click", function () {
             var c = el("div"); c.appendChild(el("h3", null, t("interromper_q"))); c.appendChild(el("p", null, t("interromper_x")));
             abrirJanela(c, [[t("continuar_lendo"), null], [t("interromper"), function () { post("/interromper", {}).then(function () { vigiar(); }).catch(function () { var cf = el("div"); cf.appendChild(el("p", null, t("falha"))); abrirJanela(cf, [[t("fechar"), null, true]]); }); }, true]]);
           });
-          box.appendChild(bi);
+          fila_.appendChild(bi);
         }
       }
-      (e.mensagens || []).slice(-4, -1).forEach(function (m) { box.appendChild(el("span", "log", m.hora + "  " + datasNoTexto(m.texto))); });
+      var ant_ = (e.mensagens || []).slice(-4, -1);
+      if (ant_.length) {
+        var dl_ = el("details", "log-det"); dl_.open = logAberto; dl_.appendChild(el("summary", null, t("ver_mensagens")));
+        dl_.addEventListener("toggle", function () { logAberto = dl_.open; });
+        ant_.forEach(function (m) { dl_.appendChild(el("span", "log", m.hora + "  " + datasNoTexto(m.texto))); }); box.appendChild(dl_);
+      }
       return;
     }
     var licFaixa_ = !!(APP && APP.conta && APP.conta.codigo && !APP.conta.ok);  // teste do dono (0.7.30): a faixa vermelha do alto já diz o motivo da licença
@@ -2426,6 +2446,7 @@ window.LEXSUITE_RADAR = null;
   function recente(chave) { return salvoAgora[chave] && Date.now() - salvoAgora[chave] < 5000; }
   function telaFechada() {
     mostrarCarregando(t("fechado_t") + ". " + t("fechado_x"), false);
+    try { window.close(); } catch (e) {}  // 0.7.35 (dono): a janela do programa tenta se fechar sozinha
   }
   setInterval(function () {
     if (MODO !== "app" || reiniciando) return;
@@ -2618,7 +2639,7 @@ window.LEXSUITE_RADAR = null;
       abrirJanela(c, [[t("c_continuar"), null], [t("c_descartar"), function () { regrasSujo = false; fecharConfig(true); }], [t("c_salvar"), salvarConfig, true]]);
       return;
     }
-    regrasSujo = false; $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); if ($("config").classList.contains("pagina")) modoPagina(null);
+    regrasSujo = false; trocandoLic = false; $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); if ($("config").classList.contains("pagina")) modoPagina(null);
     devolverFoco();
   }
   function desenharArmConfig(sit) {
@@ -2692,7 +2713,9 @@ window.LEXSUITE_RADAR = null;
     $("c-codigo").value = fixo ? mascaraCodigo(APP.conta.codigo) : ((APP && APP.conta && APP.conta.codigo) || "");  // 0.7.19: confirmado aparece mascarado
     $("c-codigo").readOnly = fixo; $("c-codigo").tabIndex = fixo ? -1 : 0; $("c-codigo-nota").hidden = !fixo;
     // 0.7.32: trocar o código só por este botão, com confirmação
-    $("c-trocar-lic").hidden = !fixo; $("c-trocar-lic").textContent = t("lic_trocar"); $("c-codigo-nota").textContent = t("cod_fixo");
+    $("c-trocar-lic").hidden = !fixo; $("c-trocar-lic").textContent = t("lic_trocar");
+    // 0.7.35 (dono): "Conferir agora" confere a licença e os termos na hora
+    $("c-conferir-lic").hidden = !(APP && APP.conta && APP.conta.codigo); $("c-conferir-lic").textContent = t("lic_conferir"); $("c-codigo-nota").textContent = t("cod_fixo");
     p.hidden = !abrir; $("b-config").setAttribute("aria-expanded", String(abrir));
     if (!abrir) return;
     $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false"); fecharPerfil();
@@ -2807,7 +2830,7 @@ window.LEXSUITE_RADAR = null;
       abrirJanela(c_, [[t("cancelar"), null], [t("mudar_pasta_ok"), function () { salvarConfig(true); }, true]]);
       return;
     }
-    var cod = $("c-codigo").value.trim().toUpperCase(); if (!$("c-codigo").readOnly && cod && !(APP && APP.conta && APP.conta.codigo === cod)) corpo.codigo = cod;
+    var cod = $("c-codigo").value.trim().toUpperCase(); if (!$("c-codigo").readOnly && cod && (trocandoLic || !(APP && APP.conta && APP.conta.codigo === cod))) corpo.codigo = cod;  // 0.7.35: "Trocar licença" com o mesmo código confere de novo
     if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
     if ($("c-agendar").checked && !cHoras.length) { $("c-msg").textContent = t("ag_um"); return; }
     corpo.horarios = cHoras.slice(); corpo.dias = diasValor(cDias); if (!cDias.length) corpo.agendar = false; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
@@ -3184,7 +3207,7 @@ window.LEXSUITE_RADAR = null;
       var li = el("li", i === 0 ? "aqui" : null); li.appendChild(el("span", "fase-n", String(i + 1))); li.appendChild(el("b", null, t(f)));
       if (i === 0) li.appendChild(el("small", null, t("fase_aqui"))); if (i === 0) li.setAttribute("aria-current", "step"); fs_.appendChild(li);
     }); $("c-mira").textContent = t("mira_conf");
-    $("b-config-txt").textContent = ""; $("c-titulo").textContent = t("c_titulo"); $("c-l-codigo").textContent = t("cod"); $("c-l-pasta").textContent = t("c_pasta"); $("c-l-outra").textContent = t("c_outra");
+    $("b-config-txt").textContent = ""; $("c-titulo").textContent = t("c_titulo"); $("c-l-codigo").textContent = t("cod"); $("c-l-pasta").textContent = t("c_pasta"); $("c-abrir-pasta").textContent = t("abrir_pasta_win"); $("c-abrir-pasta").hidden = MODO !== "app"; $("c-l-outra").textContent = t("c_outra");
     $("c-testar").textContent = t("c_testar"); $("c-escolher").textContent = t("op_escolher"); $("c-criar").textContent = t("criar_pasta"); $("c-salvar").textContent = t("c_salvar"); $("c-cancelar").textContent = t("cancelar"); $("c-registro").textContent = t("ver_registro"); $("c-atualizar").textContent = t("c_atualizar"); $("c-dica").textContent = t("c_dica");
     painel(); infoConfig(); bannerControle(); if (!$("config").hidden) desenharAgenda(); if (!$("perfil").hidden && !editando) desenharPerfil();
     if (APP && !vigia) mostrarEstado(APP.estado);
@@ -3521,7 +3544,7 @@ window.LEXSUITE_RADAR = null;
     abrirJanela(c, [[t("cancelar"), null], [t(ids.length > 1 ? "aplicar_n" : "aplicar_1", { n: num(ids.length), s: t("st_" + sit) }), function () { mudarSituacao(ids, sit, mot ? mot.value : ""); }, true]]);
   }
   function abrirJanela(conteudo, botoes, aoFechar) {
-    var j = $("janela"), box = $("janela-conteudo"); box.textContent = "";
+    var j = $("janela"), box = $("janela-conteudo"); box.textContent = ""; j.classList.remove("larga");
     j._aoFechar = aoFechar || null;  // revisão da 0.7.28: roda ao fechar de qualquer jeito (botão, ✕, Esc, clique fora)
     var fx_ = el("button", "janela-x", "✕"); fx_.type = "button"; fx_.setAttribute("aria-label", t("fechar")); fx_.title = t("fechar");  // 0.7.28 (dono): ✕ em toda janela
     fx_.addEventListener("click", function () { j.close(); }); box.appendChild(fx_); box.appendChild(conteudo);
@@ -4189,7 +4212,7 @@ window.LEXSUITE_RADAR = null;
     [1, 3, 6, 12].forEach(function (m) { var o = el("option", null, m === 1 ? t("saz_mes1") : t("saz_meses", { m: m })); o.value = String(m); sel_.appendChild(o); }); sel_.value = String((h.pedido && h.pedido.meses) || 3);
     var bp = el("button", "primario", t("saz_pedir")), bl = el("button", "primario", t("saz_ler")), bx = el("button", "chip", t("saz_parar")), bn = el("button", "chip", t("saz_noite"));
     bp.type = bl.type = bx.type = bn.type = "button";
-    bl.hidden = !(h.na_fila > 0 || h.erros > 0); bp.hidden = !bl.hidden; bx.hidden = bn.hidden = true;  // com a fila parada, o botão é "Continuar a busca"
+    bl.hidden = !(h.na_fila > 0 || h.erros > 0); bp.hidden = !bl.hidden; bx.hidden = true; bn.hidden = !(h.na_fila > 0);  // com a fila parada, o botão é "Continuar a busca"; 0.7.35 (dono): "Continuar à noite" também aparece parada
     var msgH = el("p", "nota-g saz-recado"); msgH.setAttribute("aria-live", "polite"); msgH.hidden = true;  // 0.7.30 (dono): o retorno aparece aqui, não lá no alto
     bp.addEventListener("click", function () {
       histRecado = null; histInfo = ""; bp.disabled = true; msgH.hidden = false; msgH.textContent = t("carregando");
@@ -4221,6 +4244,7 @@ window.LEXSUITE_RADAR = null;
     bn.addEventListener("click", function () {
       post("/estatisticas/parar", {}); bx.disabled = bn.disabled = true;
       histInfo = APP && APP.config && APP.config.agendado ? t("saz_noite_ok") : t("saz_noite_sem_auto");
+      msgH.hidden = false; msgH.textContent = histInfo;  // 0.7.35: com a busca parada, o recado aparece na hora
     });
     ac.appendChild(sel_); ac.appendChild(bp); ac.appendChild(bl); ac.appendChild(bx); ac.appendChild(bn); g.appendChild(ac); g.appendChild(msgH);
     g.appendChild(el("p", "nota-g", t("saz_so_totais")));  // teste do dono (0.7.30): não confundir com "Ler o Diário agora"
@@ -4453,7 +4477,7 @@ window.LEXSUITE_RADAR = null;
       };
     }).catch(function () {});
   }
-  function mostrarCarregando(txt, roda) { $("carregando-txt").textContent = txt; $("carregando").querySelector(".roda").hidden = roda === false; $("carregando").hidden = false; }
+  function mostrarCarregando(txt, roda) { $("carregando").classList.remove("abertura"); $("carregando-txt").textContent = txt;  // revisão 0.7.35: a abertura não esconde um aviso $("carregando").querySelector(".roda").hidden = roda === false; $("carregando").hidden = false; }
   function reiniciarDepois(versao) {
     reiniciando = true; mostrarCarregando(versao ? t("atualizando", { v: versao }) : t("reiniciando"));
     post("/reiniciar", {}).catch(function () {}).then(function () {
@@ -4539,6 +4563,7 @@ window.LEXSUITE_RADAR = null;
   $("w-criar").addEventListener("click", function () { testarPastaW(true); });
   $("w-escolher").addEventListener("click", function () { $("w-teste-txt").textContent = t("carregando"); post("/escolher-pasta", { inicio: $("w-outra").value }).then(function (r) { $("w-teste-txt").textContent = ""; if (r.ok) { $("w-outra").value = r.pasta; testarPastaW(false); } }).catch(function () { $("w-teste-txt").textContent = t("falha"); }); });
   $("w-papel-info").addEventListener("click", function () { var d = $("w-papel-dica"); d.hidden = !d.hidden; this.setAttribute("aria-expanded", String(!d.hidden)); });
+  $("c-abrir-pasta").addEventListener("click", function () { abrirPlanilha("pasta"); });  // 0.7.35 (dono): abrir a pasta sem sair das Configurações
   $("w-abrir-pasta").addEventListener("click", function () { post("/abrir", { o_que: "pasta_mae" }).catch(function () {}); });
   $("painel").addEventListener("change", function () { if (!$("wizard").hidden) $("w-trib-txt").textContent = t("w3_trib", { n: Object.keys(sel).length }); });
   $("w-testar").addEventListener("click", function () { testarPastaW(false); });
@@ -4580,10 +4605,18 @@ window.LEXSUITE_RADAR = null;
     setTimeout(function () { av_.classList.remove("fechando"); if (bt_.getAttribute("aria-expanded") === "false") av_.hidden = true; marcarMaisFiltros(); }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180);
   });  // 0.7.29 (sem janela preta): o que aparecia nela
   $("c-fechar").addEventListener("click", function () { fecharConfig(false); });
+  var trocandoLic = false;
+  $("c-conferir-lic").addEventListener("click", function () {  // 0.7.35 (dono): confere a licença e os termos na hora, sem trocar nada
+    var b_ = $("c-conferir-lic"); b_.disabled = true; $("c-msg").textContent = t("conferindo");
+    conferirConta().then(function (ok) {
+      b_.disabled = false; $("c-msg").textContent = ok ? t("lic_conferida_ok") : (textoConta() || t("falha"));
+      desenharTermosConfig(); infoConfig();
+    });
+  });
   $("c-trocar-lic").addEventListener("click", function () {
     var c_ = el("div"); c_.appendChild(el("h3", null, t("lic_trocar_t"))); c_.appendChild(el("p", null, t("lic_trocar_p")));
     abrirJanela(c_, [[t("cancelar"), null], [t("lic_trocar_ok"), function () {
-      var cd = $("c-codigo"); cd.readOnly = false; cd.tabIndex = 0; cd.value = ""; $("c-codigo-nota").hidden = true; $("c-trocar-lic").hidden = true;
+      var cd = $("c-codigo"); cd.readOnly = false; cd.tabIndex = 0; cd.value = ""; trocandoLic = true; $("c-codigo-nota").hidden = true; $("c-trocar-lic").hidden = true;
       setTimeout(function () { cd.focus(); }, 50); $("c-msg").textContent = t("lic_salvar_dica");
     }, true]]);
   });
@@ -4714,6 +4747,22 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
+    "0.7.35": {
+      pt: ["Tela de abertura enquanto o programa carrega.",
+        "Opção \"Conferir agora\" em Licença e termos, para conferir a licença e os termos na hora.",
+        "Opção \"Abrir a pasta no Windows\" em Pasta das planilhas.",
+        "Opção \"Continuar à noite\" também com a busca de estatísticas parada.",
+        "Simplificação da faixa de andamento da leitura.",
+        "Identificação de como foram reconhecidas as ações guardadas em versões anteriores, quando o texto permite.",
+        "Melhorias no design e na navegação."],
+      en: ["Opening screen while the program loads.",
+        "\"Check now\" option in Licence and terms, to check the licence and the terms at once.",
+        "\"Open the folder in Windows\" option in Spreadsheet folder.",
+        "\"Continue tonight\" option also with the statistics search paused.",
+        "Simpler reading progress strip.",
+        "Identification of how actions saved by earlier versions were recognised, when the text allows it.",
+        "Design and navigation improvements."]
+    },
     "0.7.34": {
       pt: ["Reconhecimento automático do aceite dos termos ao voltar para o programa, sem reiniciar.",
         "Opção \"Já aceitei\" no aviso de termos pendentes.",
@@ -4809,9 +4858,9 @@ window.LEXSUITE_RADAR = null;
     if (n_) { var ul_ = el("ul", "novidades"); (n_[lang] || n_.pt).forEach(function (x) { ul_.appendChild(el("li", null, x)); }); c_.appendChild(ul_); }
     else c_.appendChild(el("p", null, t("nov_sem")));
     c_.appendChild(el("p", "nota-registro", t("nov_onde")));  // 0.7.32 (dono): onde rever
-    abrirJanela(c_, [[t("nov_ok"), null, true]]);
+    abrirJanela(c_, [[t("nov_ok"), null, true]]); $("janela").classList.add("larga");  // 0.7.35 (dono): larga no computador
   }
-  if (MODO === "app") carregar().then(function () { if (chamadoLigado()) window.LEX_CHAMADO = abrirChamado; verVersaoNova(); if (!$("wizard") || $("wizard").hidden) mostrarNovidades(false); }); else tudo();
+  if (MODO === "app") carregar().then(function () { if (chamadoLigado()) window.LEX_CHAMADO = abrirChamado; verVersaoNova(); if (!$("wizard") || $("wizard").hidden) mostrarNovidades(false); }); else { tudo(); fimAbertura(); }
   if (MODO === "app") {  // 0.7.30 (dono): com a tela aberta o dia todo, a faixa de versão nova aparece sem precisar fechar e abrir
     var ultimaVerif_ = Date.now(), reverificar_ = function () { if (Date.now() - ultimaVerif_ < 30 * 60000 || !$("b-nova").hidden) return; ultimaVerif_ = Date.now(); novaVista = false; verVersaoNova(); };
     setInterval(reverificar_, 5 * 60000);

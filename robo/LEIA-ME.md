@@ -63,6 +63,9 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → C
 
 ## A tela
 
+- **0.7.35 (dono, 12/Nov):** tela de abertura enquanto carrega; "Conferir agora" em Licença e termos; "Abrir a pasta no
+  Windows" em Pasta das planilhas; "Continuar à noite" também com a busca parada; faixa da leitura numa linha (mensagens
+  anteriores recolhidas); Novidades largas no computador; ao encerrar, a janela tenta se fechar e diz como abrir de novo.
 - **0.7.34 (dono, 12/Nov):** depois do aceite dos termos na página, o programa confere sozinho com a SolverONE ao voltar
   para a janela (e a cada 15 s por até 10 minutos depois de abrir a página), e "Ler o Diário agora" confere antes de mostrar o
   aviso; o aviso ganhou "Já aceitei". O banco espera até 30 s pela vez em vez de cair com "database is locked".

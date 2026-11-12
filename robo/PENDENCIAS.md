@@ -162,6 +162,18 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.35 (teste do dono na 0.7.33, 12/Nov; dono: "vamos corrigir tudo que a gente puder") — pronta para publicar
+
+- Feito: tela de abertura; "Conferir agora"; "Trocar licença" com o mesmo código confere; "Abrir a pasta no Windows" e
+  título único na Pasta das planilhas; "Continuar à noite" com a busca parada; faixa da leitura compacta; Novidades largas e
+  botões das janelas sempre à vista; mensagem ao encerrar; e-mail de boas-vindas (aceite em uma frase, "não recebe
+  respostas" em linha própria). Termos continuam na versão 1.0 (decisão do dono, 12/Nov).
+- Conferido (5 pontos): manual (Configurações, Licença e termos, Pasta, Sazonalidade), Novidades PT/EN, AssistONE (busca e
+  ajuda de Configurações citam os blocos, sem mudança de caminho), termos sem mudança, e-mail revisado.
+- Fica para depois da visita: janelas largas no RootifyONE; cabeçalho fixo com o ☰; lentidão com muitos processos (medir);
+  pasta antiga "Cópias" para dentro de "Cópias da planilha"; termos dentro do programa (Arquitetura); canal de teste
+  (Arquitetura); link para a Lista ao lado de cada valor dos gráficos (confirmar com o dono).
+
 ## 0.7.34 (teste do dono na 0.7.33, 12/Nov) — correção urgente antes da visita
 
 - Defeito: depois do aceite dos termos na página, o programa continuava travado em "Falta aceitar os termos" (guardava a

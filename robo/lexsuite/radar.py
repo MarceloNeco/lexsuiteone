@@ -34,6 +34,16 @@ GRANDES_GRUPOS = [  # nomes que quase sempre têm jurídico próprio (ficam no f
 ]
 
 
+
+def sinal_guardado(lead):
+    """0.7.35 (dono): ações guardadas antes de o programa anotar o sinal (até a 0.7.18) ganham o sinal pelo texto que ficou
+    guardado, na hora de mostrar (o banco não muda). Sem texto que mostre o sinal: '' (a tela mostra "Sem sinal registrado")."""
+    from . import classificar as cl
+    tipo = cl.sem_acento(str(lead.get("tipo") or "")).lower()
+    if "distribui" in tipo:
+        return "lista de distribuição"
+    return cl.sinal_inicio(lead.get("texto_curto") or "")
+
 def link_pje(tribunal):
     return tribunais.link_pje(tribunal)
 
@@ -92,7 +102,7 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         "visto_em": lead.get("visto_em") or "",
         "tribunal": lead.get("tribunal"),
         "vara": lead.get("vara"),
-        "sinal": lead.get("sinal") or "",  # 0.7.19: como a ação nova foi reconhecida (gráfico para calibrar a regra com o escritório)
+        "sinal": lead.get("sinal") or sinal_guardado(lead),  # 0.7.19: como a ação nova foi reconhecida (gráfico para calibrar a regra com o escritório)
         "processo": lead.get("processo"),
         "classe": (lead.get("classe") or "").upper(),  # 0.7.16: o Diário às vezes traz "AçãO ... ORDINáRIO"
         "rito": lead.get("rito"),

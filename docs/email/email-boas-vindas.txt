@@ -10,7 +10,7 @@ Seu código de cliente: {{codigo}}
 Guarde este e-mail: o código ativa o {{marca.nome}} em cada computador do escritório.
 
 [CODIGO-FIM]
-Aceite dos termos: o {{marca.curto}} só começa a ler depois do aceite dos termos pelo responsável do escritório. Você pode aceitar agora ou depois de instalar (o programa mostra o mesmo link):
+Aceite dos termos: o {{marca.curto}} só começa a ler depois do aceite pelo responsável do escritório. Você pode aceitar agora ou depois de instalar:
 https://judicial.solverone.com.br/aceite.html#codigo={{codigo}}&email={{email}}&nome={{nome}}
 
 Como instalar
@@ -23,7 +23,8 @@ Onde roda: no computador do escritório, nos dias e horários escolhidos. Se o c
 
 Segurança e dados: o {{marca.curto}} não pede senha, não contorna captcha e só instala atualizações assinadas. Processos, fichas e planilhas ficam no computador e na pasta do escritório; à SolverONE vão só a conferência da licença, o cadastro de quem usa, o aceite dos termos e totais sem nomes nem números de processo (detalhes nos termos).
 
-Dúvidas? Escreva para {{contato}}. Este e-mail saiu de um endereço automático e não recebe respostas.
+Dúvidas? Escreva para {{contato}}.
+Este e-mail saiu de um endereço automático e NÃO recebe respostas.
 
 In English: your {{marca.nome}} is ready. Download the installer, run INSTALAR.bat and paste your client code in the first window; accept the terms now or after installing. Questions: {{contato}}.
 
