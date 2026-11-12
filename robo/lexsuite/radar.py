@@ -40,7 +40,10 @@ def sinal_guardado(lead):
     guardado, na hora de mostrar (o banco não muda). Sem texto que mostre o sinal: '' (a tela mostra "Sem sinal registrado")."""
     from . import classificar as cl
     tipo = cl.sem_acento(str(lead.get("tipo") or "")).lower()
-    if "distribui" in tipo:
+    texto = cl.sem_acento(str(lead.get("texto_curto") or "")).lower()
+    # revisão da 0.7.35: na lista de distribuição o DJEN guarda o tipo do documento ("Notificação"); o aviso está no texto
+    # ("Processo distribuído"), como em banco._reclassificar_0718
+    if "distribui" in tipo or "processo distribuid" in texto or "lista de distribuic" in texto:
         return "lista de distribuição"
     return cl.sinal_inicio(lead.get("texto_curto") or "")
 

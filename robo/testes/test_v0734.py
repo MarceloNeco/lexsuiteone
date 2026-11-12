@@ -56,6 +56,29 @@ class ConferirConta(unittest.TestCase):
         with open(os.path.join(self.pasta, "config.json"), encoding="utf-8") as f:
             self.assertEqual(json.load(f)["conta"]["resposta"], "aceite_pendente")
 
+    def test_durante_a_leitura_nao_vai_a_internet(self):
+        self.srv.estado.rodando = True
+        self.addCleanup(setattr, self.srv.estado, "rodando", False)
+        with mock.patch.object(conta.rede, "pedir_json", side_effect=AssertionError("não devia chamar")):
+            d = self.pedir("/conta/conferir")
+        self.assertFalse(d["ok"])
+
+    def test_grava_so_a_licenca_sobre_o_config_de_agora(self):
+        caminho = os.path.join(self.pasta, "config.json")
+        def nuvem(url, corpo, **k):  # enquanto confere, outra parte do programa grava o config
+            with open(caminho, encoding="utf-8") as f:
+                cfg = json.load(f)
+            cfg["escritorio"] = "Mudado durante a conferência"
+            with open(caminho, "w", encoding="utf-8") as f:
+                json.dump(cfg, f)
+            return {"ok": True, "aceite": {"aceito": True}}
+        with mock.patch.object(conta.rede, "pedir_json", side_effect=nuvem):
+            self.assertTrue(self.pedir("/conta/conferir")["conta"]["ok"])
+        with open(caminho, encoding="utf-8") as f:
+            cfg = json.load(f)
+        self.assertEqual(cfg["escritorio"], "Mudado durante a conferência")
+        self.assertEqual(cfg["conta"]["resposta"], "ok")
+
     def test_sem_codigo_nao_vai_a_internet(self):
         with open(os.path.join(self.pasta, "config.json"), "w", encoding="utf-8") as f:
             json.dump({"radar": {"tribunais": ["TRT2"]}}, f)

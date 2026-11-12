@@ -24,11 +24,11 @@ atualiza sem perder configuração nem lista. A fonte é `instalador/INSTALAR.ba
    como compartilhar): seu nome e seu papel no escritório (a tela e o
    manual passam a falar com você), o nome do escritório, a **pasta compartilhada** (a tela lista as pastas do Google
    Drive para computador que achou, ou outra pasta pelo "Escolher pasta…"; "Testar pasta" confirma) e a opção **rodar sozinho**
-   (de início de segunda a sexta, às 20h e às 8h, já marcada; dias e horários mudam em Configuração). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE - Trabalhista.xlsx` na pasta escolhida,
+   (de início de segunda a sexta, às 20h e às 8h, já marcada; dias e horários mudam em Configurações). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE - Trabalhista.xlsx` na pasta escolhida,
    agenda as rodadas e dispara a primeira. Cada campo do passo a passo fica guardado ao sair dele (fechar a tela no meio
    não perde o que foi digitado). Depois, quem usa (nome, e-mail, função, escritório) muda no **perfil** (as iniciais no
    alto da tela, um lápis ✏️ por dado; trocar o e-mail = outra pessoa usando o computador) e o código, a pasta e as
-   leituras automáticas, em **Configuração**.
+   leituras automáticas, em **Configurações**.
 4. **Ler o Diário agora** (até a 0.7.10, "Atualizar agora"): os 24 TRTs já vêm escolhidos (em **Tribunais** dá para mudar: por região, por estado, por
    ramo ou "Selecionar todos"). A primeira rodada baixa o diário do dia de cada tribunal (de 5 a 150 MB cada): os 24
    TRTs levam de 30 a 60 minutos; depois, só o que é novo. O computador precisa estar **no Brasil**.

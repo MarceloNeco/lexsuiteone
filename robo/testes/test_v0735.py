@@ -28,7 +28,11 @@ class Tela0735(unittest.TestCase):
     def test_licenca_conferir_agora_e_trocar_com_o_mesmo_codigo(self):
         self.assertIn('id="c-conferir-lic"', self.h)
         self.assertIn('$("c-conferir-lic").addEventListener("click"', self.h)
-        self.assertIn("(trocandoLic || !(APP && APP.conta && APP.conta.codigo === cod))", self.h)
+        self.assertIn("mesmoCod_ = !!(trocandoLic && APP && APP.conta && APP.conta.codigo === cod)", self.h)
+        self.assertIn("if (mesmoCod_) conferirConta().then", self.h)  # revisão: o mesmo código confere pela rota, sem /config
+        b_ = self.h[self.h.index('$("c-conferir-lic").addEventListener("click"'):][:600]
+        self.assertIn("conferirConta().then", b_)  # revisão: o botão chama a conferência de verdade
+        self.assertIn('ok === "sem" ? t("lic_sem_internet")', b_)  # e não diz "ativa" sem conexão
         self.assertIn("trocandoLic = false; $(\"config\").hidden = true;", self.h)
 
     def test_pasta_abrir_no_windows_e_titulo_unico(self):
@@ -63,9 +67,6 @@ class Email0735(unittest.TestCase):
         self.assertIn("{{contato}}.\nEste e-mail saiu de um endereço automático e NÃO recebe respostas.", t)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class SinalGuardado(unittest.TestCase):
     """0.7.35 (dono): ações antigas sem o sinal anotado ganham o sinal pelo texto guardado; o rótulo não cita versão."""
@@ -75,8 +76,41 @@ class SinalGuardado(unittest.TestCase):
         sys.path.insert(0, _ROBO_)
         from lexsuite import radar
         self.assertEqual(radar.sinal_guardado({"tipo": "Lista de Distribuição"}), "lista de distribuição")
+        self.assertEqual(radar.sinal_guardado({"tipo": "Notificação", "texto_curto": "Processo distribuído. ATSum 1002019"}), "lista de distribuição")
         self.assertEqual(radar.sinal_guardado({"texto_curto": "Fica designada audiência inicial para 10/12"}), "audiência inicial")
         self.assertEqual(radar.sinal_guardado({"texto_curto": "Intimação para manifestação"}), "")
         self.assertEqual(radar.sinal_guardado({}), "")
         h = ler(_ROBO_, "radar_modelo.html")
         self.assertNotIn("antes da 0.7.16", h); self.assertIn('sinal_antigo: "Sem sinal registrado"', h)
+
+
+class SinalComExemplos(unittest.TestCase):
+    """Revisão da 0.7.35: pelo caminho real (DJEN → leads), o sinal derivado é igual ao gravado nos exemplos."""
+
+    def test_exemplos_do_repositorio(self):
+        import json
+        import sys
+        sys.path.insert(0, _ROBO_)
+        from lexsuite import djen, radar
+        d = json.loads(ler(_ROBO_, "exemplos", "dia_exemplo.json"))
+        total = 0
+        for rod in d["rodadas"]:
+            for lead in djen.leads([djen.normalizar(i) for i in rod.get("items", [])]):
+                original = lead.get("sinal") or ""
+                sem = dict(lead); sem.pop("sinal", None)
+                self.assertEqual(radar.sinal_guardado(sem), original, lead.get("processo"))
+                total += 1
+        self.assertGreater(total, 20)
+
+
+class Novidades0735(unittest.TestCase):
+    def test_traz_as_linhas_da_0734(self):
+        h = ler(_ROBO_, "radar_modelo.html")
+        bloco = h[h.index('"0.7.35": {'):h.index('"0.7.34": {')]
+        for x in ("Reconhecimento automático do aceite", "Já aceitei", "Automatic recognition of the terms", "I have accepted"):
+            self.assertIn(x, bloco)
+        self.assertNotIn("Melhorias de acessibilidade e correções.", h[h.index('"0.7.34": {'):h.index('"0.7.33": {')])
+
+
+if __name__ == "__main__":
+    unittest.main()

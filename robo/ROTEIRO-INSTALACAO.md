@@ -27,6 +27,9 @@ Passos:
 2. Na tela (janela própria), o assistente de 4 passos: documento, escritório, nome, e-mail e função; onde fica a
    planilha (Google Drive, outra pasta ou só neste computador); frente e tribunais; o resumo mostra onde a
    planilha ficou. Instale no computador que fica ligado nos horários das leituras.
+   **Aceite dos termos:** o ideal é o responsável aceitar pelo link do e-mail antes de instalar. Se aceitar depois, basta
+   voltar ao programa: ele confere sozinho em segundos (ou clique em "Já aceitei", ou Configurações → Licença e termos →
+   "Conferir agora"). Antes do aceite, o programa não lê o Diário.
 3. Menu ☰, Configurações, **Armazenamento**: anote o espaço livre no disco (o ideal é mais de 10 GB) e confira onde ficam
    a planilha e a pasta `Cópias de segurança`. Nada é compartilhado com a SolverONE.
 4. "Ler o Diário agora" (os 24 TRTs já vêm escolhidos; em Tribunais dá para reduzir a 2 ou 3 para a primeira leitura ser

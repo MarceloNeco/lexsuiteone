@@ -174,6 +174,19 @@ Arquitetura (pedido no quadro).
   `marca.py` em dia, revisor (bloqueios de texto corrigidos).
 
 ### Feito (mais recente primeiro)
+- 12/Nov: **0.7.35 pronta de novo** (pedido da Operação "Revisão da 0.7.35 … 4 bloqueios", atendido): (1) "Conferir
+  agora" e "Já aceitei" sem internet dizem "Sem conexão com a SolverONE: não foi possível conferir agora" (`conferirConta`
+  devolve true, false ou "sem"); (2) manual: "O RADAR foi encerrado" com a causa nova, nas 3 cópias; (3) a entrada 0.7.35
+  das Novidades traz as linhas da 0.7.34 (PT e EN) e a 0.7.34 deixou de citar acessibilidade; (4) `sinal_guardado`
+  reconhece a lista de distribuição pelo texto ("processo distribuído", "lista de distribuição"): 44 de 44 nos exemplos,
+  teste pelo caminho real. Médias: (5) avisos entram no alto do `#estado` sem apagá-lo; (6) "Trocar licença" com o mesmo
+  código não vai ao /config e confere pela rota depois de salvar; (7) "Abrir a pasta no Windows" responde ali mesmo
+  ("A pasta ainda não existe…"); (8) lupa e AssistONE com "Conferir agora" e "Abrir a pasta no Windows"; (9) testes de
+  conduta da rota (durante a leitura não vai à internet; grava só a licença sobre o config atual) e `unittest.main` no fim.
+  Baixas: LEIA-ME no plural, e-mail/LEIA-ME 0.7.35, roteiro com o aceite depois de instalar, manual descreve o gráfico do
+  sinal, Novidades citam "Trocar licença" e a mensagem ao encerrar. Ficam: (10) jornada do aceite por pessoa (Arquitetura),
+  marca fixa na tela de abertura, `/dados` lento com 60 mil. Testes 295 OK, `aviso_e_lupa` 387, `larguras` 84 (a medida
+  "faixa de leitura" dá 128 px só na 1ª página logo depois de subir o servidor; nas seguintes, 106), revisor sem bloqueio.
 - 12/Nov: **0.7.35 pronta para publicar** (teste do dono na 0.7.33; dono: "vamos corrigir tudo que a gente puder"):
   tela de abertura; "Conferir agora" em Licença e termos; "Trocar licença" com o mesmo código confere; "Abrir a pasta no
   Windows" e título único na Pasta das planilhas; "Continuar à noite" com a busca parada; faixa da leitura compacta;
