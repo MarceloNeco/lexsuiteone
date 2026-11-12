@@ -30,6 +30,40 @@ Cada item: o que o dono viu, se era esperado e para onde vai. Tudo o que é "0.7
 | 24 | Faixa de andamento: o texto quebra em duas linhas, o botão Interromper muda de lugar e aparece um caminho técnico ("Página: C:\LexSuiteONE\saida\radar\radar.html") | Não: defeito de tela e texto técnico | 0.7.36: texto da faixa numa linha (corta com "…" e mostra inteiro ao passar o mouse), Interromper em lugar fixo; sem caminho de arquivo (ex.: "Montando a lista: 31.662 ações") |
 | 25 | Pizza: item riscado continua ocupando o arco (Setores mostra 31.662 no centro enquanto o resto do Painel mostra 2.799) | Não: a pizza deveria se redistribuir | 0.7.36: o arco mostra só os itens não riscados, o centro mostra o total que sobrou, e a mudança é animada (as fatias deslizam até a nova divisão, cerca de meio segundo; sem animação para quem pediu "reduzir movimento" no Windows). A legenda mantém o riscado, para devolver com um clique |
 | 26 | "Empresas com mais ações" não deixa clicar nos itens (e "Outros" é 90%) | Esperado pelo desenho (empresa não é filtro do Painel), mas o dono quer poder clicar em todos | 0.7.36: em todo gráfico, clicar risca e a pizza se refaz. Onde o item vira filtro (setor, tribunal, porte, estado, situação, faixa), segue filtrando o Painel; onde não vira (empresas, sinal), só some daquele gráfico, com a dica "Some só deste gráfico". Riscar "Outros" faz as empresas pequenas aparecerem |
+| 27 | (?) da Sazonalidade: "maçaroca de texto"; o gráfico "Ações por dia" precisa de (?) igual | Não: texto ruim | 0.7.36: dicas em blocos curtos, com subtítulos em negrito, espaço entre parágrafos e linguagem para advogado (textos abaixo); o mesmo padrão no (?) de "Ações por dia" |
+| 28 | "Buscar estatísticas" sem nada novo: parece que nada aconteceu | Em parte: a frase "Nada novo para buscar…" aparece, mas longe do botão e sem destaque; antes dela, "Carregando…" sai em **vermelho** | 0.7.36: ao lado do botão, "✓ As estatísticas já estão em dia" em azul (some ao sair e voltar); "Carregando…" em cor neutra |
+| 29 | Roteiro: "clique na aba Sazonalidade" | Erro da Produto: a Sazonalidade é um quadro dentro do Painel, não uma aba | Roteiro corrigido |
+
+## Textos propostos para os (?) dos gráficos (item 27)
+
+**Sazonalidade: ações novas por mês**
+
+> **Para que serve**
+> Mostra em que meses e em que dias da semana entram mais ações novas. Ajuda a planejar a equipe e a perceber os picos.
+>
+> **Como buscar**
+> Escolha quantos meses quer ver e clique em **Buscar estatísticas**. O RADAR lê os Diários desses meses, do mais
+> recente para o mais antigo. Com 3 tribunais, 12 meses levam **cerca de 1 hora**.
+>
+> **Pausar e continuar**
+> **Pausar** para e guarda o que já foi lido. **Continuar a busca** segue de onde parou. **Continuar à noite** termina
+> sozinho depois da leitura automática da noite.
+>
+> **O que entra aqui**
+> Só os totais. **Nenhum processo entra na Lista, no Arquivo ou na planilha**, e nada disso vai para a SolverONE. Se o
+> tribunal não tiver mais o Diário de um dia antigo, o dia aparece como "sem Diário".
+
+**Ações novas por dia**
+
+> **Para que serve**
+> Mostra quantas ações novas contra empresas entraram em cada dia, no período escolhido nos filtros do Painel.
+>
+> **Separar as barras**
+> Escolha **tribunal, situação, faixa de valor ou setor** para ver cada barra dividida em partes. Passe o mouse sobre a
+> barra para ver o total e cada parte.
+>
+> **De onde vêm os números**
+> De cada leitura do Diário. Os totais de cada dia ficam guardados, mesmo depois que o processo sai do Arquivo.
 
 **Pergunta D (12/Nov, noite):** nas empresas excluídas, aceitar só CNPJ ou CPF, ou também um nome sem documento?
 Recomendação da Produto: CNPJ como caminho principal (o nome vem sozinho pela consulta); nome sem documento continua
