@@ -5,7 +5,7 @@ Cópia do prompt de [`docs/VISITA-KR-LAW.md`](https://github.com/MarceloNeco/lex
 
 | | |
 |---|---|
-| Onde roda | Janela B, ao mesmo tempo que o 1A, no perfil "Visita SolverONE" do Chrome do Leandro, extensão Claude in Chrome |
+| Onde roda | Janela B, ao mesmo tempo que o 1A, na janela anônima do Chrome do Leandro (ou no perfil "Visita SolverONE"), extensão Claude in Chrome |
 | Login | Leandro, com o login dele no Astrea, quando aparecer `PAUSA PARA LOGIN` |
 | Trocar no texto | nada (ela abre até 2 processos e 2 contatos de exemplo) |
 | Antes de colar | Conversa nova na extensão; modo "Skip all approvals"; modelo Sonnet, se aparecer a escolha |

@@ -8,6 +8,10 @@ compartilhar. Os quatro prompts que precisam do login do advogado também estão
 [`documentacao/visita-kr-law/`](https://github.com/MarceloNeco/lexsuiteone/tree/main/documentacao/visita-kr-law), com a
 lista de links do dia em [`00-LINKS-DA-VISITA.md`](https://github.com/MarceloNeco/lexsuiteone/blob/main/documentacao/visita-kr-law/00-LINKS-DA-VISITA.md).
 Os critérios da lista agora são por pessoa e por área, e o próprio Leandro os ajusta no programa (passo 6).
+**Ajuste de 12/Nov (manhã, dono):** em vez do perfil novo, uma **janela anônima** do Chrome do Leandro com a conta Claude do
+dono. Antes, em `chrome://extensions` → Claude → Detalhes, ligar "Permitir no modo anônimo". Ao fechar todas as janelas
+anônimas, sessões e logins somem (não há perfil para apagar). Se a extensão não aparecer na janela anônima, use o perfil
+novo "Visita SolverONE", como descrito abaixo. A 0.7.33 está publicada: o botão de baixar do site já entrega essa versão.
 
 Complementa `robo/ROTEIRO-INSTALACAO.md` (instalação do robô). Aqui ficam os prompts para usar no **Claude in Chrome**
 no computador do Leandro, com o consentimento dele, para aprender como os sistemas funcionam e planejar as integrações.
