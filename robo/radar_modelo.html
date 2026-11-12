@@ -1955,7 +1955,7 @@ window.LEXSUITE_RADAR = null;
       ler_resposta: "Ler a resposta", colar_res: "{a} contato(s) entraram; {r} linha(s) recusada(s).", colar_rep: "{n} já estavam guardados.", linha_n: "Linha {n}",
       aviso_pl_t: "A planilha abre só para leitura", aviso_pl: "Ela é regravada pelo programa a cada leitura. Filtrar e ordenar funciona normalmente. Para anotar ou mexer, use \u201cGerar uma cópia\u201d: a cópia fica na pasta Cópias e o programa nunca mexe nela.",
       nao_mostrar: "Não mostrar de novo neste computador", gerar_copia: "Gerar uma cópia", entendi_abrir: "Entendi, abrir", copia_ok: "Cópia criada: {c}",
-      menu_ver: "Ver", menu_planilha: "Planilha", menu_contatos: "Área logada", menu_programa: "Configurações", config: "Configuração", perfil: "Perfil",
+      menu_ver: "Ver", menu_planilha: "Planilha", menu_contatos: "Área logada", menu_programa: "Configurações", perfil: "Perfil",
       arq_info: "{n} ações guardadas desde {d}; o banco ocupa {mb} MB neste computador.", arq_limpar: "Limpar o que tem mais de {m} meses",
       arq_limpar_x: "Apaga só o detalhe das ações com mais de {m} meses (o trecho do Diário). Ficam o resumo (empresa, tribunal, valor, situação) e as estatísticas.", limpar: "Limpar", arq_limpo: "{n} ação(ões) resumida(s).",
       arq_ajuda: "O Arquivo guarda tudo o que o programa já leu, de todos os tribunais, inclusive o que foi arquivado. A Lista mostra só o que está em aberto nos tribunais marcados.",
@@ -3831,16 +3831,19 @@ window.LEXSUITE_RADAR = null;
     (MODO === "app" ? [
       [t("bg_dias"), t("config"), "dias da semana segunda a sexta sabado domingo fim de semana desligar days of the week weekdays monday to friday monday friday saturday sunday weekend turn off", function () { abrirConfig(true, "c-agendar-wrap"); }],
       [t("lic_trocar"), t("config"), "trocar licenca codigo de cliente licenca change licence change license client code", function () { abrirConfig(true, "c-s-licenca"); }],
-      [t("rg_titulo"), t("config"), "criterios da lista meus criterios so meus por area valor minimo destacar list criteria my criteria only mine by area minimum value", editarPreferencias],
-      [t("rg_exc_menu"), t("config"), "excluir empresa excluir uma empresa excluir cliente empresas excluidas exclusoes conflito exclude company exclude a company exclude client excluded companies", function () { abrirConfig(true, "c-regras-wrap"); abrirExcluidas(); }],
-      [t("bg_cnpj"), t("link_manual"), "cnpj com letras cnpj alfanumerico cnpj novo alphanumeric cnpj new cnpj cnpj with letters", function () { window.open("/manual#perguntas", "_blank", "noopener"); }],
-      [t("saz_t"), t("v_painel"), "sazonalidade estatisticas buscar estatisticas pausar continuar a noite seasonality statistics fetch statistics pause continue tonight", function () { trocarVisao("painel"); setTimeout(function () { var s_ = document.querySelector(".saz-cab"); if (s_) s_.scrollIntoView({ block: "start" }); }, 200); }],
-      [t("c_s_sobre"), t("config"), "sobre este computador about this computer ver registro", function () { abrirConfig(true, "c-s-sobre"); }],
       [t("bg_graf"), t("v_painel"), "grafico graficos cores cor legenda mostrar todos filtros do painel pizza barras chart charts colours colors legend show all dashboard filters", function () { trocarVisao("painel"); setTimeout(function () { var g_ = document.querySelector(".grade-graf"); if (g_) g_.scrollIntoView({ behavior: "smooth", block: "start" }); }, 200); }],
       [t("tema_t"), t("config"), "aparencia tema escuro claro modo escuro appearance theme dark light", function () { abrirConfig(true, "c-tema-wrap"); }],
       [t("nov_menu"), "", "novidades versao o que mudou whats new release notes", function () { mostrarNovidades(true); }]
     ] : []).forEach(function (x) { if (!q || semAcento(x[0] + " " + x[2]).indexOf(q) >= 0) opc.push([x[0], x[1], x[3]]); });  // 0.7.31: o Perfil saiu do menu (fica nas iniciais), mas a lupa ainda acha
     (MODO === "app" ? gruposMenu() : [[gruposMenu()[0][0], gruposMenu()[0][1].slice(0, 2)]]).forEach(function (gr) { gr[1].forEach(function (it) { if (it[3]) return; if (!q || semAcento(it[0] + " " + gr[0]).indexOf(q) >= 0) opc.push([it[0], gr[0], it[1]]); }); });
+    // 0.7.33 (revisão B): termos novos depois do menu, para "Lista" continuar abrindo a Lista
+    (MODO === "app" ? [
+      [t("rg_titulo"), t("config"), "criterios da lista meus criterios so meus por area valor minimo destacar list criteria my criteria only mine by area minimum value", editarPreferencias],
+      [t("rg_exc_menu"), t("config"), "excluir empresa excluir uma empresa excluir cliente empresas excluidas exclusoes conflito exclude company exclude a company exclude client excluded companies", function () { abrirConfig(true, "c-regras-wrap"); abrirExcluidas(); }],
+      [t("bg_cnpj"), t("link_manual"), "cnpj com letras cnpj alfanumerico cnpj novo alphanumeric cnpj new cnpj cnpj with letters", function () { window.open("/manual#perguntas", "_blank", "noopener"); }],
+      [t("saz_t"), t("v_painel"), "sazonalidade estatisticas buscar estatisticas pausar continuar a noite seasonality statistics fetch statistics pause continue tonight", function () { trocarVisao("painel"); setTimeout(function () { var s_ = document.querySelector(".saz-cab"); if (s_) s_.scrollIntoView({ block: "start" }); }, 200); }],
+      [t("c_s_sobre"), t("config"), "sobre este computador about this computer ver registro", function () { abrirConfig(true, "c-s-sobre"); }],
+    ] : []).forEach(function (x) { if (!q || semAcento(x[0] + " " + x[2]).indexOf(q) >= 0) opc.push([x[0], x[1], x[3]]); });
     bloco(t("bg_opcoes"), opc);
     if (q.length >= 2) {
       var qn = q.replace(/[.\-\/]/g, ""), acoes = [];

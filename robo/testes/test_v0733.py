@@ -349,3 +349,12 @@ class Revisao0733(unittest.TestCase):
         self.assertEqual(app.enviar_pendentes(pasta, {}, enviar=lambda c, v, d: {"ok": True, "numero": 1}), 0)
         self.assertEqual(app._lista_json(arq), [])
         self.assertEqual(len(app._lista_json(os.path.join(pasta, "saida", "chamados.json"))), 2)
+
+
+class ChavesUnicas0733(unittest.TestCase):
+    def test_config_no_plural_e_sem_chave_repetida(self):  # revisão da 0.7.33: chave repetida no dicionário vencia com o singular
+        import re
+        with open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8") as f:
+            h = f.read()
+        self.assertNotIn('config: "Configuração"', h)
+        self.assertEqual(len(re.findall(r'[\s{,]config: "Configurações"', h)), 1)
