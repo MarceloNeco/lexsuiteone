@@ -142,6 +142,33 @@ def _abas_editaveis(caminho, aviso=print):
     return abas, True
 
 
+def _copia_antes_0733(base, frente, caminho, aviso=print):
+    """Revisão da 0.7.33 (bloqueio 1a): antes da primeira regravação que tira as abas Preferências e Exclusões, a planilha
+    vai inteira para "Cópias de segurança/antes da 0.7.33/" (uma vez; a primeira cópia nunca é substituída). A migração
+    dos outros computadores também lê dessa cópia. Se a cópia falhar, NÃO regrava (devolve False)."""
+    import shutil
+    destino = preferencias.copia_antes_0733(base, frente)
+    if not destino or os.path.exists(destino) or not os.path.exists(caminho):
+        return True
+    try:
+        tem = preferencias._ler_abas_antigas(caminho)[2]
+    except Exception as e:  # noqa: BLE001 - em uso ou ilegível: não regrava agora
+        aviso(f"  Planilha em uso ou ilegível ({e.__class__.__name__}); deixo como está nesta rodada.")
+        return False
+    if not tem:
+        return True
+    try:
+        os.makedirs(os.path.dirname(destino), exist_ok=True)
+        shutil.copyfile(caminho, destino + ".tmp")
+        os.replace(destino + ".tmp", destino)
+    except OSError as e:
+        aviso(f"  Não consegui guardar a cópia de segurança \"antes da 0.7.33\" ({e.__class__.__name__}): a planilha não foi "
+              "regravada, para nada se perder. A lista está salva.")
+        return False
+    aviso(f"  Cópia da planilha como era antes da 0.7.33 guardada em Cópias de segurança/{preferencias.PASTA_ANTES_0733}.")
+    return True
+
+
 def criar_se_faltar(cfg, versao="", pasta_robo="", aviso=print):
     """Cria a planilha única com o Radar vazio e as abas editáveis padrão. Nunca sobrescreve a que existe."""
     base = pasta_base(cfg)
@@ -198,6 +225,8 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
     caminho = os.path.join(base, preferencias.NOMES_FRENTE.get(frente) or NOME_RADAR)
     editaveis, ok = _abas_editaveis(caminho, aviso)
     if not ok:
+        return ""
+    if not _copia_antes_0733(base, frente, caminho, aviso):
         return ""
     linhas = _linhas_lista(pagina.get("itens") or [] if itens is None else itens, colunas, linha_csv)
     # 0.7.13: a aba Log mostra o histórico de leituras, uma linha por tribunal e por tentativa, visível ao escritório.

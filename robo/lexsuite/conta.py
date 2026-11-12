@@ -137,7 +137,7 @@ def bloqueio(cfg, hoje=None):
     fale = f" Fale com {CONTATO}."
     codigo = normalizar(c.get("codigo"))
     if not codigo:
-        return "Falta o código de cliente (está no e-mail de boas-vindas). Informe em Configuração."
+        return "Falta o código de cliente (está no e-mail de boas-vindas). Informe em Configurações."
     if not valido(codigo):
         return MOTIVOS["codigo_invalido"]
     resposta = c.get("resposta") or ""

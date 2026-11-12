@@ -113,14 +113,15 @@ class TestPlanilhaPorFrente(unittest.TestCase):
         self.assertTrue(pf.migrar_nome(self.base))  # fechou o Excel: troca o nome com as abas
         self.assertIn("Cliente Fictício Ltda", [e["nome"] for e in pf.carregar(self.base, pasta=tempfile.mkdtemp())["exclusoes"]])
 
-    def test_exclusoes_de_cada_area_ficam_na_sua_area(self):
-        """0.7.33: acabou a soma das exclusões entre frentes; cada área tem a sua lista (cliente do tributário fica no tributário)."""
+    def test_migracao_leva_a_soma_das_exclusoes_para_todas_as_areas(self):
+        """0.7.33 (decisão do dono, 12/Nov): na migração, o que a 0.7.32 aplicava a toda a lista (a soma das Exclusões de todas
+        as planilhas) vale em cada área; depois, cada área é separada."""
         from lexsuite import planilha, preferencias as pf
         planilha.escrever_xlsx(os.path.join(self.base, pf.NOMES_FRENTE["tributario"]), [{"nome": "Radar", "linhas": [["x"]]}]
                                + self._abas_antigas(excluida="Cliente Tributário Ltda"))
         dados = tempfile.mkdtemp()
-        self.assertNotIn("Cliente Tributário Ltda", [e["nome"] for e in pf.carregar(self.base, frente="trabalhista", pasta=dados)["exclusoes"]])
-        self.assertIn("Cliente Tributário Ltda", [e["nome"] for e in pf.carregar(self.base, frente="tributario", pasta=dados)["exclusoes"]])
+        for area in pf.AREAS:
+            self.assertIn("Cliente Tributário Ltda", [e["nome"] for e in pf.carregar(self.base, frente=area, pasta=dados)["exclusoes"]])
 
     def test_gravar_cria_trabalhista_e_pasta_de_copias(self):
         from lexsuite import radar, planilha

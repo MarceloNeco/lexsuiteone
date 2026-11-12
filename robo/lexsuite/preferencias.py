@@ -242,24 +242,35 @@ def caminho_criterios(pasta):
     return os.path.join(pasta, ARQUIVO_CRITERIOS) if pasta else ""
 
 
-def ler_criterios(pasta):
-    """O criterios.json desta pessoa ({"versao", "areas": {...}}), None se não existe; JSON quebrado = padrões e "erro"."""
+def _ler_json_criterios(c):
     import json
+    with open(c, encoding="utf-8") as f:
+        d = json.load(f)
+    if not isinstance(d, dict) or not isinstance(d.get("areas"), dict):
+        raise ValueError("formato")
+    return d
+
+
+def ler_criterios(pasta):
+    """O criterios.json desta pessoa ({"versao", "areas": {...}}), None se não existe. Revisão da 0.7.33: ilegível (vazio,
+    lixo, sem "areas") usa o criterios.json.anterior, se ele estiver bom ("restaurado"); senão, padrões e "erro"."""
     c = caminho_criterios(pasta)
     if not c or not os.path.exists(c):
         return None
     try:
-        with open(c, encoding="utf-8") as f:
-            d = json.load(f)
-        if not isinstance(d, dict) or not isinstance(d.get("areas"), dict):
-            raise ValueError("formato")
-        return d
+        return _ler_json_criterios(c)
     except (OSError, ValueError) as e:
-        return {"versao": 1, "areas": {}, "erro": e.__class__.__name__}
+        try:
+            d = _ler_json_criterios(c + ".anterior")
+            d["restaurado"] = True
+            return d
+        except (OSError, ValueError):
+            return {"versao": 1, "areas": {}, "erro": e.__class__.__name__}
 
 
 def gravar_criterios(pasta, dados):
-    """Grava o criterios.json de forma atômica, com a cópia criterios.json.anterior antes (mesmo padrão do config.json)."""
+    """Grava o criterios.json de forma atômica. A cópia criterios.json.anterior só é renovada quando o atual está bom
+    (revisão da 0.7.33: um arquivo ilegível nunca passa por cima do .anterior bom)."""
     import json
     import shutil
     c = caminho_criterios(pasta)
@@ -269,8 +280,9 @@ def gravar_criterios(pasta, dados):
              "origem": dados.get("origem", "tela"), "areas": dados.get("areas") or {}}
     if os.path.exists(c):
         try:
+            _ler_json_criterios(c)
             shutil.copy2(c, c + ".anterior")
-        except OSError:
+        except (OSError, ValueError):
             pass
     tmp = c + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
@@ -289,15 +301,20 @@ def criterios_da_area(pasta, area):
 def salvar_area(pasta, area, valores, exclusoes, todas=False):
     """Grava os critérios de uma área (ou de todas, com "Copiar para as outras áreas")."""
     d = ler_criterios(pasta) or {"areas": {}}
-    areas = dict(d.get("areas") or {}) if not d.get("erro") else {}
+    if d.get("erro"):  # revisão da 0.7.33: arquivo ilegível e sem .anterior bom: não grava só uma área por cima
+        raise ValueError("criterios_ilegivel")
+    areas = dict(d.get("areas") or {})
     bloco = dict(valores_validos(valores), exclusoes=exclusoes_validas(exclusoes))
     for a in (AREAS if todas else (area if area in AREAS else "trabalhista",)):
         areas[a] = dict(bloco, exclusoes=[dict(e) for e in bloco["exclusoes"]])
     return gravar_criterios(pasta, {"origem": "tela", "areas": areas})
 
 
+PASTA_ANTES_0733 = "antes da 0.7.33"  # dentro de "Cópias de segurança": a planilha como era antes de perder as abas antigas
+
+
 def _ler_abas_antigas(caminho_planilha):
-    """Preferências e Exclusões de uma planilha da 0.7.32 ou anterior: (valores, exclusoes)."""
+    """Preferências e Exclusões de uma planilha da 0.7.32 ou anterior: (valores, exclusoes, tinha_abas)."""
     doc = planilha.ler_xlsx(caminho_planilha, so_abas=ABAS_ANTIGAS)
     abas = {cl.sem_acento(a["nome"]).strip().lower(): a["linhas"] for a in doc["abas"]}
     valores, exc = {}, []
@@ -309,37 +326,63 @@ def _ler_abas_antigas(caminho_planilha):
         nome = str(linha[0] if linha else "").strip()
         if nome and not nome.lower().startswith("(exemplo"):
             exc.append({"nome": nome, "motivo": str(linha[1]).strip() if len(linha) > 1 else ""})
-    return valores, exc
+    return valores, exc, ("preferencias" in abas or "exclusoes" in abas)
 
 
-def migrar(pasta, pasta_base, cfg_radar=None, aviso=None):
-    """Uma vez só por computador (0.7.33): sem criterios.json, as abas Preferências e Exclusões das planilhas de cada área
-    viram os critérios desta pessoa; sem planilha, o valor mínimo e o teto de jurídico próprio do config.json, se houver.
-    Devolve quantas exclusões migraram por área, ou None quando não havia o que fazer (arquivo já existe ou sem pasta)."""
+def copia_antes_0733(pasta_base, frente):
+    """Caminho da cópia "antes da 0.7.33" da planilha da frente, em Cópias de segurança (pode não existir)."""
+    nome = os.path.basename(caminho(pasta_base, frente)) if pasta_base else ""
+    return os.path.join(pasta_base, "Cópias de segurança", PASTA_ANTES_0733, nome) if nome else ""
+
+
+def migrar(pasta, pasta_base, cfg_radar=None, aviso=None, banco=None):
+    """Uma vez só por computador (0.7.33): sem criterios.json, o que a 0.7.32 aplicava a toda a lista vira os critérios
+    desta pessoa em TODAS as áreas (decisão do dono, 12/Nov): os valores da planilha trabalhista (ou, sem ela, os do
+    config.json) e a soma das Exclusões de todas as planilhas. Cada planilha é lida dela mesma ou, se já perdeu as abas
+    (outro computador já gravou na 0.7.33), da cópia "antes da 0.7.33" (escolha (ii) da revisão). Revisão da 0.7.33: se a
+    pasta das planilhas não está acessível ou alguma planilha não abre, NÃO grava (tenta de novo na próxima abertura) e
+    devolve None. Devolve {área: exclusões} quando gravou."""
     if not pasta or os.path.exists(caminho_criterios(pasta)):
         return None
+    if pasta_base and not os.path.isdir(pasta_base):  # Drive não montado, rede fora: tenta depois
+        return None
     r = cfg_radar or {}
-    base_cfg = {k: r[k] for k in ("valor_minimo", "teto_capital_gigante") if r.get(k) not in (None, "")}
-    areas, origem, contagem = {}, "config" if base_cfg else "padrão", {}
+    valores = {k: r[k] for k in ("valor_minimo", "teto_capital_gigante") if r.get(k) not in (None, "")}
+    exc, origem, lidas = [], "config" if valores else "padrão", 0
     for frente, c in planilhas_existentes(pasta_base):
-        try:
-            valores, exc = _ler_abas_antigas(c)
-        except Exception:  # noqa: BLE001 - planilha ilegível: esta área começa com o padrão
-            continue
-        if valores or exc:
-            areas[frente] = dict(valores_validos(dict(base_cfg, **valores)), exclusoes=exclusoes_validas(exc))
-            contagem[frente] = len(areas[frente]["exclusoes"])
-            origem = "planilha"
-    for a in AREAS:
-        areas.setdefault(a, dict(valores_validos(base_cfg), exclusoes=[]))
+        fontes = [c, copia_antes_0733(pasta_base, frente)]
+        achou = False
+        for f_ in fontes:
+            if not f_ or not os.path.exists(f_):
+                continue
+            try:
+                v_, e_, tinha = _ler_abas_antigas(f_)
+            except Exception:  # noqa: BLE001 - planilha ilegível (em uso, sincronizando): não grava, tenta depois
+                return None
+            if not tinha:
+                continue
+            if frente == "trabalhista" or not lidas:
+                valores.update(v_)
+            exc += e_
+            achou, origem = True, "planilha"
+            break
+        lidas += 1 if achou else 0
+    bloco = dict(valores_validos(valores), exclusoes=exclusoes_validas(exc))
+    areas = {a: dict(bloco, exclusoes=[dict(e) for e in bloco["exclusoes"]]) for a in AREAS}
     try:
         gravar_criterios(pasta, {"origem": origem, "areas": areas})
     except OSError:
         return None
+    contagem = {a: len(bloco["exclusoes"]) for a in AREAS}
+    texto = (f"critérios da lista migrados para este computador ({origem}): {len(bloco['exclusoes'])} empresa(s) excluída(s), "
+             "iguais nas quatro áreas")
     if aviso:
-        aviso("  Critérios da lista migrados para este computador (" + origem + "): "
-              + ", ".join(f"{a} {n} excluída(s)" for a, n in contagem.items()) if contagem else
-              "  Critérios da lista agora ficam neste computador (" + origem + ").")
+        aviso("  " + texto[0].upper() + texto[1:] + ".")
+    if banco is not None:
+        try:
+            banco.registrar("saude", {"fonte": "Critérios da lista", "situacao": "ok", "detalhe": texto[:200]})
+        except Exception:  # noqa: BLE001 - o registro nunca impede a migração
+            pass
     return contagem
 
 
@@ -358,7 +401,7 @@ def carregar(pasta_base, frente="trabalhista", pasta=None, banco=None, cfg_radar
     pasta = pasta if pasta is not None else pasta_dados(banco)
     if pasta:
         if not os.path.exists(caminho_criterios(pasta)):
-            migrar(pasta, pasta_base, cfg_radar)
+            migrar(pasta, pasta_base, cfg_radar, banco=banco)
         d = ler_criterios(pasta)
         if d is not None:
             if d.get("erro"):
@@ -393,15 +436,16 @@ def carregar(pasta_base, frente="trabalhista", pasta=None, banco=None, cfg_radar
 
 
 def linhas_criterios(prefs, pessoa=""):
-    """0.7.33: aba só de leitura "Critérios desta leitura" (quem gravou e com que critérios). Não é lida pelo programa."""
-    return [["Critério", "Valor"],
-            ["Área", prefs.get("area", "")], ["Gravada por", pessoa or "este computador"],
-            ["Valor mínimo da causa para destaque (R$)", prefs.get("valor_minimo") or "sem mínimo"],
-            ["Capital social que indica jurídico próprio (R$)", prefs.get("teto_capital_gigante")],
-            ["Empresas excluídas (quantidade)", len(prefs.get("exclusoes") or [])],
+    """0.7.33: aba só de leitura "Critérios desta leitura" (quem gravou e com que critérios), PT e EN. Não é lida pelo
+    programa."""
+    return [["Critério / Criterion", "Valor / Value"],
+            ["Área / Area", prefs.get("area", "")], ["Gravada por / Saved by", pessoa or "este computador / this computer"],
+            ["Valor mínimo da causa para destaque (R$) / Minimum claim value to highlight", prefs.get("valor_minimo") or "sem mínimo / no minimum"],
+            ["Capital social que indica jurídico próprio (R$) / Share capital suggesting in-house counsel", prefs.get("teto_capital_gigante")],
+            ["Empresas excluídas (quantidade) / Excluded companies (count)", len(prefs.get("exclusoes") or [])],
             ["", ""],
-            ["Os critérios são de cada pessoa, no computador dela: mude em Configurações → Critérios da lista. "
-             "Esta aba não é lida pelo programa. / Criteria belong to each person, on their computer.", ""]]
+            ["Os critérios são de cada pessoa, no computador dela: mude em Configurações → Critérios da lista. Esta aba não é lida pelo programa.", ""],
+            ["Criteria belong to each person, on their computer: change them in Settings → List criteria. The program does not read this tab.", ""]]
 
 
 def bloqueio(prefs, versao_atual, hoje=None):

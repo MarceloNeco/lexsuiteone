@@ -176,7 +176,7 @@ Pacote: **46 arquivos no download completo e 45 na atualização** (novo `lexsui
   outras áreas", valor vazio ou 0 = sem mínimo (rótulo "Destacar ações a partir de"), números com ponto e centavos,
   excluídas recolhidas com contagem e rolagem, CPF e CNPJ conferidos e formatados, **um Salvar só** na janela.
   "Dias na aba Arquivo" e "Limite de linhas" saíram da tela.
-- **Chamados pelo AssistONE**: "Abrir um chamado" no balão e no menu Ajuda; assunto (7 categorias), mensagem, "Podem me
+- **Chamados pelo AssistONE** (implementado e **escondido** na 0.7.33, decisão do dono): "Abrir um chamado" no balão e no menu Ajuda; assunto (7 categorias), mensagem, "Podem me
   responder por e-mail", prévia do que vai junto com "não enviar"; trilha só com ids; `POST /chamado` → `lex-conta` v17;
   sem internet, fila em `saida/chamados-pendentes.json` com o mesmo `cliente_id`; "Meus chamados" (`saida/chamados.json`).
   Anexo fica para a 0.7.34.
@@ -192,6 +192,19 @@ Pacote: **46 arquivos no download completo e 45 na atualização** (novo `lexsui
   0.7.33, termos sem mudança (o chamado manda só o que a pessoa vê e deixa marcado), e-mail e site com "Configurações" e
   "seus critérios, por área".
 - Pedido à Arquitetura: `CLAUDE.md` com 46/45 arquivos e a linha "Para rever: menu ☰ → Ajuda → Novidades da versão".
+- **Revisões A e B da Operação (12/Nov), atendidas**: migração com cópia "antes da 0.7.33" (recusa regravar se falhar),
+  segundo computador migra da cópia (escolha (ii)), migração adiada com a pasta fora do ar ou planilha ilegível, registro em
+  Saúde; decisão do dono: valores da trabalhista e soma das Exclusões em **todas as áreas**; `criterios.json` ilegível usa o
+  `.anterior` (que só é renovado com arquivo bom) e não grava por cima; esconder excluídas e jurídico próprio por área;
+  estatísticas da noite depois de terminar e avisar, com parada às 7h ou após 3 h; `criterios.json*` no `.gitignore` e no
+  `PREPARAR-PARA-CLIENTE.bat`; **chamado implementado e escondido** (`app.CHAMADO_LIGADO = False`; nada do que a pessoa lê
+  promete chamado; itens 1, 2, 9 e 13 das revisões ficam para quando ligar); textos sem as abas antigas (SEGURANCA,
+  ROTEIRO, assistente, manual, Como usar); Painel redesenha o filtro ligado na hora; sazonalidade retoma a barra ao voltar ao
+  Painel; Novidades uma linha por mudança (abas, termos renomeados, todas as áreas, 90 dias e 60 mil fixos); lupa e busca do
+  AssistONE com os termos novos em PT e EN; trocar de área com mudança não salva pergunta; "Tirar" legível no escuro;
+  "Configurações" nos caminhos; números (1234.56, 1,5, abc) lidos certo; aba "Critérios desta leitura" em PT e EN.
+  Ficam para depois (baixa): topo da janela sem citar os critérios, "acima de R$ 0" no cabeçalho sem mínimo, anel de foco,
+  Esc com o (?) aberto, dica do AssistONE em PT com tela em EN, etiqueta do gráfico por teclado, manual só em PT.
 
 ## 0.7.32 (dono, 11/Nov: "pode tudo") — pronta para publicar
 

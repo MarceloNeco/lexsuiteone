@@ -22,6 +22,7 @@ import os
 import re
 import sys
 import threading
+import time
 
 from lexsuite import VERSAO, avisar, banco as bd, cnpj, classificar as cl, config, datajud, djen, monitor, pauta, prazos, radar, rede, saidas
 
@@ -512,22 +513,28 @@ def cmd_radar(a):
         com_hora = estado.aviso  # janela preta com a hora e andamento para a tela (barra de progresso)
         situacao = radar.executar(cfg, banco, com_hora, AQUI, dias=a.dias, sem_cnpj=a.sem_cnpj, pasta_diag=pasta_diag, versao=VERSAO,
                                   caminho_config=a.config, origem=estado.origem, parar=estado.parar)
-        if getattr(a, "agendado", False):  # 0.7.18: à noite, depois da leitura agendada, até 30 Diários antigos (só totais)
-            try:  # antes de terminar o estado: a tela vê a leitura "rodando" e não inicia outra ao mesmo tempo (revisão)
-                from lexsuite import historico
-                hora = dt.datetime.now().hour
-                sit_h = historico.situacao(banco)
-                if (hora >= 18 or hora < 7) and (sit_h["na_fila"] or sit_h["erros"]):
-                    # 0.7.33 (dono): à noite termina a fila inteira (Continuar à noite), em lotes, com a mesma pausa
-                    historico.processar_tudo(banco, aviso=estado.aviso, parar=estado.parar,
-                                             lote=int(cfg["radar"].get("estatisticas_por_vez") or historico.POR_VEZ))
-            except Exception as e:  # noqa: BLE001 - as estatísticas antigas nunca atrapalham a leitura
-                print(f"  Estatísticas antigas: não deu certo agora ({e.__class__.__name__}); tento na próxima noite. / Will retry next night.", flush=True)
         estado.terminar(situacao)
         if cfg["radar"].get("avisar_ao_terminar", True):
             from lexsuite import agendar, app
             m = app.marca(AQUI)
             agendar.notificar(m.get("nome", "RADAR JUDICIAL"), agendar.texto_aviso(situacao, m.get("curto", "RADAR")))
+        if getattr(a, "agendado", False):
+            # 0.7.33 (dono): à noite, depois da leitura agendada, termina a fila das estatísticas antigas (só totais), em lotes,
+            # com a pausa. Revisão da 0.7.33: só depois de terminar a leitura e avisar, e com limite: para às 7h ou após 3 horas
+            # (não ocupa a leitura da manhã nem esbarra no limite de 4 horas do Agendador)
+            try:
+                from lexsuite import historico
+                inicio_h = time.monotonic()
+                hora = dt.datetime.now().hour
+                sit_h = historico.situacao(banco)
+                def parar_h():
+                    h_ = dt.datetime.now().hour
+                    return estado.parar() or (7 <= h_ < 18) or time.monotonic() - inicio_h > 3 * 3600
+                if (hora >= 18 or hora < 7) and (sit_h["na_fila"] or sit_h["erros"]):
+                    historico.processar_tudo(banco, aviso=print, parar=parar_h,
+                                             lote=int(cfg["radar"].get("estatisticas_por_vez") or historico.POR_VEZ))
+            except Exception as e:  # noqa: BLE001 - as estatísticas antigas nunca atrapalham a leitura
+                print(f"  Estatísticas antigas: não deu certo agora ({e.__class__.__name__}); tento na próxima noite. / Will retry next night.", flush=True)
     except radar.RoboDesligado as e:
         estado.terminar(erro=str(e))
         raise SystemExit("  " + str(e))
@@ -732,7 +739,7 @@ def _avisar_erro(comando, detalhe):
     m = app.marca(AQUI)
     if comando == "radar":  # SystemExit traz a frase pronta (ex.: robô pausado pelo suporte, fora do Brasil); erro de programa, não
         agendar.notificar(m.get("nome", "RADAR JUDICIAL"), (f"A leitura não rodou: {str(detalhe).strip()[:180]}" if detalhe else
-                                                            "A leitura parou com erro. Veja em Configuração → Ver registro. / The reading stopped with an error."))
+                                                            "A leitura parou com erro. Veja em Configurações → Sobre este computador → Ver registro. / The reading stopped with an error."))
     elif comando == "app":
         agendar.caixa_erro(m.get("nome", "RADAR JUDICIAL"),
                            f"O {m.get('curto', 'RADAR')} não conseguiu abrir.\n\n{str(detalhe).strip()[:300]}\n\nO detalhe ficou em:\n{REGISTRO}\n\n"

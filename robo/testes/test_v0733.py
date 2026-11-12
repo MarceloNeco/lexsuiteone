@@ -120,6 +120,7 @@ class Chamados(unittest.TestCase):
             _j.dump(dict(self.CFG, radar={"tribunais": ["TRT2"]}), f)
         srv = app.Servidor(("127.0.0.1", 0), pasta)
         threading.Thread(target=srv.serve_forever, daemon=True).start()
+        liga = mock.patch.object(app, "CHAMADO_LIGADO", True); liga.start(); self.addCleanup(liga.stop)
         def pedir(metodo, rota, corpo=None):
             c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=20)
             c.request(metodo, rota, body=_j.dumps(corpo) if corpo is not None else None, headers={"X-LexSuite": "1", "Content-Type": "application/json"})
@@ -196,3 +197,155 @@ class SazonalidadeTudo(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def _abas_032(valor=None, socios="sim", excluidas=()):
+    """Planilha como era na 0.7.32 (dados fictícios): Preferências, Exclusões e Controle."""
+    from lexsuite import preferencias as pf
+    pref = [list(l) for l in pf.LINHAS_PREFERENCIAS]
+    for l in pref:
+        if valor is not None and l[0] == "Valor mínimo da causa (R$)":
+            l[1] = valor
+        if l[0] == "Mostrar sócios e administradores":
+            l[1] = socios
+    exc = [["Nome ou CNPJ", "Motivo"]] + [[n, "cliente"] for n in excluidas]
+    return [{"nome": "Radar", "linhas": [["x"]]}, {"nome": "Preferências", "linhas": pref}, {"nome": "Exclusões", "linhas": exc}] + pf.abas_padrao()
+
+
+class Revisao0733(unittest.TestCase):
+    """Revisão da 0.7.33 (Operação, partes A e B): migração segura, todas as áreas, arquivo danificado, critérios por área,
+    chamado escondido e o que as mutações mostraram."""
+
+    def setUp(self):
+        self.pasta = tempfile.mkdtemp(); self.base = os.path.join(self.pasta, "LexSuiteONE"); os.makedirs(self.base)
+        self.cfg = {"compartilhar": {"pasta": self.pasta}, "radar": {"tribunais": ["TRT2"], "dias_na_pagina": 30}}
+
+    def _planilha(self, frente="trabalhista", **kw):
+        from lexsuite import planilha, preferencias as pf
+        planilha.escrever_xlsx(pf.caminho(self.base, frente), _abas_032(**kw))
+
+    def test_dois_computadores_comecam_iguais_pela_copia_antes_da_0733(self):
+        from lexsuite import planilha, preferencias as pf, radar, banco as bd
+        self._planilha(valor=250000, socios="não", excluidas=["A Fictícia Ltda", "B Fictícia Ltda"])
+        pc_a, pc_b = tempfile.mkdtemp(), tempfile.mkdtemp()
+        self.assertTrue(pf.migrar(pc_a, self.base))
+        b = bd.Banco(os.path.join(pc_a, "lexsuite.db"))
+        self.assertTrue(radar.gravar_planilha(self.cfg, radar.montar_radar(self.cfg, b), b, "0.7.33", self.pasta, lambda *_: None))
+        abas = [a["nome"] for a in planilha.ler_xlsx(pf.caminho(self.base, "trabalhista"))["abas"]]
+        self.assertNotIn("Preferências", abas); self.assertIn("Critérios desta leitura", abas)
+        self.assertTrue(os.path.exists(pf.copia_antes_0733(self.base, "trabalhista")))  # a cópia de antes ficou guardada
+        self.assertTrue(pf.migrar(pc_b, self.base))  # o segundo computador migra da cópia
+        for pc in (pc_a, pc_b):
+            p = pf.carregar(self.base, pasta=pc)
+            self.assertEqual((p["valor_minimo"], p["mostrar_socios"], len(p["exclusoes"])), (250000, False, 2))
+
+    def test_copia_que_falha_impede_regravar(self):
+        import shutil
+        from lexsuite import planilha, preferencias as pf, radar, banco as bd
+        self._planilha(excluidas=["A Fictícia Ltda"])
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db")); recados = []
+        with mock.patch.object(shutil, "copyfile", side_effect=OSError("disco cheio")):
+            self.assertFalse(radar.gravar_planilha(self.cfg, radar.montar_radar(self.cfg, b, prefs=pf.padrao()), b, "0.7.33", self.pasta, recados.append))
+        self.assertIn("antes da 0.7.33", " ".join(recados))
+        self.assertIn("Exclusões", [a["nome"] for a in planilha.ler_xlsx(pf.caminho(self.base, "trabalhista"))["abas"]])
+
+    def test_migracao_adiada_sem_pasta_ou_com_planilha_ilegivel(self):
+        from lexsuite import preferencias as pf
+        dados = tempfile.mkdtemp()
+        self.assertIsNone(pf.migrar(dados, os.path.join(self.pasta, "nao-montado")))
+        self.assertFalse(os.path.exists(pf.caminho_criterios(dados)))
+        with open(pf.caminho(self.base, "trabalhista"), "wb") as f:
+            f.write(b"nao e um xlsx")
+        self.assertIsNone(pf.migrar(dados, self.base)); self.assertFalse(os.path.exists(pf.caminho_criterios(dados)))
+        self._planilha(valor=300000)
+        self.assertTrue(pf.migrar(dados, self.base) is not None)  # na próxima abertura, com a planilha boa, migra
+        self.assertEqual(pf.carregar(self.base, pasta=dados)["valor_minimo"], 300000)
+
+    def test_todas_as_areas_recebem_valores_da_trabalhista_e_a_soma_das_exclusoes(self):
+        from lexsuite import preferencias as pf
+        self._planilha(valor=250000, socios="não", excluidas=["A Fictícia Ltda"])
+        self._planilha("tributario", valor=5, excluidas=["T Fictícia Ltda"])
+        dados = tempfile.mkdtemp(); pf.migrar(dados, self.base)
+        for area in pf.AREAS:
+            p = pf.carregar(self.base, frente=area, pasta=dados)
+            self.assertEqual((p["valor_minimo"], p["mostrar_socios"]), (250000, False), area)
+            self.assertEqual(sorted(e["nome"] for e in p["exclusoes"]), ["A Fictícia Ltda", "T Fictícia Ltda"], area)
+
+    def test_arquivo_danificado_usa_o_anterior_e_nao_o_estraga(self):
+        from lexsuite import preferencias as pf
+        dados = tempfile.mkdtemp()
+        pf.salvar_area(dados, "trabalhista", {"valor_minimo": 111}, [])
+        pf.salvar_area(dados, "trabalhista", {"valor_minimo": 222}, [])  # agora o .anterior tem 111
+        with open(pf.caminho_criterios(dados), "w", encoding="utf-8") as f:
+            f.write("lixo")
+        self.assertEqual(pf.criterios_da_area(dados, "trabalhista")[0]["valor_minimo"], 111)  # usa o .anterior
+        pf.salvar_area(dados, "civel", {"valor_minimo": 333}, [])
+        self.assertEqual(pf.criterios_da_area(dados, "trabalhista")[0]["valor_minimo"], 111)  # a área não salva veio do .anterior
+        with open(pf.caminho_criterios(dados) + ".anterior", encoding="utf-8") as f:
+            self.assertNotIn("lixo", f.read())  # o ilegível nunca passa por cima do .anterior
+        outro = tempfile.mkdtemp()
+        with open(pf.caminho_criterios(outro), "w", encoding="utf-8") as f:
+            f.write("[]")
+        with self.assertRaises(ValueError):
+            pf.salvar_area(outro, "trabalhista", {}, [])
+
+    def test_criterios_de_cada_area_na_lista(self):
+        from lexsuite import preferencias as pf, radar, banco as bd
+        pasta_pc = tempfile.mkdtemp(); b = bd.Banco(os.path.join(pasta_pc, "lexsuite.db"))
+        import datetime as dt
+        hoje = dt.date.today().isoformat()
+        cfg = dict(self.cfg, radar={"tribunais": ["TRT2", "TJSP"], "dias_na_pagina": 30})
+        for k, (trib, classe) in enumerate((("TRT2", "ATOrd"), ("TJSP", "Execução Fiscal"))):
+            b.guardar_lead({"processo": f"000000{k}-11.2026.5.02.0001", "tribunal": trib, "vara": "1ª Vara",
+                            "empresas": ["Cliente Comum Ltda"], "data_publicacao": hoje, "classe": classe}, hoje)
+        pf.gravar_criterios(pasta_pc, {"areas": {"trabalhista": {"exclusoes": [{"nome": "Cliente Comum Ltda"}], "mostrar_socios": False},
+                                                 "tributario": {"esconder_excluidas": False}}})
+        itens = {i["frente"]: i for i in radar.montar_radar(cfg, b)["itens"]}
+        self.assertTrue(itens["trabalhista"]["excluida"]); self.assertFalse(itens["tributario"]["excluida"])
+        self.assertTrue(itens["trabalhista"]["esconder_exc"]); self.assertFalse(itens["tributario"]["esconder_exc"])
+
+    def test_chamado_escondido(self):
+        import http.client, json as _j, threading
+        from lexsuite import app
+        self.assertFalse(app.CHAMADO_LIGADO)
+        srv = app.Servidor(("127.0.0.1", 0), tempfile.mkdtemp())
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        try:
+            with mock.patch.object(conta, "enviar_chamado") as env:
+                c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+                c.request("POST", "/chamado", body=_j.dumps({"categoria": "erro", "texto": "x"}), headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+                r = c.getresponse(); d = _j.loads(r.read()); c.close()
+                self.assertEqual(r.status, 403); self.assertTrue(d["desligado"]); self.assertFalse(env.called)
+        finally:
+            srv.shutdown(); srv.server_close()
+        with open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8") as f:
+            h = f.read()
+        self.assertIn("if (chamadoLigado()) window.LEX_CHAMADO = abrirChamado;", h)
+        i = h.index('"0.7.33": {'); self.assertNotIn("chamado", h[i:h.index('"0.7.32": {')].lower())
+        with open(os.path.join(_ROBO_, "..", "paginas", "manual.html"), encoding="utf-8") as f:
+            self.assertNotIn("Abrir um chamado", f.read())
+
+    def test_mutacoes_que_sobreviviam(self):
+        from lexsuite import preferencias as pf
+        for codigo in (400, 404):  # 400 e 404 das duas fontes, não só 404
+            def recusa(url, *a, codigo=codigo, **k):
+                raise rede.ErroHTTP(codigo, url, "x")
+            with mock.patch.object(rede, "pedir_json", side_effect=recusa):
+                self.assertEqual(cnpj.consultar(ALFA)["situacao"], "fonte_sem_suporte")
+        visto = {}
+        conta.enviar_chamado({"conta": {"codigo": "LEX-ABCD-EFGH"}}, "0.7.33", {"categoria": "erro", "texto": "x", "extra": "nao vai"},
+                             pedir=lambda u, c, **k: visto.update(c) or {"ok": True})
+        self.assertNotIn("extra", visto)
+        self.assertEqual(set(visto) - {"acao", "codigo", "instalacao", "versao", "categoria", "texto", "trilha", "windows", "python", "pode_responder"}, set())
+        dados = tempfile.mkdtemp()
+        pf.salvar_area(dados, "trabalhista", {}, []); pf.salvar_area(dados, "trabalhista", {}, [])
+        self.assertTrue(os.path.exists(pf.caminho_criterios(dados) + ".anterior"))
+        self.assertEqual(pf.linhas_criterios(pf.padrao())[1][0], "Área / Area")
+
+    def test_fila_limpa_depois_de_enviar(self):
+        from lexsuite import app
+        pasta = tempfile.mkdtemp(); arq = os.path.join(pasta, "saida", "chamados-pendentes.json")
+        app._gravar_lista_json(arq, [{"categoria": "erro", "texto": "a", "cliente_id": "1"}, {"categoria": "erro", "texto": "b", "cliente_id": "2"}])
+        self.assertEqual(app.enviar_pendentes(pasta, {}, enviar=lambda c, v, d: {"ok": True, "numero": 1}), 0)
+        self.assertEqual(app._lista_json(arq), [])
+        self.assertEqual(len(app._lista_json(os.path.join(pasta, "saida", "chamados.json"))), 2)

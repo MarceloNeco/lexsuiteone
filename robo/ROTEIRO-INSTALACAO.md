@@ -33,8 +33,8 @@ Passos:
    rápida). Enquanto roda, mostre a ficha, os filtros, a exportação e a planilha no Drive.
 5. Se o agendamento automático falhar (a Configuração avisa): em `C:\LexSuiteONE`, `AGENDAR.bat` com botão direito,
    Executar como administrador.
-6. Deixe anotado: abre pelo atalho RADAR JUDICIAL; desde a 0.7.29 não há janela preta (para sair: ☰ → Sair; se travar: DIAGNOSTICO.bat, opção 2; suporte: ABRIR.bat --ver); as abas
-   Preferências e Exclusões da planilha são do escritório; "Sair do RADAR" (menu ☰) fecha tudo; se aparecer "a planilha
+6. Deixe anotado: abre pelo atalho RADAR JUDICIAL; desde a 0.7.29 não há janela preta (para sair: ☰ → Sair; se travar: DIAGNOSTICO.bat, opção 2; suporte: ABRIR.bat --ver); os critérios
+   da lista e as empresas excluídas são de cada pessoa, em Configurações → Critérios da lista (a planilha é completa); "Sair do RADAR" (menu ☰) fecha tudo; se aparecer "a planilha
    está ficando grande", clique em "Limpar a planilha (com cópia)"; dúvidas para **judicial@solverone.com.br**.
 
 Plano B (o instalador não baixou): descompacte o pacote completo do pen drive em `C:\LexSuiteONE` e dê dois cliques em

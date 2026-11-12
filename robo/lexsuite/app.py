@@ -40,14 +40,14 @@ PARA_VOCE = {
                        "Nada aqui usa inteligência artificial nem tem custo por uso: o robô lê fontes públicas e roda no seu computador."],
     "Advogado ou advogada": ["Clique na linha e a ficha abre: vara, rito, data do Diário, empresa, atividade, porte, capital social e contatos do cadastro público.",
                              "O valor da causa fica atrás do captcha do PJe: \"Abrir consulta no PJe\", cole o número, veja o valor e digite na ficha. Ele sai na planilha exportada.",
-                             "Use o status (visto, em contato, descartado) para não repassar a mesma empresa duas vezes; o filtro \"Acima de\" segue o valor mínimo dos Critérios da lista (Configuração).",
+                             "Use o status (visto, em contato, descartado) para não repassar a mesma empresa duas vezes; o filtro \"Acima de\" segue o valor mínimo dos Critérios da lista (Configurações).",
                              "Rito ordinário indica causa acima de 40 salários mínimos; sumaríssimo, até 40. É o primeiro corte de valor que o Diário permite."],
     "Estagiário ou estagiária": ["A rotina sugerida: de manhã, abrir a tela, conferir \"Última atualização\" e passar pela lista marcando o status de cada linha.",
                                  "Para as linhas com \"valor a conferir\", abrir a consulta no PJe, resolver o captcha e digitar o valor da causa na ficha.",
-                                 "Cadastrar em Configuração → Critérios da lista as empresas que a equipe pedir para não aparecer (nome como está no Diário, ou CNPJ, e o motivo).",
+                                 "Cadastrar em Configurações → Critérios da lista as empresas que a equipe pedir para não aparecer (nome como está no Diário, ou CNPJ, e o motivo).",
                                  "Não é preciso mexer nas abas ocultas da planilha: elas são do suporte."],
-    "Equipe administrativa": ["A planilha (LexSuiteONE - Trabalhista.xlsx, na pasta escolhida) é sua, para consultar. Os critérios (valor mínimo, clientes e empresas que não devem aparecer) se mudam em Configuração → Critérios da lista.",
-                              "O RADAR lê sozinho nos dias e horários de Configuração (numa instalação nova, de segunda a sexta, às 20h e às 8h); se o computador estava desligado, a leitura acontece quando ele ligar.",
+    "Equipe administrativa": ["A planilha (LexSuiteONE - Trabalhista.xlsx, na pasta escolhida) é sua, para consultar. Os critérios (valor mínimo, clientes e empresas que não devem aparecer) se mudam em Configurações → Critérios da lista.",
+                              "O RADAR lê sozinho nos dias e horários de Configurações (numa instalação nova, de segunda a sexta, às 20h e às 8h); se o computador estava desligado, a leitura acontece quando ele ligar.",
                               "Se a planilha estiver aberta e travada na hora de uma rodada, o robô grava na próxima. Nada se perde.",
                               "Avise o suporte quando a tela mostrar \"robô desligado\", \"precisa atualizar\" ou quando a lista vier vazia dois dias úteis seguidos."],
 }
@@ -211,6 +211,9 @@ def processo_vivo(pid):
 
 
 # --- 0.7.33: chamados pelo AssistONE (desenho da Arquitetura, seção 2) -----------------------------------------------
+# Decisão do dono (12/Nov): o chamado fica implementado, mas ESCONDIDO na 0.7.33 (o escritório não abre chamado).
+# Uma chave só: desligada, a tela não mostra o chamado, as rotas recusam e a fila não é enviada.
+CHAMADO_LIGADO = False
 _TRAVA_CHAMADOS = threading.Lock()
 MOTIVOS_CHAMADO = {
     "limite": ("Limite de chamados de hoje atingido (5 por computador). Tente amanhã ou escreva para judicial@solverone.com.br.",
@@ -542,7 +545,7 @@ class Tratador(BaseHTTPRequestHandler):
                            "pasta_ok": bool(base and os.path.isdir(base)),
                            "planilha": preferencias.caminho(base) if base and os.path.exists(preferencias.caminho(base)) else "",
                            "planilha_prevista": preferencias.caminho(base) if base else "", "no_drive": compartilhar.no_google_drive(comp.get("pasta", "")),
-                           "agendavel": agendar.disponivel(), "agendado": agendado,
+                           "agendavel": agendar.disponivel(), "chamado": CHAMADO_LIGADO, "agendado": agendado,
                            "horarios": horarios, "dias": dias, "tem_noite": agendar.tem_noite(horarios),
                            "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
                            "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True)),
@@ -621,12 +624,14 @@ class Tratador(BaseHTTPRequestHandler):
             if area not in preferencias.AREAS:
                 area = "trabalhista"
             if not os.path.exists(preferencias.caminho_criterios(s.pasta)):
-                preferencias.migrar(s.pasta, compartilhar.pasta_base(cfg), cfg.get("radar"))
+                preferencias.migrar(s.pasta, compartilhar.pasta_base(cfg), cfg.get("radar"), banco=bd.Banco(s.caminho_db))
             erro = (preferencias.ler_criterios(s.pasta) or {}).get("erro", "")
             valores, exc = preferencias.criterios_da_area(s.pasta, area)
             return self._responder({"ok": True, "area": area, "areas": list(preferencias.AREAS), "valores": valores, "exclusoes": exc,
                                     "limites": preferencias.LIMITES, "max_exclusoes": preferencias.MAX_EXCLUSOES, "erro_leitura": erro})
         if u.path == "/chamados":  # 0.7.33: Meus chamados (lista local) e envio dos que ficaram sem internet
+            if not CHAMADO_LIGADO:
+                return self._responder({"ok": False, "desligado": True, "chamados": [], "pendentes": 0})
             faltam = enviar_pendentes(s.pasta, s.config())
             return self._responder({"ok": True, "chamados": list(reversed(_lista_json(os.path.join(s.pasta, "saida", "chamados.json"))))[:30],
                                     "pendentes": faltam})
@@ -916,11 +921,17 @@ class Tratador(BaseHTTPRequestHandler):
             with _TRAVA_REGRAS:
                 try:
                     preferencias.salvar_area(s.pasta, area, valores, exc, todas=todas)
+                except ValueError:  # revisão da 0.7.33: criterios.json ilegível e sem cópia boa: não grava uma área por cima
+                    return self._responder({"ok": False, "motivo": "O arquivo dos critérios deste computador está danificado e não há cópia boa. Escreva para judicial@solverone.com.br antes de salvar.",
+                                            "motivo_en": "This computer's criteria file is damaged and there is no good copy. Write to judicial@solverone.com.br before saving."})
                 except OSError:
                     return self._responder({"ok": False, "motivo": "Não consegui gravar os critérios neste computador (pasta do programa sem permissão).",
                                             "motivo_en": "Could not save the criteria on this computer (no permission in the program folder)."})
             return self._responder({"ok": True, "area": area, "todas": todas})
         if caminho == "/chamado":  # 0.7.33 (dono): chamado pelo AssistONE, para a central de feedback do RootifyONE
+            if not CHAMADO_LIGADO:
+                return self._responder({"ok": False, "desligado": True, "motivo": "O chamado pelo programa ainda não está disponível. Escreva para judicial@solverone.com.br.",
+                                        "motivo_en": "Tickets from the program are not available yet. Write to judicial@solverone.com.br."}, status=403)
             import uuid
             cat, texto = str(corpo.get("categoria") or ""), str(corpo.get("texto") or "").strip()
             if cat not in conta.CATEGORIAS_CHAMADO or not texto:
@@ -1033,7 +1044,7 @@ class Tratador(BaseHTTPRequestHandler):
                     return self._responder({"ok": True, "so_leitura": True, "em_uso": em_uso})
             if abrir_no_windows(alvo):
                 return self._responder({"ok": True, "em_uso": em_uso})
-            return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Confira a pasta das planilhas em Configuração e faça uma leitura. / The spreadsheet does not exist yet.",
+            return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Confira a pasta das planilhas em Configurações e faça uma leitura. / The spreadsheet does not exist yet.",
                                     "caminho": planilha})
         if caminho == "/testar-pasta":
             cfg = s.config()
@@ -1045,7 +1056,7 @@ class Tratador(BaseHTTPRequestHandler):
                                     "no_drive": compartilhar.no_google_drive(pasta)})
         if caminho == "/gravar-planilha":
             if not compartilhar.pasta_base(s.config()):
-                return self._responder({"ok": False, "motivo": "Escolha a pasta da planilha em Configuração."})
+                return self._responder({"ok": False, "motivo": "Escolha a pasta da planilha em Configurações."})
             recados = []
             ok = radar.regravar_planilha(s.config(), bd.Banco(s.caminho_db), s.pasta, VERSAO, recados.append)
             if not ok:
