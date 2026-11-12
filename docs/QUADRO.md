@@ -270,12 +270,15 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ### Feito (mais recente primeiro)
 - 12/Nov (7, URGENTE do dono): **aceite pela página confirmado de ponta a ponta**. A Produto e a Arquitetura receberam o mesmo
-  urgente e publicaram a mesma correção (CORS e OPTIONS) em paralelo: a da Produto ficou na `main` (commit `1225b27`) e no Supabase
-  como v18; a da Arquitetura virou v19 no contador do Supabase (equivalente, sem `Access-Control-Max-Age`). Para a nuvem bater com a
-  `main`, a Arquitetura republicou o arquivo da `main` (contador v20; o cabeçalho do arquivo segue "v18"). Teste real na página
-  publicada com a licença de teste do dono (Chromium): protocolo `ACE-000001-416B13`, linha em `sol_aceites` (versão 1.0, origem
-  e-mail), evento em `lex_eventos`; a trava da licença de teste está liberada por esse aceite. `aceite.html` não precisa mudar. A KR
-  Law continua sem aceite e com a trava ligada: o Leandro aceita pelo link do e-mail de boas-vindas ou pelo link que o programa mostra.
+  urgente e publicaram a mesma correção (CORS e OPTIONS 204, só para judicial.solverone.com.br) com 50 s de diferença: Produto
+  v18 (11h37, com o "pode aplicar" do dono, commit `1225b27`), Arquitetura v19 (equivalente, sem `Access-Control-Max-Age`). A
+  Produto pediu que o repositório ficasse igual ao que está publicado; a Arquitetura fez o inverso, com o mesmo resultado:
+  republicou o texto exato da `main` (commit `1225b27`) como **v20**, conferido byte a byte pela leitura da função publicada
+  (cabeçalho do arquivo segue "v18"; a nuvem e a `main` são idênticas; OPTIONS devolve 204 com `Max-Age`). Daqui em diante só a
+  Arquitetura mexe na `lex-conta`. Teste real na página publicada com a licença de teste do dono (Chromium): protocolo
+  `ACE-000001-416B13`, linha em `sol_aceites` (versão 1.0, origem e-mail), evento em `lex_eventos`; a trava da licença de teste
+  está liberada por esse aceite. `aceite.html` não precisa mudar. A KR Law continua sem aceite e com a trava ligada: o Leandro
+  aceita pelo link do e-mail de boas-vindas ou pelo link que o programa mostra.
 - 12/Nov (6): respondido o pedido da Operação sobre a migração dos critérios com vários computadores (opção ii: cópia "antes da
   0.7.33" na pasta de cópias e migração lendo dela), cópia dos critérios da 0.7.32 a todas as áreas (sim) e termos para o chamado
   (versão 1.1 material antes de ligar na 0.7.34). Desenho atualizado (1.4 e 2.5).
