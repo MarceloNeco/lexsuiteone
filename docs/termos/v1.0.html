@@ -51,6 +51,7 @@ button[disabled] { opacity: .45; cursor: not-allowed; }
 footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-align: center; }
 /* Modo leitura (?ler=1 ou ?ler=uso): sem a coluna do formulário; a página inteira rola; índice fixo ao lado do texto. */
 body.leitura .grade { grid-template-columns: minmax(0, 1fr); }
+body.leitura .topo { max-width: none; }
 body.leitura .lado { display: none; }
 body.leitura .termos { height: auto; overflow: visible; grid-template-columns: minmax(200px, 16rem) minmax(0, 80ch); }
 body.leitura .termos > nav.indice { top: 76px; }
@@ -200,9 +201,7 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
   if (q.get("ler")) {
     document.body.classList.add("leitura");
     document.getElementById("form").hidden = true;
-    document.getElementById("intro").textContent = q.get("ler") === "uso"
-      ? "Termos do RADAR JUDICIAL, versão " + VERSAO + ". Cada pessoa que usa o programa aceita estes mesmos termos na tela de cadastro, na primeira vez e a cada versão nova."
-      : "Leitura dos termos do RADAR JUDICIAL, versão " + VERSAO + ", de 11/Nov/2026. O aceite em nome do escritório é feito pelo link do e-mail de boas-vindas; cada pessoa aceita os Termos de uso no cadastro do programa.";
+    document.getElementById("intro").textContent = "Termos do RADAR JUDICIAL, versão " + VERSAO + ", de 11/Nov/2026. O aceite em nome do escritório é registrado nesta página, acessada pelo e-mail de boas-vindas ou pelo próprio programa; cada pessoa aceita os Termos de uso no seu cadastro.";
     // termo único (11/Nov): ?ler=uso mostra o mesmo texto inteiro; a pessoa aceita estes mesmos termos no cadastro do programa
   }
   // Busca dentro dos termos (modo leitura): destaca, mostra "3 de 7", setas e Enter/Shift+Enter andam pelos resultados.

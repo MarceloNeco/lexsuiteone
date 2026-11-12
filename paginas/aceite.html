@@ -31,17 +31,18 @@ main .miolo { padding: 28px clamp(16px, 3vw, 56px) 48px; }
 h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 8px; } h2 { font-size: 1.15rem; margin: 22px 0 8px; } h3 { font-size: 1rem; margin: 16px 0 6px; }
 p, li { margin: 0 0 10px; } .mudo { color: var(--tinta-2); }
 .cartao { background: var(--papel); border: 1px solid var(--fio); border-radius: 16px; padding: 20px; }
-.lado { position: sticky; top: 16px; }
+.lado { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; }   /* notebook: o cartão nunca passa da tela; a dica fica sempre à vista */
+#li:disabled { pointer-events: none; }   /* o clique na caixa travada chega ao rótulo, que rola o texto */
 .termos { height: min(70vh, 48rem); overflow: auto; border: 1px solid var(--fio); border-radius: 12px; padding: 16px clamp(16px, 2vw, 28px); background: var(--papel); font-size: .98rem; display: grid; grid-template-columns: minmax(200px, 16rem) minmax(0, 80ch); gap: 0 clamp(16px, 2.5vw, 40px); align-content: start; }
 .termos > section, .termos > .fim { grid-column: 2; } .termos > nav.indice { grid-column: 1; grid-row: 1 / span 20; position: sticky; top: 0; align-self: start; }
 @media (max-width: 760px) { .termos { display: block; } }
 .termos section > h2:first-child { margin-top: 0; } .termos section { border-top: 1px solid var(--fio); padding-top: 4px; margin-top: 14px; } .termos section#s1 { border-top: 0; margin-top: 0; }
 .indice { font-size: .92rem; margin: 0 0 12px; background: var(--papel-2); border-radius: 10px; padding: 10px 12px; } .indice b { display: block; margin-bottom: 4px; } .indice ol { margin: 0; padding-left: 1.3em; } .indice li { margin: 2px 0; }
 .fim { text-align: center; color: var(--tinta-3); font-size: .9rem; padding: 10px 0 0; border-top: 1px dashed var(--fio); margin-top: 16px; }
-label { display: block; font-weight: 600; margin: 14px 0 6px; } label small { display: block; font-weight: 400; color: var(--tinta-3); }
+label { display: block; font-weight: 600; margin: 10px 0 4px; } label small { display: block; font-weight: 400; color: var(--tinta-3); }
 input.fixo { background: var(--papel-2); color: var(--tinta-2); }
 .fixo-texto { background: var(--papel-2); color: var(--tinta-2); border: 1px solid var(--fio); border-radius: 10px; padding: 12px 14px; cursor: default; user-select: none; letter-spacing: .02em; }
-input[type=text], input[type=email] { width: 100%; font: inherit; padding: 12px 14px; border: 1px solid var(--fio); border-radius: 10px; background: var(--papel); }
+input[type=text], input[type=email] { width: 100%; font: inherit; padding: 10px 14px; border: 1px solid var(--fio); border-radius: 10px; background: var(--papel); }
 .marca { display: flex; gap: 12px; align-items: flex-start; font-weight: 500; margin-top: 16px; } .marca input { width: 22px; height: 22px; margin-top: 3px; flex: none; }
 button { font: 700 1.05rem var(--f); background: var(--latao); color: var(--noite); border: 0; border-radius: 12px; padding: 14px 22px; cursor: pointer; margin-top: 18px; min-height: 48px; }
 button[disabled] { opacity: .45; cursor: not-allowed; }
@@ -50,6 +51,7 @@ button[disabled] { opacity: .45; cursor: not-allowed; }
 footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-align: center; }
 /* Modo leitura (?ler=1 ou ?ler=uso): sem a coluna do formulário; a página inteira rola; índice fixo ao lado do texto. */
 body.leitura .grade { grid-template-columns: minmax(0, 1fr); }
+body.leitura .topo { max-width: none; }   /* dono, 12/Nov: o parágrafo abaixo da busca ocupa a largura do conteúdo */
 body.leitura .lado { display: none; }
 body.leitura .termos { height: auto; overflow: visible; grid-template-columns: minmax(200px, 16rem) minmax(0, 80ch); }
 body.leitura .termos > nav.indice { top: 76px; }
@@ -159,14 +161,14 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
   <div class="lado">
   <div class="cartao">
     <form id="form" novalidate>
+      <div id="dica" class="aviso info" style="margin-top:0" role="status">Role o texto dos termos até o fim para liberar a caixa de aceite (clicar na caixa leva ao trecho que falta).</div>
       <label for="nome">Nome completo (como no documento de identidade)<small>Confira e corrija se preciso.</small></label>
       <input type="text" id="nome" autocomplete="name" maxlength="120" required>
-      <label for="email">E-mail do responsável<small>O e-mail cadastrado na licença, que recebeu o e-mail de boas-vindas.</small></label>
+      <label for="email">E-mail do responsável<small>O que recebeu o e-mail de boas-vindas.</small></label>
       <input type="email" id="email" autocomplete="email" maxlength="120" required>
-      <label for="codigo">Código de cliente<small>Veio no e-mail de boas-vindas (LEX-XXXX-XXXX). Identifica o escritório.</small></label>
+      <label for="codigo">Código de cliente<small>Veio no e-mail de boas-vindas (LEX-XXXX-XXXX).</small></label>
       <input type="text" id="codigo" autocomplete="off" maxlength="13" required>
-      <label class="marca"><input type="checkbox" id="li" disabled><span>Li os termos até o fim e <b>aceito</b>, em nome do escritório, todos os documentos desta página (seções 1 a 11).</span></label>
-      <div id="dica" class="aviso info">Role o texto dos termos até o fim para liberar a caixa de aceite.</div>
+      <label class="marca" id="marca-li"><input type="checkbox" id="li" disabled><span>Li os termos até o fim e <b>aceito</b>, em nome do escritório, todos os documentos desta página (seções 1 a 11).</span></label>
       <button type="submit" id="botao" disabled>Confirmar o aceite</button>
       <div id="msg" class="aviso" hidden></div>
     </form>
@@ -198,9 +200,7 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
   if (q.get("ler")) {
     document.body.classList.add("leitura");
     document.getElementById("form").hidden = true;
-    document.getElementById("intro").textContent = q.get("ler") === "uso"
-      ? "Termos do {{marca.nome}}, versão " + VERSAO + ". Cada pessoa que usa o programa aceita estes mesmos termos na tela de cadastro, na primeira vez e a cada versão nova."
-      : "Leitura dos termos do {{marca.nome}}, versão " + VERSAO + ", de 11/Nov/2026. O aceite em nome do escritório é feito pelo link do e-mail de boas-vindas; cada pessoa aceita os Termos de uso no cadastro do programa.";
+    document.getElementById("intro").textContent = "Termos do {{marca.nome}}, versão " + VERSAO + ", de 11/Nov/2026. O aceite em nome do escritório é registrado nesta página, acessada pelo e-mail de boas-vindas ou pelo próprio programa; cada pessoa aceita os Termos de uso no seu cadastro.";   // texto do dono, 12/Nov (vale para ?ler=1 e ?ler=uso: termo único)
     // termo único (11/Nov): ?ler=uso mostra o mesmo texto inteiro; a pessoa aceita estes mesmos termos no cadastro do programa
   }
   // Busca dentro dos termos (modo leitura): destaca, mostra "3 de 7", setas e Enter/Shift+Enter andam pelos resultados.
@@ -261,6 +261,14 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
   function leuTudo() { return termos.scrollTop + termos.clientHeight >= termos.scrollHeight - 8; }
   function liberar() { if (leuTudo() && li.disabled) { li.disabled = false; dica.textContent = "Obrigado por ler. Marque a caixa para aceitar."; } }
   termos.addEventListener("scroll", liberar); setTimeout(liberar, 300);
+  // Caixa ainda travada: o clique rola o texto até o fim (o que falta ler), e a rolagem libera a caixa (dono, 12/Nov).
+  document.getElementById("marca-li").addEventListener("click", function (ev) {
+    if (!li.disabled) return;
+    ev.preventDefault();
+    termos.scrollTo({ top: termos.scrollHeight, behavior: "smooth" });
+    dica.textContent = "Rolando até o fim dos termos. Leia o trecho que faltava e marque a caixa.";
+    setTimeout(liberar, 900);
+  });
   li.addEventListener("change", function () { botao.disabled = !li.checked; });
   function mostrar(texto, tipo) { msg.textContent = texto; msg.className = "aviso " + tipo; msg.hidden = false; }
   async function sha256(texto) { var b = new TextEncoder().encode(texto); var h = await crypto.subtle.digest("SHA-256", b); return Array.from(new Uint8Array(h)).map(function (x) { return x.toString(16).padStart(2, "0"); }).join(""); }
