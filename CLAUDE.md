@@ -26,8 +26,8 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
   1. **Manual e orientações espalhadas pelo app**: manual (quando o aplicativo tem), botões (?), dicas, mensagens de erro e
      de aviso, LEIA-ME, roteiros, páginas do site.
   2. **AssistONE**: ajuda da tela, tour e busca (alvos que sumiram ou mudaram de lugar).
-  3. **Novidades da versão** (a janela que aparece depois de atualizar, com a linha "Para rever: menu ☰ → Configurações →
-     Novidades da versão"), em linguagem formal e curta: de preferência uma linha por mudança, começando por substantivo
+  3. **Novidades da versão** (a janela que aparece depois de atualizar, com a linha "Para rever: menu ☰ → Ajuda → Novidades da
+     versão"; até a 0.7.32 era "☰ → Configurações → Novidades da versão"), em linguagem formal e curta: de preferência uma linha por mudança, começando por substantivo
      ("Inclusão de…", "Simplificação de…", "Alteração do termo X para Y", "Opção de…", "Atualização do manual"); sem frase de
      efeito nem coloquial ("já lê", "com um botão só", "agora"); sem detalhe de tela (cores, setas, animação), que fica em
      "Melhorias no design e na navegação" ou "Melhorias de acessibilidade e correções"; perfumaria não entra; mudança grande
@@ -111,7 +111,7 @@ nunca é delegada a subagente. Resultado de subagente é dado a conferir, não o
 
 ## Como entregar
 
-- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos arquivos (45 no download completo, 44 no de atualização, a partir da 0.7.18 com `lexsuite/historico.py`; a 0.7.16 tinha 44 e 43) em `releases/LexSuiteONE-RADAR.zip`,
+- Versão em `robo/lexsuite/__init__.py`. Pacote: os mesmos arquivos (46 no download completo, 45 no de atualização, a partir da 0.7.33 com `lexsuite/documento.py`; da 0.7.18 à 0.7.32 eram 45 e 44; a 0.7.16 tinha 44 e 43) em `releases/LexSuiteONE-RADAR.zip`,
   `releases/LexSuiteONE-RADAR-<versão>.zip` e `docs/downloads/LexSuiteONE-RADAR.zip` (o pacote de atualização é
   `LexSuiteONE-RADAR-atualizacao-<versão>.zip`; o botão do site baixa o instalador `Instalar-LexSuiteONE.zip`). Atualize `robo/LEIA-ME.md`,
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.
