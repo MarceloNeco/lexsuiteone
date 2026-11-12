@@ -145,8 +145,11 @@ Arquitetura (pedido no quadro).
 - **0.7.33 (lista, esperando o dono ver a 0.7.32 publicada e dar o "pode")**, teste do dono na 0.7.31 (12/Nov):
   (1) Painel sem a busca; Lista e Arquivo com "Procure por empresa, nº ou CNPJ" em itálico cinza; (2) Painel sem filtros
   repetidos (período, tribunais, datas; setor, porte, estado, vara e situação controlados no gráfico, com chip do que está
-  ligado no alto); (3) etiqueta grande ao passar o mouse nos gráficos; (4) Sazonalidade com um botão só e andamento
-  ("lidos 90 de 250"), Parar e (?) explicando o ritmo; (5) um Salvar só na Configuração (critérios e excluídas acendem o
+  ligado no alto); (3) etiqueta grande ao passar o mouse nos gráficos; (4) Sazonalidade (dono, 12/Nov, muda a decisão de 30 por vez):
+  "Buscar estatísticas dos últimos N meses" lê tudo de uma vez, em segundo plano, com a mesma pausa entre Diários; barra
+  com % geral e a lista de meses do mais novo ao mais antigo (nov/2026 ✓, out/2026 15%…); botões Pausar (continua de onde
+  parou) e Continuar à noite (depois da leitura automática); "Ler o Diário agora" durante a busca abre aviso com o
+  andamento, link para o Painel e a opção de pausar e continuar depois; (?) explicando tudo; (5) um Salvar só na Configuração (critérios e excluídas acendem o
   Salvar geral); (6) valor mínimo 0 ou vazio = sem mínimo (hoje vira 100 mil) e rótulo "Destacar ações a partir de (R$)";
   (7) números com ponto de milhar e R$ com ,00; (8) texto do bloco de critérios curto; (9) menu Configurações com os
   mesmos nomes e a mesma ordem da janela, Licença e código primeiro; (10) grupo Ajuda (Novidades, Manual, Abrir numa aba);
