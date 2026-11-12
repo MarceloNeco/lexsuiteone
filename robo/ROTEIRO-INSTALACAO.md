@@ -22,11 +22,12 @@ Perguntas antes de começar:
 Passos:
 1. No navegador do cliente, judicial.solverone.com.br, "Baixar o RADAR JUDICIAL". Abra o arquivo baixado e dê dois
    cliques em `INSTALAR.bat` ("Executar"; ou "Mais informações" e "Executar assim mesmo"). Ele instala em
-   `C:\LexSuiteONE` (ou na pasta do usuário, se o Windows não deixar), cria o atalho e abre a tela.
+   `C:\LexSuiteONE` (ou na pasta do usuário, se o Windows não deixar), cria o atalho e abre a tela. Na primeira janela
+   ele pede o **código de cliente** (está no e-mail de boas-vindas): cole com o botão direito do mouse e aperte Enter.
 2. Na tela (janela própria), o assistente de 4 passos: documento, escritório, nome, e-mail e função; onde fica a
    planilha (Google Drive, outra pasta ou só neste computador); frente e tribunais; o resumo mostra onde a
    planilha ficou. Instale no computador que fica ligado nos horários das leituras.
-3. Menu ☰, Configuração, **Armazenamento**: anote o espaço livre no disco (o ideal é mais de 10 GB) e confira onde ficam
+3. Menu ☰, Configurações, **Armazenamento**: anote o espaço livre no disco (o ideal é mais de 10 GB) e confira onde ficam
    a planilha e a pasta `Cópias de segurança`. Nada é compartilhado com a SolverONE.
 4. "Ler o Diário agora" (os 24 TRTs já vêm escolhidos; em Tribunais dá para reduzir a 2 ou 3 para a primeira leitura ser
    rápida). Enquanto roda, mostre a ficha, os filtros, a exportação e a planilha no Drive.

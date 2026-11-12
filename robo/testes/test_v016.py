@@ -1596,6 +1596,19 @@ class Novo0732(unittest.TestCase):
         pt = re.search(r"pt: \[(.*?)\],\s*en:", bloco, re.S).group(1); en = re.search(r"en: \[(.*?)\]\s*$", bloco, re.S).group(1)
         self.assertGreater(pt.count('",'), 0); self.assertEqual(pt.count('", '), en.count('", '))
 
+    def test_novidades_032_citam_a_troca_de_nome(self):  # terceira revisão da 0.7.32 (Operação): nome que a pessoa vê mudou
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        i = h.index('"0.7.32": {'); bloco = h[i:h.index("\n    }", i)]
+        self.assertIn("Regras do escritório", bloco); self.assertIn("Critérios da lista", bloco)
+        self.assertIn("Firm rules", bloco); self.assertIn("List criteria", bloco)
+        self.assertEqual(bloco.count('",\n'), 2 * (bloco.split("en: [")[0].count('",\n')))  # mesmo número de linhas em PT e EN
+        self.assertIn("Para rever: menu ☰ → Configurações → Novidades da versão", h)
+
+    def test_lupa_acha_dias_com_espaco_duplo_e_monday_to_friday(self):  # terceira revisão da 0.7.32 (Operação)
+        h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
+        self.assertIn('$("bg-q").value.trim()).replace(/\\s+/g, " ")', h)
+        self.assertIn("monday to friday", h)
+
     def test_assistone_aponta_para_o_que_existe(self):  # regra do dono: o AssistONE acompanha a tela
         import re
         h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()

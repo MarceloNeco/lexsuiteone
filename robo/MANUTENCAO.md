@@ -5,7 +5,7 @@ O produto não usa IA; a manutenção pode usar qualquer agente (Claude Code, Co
 
 ## Check-up mensal
 
-1. Abrir a planilha compartilhada de cada cliente: aba **Log** (rodou todo dia? erros?) e aba **Saúde** (avisos).
+1. Abrir a planilha compartilhada de cada cliente: aba **Log** (rodou nos dias escolhidos, de segunda a sexta no padrão? erros?) e aba **Saúde** (avisos).
 2. Rodar `TESTAR.bat` (ou `python -m unittest discover -s testes`) no pacote atual: tudo verde.
 3. Conferir se o Python portátil (3.13.x) e as fontes (DJEN, PJe, BrasilAPI, Minha Receita) ainda respondem como antes.
 4. Se nada mudou: nada a fazer.
