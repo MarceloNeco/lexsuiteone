@@ -162,6 +162,37 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.33 (teste do dono na 0.7.31, 12/Nov; desenho da Arquitetura de 12/Nov) — pronta para publicar
+
+Pacote: **46 arquivos no download completo e 45 na atualização** (novo `lexsuite/documento.py`).
+
+- **CNPJ alfanumérico** (IN RFB 2.229/2024): `documento.py` (limpar, válido com ASCII − 48, formatar, extrair com DV e máscara ou
+  contexto, CPF); extração nos Diários, exclusões, tela (máscara com letras) e consulta com as letras; 400/404 das duas fontes
+  para CNPJ com letras = `fonte_sem_suporte` por 7 dias, ficha com "CNPJ novo (dados da Receita indisponíveis)".
+- **Critérios da lista por pessoa, neste computador, por área** (decisão do dono, 12/Nov): `criterios.json` ao lado do
+  `config.json` (gravação atômica, `.anterior`), migração única das abas Preferências e Exclusões, sem soma entre frentes;
+  planilha compartilhada **completa** (90 dias e 60 mil linhas fixos), sem as duas abas, com a aba só de leitura "Critérios
+  desta leitura". Tela: seletor de área, (?) "Estes critérios são seus, neste computador", "Copiar estes critérios para as
+  outras áreas", valor vazio ou 0 = sem mínimo (rótulo "Destacar ações a partir de"), números com ponto e centavos,
+  excluídas recolhidas com contagem e rolagem, CPF e CNPJ conferidos e formatados, **um Salvar só** na janela.
+  "Dias na aba Arquivo" e "Limite de linhas" saíram da tela.
+- **Chamados pelo AssistONE**: "Abrir um chamado" no balão e no menu Ajuda; assunto (7 categorias), mensagem, "Podem me
+  responder por e-mail", prévia do que vai junto com "não enviar"; trilha só com ids; `POST /chamado` → `lex-conta` v17;
+  sem internet, fila em `saida/chamados-pendentes.json` com o mesmo `cliente_id`; "Meus chamados" (`saida/chamados.json`).
+  Anexo fica para a 0.7.34.
+- **Painel**: sem a busca e sem os filtros que já estão nos gráficos (aparecem no alto só quando ligados, com ×); etiqueta
+  grande ao passar o mouse. Lista e Arquivo: busca com dica em itálico "Procure por empresa, nº ou CNPJ".
+- **Sazonalidade** (muda a decisão 10): "Buscar estatísticas" lê a fila inteira em lotes, com a pausa; barra com % e
+  andamento por mês; Pausar; Continuar à noite (a leitura da noite termina a fila); "Ler o Diário agora" durante a busca
+  pergunta (ver no Painel ou pausar e ler); (?) reescrito.
+- **Menu**: Configurações com os mesmos nomes e a ordem da janela; grupo Ajuda (Novidades, Manual, Abrir um chamado, Abrir
+  numa aba); janela "Configurações"; "Pasta das planilhas"; "Sobre este computador"; Novidades: "menu ☰ → Ajuda".
+- Definition of done: manual (critérios, excluídas, planilha, Painel, sazonalidade, chamados, CNPJ, privacidade), AssistONE
+  (ajuda de Configurações e Painel, tour, dica, busca: critérios, excluir empresa, chamado, CNPJ com letras), Novidades da
+  0.7.33, termos sem mudança (o chamado manda só o que a pessoa vê e deixa marcado), e-mail e site com "Configurações" e
+  "seus critérios, por área".
+- Pedido à Arquitetura: `CLAUDE.md` com 46/45 arquivos e a linha "Para rever: menu ☰ → Ajuda → Novidades da versão".
+
 ## 0.7.32 (dono, 11/Nov: "pode tudo") — pronta para publicar
 
 Segunda revisão da Operação (12/Nov, `8e95fce`): 3 bloqueios corrigidos. (1) "Sem estado/setor/porte (sem CNPJ)" usa a

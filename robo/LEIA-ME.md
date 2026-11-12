@@ -50,19 +50,26 @@ A aba Arquivo mostra os últimos 90 dias e todo processo trabalhado; limite de 6
   cabeçalho azul-marinho fixo, filtro em todas as colunas, valores em R$ e o valor da causa acima do mínimo em latão
   claro; abre igual no Excel e no Google Planilhas.
 - **Como usar**: o passo a passo da planilha, em português e inglês.
-- **Preferências** e **Exclusões** (o escritório edita; o robô lê antes de cada rodada e preserva): valor mínimo,
-  mínimo de ações da mesma empresa e janela de dias, capital que indica jurídico próprio, esconder ou não; e a lista de
-  clientes e empresas que não devem aparecer (nome ou CNPJ e o motivo).
+- **Critérios desta leitura** (0.7.33, só leitura): com que critérios a pessoa que gravou por último olhou a lista. As
+  antigas abas **Preferências** e **Exclusões** saíram: os critérios e as empresas excluídas são de cada pessoa, no
+  computador dela, por área (Configurações → Critérios da lista); a planilha fica completa, como registro do escritório.
 - Abas ocultas, usadas pelo suporte: **Controle** (`ativo`, `validade`, `versao_minima`, `mensagem`, `suporte`),
   **Log** (cada rodada), **Saúde** (o que o robô percebeu: Diário fora do ar, formato mudou, Receita sem resposta) e
   **Sobre** (versão, computador, pasta).
 
 Também fica ali a página `Retrato da última leitura.html` (antes `Lista para abrir no celular.html`), uma foto da lista na última leitura que abre em qualquer lugar. No Google Planilhas,
 abra o `.xlsx` para consultar (modo de compatibilidade com Office). Os critérios da lista (exclusões, valor mínimo)
-se mudam no programa: Configuração → Critérios da lista. Se a planilha estiver aberta e travada na hora de uma rodada, o robô tenta de novo a cada 2 minutos e grava sozinho quando ela for fechada.
+são de cada pessoa, neste computador, por área (0.7.33): Configurações → Critérios da lista. A planilha não guarda critérios. Se a planilha estiver aberta e travada na hora de uma rodada, o robô tenta de novo a cada 2 minutos e grava sozinho quando ela for fechada.
 
 ## A tela
 
+- **0.7.33 (dono, 12/Nov):** critérios da lista e empresas excluídas de cada pessoa, neste computador, por área
+  (`criterios.json`; migração única das abas da planilha; "Copiar estes critérios para as outras áreas"; valor vazio = sem
+  mínimo; números com ponto; CPF e CNPJ conferidos, inclusive o CNPJ com letras; um Salvar só); CNPJ com letras reconhecido
+  nos Diários e na ficha; "Abrir um chamado" no AssistONE e no menu Ajuda (fila sem internet, "Meus chamados"); Painel sem
+  busca e sem filtros repetidos, com etiqueta grande nos gráficos; sazonalidade lendo a fila inteira com barra por mês,
+  Pausar e Continuar à noite; menu Configurações com os nomes da janela e grupo Ajuda; planilha completa com a aba
+  "Critérios desta leitura". Pacote com 46/45 arquivos (novo `lexsuite/documento.py`).
 - **0.7.32 (dono, 11/Nov):** gráficos do Painel com dica ao passar o mouse, item ligado e desligado pela legenda
   (apagado, "Mostrar todos"), "Ver na lista →" e cor escolhida ("Cores originais"); filtros do Painel separados dos da
   Lista; leitura automática por dias da semana (padrão de segunda a sexta; nenhum dia = desligada); Configuração
@@ -160,8 +167,8 @@ se mudam no programa: Configuração → Critérios da lista. Se a planilha esti
   direito: explica a tela onde a pessoa está, faz um tour rápido, dá uma dica por tela e procura funções; liga e
   desliga em Configuração → AssistONE. Sem IA e sem internet (só ajuda; as escolhas ficam neste navegador).
 - **0.7.18:** **estatísticas dos meses anteriores** no Painel ("Sazonalidade": ações novas por mês e por dia da
-  semana, mês de pico): o escritório escolhe quantos meses (padrão 3), o RADAR lê os Diários antigos 30 por vez, à
-  noite depois da leitura agendada ou com "Ler agora", e guarda os totais e, só neste computador, o número dos processos já contados; engrenagem ⚙ ao lado do perfil (abre a
+  semana, mês de pico): o escritório escolhe quantos meses (padrão 3), o RADAR lê os Diários antigos (desde a 0.7.33, a fila inteira, com pausa, barra por mês, Pausar e Continuar à
+  noite), e guarda os totais e, só neste computador, o número dos processos já contados; engrenagem ⚙ ao lado do perfil (abre a
   Configuração numa janela por cima); perfil na mesma janela, com a licença do escritório, e-mail e escritório fixos
   e "Outra pessoa vai usar este computador"; pelo menu ☰, Configuração e perfil abrem como página com "Voltar";
   "Gerar uma cópia" com "Abrir a cópia" e "Abrir a pasta"; o estado (UF) da empresa vem do endereço trazido da área

@@ -16,7 +16,7 @@ https://judicial.solverone.com.br/aceite.html#codigo={{codigo}}&email={{email}}&
 Como instalar
 1. Abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Se o Windows pedir confirmação, clique em "Mais informações" e "Executar assim mesmo". Na primeira janela, cole o código de cliente deste e-mail (botão direito do mouse) e aperte Enter.
 2. Siga o passo a passo na tela: seu nome e e-mail, a pasta das planilhas (uma por área, por exemplo, Trabalhista) e os tribunais.
-3. Confira a Configuração (ícone ⚙): dias e horários da leitura automática e critérios da lista (valor mínimo e empresas que ficam de fora).
+3. Confira as Configurações (ícone ⚙): dias e horários da leitura automática e os seus critérios da lista (valor mínimo e empresas que ficam de fora), por área.
 4. Depois, abra pelo atalho {{marca.nome}} na área de trabalho. Para sair, menu ☰ → Sair. O manual está no link "Manual", no alto da tela.
 
 Onde roda: no computador do escritório, nos dias e horários escolhidos. Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
