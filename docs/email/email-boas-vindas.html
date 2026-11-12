@@ -8,14 +8,14 @@
 <body style="margin:0;padding:0;background:#f4f6f9;font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;color:#121a2b;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f6f9;">
 <tr><td align="center" style="padding:28px 12px;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#ffffff;border:1px solid #dbe1ea;border-radius:12px;overflow:hidden;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:760px;background:#ffffff;border:1px solid #dbe1ea;border-radius:12px;overflow:hidden;">
   <tr><td style="background:#0f1d33;padding:22px 28px;">
     <div style="font-size:13px;color:#c4cbd8;margin-bottom:2px;">LexSuite<span style="color:#d4ab6a;">ONE</span></div>
     <div style="font-size:22px;letter-spacing:.02em;color:#ffffff;">{{marca.logo_email}}</div>
   </td></tr>
   <tr><td style="padding:28px 28px 8px;">
     <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:600;">Olá, {{nome}}. Seu {{marca.nome}} está pronto.</h1>
-    <p style="margin:0 0 14px;font-size:16px;line-height:1.55;color:#4a5468;">O {{marca.nome}} acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) nos tribunais que você escolher e relaciona os <b style="color:#121a2b;">novos processos ajuizados em face de empresas e empreendedores com CNPJ</b>, com a ficha cadastral de cada empresa. A relação aparece na tela do {{marca.curto}} e numa planilha na pasta que o escritório escolher (no computador ou no Google Drive).</p>
+    <p style="margin:0 0 14px;font-size:16px;line-height:1.55;color:#4a5468;">O {{marca.nome}} lê diariamente o Diário de Justiça Eletrônico Nacional (DJEN) nos tribunais escolhidos e lista os <b style="color:#121a2b;">novos processos ajuizados contra empresas e empreendedores com CNPJ</b>, com a ficha cadastral de cada empresa, na tela do programa e numa planilha do escritório.</p>
   </td></tr>
   <tr><td align="center" style="padding:8px 28px 22px;">
     <a href="https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip" style="display:inline-block;background:#d4ab6a;color:#0f1d33;text-decoration:none;font-weight:700;font-size:16px;padding:14px 26px;border-radius:999px;">Baixar o {{marca.nome}}</a>
@@ -27,36 +27,32 @@
   </td></tr>
 <!--CODIGO-FIM-->
   <tr><td style="padding:0 28px 18px;">
-    <div style="background:#f6efe0;border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.5;color:#121a2b;"><b>Antes de instalar, aceite os termos.</b> Sua licença já está ativa, mas o programa só libera a leitura depois do aceite. Leia os termos de uso, a política de privacidade e o termo de tratamento de dados e confirme (leva 3 minutos; o código e o e-mail já vão preenchidos, e o aceite fica registrado): <a href="https://judicial.solverone.com.br/aceite.html#codigo={{codigo}}&amp;email={{email}}&amp;nome={{nome}}" style="color:#85601f;font-weight:700;">judicial.solverone.com.br/aceite.html</a></div>
+    <div style="background:#f6efe0;border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.5;color:#121a2b;"><b>Aceite dos termos.</b> O {{marca.curto}} só começa a ler depois do aceite dos termos pelo responsável do escritório. Você pode aceitar agora ou depois de instalar (o programa mostra o mesmo link): <a href="https://judicial.solverone.com.br/aceite.html#codigo={{codigo}}&amp;email={{email}}&amp;nome={{nome}}" style="color:#85601f;font-weight:700;">aceitar os termos</a></div>
   </td></tr>
   <tr><td style="padding:0 28px 8px;">
-    <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7a8396;font-weight:600;margin-bottom:8px;">Como instalar, em quatro passos</div>
+    <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7a8396;font-weight:600;margin-bottom:8px;">Como instalar</div>
     <table role="presentation" cellspacing="0" cellpadding="0" style="font-size:15px;line-height:1.5;color:#121a2b;">
-      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">1</td><td style="padding:6px 0;"><b>Instale:</b> abra o arquivo baixado e dê dois cliques em <code style="background:#f6efe0;color:#8a6222;padding:1px 6px;border-radius:4px;">INSTALAR.bat</code>. Ele baixa o resto, prepara tudo e abre a tela do programa numa janela própria. Não fica nenhuma janela preta aberta: o programa trabalha por trás.</td></tr>
-      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">2</td><td style="padding:6px 0;"><b>Configure no assistente:</b> a tela confere o código e pede o seu nome, e-mail e função (e o seu aceite, em seu nome, dos mesmos termos); a pasta onde ficam as planilhas, uma por área (por exemplo, "LexSuiteONE - Trabalhista.xlsx"), no computador ou, se o escritório preferir, no Google Drive; e os tribunais (de início, os 24 TRTs). A primeira leitura começa em seguida.</td></tr>
-      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">3</td><td style="padding:6px 0;"><b>Confira a Configuração</b> (a engrenagem, no alto da tela): pasta das planilhas, leituras automáticas, regras do escritório (valor mínimo e empresas que ficam de fora), espaço do computador, termos e "O que a SolverONE recebe".</td></tr>
-      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">4</td><td style="padding:6px 0;">Daí em diante, abra pelo atalho <b>{{marca.nome}}</b> na área de trabalho. Para sair, use o menu ☰ e "Sair"; se a tela for fechada, o programa se encerra sozinho alguns minutos depois.</td></tr>
+      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">1</td><td style="padding:6px 0;">Abra o arquivo baixado e dê dois cliques em <code style="background:#f6efe0;color:#8a6222;padding:1px 6px;border-radius:4px;">INSTALAR.bat</code>. Se o Windows pedir confirmação, clique em "Mais informações" e "Executar assim mesmo".</td></tr>
+      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">2</td><td style="padding:6px 0;">Siga o passo a passo na tela: código de cliente, seu nome e e-mail, a pasta das planilhas (uma por área, por exemplo, Trabalhista) e os tribunais.</td></tr>
+      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">3</td><td style="padding:6px 0;">Confira a <b>Configuração</b> (ícone ⚙): dias e horários da leitura automática e critérios da lista (valor mínimo e empresas que ficam de fora).</td></tr>
+      <tr><td style="padding:6px 10px 6px 0;color:#8a6222;font-weight:700;vertical-align:top;">4</td><td style="padding:6px 0;">Depois, abra pelo atalho <b>{{marca.nome}}</b> na área de trabalho. Para sair, menu ☰ → Sair. O manual está no link "Manual", no alto da tela.</td></tr>
     </table>
-    <p style="margin:10px 0 0;font-size:14px;line-height:1.5;color:#4a5468;">Não é preciso compartilhar a pasta com a SolverONE. Se o escritório quiser ajuda do suporte, pode compartilhá-la por um tempo e retirar o acesso depois; é opcional (termos, seção 6.1).</p>
   </td></tr>
   <tr><td style="padding:14px 28px 0;">
-    <p style="margin:0;font-size:14px;line-height:1.5;color:#4a5468;"><b style="color:#121a2b;">Onde roda:</b> no seu computador, que lê o DJEN nos horários que o escritório escolher (de início, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.</p>
-  </td></tr>
-  <tr><td style="padding:14px 28px 6px;">
-    <div style="background:#f6efe0;color:#8a6222;border-radius:8px;padding:10px 14px;font-size:14px;line-height:1.5;">Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual", no alto da tela.</div>
+    <p style="margin:0;font-size:14px;line-height:1.5;color:#4a5468;"><b style="color:#121a2b;">Onde roda:</b> no computador do escritório, nos dias e horários escolhidos. Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.</p>
   </td></tr>
   <tr><td style="padding:16px 28px 8px;">
     <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7a8396;font-weight:600;margin-bottom:6px;">Segurança e dados</div>
-    <p style="margin:0;font-size:14px;line-height:1.5;color:#4a5468;">O {{marca.curto}} não pede nem guarda senha, não contorna captcha e só instala atualizações assinadas digitalmente. Organiza dados da empresa processada e, com a fonte, dos sócios, administradores e do empresário individual (inclusive MEI); não organiza dados do autor da ação nem de testemunhas (termos, seção 4). A relação de processos, as fichas, os contatos e as planilhas ficam no seu computador e na pasta do escritório. À SolverONE vão só: a conferência da licença, o cadastro de quem usa (nome, e-mail e função) e o documento do escritório (CNPJ, CPF ou passaporte), o aceite dos termos, avisos técnicos de erro sem conteúdo de processo e quantidades de processos por situação, dia, tribunal, área e faixa de valor, sem nome, número de processo ou CNPJ (termos, seções 6 e 7). A Configuração mostra exatamente o que foi enviado.</p>
+    <p style="margin:0;font-size:14px;line-height:1.5;color:#4a5468;">O {{marca.curto}} não pede senha, não contorna captcha e só instala atualizações assinadas. Processos, fichas e planilhas ficam no computador e na pasta do escritório; à SolverONE vão só a conferência da licença, o cadastro de quem usa, o aceite dos termos e totais sem nomes nem números de processo (detalhes nos termos).</p>
   </td></tr>
   <tr><td style="padding:22px 28px 26px;">
     <p style="margin:0;font-size:15px;line-height:1.5;">Dúvidas? Escreva para <a href="mailto:{{contato}}" style="color:#8a6222;">{{contato}}</a>. Este e-mail saiu de um endereço automático e não recebe respostas.</p>
-    <p lang="en" style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#7a8396;"><b>In English:</b> your {{marca.nome}} is ready. Accept the terms first (link above), then download the installer, double-click INSTALAR.bat and follow the assistant: client code, your name, e-mail and role, the spreadsheet folder (on the computer or, if the firm prefers, on Google Drive) and the courts. No black window stays open; to quit, use the ☰ menu and "Exit". Lawsuit data stays on your computer and in the firm's folder; SolverONE only receives the licence check, who uses it, the terms acceptance, technical error notices and counts by status, without names, case numbers or tax IDs (terms, sections 6 and 7). Sharing the folder with SolverONE is optional, for support only. Keep this e-mail: the client code activates {{marca.nome}} on each of the firm's computers.</p>
+    <p lang="en" style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#7a8396;"><b>In English:</b> your {{marca.nome}} is ready. Download the installer, accept the terms (now or after installing) and follow the steps on screen. Questions: {{contato}}.</p>
     <p style="margin:14px 0 0;font-size:15px;line-height:1.5;">Marcelo Freitas<br><span style="color:#7a8396;">SolverONE</span></p>
   </td></tr>
   <tr><td style="background:#f4f6f9;border-top:1px solid #dbe1ea;padding:14px 28px;font-size:12px;line-height:1.5;color:#7a8396;">
-    {{marca.nome}}: <a href="https://judicial.solverone.com.br" style="color:#85601f;font-weight:700;">judicial.solverone.com.br</a><br>
-    {{marca.nome}} é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque o seu escritório vai usar o {{marca.nome}}.
+    LexSuiteONE · {{marca.nome}} é um produto da SolverONE.<br>
+    <a href="https://judicial.solverone.com.br" style="color:#85601f;font-weight:700;">judicial.solverone.com.br</a>
   </td></tr>
 </table>
 </td></tr>

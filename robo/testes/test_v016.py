@@ -1759,3 +1759,46 @@ class Revisao0732(unittest.TestCase):
     def test_lista_so_com_lixo_nao_desliga(self):
         from lexsuite import agendar
         self.assertEqual(agendar.validar_dias(["x", 9]), "todos"); self.assertEqual(agendar.validar_dias([]), [])
+
+    # --- segunda revisão da 0.7.32, item 7 ---
+    def test_mesmo_codigo_sem_internet_continua_aceito(self):
+        from unittest import mock
+        from lexsuite import conta
+        self._gravar_conta()
+        def offline(cfg, versao, hoje=None, pedir=None, retorno=None):
+            c = cfg.setdefault("conta", {}); c.update({"resposta": "sem_resposta"}); return c
+        with mock.patch.object(conta, "verificar", side_effect=offline):
+            r = self.pedir("POST", "/config", {"codigo": "LEX-AAAA-BBBB"})
+        self.assertTrue(r["ok"])  # o mesmo código, digitado de novo, não perde a confirmação
+
+    def test_codigo_novo_nao_herda_aceite_nem_termos(self):
+        from unittest import mock
+        from lexsuite import conta
+        self._gravar_conta()
+        import json as _j
+        c = self._cfg(); c["conta"].update({"aceite": {"aceito": True}, "termos": {"x": 1}, "escritorio_licenca": "Velho", "validade": "2099-01-01"})
+        _j.dump(c, open(os.path.join(self.pasta, "config.json"), "w", encoding="utf-8"))
+        visto = {}
+        def ok(cfg, versao, hoje=None, pedir=None, retorno=None):
+            c_ = cfg.setdefault("conta", {}); visto.update({k: c_.get(k) for k in ("aceite", "termos", "escritorio_licenca", "validade")})
+            c_.update({"resposta": "ok", "ok": True, "ultima_ok": "2026-11-12"}); return c_
+        with mock.patch.object(conta, "verificar", side_effect=ok):
+            self.pedir("POST", "/config", {"codigo": "LEX-CCCC-DDDD"})
+        self.assertEqual(set(visto.values()), {None})
+
+    def test_recusa_nao_grava_nada(self):
+        from unittest import mock
+        from lexsuite import conta
+        self._gravar_conta()
+        antes = open(os.path.join(self.pasta, "config.json"), encoding="utf-8").read()
+        def recusa(cfg, versao, hoje=None, pedir=None, retorno=None):
+            c = cfg.setdefault("conta", {}); c.update({"resposta": "codigo_desconhecido", "ok": False}); return c
+        with mock.patch.object(conta, "verificar", side_effect=recusa):
+            self.pedir("POST", "/config", {"codigo": "LEX-ZZZZ-9999", "valor_minimo": 5})
+        self.assertEqual(open(os.path.join(self.pasta, "config.json"), encoding="utf-8").read(), antes)
+
+    def test_xml_com_sabado_e_domingo(self):
+        import datetime as _dt
+        from lexsuite import agendar
+        x = agendar.xml_tarefa(r"C:\Lex\RODAR.bat", ["20:00"], [5, 6], _dt.date(2026, 11, 8))
+        self.assertIn("<DaysOfWeek><Saturday /><Sunday /></DaysOfWeek>", x)

@@ -37,7 +37,7 @@ for f in ("radar_modelo.html", "MANUAL-DO-ESCRITORIO.html", "marca.json"):
 if os.environ.get("CURTO"):
     json.dump({"nome": "ZETA JUDICIAL", "curto": os.environ["CURTO"], "destaque": "IA"}, open(os.path.join(pasta, "marca.json"), "w"))
 b = bd.Banco(os.path.join(pasta, "lexsuite.db"))
-hoje = dt.datetime(2026, 11, 10, 9, 0)
+hoje = dt.datetime.now().replace(hour=9, minute=0, second=0, microsecond=0)  # revisão da 0.7.32: relativo a hoje (o período conta pela data do Diário)
 for k in range(12):
     lead = {"processo": f"0000{k:03d}-11.2026.5.02.0001", "tribunal": "TRT2", "vara": f"{k % 7 + 1}ª Vara do Trabalho de São Paulo", "empresas": [f"Empresa Fictícia {k} Ltda"],
             "data_publicacao": hoje.date().isoformat(), "visto_em": hoje.isoformat(timespec="seconds"), "valor_causa": 50000 + k * 10000, "classe": "ATOrd", "rito": "Ordinário", "cnpjs": ["11222333000181"], "empresa_receita": {}}

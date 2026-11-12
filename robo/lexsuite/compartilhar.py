@@ -334,9 +334,9 @@ def como_usar(produto="RADAR JUDICIAL"):
          "On the \"Valor da causa\" arrow, choose \"Sort largest to smallest\"."],
         ["Destaque em latão", "O valor da causa com fundo latão claro está acima do valor mínimo escolhido na Configuração.",
          "A claim value with a light brass background is above the minimum value set in Settings."],
-        ["Excluir uma empresa", "No programa: Configuração → Regras do escritório (empresas excluídas, valor mínimo e as outras "
-         "regras). O programa grava nas abas Preferências e Exclusões, com cópia de segurança antes. Não edite essas abas aqui.",
-         "In the program: Settings → Firm rules (excluded companies, minimum value and the other rules). The program writes "
+        ["Excluir uma empresa", "No programa: Configuração → Critérios da lista (empresas excluídas, valor mínimo e os outros "
+         "critérios). O programa grava nas abas Preferências e Exclusões, com cópia de segurança antes. Não edite essas abas aqui.",
+         "In the program: Settings → List criteria (excluded companies, minimum value and the other criteria). The program writes "
          "the Preferences and Exclusions tabs, with a backup copy first. Do not edit those tabs here."],
         ["Planilha aberta", "Se a planilha estiver aberta no Excel na hora da leitura, o programa avisa e grava depois. "
          "Feche e use o botão \"Gravar a planilha agora\".",

@@ -31,6 +31,8 @@ bloco do código; sem ele, o bloco é removido, e o cliente não consegue instal
   `docs/DNS-SOLVERONE.md`). O e-mail não pede para compartilhar pasta com a SolverONE: diz que é opcional, só para
   suporte (termos, seção 6.1).
 - Revisado em 11/Nov contra o programa 0.7.29 (sem janela preta, assistente, planilha por área, Configuração com
-  regras do escritório e "O que a SolverONE recebe") e os termos 1.0 (seções 4, 6 e 7); traz um resumo em inglês.
+  critérios da lista e "O que a SolverONE recebe") e os termos 1.0 (seções 4, 6 e 7); traz um resumo em inglês.
 - Um e-mail por pessoa, enviado depois que ela pediu o pacote. Não é lista nem campanha.
 - Nada de senha ou chave no corpo do e-mail. O código de cliente não é segredo: identifica a conta, não dá acesso.
+
+- 12/Nov (dono): texto mais curto e formal, largura de 760 px no computador, aceite "agora ou depois de instalar", sem prometer campos preenchidos, sem o parágrafo do compartilhamento, rodapé "LexSuiteONE · RADAR JUDICIAL é um produto da SolverONE".
