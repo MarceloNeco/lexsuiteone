@@ -15,6 +15,7 @@ Cada item: o que o dono viu, se era esperado e para onde vai. Tudo o que é "0.7
 | 9 | Rodapé "Licença conferida com a SolverONE agora: ativa": pode ficar, mas só a palavra "ativa" em verde | Melhoria | 0.7.36 (estado em vermelho quando não ativa) |
 | 10 | "Termos (versão 1.0) / aceitos por… / Ler os termos" ocupa três linhas | Melhoria | 0.7.36: uma linha só, com "Ler os termos" no fim |
 | 11 | "Licença e termos" e "Sobre este computador": títulos de seção com destaque; uma subcategoria para o código de cliente, em dourado, com a situação da licença logo abaixo, sem repetir "Licença"/"Código" | Melhoria | 0.7.36 (proposta abaixo) |
+| 12 | Empresas excluídas: "Acrescentar" só apaga o que foi digitado e a empresa não aparece; sem motivo na tela | Não: defeito de tela. As empresas entram (a contagem subiu para 9), mas o campo de baixo é a **busca** da lista: com texto nela ("dsfsdfs"), a lista esconde tudo que não bate, sem aviso. A busca parece um campo de cadastro | 0.7.36, prioridade alta: ao acrescentar, limpar a busca e mostrar "✓ Acrescentada: …" com a linha em destaque; busca com 🔍, rótulo "Procurar na lista" e separada do cadastro; com busca sem resultado, "Nenhuma excluída com "…" · Limpar a busca"; todo recusado diz o motivo (CNPJ ou CPF inválido, já está na lista). Motivo segue opcional; obrigatório só o nome, CNPJ ou CPF |
 
 ## Decisão do dono (12/Nov, noite): nomes das Configurações
 
