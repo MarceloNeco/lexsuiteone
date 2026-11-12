@@ -98,6 +98,14 @@ aceite"); o `{{email}}` vazio do teste do dono veio daí. (2) Em Configuração 
 "Mudança material (exige novo aceite de todos)"; sem ele, a versão é editorial e ninguém é perguntado. (3) Na ficha, o aceite
 de cada pessoa continua vindo de `admin_sol_aceites` (termo único `lexsuiteone-termos`).
 
+**3f. Chamados do RADAR JUDICIAL na central de feedback (desenho de 12/Nov, `documentacao/DESENHO-CRITERIOS-CHAMADOS-CNPJ-2026-11-12.md`,
+seção 2).** O RADAR vai abrir chamados pelo AssistONE, que chegam em `sol_feedback` com `app = radar-judicial` pela `lex-conta` (a função
+chama `sol_enviar_feedback`; nada muda no SQL da central). Na sua ficha e na fila: (1) aceitar e mostrar as categorias do RADAR
+(`erro`, `duvida`, `sugestao`, `licenca-e-acesso`, `planilha-e-pasta`, `leitura-do-diario`, `outros`), hoje a lista de
+`rootify-feedback.js` é fixa; (2) mostrar `aparelho.licenca` e `aparelho.escritorio` como "Licença" e "Escritório" na ficha
+(o `anon_id` é o id da instalação); (3) a resposta ao chamado vai por e-mail só quando `pode_responder` for verdadeiro, como já é.
+Quando a `lex-conta` v17 estiver publicada, aviso aqui; até lá, nada a fazer.
+
 **4. O que esperar (vem do LexSuiteONE, colado por mim).** O "publicado" da página de aceite e do e-mail com `{{email}}`
 e `&nome=`; o aviso de que a trava da KR Law foi ligada; a ampliação do check de `lex_eventos` com tipos próprios
 (`termos_aceitos`, `aceite_dispensado`, `aceite_exigido`) numa sessão em que eu esteja no desktop (até lá, tudo é
