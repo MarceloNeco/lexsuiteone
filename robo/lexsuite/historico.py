@@ -203,7 +203,7 @@ def por_mes(banco, tribunais=None):
             continue
         mes = e["data"][:7]
         saida[mes] = saida.get(mes, 0) + int(e["novas"] or 0)
-        tr = (e["tribunal"] or "").upper()
+        tr = (e["tribunal"] or "").upper() or "—"  # revisão 2: sem tribunal também entra, para a pilha somar a barra
         if tr:  # 0.7.36 (dono): barras empilhadas por tribunal (o único atributo que as estatísticas mensais guardam sempre)
             por_trib.setdefault(mes, {})[tr] = por_trib.setdefault(mes, {}).get(tr, 0) + int(e["novas"] or 0)
     return [{"mes": m, "novas": n, "por_tribunal": por_trib.get(m, {})} for m, n in sorted(saida.items())]

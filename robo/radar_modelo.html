@@ -2646,7 +2646,7 @@ window.LEXSUITE_RADAR = null;
       var bR_ = $("b-rodar"); if (bR_) bR_.disabled = true; avisoRapidoApp(t("conferindo_lic"), "nota-g");  // 0.7.36 (revisão da Operação): retorno enquanto confere
       conferirConta().then(function (ok) {
         if (bR_) bR_.disabled = false; [].slice.call(document.querySelectorAll("#avisos-rapidos .aviso-rapido")).forEach(function (v_) { if (v_.textContent === t("conferindo_lic")) v_.parentNode.removeChild(v_); });
-        if (ok === true) rodar(); else if (ok !== "ocupado") { avisoLicenca(); if (ok === "sem") avisoRapidoApp(t("lic_sem_internet"), "erro"); }
+        if (ok === true) rodar(); else if (ok === "ocupado") avisoRapidoApp(t("lic_ocupado"), "nota-g"); else { avisoLicenca(); if (ok === "sem") avisoRapidoApp(t("lic_sem_internet"), "erro"); }
       });  // revisão: não apaga a linha de estado
       return;
     }
@@ -3872,7 +3872,7 @@ window.LEXSUITE_RADAR = null;
         var n = nomeDigitado(); if (n === null) { aviso(t("rg_falta_nome"), "erro"); nNome.focus(); return; }
         if (n === false) { aviso(t("rg_doc_ruim"), "erro"); nNome.focus(); return; }
         var doc_ = pareceDoc(n) && cnpjOk(n) ? semPont(n).toUpperCase() : "", nome_ = achado && achado.doc === n ? achado.nome : n;
-        var ja_ = regrasExc.some(function (e) { return (doc_ && semPont(e.cnpj || e.nome).toUpperCase() === doc_) || semAcento(e.nome) === semAcento(nome_); });
+        var ja_ = regrasExc.some(function (e) { return doc_ ? semPont(e.cnpj || e.nome).toUpperCase() === doc_ : (!e.cnpj && semAcento(e.nome) === semAcento(nome_)); });  // filial com outro CNPJ entra
         if (ja_) { aviso(t("rg_exc_ja"), "erro"); return; }
         regrasExc.unshift({ nome: nome_, cnpj: doc_, motivo: nMot.value.trim().slice(0, 200) }); novaLinha = nome_;
         nNome.value = nMot.value = ""; achado = null; ++buscaN; busca.value = ""; desenharExc(); marcarRegras(); aviso(t("rg_exc_ok", { n: nome_ }), "txt-verde"); nNome.focus();
@@ -3898,6 +3898,7 @@ window.LEXSUITE_RADAR = null;
         return { vals: vals, fora: fora_ };
       }
       function salvarRegras(depois, copia) {  // 0.7.36 (dono): copia = { destinos, modo, partes } (áreas escolhidas, Acrescentar ou Substituir)
+        if (buscaP) { buscaP.then(function () { salvarRegras(depois, copia); }); return; }  // revisão 2: espera o nome do CNPJ antes de gravar
         var n_ = nomeDigitado(); if (n_ === false) { det.open = true; nMsg.textContent = t("rg_doc_ruim"); nNome.focus(); return; }
         if (n_) bAdd.click();  // 0.7.29: nome digitado e não acrescentado entra junto (antes ficava de fora sem aviso)
         var vt = valoresTela(), fora_ = vt.fora;
@@ -3910,7 +3911,7 @@ window.LEXSUITE_RADAR = null;
           regrasSujo = false; msg.textContent = ""; marcarSalvarC(); carregar();
           if (copia) msg.appendChild(el("span", "txt-verde", t("rg_copiado_para", { a: copia.destinos.map(function (a_) { return t("rg_a_" + a_); }).join(t("ag_e")) })));  // em verde, com as áreas
           if (copia && r.cortadas) msg.appendChild(el("span", "erro", " " + t("rg_copiar_limite", { n: num(r.cortadas) })));
-          else msg.textContent = t("rg_salvo");
+          else if (!copia) msg.textContent = t("rg_salvo");
           if (typeof depois === "function") depois();
         }).catch(function () { msg.textContent = t("falha"); });
       }
@@ -4057,7 +4058,8 @@ window.LEXSUITE_RADAR = null;
   function fecharBusca(semFoco) { $("busca-global").hidden = true; $("b-busca").setAttribute("aria-expanded", "false"); if (!semFoco) $("b-busca").focus(); }
   function bate(texto, q) {  // 0.7.36 (dono): cada palavra digitada bate com o começo de uma palavra do texto ("abri" não acha "Fabricadora")
     var pal_ = semAcento(texto).split(/[^a-z0-9]+/).filter(Boolean);
-    return semAcento(q).split(/[^a-z0-9]+/).every(function (tk) { return !tk || pal_.some(function (w) { return w.indexOf(tk) === 0; }); });
+    var tks_ = semAcento(q).split(/[^a-z0-9]+/).filter(Boolean); if (!tks_.length) return false;  // só pontuação não lista tudo
+    return tks_.every(function (tk) { return pal_.some(function (w) { return w.indexOf(tk) === 0; }); });
   }
   function resultadosBusca() {
     // terceira revisão da 0.7.32: espaço duplo não esconde o resultado

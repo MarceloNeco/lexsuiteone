@@ -369,7 +369,7 @@ class Servidor(ThreadingHTTPServer):
             if e.get("resultado") == "ok" or e.get("lidas"):
                 achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} processos novos contra empresas.",
                          "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new cases against companies."}
-                if not e.get("lidas"):  # 0.7.36 (dono): leitura sem nada novo não parece falha
+                if e.get("nada_novo"):  # 0.7.36 (dono): leitura sem nada novo não parece falha (revisão 2: só quando a leitura marcou)
                     achou.update({"pt": "Nada novo: os Diários já publicados tinham sido lidos. O Diário de hoje sai por volta das 19h.",
                                   "en": "Nothing new: the gazettes already published had been read. Today's gazette comes out around 7 pm."})
                 break
@@ -534,7 +534,7 @@ class Tratador(BaseHTTPRequestHandler):
             # 0.7.36 (dono): a faixa do Painel avisa quando a última leitura falhou; uma leitura grava uma linha por tribunal com a
             # mesma hora, então olha todas as linhas dessa hora e mostra a que falhou (revisão)
             tent = banco.execucoes("tentativa", 40)
-            ult = [x for x in tent if tent and x.get("quando") == tent[0].get("quando")]
+            ult = [x for x in tent if tent and (x.get("quando_local") or x.get("quando")) == (tent[0].get("quando_local") or tent[0].get("quando"))]  # revisão 2: a leitura inteira tem o mesmo quando_local
             ruins = [x for x in ult if x.get("causa") not in ("ok", "ainda_nao_liberado_3h", "nao_publicado", "interrompida")]
             pagina["ultima_tentativa"] = (ruins or ult or [{}])[0]
             comp = cfg["compartilhar"]

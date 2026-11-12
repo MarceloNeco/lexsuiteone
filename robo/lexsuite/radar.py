@@ -351,6 +351,8 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         registro.update({"lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj, "resultado": "interrompida" if interrompida else "ok"})
         if interrompida:
             registro["causa"] = "interrompida"
+        if tentativas and not pubs and not interrompida and all(t["causa"] in ("ok", "ainda_nao_liberado_3h", "nao_publicado") for t in tentativas):
+            registro["nada_novo"] = True  # 0.7.36 (revisão 2): a tela, depois de reiniciar, só diz "Nada novo" quando a leitura marcou
     except Exception as e:
         from . import causas
         registro.update({"resultado": "interrompida" if isinstance(e, Interrompida) else "erro", "erro": f"{e.__class__.__name__}: {e}"[:300], "causa": causas.classificar(e),
@@ -381,7 +383,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} processos novos contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
                 "en": f"{len(pubs)} notices read; {len(novos)} new cases against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}
-    if not pubs and not interrompida and all(t["causa"] in ("ok", "ainda_nao_liberado_3h", "nao_publicado") for t in tentativas):
+    if tentativas and not pubs and not interrompida and all(t["causa"] in ("ok", "ainda_nao_liberado_3h", "nao_publicado") for t in tentativas):
         # 0.7.36 (dono): "0 publicações lidas" parecia falha; quando nada é novo, a tela diz por quê
         ate = max((str(t.get("leu_ate") or "")[:10] for t in tentativas), default="")
         ate_br = f"{ate[8:10]}/{ate[5:7]}" if len(ate) == 10 else ""
