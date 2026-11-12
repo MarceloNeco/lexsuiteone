@@ -385,5 +385,5 @@ def texto_aviso(situacao, marca_curto="RADAR"):
     novas = int(s.get("novas") or 0)
     if not novas:
         return "Leitura terminada: nenhuma ação nova contra empresas nos tribunais acompanhados."
-    frase = "1 ação nova contra empresa" if novas == 1 else f"{novas} ações novas contra empresas"
+    frase = "1 processo novo contra empresa" if novas == 1 else f"{novas} processos novos contra empresas"
     return f"Leitura terminada: {frase}. Abra o {marca_curto} para ver a lista."

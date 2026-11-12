@@ -73,16 +73,19 @@ const externos = [];
         await p3.waitForTimeout(8300); const v2 = await lerMsg(p3); ok(!v2 || v2.txt !== v1.txt, 'verde: some em ~8 s (restou: ' + JSON.stringify(v2 && v2.txt) + ')');
         ok(!p3.erros.length, 'verde: sem erro de JS'); await ctx3.close();
       }
-      // M1 no app: lupa lista todos os grupos e Enter abre o que deve
+      // M1 no app: a lupa vazia só orienta (0.7.36, dono); cada grupo aparece ao digitar e Enter abre o que deve
       {
         const [ctx4, p4] = await novo('http://127.0.0.1:' + pOk + '/');
         const lista = async () => p4.evaluate(() => [...document.querySelectorAll('#bg-res button')].map(x => x.firstChild.textContent.trim() + '|' + ((x.querySelector('small') || {}).textContent || '')));
         await p4.click('#b-busca'); await p4.waitForTimeout(300); const L = await lista();
-        console.log('  [app] lupa vazia:', L.length, 'itens:', JSON.stringify(L));
-        const exp = idioma === 'pt' ? ['Painel', 'Lista', 'Arquivo', 'Histórico', 'planilha', 'Configurações', 'Perfil', 'área logada', 'Termos', 'Manual'] : ['Dashboard', 'List', 'Archive', 'History', 'spreadsheet', 'Settings', 'Profile', 'logged-in area', 'Terms', 'Manual'];
-        for (const e of exp) ok(L.some(x => x.toLowerCase().includes(e.toLowerCase())), `app: lupa lista algo com "${e}"`);
+        console.log('  [app] lupa vazia:', L.length, 'itens');
+        ok(L.length === 0 && await p4.locator('#bg-res .bg-nada').isVisible(), 'app: lupa vazia mostra só a dica');
+        const exp = idioma === 'pt' ? ['Painel', 'Lista', 'Arquivo', 'Histórico', 'planilha', 'Configurações', 'Perfil', 'área logada', 'Termos', 'Manual', 'Sair'] : ['Dashboard', 'List', 'Archive', 'History', 'spreadsheet', 'Settings', 'Profile', 'logged-in area', 'Terms', 'Manual', 'Exit'];
+        for (const e of exp) { await p4.fill('#bg-q', e); await p4.waitForTimeout(200); const Le = await lista(); ok(Le.some(x => x.toLowerCase().includes(e.toLowerCase())), `app: "${e}" acha algo com "${e}"`); }
+        await p4.fill('#bg-q', 'abri'); await p4.waitForTimeout(200); const La = await lista();
+        ok(!La.some(x => /fabric/i.test(x)), 'app: "abri" não acha "Fabricadora" (começo de palavra)');
         for (const [q, cond] of [[idioma === 'pt' ? 'Arquivo' : 'Archive', async () => (await p4.getAttribute('#v-arquivo', 'aria-selected')) === 'true'],
-                                 [idioma === 'pt' ? 'Histórico' : 'History', async () => (await p4.getAttribute('#v-historico', 'aria-selected')) === 'true'],
+                                 [idioma === 'pt' ? 'Histórico' : 'History', async () => { const r = await p4.evaluate(() => document.getElementById('config').classList.contains('ver-hist')); await p4.evaluate(() => { const b = document.getElementById('c-fechar'); if (b) b.click(); }); await p4.waitForTimeout(300); return r; }],
                                  [idioma === 'pt' ? 'Painel' : 'Dashboard', async () => (await p4.getAttribute('#v-painel', 'aria-selected')) === 'true'],
                                  [idioma === 'pt' ? 'Lista' : 'List', async () => (await p4.getAttribute('#v-lista', 'aria-selected')) === 'true']]) {
           if (await p4.locator('#busca-global').isHidden()) { await p4.click('#b-busca'); await p4.waitForTimeout(250); }
@@ -102,7 +105,7 @@ const externos = [];
         const est = await p5.evaluate(() => ({ estado: (document.getElementById('estado') || {}).innerText, versao: (document.getElementById('versao-topo') || {}).textContent, abas: [...document.querySelectorAll('[role=tab]')].filter(x => x.getBoundingClientRect().width).length, corpo: document.body.innerText.length, periodo: (document.getElementById('periodo') || {}).value, linhas: document.querySelectorAll('#lista .item').length, sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
         console.log(`  [${rot}]`, JSON.stringify(est).slice(0, 300));
         ok(!/Não consegui falar|Could not reach/.test(est.estado || '') && !/Não consegui falar|Could not reach/.test(await p5.evaluate(() => document.body.innerText)), `${rot}: sem "Não consegui falar com o programa"`);
-        ok(est.abas >= 4 && est.linhas > 0 && est.corpo > 200, `${rot}: a tela carregou (abas ${est.abas}, linhas ${est.linhas})`);
+        ok(est.abas >= 3 && est.linhas > 0 && est.corpo > 200, `${rot}: a tela carregou (abas ${est.abas}, linhas ${est.linhas})`);
         ok(est.periodo === esperaDias, `${rot}: período mostrado = ${esperaDias} (veio ${est.periodo})`);
         ok(est.sw <= est.cw + 1, `${rot}: sem transbordo`);
         // abre a Configuração e fecha
@@ -126,7 +129,7 @@ const externos = [];
     await p.click('#b-busca'); await p.waitForTimeout(300);
     const L0 = await lista(); console.log('  lista vazia:', JSON.stringify(L0));
     const nomesVer = idioma === 'pt' ? ['Painel', 'Lista'] : ['Dashboard', 'List'], proibidos = idioma === 'pt' ? ['Arquivo', 'Histórico'] : ['Archive', 'History'];
-    ok(L0.length === 2 && nomesVer.every((n, i) => L0[i].startsWith(n + '|')), 'offline: a lupa vazia lista exatamente Painel e Lista (nessa ordem)');
+    ok(L0.length === 0, 'offline: a lupa vazia só orienta (0.7.36, dono)');
     ok(!L0.some(x => proibidos.some(pr => x.startsWith(pr))), 'offline: nem Arquivo nem Histórico na lupa vazia');
     for (const q of (idioma === 'pt' ? ['Arquivo', 'Histórico', 'historico', 'arq', 'planilha', 'pasta', 'Configuração', 'Perfil', 'Colar', 'Termos', 'aba', 'cópia', 'Sair', 'Ver', 'Pa', 'Li'] : ['Archive', 'History', 'hist', 'arc', 'spreadsheet', 'folder', 'Settings', 'Profile', 'Paste', 'Terms', 'tab', 'copy', 'Quit', 'View', 'Da', 'Li'])) {
       await p.fill('#bg-q', q); await p.waitForTimeout(250); const L = await lista();

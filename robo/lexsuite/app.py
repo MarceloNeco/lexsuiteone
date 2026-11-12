@@ -367,8 +367,8 @@ class Servidor(ThreadingHTTPServer):
             except ValueError:
                 continue
             if e.get("resultado") == "ok" or e.get("lidas"):
-                achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} ações novas contra empresas.",
-                         "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new lawsuits against companies."}
+                achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} processos novos contra empresas.",
+                         "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new cases against companies."}
                 if not e.get("lidas"):  # 0.7.36 (dono): leitura sem nada novo não parece falha
                     achou.update({"pt": "Nada novo: os Diários já publicados tinham sido lidos. O Diário de hoje sai por volta das 19h.",
                                   "en": "Nothing new: the gazettes already published had been read. Today's gazette comes out around 7 pm."})

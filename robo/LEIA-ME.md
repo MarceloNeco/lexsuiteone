@@ -1,6 +1,6 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.32 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.36 (frente trabalhista)
 
-Uma lista por dia: as ações novas contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
+Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
 inteligência artificial e sem senha de ninguém. A planilha vai para a sua pasta do Google Drive.
 
@@ -43,7 +43,7 @@ ainda não foi calibrada neles.
 Uma por frente (0.7.16), na mesma pasta: `<pasta escolhida>\<subpasta>\LexSuiteONE - Trabalhista.xlsx` (a
 `LexSuiteONE.xlsx` antiga vira essa na primeira leitura, com as abas editadas). Ao lado, `Cópias` e `Cópias de segurança`.
 A aba Arquivo mostra os últimos 90 dias e todo processo trabalhado; limite de 60 mil linhas por planilha, com aviso a
-80% e limpeza com cópia sozinha a 100% (6 cópias guardadas). Configuração → Armazenamento mostra planilhas, banco,
+80% e limpeza com cópia sozinha a 100% (6 cópias guardadas). Configurações → Leitura do Diário → Armazenamento mostra planilhas, banco,
 `saida/`, cópias e o espaço livre do disco.
 
 - **Radar** (o robô escreve a cada rodada): a lista do dia, com as mesmas colunas da tela. A partir da 0.7.12, com
@@ -52,17 +52,32 @@ A aba Arquivo mostra os últimos 90 dias e todo processo trabalhado; limite de 6
 - **Como usar**: o passo a passo da planilha, em português e inglês.
 - **Critérios desta leitura** (0.7.33, só leitura): com que critérios a pessoa que gravou por último olhou a lista. As
   antigas abas **Preferências** e **Exclusões** saíram: os critérios e as empresas excluídas são de cada pessoa, no
-  computador dela, por área (Configurações → Critérios da lista); a planilha fica completa, como registro do escritório.
+  computador dela, por área (Configurações → Destaques e exclusões); a planilha fica completa, como registro do escritório.
 - Abas ocultas, usadas pelo suporte: **Controle** (`ativo`, `validade`, `versao_minima`, `mensagem`, `suporte`),
   **Log** (cada rodada), **Saúde** (o que o robô percebeu: Diário fora do ar, formato mudou, Receita sem resposta) e
   **Sobre** (versão, computador, pasta).
 
 Também fica ali a página `Retrato da última leitura.html` (antes `Lista para abrir no celular.html`), uma foto da lista na última leitura que abre em qualquer lugar. No Google Planilhas,
-abra o `.xlsx` para consultar (modo de compatibilidade com Office). Os critérios da lista (exclusões, valor mínimo)
-são de cada pessoa, neste computador, por área (0.7.33): Configurações → Critérios da lista. A planilha não guarda critérios. Se a planilha estiver aberta e travada na hora de uma rodada, o robô tenta de novo a cada 2 minutos e grava sozinho quando ela for fechada.
+abra o `.xlsx` para consultar (modo de compatibilidade com Office). Os destaques e as exclusões (empresas excluídas, valor mínimo)
+são de cada pessoa, neste computador, por área (0.7.33): Configurações → Destaques e exclusões. A planilha não guarda critérios. Se a planilha estiver aberta e travada na hora de uma rodada, o robô tenta de novo a cada 2 minutos e grava sozinho quando ela for fechada.
 
 ## A tela
 
+- **0.7.36 (teste do dono na 0.7.35, 12/Nov):** Configurações em quatro seções com faixa (Processos, Leitura do Diário,
+  Tela, Licença e termos); "Critérios da lista" vira "Destaques e exclusões" e "Leitura automática" vira "Rotina de
+  leitura"; "processos" no lugar de "ações" nas telas; Licença e termos com o código, a situação ("ativa" em verde) e a
+  validade numa linha, "Conferir agora" que mostra que está conferindo, termos numa linha e Sobre este computador sem
+  repetir a licença ("Último envio", (?) na chave de atualização); verificar atualização em verde, azul ou vermelho;
+  Pasta das planilhas com o caminho uma vez só, botões numa linha (Escolher pasta, Google Drive, OneDrive sem nome
+  entre parênteses) e "Abrir a pasta no Windows" separado; empresas excluídas com o nome pelo CNPJ (cadastro público),
+  busca separada que não esconde em silêncio, motivo de cada recusa e uma linha por empresa; copiar para outras áreas
+  só com mais de uma área em uso, escolhendo áreas, partes e se soma ou substitui; barras de Processos por dia
+  separadas por tribunal, situação, faixa de valor ou setor (Sazonalidade por tribunal), sem o dourado; pizza que se
+  refaz com movimento e itens todos clicáveis; dicas (?) em blocos; Buscar estatísticas responde na hora; faixa da
+  leitura numa linha, sem caminho de arquivo; "Nada novo" quando a leitura não traz publicação nova; Histórico de
+  leituras fora das abas (Configurações → Sobre este computador, e faixa vermelha no Painel quando uma leitura falha);
+  lupa vazia só orienta, acha pelo começo das palavras, sem repetidos e com Sair; ressalvas da Operação (Conferir agora
+  durante a leitura, Trocar licença encadeado, avisos sem empilhar, texto em EN).
 - **0.7.35 (dono, 12/Nov):** tela de abertura enquanto carrega; "Conferir agora" em Licença e termos; "Abrir a pasta no
   Windows" em Pasta das planilhas; "Continuar à noite" também com a busca parada; faixa da leitura numa linha (mensagens
   anteriores recolhidas); Novidades largas no computador; ao encerrar, a janela tenta se fechar e diz como abrir de novo.
@@ -117,7 +132,7 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → C
   da hora, como "(Brasília)"; critério do "Ler o Diário agora" curto, com o atalho "alterar"; filtros em azul-marinho e
   ordenação em dourado, com "Limpar filtros" sempre ao lado (apagado quando não há filtro); a lista lembra os últimos
   filtros; toda janela tem ✕, Cancelar e fecha ao clicar fora; filtros salvos em ordem alfabética, com renomear,
-  arquivar e apagar na Configuração (ficam neste computador por enquanto); **Regras do escritório** (desde a 0.7.32, **Critérios da lista**) na Configuração
+  arquivar e apagar nas Configurações (ficam neste computador por enquanto); **Regras do escritório** (desde a 0.7.32, **Critérios da lista**; desde a 0.7.36, **Destaques e exclusões**) nas Configurações
   (valor mínimo, jurídico próprio, sócios, arquivo, limite e empresas excluídas) editadas na tela e gravadas pelo RADAR
   nas abas Preferências e Exclusões da planilha (sem editar Excel à mão; entram na cópia de segurança); clicar de novo
   no atalho com a tela aberta não abre outra janela: a tela aberta avisa "O RADAR já estava aberto aqui".

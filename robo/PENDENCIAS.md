@@ -162,7 +162,21 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.35 (teste do dono na 0.7.33, 12/Nov; dono: "vamos corrigir tudo que a gente puder") — pronta para publicar
+## 0.7.36 (teste do dono na 0.7.35, 12/Nov; dono: "pode codificar todas as correções e melhorias sem esquecer nada") — pronta para revisão
+
+- Feito: os 34 itens de `documentacao/FEEDBACK-TESTE-0.7.35.md` (menos o 7, depois da visita), os itens 1 a 4b da lista da
+  0.7.36 (`documentacao/LISTA-TESTE-DO-DONO-2026-11-12.md`) e as ressalvas (1) a (6) da segunda revisão da 0.7.35.
+  Decisões usadas: A "Processos", B "Destaques e exclusões", C "Rotina de leitura"; cores da atualização (verde, azul,
+  vermelho só para erro); rodapé sem "hoje"; pergunta D pela recomendação (nome sem CNPJ aceito, com aviso).
+- Conferido (5 pontos): manual (Configurações, Licença e termos, Pasta das planilhas, Empresas excluídas, Painel, lupa,
+  Leituras automáticas, Quando algo não funciona), Novidades PT/EN da 0.7.36, AssistONE (ajuda de Configurações, Painel e
+  Histórico, tour sem a aba Histórico, busca com Histórico de leituras e Sair), termos sem mudança (a consulta do nome pelo
+  CNPJ usa o mesmo cadastro público da ficha), e-mails sem menção ao que mudou.
+- Fica para depois: pasta antiga "Cópias" para dentro de "Cópias da planilha"; link para a Lista ao lado de cada valor dos
+  gráficos (hoje há "Ver na lista →" por gráfico); o site ainda diz "ações novas" na descrição (texto público: só com o
+  "pode" do dono); jornada do aceite por pessoa (Arquitetura).
+
+## 0.7.35 (teste do dono na 0.7.33, 12/Nov; dono: "vamos corrigir tudo que a gente puder") — publicada em 12/Nov
 
 - Feito: tela de abertura; "Conferir agora"; "Trocar licença" com o mesmo código confere; "Abrir a pasta no Windows" e
   título único na Pasta das planilhas; "Continuar à noite" com a busca parada; faixa da leitura compacta; Novidades largas e

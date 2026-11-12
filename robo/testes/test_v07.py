@@ -482,8 +482,8 @@ class Agenda079(unittest.TestCase):
 
     def test_aviso_e_fora_do_windows(self):
         from lexsuite import agendar
-        self.assertIn("12 ações novas", agendar.texto_aviso({"novas": 12}, "RADAR"))
-        self.assertIn("1 ação nova", agendar.texto_aviso({"novas": 1}))
+        self.assertIn("12 processos novos", agendar.texto_aviso({"novas": 12}, "RADAR"))  # 0.7.36: termo Processos
+        self.assertIn("1 processo novo", agendar.texto_aviso({"novas": 1}))
         self.assertIn("nenhuma ação nova", agendar.texto_aviso({}))
         if os.name != "nt":
             self.assertFalse(agendar.notificar("t", "x"))

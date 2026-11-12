@@ -378,8 +378,8 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     if interrompida:  # 0.7.16: depois de uma parada na Receita, conta só o que foi feito (antes misturava parcial e total)
         com_cnpj = sum(1 for n in novos_feitos if n.get("cnpjs"))
     parcial_pt, parcial_en = (" (leitura interrompida)", " (reading stopped)") if interrompida else ("", "")
-    situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} ações novas contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
-                "en": f"{len(pubs)} notices read; {len(novos)} new lawsuits against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
+    situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} processos novos contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
+                "en": f"{len(pubs)} notices read; {len(novos)} new cases against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}
     if not pubs and not interrompida and all(t["causa"] in ("ok", "ainda_nao_liberado_3h", "nao_publicado") for t in tentativas):
         # 0.7.36 (dono): "0 publicações lidas" parecia falha; quando nada é novo, a tela diz por quê

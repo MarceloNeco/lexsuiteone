@@ -272,6 +272,52 @@ class SazonalPorTribunal(unittest.TestCase):
         self.assertEqual(m[0], {"mes": "2026-10", "novas": 5, "por_tribunal": {"TRT2": 3, "TRT15": 2}})
 
 
+class Lupa0736(unittest.TestCase):
+    """Itens 31 a 34: grupo Processos, vazia só orienta, menu inteiro (com Sair), começo de palavra, sem repetidos."""
+
+    def setUp(self):
+        self.h = ler("radar_modelo.html")
+
+    def test_lupa(self):
+        self.assertIn('bg_acoes: "Processos"', self.h); self.assertIn('bg_acoes: "Cases"', self.h)
+        self.assertIn('if (!q) { box.appendChild(el("p", "bg-nada", t("bg_dica"))); return; }', self.h)
+        self.assertIn('[t("sair"), "", "sair encerrar fechar o programa sair do radar exit quit close", sairDoRadar]', self.h)
+        self.assertIn("function bate(texto, q)", self.h); self.assertNotIn("indexOf(q) >= 0", self.h)
+        self.assertIn("if (vistos_[k_]) return false;", self.h)
+
+    def test_todo_item_do_menu_entra_na_lupa(self):
+        # a lupa percorre gruposMenu() (o mesmo menu ☰); o Sair, que fica fora dos grupos, entra à parte
+        corpo = self.h[self.h.index("  function resultadosBusca() {"):][:9000]
+        self.assertIn("gruposMenu()", corpo); self.assertIn("sairDoRadar", corpo)
+        gaveta = self.h[self.h.index('add(t("sair"), sairDoRadar'):][:10]
+        self.assertTrue(gaveta)
+
+    def test_termo_processos(self):
+        for k in ('g_dia: "Processos por dia"', 'g_empresas: "Empresas com mais processos"', 'k_acoes: "Processos"', 'saz_t: "Sazonalidade: processos novos por mês"',
+                  'g_sinal: "Como o processo novo foi reconhecido"', 'g_acoes_n: "{n} processos"'):
+            self.assertIn(k, self.h)
+        self.assertNotIn("Lawsuits per day", self.h)
+
+
+class Versao0736(unittest.TestCase):
+    def test_versao_e_novidades(self):
+        from lexsuite import VERSAO
+        self.assertEqual(VERSAO, "0.7.36")
+        h = ler("radar_modelo.html"); bloco = h[h.index('"0.7.36": {'):h.index('"0.7.35": {')]
+        pt = re.findall(r'"([^"]+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
+        en = re.findall(r'"([^"]+)"', bloco[bloco.index("en: ["):])
+        self.assertEqual(len(pt), len(en)); self.assertGreaterEqual(len(pt), 10)
+        for linha in pt:  # diretriz do dono: formal, curta, sem frase de efeito
+            self.assertNotRegex(linha, r"\b(agora|já lê|com um botão só)\b")
+        self.assertIn("Melhorias no design e na navegação.", pt)
+
+    def test_manual_em_dia(self):
+        m = ler("..", "paginas", "manual.html")
+        for x in ("Destaques e exclusões", "Rotina de leitura", "Ver histórico de leituras", "Separar por", "Nada novo", "Há uma leitura em andamento"):
+            self.assertIn(x, m)
+        self.assertNotIn("Critérios da lista", m)
+
+
 class UltimaTentativa(Servidor):
     def test_regras_dizem_as_areas_em_uso_e_copiam_para_as_escolhidas(self):
         c = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=20)
