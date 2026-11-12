@@ -676,6 +676,24 @@ class Tratador(BaseHTTPRequestHandler):
         if not isinstance(corpo, dict):
             corpo = {}
         s = self.server
+        if caminho == "/conta/conferir":  # 0.7.34 (dono): depois do aceite dos termos a tela confere na hora, sem esperar a leitura
+            cfg = s.config()
+            if not conta.valido(conta.normalizar((cfg.get("conta") or {}).get("codigo"))) or s.estado.rodando:
+                return self._responder({"ok": False, "conta": conta.situacao(cfg)})  # a leitura em andamento já confere sozinha
+            import copy as _copy
+            antes_conta = _copy.deepcopy(cfg.get("conta") or {})
+            c = conta.verificar(cfg, VERSAO)
+            if c.get("resposta") == "sem_resposta":  # sem internet: nada muda (não troca "falta aceitar" por "última confirmação")
+                cfg["conta"] = antes_conta
+                return self._responder({"ok": False, "sem_internet": True, "conta": conta.situacao(cfg)})
+            novo = s.config()  # revisão: a conferência pode levar segundos; grava só a licença sobre o config de agora
+            novo["conta"] = cfg["conta"]
+            if not s.estado.rodando:
+                try:
+                    config.salvar(s.caminho_config, novo)
+                except OSError:
+                    pass
+            return self._responder({"ok": True, "conta": conta.situacao(novo)})
         if caminho == "/config":
             cfg = s.config()
             r = cfg["radar"]

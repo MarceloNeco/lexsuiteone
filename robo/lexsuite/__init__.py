@@ -6,4 +6,4 @@ hora (Telegram ou e-mail) o que sai no DJEN nos processos do escritório.
 Nenhuma etapa usa inteligência artificial: não gasta token.
 """
 
-VERSAO = "0.7.33"
+VERSAO = "0.7.34"

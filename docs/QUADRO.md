@@ -173,6 +173,14 @@ Arquitetura (pedido no quadro).
   `marca.py` em dia, revisor (bloqueios de texto corrigidos).
 
 ### Feito (mais recente primeiro)
+- 12/Nov: **0.7.34 pronta para publicar** (correção urgente do teste do dono; visita à KR Law passou para sexta 13/Nov):
+  depois do aceite dos termos o programa não reconhecia (guardava "falta aceitar" e "Ler o Diário agora" só mostrava o
+  aviso). Agora a rota local `POST /conta/conferir` confere na hora; a tela confere ao voltar para a janela, ao abrir com
+  aceite pendente, a cada 15 s por 10 min depois de abrir a página de aceite (no máximo 1 pedido a cada 10 s) e antes de
+  ler; o aviso tem "Já aceitei"; sem internet nada muda; grava só a licença sobre o config atual. SQLite com `timeout=30`
+  (o "database is locked" da busca de estatísticas com a tela). Testes: 283 OK (`test_v0734.py`, 7 novos), `aviso_e_lupa`
+  387, `larguras` 84, `marca.py` em dia, revisor sem bloqueio (ressalvas 2 e 4 corrigidas). Não testado no navegador real:
+  a volta da página de aceite (foco) e a vigia de 15 s. **Operação: publicar só com o "publica a versão 0.7.34" do dono.**
 - 12/Nov: **prompts da visita à KR Law revisados** (pedido do dono; só texto interno): `docs/VISITA-KR-LAW.md` com a
   versão 0.7.33, a conta Claude do dono num perfil novo do Chrome do Leandro, modo "Skip all approvals" da extensão, 1
   download por prompt, relatórios no claude.ai do dono, critérios ajustados pelo Leandro por área e "Configurações" no

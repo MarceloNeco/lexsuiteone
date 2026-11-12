@@ -162,6 +162,17 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.34 (teste do dono na 0.7.33, 12/Nov) — correção urgente antes da visita
+
+- Defeito: depois do aceite dos termos na página, o programa continuava travado em "Falta aceitar os termos" (guardava a
+  última resposta da nuvem e "Ler o Diário agora" só mostrava o aviso; só a leitura automática conferia de novo). Corrigido:
+  `POST /conta/conferir` e a tela confere ao voltar para a janela, vigia por 10 min depois de abrir a página, confere antes
+  de ler e tem "Já aceitei". "database is locked" (estatísticas e tela ao mesmo tempo): `timeout=30` no SQLite.
+- Conferido (5 pontos): manual (Termos e aceite), Novidades 0.7.34 (PT e EN), AssistONE sem texto sobre isso (nada a
+  mudar), termos sem mudança (fluxo, não dados), e-mail de boas-vindas continua certo ("aceitar agora ou depois de instalar").
+- Fica para depois (lista no quadro): botão "Conferir de novo" em Licença e termos, mensagem certa quando a janela é fechada
+  pelo DIAGNOSTICO, "Trocar licença" com o mesmo código.
+
 ## 0.7.33 (teste do dono na 0.7.31, 12/Nov; desenho da Arquitetura de 12/Nov) — pronta para publicar
 
 Pacote: **46 arquivos no download completo e 45 na atualização** (novo `lexsuite/documento.py`).

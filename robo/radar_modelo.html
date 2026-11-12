@@ -1966,7 +1966,7 @@ window.LEXSUITE_RADAR = null;
       ag_expl: "Clique nos horários em que o programa lê o Diário sozinho. Cada horário é uma leitura (não é início e fim). Para um horário que não está aqui, use \u201cOutro horário\u201d.",
       ret_titulo: "O que a SolverONE recebe", ret_quando: "Última conferência ({q}): {n} linha(s).", ret_nada: "Nada enviado ainda (vai na próxima leitura).", ret_frase: "Só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou contato.", ret_ver: "Ver a tabela enviada",
       rodando_auto: "Leitura automática em andamento (começou às {h}).", c_tela: "Onde a tela abre", c_aba: "Abrir pelo atalho numa aba do navegador (junto das outras abas), em vez de uma janela própria", abrir_aba: "Abrir numa aba do navegador",
-      aceite_abrir: "Abrir a página de aceite dos termos", aceite_banner: "Falta aceitar os termos: ", aceite_abrir_curto: "abrir a página de aceite", aceite_duvidas: ". Dúvidas: {c}", aceite_duvidas_p: "Dúvidas: {c}", termos: "Termos de uso", termos_ok: "aceitos por {n} em {d} (versão {v})", termos_falta: "falta o aceite do responsável do escritório (link no e-mail de boas-vindas)",
+      aceite_abrir: "Abrir a página de aceite dos termos", aceite_banner: "Falta aceitar os termos: ", aceite_ok: "Termos aceitos. O RADAR está liberado.", aceite_ja: "Já aceitei", aceite_ainda: "A SolverONE ainda não recebeu o aceite. Confira se a página mostrou o protocolo e tente de novo.", aceite_abrir_curto: "abrir a página de aceite", aceite_duvidas: ". Dúvidas: {c}", aceite_duvidas_p: "Dúvidas: {c}", termos: "Termos de uso", termos_ok: "aceitos por {n} em {d} (versão {v})", termos_falta: "falta o aceite do responsável do escritório (link no e-mail de boas-vindas)",
       atrasada: "Fazendo agora a leitura das {h}, que não rodou na hora porque o computador estava desligado ou em repouso.", interromper: "Interromper", interromper_q: "Interromper a leitura?",
       interromper_x: "A leitura para no próximo ponto seguro: entre um Diário e outro ou entre uma consulta à Receita e outra (se estiver baixando um Diário grande, pode levar alguns minutos). Nada fica pela metade: as ações já gravadas ficam, e o resto é lido na próxima leitura.", continuar_lendo: "Continuar lendo", parando: "Parando no próximo ponto seguro...",
       c_interrompida: "Interrompida",
@@ -2063,7 +2063,7 @@ window.LEXSUITE_RADAR = null;
       ag_expl: "Click the times when the program reads the gazette by itself. Each time is one reading (not a start and end). For a time not listed, use \u201cAnother time\u201d.",
       ret_titulo: "What SolverONE receives", ret_quando: "Last check ({q}): {n} row(s).", ret_nada: "Nothing sent yet (goes with the next reading).", ret_frase: "Only counts by status, day, court, practice area and value range; no name, case number or contact.", ret_ver: "See the table sent",
       rodando_auto: "Automatic reading in progress (started at {h}).", c_tela: "Where the screen opens", c_aba: "Open from the shortcut in a browser tab (next to the other tabs), instead of its own window", abrir_aba: "Open in a browser tab",
-      aceite_abrir: "Open the terms acceptance page", aceite_banner: "The terms still need to be accepted: ", aceite_abrir_curto: "open the acceptance page", aceite_duvidas: ". Questions: {c}", aceite_duvidas_p: "Questions: {c}", termos: "Terms of use", termos_ok: "accepted by {n} on {d} (version {v})", termos_falta: "the firm\u2019s responsible person has not accepted yet (link in the welcome e-mail)",
+      aceite_abrir: "Open the terms acceptance page", aceite_banner: "The terms still need to be accepted: ", aceite_ok: "Terms accepted. RADAR is unlocked.", aceite_ja: "I have accepted", aceite_ainda: "SolverONE has not received the acceptance yet. Check that the page showed the protocol and try again.", aceite_abrir_curto: "open the acceptance page", aceite_duvidas: ". Questions: {c}", aceite_duvidas_p: "Questions: {c}", termos: "Terms of use", termos_ok: "accepted by {n} on {d} (version {v})", termos_falta: "the firm\u2019s responsible person has not accepted yet (link in the welcome e-mail)",
       atrasada: "Running now the {h} reading, which did not run on time because the computer was off or asleep.", interromper: "Stop", interromper_q: "Stop the reading?",
       interromper_x: "The reading stops at the next safe point: between two gazettes or between two Federal Revenue lookups (if a large gazette is downloading, it may take a few minutes). Nothing is left half-done: lawsuits already saved stay, and the rest is read in the next reading.", continuar_lendo: "Keep reading", parando: "Stopping at the next safe point...",
       c_interrompida: "Stopped",
@@ -2475,19 +2475,54 @@ window.LEXSUITE_RADAR = null;
     tx_.title = t("rodar_crit_x"); rc_.appendChild(tx_);  // 0.7.30: o "Alterar configuração" fica logo ao lado (um botão só)
     if (mudou_) rc_.appendChild(el("span", "rc-nao-salvo", t("rodar_crit_mudou")));
   }
+  /* 0.7.34 (dono): "depois que aceita os termos, volta para o programa e ele reconhece e libera". A tela pede ao programa
+     que confira na nuvem (/conta/conferir) ao voltar para a janela, a cada 15 s por até 10 min depois de abrir a página de
+     aceite, ao abrir com o aceite pendente e antes de "Ler o Diário agora". Sem F5, sem esperar a leitura automática. */
+  var conferindoConta = null, vigiaAceite = null, ultimaConferencia = 0;
+  function pendenteAceite() { return !!(MODO === "app" && APP && APP.conta && APP.conta.codigo && !APP.conta.ok && APP.conta.estado === "aceite_pendente"); }
+  function conferirConta(sozinho) {  // sozinho = foco, visibilidade ou vigia: no máximo 1 pedido a cada 10 s (limite da nuvem)
+    if (MODO !== "app" || !APP) return Promise.resolve(false);
+    if (conferindoConta) return conferindoConta;
+    if (sozinho && Date.now() - ultimaConferencia < 10000) return Promise.resolve(!!(APP.conta && APP.conta.ok));
+    ultimaConferencia = Date.now();
+    conferindoConta = post("/conta/conferir", {}).then(function (r) {
+      conferindoConta = null;
+      if (!r || !r.conta) return false;
+      var antes = !!(APP.conta && APP.conta.ok); APP.conta = r.conta; bannerControle();
+      if (APP.conta.ok && !antes) { pararVigiaAceite(); avisoRapidoApp(t("aceite_ok")); }
+      return !!APP.conta.ok;
+    }).catch(function () { conferindoConta = null; return false; });
+    return conferindoConta;
+  }
+  function vigiarAceite() {
+    if (vigiaAceite) return; var n_ = 0;
+    vigiaAceite = setInterval(function () { if (!pendenteAceite() || ++n_ > 40) { pararVigiaAceite(); return; } conferirConta(true); }, 15000);
+  }
+  function pararVigiaAceite() { clearInterval(vigiaAceite); vigiaAceite = null; }
+  function avisoRapidoApp(txt) { var e_ = $("estado"); if (e_) e_.textContent = txt; }
+  window.addEventListener("focus", function () { if (pendenteAceite()) conferirConta(true); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && pendenteAceite()) conferirConta(true); });
+  setTimeout(function () { if (pendenteAceite()) conferirConta(true); }, 1500);
   function avisoLicenca() {
     var c_ = APP.conta || {}, c = el("div"); c.appendChild(el("h3", null, c_.aceite_link ? t("lic_aceite_t") : t("lic_bloq_t")));
     // teste do dono (0.7.30): só a janela, curta; a faixa vermelha do alto já diz o motivo (sem repetir em vermelho na linha da leitura)
     c.appendChild(el("p", null, c_.aceite_link ? t("aceite_duvidas_p", { c: c_.contato || "judicial@solverone.com.br" }) : textoConta()));
     var bts = [[t("agora_nao"), null]];
-    if (c_.aceite_link) bts.push([t("termos_aceitar"), function () { window.open(c_.aceite_link, "_blank", "noopener"); }, true]);
+    if (c_.aceite_link) {  // 0.7.34 (dono): ao voltar da página de aceite o programa confere sozinho; "Já aceitei" confere na hora
+      bts.push([t("aceite_ja"), function () { conferirConta().then(function (ok) { if (ok) rodar(); else avisoRapidoApp(t("aceite_ainda")); }); }]);
+      bts.push([t("termos_aceitar"), function () { window.open(c_.aceite_link, "_blank", "noopener"); vigiarAceite(); }, true]);
+    }
     else bts.push([t("lic_ver_perfil"), function () { abrirPerfil(); }, true]);
     abrirJanela(c, bts);
   }
   function rodar() {
     if (selMudou() && Object.keys(sel).length && !(APP && APP.conta && !APP.conta.ok)) { salvarTribunais(true); return; }  // revisão: licença conferida antes  // 0.7.30 (dono): marcou na mira e clicou em "Ler o Diário agora": salva e lê o que está marcado
     if (!Object.keys(sel).length) { $("painel").hidden = false; $("b-trib").setAttribute("aria-expanded", "true"); painel(); mostrarEstado({ erro: t("sem_trib") }); return; }
-    if (APP && APP.conta && !APP.conta.ok) { avisoLicenca(); return; }  // 0.7.30 (dono): janela com o motivo e o caminho, sem prender a pessoa
+    if (APP && APP.conta && !APP.conta.ok) {  // 0.7.34 (dono): confere na nuvem antes (o aceite pode ter acabado de ser feito)
+      $("estado").textContent = t("conferindo");
+      conferirConta().then(function (ok) { $("estado").textContent = ""; if (ok) rodar(); else avisoLicenca(); });
+      return;
+    }
     if (vigiaHist || (D && D.historico && D.historico.rodando && D.historico.rodando.rodando)) { avisoBuscaEstatisticas(); return; }  // 0.7.33 (dono)
     $("estado").textContent = t("carregando");
     post("/rodar", { dias: null }).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo || t("falha") }); }).catch(function () { $("estado").textContent = t("falha"); });
@@ -2638,7 +2673,7 @@ window.LEXSUITE_RADAR = null;
     if (!aceito || antiga) {  // falta o aceite (ou a versão mudou): o único botão é aceitar; o texto inteiro está na própria página
       var u_ = (APP && APP.usuario) || {}, ct_ = (APP && APP.conta) || {};
       // 0.7.20: fragmento (#) não vai ao servidor nem a logs; a página do aceite lê e apaga da barra
-      a_ = el("a", "primario", t("termos_aceitar")); a_.href = base_ + "#codigo=" + encodeURIComponent(ct_.codigo || "") + "&email=" + encodeURIComponent(u_.email || "") + "&nome=" + encodeURIComponent(u_.nome || "");
+      a_ = el("a", "primario", t("termos_aceitar")); a_.addEventListener("click", function () { vigiarAceite(); }); a_.href = base_ + "#codigo=" + encodeURIComponent(ct_.codigo || "") + "&email=" + encodeURIComponent(u_.email || "") + "&nome=" + encodeURIComponent(u_.nome || "");
     } else { a_ = el("a", "chip", t("termos_ler_todos")); a_.href = base_ + "?ler=1"; }
     a_.target = "_blank"; a_.rel = "noopener noreferrer"; acoes_.appendChild(a_); box.appendChild(acoes_);
   }
@@ -3116,6 +3151,7 @@ window.LEXSUITE_RADAR = null;
       b.hidden = false; b.textContent = textoConta(); b.className = "banner erro";
       if (APP.conta.aceite_link) {  // teste do dono (0.7.30): "Falta aceitar os termos: abrir a página de aceite. Dúvidas: …" (sem o link por extenso)
         b.textContent = t("aceite_banner"); var la = el("a", null, t("aceite_abrir_curto")); la.href = APP.conta.aceite_link; la.target = "_blank"; la.rel = "noopener noreferrer";
+        la.addEventListener("click", vigiarAceite);  // 0.7.34 (dono)
         b.appendChild(la); b.appendChild(document.createTextNode(t("aceite_duvidas", { c: APP.conta.contato || "judicial@solverone.com.br" })));
       }
       return;
@@ -4678,6 +4714,16 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
+    "0.7.34": {
+      pt: ["Reconhecimento automático do aceite dos termos ao voltar para o programa, sem reiniciar.",
+        "Opção \"Já aceitei\" no aviso de termos pendentes.",
+        "Conferência da licença antes de \"Ler o Diário agora\" quando o aceite está pendente.",
+        "Melhorias de acessibilidade e correções."],
+      en: ["Automatic recognition of the terms acceptance when returning to the program, without restarting.",
+        "\"I have accepted\" option in the pending terms notice.",
+        "Licence check before \"Read the gazette now\" when the acceptance is pending.",
+        "Accessibility improvements and fixes."]
+    },
     "0.7.33": {
       pt: ["Critérios da lista e empresas excluídas por pessoa, neste computador, separados por área.",
         "Na atualização, os critérios e as empresas excluídas da versão anterior passam para todas as áreas.",

@@ -60,7 +60,9 @@ def agora_utc_e_fuso():
 
 class Banco:
     def __init__(self, caminho="lexsuite.db"):
-        self.con = sqlite3.connect(caminho)
+        # 0.7.34 (teste do dono): a busca de estatísticas e a tela gravam no mesmo banco; espera até 30 s pela vez em vez de
+        # cair com "database is locked" (o padrão do sqlite3 é 5 s)
+        self.con = sqlite3.connect(caminho, timeout=30)
         self.con.executescript("""
             CREATE TABLE IF NOT EXISTS leads (
                 processo TEXT PRIMARY KEY, primeira_vez TEXT, tribunal TEXT, vara TEXT,
