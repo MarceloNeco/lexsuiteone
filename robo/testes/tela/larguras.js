@@ -135,16 +135,20 @@ const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
   { const ctx = await b.newContext({ viewport: { width: 1366, height: 900 } });
     await ctx.route('**/dados*', async r => { const resp = await r.fetch(); const j = await resp.json();
       const ufs = ['SP', 'RJ', 'MG', 'PR', 'SC', 'RS', 'BA', 'PE', 'CE', 'GO', 'DF', 'ES'];
-      (j.itens || []).forEach((i, k) => { i.empresa = Object.assign({}, i.empresa || {}, { uf: ufs[k % ufs.length] }); }); await r.fulfill({ response: resp, json: j }); });
+      (j.itens || []).forEach((i, k) => { i.empresa = Object.assign({}, i.empresa || {}, { uf: k % 5 === 4 ? '' : ufs[k % ufs.length] }); }); await r.fulfill({ response: resp, json: j }); });  // segunda revisão da 0.7.32: 1 em cada 5 sem estado (sem CNPJ)
     const p = await ctx.newPage(); await p.goto('http://127.0.0.1:' + porta + '/'); await p.waitForTimeout(1300); await p.click('.dgo-aone-x').catch(() => {});
     await p.click('#v-painel'); await p.waitForTimeout(500);
     const kpi = () => p.evaluate(() => Number((document.querySelector('.kpi') || {}).innerText.replace(/\D+/g, ' ').trim().split(' ')[0]));
     const antes = await kpi();
     const card = p.locator('.grade-graf > *', { hasText: /Estado da empresa|Company state/ }).first();
-    const n1 = Number((await card.locator('button.barra-l .n').first().innerText()).replace(/\D/g, ''));
-    await card.locator('button.barra-l').first().click(); await p.waitForTimeout(400);
+    const um = card.locator('button.barra-l:not([data-gk$="__nao__"])').first();
+    const n1 = Number((await um.locator('.n').innerText()).replace(/\D/g, ''));
+    await um.click(); await p.waitForTimeout(400);
     const depois = await kpi();
     ok(depois === antes - n1, `Painel com 12 estados: desligar um tira só ele (${antes} → ${depois}, esperado ${antes - n1})`);
+    const sem = card.locator('button.barra-l[data-gk$="__nao__"]').first();
+    ok(await sem.count() === 1, 'Painel: a linha "Sem estado" (sem CNPJ) se liga e desliga como as outras');
+    if (await sem.count()) { const ns = Number((await sem.locator('.n').innerText()).replace(/\D/g, '')); await sem.click(); await p.waitForTimeout(400); const d2 = await kpi(); ok(d2 === antes - n1 - ns, `Painel: desligar "Sem estado" também tira só ela (${depois} → ${d2}, esperado ${antes - n1 - ns})`); }
     await ctx.close(); }
   await b.close();
   console.log(falhas.length ? 'FALHOU:\n - ' + falhas.join('\n - ') : `OK (${n} verificações)`);

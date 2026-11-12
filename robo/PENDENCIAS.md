@@ -164,6 +164,16 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 ## 0.7.32 (dono, 11/Nov: "pode tudo") — pronta para publicar
 
+Segunda revisão da Operação (12/Nov, `8e95fce`): 3 bloqueios corrigidos. (1) "Sem estado/setor/porte (sem CNPJ)" usa a
+mesma chave da lista (`__nao__`) e se liga e desliga como os outros (antes, desligar outro item tirava as ações sem CNPJ
+do total); `larguras.js` com 1 em cada 5 sem estado. (2) A lupa acha dias da semana, trocar licença, gráficos,
+aparência e novidades, em PT e EN. (3) "Critérios da lista" em todo lugar (planilha, manual por função, mensagens do
+servidor, `rg_mudou`, LEIA-ME, e-mail); manual: Configuração pelo menu em janela, Perfil só pelas iniciais, Aparência
+nos dois lugares. Também: recusa do "Trocar licença" só em memória (nada gravado); Novidades e manual dizem que quem
+já usava continua como estava; site, roteiro de instalação e ARQUITETURA com os dias; testes (mesmo código sem
+internet, aceite e termos do antigo não passam ao novo, recusa não grava, XML de sábado e domingo); `servidor_aviso.py`
+com a data de hoje; `lic_trocar_p` e "Digite o código novo e clique em Salvar"; Esc na edição do nome só cancela.
+
 Revisão da Operação (11/Nov, `7086e6c`): 3 bloqueios corrigidos. (1) Painel: ligar e desligar usa a lista inteira do
 gráfico (antes, só as linhas desenhadas: o que estava em "Outros" ou além das 8 barras saía do total); `larguras.js` com
 12 estados confere. (2) "Trocar licença": código novo não herda a confirmação do antigo; recusado ou sem internet, o

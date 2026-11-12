@@ -16,8 +16,8 @@ Perguntas antes de começar:
 - O computador tem o **Google Drive para computador**? (Ícone na bandeja; pasta "Meu Drive" no Explorador.) Se não
   tiver, instale pelo site do Google Drive, com a conta do escritório.
 - Qual conta Google é a do escritório? É nela que a planilha vai morar.
-- Em que horários o computador costuma estar ligado? (O padrão é 20h e 8h; em Configuração, Leitura automática, dá
-  para mudar. Se estiver desligado na hora, a leitura acontece quando ele ligar.)
+- Em que dias e horários o computador costuma estar ligado? (O padrão é de segunda a sexta, às 20h e às 8h; em
+  Configuração, Leitura, dá para mudar os dias da semana e os horários. Se estiver desligado na hora, a leitura acontece quando ele ligar.)
 
 Passos:
 1. No navegador do cliente, judicial.solverone.com.br, "Baixar o RADAR JUDICIAL". Abra o arquivo baixado e dê dois
@@ -56,5 +56,5 @@ Plano B (o instalador não baixou): descompacte o pacote completo do pen drive e
    Volte para `sim`.
 5. Rode o `INSTALAR.bat` de novo: deve atualizar sem perder a configuração nem a lista.
 
-Na versão 0.8 a instalação vai pedir também um **código do cliente** (ligado à conta na nuvem); por enquanto a
-identificação é a própria pasta compartilhada.
+A instalação pede o **código do cliente** (está no e-mail de boas-vindas); depois de confirmado pela SolverONE, ele
+fica travado e mascarado, e só se troca em Configuração → Licença e termos → "Trocar licença".
