@@ -19,18 +19,30 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
   chave aparecer no chat, peça para revogar.
 - Regra zero: antes de implementar um requisito novo, liste o que falta e confirme com o dono. Não publique nada que o
   cliente vê (Pages, pacote, DNS, e-mail a cliente) sem permissão explícita dele.
-- **Definition of done: regra zero de qualidade (decisão do dono, 11/Nov). Vale para qualquer commit, de qualquer feature, de qualquer aplicativo
-  da SolverONE (RADAR JUDICIAL, RootifyONE, o site e os que vierem), sem exceção por tamanho.** Mexeu em feature, nova, alterada ou removida,
-  a mudança só está pronta quando, no mesmo commit ou na mesma versão, estes três estão conferidos e atualizados, em PT e EN:
-  (1) o **manual** (quando o aplicativo tem manual); (2) o **AssistONE** (a ajuda da tela onde a mudança está, o tour e a busca);
-  (3) as **Novidades da versão** (a janela que aparece depois de atualizar, com a linha "Para rever: menu ☰ → Configurações → Novidades da versão");
-  e (4) **qualquer outra orientação** atingida, onde quer que esteja: botões (?) e dicas de campo, textos de erro e de aviso, e-mail de
-  boas-vindas, LEIA-ME, roteiros, páginas do site, documentos. Vale também para correção de bug que mude o que a pessoa vê.
-  Conferir é ler cada um contra o que o código faz de verdade e corrigir o que ficou velho; não basta existir nem estar nos dois idiomas.
-  Texto que descreve o comportamento antigo, caminho de menu que mudou ou passo do tour apontando para o vazio é defeito, não detalhe.
-  Aplicativo novo desenha manual, AssistONE e Novidades desde o começo. Os testes `Novo…` da Produto conferem o que dá para automatizar;
-  o resto é revisão: a Produto, a Arquitetura e a Operação conferem isso em todo envio, o revisor trata a falta como **bloqueio** e a
-  Operação não publica versão em que falte.
+- **Definition of done: regra zero de qualidade (diretriz do dono, 11 e 12/Nov). Vale para todos os apps da SolverONE (RADAR
+  JUDICIAL, RootifyONE, o site e os que vierem), para qualquer commit, sem exceção por tamanho.** Toda mudança de funcionalidade,
+  inclusive correção de bug que mude o que a pessoa vê, só está pronta quando estes 5 pontos foram conferidos contra o que o
+  programa faz de verdade, em PT e EN:
+  1. **Manual e orientações espalhadas pelo app**: manual (quando o aplicativo tem), botões (?), dicas, mensagens de erro e
+     de aviso, LEIA-ME, roteiros, páginas do site.
+  2. **AssistONE**: ajuda da tela, tour e busca (alvos que sumiram ou mudaram de lugar).
+  3. **Novidades da versão** (a janela que aparece depois de atualizar, com a linha "Para rever: menu ☰ → Configurações →
+     Novidades da versão"), em linguagem formal e curta: de preferência uma linha por mudança, começando por substantivo
+     ("Inclusão de…", "Simplificação de…", "Alteração do termo X para Y", "Opção de…", "Atualização do manual"); sem frase de
+     efeito nem coloquial ("já lê", "com um botão só", "agora"); sem detalhe de tela (cores, setas, animação), que fica em
+     "Melhorias no design e na navegação" ou "Melhorias de acessibilidade e correções"; perfumaria não entra; mudança grande
+     pode ter mais de uma linha.
+  4. **Termos e condições**, quando existirem: descrevem a jornada real (quando e onde se aceita, o que é guardado e onde).
+     Mudam só por necessidade jurídica real: finalidade, dados coletados, compartilhamento, retenção, controlador ou
+     obrigações do cliente. Versão nova do programa, fluxo ou funcionalidade que não toca nisso NÃO muda os termos nem
+     pede novo aceite. Cada versão do texto e cada aceite ficam guardados; mostra-se a versão aceita e as anteriores.
+  5. **Comunicações e e-mails** (boas-vindas, avisos, pós-venda): revisados sempre que a funcionalidade mudar, para não
+     prometer o que não existe mais (ex.: "janela preta", "campos já preenchidos"). Curtos, sem repetir o que está nos termos.
+  Conferir é ler cada um contra o que o código faz e corrigir o que ficou velho; não basta existir nem estar nos dois idiomas.
+  Texto que descreve o comportamento antigo, caminho de menu que mudou ou passo do tour apontando para o vazio é defeito, não
+  detalhe. Aplicativo novo desenha manual, AssistONE e Novidades desde o começo. Os testes `Novo…` da Produto conferem o que
+  dá para automatizar; o resto é revisão: Produto, Arquitetura e Operação conferem em todo envio, o revisor trata a falta como
+  **bloqueio** e a Operação não publica versão em que falte. A mesma regra está na diretriz geral do `rootify-one`.
 - Nunca reescreva histórico nem force push sem o dono pedir na hora. Nunca commite `config.json`, `*.db`, `saida/`,
   `diagnostico/`, `chave_privada.txt`.
 - O robô é só biblioteca padrão do Python, sem IA no caminho principal, sem contornar captcha, sem dado fictício no
@@ -103,12 +115,9 @@ nunca é delegada a subagente. Resultado de subagente é dado a conferir, não o
   `releases/LexSuiteONE-RADAR-<versão>.zip` e `docs/downloads/LexSuiteONE-RADAR.zip` (o pacote de atualização é
   `LexSuiteONE-RADAR-atualizacao-<versão>.zip`; o botão do site baixa o instalador `Instalar-LexSuiteONE.zip`). Atualize `robo/LEIA-ME.md`,
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.
-- Toda mudança que o escritório vê (botão, menu, tela, comportamento) confere três coisas, em PT e EN, antes de ir à `main`:
-  (1) o **manual** (`paginas/manual.html`, gerado para o site e para o pacote); (2) o **AssistONE** (a ajuda da tela onde a
-  mudança está, o tour e a busca); (3) as **Novidades da versão** (a janela que aparece depois de atualizar, com a linha
-  "Para rever: menu ☰ → Configurações → Novidades da versão"). Os testes `Novo…` da Produto conferem os três (regra do dono, 11/Nov).
-- Toda mudança que o escritório vê cumpre a **Definition of done** (regra zero de qualidade, acima): manual, AssistONE, Novidades
-  da versão e qualquer outra orientação atingida conferidos e atualizados, em PT e EN, antes de ir à `main`.
+- Toda mudança que o escritório vê cumpre a **Definition of done** (regra zero de qualidade, acima, 5 pontos): manual e
+  orientações (`paginas/manual.html` gera o site e o pacote), AssistONE, Novidades da versão, termos e comunicações, conferidos
+  e atualizados em PT e EN antes de ir à `main`.
 - Testes: `cd robo && python -m unittest discover -s testes`. A automação do GitHub roda testes, Bandit e Gitleaks.
 - Arquivos `.bat` sempre com fim de linha CRLF.
 - Nome do produto é configuração, não texto fixo: fica só em `docs/marca.json` (nome exato, nome curto, trecho em latão).

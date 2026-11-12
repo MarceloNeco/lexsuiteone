@@ -236,6 +236,13 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 12/Nov: **Definition of done em 5 pontos** (diretriz do dono, 12/Nov): manual e orientações; AssistONE; Novidades da versão
+  (linguagem formal e curta, uma linha por mudança começando por substantivo, sem frase de efeito, detalhe de tela em
+  "Melhorias…"); termos e condições (descrevem a jornada real; mudam só por necessidade jurídica; versão nova do programa não
+  pede novo aceite; cada versão e cada aceite guardados); comunicações e e-mails (revisados a cada mudança, curtos, sem repetir
+  os termos). Registrada no `CLAUDE.md` daqui, na diretriz geral do `rootify-one` e na planilha do Drive (linha 211).
+  O pedido da Produto "Aceite dos termos e e-mail de boas-vindas" (12/Nov, com a pesquisa da LGPD) ainda não estava no
+  quadro quando li; respondo quando aparecer.
 - 11/Nov (4): a mesma regra registrada, a pedido do dono, na planilha do Drive "0-SolverONE DIRETRIZES E BACKLOG v12
   2026-11-11": aba "DIRETRIZ GERAL", linha **nº 211** ("Definição de pronto: conteúdo das orientações", 0 Ground Rule,
   0-Crítico, Todos) e aba "LexSuiteONE", item nº 3 (✅ Feito no RADAR).
