@@ -14,8 +14,8 @@ Aceite dos termos: o {{marca.curto}} só começa a ler depois do aceite dos term
 https://judicial.solverone.com.br/aceite.html#codigo={{codigo}}&email={{email}}&nome={{nome}}
 
 Como instalar
-1. Abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Se o Windows pedir confirmação, clique em "Mais informações" e "Executar assim mesmo".
-2. Siga o passo a passo na tela: código de cliente, seu nome e e-mail, a pasta das planilhas (uma por área, por exemplo, Trabalhista) e os tribunais.
+1. Abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Se o Windows pedir confirmação, clique em "Mais informações" e "Executar assim mesmo". Na primeira janela, cole o código de cliente deste e-mail (botão direito do mouse) e aperte Enter.
+2. Siga o passo a passo na tela: seu nome e e-mail, a pasta das planilhas (uma por área, por exemplo, Trabalhista) e os tribunais.
 3. Confira a Configuração (ícone ⚙): dias e horários da leitura automática e critérios da lista (valor mínimo e empresas que ficam de fora).
 4. Depois, abra pelo atalho {{marca.nome}} na área de trabalho. Para sair, menu ☰ → Sair. O manual está no link "Manual", no alto da tela.
 
@@ -25,7 +25,7 @@ Segurança e dados: o {{marca.curto}} não pede senha, não contorna captcha e s
 
 Dúvidas? Escreva para {{contato}}. Este e-mail saiu de um endereço automático e não recebe respostas.
 
-In English: your {{marca.nome}} is ready. Download the installer, accept the terms (now or after installing) and follow the steps on screen. Questions: {{contato}}.
+In English: your {{marca.nome}} is ready. Download the installer, run INSTALAR.bat and paste your client code in the first window; accept the terms now or after installing. Questions: {{contato}}.
 
 Marcelo Freitas
 SolverONE
