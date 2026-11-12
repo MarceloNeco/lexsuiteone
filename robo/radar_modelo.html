@@ -55,7 +55,7 @@ header { display: contents; }
 .faixa-topo { position: sticky; top: 0; z-index: 40; margin-bottom: 0; box-shadow: 0 6px 16px -14px rgba(0,0,0,.6); }
 .faixa-topo .miolo { padding-block: 10px; }
 .faixa-titulo .miolo { padding-block: 2px 22px; }
-@media (max-height: 520px) { .faixa-topo { position: static; } }
+@media (max-width: 600px) { .faixa-topo { position: static; } }  /* dono (12/Nov): fixo em tudo, menos no celular */
 html { scroll-padding-top: var(--topo-h, 0px); }  /* ir para um ponto da página não esconde o alvo atrás do cabeçalho */
 .topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .topo > .b-menu:not([hidden]) + .marca { margin-right: auto; }
@@ -519,7 +519,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .baixar-csv { all: unset; cursor: pointer; background: var(--csv-bg); color: var(--csv-t); font-weight: 700; font-size: .84rem; border-radius: 999px; padding: 7px 16px; }
 .baixar-csv::before { content: "⤓ "; }
 .baixar-csv:hover, .baixar-csv:focus-visible { filter: brightness(1.08); outline: 2px solid var(--latao-texto); outline-offset: 2px; }
-@media (min-width: 900px) and (min-height: 620px) { .barra-lista { position: sticky; top: var(--topo-h, 0px); z-index: 30; box-shadow: 0 6px 18px -12px rgba(15, 29, 51, .35); } }
+@media (min-width: 601px) { .barra-lista { position: sticky; top: var(--topo-h, 0px); z-index: 30; box-shadow: 0 6px 18px -12px rgba(15, 29, 51, .35); } }
 .dica-graf { position: fixed; z-index: 95; pointer-events: none; background: var(--tinta, #14213d); color: var(--papel, #fff); border-radius: 8px; padding: 8px 12px; font-size: .95rem; font-weight: 600; max-width: min(360px, 80vw); box-shadow: 0 8px 24px rgba(0,0,0,.25); line-height: 1.35; }
 .busca::placeholder { font-style: italic; }  /* 0.7.33 (dono): dica em itálico; o que se digita fica normal */
 /* 0.7.33 (dono): no Painel ficam só os filtros que não têm gráfico; os dos gráficos aparecem no alto só quando ligados (com ×) */
