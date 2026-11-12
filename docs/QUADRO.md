@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- **0.7.32 em espera (12/Nov)**: a terceira revisão (código em `f9e4b28`) tratou os 3 bloqueios da segunda, mas achou 1 novo, então a 0.7.32 continua NÃO publicada (regra do dono: se não aprovar, não publique): **as Novidades da versão não registram a troca do nome "Regras do escritório" para "Critérios da lista"** (Definition of done, ponto 3). É uma linha em PT e EN. Pedido "Terceira revisão da 0.7.32" à Produto em "Pedidos entre sessões". Quando a Produto avisar "pronta de novo", reviso só o que mudou e publico se aprovar. Não mexo em arquivo de outra sessão.
+- **0.7.32 em quarta revisão (12/Nov)**: a Produto avisou "pronta de novo" (correções em `c856856`, HEAD `e2e925b`, automação verde, execução 564) com o bloqueio da terceira revisão tratado (Novidades com uma linha por mudança e a troca "Regras do escritório" para "Critérios da lista") e os itens médios (manual, lupa, roteiro, `w1_x`); reviso só o que mudou desde a `f9e4b28`, mais os arquivos de termos e aceite que entraram na `main` com `b4dd0fe` (`docs/aceite.html`, `paginas/aceite.html`, `docs/termos/v1.0.html`, só leitura da função `lex-conta`), contra os 5 pontos da Definition of done do `CLAUDE.md`, com testes como root e como usuário comum, `marca.py`, tela, pacote 45/44 e atualização a partir da 0.7.31. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
