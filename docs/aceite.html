@@ -242,7 +242,7 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
   }
   // Pelo link do e-mail: código e e-mail vêm preenchidos e fixos (identificam a licença e o responsável); o nome vem
   // preenchido mas pode ser corrigido, porque o cadastro às vezes está errado.
-  if (q.get("codigo")) { campoCodigo.value = normCodigo(q.get("codigo")); fixar(campoCodigo, mascaraCodigo(campoCodigo.value)); }
+  if (q.get("codigo")) { campoCodigo.value = normCodigo(q.get("codigo")); fixar(campoCodigo, campoCodigo.value); }   // inteiro antes de confirmar (decisão do dono, 12/Nov); mascarado depois
   if (q.get("email")) { campoEmail.value = String(q.get("email")).trim().toLowerCase(); fixar(campoEmail); }
   if (q.get("nome")) campoNome.value = String(q.get("nome")).trim().slice(0, 120);
   var quem = document.getElementById("quem");
@@ -252,7 +252,7 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
       var r = await fetch(NUVEM + "/rest/v1/rpc/sol_aceite_contexto", { method: "POST", headers: { apikey: CHAVE, Authorization: "Bearer " + CHAVE, "Content-Type": "application/json" }, body: JSON.stringify({ p_app: APP, p_licenca: c }) });
       var j = r.ok ? await r.json() : null;
       if (j && j.ok) {
-        quem.textContent = "Este aceite é dado em nome de " + j.escritorio + " (código " + mascaraCodigo(c) + ")." + (j.ja_aceito ? " Já existe um aceite registrado para este escritório; um novo aceite não faz mal." : ""); quem.hidden = false;
+        quem.textContent = "Este aceite é dado em nome de " + j.escritorio + " (código " + c + ")." + (j.ja_aceito ? " Já existe um aceite registrado para este escritório; um novo aceite não faz mal." : ""); quem.hidden = false;
         if (j.email_mascarado && !campoEmail.value) campoEmail.placeholder = j.email_mascarado + " (o e-mail do responsável, como no e-mail de boas-vindas)";
       }
       else quem.hidden = true;
@@ -287,6 +287,8 @@ mark { background: #ffe58a; border-radius: 3px; padding: 0 1px; } mark.atual { b
         botao.disabled = false; return mostrar(m, "erro");
       }
       msg.hidden = true; document.getElementById("form").hidden = true;
+      var ct = document.getElementById("codigo-texto"); if (ct) ct.textContent = mascaraCodigo(codigo);   // depois do aceite, só mascarado
+      if (!quem.hidden) quem.textContent = quem.textContent.replace(codigo, mascaraCodigo(codigo));
       document.getElementById("protocolo").textContent = j.protocolo;
       document.getElementById("quando").textContent = "Aceito por " + nome + " (" + email + ")" + (quem.hidden ? "" : ", " + quem.textContent.replace("Este aceite é dado ", "").split(".")[0]) + ", em " + new Date(j.aceito_em).toLocaleString("pt-BR") + ", versão " + VERSAO + " dos termos.";
       document.getElementById("pronto").hidden = false; document.getElementById("pronto").scrollIntoView({ behavior: "smooth" });

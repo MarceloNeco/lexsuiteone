@@ -91,6 +91,13 @@ formato dos outros apps (`{"app": "radar-judicial", "recursos": {"assistone": {"
 já vale para o RADAR hoje (desligar `assistone` em `*` desliga lá também, em até 5 minutos mais a próxima conferência do
 programa). Nada de SQL.
 
+**3e. Histórico de versões dos termos e e-mail do responsável (12/Nov).** (1) Na prévia do e-mail de boas-vindas, se
+`email_responsavel` da ficha estiver vazio, avisar antes de enviar ("preencha o e-mail do responsável: ele vai no link do
+aceite"); o `{{email}}` vazio do teste do dono veio daí. (2) Em Configuração → Termos, listar `sol_termos_versoes_lista(p_termo)`
+(versão, data, link do texto, material, motivo) e, ao "Publicar versão", o interruptor "Exigir novo aceite" passa a chamar-se
+"Mudança material (exige novo aceite de todos)"; sem ele, a versão é editorial e ninguém é perguntado. (3) Na ficha, o aceite
+de cada pessoa continua vindo de `admin_sol_aceites` (termo único `lexsuiteone-termos`).
+
 **4. O que esperar (vem do LexSuiteONE, colado por mim).** O "publicado" da página de aceite e do e-mail com `{{email}}`
 e `&nome=`; o aviso de que a trava da KR Law foi ligada; a ampliação do check de `lex_eventos` com tipos próprios
 (`termos_aceitos`, `aceite_dispensado`, `aceite_exigido`) numa sessão em que eu esteja no desktop (até lá, tudo é

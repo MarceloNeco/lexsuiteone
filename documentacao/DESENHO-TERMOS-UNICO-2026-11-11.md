@@ -54,3 +54,31 @@ Arquitetura, 11/Nov/2026. Responde aos 4 pontos do dono. **Nada aplicado**: banc
 3. **Ligar a trava da sua licença de teste** (`exigir_aceite = true`), para você ver o programa travar e aceitar pelo link.
    A KR Law continua desligada até você mandar.
 4. Produto: versão do programa que declara `suporta_aceite_uso: true` e mostra a caixa com o link `?ler=1` (pedido no quadro).
+
+## 5e. Histórico de versões, novo aceite só por mudança material, aceite pela página antes de instalar (12/Nov)
+
+Responde ao pedido da Produto "Aceite dos termos e e-mail de boas-vindas" (12/Nov) e à diretriz do dono (ponto 4 da
+definição de pronto). Aplicado em 12/Nov: `nuvem/supabase/2026-11-12-sol-termos-versoes.sql` e `lex-conta` v16.
+
+1. **`{{email}}` vazio no e-mail de teste**: a ficha da licença de teste não tem "e-mail do responsável" preenchido (a da
+   KR Law tem). A prévia do RootifyONE preenche `{{email}}` com esse campo; vazio na ficha = vazio no link. Preencher o
+   campo na ficha; o RootifyONE deve avisar antes de enviar quando estiver vazio (já pedido no prompt, item 3).
+2. **Código visível na primeira vez**: pelo link do e-mail, a página mostra o código inteiro (campo fixo e faixa "em nome
+   de…") até confirmar; depois do aceite, mascarado (`LEX-••••-XXXX`). Publicado.
+3. **Aceitar pela página e depois instalar**: o aceite é por licença e por e-mail; quem aceita pela página (responsável) e
+   depois instala com o mesmo e-mail já entra com `termos.escritorio.aceito` e `termos.pessoa.aceito` verdadeiros. Quem
+   instala primeiro recebe o link com o e-mail (da ficha ou da própria pessoa) na mensagem de `aceite_pendente`.
+4. **O assistente não pede de novo a quem já aceitou**: a ação `conferir {codigo, email}` (antes do cadastro) devolve
+   `termos.escritorio` e `termos.pessoa` para aquele e-mail; `termos.pessoa.precisa_aceitar = false` → sem caixa de aceite;
+   `true` → caixa com o link `?ler=1` e envio de `aceite_uso`. `cadastrar` e `verificar` continuam devolvendo `termos`.
+5. **Novo aceite só quando os termos mudarem de verdade**: `admin_sol_termo_publicar(…, p_reaceite)`: `p_reaceite = true`
+   significa **mudança material** (finalidade, dados, compartilhamento, retenção, controlador, obrigações); só então a licença
+   e cada pessoa precisam aceitar de novo. `false` = mudança editorial: versão nova registrada, ninguém é perguntado
+   (`sol_aceite_situacao.precisa_aceitar` só fica verdadeiro sem aceite algum ou com versão material mais nova). Versão
+   nova do programa nunca mexe nos termos.
+6. **Histórico**: `sol_termos_versoes` guarda cada versão (texto por link, hash, material, motivo, quem publicou), imutável;
+   `sol_aceites` guarda cada aceite. O texto de cada versão fica numa cópia estática do site
+   (`judicial.solverone.com.br/termos/v1.0.html`, feita pelo LexSuiteONE a cada versão). A `lex-conta` devolve
+   `termos.versoes` na `verificar` para a Configuração mostrar a versão aceita e as anteriores com link; o RootifyONE lê
+   `sol_termos_versoes_lista(termo)`. Retenção: contrato + 5 anos (pesquisa da Produto); nada se apaga por rotina. Base
+   legal (contrato × consentimento) e prazo: validar com o Leandro, como a Produto recomendou.

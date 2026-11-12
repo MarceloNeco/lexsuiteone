@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v15 (publicada no Supabase como v15. v14 + ação 'conferir' (e-mail × domínio da licença, sem gravar) e 'cadastrar' recusa e-mail fora dos domínios liberados): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v16 (publicada no Supabase como v16. v15 + 'conferir' devolve a situação dos termos para o e-mail; 'verificar' devolve o histórico de versões dos termos): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -140,7 +140,11 @@ Deno.serve(async (req) => {
     if (ja && ja.codigo !== codigo) return json({ ok: false, motivo: "dados_invalidos" });
     if (ja && ja.aprovacao === "recusado") return json({ ok: false, motivo: "email_recusado" });
     if (doms.length && !doms.includes(dom)) return json({ ok: false, motivo: "dominio_nao_liberado", dominios: doms, escritorio: c.escritorio });
-    return json({ ok: true, escritorio: c.escritorio, dominios: doms, dominio_novo: doms.length === 0 && !PUBLICOS.has(dom) ? dom : null, ja_cadastrado: !!ja });
+    // Situação dos termos para este e-mail (quem aceitou pela página não é perguntado de novo no assistente).
+    const { data: cEsc } = await sb.rpc("sol_aceite_situacao", { p_app: "radar-judicial", p_licenca: codigo, p_termo: TERMO_ESCRITORIO, p_email: null });
+    const { data: cPes } = await sb.rpc("sol_aceite_situacao", { p_app: "radar-judicial", p_licenca: codigo, p_termo: TERMO_PESSOA, p_email: email });
+    const termosConf = { escritorio: cEsc ?? { aceito: false }, pessoa: { ...(cPes as Record<string, unknown> ?? { aceito: false, precisa_aceitar: true }), link: `${LINK_ACEITE}?ler=1` } };
+    return json({ ok: true, escritorio: c.escritorio, dominios: doms, dominio_novo: doms.length === 0 && !PUBLICOS.has(dom) ? dom : null, ja_cadastrado: !!ja, termos: termosConf });
   }
 
   // ---- Conferência da licença (padrão) e cadastro ----
@@ -324,6 +328,10 @@ Deno.serve(async (req) => {
     pessoa: tPes ? { ...(tPes as Record<string, unknown>) } : { termo: TERMO_PESSOA, aceito: false, precisa_aceitar: true },
   };
   (termos.pessoa as Record<string, unknown>).link = `${LINK_ACEITE}?ler=1`;   // leitura do texto único para a caixa do cadastro
+  if (acao === "verificar") {   // histórico de versões (a Configuração mostra a versão aceita e as anteriores, com link para o texto de cada uma)
+    const { data: vers } = await sb.rpc("sol_termos_versoes_lista", { p_termo: TERMO_ESCRITORIO });
+    if (Array.isArray(vers)) termos.versoes = vers;
+  }
   if (aceiteUsoErro) (termos.pessoa as Record<string, unknown>).erro_aceite = aceiteUsoErro;
   // A pessoa deste computador ainda não aceitou a versão vigente dos termos de uso: trava só quando o programa declara que
   // sabe pedir o aceite (suporta_aceite_uso: true, a partir da versão que a Produto fizer); programa antigo só recebe o aviso.
