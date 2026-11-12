@@ -306,6 +306,44 @@ def _sem_caminho_pessoal(texto):
     return re.sub(r"(?i)([a-z]:[\\/]+users[\\/]+)[^\\/\"']+", r"\1~", t)
 
 
+CATEGORIAS_CHAMADO = ("erro", "duvida", "sugestao", "licenca-e-acesso", "planilha-e-pasta", "leitura-do-diario", "outros")
+
+
+def enviar_chamado(cfg, versao, dados, pedir=None):
+    """0.7.33 (dono; desenho da Arquitetura, seção 2): chamado do AssistONE para a central de feedback do RootifyONE, pela
+    lex-conta (ação `chamado`, v17). Só vai o que a pessoa viu na prévia. Devolve {ok, numero} ou {ok: False, motivo,
+    sem_internet}. Nunca levanta exceção."""
+    import json
+    import platform
+    c = (cfg or {}).get("conta") or {}
+    u = (cfg or {}).get("usuario") or {}
+    corpo = {"acao": "chamado", "codigo": normalizar(c.get("codigo")), "instalacao": c.get("instalacao", ""), "versao": str(versao)[:20]}
+    for k in ("categoria", "texto", "tela", "titulo_tela", "funcao", "idioma", "fuso", "quando_cliente", "cliente_id"):
+        if dados.get(k) not in (None, ""):
+            corpo[k] = str(dados[k])[:4000 if k == "texto" else 200]
+    corpo["trilha"] = [{"quando": str(x.get("quando", ""))[:40], "alvo": str(x.get("alvo", ""))[:80]}
+                       for x in (dados.get("trilha") or [])[:5] if isinstance(x, dict)]
+    if dados.get("com_sistema", True):
+        corpo["windows"] = f"{platform.system()} {platform.release()}"[:80]
+        corpo["python"] = platform.python_version()
+    corpo["pode_responder"] = bool(dados.get("pode_responder"))
+    if corpo["pode_responder"] and u.get("email"):
+        corpo["email"] = str(u.get("email"))[:200]
+    try:
+        r = (pedir or rede.pedir_json)(c.get("url") or URL_PADRAO, corpo, tentativas=1, tempo_limite=15)
+    except rede.ErroHTTP as e:
+        try:
+            r = json.loads(e.texto or "{}")
+        except ValueError:
+            r = {}
+        return {"ok": False, "motivo": (r or {}).get("motivo") or f"http_{e.codigo}", "sem_internet": False}
+    except Exception:  # noqa: BLE001 - sem internet, proxy, DNS: o chamado vai para a fila
+        return {"ok": False, "motivo": "sem_internet", "sem_internet": True}
+    if not isinstance(r, dict) or not r.get("ok"):
+        return {"ok": False, "motivo": (r or {}).get("motivo") if isinstance(r, dict) else "erro", "sem_internet": False}
+    return {"ok": True, "numero": r.get("numero"), "repetido": bool(r.get("repetido"))}
+
+
 def registrar_erro(cfg, versao, etapa, mensagem, pedir=None):
     """Envia à SolverONE um registro técnico de erro (etapa, versão, Windows, mensagem sem caminhos pessoais).
     Nunca levanta exceção e nunca atrasa o programa mais que alguns segundos."""

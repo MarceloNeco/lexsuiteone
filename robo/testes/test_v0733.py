@@ -84,5 +84,70 @@ class CnpjAlfanumerico(unittest.TestCase):
         self.assertIn("cnpj_novo:", h)
 
 
+
+class Chamados(unittest.TestCase):
+    """0.7.33: chamado pelo AssistONE → servidor local → lex-conta (ação chamado) → central de feedback do RootifyONE."""
+
+    CFG = {"conta": {"codigo": "LEX-ABCD-EFGH", "instalacao": "0123456789abcdef"}, "usuario": {"email": "pessoa@exemplo.com.br"}}
+
+    def test_enviar_monta_o_pedido_e_le_a_resposta(self):
+        visto = {}
+        def pedir(url, corpo, **k):
+            visto.update(corpo); return {"ok": True, "numero": 42}
+        r = conta.enviar_chamado(self.CFG, "0.7.33", {"categoria": "duvida", "texto": "Como filtro?", "pode_responder": True,
+                                                      "trilha": [{"quando": "t", "alvo": "b-config"}] * 9}, pedir=pedir)
+        self.assertEqual(r, {"ok": True, "numero": 42, "repetido": False})
+        self.assertEqual(visto["acao"], "chamado"); self.assertEqual(visto["email"], "pessoa@exemplo.com.br")
+        self.assertEqual(len(visto["trilha"]), 5)
+        visto.clear()
+        conta.enviar_chamado(self.CFG, "0.7.33", {"categoria": "duvida", "texto": "x", "pode_responder": False}, pedir=pedir)
+        self.assertNotIn("email", visto)
+
+    def test_limite_e_sem_internet(self):
+        def limite(url, corpo, **k):
+            raise rede.ErroHTTP(429, url, '{"ok": false, "motivo": "limite"}')
+        self.assertEqual(conta.enviar_chamado(self.CFG, "0.7.33", {"categoria": "erro", "texto": "x"}, pedir=limite)["motivo"], "limite")
+        def fora(url, corpo, **k):
+            raise rede.SemResposta(url, OSError("rede"))
+        r = conta.enviar_chamado(self.CFG, "0.7.33", {"categoria": "erro", "texto": "x"}, pedir=fora)
+        self.assertTrue(r["sem_internet"]); self.assertFalse(r["ok"])
+
+    def test_rota_com_fila_sem_internet_e_reenvio(self):
+        import http.client, json as _j, threading
+        from lexsuite import app
+        pasta = tempfile.mkdtemp()
+        with open(os.path.join(pasta, "config.json"), "w", encoding="utf-8") as f:
+            _j.dump(dict(self.CFG, radar={"tribunais": ["TRT2"]}), f)
+        srv = app.Servidor(("127.0.0.1", 0), pasta)
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+        def pedir(metodo, rota, corpo=None):
+            c = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=20)
+            c.request(metodo, rota, body=_j.dumps(corpo) if corpo is not None else None, headers={"X-LexSuite": "1", "Content-Type": "application/json"})
+            r = c.getresponse(); d = _j.loads(r.read()); d["_status"] = r.status; c.close(); return d
+        try:
+            self.assertEqual(pedir("POST", "/chamado", {"categoria": "x", "texto": "a"})["_status"], 400)
+            self.assertEqual(pedir("POST", "/chamado", {"categoria": "erro", "texto": " "})["_status"], 400)
+            ids = []
+            with mock.patch.object(conta, "enviar_chamado", side_effect=lambda c, v, d: ids.append(d["cliente_id"]) or {"ok": False, "motivo": "sem_internet", "sem_internet": True}):
+                r = pedir("POST", "/chamado", {"categoria": "erro", "texto": "Não abre a planilha", "tela": "lista", "trilha": [{"quando": "t", "alvo": "b-planilha"}]})
+            self.assertTrue(r["fila"]); self.assertIn("Sem internet", r["motivo"])
+            with mock.patch.object(conta, "enviar_chamado", side_effect=lambda c, v, d: ids.append(d["cliente_id"]) or {"ok": True, "numero": 7}):
+                d = pedir("GET", "/chamados")
+            self.assertEqual(d["pendentes"], 0); self.assertEqual(d["chamados"][0]["numero"], 7)
+            self.assertEqual(len(set(ids)), 1)  # o reenvio usa o mesmo cliente_id: a central não duplica
+            with mock.patch.object(conta, "enviar_chamado", return_value={"ok": False, "motivo": "limite"}):
+                r = pedir("POST", "/chamado", {"categoria": "duvida", "texto": "Outra"})
+            self.assertFalse(r["ok"]); self.assertIn("Limite", r["motivo"]); self.assertTrue(r["motivo_en"])
+        finally:
+            srv.shutdown(); srv.server_close()
+
+    def test_tela_tem_o_chamado_no_assistone_e_trilha_sem_texto(self):
+        with open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8") as f:
+            h = f.read()
+        self.assertIn("raiz.LEX_CHAMADO", h); self.assertIn('post("/chamado"', h)
+        self.assertIn("aoneChamado:", h)
+        i = h.index("function alvoTrilha("); trecho = h[i:i + 600]
+        self.assertNotIn("textContent", trecho); self.assertNotIn("aria-label", trecho)  # nunca o texto da tela nem nomes
+
 if __name__ == "__main__":
     unittest.main()

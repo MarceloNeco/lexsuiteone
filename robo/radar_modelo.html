@@ -519,6 +519,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .ordenacao .rotulo-barra { color: var(--latao-texto); }
 .fs-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 6px 0; border-top: 1px solid var(--linha, #e3e7ee); }
 .fs-nome { flex: 1 1 200px; font-weight: 600; } .fs-arq .fs-nome { color: var(--tinta-3); font-weight: 500; } .fs-apagar { color: #a3261b !important; }
+.chamado-form .campo { display: flex; flex-direction: column; align-items: stretch; gap: 4px; margin: 8px 0; } .janela .chamado-form textarea { width: 100%; min-height: 110px; font: inherit; } .chamado-form select { max-width: 100%; }
 .rg-exc-det { margin: 8px 0; } .rg-exc-det > summary { cursor: pointer; } .rg-exc-det .rg-exc { max-height: 280px; overflow-y: auto; } .rg-doc-msg { color: var(--alerta, #b42318); font-size: .84rem; margin: 2px 0; min-height: 1em; } .rg-areas { margin: 4px 0 8px; }
 .rg-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 8px 18px; margin: 6px 0 10px; }
 .rg-campo { display: flex; align-items: center; gap: 8px; font-size: .88rem; } .rg-campo span { flex: 1; }
@@ -1044,6 +1045,8 @@ window.LEXSUITE_RADAR = null;
     aoneTenteOutra: ['Tente outra palavra.', 'Try another word.'],
     aoneFeedback: ['Dar uma opinião', 'Give feedback'],
     aoneFeedbackSub: ['Ou avisar um problema desta tela', 'Or report a problem on this screen'],
+    aoneChamado: ['Abrir um chamado', 'Open a support ticket'],
+    aoneChamadoSub: ['Fale com o suporte da SolverONE sobre esta tela', 'Contact SolverONE support about this screen'],
     aoneAgoraNao: ['Agora não', 'Not now'],
     aoneDesligar: ['Desligar o AssistONE', 'Turn AssistONE off'],
     aoneLigado: ['AssistONE ligado.', 'AssistONE on.'],
@@ -1457,6 +1460,10 @@ window.LEXSUITE_RADAR = null;
       /* novo no arquivo próprio: o 💬 em toda abertura do balão (só aparece se o app tem o DGO.feedback) */
       if (D && D.feedback && typeof D.feedback.abrir === 'function') {
         op('💬', t('aoneFeedback'), t('aoneFeedbackSub'), function () { Assistente.fechar(); Assistente.feedback(); }, false, 'feedback');
+      }
+      /* 0.7.33 (dono, RADAR): chamado ao suporte pelo próprio programa, quando o app oferece raiz.LEX_CHAMADO */
+      if (typeof raiz.LEX_CHAMADO === 'function') {
+        op('🎫', t('aoneChamado'), t('aoneChamadoSub'), function () { var x_ = Assistente.dadosTela(); Assistente.fechar(); raiz.LEX_CHAMADO({ tela: Assistente.tela(), titulo: x_ ? Assistente.tx(x_.titulo) : '' }); }, false, 'chamado');
       }
       op('💤', t('aoneAgoraNao'), '', function () { Assistente.fechar(); });
       Assistente.mostrar([
@@ -2072,7 +2079,7 @@ window.LEXSUITE_RADAR = null;
     rodar_crit_1: "Lê {n} de {k} tribunais ({l}), do último dia útil até hoje", rodar_crit_n: "Lê {n} de {k} tribunais ({l}), dos últimos {d} dias úteis até hoje", rodar_crit_alterar: "alterar", rodar_crit_mudou: "(marcado, ainda não salvo)",
     ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
     c_trib_lidos: "Tribunais que a leitura lê: {l}.", ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Se precisar de suporte, use o DIAGNOSTICO.bat: ele leva estas linhas, sem CPF.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo",
-    rg_titulo: "Critérios da lista", rg_titulo_x: "Estes critérios são seus, neste computador. Cada pessoa do escritório tem os dela, separados por área; a planilha compartilhada não guarda critérios.", rg_intro: "O que o {c} destaca ou deixa de fora da sua lista, nesta área.", rg_area: "Área:", rg_a_trabalhista: "Trabalhista", rg_a_tributario: "Tributário", rg_a_civel: "Cível", rg_a_empresarial: "Empresarial", rg_copiar: "Copiar estes critérios para as outras áreas", rg_copiar_q: "Copiar os critérios e as empresas excluídas de {a} para as outras áreas? O que está lá hoje é substituído.", rg_copiar_ok: "Copiar", rg_copiado: "✓ Critérios copiados para todas as áreas.", rg_exc_n: "Empresas excluídas ({n})", rg_doc_ruim: "CPF ou CNPJ inválido. Confira os números (o CNPJ novo pode ter letras).", rg_erro_arquivo: "Não consegui ler o arquivo de critérios deste computador; aparecem os padrões. Ao salvar, ele é criado de novo.",
+    ch_t: "Abrir um chamado", ch_x: "Sua mensagem vai para o suporte da SolverONE pelo próprio programa. Não escreva senhas. Se for sobre um processo, descreva sem o número, se puder.", ch_assunto: "Assunto", ch_escolha: "Escolha o assunto", ch_c_erro: "Erro", ch_c_duvida: "Dúvida", ch_c_sugestao: "Sugestão", ch_c_licenca_e_acesso: "Licença e acesso", ch_c_planilha_e_pasta: "Planilha e pasta", ch_c_leitura_do_diario: "Leitura do Diário", ch_c_outros: "Outros", ch_texto: "Mensagem", ch_texto_ph: "O que aconteceu ou o que você precisa", ch_responder: "Podem me responder por e-mail ({e})", ch_sem_email: "Sem e-mail no cadastro: a resposta vem pelo escritório", ch_previa: "Vai junto (desmarque o que não quiser enviar)", ch_p_tela: "Tela: {t}; último clique: {u}", ch_p_sistema: "Versão {v}, Windows e Python deste computador", ch_p_licenca: "Também vão o código de cliente e o escritório, para a SolverONE saber de quem é o chamado. Nenhum nome de empresa, número de processo ou contato da lista vai junto.", ch_enviar: "Enviar", ch_falta_assunto: "Escolha o assunto.", ch_falta_texto: "Escreva a mensagem.", ch_ok: "Chamado nº {n} aberto. Guarde o número.", ch_meus: "Meus chamados", ch_meu: "Nº {n}, {d}, {a}", rg_titulo: "Critérios da lista", rg_titulo_x: "Estes critérios são seus, neste computador. Cada pessoa do escritório tem os dela, separados por área; a planilha compartilhada não guarda critérios.", rg_intro: "O que o {c} destaca ou deixa de fora da sua lista, nesta área.", rg_area: "Área:", rg_a_trabalhista: "Trabalhista", rg_a_tributario: "Tributário", rg_a_civel: "Cível", rg_a_empresarial: "Empresarial", rg_copiar: "Copiar estes critérios para as outras áreas", rg_copiar_q: "Copiar os critérios e as empresas excluídas de {a} para as outras áreas? O que está lá hoje é substituído.", rg_copiar_ok: "Copiar", rg_copiado: "✓ Critérios copiados para todas as áreas.", rg_exc_n: "Empresas excluídas ({n})", rg_doc_ruim: "CPF ou CNPJ inválido. Confira os números (o CNPJ novo pode ter letras).", rg_erro_arquivo: "Não consegui ler o arquivo de critérios deste computador; aparecem os padrões. Ao salvar, ele é criado de novo.",
     rg_sem_pasta: "Escolha primeiro onde ficam as planilhas (acima).", rg_valor: "Destacar ações a partir de (R$)", rg_valor_x: "Ações com valor da causa igual ou maior ficam em destaque, contam no cartão “Acima de” do Painel e no filtro “Acima de”. Nada sai da lista. Vazio ou 0: sem destaque.", rg_sem_minimo: "sem mínimo",
     rg_min: "Mínimo de ações da mesma empresa", rg_min_x: "Ex.: 3 = só destacar empresa com 3 ou mais ações novas na janela de dias. 1 = todas.", rg_janela: "Janela do mínimo de ações (dias)", rg_janela_x: "Quantos dias para trás contar as ações da mesma empresa.",
     rg_teto: "Capital social que indica jurídico próprio (R$)", rg_teto_x: "Acima disso a empresa é marcada “jurídico próprio provável” e vai para o fim da lista.", rg_esc_gig: "Esconder jurídico próprio provável", rg_esc_gig_x: "Esconde da lista as empresas acima do capital social indicado.",
@@ -2143,7 +2150,7 @@ window.LEXSUITE_RADAR = null;
     rodar_crit_1: "Reads {n} of {k} courts ({l}), from the last working day to today", rodar_crit_n: "Reads {n} of {k} courts ({l}), the last {d} working days to today", rodar_crit_alterar: "change", rodar_crit_mudou: "(ticked, not saved yet)",
     ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
     c_trib_lidos: "Courts the reading covers: {l}.", ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). For support, run DIAGNOSTICO.bat: it takes these lines, without CPF.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file",
-    rg_titulo: "List criteria", rg_titulo_x: "These criteria are yours, on this computer. Each person in the firm has their own, by practice area; the shared spreadsheet does not keep criteria.", rg_intro: "What {c} highlights or leaves out of your list, in this area.", rg_area: "Area:", rg_a_trabalhista: "Labour", rg_a_tributario: "Tax", rg_a_civel: "Civil", rg_a_empresarial: "Corporate", rg_copiar: "Copy these criteria to the other areas", rg_copiar_q: "Copy the criteria and excluded companies of {a} to the other areas? What is there today is replaced.", rg_copiar_ok: "Copy", rg_copiado: "✓ Criteria copied to all areas.", rg_exc_n: "Excluded companies ({n})", rg_doc_ruim: "Invalid CPF or CNPJ. Check the numbers (the new CNPJ may have letters).", rg_erro_arquivo: "Could not read the criteria file on this computer; defaults are shown. Saving creates it again.",
+    ch_t: "Open a support ticket", ch_x: "Your message goes to SolverONE support through the program itself. Do not write passwords. If it is about a lawsuit, describe it without the number if you can.", ch_assunto: "Subject", ch_escolha: "Choose the subject", ch_c_erro: "Error", ch_c_duvida: "Question", ch_c_sugestao: "Suggestion", ch_c_licenca_e_acesso: "Licence and access", ch_c_planilha_e_pasta: "Spreadsheet and folder", ch_c_leitura_do_diario: "Gazette reading", ch_c_outros: "Other", ch_texto: "Message", ch_texto_ph: "What happened or what you need", ch_responder: "You may reply by e-mail ({e})", ch_sem_email: "No e-mail on file: the answer comes through the firm", ch_previa: "Sent along (untick what you do not want to send)", ch_p_tela: "Screen: {t}; last click: {u}", ch_p_sistema: "Version {v}, Windows and Python of this computer", ch_p_licenca: "The client code and the firm also go, so SolverONE knows whose ticket it is. No company name, lawsuit number or contact from the list goes along.", ch_enviar: "Send", ch_falta_assunto: "Choose the subject.", ch_falta_texto: "Write the message.", ch_ok: "Ticket no. {n} opened. Keep the number.", ch_meus: "My tickets", ch_meu: "No. {n}, {d}, {a}", rg_titulo: "List criteria", rg_titulo_x: "These criteria are yours, on this computer. Each person in the firm has their own, by practice area; the shared spreadsheet does not keep criteria.", rg_intro: "What {c} highlights or leaves out of your list, in this area.", rg_area: "Area:", rg_a_trabalhista: "Labour", rg_a_tributario: "Tax", rg_a_civel: "Civil", rg_a_empresarial: "Corporate", rg_copiar: "Copy these criteria to the other areas", rg_copiar_q: "Copy the criteria and excluded companies of {a} to the other areas? What is there today is replaced.", rg_copiar_ok: "Copy", rg_copiado: "✓ Criteria copied to all areas.", rg_exc_n: "Excluded companies ({n})", rg_doc_ruim: "Invalid CPF or CNPJ. Check the numbers (the new CNPJ may have letters).", rg_erro_arquivo: "Could not read the criteria file on this computer; defaults are shown. Saving creates it again.",
     rg_sem_pasta: "First choose where the spreadsheets live (above).", rg_valor: "Highlight lawsuits from (R$)", rg_valor_x: "Lawsuits with an equal or higher claim value are highlighted and count in the Dashboard “Above” card and the “Above” filter. Nothing leaves the list. Empty or 0: no highlight.", rg_sem_minimo: "no minimum",
     rg_min: "Minimum lawsuits per company", rg_min_x: "E.g. 3 = only highlight companies with 3 or more new lawsuits in the day window. 1 = all.", rg_janela: "Window for the minimum (days)", rg_janela_x: "How many days back to count the same company\u2019s lawsuits.",
     rg_teto: "Share capital that suggests in-house counsel (R$)", rg_teto_x: "Above it the company is marked “likely in-house counsel” and goes to the end of the list.", rg_esc_gig: "Hide likely in-house counsel", rg_esc_gig_x: "Hides companies above the given share capital.",
@@ -3462,7 +3469,7 @@ window.LEXSUITE_RADAR = null;
     var fx_ = el("button", "janela-x", "✕"); fx_.type = "button"; fx_.setAttribute("aria-label", t("fechar")); fx_.title = t("fechar");  // 0.7.28 (dono): ✕ em toda janela
     fx_.addEventListener("click", function () { j.close(); }); box.appendChild(fx_); box.appendChild(conteudo);
     var bb = el("div", "botoes");
-    botoes.forEach(function (b) { var x = el("button", b[2] ? "primario" : "chip", b[0]); x.type = "button"; x.addEventListener("click", function () { j.close(); if (b[1]) b[1](); }); bb.appendChild(x); });
+    botoes.forEach(function (b) { var x = el("button", b[2] ? "primario" : "chip", b[0]); x.type = "button"; x.addEventListener("click", function () { if (b[3] && b[3]() === false) return; j.close(); if (b[1]) b[1](); }); bb.appendChild(x); });
     box.appendChild(bb);
     if (j.showModal) j.showModal(); else j.setAttribute("open", "");
     var ult = bb.lastChild; if (ult) ult.focus();
@@ -3664,7 +3671,61 @@ window.LEXSUITE_RADAR = null;
       pre.scrollTop = pre.scrollHeight;
     }).catch(function () { mostrarAviso(t("falha")); });
   }
-  function editarPreferencias() { abrirConfig(true, "c-regras-wrap"); }  // 0.7.28: as regras agora se editam na tela
+  function editarPreferencias() { abrirConfig(true, "c-regras-wrap"); }
+  /* 0.7.33 (dono): chamado ao suporte pelo AssistONE. Vai pelo programa (POST /chamado) à central do RootifyONE; a trilha
+     guarda só os ids dos últimos 5 cliques, nunca o texto da tela, nomes de empresas ou números de processo */
+  var trilhaCliques = [];
+  function alvoTrilha(alvo) {
+    var n_ = alvo && alvo.closest ? alvo.closest("[id]") : null;
+    return n_ ? (n_.id + (n_ !== alvo && alvo.tagName ? ">" + alvo.tagName.toLowerCase() : "")).slice(0, 80) : (alvo && alvo.tagName ? alvo.tagName.toLowerCase() : "");
+  }
+  document.addEventListener("click", function (ev) {
+    if (ev.target && ev.target.closest && ev.target.closest(".chamado-form")) return;
+    trilhaCliques.push({ quando: new Date().toISOString(), alvo: alvoTrilha(ev.target) }); if (trilhaCliques.length > 5) trilhaCliques.shift();
+  }, true);
+  var CATEGORIAS_CHAMADO = ["erro", "duvida", "sugestao", "licenca-e-acesso", "planilha-e-pasta", "leitura-do-diario", "outros"];
+  function abrirChamado(ctx) {
+    ctx = ctx || {}; var trilha = trilhaCliques.slice(), ultimo = trilha.length ? trilha[trilha.length - 1].alvo : "";
+    var c = el("div", "chamado-form"); c.appendChild(el("h3", null, t("ch_t"))); c.appendChild(el("p", "nota", t("ch_x")));
+    var lc = el("label", "campo"), sel = el("select"); lc.appendChild(el("span", null, t("ch_assunto")));
+    var o0 = el("option", null, t("ch_escolha")); o0.value = ""; sel.appendChild(o0);
+    CATEGORIAS_CHAMADO.forEach(function (k) { var o = el("option", null, t("ch_c_" + k.replace(/-/g, "_"))); o.value = k; sel.appendChild(o); });
+    lc.appendChild(sel); c.appendChild(lc);
+    var lt = el("label", "campo"), tx = el("textarea"); tx.maxLength = 4000; tx.rows = 5; tx.placeholder = t("ch_texto_ph");
+    lt.appendChild(el("span", null, t("ch_texto"))); lt.appendChild(tx); c.appendChild(lt);
+    var email_ = (APP && APP.config && APP.config.usuario && APP.config.usuario.email) || "";
+    var lr = el("label", "rg-campo rg-sim"), cr = el("input"); cr.type = "checkbox"; cr.checked = !!email_; cr.disabled = !email_;
+    lr.appendChild(cr); lr.appendChild(el("span", null, email_ ? t("ch_responder", { e: email_ }) : t("ch_sem_email"))); c.appendChild(lr);
+    // prévia do que vai junto, com "não enviar" em cada item (regra do dono: nada vai sem a pessoa ver)
+    c.appendChild(el("h4", "rg-sub", t("ch_previa")));
+    var lTela = el("label", "rg-campo rg-sim"), cTela = el("input"); cTela.type = "checkbox"; cTela.checked = true;
+    lTela.appendChild(cTela); lTela.appendChild(el("span", null, t("ch_p_tela", { t: ctx.titulo || ctx.tela || visao, u: ultimo || "—" }))); c.appendChild(lTela);
+    var lSis = el("label", "rg-campo rg-sim"), cSis = el("input"); cSis.type = "checkbox"; cSis.checked = true;
+    lSis.appendChild(cSis); lSis.appendChild(el("span", null, t("ch_p_sistema", { v: (APP && APP.versao) || "" }))); c.appendChild(lSis);
+    c.appendChild(el("p", "nota", t("ch_p_licenca")));
+    var msg = el("p", "rg-doc-msg"); msg.setAttribute("role", "status"); c.appendChild(msg);
+    var meus = el("div", "chamados-meus"); c.appendChild(meus);
+    fetch("/chamados", { headers: cabecalhosApp(), cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.chamados || !d.chamados.length) return;
+      meus.appendChild(el("h4", "rg-sub", t("ch_meus")));
+      d.chamados.slice(0, 5).forEach(function (x) { meus.appendChild(el("p", "nota", t("ch_meu", { n: x.numero, d: dataCurta((x.quando || "").slice(0, 10)), a: t("ch_c_" + String(x.categoria || "outros").replace(/-/g, "_")) }))); });
+    }).catch(function () {});
+    function confere() {  // a janela só fecha com assunto e mensagem
+      if (!sel.value) { msg.textContent = t("ch_falta_assunto"); sel.focus(); return false; }
+      if (!tx.value.trim()) { msg.textContent = t("ch_falta_texto"); tx.focus(); return false; }
+      return true;
+    }
+    abrirJanela(c, [[t("cancelar"), null], [t("ch_enviar"), function () {
+      post("/chamado", { categoria: sel.value, texto: tx.value.trim(), pode_responder: cr.checked, com_tela: cTela.checked, com_sistema: cSis.checked,
+        tela: ctx.tela || visao, titulo_tela: ctx.titulo || "", funcao: ultimo, trilha: trilha, idioma: lang,
+        fuso: (Intl.DateTimeFormat().resolvedOptions().timeZone || "") }).then(function (r) {
+        if (r.ok) mostrarAviso(t("ch_ok", { n: r.numero }));
+        else mostrarAviso((lang === "en" && r.motivo_en) || r.motivo || t("falha"));
+      }).catch(function () { mostrarAviso(t("falha")); });
+    }, true, confere]]);
+    setTimeout(function () { try { sel.focus(); } catch (e) {} }, 50);
+  }
+  if (MODO === "app") window.LEX_CHAMADO = abrirChamado;  // 0.7.28: as regras agora se editam na tela
   function gerarCopia() {
     post("/copia-planilha", {}).then(function (r) {
       if (!r.ok) { mostrarAviso(r.motivo || t("falha")); return; }

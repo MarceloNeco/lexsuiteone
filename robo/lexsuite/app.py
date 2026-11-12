@@ -210,6 +210,66 @@ def processo_vivo(pid):
         return False
 
 
+# --- 0.7.33: chamados pelo AssistONE (desenho da Arquitetura, seção 2) -----------------------------------------------
+_TRAVA_CHAMADOS = threading.Lock()
+MOTIVOS_CHAMADO = {
+    "limite": ("Limite de chamados de hoje atingido (5 por computador). Tente amanhã ou escreva para judicial@solverone.com.br.",
+               "Today's ticket limit was reached (5 per computer). Try tomorrow or write to judicial@solverone.com.br."),
+    "codigo_invalido": ("Para abrir um chamado, o código de cliente precisa estar conferido (Configurações → Licença e código).",
+                        "To open a ticket, the client code must be confirmed (Settings → Licence and code)."),
+    "desativado": ("A licença está desativada. Escreva para judicial@solverone.com.br.", "The licence is deactivated. Write to judicial@solverone.com.br."),
+    "dados_invalidos": ("Pedido incompleto: escolha o assunto e escreva a mensagem.", "Incomplete request: choose the subject and write the message."),
+}
+MOTIVOS_CHAMADO["codigo_desconhecido"] = MOTIVOS_CHAMADO["codigo_invalido"]
+
+
+def _lista_json(arq):
+    try:
+        with open(arq, encoding="utf-8") as f:
+            d = json.load(f)
+        return d if isinstance(d, list) else []
+    except (OSError, ValueError):
+        return []
+
+
+def _gravar_lista_json(arq, lista):
+    os.makedirs(os.path.dirname(arq), exist_ok=True)
+    tmp = arq + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(lista[-200:], f, ensure_ascii=False, indent=1)
+    os.replace(tmp, arq)
+
+
+def guardar_chamado(pasta, dados, numero):
+    """Meus chamados: número, data, assunto e o começo do texto, só neste computador (saida/chamados.json)."""
+    arq = os.path.join(pasta, "saida", "chamados.json")
+    lista = _lista_json(arq)
+    lista.append({"numero": numero, "quando": dt.datetime.now().astimezone().isoformat(timespec="minutes"),
+                  "categoria": dados.get("categoria", ""), "resumo": str(dados.get("texto", ""))[:80]})
+    _gravar_lista_json(arq, lista)
+
+
+def enviar_pendentes(pasta, cfg, enviar=None):
+    """Chamados que ficaram sem internet saem quando houver conexão, com o mesmo cliente_id (nunca duplicam).
+    Devolve quantos ainda faltam."""
+    arq = os.path.join(pasta, "saida", "chamados-pendentes.json")
+    with _TRAVA_CHAMADOS:
+        fila = _lista_json(arq)
+        if not fila:
+            return 0
+        resto = []
+        for i, dados in enumerate(fila):
+            r = (enviar or conta.enviar_chamado)(cfg, VERSAO, dados)
+            if r.get("ok"):
+                guardar_chamado(pasta, dados, r.get("numero"))
+            elif r.get("sem_internet"):
+                resto = fila[i:]
+                break
+            # recusado (limite, licença): sai da fila; a pessoa vê o motivo ao abrir outro chamado
+        _gravar_lista_json(arq, resto)
+        return len(resto)
+
+
 def leitura_em_outro_processo(arquivo, minutos=45):
     """A leitura que está rodando em OUTRO processo (a agendada pelo Windows, por exemplo), ou None."""
     try:
@@ -566,6 +626,10 @@ class Tratador(BaseHTTPRequestHandler):
             valores, exc = preferencias.criterios_da_area(s.pasta, area)
             return self._responder({"ok": True, "area": area, "areas": list(preferencias.AREAS), "valores": valores, "exclusoes": exc,
                                     "limites": preferencias.LIMITES, "max_exclusoes": preferencias.MAX_EXCLUSOES, "erro_leitura": erro})
+        if u.path == "/chamados":  # 0.7.33: Meus chamados (lista local) e envio dos que ficaram sem internet
+            faltam = enviar_pendentes(s.pasta, s.config())
+            return self._responder({"ok": True, "chamados": list(reversed(_lista_json(os.path.join(s.pasta, "saida", "chamados.json"))))[:30],
+                                    "pendentes": faltam})
         if u.path == "/registro":  # 0.7.29 (sem janela preta): o que ia para a janela preta, na Configuração → Ver registro
             arq = os.path.join(s.pasta, "saida", "registro.txt")
             try:
@@ -855,6 +919,34 @@ class Tratador(BaseHTTPRequestHandler):
                     return self._responder({"ok": False, "motivo": "Não consegui gravar os critérios neste computador (pasta do programa sem permissão).",
                                             "motivo_en": "Could not save the criteria on this computer (no permission in the program folder)."})
             return self._responder({"ok": True, "area": area, "todas": todas})
+        if caminho == "/chamado":  # 0.7.33 (dono): chamado pelo AssistONE, para a central de feedback do RootifyONE
+            import uuid
+            cat, texto = str(corpo.get("categoria") or ""), str(corpo.get("texto") or "").strip()
+            if cat not in conta.CATEGORIAS_CHAMADO or not texto:
+                m_ = MOTIVOS_CHAMADO["dados_invalidos"]
+                return self._responder({"ok": False, "motivo": m_[0], "motivo_en": m_[1]}, status=400)
+            trilha = corpo.get("trilha") if isinstance(corpo.get("trilha"), list) else []
+            dados = {"categoria": cat, "texto": texto[:4000], "pode_responder": bool(corpo.get("pode_responder")),
+                     "com_sistema": corpo.get("com_sistema", True) is not False, "trilha": trilha if corpo.get("com_tela", True) is not False else [],
+                     "cliente_id": uuid.uuid4().hex, "quando_cliente": dt.datetime.now().astimezone().isoformat(timespec="seconds")}
+            for k in ("tela", "titulo_tela", "funcao", "idioma", "fuso"):
+                if corpo.get("com_tela", True) is not False or k in ("idioma", "fuso"):
+                    dados[k] = str(corpo.get(k) or "")[:200]
+            enviar_pendentes(s.pasta, s.config())
+            r = conta.enviar_chamado(s.config(), VERSAO, dados)
+            if r.get("ok"):
+                guardar_chamado(s.pasta, dados, r.get("numero"))
+                return self._responder({"ok": True, "numero": r.get("numero")})
+            if r.get("sem_internet"):
+                with _TRAVA_CHAMADOS:
+                    arq = os.path.join(s.pasta, "saida", "chamados-pendentes.json")
+                    _gravar_lista_json(arq, _lista_json(arq) + [dados])
+                return self._responder({"ok": False, "fila": True,
+                                        "motivo": "Sem internet: o chamado não foi enviado. Ele fica guardado e sai sozinho quando o programa abrir com internet.",
+                                        "motivo_en": "No internet: the ticket was not sent. It is kept and goes out by itself when the program opens with internet."})
+            m_ = MOTIVOS_CHAMADO.get(r.get("motivo"), ("A SolverONE não respondeu agora. Tente de novo em alguns minutos.",
+                                                      "SolverONE did not answer now. Try again in a few minutes."))
+            return self._responder({"ok": False, "motivo": m_[0], "motivo_en": m_[1]})
         if caminho == "/copia-planilha":
             cfg = s.config()
             ok, resultado = compartilhar.gerar_copia(cfg)
