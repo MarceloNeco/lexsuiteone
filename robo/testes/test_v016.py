@@ -1195,7 +1195,7 @@ class V0729(unittest.TestCase):
         self.assertNotIn("janela preta", h.split('<script id="assistone-master">')[0].lower().replace("sem janela preta", ""))
         self.assertEqual(h.count("ver_registro:"), 2)
         self.assertIn("snapC = estadoConfig(); fecharConfig();", h)
-        self.assertIn("if (nNome.value.trim()) bAdd.click();", h)
+        self.assertIn("if (n_) bAdd.click();", h)  # 0.7.33: com a conferência de CPF e CNPJ antes
         import re
         self.assertFalse(re.search(r"\n[ \t]+\n[ \t]+[a-z_0-9]+: \"", h))
 
