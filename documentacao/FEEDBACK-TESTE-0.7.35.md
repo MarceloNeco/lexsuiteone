@@ -11,6 +11,10 @@ Cada item: o que o dono viu, se era esperado e para onde vai. Tudo o que é "0.7
 | 5 | "Verificar atualização": "Nada a atualizar…" em verde; quando houver versão nova, a frase em destaque | Melhoria | 0.7.36: verde = em dia, azul = versão nova, vermelho = só erro (decidido) |
 | 6 | Rodapé das Configurações repete "pasta" e "lista" e soa informal ("Não é preciso compartilhar nada com a SolverONE") | Melhoria de texto | 0.7.36 (texto revisto abaixo) |
 | 7 | Pastas "Cópias", "Cópias da planilha" e "Cópias de segurança" | Esperado numa instalação antiga ("Cópias" é o nome de antes da 0.7.18); some ao zerar | Depois: mover a antiga para "Cópias da planilha" |
+| 8 | "Conferir agora": ao clicar, nada parece acontecer (o resultado aparece só no rodapé da janela) | Não: falta retorno | 0.7.36: botão fica cinza com "Conferindo…" enquanto consulta e volta ao normal com o resultado |
+| 9 | Rodapé "Licença conferida com a SolverONE agora: ativa": pode ficar, mas só a palavra "ativa" em verde | Melhoria | 0.7.36 (estado em vermelho quando não ativa) |
+| 10 | "Termos (versão 1.0) / aceitos por… / Ler os termos" ocupa três linhas | Melhoria | 0.7.36: uma linha só, com "Ler os termos" no fim |
+| 11 | "Licença e termos" e "Sobre este computador": títulos de seção com destaque; uma subcategoria para o código de cliente, em dourado, com a situação da licença logo abaixo, sem repetir "Licença"/"Código" | Melhoria | 0.7.36 (proposta abaixo) |
 
 ## Decisão do dono (12/Nov, noite): nomes das Configurações
 
@@ -49,3 +53,16 @@ on this computer. None of these files needs to be shared with SolverONE."
 - **Verde**: já está na última versão ("Nada a atualizar…").
 - **Azul** (sóbrio): há versão nova; a frase em destaque, com o botão de instalar.
 - **Vermelho**: só para erro (ex.: não foi possível verificar).
+
+## Licença e termos (itens 8 a 11), proposta da Produto (12/Nov, noite)
+
+Faixa de seção **LICENÇA E TERMOS** (destaque igual às outras seções), com três subtítulos em dourado:
+
+- **Código de cliente**: `LEX-•••••-E3LF` · **ativa** (verde; vermelho quando não) · sem data de vencimento; botões
+  "Conferir agora" (cinza com "Conferindo…" durante a consulta) e "Trocar licença". Sai a frase "Código confirmado. Para
+  trocar, use "Trocar licença"." e saem as linhas "Licença" e "Validade" de "Sobre este computador" (estavam repetidas).
+- **Termos e condições**: uma linha: "Versão 1.0, aceitos por Marcelo Teste Advogado em 12/NOV/2026 14:51 (Brasília) ·
+  Ler os termos".
+- **Sobre este computador**: versão instalada, pasta do programa, planilha, chave e pasta de atualização, o que a
+  SolverONE recebe; "Ver histórico de leituras" (item 4b da lista) no lugar de "Ver registro".
+- Rodapé da janela: "Licença conferida com a SolverONE agora: **ativa**" (só "ativa" em verde).
