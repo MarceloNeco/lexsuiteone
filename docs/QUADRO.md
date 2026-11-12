@@ -276,7 +276,10 @@ migram depois de quinta 12/Nov), SQL do Supabase (`nuvem/supabase/*.sql`) e as f
 migração para a organização `solverone`, e as regras deste repositório (`CLAUDE.md`, `.claude/`).
 
 ### Fazendo agora
-- Nada em andamento. **Trava do aceite ligada nas duas licenças** (KR Law e teste do dono) desde 11/Nov, a pedido do dono.
+- **Staging e CI/CD (iniciativa do dono, 12/Nov; prioridade DEPOIS da KR Law)**: desenhando a parte do RADAR
+  (`documentacao/DESENHO-STAGING-RADAR-2026-11-12.md`, a partir de `PROMPT-STAGING-CICD-2026-11-12.md`, seção 2), alinhada ao
+  padrão que a conversa de diretrizes vai definir. Nada é implementado antes do "pode" do dono. Arquivos: só o desenho e esta seção.
+- **Trava do aceite ligada nas duas licenças** (KR Law e teste do dono) desde 11/Nov, a pedido do dono.
   Próximos: SQL da 0.8, pareamento com credencial, trilha de auditoria, check de `lex_eventos` no desktop.
 
 ### Arquivos em uso
