@@ -110,5 +110,55 @@ class Tela0736A(unittest.TestCase):
         self.assertNotIn("Mensagem clara quando", self.h)
 
 
+class Configuracoes0736(unittest.TestCase):
+    """Teste do dono (itens 2 a 6, 8 a 11 e 17) e Histórico fora das abas (4b)."""
+
+    def setUp(self):
+        self.h = ler("radar_modelo.html")
+
+    def test_nomes_decididos(self):
+        for k in ('c_s_lista: "Processos"', 'c_s_leitura: "Leitura do Diário"', 'rg_titulo: "Destaques e exclusões"', 'ag_titulo: "Rotina de leitura"',
+                  'c_s_lista: "Cases"', 'rg_titulo: "Highlights and exclusions"', 'ag_titulo: "Reading routine"'):
+            self.assertIn(k, self.h)
+        self.assertNotIn('"Critérios da lista"', self.h)
+
+    def test_ordem_das_secoes(self):
+        ordem = ['id="c-s-lista"', 'id="c-regras-wrap"', 'id="c-filtros-wrap"', 'id="c-pasta-wrap"', 'id="c-s-leitura"', 'id="c-agendar-wrap"',
+                 'id="c-arm-wrap"', 'id="c-s-tela"', 'id="c-s-licenca"', 'id="c-lic-wrap"', 'id="c-termos-wrap"', 'id="c-sobre-wrap"']
+        pos = [self.h.index(x) for x in ordem]
+        self.assertEqual(pos, sorted(pos))
+
+    def test_licenca_sem_repetir(self):
+        self.assertIn("function estadoLicConfig()", self.h)
+        corpo = self.h[self.h.index("  function infoConfig() {"):][:900]
+        self.assertNotIn('par(t("licenca")', corpo); self.assertNotIn('par(t("lic_validade")', corpo)
+        self.assertIn('$("c-codigo-nota").hidden = true;', self.h)
+
+    def test_termos_numa_linha_e_ultimo_envio(self):
+        self.assertIn('termos_linha: "Versão {v}, aceitos por {n} em {d}."', self.h)
+        self.assertIn('ret_quando: "Último envio ({q}): {n} linha(s)."', self.h)
+        self.assertIn('t("c_chave_ajuda")', self.h)
+
+    def test_cores_da_atualizacao_e_rodape(self):
+        self.assertIn('el("span", "txt-verde", t("atu_nada"', self.h); self.assertIn('el("span", "txt-azul", t("atu_ok"', self.h)
+        self.assertIn('c_dica: "Cada área do direito tem a sua planilha (exemplo:', self.h)
+        self.assertNotIn("Trabalhista.xlsx agora", self.h)
+
+    def test_historico_fora_das_abas(self):
+        self.assertIn('if (v === "historico") { abrirHistorico(false); return; }', self.h)
+        self.assertIn('b.hidden = v === "historico"', self.h)
+        self.assertIn('[["painel", "v_painel"], ["lista", "v_lista"], ["arquivo", "v_arquivo"]].map(', self.h)
+        self.assertIn('#config.ver-hist > :not(.conf-cab):not(#c-hist)', self.h)
+        self.assertIn('id="c-historico"', self.h); self.assertIn('id="c-hist-voltar"', self.h)
+        self.assertIn('"faixa-falha"', self.h)
+
+
+class UltimaTentativa(Servidor):
+    def test_dados_trazem_a_ultima_tentativa(self):
+        c = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=20)
+        c.request("GET", "/dados", headers={"X-LexSuite": "1"}); d = json.loads(c.getresponse().read()); c.close()
+        self.assertIn("ultima_tentativa", d)
+
+
 if __name__ == "__main__":
     unittest.main()

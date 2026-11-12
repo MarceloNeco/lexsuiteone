@@ -528,6 +528,8 @@ class Tratador(BaseHTTPRequestHandler):
             pagina["criterio"] = crit[0] if crit else {}
             ultimo = banco.execucoes("retorno", 1)
             pagina["retorno"] = ultimo[0] if ultimo else {}
+            tent = banco.execucoes("tentativa", 1)  # 0.7.36 (dono): a faixa do Painel avisa quando a última leitura falhou
+            pagina["ultima_tentativa"] = tent[0] if tent else {}
             comp = cfg["compartilhar"]
             base = compartilhar.pasta_base(cfg)
             chave = atualizar.chave_publica(s.pasta)

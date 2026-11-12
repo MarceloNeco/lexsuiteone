@@ -29,8 +29,8 @@ class Tela0735(unittest.TestCase):
         self.assertIn('id="c-conferir-lic"', self.h)
         self.assertIn('$("c-conferir-lic").addEventListener("click"', self.h)
         self.assertIn("mesmoCod_ = !!(trocandoLic && APP && APP.conta && APP.conta.codigo === cod)", self.h)
-        self.assertIn("if (mesmoCod_) conferirConta().then", self.h)  # revisão: o mesmo código confere pela rota, sem /config
-        b_ = self.h[self.h.index('$("c-conferir-lic").addEventListener("click"'):][:600]
+        self.assertIn("if (mesmoCod_) Promise.resolve(depois_).then(function () { return conferirConta(); })", self.h)  # 0.7.36: encadeado depois do carregar  # revisão: o mesmo código confere pela rota, sem /config
+        b_ = self.h[self.h.index('$("c-conferir-lic").addEventListener("click"'):][:1400]
         self.assertIn("conferirConta().then", b_)  # revisão: o botão chama a conferência de verdade
         self.assertIn('ok === "sem" ? t("lic_sem_internet")', b_)  # e não diz "ativa" sem conexão
         self.assertIn("trocandoLic = false; $(\"config\").hidden = true;", self.h)
