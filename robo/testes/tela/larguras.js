@@ -103,10 +103,10 @@ const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
     ok(ruins.size === 0, `${tema}: texto com contraste suficiente ${[...ruins].slice(0, 4).join(' | ')}`);
     await ctx.close();
   }
-  // teste do dono (0.7.30): Configuração pelo menu ☰ abre em janela, rola com a roda do mouse, e o (?) abre na frente
+  // teste do dono (0.7.30; 0.7.33: o menu abre pelo primeiro item, Critérios da lista): Configurações pelo menu ☰ abre em janela, rola com a roda do mouse, e o (?) abre na frente
   { const ctx = await b.newContext({ viewport: { width: 1366, height: 700 } }); const p = await ctx.newPage();
     await p.goto('http://127.0.0.1:' + porta + '/'); await p.waitForTimeout(1300); await p.click('.dgo-aone-x').catch(() => {});
-    await p.click('#b-menu'); await p.waitForTimeout(400); await p.locator('.gv-item', { hasText: /^Configuração/ }).first().click(); await p.waitForTimeout(700);
+    await p.click('#b-menu'); await p.waitForTimeout(400); await p.locator('.gv-item', { hasText: /^Critérios da lista/ }).first().click(); await p.waitForTimeout(700);
     await p.mouse.move(683, 450); await p.mouse.wheel(0, 600); await p.waitForTimeout(400);
     const y = await p.evaluate(() => document.getElementById('config').scrollTop); const pag = await p.evaluate(() => document.getElementById('config').classList.contains('pagina'));
     ok(!pag && y > 100, `Configuração pelo menu abre em janela e rola com a roda do mouse (${y})`);
