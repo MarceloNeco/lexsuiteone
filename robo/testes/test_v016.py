@@ -1517,7 +1517,7 @@ class Novo0732(unittest.TestCase):
         self.assertIn("Regras do escritório", bloco); self.assertIn("Critérios da lista", bloco)
         self.assertIn("Firm rules", bloco); self.assertIn("List criteria", bloco)
         self.assertEqual(bloco.count('",\n'), 2 * (bloco.split("en: [")[0].count('",\n')))  # mesmo número de linhas em PT e EN
-        self.assertIn("Para rever: menu ☰ → Configurações → Novidades da versão", h)
+        self.assertIn("Para rever: menu ☰ → Ajuda → Novidades da versão", h)  # 0.7.33: Novidades foi para o grupo Ajuda
 
     def test_lupa_acha_dias_com_espaco_duplo_e_monday_to_friday(self):  # terceira revisão da 0.7.32 (Operação)
         h = open(os.path.join(_ROBO_, "radar_modelo.html"), encoding="utf-8").read()
