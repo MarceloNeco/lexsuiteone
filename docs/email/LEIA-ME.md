@@ -30,7 +30,7 @@ bloco do código; sem ele, o bloco é removido, e o cliente não consegue instal
 - A caixa `{{contato}}` precisa existir antes do envio ao cliente (apelido no ImprovMX; passo a passo em
   `docs/DNS-SOLVERONE.md`). O e-mail não pede para compartilhar pasta com a SolverONE: diz que é opcional, só para
   suporte (termos, seção 6.1).
-- Revisado em 12/Nov contra o programa 0.7.32 (instalador que pede o código na primeira janela, assistente, planilha por
+- Revisado em 12/Nov contra o programa 0.7.33 (instalador que pede o código na primeira janela, assistente, planilha por
   área, Configurações com critérios da lista, leitura automática por dias e horários, "O que a SolverONE recebe") e os
   termos vigentes; traz um resumo em inglês.
 - Um e-mail por pessoa, enviado depois que ela pediu o pacote. Não é lista nem campanha.

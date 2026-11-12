@@ -195,7 +195,7 @@ REGRAS = " - antes de salvar regras"
 
 
 def copia_antes_das_regras(base, aviso=print, agora=None):
-    """Revisão da 0.7.28: antes de a tela regravar as abas Preferências e Exclusões, a planilha da frente trabalhista vai
+    """Revisão da 0.7.28 (sem uso desde a 0.7.33, quando os critérios saíram da planilha): antes de a tela regravar as abas Preferências e Exclusões, a planilha da frente trabalhista vai
     para "Cópias de segurança/AAAA-MM-DD HHhMMmSS - antes de salvar regras/" (ficam as 6 mais novas dessas). Sem planilha,
     nada a copiar. Devolve (ok, pasta ou motivo)."""
     origem = preferencias.caminho(base, "trabalhista")
@@ -222,7 +222,7 @@ def copia_seguranca(cfg, banco, motivo="", aviso=print, agora=None, so_csv=False
     from . import compartilhar
     base = compartilhar.pasta_base(cfg)
     if not base:
-        return False, "Escolha antes a pasta da planilha (Configuração)."
+        return False, "Escolha antes a pasta da planilha (Configurações)."
     d = disco(base)
     if d["nivel"] in ("baixo", "critico"):
         return False, texto_disco(d)

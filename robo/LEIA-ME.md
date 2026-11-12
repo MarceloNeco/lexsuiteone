@@ -66,7 +66,7 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → C
 - **0.7.33 (dono, 12/Nov):** critérios da lista e empresas excluídas de cada pessoa, neste computador, por área
   (`criterios.json`; migração única das abas da planilha; "Copiar estes critérios para as outras áreas"; valor vazio = sem
   mínimo; números com ponto; CPF e CNPJ conferidos, inclusive o CNPJ com letras; um Salvar só); CNPJ com letras reconhecido
-  nos Diários e na ficha; "Abrir um chamado" no AssistONE e no menu Ajuda (fila sem internet, "Meus chamados"); Painel sem
+  nos Diários e na ficha; Painel sem
   busca e sem filtros repetidos, com etiqueta grande nos gráficos; sazonalidade lendo a fila inteira com barra por mês,
   Pausar e Continuar à noite; menu Configurações com os nomes da janela e grupo Ajuda; planilha completa com a aba
   "Critérios desta leitura". Pacote com 46/45 arquivos (novo `lexsuite/documento.py`).

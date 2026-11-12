@@ -178,6 +178,9 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
         item = item_de_lead(lead, dict(r, teto_capital_gigante=p_item.get("teto_capital_gigante") or r.get("teto_capital_gigante")), por_processo)
         if not p_item.get("mostrar_socios", True):
             item["empresa"]["socios"] = []  # minimização: nomes de pessoas só se o escritório pedir
+        # revisão da 0.7.33: esconder excluídas e jurídico próprio valem pela área de cada ação
+        item["esconder_exc"] = bool(p_item.get("esconder_excluidas", True))
+        item["esconder_gig"] = bool(p_item.get("esconder_gigantes"))
         itens.append(item)
     # Quantas ações cada empresa teve na janela do "mínimo de ações" (conta processos distintos).
     grupos = collections.defaultdict(list)
@@ -203,7 +206,8 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
         "valor_minimo_area": {a: float(prefs_de(a).get("valor_minimo") or 0) for a in sorted(set(grupos) | {"trabalhista"})},
         "situacao": situacao or {}, "itens": itens,
         "excluidas": sum(1 for i in itens if i.get("excluida")),
-        "prefs": {"esconder_excluidas": bool(p_trab.get("esconder_excluidas", True)), "esconder_gigantes": bool(p_trab.get("esconder_gigantes")),
+        "prefs": {"esconder_excluidas": bool(p_trab.get("esconder_excluidas", True)),
+                  "esconder_gigantes": any(bool(prefs_de(a).get("esconder_gigantes")) for a in sorted(set(grupos) | {"trabalhista"})),
                   "minimo_acoes": int(p_trab.get("minimo_acoes") or 1), "janela_dias": int(p_trab.get("janela_dias") or 30),
                   "origem": p_trab.get("origem", "padrão"), "erro": p_trab.get("erro", ""), "controle": p_trab.get("controle") or {}},
     }

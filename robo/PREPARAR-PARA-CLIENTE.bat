@@ -12,6 +12,7 @@ if /i not "%OK%"=="SIM" (
   exit /b 0
 )
 del /q config.json 2>nul
+del /q criterios.json criterios.json.anterior criterios.json.tmp 2>nul
 del /q lexsuite.db lexsuite_exemplo.db ultima_atualizacao.json 2>nul
 del /q lexsuite.db.antes-* 2>nul
 rmdir /s /q saida 2>nul

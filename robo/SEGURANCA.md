@@ -35,7 +35,7 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
   `@` recebe um apóstrofo, para o texto do Diário não virar fórmula no Excel.
 - **Dados pessoais.** Pessoas físicas das publicações são descartadas antes de gravar. Os contatos de empresa vêm do
   cadastro público da Receita; o uso é decisão do compliance do escritório, e os nomes de sócios podem ser desligados
-  na aba Preferências. O relatório de diagnóstico mascara nomes e CPFs. O banco local guarda as ações com um trecho
+  em Configurações → Critérios da lista (cada pessoa, por área). O relatório de diagnóstico mascara nomes e CPFs. O banco local guarda as ações com um trecho
   curto do texto; depois de 12 meses (`radar.guardar_dias`) o trecho do Diário é apagado e fica um resumo (número do
   processo, tribunal, vara, classe, data, link, valor, empresas, CNPJ e, da Receita, porte, atividade, cidade, endereço,
   telefone, e-mail e nomes de sócios, sem o autor da ação), e os totais diários (estatísticas) ficam para sempre. Contatos de sócios só com fonte e data
