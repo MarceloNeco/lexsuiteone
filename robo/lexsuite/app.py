@@ -40,14 +40,14 @@ PARA_VOCE = {
                        "Nada aqui usa inteligência artificial nem tem custo por uso: o robô lê fontes públicas e roda no seu computador."],
     "Advogado ou advogada": ["Clique na linha e a ficha abre: vara, rito, data do Diário, empresa, atividade, porte, capital social e contatos do cadastro público.",
                              "O valor da causa fica atrás do captcha do PJe: \"Abrir consulta no PJe\", cole o número, veja o valor e digite na ficha. Ele sai na planilha exportada.",
-                             "Use o status (visto, em contato, descartado) para não repassar a mesma empresa duas vezes; o filtro \"Acima de\" segue o valor mínimo das Regras do escritório (Configuração).",
+                             "Use o status (visto, em contato, descartado) para não repassar a mesma empresa duas vezes; o filtro \"Acima de\" segue o valor mínimo dos Critérios da lista (Configuração).",
                              "Rito ordinário indica causa acima de 40 salários mínimos; sumaríssimo, até 40. É o primeiro corte de valor que o Diário permite."],
     "Estagiário ou estagiária": ["A rotina sugerida: de manhã, abrir a tela, conferir \"Última atualização\" e passar pela lista marcando o status de cada linha.",
                                  "Para as linhas com \"valor a conferir\", abrir a consulta no PJe, resolver o captcha e digitar o valor da causa na ficha.",
-                                 "Cadastrar em Configuração → Regras do escritório as empresas que a equipe pedir para não aparecer (nome como está no Diário, ou CNPJ, e o motivo).",
+                                 "Cadastrar em Configuração → Critérios da lista as empresas que a equipe pedir para não aparecer (nome como está no Diário, ou CNPJ, e o motivo).",
                                  "Não é preciso mexer nas abas ocultas da planilha: elas são do suporte."],
-    "Equipe administrativa": ["A planilha (LexSuiteONE - Trabalhista.xlsx, na pasta escolhida) é sua, para consultar. As regras (valor mínimo, clientes e empresas que não devem aparecer) se mudam em Configuração → Regras do escritório.",
-                              "O RADAR lê sozinho nos horários de Configuração (de início, 20h e 8h); se o computador estava desligado, a leitura acontece quando ele ligar.",
+    "Equipe administrativa": ["A planilha (LexSuiteONE - Trabalhista.xlsx, na pasta escolhida) é sua, para consultar. Os critérios (valor mínimo, clientes e empresas que não devem aparecer) se mudam em Configuração → Critérios da lista.",
+                              "O RADAR lê sozinho nos dias e horários de Configuração (numa instalação nova, de segunda a sexta, às 20h e às 8h); se o computador estava desligado, a leitura acontece quando ele ligar.",
                               "Se a planilha estiver aberta e travada na hora de uma rodada, o robô grava na próxima. Nada se perde.",
                               "Avise o suporte quando a tela mostrar \"robô desligado\", \"precisa atualizar\" ou quando a lista vier vazia dois dias úteis seguidos."],
 }
@@ -564,9 +564,9 @@ class Tratador(BaseHTTPRequestHandler):
             marca_r, doc, erro = preferencias.marca_regras(base)
             if marca_r is None:  # revisão da 0.7.28 (bloqueio): sem ler a planilha, a tela NÃO mostra o formulário padrão
                 return self._responder({"ok": False, "tem_pasta": True, "erro_leitura": erro,
-                                        "motivo": "Não consegui ler as regras do escritório na planilha (pode estar aberta no Excel, "
+                                        "motivo": "Não consegui ler os critérios da lista na planilha (pode estar aberta no Excel, "
                                                   "ainda sincronizando no Drive ou danificada). Feche o Excel, espere o Drive terminar e abra de novo.",
-                                        "motivo_en": "Could not read the firm rules from the spreadsheet (it may be open in Excel, still "
+                                        "motivo_en": "Could not read the list criteria from the spreadsheet (it may be open in Excel, still "
                                                      "syncing in Drive or damaged). Close Excel, wait for Drive and open this again."})
             p = preferencias.carregar(base, doc=doc) if doc else preferencias.padrao()
             return self._responder({"ok": True, "valores": {k: p.get(k) for k in preferencias.PADRAO}, "marca": marca_r,
@@ -642,12 +642,12 @@ class Tratador(BaseHTTPRequestHandler):
                 if c.get("resposta") not in ("ok", "sem_resposta"):
                     resp_ = {"ok": False, "motivo": conta.bloqueio(cfg), "motivo_en": conta.bloqueio_en(cfg), "conta": conta.situacao(cfg)}
                     if mudou_cod and antes_conta.get("codigo"):
-                        cfg["conta"] = antes_conta; config.salvar(s.caminho_config, cfg)  # o código bom continua
+                        cfg["conta"] = antes_conta  # o código bom continua (o disco não foi tocado: cada pedido relê o config)
                         resp_["conta"] = conta.situacao(cfg)
                     return self._responder(resp_)
                 if c.get("resposta") == "sem_resposta" and not c.get("ultima_ok"):
                     if mudou_cod and antes_conta.get("codigo"):
-                        cfg["conta"] = antes_conta; config.salvar(s.caminho_config, cfg)
+                        cfg["conta"] = antes_conta
                     return self._responder({"ok": False, "motivo": "Não consegui falar com a SolverONE para confirmar o código. "
                                                                     "Confira a internet e tente de novo.",
                                             "motivo_en": "I could not reach SolverONE to confirm the code. Check the internet and try again.",
@@ -849,8 +849,8 @@ class Tratador(BaseHTTPRequestHandler):
                                         "motivo_en": "Choose the spreadsheet folder in Settings first."})
             valores, exc, marca_tela = corpo.get("valores"), corpo.get("exclusoes"), corpo.get("marca")
             if not isinstance(valores, dict) or not isinstance(exc, list) or not isinstance(marca_tela, str):  # revisão da 0.7.28
-                return self._responder({"ok": False, "motivo": "Pedido incompleto: abra as regras de novo.",
-                                        "motivo_en": "Incomplete request: open the rules again."}, status=400)
+                return self._responder({"ok": False, "motivo": "Pedido incompleto: abra os critérios de novo.",
+                                        "motivo_en": "Incomplete request: open the criteria again."}, status=400)
             if len(exc) > preferencias.MAX_EXCLUSOES:
                 return self._responder({"ok": False, "motivo": f"São {len(exc)} empresas excluídas; o limite é {preferencias.MAX_EXCLUSOES}. Tire algumas e salve de novo.",
                                         "motivo_en": f"There are {len(exc)} excluded companies; the limit is {preferencias.MAX_EXCLUSOES}. Remove some and save again."})
@@ -860,24 +860,24 @@ class Tratador(BaseHTTPRequestHandler):
                 if s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento) or (getattr(s, "hist", {}) or {}).get("rodando"):
                     # revisão da 0.7.28 (Operação, item 1): a leitura regravaria a planilha com as regras de antes
                     return self._responder({"ok": False, "lendo": True,
-                                            "motivo": "Há uma leitura em andamento: ela regravaria a planilha com as regras de antes. Espere terminar e salve de novo (o que você digitou continua aqui).",
-                                            "motivo_en": "A reading is in progress: it would rewrite the spreadsheet with the old rules. Wait for it to finish and save again (what you typed stays here)."})
+                                            "motivo": "Há uma leitura em andamento: ela regravaria a planilha com os critérios de antes. Espere terminar e salve de novo (o que você digitou continua aqui).",
+                                            "motivo_en": "A reading is in progress: it would rewrite the spreadsheet with the old criteria. Wait for it to finish and save again (what you typed stays here)."})
                 marca_agora, _doc, _erro = preferencias.marca_regras(base)
                 if marca_agora is None:
                     return self._responder({"ok": False, "motivo": "Não consegui ler a planilha agora: ela pode estar aberta no Excel ou sincronizando. Nada foi alterado.",
                                             "motivo_en": "Could not read the spreadsheet now: it may be open in Excel or syncing. Nothing was changed."})
                 if marca_agora != marca_tela:
                     return self._responder({"ok": False, "mudou": True,
-                                            "motivo": "As regras na planilha mudaram depois que você abriu esta tela (outra pessoa, outro computador ou edição à mão). Nada foi alterado: abra as regras de novo e refaça a mudança.",
-                                            "motivo_en": "The rules in the spreadsheet changed after you opened this screen (someone else, another computer or a manual edit). Nothing was changed: open the rules again and redo the change."})
+                                            "motivo": "Os critérios na planilha mudaram depois que você abriu esta tela (outra pessoa, outro computador ou edição à mão). Nada foi alterado: abra os critérios de novo e refaça a mudança.",
+                                            "motivo_en": "The criteria in the spreadsheet changed after you opened this screen (someone else, another computer or a manual edit). Nothing was changed: open the criteria again and redo the change."})
                 pref, exc_l = preferencias.linhas_regras(valores, exc)
                 copia_ok, onde = armazenamento.copia_antes_das_regras(base)
                 if not copia_ok:
                     return self._responder({"ok": False, "motivo": onde + " Nada foi alterado.",
                                             "motivo_en": "Could not save the backup copy before saving. Nothing was changed."})
                 if preferencias.marca_regras(base)[0] != marca_tela:  # outro computador mudou a planilha durante a cópia
-                    return self._responder({"ok": False, "mudou": True, "motivo": "A planilha mudou agora mesmo (outro computador). Nada foi alterado: abra as regras de novo.",
-                                            "motivo_en": "The spreadsheet just changed (another computer). Nothing was changed: open the rules again."})
+                    return self._responder({"ok": False, "mudou": True, "motivo": "A planilha mudou agora mesmo (outro computador). Nada foi alterado: abra os critérios de novo.",
+                                            "motivo_en": "The spreadsheet just changed (another computer). Nothing was changed: open the criteria again."})
                 recados = []
                 try:
                     compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, recados.append)

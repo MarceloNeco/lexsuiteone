@@ -23,8 +23,8 @@ atualiza sem perder configuração nem lista. A fonte é `instalador/INSTALAR.ba
    código só para ler, função obrigatória, três opções para a planilha, tribunais escolhidos ali, onde a planilha fica e
    como compartilhar): seu nome e seu papel no escritório (a tela e o
    manual passam a falar com você), o nome do escritório, a **pasta compartilhada** (a tela lista as pastas do Google
-   Drive para computador que achou, ou outra pasta pelo "Escolher pasta…"; "Testar pasta" confirma) e a opção **rodar sozinho todo dia**
-   (de início às 20h e às 8h, já marcada; os horários mudam em Configuração). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE - Trabalhista.xlsx` na pasta escolhida,
+   Drive para computador que achou, ou outra pasta pelo "Escolher pasta…"; "Testar pasta" confirma) e a opção **rodar sozinho**
+   (de início de segunda a sexta, às 20h e às 8h, já marcada; dias e horários mudam em Configuração). "Começar a primeira rodada" salva tudo, cria a planilha `LexSuiteONE - Trabalhista.xlsx` na pasta escolhida,
    agenda as rodadas e dispara a primeira. Cada campo do passo a passo fica guardado ao sair dele (fechar a tela no meio
    não perde o que foi digitado). Depois, quem usa (nome, e-mail, função, escritório) muda no **perfil** (as iniciais no
    alto da tela, um lápis ✏️ por dado; trocar o e-mail = outra pessoa usando o computador) e o código, a pasta e as
@@ -58,8 +58,8 @@ A aba Arquivo mostra os últimos 90 dias e todo processo trabalhado; limite de 6
   **Sobre** (versão, computador, pasta).
 
 Também fica ali a página `Retrato da última leitura.html` (antes `Lista para abrir no celular.html`), uma foto da lista na última leitura que abre em qualquer lugar. No Google Planilhas,
-abra o `.xlsx` para consultar (modo de compatibilidade com Office). As regras do escritório (exclusões, valor mínimo)
-se mudam no programa: Configuração → Regras do escritório. Se a planilha estiver aberta e travada na hora de uma rodada, o robô tenta de novo a cada 2 minutos e grava sozinho quando ela for fechada.
+abra o `.xlsx` para consultar (modo de compatibilidade com Office). Os critérios da lista (exclusões, valor mínimo)
+se mudam no programa: Configuração → Critérios da lista. Se a planilha estiver aberta e travada na hora de uma rodada, o robô tenta de novo a cada 2 minutos e grava sozinho quando ela for fechada.
 
 ## A tela
 
@@ -104,7 +104,7 @@ se mudam no programa: Configuração → Regras do escritório. Se a planilha es
   da hora, como "(Brasília)"; critério do "Ler o Diário agora" curto, com o atalho "alterar"; filtros em azul-marinho e
   ordenação em dourado, com "Limpar filtros" sempre ao lado (apagado quando não há filtro); a lista lembra os últimos
   filtros; toda janela tem ✕, Cancelar e fecha ao clicar fora; filtros salvos em ordem alfabética, com renomear,
-  arquivar e apagar na Configuração (ficam neste computador por enquanto); **Regras do escritório** na Configuração
+  arquivar e apagar na Configuração (ficam neste computador por enquanto); **Regras do escritório** (desde a 0.7.32, **Critérios da lista**) na Configuração
   (valor mínimo, jurídico próprio, sócios, arquivo, limite e empresas excluídas) editadas na tela e gravadas pelo RADAR
   nas abas Preferências e Exclusões da planilha (sem editar Excel à mão; entram na cópia de segurança); clicar de novo
   no atalho com a tela aberta não abre outra janela: a tela aberta avisa "O RADAR já estava aberto aqui".

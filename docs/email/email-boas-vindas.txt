@@ -16,7 +16,7 @@ https://judicial.solverone.com.br/aceite.html#codigo={{codigo}}&email={{email}}&
 Como instalar, em quatro passos
 1. Instale: abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Ele baixa o resto, prepara tudo e abre a tela do programa numa janela própria. Não fica nenhuma janela preta aberta: o programa trabalha por trás.
 2. Configure no assistente: a tela confere o código e pede o seu nome, e-mail e função (e o seu aceite, em seu nome, dos mesmos termos); a pasta onde ficam as planilhas, uma por área (por exemplo, "LexSuiteONE - Trabalhista.xlsx"), no computador ou, se o escritório preferir, no Google Drive; e os tribunais (de início, os 24 TRTs). A primeira leitura começa em seguida.
-3. Confira a Configuração (a engrenagem, no alto da tela): pasta das planilhas, leituras automáticas, regras do escritório (valor mínimo e empresas que ficam de fora), espaço do computador, termos e "O que a SolverONE recebe".
+3. Confira a Configuração (a engrenagem, no alto da tela): pasta das planilhas, leituras automáticas (dias e horários), critérios da lista (valor mínimo e empresas que ficam de fora), espaço do computador, termos e "O que a SolverONE recebe".
 4. Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho. Para sair, use o menu ☰ e "Sair"; se a tela for fechada, o programa se encerra sozinho alguns minutos depois.
 
 Não é preciso compartilhar a pasta com a SolverONE. Se o escritório quiser ajuda do suporte, pode compartilhá-la por um tempo e retirar o acesso depois; é opcional (termos, seção 6.1).
