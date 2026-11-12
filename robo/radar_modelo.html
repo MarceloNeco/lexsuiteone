@@ -3838,6 +3838,7 @@ window.LEXSUITE_RADAR = null;
     (MODO === "app" ? gruposMenu() : [[gruposMenu()[0][0], gruposMenu()[0][1].slice(0, 2)]]).forEach(function (gr) { gr[1].forEach(function (it) { if (it[3]) return; if (!q || semAcento(it[0] + " " + gr[0]).indexOf(q) >= 0) opc.push([it[0], gr[0], it[1]]); }); });
     // 0.7.33 (revisão B): termos novos depois do menu, para "Lista" continuar abrindo a Lista
     (MODO === "app" ? [
+      [t("config"), "", "configuracao configuracoes ajustes settings", function () { abrirConfig(true); }],
       [t("rg_titulo"), t("config"), "criterios da lista meus criterios so meus por area valor minimo destacar list criteria my criteria only mine by area minimum value", editarPreferencias],
       [t("rg_exc_menu"), t("config"), "excluir empresa excluir uma empresa excluir cliente empresas excluidas exclusoes conflito exclude company exclude a company exclude client excluded companies", function () { abrirConfig(true, "c-regras-wrap"); abrirExcluidas(); }],
       [t("bg_cnpj"), t("link_manual"), "cnpj com letras cnpj alfanumerico cnpj novo alphanumeric cnpj new cnpj cnpj with letters", function () { window.open("/manual#perguntas", "_blank", "noopener"); }],

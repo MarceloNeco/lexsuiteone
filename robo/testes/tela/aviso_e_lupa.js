@@ -79,7 +79,7 @@ const externos = [];
         const lista = async () => p4.evaluate(() => [...document.querySelectorAll('#bg-res button')].map(x => x.firstChild.textContent.trim() + '|' + ((x.querySelector('small') || {}).textContent || '')));
         await p4.click('#b-busca'); await p4.waitForTimeout(300); const L = await lista();
         console.log('  [app] lupa vazia:', L.length, 'itens:', JSON.stringify(L));
-        const exp = idioma === 'pt' ? ['Painel', 'Lista', 'Arquivo', 'Histórico', 'planilha', 'Configuração', 'Perfil', 'área logada', 'Termos', 'Manual'] : ['Dashboard', 'List', 'Archive', 'History', 'spreadsheet', 'Settings', 'Profile', 'logged-in area', 'Terms', 'Manual'];
+        const exp = idioma === 'pt' ? ['Painel', 'Lista', 'Arquivo', 'Histórico', 'planilha', 'Configurações', 'Perfil', 'área logada', 'Termos', 'Manual'] : ['Dashboard', 'List', 'Archive', 'History', 'spreadsheet', 'Settings', 'Profile', 'logged-in area', 'Terms', 'Manual'];
         for (const e of exp) ok(L.some(x => x.toLowerCase().includes(e.toLowerCase())), `app: lupa lista algo com "${e}"`);
         for (const [q, cond] of [[idioma === 'pt' ? 'Arquivo' : 'Archive', async () => (await p4.getAttribute('#v-arquivo', 'aria-selected')) === 'true'],
                                  [idioma === 'pt' ? 'Histórico' : 'History', async () => (await p4.getAttribute('#v-historico', 'aria-selected')) === 'true'],

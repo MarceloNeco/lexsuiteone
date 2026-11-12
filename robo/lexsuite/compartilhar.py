@@ -165,7 +165,7 @@ def _copia_antes_0733(base, frente, caminho, aviso=print):
         aviso(f"  Não consegui guardar a cópia de segurança \"antes da 0.7.33\" ({e.__class__.__name__}): a planilha não foi "
               "regravada, para nada se perder. A lista está salva.")
         return False
-    aviso(f"  Cópia da planilha como era antes da 0.7.33 guardada em Cópias de segurança/{preferencias.PASTA_ANTES_0733}.")
+    aviso(f"  Cópia da planilha como era antes da 0.7.33 guardada em Cópias de segurança ({os.path.basename(destino)}).")
     return True
 
 

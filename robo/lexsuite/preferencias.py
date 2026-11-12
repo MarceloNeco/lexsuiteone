@@ -331,8 +331,10 @@ def _ler_abas_antigas(caminho_planilha):
 
 def copia_antes_0733(pasta_base, frente):
     """Caminho da cópia "antes da 0.7.33" da planilha da frente, em Cópias de segurança (pode não existir)."""
-    nome = os.path.basename(caminho(pasta_base, frente)) if pasta_base else ""
-    return os.path.join(pasta_base, "Cópias de segurança", PASTA_ANTES_0733, nome) if nome else ""
+    nome = os.path.splitext(os.path.basename(caminho(pasta_base, frente)))[0] if pasta_base else ""
+    # desenho da Arquitetura (12/Nov, 1.4): "LexSuiteONE - <Frente> - antes da 0.7.33.xlsx", solta em Cópias de segurança
+    # (a limpeza automática só mexe nas pastas datadas, então esta cópia fica)
+    return os.path.join(pasta_base, "Cópias de segurança", f"{nome} - {PASTA_ANTES_0733}.xlsx") if nome else ""
 
 
 def migrar(pasta, pasta_base, cfg_radar=None, aviso=None, banco=None):
