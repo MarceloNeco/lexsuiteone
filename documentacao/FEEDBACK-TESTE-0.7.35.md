@@ -1,6 +1,6 @@
 # Teste do dono na 0.7.35 (12/Nov/2026): feedbacks acumulados
 
-Cada item: o que o dono viu, se era esperado e para onde vai. Tudo o que é "0.7.36" espera o "pode" do dono.
+Cada item: o que o dono viu, se era esperado e para onde vai. **Situação (12/Nov, noite): com o "pode codificar tudo" do dono, todos os itens marcados "0.7.36" estão feitos no ramo de trabalho (0.7.36, pronta para revisão da Operação). O item 7 fica para depois da visita.** Pergunta D pela recomendação (nome sem CNPJ aceito, com aviso).
 
 | # | Feedback | Esperado? | Destino |
 |---|---|---|---|

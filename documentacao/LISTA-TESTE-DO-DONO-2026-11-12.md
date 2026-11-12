@@ -74,7 +74,8 @@ com indicador e aviso, Histórico 50 por vez e dica em linhas, fixo em tudo meno
 
 ### Achados do teste do dono na 0.7.35
 
-(a preencher quando ele trouxer)
+Em `documentacao/FEEDBACK-TESTE-0.7.35.md` (itens 1 a 34). **Feitos na 0.7.36** (12/Nov, noite, com o "pode" do dono), junto
+com os itens 1 a 4b acima e as ressalvas (1) a (6). Roteiro do teste: `documentacao/ROTEIRO-TESTE-0.7.36.md`.
 
 ## Depois da visita
 
