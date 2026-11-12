@@ -21,7 +21,7 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (nada)
+- **0.7.34 em revisão (12/Nov)**: a Produto avisou "pronta" (código em `d381a14`, automação verde, execução 607; correção urgente antes da visita de sexta 13/Nov) e o dono mandou publicar: depois do aceite dos termos o programa não reconhecia (a rota nova `POST /conta/conferir` confere na hora; a tela confere ao voltar para a janela, ao abrir, depois de abrir a página de aceite e antes de ler; botão "Já aceitei") e o "database is locked" (SQLite com `timeout=30`). Reviso o que mudou desde a 0.7.33 publicada (`8a2e76f`), com cuidado porque mexe em estado de licença e na gravação do `config.json`: o que a rota devolve e grava com a nuvem falsa respondendo cada caso (aceito, pendente, sem internet, limite, erro), concorrência com a Configuração e com a leitura, a vigia de 15 s e a volta da janela no navegador, o travamento do banco, os 5 pontos da Definition of done, pacote 46 e 45 e atualização a partir da 0.7.33, sem nenhuma saída para a internet. Só publico se o revisor aprovar. Não mexo em arquivo de outra sessão.
 
 ### Arquivos em uso
 - (nenhum)
