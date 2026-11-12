@@ -503,6 +503,10 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .baixar-csv::before { content: "⤓ "; }
 .baixar-csv:hover, .baixar-csv:focus-visible { filter: brightness(1.08); outline: 2px solid var(--latao-texto); outline-offset: 2px; }
 @media (min-width: 900px) and (min-height: 620px) { .barra-lista { position: sticky; top: 0; z-index: 30; box-shadow: 0 6px 18px -12px rgba(15, 29, 51, .35); } }
+.dica-graf { position: fixed; z-index: 95; pointer-events: none; background: var(--tinta, #14213d); color: var(--papel, #fff); border-radius: 8px; padding: 8px 12px; font-size: .95rem; font-weight: 600; max-width: min(360px, 80vw); box-shadow: 0 8px 24px rgba(0,0,0,.25); line-height: 1.35; }
+.busca::placeholder { font-style: italic; }  /* 0.7.33 (dono): dica em itálico; o que se digita fica normal */
+/* 0.7.33 (dono): no Painel ficam só os filtros que não têm gráfico; os dos gráficos aparecem no alto só quando ligados (com ×) */
+.barra-lista.no-painel #f-busca, .barra-lista.no-painel .campo-data, .barra-lista.no-painel .multi.multi-vazio:not(#f-frente) { display: none !important; }
 .busca { flex: 1 1 280px; min-width: 200px; border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 8px 16px; min-height: 38px; font-size: .9rem; }
 /* 0.7.28 (dono): filtros (azul-marinho claro) e ordenação (dourado) em cores diferentes; "Limpar filtros" ao lado dos filtros */
 .rotulo-barra { font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); margin-right: 2px; }
@@ -576,7 +580,7 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 @media (max-width: 1240px) { body:has(#config:not([hidden])) #dgo-aone, body:has(#perfil:not([hidden])) #dgo-aone { --dgo-aone-sobe: 76px; --dgo-aone-sobe-pc: 76px; } }
 .nuvens { align-items: center; } .nuvem-nota { color: var(--tinta-3); font-size: .82rem; flex-basis: 100%; }
 .ajuda-topo .ajuda { border-color: rgba(255,255,255,.45); color: #e6eaf2; margin-left: -4px; } .ajuda-topo[hidden] { display: none; }
-#c-pasta-cartoes, #c-agendar-wrap, #c-arm-wrap, #c-termos-wrap, #c-aone-wrap, #c-codigo { scroll-margin-top: 90px; }  /* 0.7.25: não some sob o cabeçalho */
+#c-pasta-cartoes, #c-s-pasta, #c-s-sobre, #c-s-licenca, #c-regras-wrap, #c-filtros-wrap, #c-tema-wrap, #c-agendar-wrap, #c-arm-wrap, #c-termos-wrap, #c-aone-wrap, #c-codigo { scroll-margin-top: 90px; }  /* 0.7.25: não some sob o cabeçalho */
 .rodar-criterio { font-size: .82rem; color: var(--tinta-3); display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; justify-content: flex-end; }  /* 0.7.28: uma linha ao lado do botão */
 .rodar-criterio .rc-txt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .rodar-criterio .btn-txt { flex: none; }
@@ -1889,7 +1893,7 @@ window.LEXSUITE_RADAR = null;
       b_trib: "Alterar configuração", periodo: "Publicado no Diário", config: "Configuração", excluidas_resumo: " {x} escondidas pelas preferências do escritório.",
       f_exc_mostrar: "Mostrar excluídas ({n})", f_exc_ocultar: "Ocultar excluídas", excluida: "Excluída",
       dica_tj: "Tribunais estaduais publicam diários muito maiores (o TJSP sozinho pode passar de 1 GB por dia) e a regra de \"ação nova\" ainda não foi calibrada neles.",
-      c_titulo: "Configuração deste computador", c_nome: "Seu nome", c_papel: "Função no escritório", c_papel_vazio: "escolha", c_escritorio: "Escritório",
+      c_titulo: "Configurações", c_nome: "Seu nome", c_papel: "Função no escritório", c_papel_vazio: "escolha", c_escritorio: "Escritório",
       perfil: "Seu perfil", perfil_rot: "Seu perfil: {n}", perfil_x: "Quem usa o {c} neste computador, registrado na licença do escritório. Nome e função mudam pelo lápis; e-mail e escritório são fixos (🔒).",
       editar: "Editar {r}", cancelar: "Cancelar", fechar: "Fechar", troca_aviso: "Outra pessoa vai usar este computador: {a} deixa de usar o {c} aqui e não ocupa mais vaga na licença do escritório. Depois, confira o nome e a função.", troca_btn: "Trocar a pessoa", email_invalido: "Confira o e-mail: falta o @ ou o domínio.", nome_falta: "Escreva o nome.", w_guardado: "Guardado neste computador.", cod_ok: "Código confirmado: {e}.", cod_ok_sem: "Código confirmado.",
       w_passo: "Passo {a} de {b}", w_voltar: "Voltar", w_avancar: "Avançar", w_concluir: "Começar a primeira leitura", w_so_salvar: "Salvar e ver a tela",
@@ -1899,7 +1903,7 @@ window.LEXSUITE_RADAR = null;
       w4_t: "Tudo pronto", w4_x: "A primeira leitura leva de alguns minutos (poucos tribunais) a uma hora (os 24 TRTs); o andamento aparece aqui na tela, e o Windows avisa quando terminar. O manual fica no alto da tela.",
       w_rotina: "Leituras automáticas", w_nome_falta: "Informe o nome do escritório.", w_pasta_falta: "Escolha uma pasta ou marque \"Nenhuma\".", c_pasta: "Pasta das planilhas", c_outra: "Caminho da pasta", c_testar: "Testar pasta",
       c_nenhuma: "Pasta padrão do {c} (neste computador)", c_outra_op: "Outra pasta (rede, OneDrive, Google Drive ou deste computador)", c_salvar: "Salvar", c_atualizar: "Verificar atualização",
-      c_versao: "Versão instalada", c_pasta_robo: "Pasta do programa", c_controle: "A planilha está em", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Ler sozinho, com o computador ligado", c_agendar_nao: "Leitura automática só no Windows.", w_agendar: "Ler sozinho {d} (dá para mudar em Configuração).", ag_titulo: "Leitura automática", ag_nova: "Outro horário", ag_add: "Acrescentar", ag_tirar: "Tirar o horário {h}", ag_todos: "Todos os dias", ag_dias_rot: "Dias", ag_horas_rot: "Horários", ag_dia_0: "Seg", ag_dia_1: "Ter", ag_dia_2: "Qua", ag_dia_3: "Qui", ag_dia_4: "Sex", ag_dia_5: "Sáb", ag_dia_6: "Dom", ag_nos_dias: "{d}", ag_sem_dia: "Nenhum dia marcado: a leitura automática fica desligada ao salvar.", ag_uteis: "De segunda a sexta", ag_todo_dia: "todo dia", ag_seg_sex: "de segunda a sexta", ag_as: "às {h}", ag_e: " e ", ag_max: "No máximo 6 horários.", ag_ja: "Esse horário já está na lista.", ag_um: "Deixe pelo menos um horário (ou desmarque Ler sozinho).", nov_menu: "Novidades da versão", bg_dias: "Leitura automática: dias da semana", bg_graf: "Gráficos do Painel: legenda, cores e filtros", nov_t: "Novidades da versão {v}", nov_ok: "Entendi", nov_sem: "Esta versão traz correções pequenas.", nov_onde: "Para rever: menu ☰ → Configurações → Novidades da versão.", ag_desligar_t: "Desligar a leitura automática?", ag_desligar_p: "Sem horário, o {c} só lê quando você clicar em \u201cLer o Diário agora\u201d. A tela inicial avisa que está desligada.", ag_manter: "Manter", ag_desligar: "Desligar", ag_desligada: "Leitura automática desligada.", ag_configurar: "Configurar", ag_hora_inv: "Escolha a hora.", ag_compensa: "Se o computador estiver desligado ou dormindo na hora, a leitura acontece assim que ele ligar.", ag_noite: "O Diário do dia termina de sair à noite (por volta das 19h). Para lê-lo no mesmo dia, deixe um horário depois das 19h.", ag_avisar: "Mostrar um aviso no canto da tela ao terminar cada leitura", proxima: "Próxima leitura automática: {q}.", hoje: "hoje", amanha: "amanhã", ag_salvar_dica: "Os horários valem depois de Salvar.", ag_le: "Lê {d}.", cod_instalador: "Veio do instalador. Depois de confirmado, fica travado; para trocar, Configuração → Trocar licença.", papel_escolha: "Escolha uma opção", papel_outra: "Outra", papel_sem: "Prefiro não informar", papel_outro_l: "Qual é a sua função?", papel_dica: "Ajuda a SolverONE a adaptar o {c} ao trabalho de cada função. Se preferir, escolha \"Prefiro não informar\".", papel_falta: "Escolha a sua função no escritório (ou \"Prefiro não informar\").", papel_outro_falta: "Escreva qual é a sua função.",
+      c_versao: "Versão instalada", c_pasta_robo: "Pasta do programa", c_controle: "A planilha está em", c_controle_falta: "será criada ao salvar", c_sem_pasta: "sem pasta compartilhada", c_agendar: "Ler sozinho, com o computador ligado", c_agendar_nao: "Leitura automática só no Windows.", w_agendar: "Ler sozinho {d} (dá para mudar em Configuração).", ag_titulo: "Leitura automática", ag_nova: "Outro horário", ag_add: "Acrescentar", ag_tirar: "Tirar o horário {h}", ag_todos: "Todos os dias", ag_dias_rot: "Dias", ag_horas_rot: "Horários", ag_dia_0: "Seg", ag_dia_1: "Ter", ag_dia_2: "Qua", ag_dia_3: "Qui", ag_dia_4: "Sex", ag_dia_5: "Sáb", ag_dia_6: "Dom", ag_nos_dias: "{d}", ag_sem_dia: "Nenhum dia marcado: a leitura automática fica desligada ao salvar.", ag_uteis: "De segunda a sexta", ag_todo_dia: "todo dia", ag_seg_sex: "de segunda a sexta", ag_as: "às {h}", ag_e: " e ", ag_max: "No máximo 6 horários.", ag_ja: "Esse horário já está na lista.", ag_um: "Deixe pelo menos um horário (ou desmarque Ler sozinho).", nov_menu: "Novidades da versão", menu_ajuda: "Ajuda", rg_exc_menu: "Empresas excluídas", bg_dias: "Leitura automática: dias da semana", bg_graf: "Gráficos do Painel: legenda, cores e filtros", nov_t: "Novidades da versão {v}", nov_ok: "Entendi", nov_sem: "Esta versão traz correções pequenas.", nov_onde: "Para rever: menu ☰ → Configurações → Novidades da versão.", ag_desligar_t: "Desligar a leitura automática?", ag_desligar_p: "Sem horário, o {c} só lê quando você clicar em \u201cLer o Diário agora\u201d. A tela inicial avisa que está desligada.", ag_manter: "Manter", ag_desligar: "Desligar", ag_desligada: "Leitura automática desligada.", ag_configurar: "Configurar", ag_hora_inv: "Escolha a hora.", ag_compensa: "Se o computador estiver desligado ou dormindo na hora, a leitura acontece assim que ele ligar.", ag_noite: "O Diário do dia termina de sair à noite (por volta das 19h). Para lê-lo no mesmo dia, deixe um horário depois das 19h.", ag_avisar: "Mostrar um aviso no canto da tela ao terminar cada leitura", proxima: "Próxima leitura automática: {q}.", hoje: "hoje", amanha: "amanhã", ag_salvar_dica: "Os horários valem depois de Salvar.", ag_le: "Lê {d}.", cod_instalador: "Veio do instalador. Depois de confirmado, fica travado; para trocar, Configuração → Trocar licença.", papel_escolha: "Escolha uma opção", papel_outra: "Outra", papel_sem: "Prefiro não informar", papel_outro_l: "Qual é a sua função?", papel_dica: "Ajuda a SolverONE a adaptar o {c} ao trabalho de cada função. Se preferir, escolha \"Prefiro não informar\".", papel_falta: "Escolha a sua função no escritório (ou \"Prefiro não informar\").", papel_outro_falta: "Escreva qual é a sua função.",
       op_drive: "No Google Drive deste computador", op_drive_x: "A planilha fica no seu Google Drive: dá para abrir em qualquer lugar e compartilhar com a equipe do escritório.", op_drive_nao: "Não achei o Google Drive para computador aqui. Para a planilha ir ao Drive, instale-o (google.com/drive/download) com a conta do escritório e abra o RADAR de novo; enquanto isso, use \"Só neste computador\".",
       op_outra: "Outra pasta (rede, OneDrive, Google Drive ou deste computador)", op_outra_x: "Para a equipe abrir de outros computadores. Se a pasta não existir, o {c} cria.", op_escolher: "Escolher pasta…", op_local: "Pasta padrão do {c} (neste computador)", op_local_x: "As planilhas ficam em {p}, só neste computador. Dá para passar para uma pasta compartilhada depois, em Configuração.",
       criar_pasta: "Criar a pasta", pasta_criada: "Pasta criada.", pasta_nao_existe: "Essa pasta ainda não existe. Clique em \"Criar a pasta\" ou siga em frente: o {c} cria ao avançar.",
@@ -1926,7 +1930,7 @@ window.LEXSUITE_RADAR = null;
       gig: "Jurídico próprio provável", e: "e", mais_n: "e mais {n}",
       v_arquivo: "Arquivo", v_historico: "Histórico de leituras", nao_informado: "Não informado", f_todas_sit: "Todas as situações", f_todas_frentes: "Todas as frentes",
       f_contato_todos: "Com e sem contato", f_contato_com: "Só com contato", f_contato_sem: "Só sem contato", f_valor_todos: "Qualquer valor", f_valor_acima: "Acima de {v}", f_valor_sem: "Sem valor informado", f_valor_outro: "Outro valor...",
-      busca_ph: "Empresa, nº, CNPJ…", busca_tit: "Buscar por empresa, número do processo, vara, CNPJ ou cidade", salvos_ph: "Filtros salvos", salvar_filtro: "Salvar estes filtros", salvar_filtro_q: "Nome para estes filtros (ex.: TRT15 acima de 300 mil):", limpar_filtros: "Limpar filtros ({n})",
+      busca_ph: "Procure por empresa, nº ou CNPJ", busca_tit: "Buscar por empresa, número do processo, vara, CNPJ ou cidade", salvos_ph: "Filtros salvos", salvar_filtro: "Salvar estes filtros", salvar_filtro_q: "Nome para estes filtros (ex.: TRT15 acima de 300 mil):", limpar_filtros: "Limpar filtros ({n})",
       valor_outro_q: "Mostrar ações com valor da causa acima de (R$):",
       ord_vara: "Vara (A a Z)", ord_situacao: "Situação", ord2_nada: "Depois por: nada", ord2_valor: "Depois por: maior valor", ord2_recentes: "Depois por: mais recentes", ord2_porte: "Depois por: maior porte", ord2_empresa: "Depois por: empresa", ord2_vara: "Depois por: vara", ord2_situacao: "Depois por: situação",
       situacao: "Situação", st_novo: "Novo", st_visto: "Visto", st_em_analise: "Em análise", st_em_contato: "Em contato", st_virou_cliente: "Virou cliente", st_descartado: "Descartado", st_arquivado: "Arquivado",
@@ -1986,7 +1990,7 @@ window.LEXSUITE_RADAR = null;
       b_trib: "Change settings", periodo: "Published in the gazette", config: "Settings", excluidas_resumo: " {x} hidden by the firm's preferences.",
       f_exc_mostrar: "Show excluded ({n})", f_exc_ocultar: "Hide excluded", excluida: "Excluded",
       dica_tj: "State courts publish much larger gazettes (TJSP alone can exceed 1 GB a day) and the \"new lawsuit\" rule is not calibrated for them yet.",
-      c_titulo: "Settings for this computer", c_nome: "Your name", c_papel: "Role at the firm", c_papel_vazio: "choose", c_escritorio: "Firm",
+      c_titulo: "Settings", c_nome: "Your name", c_papel: "Role at the firm", c_papel_vazio: "choose", c_escritorio: "Firm",
       perfil: "Your profile", perfil_rot: "Your profile: {n}", perfil_x: "Who uses {c} on this computer, registered under the firm\u2019s licence. Name and role change with the pencil; e-mail and firm are fixed (🔒).",
       editar: "Edit {r}", cancelar: "Cancel", fechar: "Close", troca_aviso: "Someone else will use this computer: {a} stops using {c} here and no longer takes a seat on the firm\u2019s licence. Then check the name and role.", troca_btn: "Change the person", email_invalido: "Check the e-mail: the @ or the domain is missing.", nome_falta: "Type the name.", w_guardado: "Saved on this computer.", cod_ok: "Code confirmed: {e}.", cod_ok_sem: "Code confirmed.",
       w_passo: "Step {a} of {b}", w_voltar: "Back", w_avancar: "Next", w_concluir: "Start the first reading", w_so_salvar: "Save and open the screen",
@@ -1996,7 +2000,7 @@ window.LEXSUITE_RADAR = null;
       w4_t: "All set", w4_x: "The first reading takes from a few minutes (few courts) to an hour (all 24); progress shows here on screen, and Windows tells you when it is done. The manual is at the top of the screen.",
       w_rotina: "Automatic readings", w_nome_falta: "Enter the firm's name.", w_pasta_falta: "Choose a folder or pick \"None\".", c_pasta: "Spreadsheets folder", c_outra: "Folder path", c_testar: "Test folder",
       c_nenhuma: "{c} default folder (on this computer)", c_outra_op: "Another folder (network, OneDrive, Google Drive or this computer)", c_salvar: "Save", c_atualizar: "Check for updates",
-      c_versao: "Installed version", c_pasta_robo: "Program folder", c_controle: "The spreadsheet is at", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Read by itself, with the computer on", c_agendar_nao: "Automatic reading only on Windows.", w_agendar: "Read by itself {d} (you can change it in Settings).", ag_titulo: "Automatic reading", ag_nova: "Another time", ag_add: "Add", ag_tirar: "Remove time {h}", ag_todos: "Every day", ag_dias_rot: "Days", ag_horas_rot: "Times", ag_dia_0: "Mon", ag_dia_1: "Tue", ag_dia_2: "Wed", ag_dia_3: "Thu", ag_dia_4: "Fri", ag_dia_5: "Sat", ag_dia_6: "Sun", ag_nos_dias: "on {d}", ag_sem_dia: "No day selected: automatic reading is turned off when you save.", ag_uteis: "Monday to Friday", ag_todo_dia: "every day", ag_seg_sex: "Monday to Friday", ag_as: "at {h}", ag_e: " and ", ag_max: "At most 6 times.", ag_ja: "That time is already on the list.", ag_um: "Keep at least one time (or untick Read by itself).", nov_menu: "What\u2019s new", bg_dias: "Automatic reading: days of the week", bg_graf: "Dashboard charts: legend, colours and filters", nov_t: "What\u2019s new in version {v}", nov_ok: "Got it", nov_sem: "This version brings small fixes.", nov_onde: "To see it again: ☰ menu → Settings → What\u2019s new.", ag_desligar_t: "Turn off automatic reading?", ag_desligar_p: "With no time set, {c} only reads when you click \u201cRead the gazette now\u201d. The home screen shows that it is off.", ag_manter: "Keep", ag_desligar: "Turn off", ag_desligada: "Automatic reading is off.", ag_configurar: "Set up", ag_hora_inv: "Pick the time.", ag_compensa: "If the computer is off or asleep at that time, the reading runs as soon as it is back on.", ag_noite: "The day\u2019s gazette finishes coming out in the evening (around 7 pm). To read it the same day, keep a time after 7 pm.", ag_avisar: "Show a notice in the corner of the screen when each reading ends", proxima: "Next automatic reading: {q}.", hoje: "today", amanha: "tomorrow", ag_salvar_dica: "The times apply after Save.", ag_le: "Reads {d}.", cod_instalador: "It came from the installer. Once confirmed it is locked; to change it, Settings → Change licence.", papel_escolha: "Choose an option", papel_outra: "Other", papel_sem: "Prefer not to say", papel_outro_l: "What is your role?", papel_dica: "Helps SolverONE adapt {c} to each role. If you prefer, choose \"Prefer not to say\".", papel_falta: "Choose your role at the firm (or \"Prefer not to say\").", papel_outro_falta: "Type your role.",
+      c_versao: "Installed version", c_pasta_robo: "Program folder", c_controle: "The spreadsheet is at", c_controle_falta: "created when you save", c_sem_pasta: "no shared folder", c_agendar: "Read by itself, with the computer on", c_agendar_nao: "Automatic reading only on Windows.", w_agendar: "Read by itself {d} (you can change it in Settings).", ag_titulo: "Automatic reading", ag_nova: "Another time", ag_add: "Add", ag_tirar: "Remove time {h}", ag_todos: "Every day", ag_dias_rot: "Days", ag_horas_rot: "Times", ag_dia_0: "Mon", ag_dia_1: "Tue", ag_dia_2: "Wed", ag_dia_3: "Thu", ag_dia_4: "Fri", ag_dia_5: "Sat", ag_dia_6: "Sun", ag_nos_dias: "on {d}", ag_sem_dia: "No day selected: automatic reading is turned off when you save.", ag_uteis: "Monday to Friday", ag_todo_dia: "every day", ag_seg_sex: "Monday to Friday", ag_as: "at {h}", ag_e: " and ", ag_max: "At most 6 times.", ag_ja: "That time is already on the list.", ag_um: "Keep at least one time (or untick Read by itself).", nov_menu: "What\u2019s new", menu_ajuda: "Help", rg_exc_menu: "Excluded companies", bg_dias: "Automatic reading: days of the week", bg_graf: "Dashboard charts: legend, colours and filters", nov_t: "What\u2019s new in version {v}", nov_ok: "Got it", nov_sem: "This version brings small fixes.", nov_onde: "To see it again: ☰ menu → Settings → What\u2019s new.", ag_desligar_t: "Turn off automatic reading?", ag_desligar_p: "With no time set, {c} only reads when you click \u201cRead the gazette now\u201d. The home screen shows that it is off.", ag_manter: "Keep", ag_desligar: "Turn off", ag_desligada: "Automatic reading is off.", ag_configurar: "Set up", ag_hora_inv: "Pick the time.", ag_compensa: "If the computer is off or asleep at that time, the reading runs as soon as it is back on.", ag_noite: "The day\u2019s gazette finishes coming out in the evening (around 7 pm). To read it the same day, keep a time after 7 pm.", ag_avisar: "Show a notice in the corner of the screen when each reading ends", proxima: "Next automatic reading: {q}.", hoje: "today", amanha: "tomorrow", ag_salvar_dica: "The times apply after Save.", ag_le: "Reads {d}.", cod_instalador: "It came from the installer. Once confirmed it is locked; to change it, Settings → Change licence.", papel_escolha: "Choose an option", papel_outra: "Other", papel_sem: "Prefer not to say", papel_outro_l: "What is your role?", papel_dica: "Helps SolverONE adapt {c} to each role. If you prefer, choose \"Prefer not to say\".", papel_falta: "Choose your role at the firm (or \"Prefer not to say\").", papel_outro_falta: "Type your role.",
       op_drive: "In this computer\u2019s Google Drive", op_drive_x: "The spreadsheet lives in your Google Drive: open it anywhere and share it with the firm\u2019s team.", op_drive_nao: "Google Drive for desktop was not found here. For the spreadsheet to go to Drive, install it (google.com/drive/download) with the firm\u2019s account and open RADAR again; meanwhile, use \"This computer only\".",
       op_outra: "Another folder (network, OneDrive, Google Drive or this computer)", op_outra_x: "So the team can open it from other computers. If the folder does not exist, {c} creates it.", op_escolher: "Choose folder…", op_local: "{c} default folder (on this computer)", op_local_x: "The spreadsheets stay in {p}, on this computer only. You can move to a shared folder later, in Settings.",
       criar_pasta: "Create the folder", pasta_criada: "Folder created.", pasta_nao_existe: "This folder does not exist yet. Click \"Create the folder\" or go on: {c} creates it when you continue.",
@@ -2023,7 +2027,7 @@ window.LEXSUITE_RADAR = null;
       gig: "Likely in-house counsel", e: "and", mais_n: "and {n} more",
       v_arquivo: "Archive", v_historico: "Reading history", nao_informado: "Not informed", f_todas_sit: "All statuses", f_todas_frentes: "All practice areas",
       f_contato_todos: "With and without contact", f_contato_com: "With contact only", f_contato_sem: "Without contact only", f_valor_todos: "Any value", f_valor_acima: "Above {v}", f_valor_sem: "No value informed", f_valor_outro: "Other value...",
-      busca_ph: "Company, case, tax ID…", busca_tit: "Search by company, case number, court unit, tax ID or city", salvos_ph: "Saved filters", salvar_filtro: "Save these filters", salvar_filtro_q: "Name for these filters (e.g. TRT15 above 300k):", limpar_filtros: "Clear filters ({n})",
+      busca_ph: "Search by company, number or tax ID", busca_tit: "Search by company, case number, court unit, tax ID or city", salvos_ph: "Saved filters", salvar_filtro: "Save these filters", salvar_filtro_q: "Name for these filters (e.g. TRT15 above 300k):", limpar_filtros: "Clear filters ({n})",
       valor_outro_q: "Show lawsuits with claim value above (R$):",
       ord_vara: "Court unit (A to Z)", ord_situacao: "Status", ord2_nada: "Then by: nothing", ord2_valor: "Then by: highest value", ord2_recentes: "Then by: most recent", ord2_porte: "Then by: largest", ord2_empresa: "Then by: company", ord2_vara: "Then by: court unit", ord2_situacao: "Then by: status",
       situacao: "Status", st_novo: "New", st_visto: "Seen", st_em_analise: "Under review", st_em_contato: "In contact", st_virou_cliente: "Became a client", st_descartado: "Discarded", st_arquivado: "Archived",
@@ -2123,10 +2127,10 @@ window.LEXSUITE_RADAR = null;
     sair_ok: "Pode fechar esta janela. O RADAR foi encerrado.", sair_rodando: "Há uma leitura em andamento: espere terminar ou clique em Interromper.",
     fechado_t: "O RADAR foi fechado", fechado_x: "A tela ficou fechada ou escondida por alguns minutos e o programa se encerrou para não ficar aberto à toa. Abra de novo pelo atalho da área de trabalho.",
     atualizando: "Atualizando para a versão {v}… a tela volta sozinha em alguns segundos.", reiniciando: "Reiniciando o programa…",
-    c_s_licenca: "Licença e termos", c_s_lista: "A lista", c_s_leitura: "Leitura", c_s_tela: "Tela", c_l_aone: "Assistente (AssistONE)", lic_trocar: "Trocar licença", lic_trocar_t: "Trocar o código de cliente?", lic_trocar_p: "Digite o novo código (está no e-mail de boas-vindas) e salve. O {c} só troca se a SolverONE confirmar o código novo; até lá, e sem internet, o atual continua valendo.", lic_trocar_ok: "Trocar", lic_salvar_dica: "Digite o código novo e clique em Salvar.", c_s_pasta: "Onde ficam as planilhas", c_s_sobre: "Sobre este computador e o que a SolverONE recebe",
+    c_s_licenca: "Licença e termos", c_s_lista: "A lista", c_s_leitura: "Leitura", c_s_tela: "Tela", c_l_aone: "Assistente (AssistONE)", lic_trocar: "Trocar licença", lic_trocar_t: "Trocar o código de cliente?", lic_trocar_p: "Digite o novo código (está no e-mail de boas-vindas) e salve. O {c} só troca se a SolverONE confirmar o código novo; até lá, e sem internet, o atual continua valendo.", lic_trocar_ok: "Trocar", lic_salvar_dica: "Digite o código novo e clique em Salvar.", c_s_pasta: "Pasta das planilhas", c_s_sobre: "Sobre este computador",
     c_pasta_nota: "Mudar a pasta não move as planilhas que já existem: o RADAR cria as novas na pasta escolhida na próxima leitura, e as antigas ficam onde estão.",
     c_fechar: "Fechar", c_mudou_t: "Salvar as mudanças?", c_mudou: "Você mudou a Configuração e ainda não salvou.", c_descartar: "Descartar", c_continuar: "Continuar editando",
-    arm_t: "Armazenamento neste computador", arm_planilha: "Planilha {f}", arm_linhas: "{n} de {l} linhas ({p}%)", arm_banco: "Banco do programa ({n} ações guardadas)",
+    arm_t: "Armazenamento", arm_planilha: "Planilha {f}", arm_linhas: "{n} de {l} linhas ({p}%)", arm_banco: "Banco do programa ({n} ações guardadas)",
     arm_saida: "Pasta saida/ (páginas e arquivos de trabalho)", arm_copias: "Cópias de segurança ({n} de {g} guardadas)", arm_disco: "Espaço livre no disco",
     arm_disco_v: "{l} livres de {t} ({p}%)", arm_ok: "Tudo certo.", arm_limpar: "Limpar a planilha (com cópia)", arm_copia: "Fazer uma cópia de segurança agora",
     arm_exportar: "Exportar o Arquivo completo (CSV)", arm_pasta: "Abrir a pasta das cópias", arm_sem_planilha: "Nenhuma planilha ainda: ela nasce na primeira leitura.",
@@ -2194,10 +2198,10 @@ window.LEXSUITE_RADAR = null;
     sair_ok: "You can close this window. RADAR has exited.", sair_rodando: "A reading is in progress: wait for it to finish or click Stop.",
     fechado_t: "RADAR was closed", fechado_x: "The screen was closed or hidden for a few minutes and the program exited so it does not stay open for nothing. Open it again from the desktop shortcut.",
     atualizando: "Updating to version {v}… the screen comes back by itself in a few seconds.", reiniciando: "Restarting the program…",
-    c_s_licenca: "Licence and terms", c_s_lista: "The list", c_s_leitura: "Reading", c_s_tela: "Screen", c_l_aone: "Assistant (AssistONE)", lic_trocar: "Change licence", lic_trocar_t: "Change the client code?", lic_trocar_p: "Type the new code (it is in the welcome e-mail) and save. {c} only changes it if SolverONE confirms the new code; until then, and without internet, the current one stays valid.", lic_trocar_ok: "Change", lic_salvar_dica: "Type the new code and click Save.", c_s_pasta: "Where the spreadsheets live", c_s_sobre: "About this computer and what SolverONE receives",
+    c_s_licenca: "Licence and terms", c_s_lista: "The list", c_s_leitura: "Reading", c_s_tela: "Screen", c_l_aone: "Assistant (AssistONE)", lic_trocar: "Change licence", lic_trocar_t: "Change the client code?", lic_trocar_p: "Type the new code (it is in the welcome e-mail) and save. {c} only changes it if SolverONE confirms the new code; until then, and without internet, the current one stays valid.", lic_trocar_ok: "Change", lic_salvar_dica: "Type the new code and click Save.", c_s_pasta: "Spreadsheet folder", c_s_sobre: "About this computer",
     c_pasta_nota: "Changing the folder does not move existing spreadsheets: RADAR creates new ones in the chosen folder on the next reading, and the old ones stay where they are.",
     c_fechar: "Close", c_mudou_t: "Save changes?", c_mudou: "You changed the Settings and did not save yet.", c_descartar: "Discard", c_continuar: "Keep editing",
-    arm_t: "Storage on this computer", arm_planilha: "Spreadsheet {f}", arm_linhas: "{n} of {l} rows ({p}%)", arm_banco: "Program database ({n} lawsuits saved)",
+    arm_t: "Storage", arm_planilha: "Spreadsheet {f}", arm_linhas: "{n} of {l} rows ({p}%)", arm_banco: "Program database ({n} lawsuits saved)",
     arm_saida: "saida/ folder (pages and work files)", arm_copias: "Backups ({n} of {g} kept)", arm_disco: "Free disk space",
     arm_disco_v: "{l} free of {t} ({p}%)", arm_ok: "All good.", arm_limpar: "Clean up the spreadsheet (with backup)", arm_copia: "Make a backup now",
     arm_exportar: "Export the full Archive (CSV)", arm_pasta: "Open the backups folder", arm_sem_planilha: "No spreadsheet yet: it is created on the first reading.",
@@ -3148,7 +3152,7 @@ window.LEXSUITE_RADAR = null;
       for (var m = 0; m < MULTI.length; m++) { var k = MULTI[m], sel = lista_(F[k]); if (k !== menos && sel.length && sel.indexOf(valorFacet(i, k)) < 0) return false; }
       return true;
   }
-  function contextoFiltros() { return { min: minimo(), esconder: !D.prefs || D.prefs.esconder_excluidas !== false, q: semAcento(F.busca).replace(/[.\-\/]/g, "").trim() }; }
+  function contextoFiltros() { return { min: minimo(), esconder: !D.prefs || D.prefs.esconder_excluidas !== false, q: visao === "painel" ? "" : semAcento(F.busca).replace(/[.\-\/]/g, "").trim() }; }  // 0.7.33: o Painel não tem busca
   function visiveis() {
     var cx = contextoFiltros();
     var lista = base().filter(function (i) { return passaFiltros(i, null, cx.min, cx.esconder, cx.q); });
@@ -3229,7 +3233,7 @@ window.LEXSUITE_RADAR = null;
     var sel = lista_(F[k]).filter(function (v) { return v; }); F[k] = sel;
     sel.forEach(function (v) { if (!(v in cont)) cont[v] = 0; });
     var chaves = Object.keys(cont);
-    box.hidden = chaves.length < 2 && !sel.length;
+    box.hidden = chaves.length < 2 && !sel.length; box.classList.toggle("multi-vazio", !sel.length);
     var b = el("button", sel.length ? "ligado" : null); b.type = "button"; b.setAttribute("aria-expanded", String(multiAberto === k)); b.setAttribute("aria-haspopup", "true");
     b.textContent = !sel.length ? t(ROTULO_TODOS[k]) : sel.length === 1 ? rotuloFacet(k, sel[0]) + " (" + num(cont[sel[0]] || 0) + ")" : t(ROTULO_N[k], { n: sel.length });
     b.title = box.getAttribute("data-rotulo") || "";
@@ -3672,6 +3676,7 @@ window.LEXSUITE_RADAR = null;
     }).catch(function () { mostrarAviso(t("falha")); });
   }
   function editarPreferencias() { abrirConfig(true, "c-regras-wrap"); }
+  function abrirExcluidas() { var tentar = 0; (function abre() { var d_ = document.querySelector("#c-regras details"); if (d_) { d_.open = true; try { d_.scrollIntoView({ block: "start" }); } catch (e) {} } else if (tentar++ < 20) setTimeout(abre, 150); })(); }
   /* 0.7.33 (dono): chamado ao suporte pelo AssistONE. Vai pelo programa (POST /chamado) à central do RootifyONE; a trilha
      guarda só os ids dos últimos 5 cliques, nunca o texto da tela, nomes de empresas ou números de processo */
   var trilhaCliques = [];
@@ -3739,9 +3744,15 @@ window.LEXSUITE_RADAR = null;
       [t("menu_planilha"), [[t("planilha_abrir"), abrirPlanilhaComAviso], [t("gerar_copia"), gerarCopia], [t("pasta_abrir"), function () { abrirPlanilha("pasta"); }]]],
       [t("menu_contatos"), [[t("colar_logada"), colarContatos]]],
       // 0.7.32 (dono): "Configurações", na mesma ordem da janela
-      [t("menu_programa"), [[t("config"), function () { abrirConfig(true); }], [t("rg_titulo"), editarPreferencias], [t("c_s_pasta"), function () { abrirConfig(true, "c-pasta-cartoes"); }],
-        [t("ag_titulo"), function () { abrirConfig(true, "c-agendar-wrap"); }], [t("arm_ver"), function () { abrirConfig(true, "c-arm-wrap"); }], [t("tema_t"), function () { abrirConfig(true, "c-tema-wrap"); }],
-        [t("c_s_licenca"), function () { abrirConfig(true, "c-s-licenca"); }], [t("nov_menu"), function () { mostrarNovidades(true); }], [t("abrir_aba"), function () { post("/abrir-em-aba", {}); }], [t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); }]]]
+      // 0.7.33 (dono): os mesmos nomes e a mesma ordem da janela Configurações; ajuda num grupo à parte
+      [t("menu_programa"), [[t("rg_titulo"), editarPreferencias], [t("rg_exc_menu"), function () { abrirConfig(true, "c-regras-wrap"); abrirExcluidas(); }],
+        [t("c_s_pasta"), function () { abrirConfig(true, "c-s-pasta"); }], [t("ag_titulo"), function () { abrirConfig(true, "c-agendar-wrap"); }],
+        [t("fs_titulo"), function () { abrirConfig(true, "c-filtros-wrap"); }], [t("arm_t"), function () { abrirConfig(true, "c-arm-wrap"); }],
+        [t("tema_t"), function () { abrirConfig(true, "c-tema-wrap"); }], [t("c_l_aone"), function () { abrirConfig(true, "c-aone-wrap"); }],
+        [t("c_s_licenca"), function () { abrirConfig(true, "c-s-licenca"); }], [t("termos_t"), function () { abrirConfig(true, "c-termos-wrap"); }],
+        [t("c_s_sobre"), function () { abrirConfig(true, "c-s-sobre"); }]]],
+      [t("menu_ajuda"), [[t("nov_menu"), function () { mostrarNovidades(true); }], [t("link_manual"), function () { window.open("/manual", "_blank", "noopener"); }],
+        [t("ch_t"), function () { abrirChamado({ tela: visao }); }], [t("abrir_aba"), function () { post("/abrir-em-aba", {}); }]]]
     ];
   }
   function montarMenu() {
@@ -3903,6 +3914,20 @@ window.LEXSUITE_RADAR = null;
     }
     return c_;
   }
+  /* 0.7.33 (dono): a dica do Windows é pequena; esta etiqueta acompanha o mouse nos gráficos, com nome, ações, % e valor */
+  var dicaGraf = null;
+  function mostrarDicaGraf(ev) {
+    var alvo_ = ev.target && ev.target.closest ? ev.target.closest("[data-dica]") : null;
+    if (!alvo_) { if (dicaGraf) dicaGraf.hidden = true; return; }
+    if (!dicaGraf) { dicaGraf = el("div", "dica-graf"); dicaGraf.setAttribute("role", "tooltip"); document.body.appendChild(dicaGraf); }
+    dicaGraf.textContent = alvo_.getAttribute("data-dica"); dicaGraf.hidden = false;
+    var x_ = ev.clientX + 14, y_ = ev.clientY + 16, w_ = dicaGraf.offsetWidth, h_ = dicaGraf.offsetHeight;
+    if (x_ + w_ > window.innerWidth - 8) x_ = Math.max(8, ev.clientX - w_ - 14);
+    if (y_ + h_ > window.innerHeight - 8) y_ = Math.max(8, ev.clientY - h_ - 12);
+    dicaGraf.style.left = x_ + "px"; dicaGraf.style.top = y_ + "px";
+  }
+  document.addEventListener("mousemove", mostrarDicaGraf);
+  document.addEventListener("scroll", function () { if (dicaGraf) dicaGraf.hidden = true; }, true);
   function acoesN(n) { return Number(n) === 1 ? t("g_acoes_1") : t("g_acoes_n", { n: num(n) }); }
   function dicaLinha(l, total, opc) { return l.r + ": " + acoesN(l.n) + (total ? " (" + num(Math.round(100 * l.n / total)) + "%)" : "") + (opc.comValor && l.v ? " · " + reaisCurto(l.v) : ""); }
   function grafPizza(tit, linhas, opc) {  // 0.7.30 (dono): pizza sóbria (anel), legenda sempre visível, nada sai da tela
@@ -3923,14 +3948,14 @@ window.LEXSUITE_RADAR = null;
       arco.setAttribute("stroke-dasharray", (frac * C).toFixed(2) + " " + C.toFixed(2)); arco.setAttribute("stroke-dashoffset", (-ini * C).toFixed(2));
       arco.setAttribute("transform", "rotate(-90 60 60)"); svg.appendChild(arco); ini += frac;
       var desl_ = desligadaNoGrafico(opc, l); if (desl_) arco.setAttribute("opacity", "0.25");
-      var tt_ = document.createElementNS(NS, "title"); tt_.textContent = dicaLinha(l, total, opc); arco.appendChild(tt_);  // dica ao passar o mouse na fatia
+      arco.setAttribute("data-dica", dicaLinha(l, total, opc));  // 0.7.33 (dono): etiqueta grande ao passar o mouse na fatia
       var clicavel = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro), li = el("li", desl_ ? "desligada" : null);
-      var item = el(clicavel ? "button" : "span", "leg-item"); item.title = dicaLinha(l, total, opc);
+      var item = el(clicavel ? "button" : "span", "leg-item"); item.setAttribute("data-dica", dicaLinha(l, total, opc));
       if (clicavel) { item.type = "button"; if (noPainel(opc)) { item.setAttribute("aria-pressed", String(!desl_)); item.setAttribute("data-gk", (opc.campo + "|" + l.k).replace(/["\\]/g, "")); item.addEventListener("click", function () { alternarNoGrafico(opc, l.k, linhas); }); } else item.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
       var sw = el(l.outros ? "i" : "button", "leg-cor"); sw.style.background = cor;
       if (!l.outros) { sw.type = "button"; sw.title = t("g_cor"); sw.setAttribute("aria-label", t("g_cor") + ": " + l.r); sw.addEventListener("click", function (ev) { ev.stopPropagation(); escolherCor(opc, l, cor); }); }
       li.appendChild(sw);
-      var rt = el("span", "leg-rot", l.r); rt.title = l.r; item.appendChild(rt);
+      var rt = el("span", "leg-rot", l.r); item.appendChild(rt);
       item.appendChild(el("span", "leg-n", num(l.n) + " · " + num(Math.round(100 * frac)) + "%"));
       item.setAttribute("aria-label", l.r + ": " + acoesN(l.n) + " (" + Math.round(100 * frac) + "%)");
       li.appendChild(item); leg.appendChild(li);
@@ -3959,9 +3984,9 @@ window.LEXSUITE_RADAR = null;
     mostradas.forEach(function (l) {
       var clicavel = !!(opc.campo && l.k !== "" && l.k != null && !l.semFiltro), desl_ = desligadaNoGrafico(opc, l);
       var row = el(clicavel ? "button" : "div", "barra-l" + (l.ouro ? " ouro" : "") + (l.apagada ? " apagada" : "") + (desl_ ? " desligada" : ""));
-      row.title = dicaLinha(l, totalB, opc);  // dica ao passar o mouse
+      row.setAttribute("data-dica", dicaLinha(l, totalB, opc));  // 0.7.33 (dono): etiqueta grande ao passar o mouse
       if (clicavel) { row.type = "button"; if (noPainel(opc)) { row.setAttribute("aria-pressed", String(!desl_)); row.setAttribute("data-gk", (opc.campo + "|" + l.k).replace(/["\\]/g, "")); row.addEventListener("click", function () { alternarNoGrafico(opc, l.k, linhas); }); } else row.addEventListener("click", function () { filtrarPor(opc.campo, l.k); }); }
-      var r = el("span", "rot", l.r); r.title = l.r; row.appendChild(r);
+      var r = el("span", "rot", l.r); row.appendChild(r);
       var tr_ = el("span", "trilho"), en = el("span", "enche"); var cp_ = corPropria(opc, l); if (cp_) en.style.background = cp_; var alvoW = (100 * l.n / max).toFixed(1) + "%"; en.style.width = "0%"; requestAnimationFrame(function () { requestAnimationFrame(function () { en.style.width = alvoW; }); }); tr_.appendChild(en); row.appendChild(tr_);
       var n = el("span", "n", num(l.n)); if (opc.comValor && l.v) n.appendChild(el("small", null, reaisCurto(l.v))); row.appendChild(n);
       row.setAttribute("aria-label", l.r + ": " + acoesN(l.n) + (opc.comValor && l.v ? ", " + reaisCurto(l.v) : ""));
@@ -4196,7 +4221,7 @@ window.LEXSUITE_RADAR = null;
     ["painel", "lista", "arquivo", "historico"].forEach(function (v) { var b = $("v-" + v); b.textContent = t("v_" + v); b.setAttribute("aria-selected", String(visao === v)); b.hidden = MODO !== "app" && (v === "arquivo" || v === "historico"); });
     $("graficos").hidden = visao !== "painel"; $("lista").hidden = visao === "painel" || visao === "historico";
     $("historico-aba").hidden = visao !== "historico";
-    $("barra-lista").hidden = visao === "historico"; $("bl-filtros-t").textContent = t(visao === "painel" ? "bl_filtros_painel" : "bl_filtros"); $("controles").hidden = visao === "historico"; $("filtros-extra").hidden = visao === "historico"; $("ordenacao").hidden = visao === "historico" || visao === "painel";
+    $("barra-lista").hidden = visao === "historico"; $("barra-lista").classList.toggle("no-painel", visao === "painel"); $("bl-filtros-t").textContent = t(visao === "painel" ? "bl_filtros_painel" : "bl_filtros"); $("controles").hidden = visao === "historico"; $("filtros-extra").hidden = visao === "historico"; $("ordenacao").hidden = visao === "historico" || visao === "painel";
     var oc = ["ordem", "ordem2", "exportar"]; oc.forEach(function (id) { $(id).style.visibility = visao === "painel" ? "hidden" : ""; });
     desenharArquivoInfo(); desenharLote();
     if (visao === "historico") { $("mais").hidden = true; desenharHistorico(); return; }
