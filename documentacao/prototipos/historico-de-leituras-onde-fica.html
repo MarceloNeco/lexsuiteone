@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Protótipo · onde fica o Histórico de leituras</title>
+<style>
+body{margin:0;font:15px/1.5 system-ui,Segoe UI,sans-serif;background:#eef1f6;color:#121a2b}
+h1{font-size:20px;margin:18px 24px 4px} .sub{margin:0 24px 14px;color:#56607a}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:0 24px 24px}
+.op{background:#fff;border:1px solid #dbe1ea;border-radius:14px;overflow:hidden}
+.op h2{font-size:15px;margin:0;padding:12px 14px;background:#0f1d33;color:#fff}.op h2 b{color:#d4ab6a}
+.op .nota{padding:10px 14px;font-size:13px;color:#3d4660;border-top:1px solid #e6eaf1}
+.tela{padding:12px 14px;display:grid;gap:10px}
+.topo{background:#0f1d33;color:#fff;border-radius:8px;padding:8px 10px;font-size:13px;display:flex;justify-content:space-between}
+.leitura{background:#f6f8fb;border:1px solid #e1e6ee;border-radius:10px;padding:8px 10px;font-size:12.5px;color:#3d4660}
+.leitura .bt{display:inline-block;background:#0f1d33;color:#fff;border-radius:999px;padding:3px 10px;font-weight:700;margin-right:6px}
+.abas{display:flex;gap:14px;font-size:13px;border-bottom:1px solid #e1e6ee;padding-bottom:4px}.abas .on{font-weight:700;border-bottom:2px solid #a87b2c}
+.lnk{color:#85601f;text-decoration:underline;font-weight:600}.mark{outline:3px solid #d4ab6a;outline-offset:2px;border-radius:6px}
+.alerta{background:#fbecea;border:1px solid #e6b3ad;color:#8f2a1f;border-radius:8px;padding:6px 10px;font-size:12.5px}
+.menu{background:#fff;border:1px solid #dbe1ea;border-radius:10px;padding:8px 12px;font-size:13px;width:70%}
+.menu .g{color:#85601f;font-weight:700;font-size:11px;letter-spacing:.06em;margin-top:6px}.menu div{padding:2px 0}
+.conf{background:#fff;border:1px solid #dbe1ea;border-radius:10px;padding:8px 12px;font-size:12.5px}
+.conf .g{color:#85601f;font-weight:700;font-size:11px;letter-spacing:.06em}.chip{display:inline-block;border:1px solid #c9d1de;border-radius:999px;padding:2px 10px;margin-top:4px}
+.rec{background:#e7f3ea;color:#1e5d32;border-radius:999px;padding:2px 10px;font-weight:700;font-size:12px;display:inline-block;margin:8px 14px 0}
+</style></head><body>
+<h1>Onde fica o "Histórico de leituras"?</h1>
+<p class="sub">Protótipo para decidir (12/Nov). Hoje é uma aba principal, ao lado de Painel, Lista e Arquivo. Em amarelo, o lugar novo.</p>
+<div class="grade">
+ <div class="op"><h2>A · Ao lado da <b>última leitura</b></h2>
+  <span class="rec">Recomendado</span>
+  <div class="tela">
+   <div class="topo"><span>☰ RADAR JUDICIAL</span><span>⚙ PT EN</span></div>
+   <div class="leitura"><span class="bt">Ler o Diário agora</span> Última leitura: hoje 12:19 · 153.063 publicações · <span class="lnk mark">ver histórico</span></div>
+   <div class="alerta">A leitura de ontem às 20h do TRT2 não terminou. <span class="lnk">ver histórico</span></div>
+   <div class="abas"><span class="on">Painel</span><span>Lista</span><span>Arquivo</span></div>
+  </div>
+  <div class="nota">O histórico aparece onde a pessoa já olha quando quer saber "leu ou não leu?". Abre numa janela com as 50 últimas. Sai das abas. A faixa vermelha só aparece quando uma leitura falha.</div></div>
+ <div class="op"><h2>B · No <b>menu ☰</b>, grupo Ver</h2>
+  <div class="tela">
+   <div class="topo"><span>☰ RADAR JUDICIAL</span><span>⚙ PT EN</span></div>
+   <div class="menu"><div class="g">VER</div><div>Painel</div><div>Lista</div><div>Arquivo</div><div class="mark">Histórico de leituras</div><div class="g">PLANILHA</div><div>Abrir a planilha</div></div>
+   <div class="abas"><span class="on">Painel</span><span>Lista</span><span>Arquivo</span></div>
+  </div>
+  <div class="nota">Continua fácil de achar, mas sai das abas. Abre como página, com "Voltar". Sem o aviso de falha, a pessoa só descobre um problema se abrir o menu.</div></div>
+ <div class="op"><h2>C · Em <b>Configurações → Sobre este computador</b></h2>
+  <div class="tela">
+   <div class="topo"><span>☰ RADAR JUDICIAL</span><span>⚙ PT EN</span></div>
+   <div class="conf"><div class="g">SOBRE ESTE COMPUTADOR</div>Licença: ativa · Versão: 0.7.36<br>Planilha: C:\…\Trabalhista.xlsx<br><span class="chip">Ver registro</span> <span class="chip mark">Ver histórico de leituras</span></div>
+   <div class="abas"><span class="on">Painel</span><span>Lista</span><span>Arquivo</span></div>
+  </div>
+  <div class="nota">O lugar mais "técnico". Fica escondido para o dia a dia; serve para quem dá suporte. Precisaria do aviso de falha (como em A) para ninguém perder um problema.</div></div>
+</div></body></html>
