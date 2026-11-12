@@ -173,6 +173,14 @@ Arquitetura (pedido no quadro).
   `marca.py` em dia, revisor (bloqueios de texto corrigidos).
 
 ### Feito (mais recente primeiro)
+- 12/Nov: **0.7.35 pronta para publicar** (teste do dono na 0.7.33; dono: "vamos corrigir tudo que a gente puder"):
+  tela de abertura; "Conferir agora" em Licença e termos; "Trocar licença" com o mesmo código confere; "Abrir a pasta no
+  Windows" e título único na Pasta das planilhas; "Continuar à noite" com a busca parada; faixa da leitura compacta;
+  Novidades largas e botões das janelas à vista; mensagem ao encerrar; sinal das ações antigas pelo texto guardado
+  ("Sem sinal registrado" no lugar de "Guardada antes da 0.7.16"); e-mail de boas-vindas mais curto. Contém a 0.7.34. Testes
+  291 OK, `aviso_e_lupa` 387, `larguras` 84, revisor sem bloqueio (ressalva da abertura corrigida). Lista completa do teste
+  do dono: `documentacao/LISTA-TESTE-DO-DONO-2026-11-12.md`. **Decisão do dono (12/Nov): termos ficam na versão 1.0 até a
+  KR Law usar.** Operação: publicar com o "publica a versão 0.7.35" do dono (vale também pela 0.7.34).
 - 12/Nov: **0.7.34 pronta para publicar** (correção urgente do teste do dono; visita à KR Law passou para sexta 13/Nov):
   depois do aceite dos termos o programa não reconhecia (guardava "falta aceitar" e "Ler o Diário agora" só mostrava o
   aviso). Agora a rota local `POST /conta/conferir` confere na hora; a tela confere ao voltar para a janela, ao abrir com
