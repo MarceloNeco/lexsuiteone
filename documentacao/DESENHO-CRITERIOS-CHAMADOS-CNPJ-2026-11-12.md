@@ -73,23 +73,30 @@ gravação), tem outro dono de tela e não tem áreas; o arquivo separado també
 - O cartão de aviso "a planilha está só para leitura / Editar Preferências e Exclusões" e o `rg_mudou` ("alguém mudou as regras")
   somem, porque não há mais edição concorrente.
 
-### 1.4 Migração do que está hoje nas abas Preferências e Exclusões
+### 1.4 Migração do que está hoje nas abas Preferências e Exclusões (revisto em 12/Nov, revisão A da Operação e decisão do dono)
 
-Uma vez só, na primeira abertura da 0.7.33 em cada computador, quando `criterios.json` não existe (`preferencias.migrar()`):
+Uma vez só, em cada computador, quando `criterios.json` não existe (`preferencias.migrar()`, na abertura ou na leitura agendada,
+o que vier primeiro):
 
-1. Para cada frente, se a planilha `LexSuiteONE - <Frente>.xlsx` existir na pasta compartilhada, ler as abas Preferências e Exclusões
-   dela (é a **última** vez que o programa lê essas abas) e gravar na área correspondente. A aba Exclusões de cada frente vai só para a
-   sua área (a soma das frentes da 0.7.16 acaba); como a tela só editava a planilha trabalhista (`app.py` 558-564), na prática as outras
-   frentes têm os padrões ou a lista que a trabalhista gravou.
-2. Se não houver planilha: `config.radar.valor_minimo` e `teto_capital_gigante`, se existirem, em todas as áreas; o resto, padrão.
-3. Gravar `criterios.json` com `origem: "planilha"` ou `"config"` e registrar em `saude` ("critérios migrados: N exclusões por área").
-4. Na próxima leitura do Diário, a planilha é regravada sem as duas abas (item 1.5). Quem tinha a planilha aberta no Excel não perde
-   nada: a cópia de segurança de `armazenamento.py` 198 continua antes de regravar.
+1. **Cópia antes de regravar.** Antes da PRIMEIRA regravação de cada planilha de frente pela 0.7.33, o programa grava
+   `LexSuiteONE - <Frente> - antes da 0.7.33.xlsx` na pasta "Cópias de segurança" (só se ainda não existir; nunca sobrescrita; fora da
+   limpeza automática de cópias por 180 dias). É o que garante que o SEGUNDO computador do escritório ainda acha o que migrar
+   depois que o primeiro já regravou a planilha sem as abas (opção ii da Operação; a (i), manter abas sem efeito por uma versão, e a
+   (iii), depender de abrir o programa em todos os computadores antes da leitura agendada, foram recusadas).
+2. **Ler tudo, depois gravar.** Para cada frente: as abas Preferências e Exclusões da planilha viva e, se elas já não existirem, da
+   cópia "antes da 0.7.33". Só depois de passar pelas 4 frentes é que `criterios.json` é gravado. É a última vez que o programa lê
+   essas abas.
+3. **O que vai para onde (decisão do dono, 12/Nov).** O que a 0.7.32 aplicava à lista inteira passa a valer em CADA uma das 4 áreas,
+   inclusive nas que não têm planilha: as Preferências da planilha trabalhista (a única que a tela editava) e a SOMA das Exclusões de
+   todas as planilhas existentes ("exclusões somadas" da 0.7.16). Ninguém perde nada ao atualizar; a independência por área começa daí.
+4. Sem planilha nem cópia: `config.radar.valor_minimo` e `teto_capital_gigante`, se existirem, em todas as áreas; o resto, padrão.
+5. Gravar `criterios.json` com `origem: "planilha"`, `"copia"` ou `"config"` e registrar em `saude` ("critérios migrados: N exclusões,
+   origem …"): é o único rastro de que a migração aconteceu naquele computador. Na próxima leitura, a planilha é regravada sem as duas
+   abas (1.5).
 
-Cada computador do escritório migra a partir da mesma planilha: no dia seguinte, todos começam com os mesmos critérios e a mesma lista
-de excluídas (o que o escritório tinha), e dali em diante cada um muda o seu. É o comportamento que o dono pediu, sem perder o que a
-KR Law já cadastrou. Teste da Produto: planilha da 0.7.32 com valores e 3 exclusões → `criterios.json` com os mesmos valores na
-área trabalhista; sem planilha → padrões; arquivo já existente → nada é relido.
+Teste da Produto: A e B na mesma pasta; A atualiza, lê e regrava; B atualiza depois e migra a partir da cópia com os mesmos valores e
+exclusões de A; planilha da 0.7.32 com valores e 3 exclusões → as 4 áreas iguais; sem planilha → padrões; `criterios.json` existente →
+nada é relido.
 
 ### 1.5 O que a planilha passa a mostrar
 
@@ -167,6 +174,23 @@ escritório e o código entram na ficha; e os limites por licença ficam no mesm
   licença ativa, dentro de cota, e a URL só serve para aquele caminho.
 - **Drive não**: `judicial@solverone.com.br` é encaminhamento do Cloudflare, não Conta Google; um arquivo "compartilhado" com ele não
   abre, e o link público de Drive exporia o print do escritório. Nada de link de Drive no chamado.
+
+### 2.5 Termos e condições (análise de 12/Nov, pedido da Operação)
+
+Decisão do dono (12/Nov): o chamado vai na 0.7.33 **escondido** (o escritório não consegue abrir) e é ligado na 0.7.34. Antes de ligar,
+os termos mudam para a **versão 1.1, material, com novo aceite do escritório**; a prévia na tela não basta. Pela regra do dono os termos
+só mudam por necessidade jurídica (dados coletados, retenção…), e aqui ela existe: o chamado cria uma categoria nova de dado tratado
+pela SolverONE (a mensagem livre da pessoa e a trilha técnica da tela) e um prazo de guarda novo, que a 6.2 e a 6.4 da 1.0 não têm; e
+o anexo é pior, porque uma imagem da tela do RADAR MOSTRA a relação de ações, enquanto a 3.4 promete "não receber a relação de ações".
+
+Texto mínimo da 1.1: 6.2 (f) "mensagens de suporte que a pessoa envia pelo programa, com os dados técnicos da tela (versão, sistema,
+últimos botões usados, sem o texto da tela) e, se a pessoa anexar, imagens da tela, que podem mostrar a lista de ações"; 6.3 "atender
+chamados de suporte"; 6.4 "chamados: 24 meses depois de encerrados; imagens anexadas: 90 dias depois do encerramento"; 3.4 "… não
+receber a relação de ações, salvo o que a própria pessoa escrever ou anexar num chamado, depois de ver o que vai ser enviado"; 6.5 igual
+(mesmo Supabase, sem operador novo). A Arquitetura escreve a proposta (`documentacao/TERMOS-V1.1-CHAMADOS-PROPOSTA.md`) quando o dono
+mandar ligar o chamado; publicação por `admin_sol_termo_publicar` com "mudança material" (um clique do responsável, 3 minutos; quem
+aceitar depois já aceita a 1.1). Enquanto o chamado está escondido, os termos 1.0 ficam como estão. Chamado de teste: a licença de teste
+do dono manda chamado real, que aparece no RootifyONE e ele fecha lá; não há código especial.
 
 ### 2.4 O que cabe a quem
 
