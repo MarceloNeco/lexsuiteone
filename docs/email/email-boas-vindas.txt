@@ -21,7 +21,7 @@ Como instalar, em quatro passos
 
 Não é preciso compartilhar a pasta com a SolverONE. Se o escritório quiser ajuda do suporte, pode compartilhá-la por um tempo e retirar o acesso depois; é opcional (termos, seção 6.1).
 
-Onde roda: no seu computador, que lê o DJEN nos horários que o escritório escolher (de início, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
+Onde roda: no seu computador, que lê o DJEN nos dias e horários que o escritório escolher (de início, de segunda a sexta, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
 
 Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual", no alto da tela.
 

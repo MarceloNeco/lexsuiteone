@@ -4462,36 +4462,34 @@ window.LEXSUITE_RADAR = null;
   var USADO_ANTES = (function () {  // havia escolhas guardadas deste programa antes de abrir a tela? (sim = atualização, não = instalação nova)
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
-  var NOVIDADES = {
+  var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
     "0.7.32": {
-      pt: ["Gráficos do Painel: passe o mouse para ver o número e a %; clique num item da legenda para tirá-lo ou devolvê-lo (fica apagado); \u201cMostrar todos\u201d e \u201cVer na lista →\u201d em cada gráfico; escolha a cor no quadradinho da legenda (\u201cCores originais\u201d volta ao padrão).",
-        "O Painel tem os seus filtros e a Lista os dela.",
-        "Leitura automática por dias da semana (Dom a Sáb). Quem já usava continua como estava; instalação nova começa de segunda a sexta. Nenhum dia marcado desliga a leitura.",
-        "Configuração reorganizada: A lista (Critérios da lista), Onde ficam as planilhas, Leitura (leitura automática, filtros salvos, armazenamento), Tela (onde abre, Aparência e o assistente), Licença e termos (com \u201cTrocar licença\u201d). O menu Configurações segue a mesma ordem.",
-        "Textos no singular quando é 1 (\u201c1 ação\u201d) e ajustes de contraste e do teclado (Esc)."],
-      en: ["Dashboard charts: hover to see the number and %; click a legend item to take it out or bring it back (it stays faded); \u201cShow all\u201d and \u201cSee in the list →\u201d on each chart; pick the colour in the legend square (\u201cOriginal colours\u201d resets it).",
-        "The Dashboard has its own filters and the List has its own.",
-        "Automatic reading by weekday (Sun to Sat). Existing users keep their schedule; a new installation starts Monday to Friday. No day selected turns reading off.",
-        "Settings reorganised: The list (List criteria), Where the spreadsheets live, Reading (automatic reading, saved filters, storage), Screen (where it opens, Appearance and the assistant), Licence and terms (with \u201cChange licence\u201d). The Settings menu follows the same order.",
-        "Singular texts for 1 (\u201c1 lawsuit\u201d) and contrast and keyboard (Esc) fixes."]
+      pt: ["Gráficos do Painel interativos: filtros próprios, seleção pela legenda e escolha de cores.",
+        "Leitura automática por dia da semana.",
+        "Reorganização da Configuração, com opção de troca de licença.",
+        "Melhorias de acessibilidade e correções.",
+        "Atualização do manual e da ajuda."],
+      en: ["Interactive Dashboard charts: own filters, selection from the legend and colour choice.",
+        "Automatic reading by day of the week.",
+        "Settings reorganised, with a licence change option.",
+        "Accessibility improvements and fixes.",
+        "Manual and help updated."]
     },
     "0.7.31": {
-      pt: ["Termos e licença com textos curtos: \u201cFalta aceitar os termos\u201d, com um botão só. O código de cliente aparece mascarado e não se edita.",
-        "Novo gráfico no Painel: Situação no escritório (Novo, Visto, Em contato, Virou cliente…).",
-        "Sazonalidade com um botão: \u201cBuscar estatísticas\u201d já lê. Só soma totais; não entra processo na Lista.",
-        "\u201cPublicado no Diário\u201d no lugar de \u201cData do processo\u201d.",
-        "Configuração da leitura mais baixa, setas que giram e painéis que abrem com movimento.",
-        "Configuração e Perfil abrem em janela e rolam com a roda do mouse; a ajuda (?) aparece na frente.",
-        "Leitura automática: dá para desligar (pede confirmação) e a tela inicial avisa quando está desligada.",
-        "Manual sem nome de pessoa e com o ícone certo."],
-      en: ["Terms and licence with short texts: \u201cThe terms still need to be accepted\u201d, with a single button. The client code is masked and cannot be edited.",
-        "New Dashboard chart: Status at the firm (New, Seen, In contact, Became a client…).",
-        "Seasonality with one button: \u201cFetch statistics\u201d starts reading. It only adds totals; no lawsuit goes into the List.",
-        "\u201cPublished in the gazette\u201d instead of \u201cLawsuit date\u201d.",
-        "Lower reading settings bar, arrows that turn and panels that open smoothly.",
-        "Settings and Profile open in a window and scroll with the mouse wheel; the help (?) shows in front.",
-        "Automatic reading: you can turn it off (with confirmation) and the home screen shows when it is off.",
-        "Manual without personal names and with the right icon."]
+      pt: ["Simplificação das mensagens de licença e termos de uso.",
+        "Inclusão da situação dos processos nas estatísticas do Painel.",
+        "Simplificação da atualização das estatísticas mensais.",
+        "Alteração do termo \u201cData do processo\u201d para \u201cPublicado no Diário\u201d.",
+        "Melhorias no design e na navegação.",
+        "Opção de desligar a leitura automática.",
+        "Atualização do manual."],
+      en: ["Simplified licence and terms of use messages.",
+        "Case status added to the Dashboard statistics.",
+        "Simplified update of the monthly statistics.",
+        "The term \u201cLawsuit date\u201d changed to \u201cPublished in the gazette\u201d.",
+        "Design and navigation improvements.",
+        "Option to turn off automatic reading.",
+        "Manual updated."]
     }
   };
   function mostrarNovidades(sempre) {
