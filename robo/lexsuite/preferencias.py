@@ -8,6 +8,7 @@ import os
 import re
 
 from . import classificar as cl
+from . import documento
 from . import planilha
 
 # 0.7.16: uma planilha por frente, na mesma pasta (decisão de 09/Nov, documentacao/DESENHO-PLANILHA-GRANDE.md). A frente
@@ -298,12 +299,12 @@ def bloqueio(prefs, versao_atual, hoje=None):
 def aplicar(itens, prefs, acoes_por_empresa=None):
     """Marca item['excluida'] com o motivo (exclusão da planilha ou mínimo de ações). Não remove nada da lista."""
     por_nome = {cl.chave_nome(e["nome"]): e for e in prefs.get("exclusoes") or [] if cl.chave_nome(e["nome"])}
-    cnpjs = {re.sub(r"\D", "", e["nome"]) for e in prefs.get("exclusoes") or [] if len(re.sub(r"\D", "", e["nome"])) == 14}
+    cnpjs = {documento.limpar(e.get("cnpj") or e["nome"]) for e in prefs.get("exclusoes") or [] if documento.valido(e.get("cnpj") or e["nome"])}  # 0.7.33: CNPJ com letras também
     minimo = int(prefs.get("minimo_acoes") or 1)
     for it in itens:
         motivo = ""
         nomes = it.get("empresas") or []
-        cnpj = re.sub(r"\D", "", str((it.get("empresa") or {}).get("cnpj") or ""))
+        cnpj = documento.limpar((it.get("empresa") or {}).get("cnpj"))
         for n in nomes:
             e = por_nome.get(cl.chave_nome(n))
             if e:

@@ -285,6 +285,12 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
                     if not d:
                         continue
                     respondeu = True
+                    if d.get("situacao") == "fonte_sem_suporte":
+                        # 0.7.33: CNPJ novo (com letras) que as fontes públicas ainda não têm: fica o CNPJ, sem os dados
+                        if len(n["cnpjs"]) == 1:
+                            dados = d
+                            break
+                        continue
                     nomes_rf = [d.get("razao_social") or "", d.get("nome_fantasia") or ""]
                     if any(cl.nomes_batem(x, e) for x in nomes_rf if x for e in n.get("empresas") or []):
                         dados = d

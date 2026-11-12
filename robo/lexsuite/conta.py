@@ -16,7 +16,7 @@ import datetime as dt
 import re
 import secrets
 
-from . import rede
+from . import documento as _doc, rede  # o nome "documento" é de uma função daqui
 
 URL_PADRAO = "https://qvdvkqydhnadhewcidia.supabase.co/functions/v1/lex-conta"
 DIAS_SEM_RESPOSTA = 15
@@ -230,23 +230,13 @@ def so_digitos(texto):
     return re.sub(r"\D", "", str(texto or ""))
 
 
-def _dv_cnpj(base):
-    """Dígito verificador do CNPJ, numérico ou alfanumérico (Receita, a partir de jul/2026): valor = código ASCII - 48."""
-    pesos = list(range(len(base) - 7, 1, -1)) + list(range(9, 1, -1))
-    resto = sum((ord(c) - 48) * p for c, p in zip(base, pesos)) % 11
-    return "0" if resto < 2 else str(11 - resto)
-
-
 def limpar_cnpj(cnpj):
-    return re.sub(r"[^0-9A-Z]", "", str(cnpj or "").upper())
+    return _doc.limpar(cnpj)
 
 
 def cnpj_valido(cnpj):
     """CNPJ com 14 posições: as 12 primeiras com números ou letras (formato novo), as 2 últimas números (dígitos)."""
-    d = limpar_cnpj(cnpj)
-    if not re.fullmatch(r"[0-9A-Z]{12}[0-9]{2}", d) or d == d[0] * 14:
-        return False
-    return d[12] == _dv_cnpj(d[:12]) and d[13] == _dv_cnpj(d[:13])
+    return _doc.valido(cnpj)
 
 
 def cpf_valido(cpf):

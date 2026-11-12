@@ -9,7 +9,7 @@ O uso desses contatos é decisão do escritório (compliance); o robô só os l�
 import json
 import time
 
-from . import rede
+from . import documento, rede
 
 FONTES = ["https://brasilapi.com.br/api/cnpj/v1/{cnpj}", "https://minhareceita.org/{cnpj}"]
 
@@ -23,14 +23,24 @@ def _telefone(bruto):
     return f"{d[:2]} {d[2:-4]}-{d[-4:]}"
 
 
+SEM_SUPORTE_DIAS = 7  # 0.7.33: CNPJ com letras que as fontes ainda não conhecem é tentado de novo depois de 7 dias
+
+
 def consultar(cnpj, banco=None, validade_dias=30):
+    cnpj = documento.limpar(cnpj)  # 0.7.33: os 14 caracteres, com as letras (CNPJ alfanumérico)
     if banco:
         guardado = banco.cnpj_em_cache(cnpj, validade_dias)
+        if guardado and guardado.get("situacao") == "fonte_sem_suporte" and not banco.cnpj_em_cache(cnpj, SEM_SUPORTE_DIAS):
+            guardado = None
         if guardado:
             return guardado
+    recusas = 0
     for fonte in FONTES:
         try:
             d = rede.pedir_json(fonte.format(cnpj=cnpj), intervalo_minimo=1.2, tentativas=3)
+        except rede.ErroHTTP as e:
+            recusas += e.codigo in (400, 404)
+            continue
         except RuntimeError:
             continue
         resumo = {
@@ -58,6 +68,14 @@ def consultar(cnpj, banco=None, validade_dias=30):
             "simples": (d.get("opcao_pelo_simples") if d.get("opcao_pelo_simples") is not None else None),
             "consultado_em": time.strftime("%Y-%m-%d"),
         }
+        if banco:
+            banco.guardar_cnpj(cnpj, resumo)
+        return resumo
+    if recusas == len(FONTES) and documento.eh_alfanumerico(cnpj):
+        # 0.7.33 (desenho da Arquitetura, 3.4): CNPJ novo que as fontes públicas ainda não aceitam não é "não existe";
+        # a ação segue com o CNPJ, marcada "CNPJ novo (dados da Receita indisponíveis)", sem porte, setor nem capital
+        resumo = {"cnpj": cnpj, "situacao": "fonte_sem_suporte", "razao_social": "", "nome_fantasia": "", "porte": "",
+                  "capital_social": 0, "consultado_em": time.strftime("%Y-%m-%d")}
         if banco:
             banco.guardar_cnpj(cnpj, resumo)
         return resumo

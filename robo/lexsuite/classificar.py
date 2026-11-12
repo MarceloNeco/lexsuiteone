@@ -10,6 +10,7 @@ Tudo aqui é regra escrita, explicável e barata:
 
 import re
 import unicodedata
+from . import documento
 
 # Palavras que indicam empresa/entidade no nome da parte.
 _PJ = re.compile(
@@ -64,28 +65,17 @@ def limpar_texto(html):
 
 
 def eh_empresa(nome):
-    return bool(nome) and (bool(_PJ.search(sem_acento(nome))) or bool(_CNPJ.search(nome)))
+    return bool(nome) and (bool(_PJ.search(sem_acento(nome))) or bool(_CNPJ.search(nome)) or documento.parece_cnpj(nome))
 
 
-def cnpj_valido(digitos):
-    d = re.sub(r"\D", "", digitos)
-    if len(d) != 14 or d == d[0] * 14:
-        return False
-    def dv(base, pesos):
-        s = sum(int(a) * b for a, b in zip(base, pesos)) % 11
-        return "0" if s < 2 else str(11 - s)
-    p1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-    p2 = [6] + p1
-    return d[12] == dv(d[:12], p1) and d[13] == dv(d[:13], p2)
+def cnpj_valido(cnpj):
+    """0.7.33: numérico ou alfanumérico (IN RFB 2.229/2024), pelo módulo único documento.py."""
+    return documento.valido(cnpj)
 
 
 def extrair_cnpjs(texto):
-    achados = []
-    for m in _CNPJ.finditer(texto or ""):
-        d = "".join(m.groups())
-        if cnpj_valido(d) and d not in achados:
-            achados.append(d)
-    return achados
+    """0.7.33: CNPJs válidos do texto, numéricos e alfanuméricos, limpos (14 posições, maiúsculas)."""
+    return documento.extrair(texto)
 
 
 def extrair_valor_causa(texto):
@@ -232,7 +222,7 @@ def ler_carteira(caminho):
     with open(caminho, encoding="utf-8-sig") as f:
         for linha in csv.DictReader(f, delimiter=";"):
             nome = (linha.get("nome") or "").strip()
-            cnpj = re.sub(r"\D", "", linha.get("cnpj") or "")
+            cnpj = documento.limpar(linha.get("cnpj"))  # 0.7.33: CNPJ com letras também
             if cnpj:
                 por_cnpj[cnpj] = nome or cnpj
             if nome:
