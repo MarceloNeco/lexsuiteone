@@ -161,7 +161,7 @@ escritório e o código entram na ficha; e os limites por licença ficam no mesm
   arquivo (Windows: Win+Shift+S e colar numa pasta, ou "Anexar arquivo…"). Fica para a **0.7.34**, depois do chamado sem anexo.
 - Como: o programa pede à `lex-conta` (ação **`chamado_anexo`**: número do chamado, nome, tipo, tamanho) e ela, depois de validar,
   chama `sol_feedback_anexo` (que registra e devolve o caminho) e devolve uma **URL assinada de envio** do bucket `sol-arquivos`
-  (válida 10 minutos, caminho fixo, só PUT). O arquivo sobe direto do computador para o Storage, sem passar pela função.
+  (válida 2 horas, caminho fixo, só PUT). O arquivo sobe direto do computador para o Storage, sem passar pela função.
 - Limites (além dos que a central já tem): só PNG, JPEG e WebP (sem vídeo no RADAR); **2 anexos por chamado**, **5 MB** cada; só nas 2 h
   seguintes à abertura; contados nos 5 chamados por dia da instalação. O spam fica contido: anexo só existe para chamado aberto por
   licença ativa, dentro de cota, e a URL só serve para aquele caminho.
@@ -172,7 +172,7 @@ escritório e o código entram na ficha; e os limites por licença ficam no mesm
 
 - Produto (0.7.33): balão, formulário, prévia, trilha de ids, `POST /chamado`, `conta.enviar_chamado`, fila, "Meus chamados", manual,
   AssistONE (ajuda, tour, busca: "chamado", "suporte", "falar com a SolverONE"), Novidades ("Abertura de chamado pelo AssistONE…").
-- Arquitetura: `lex-conta` v17 (`chamado` e `chamado_anexo`), consequência do pedido do dono; contrato de resposta
+- Arquitetura: `lex-conta` v17 (`chamado` e `chamado_anexo`) **publicada em 12/Nov** e testada (código desconhecido → `codigo_desconhecido`); contrato de resposta
   `{ok, numero, motivo}` com motivos `limite`, `codigo_desconhecido`, `desativado`, `dados_invalidos`, `erro`.
 - Conversa do RootifyONE (pedido pelo prompt, item 3f): aceitar as categorias do RADAR na ficha (`rootify-feedback.js` 26-29 tem lista
   fixa) e mostrar `aparelho.licenca` e `aparelho.escritorio` como "Licença" e "Escritório".
@@ -238,7 +238,7 @@ numéricos de hoje continuam válidos; extração de "CNPJ 12.ABC.345/01DE-35", 
 
 1. CNPJ alfanumérico (3): só robô, sem nuvem, risco baixo, já atrasado em relação à Receita.
 2. Critérios por pessoa (1): robô e tela; planilha completa (decisão da Arquitetura, 1.5).
-3. Chamados (2): tela e robô na 0.7.33; `lex-conta` v17 pela Arquitetura, sem nova pergunta; anexo na 0.7.34.
+3. Chamados (2): tela e robô na 0.7.33; `lex-conta` v17 já publicada; anexo na 0.7.34. Prompt para a Produto: `documentacao/PROMPT-PRODUTO-0.7.33-2026-11-12.md`.
 
 Definição de pronto (5 pontos) para os três: manual e (?) ("critérios são seus, neste computador"; "abrir um chamado"; "CNPJ novo"),
 AssistONE (ajuda, tour, busca), Novidades formais e curtas, termos **sem mudança** (o chamado manda só o que a pessoa vê e aprova; o

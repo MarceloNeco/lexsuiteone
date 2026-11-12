@@ -243,7 +243,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ### Fazendo agora
 - Nada em andamento. **Trava do aceite ligada nas duas licenças** (KR Law e teste do dono) desde 11/Nov, a pedido do dono.
-  Próximos: `lex-conta` v17 (chamados), SQL da 0.8, pareamento com credencial, trilha de auditoria, check de `lex_eventos` no desktop.
+  Próximos: SQL da 0.8, pareamento com credencial, trilha de auditoria, check de `lex_eventos` no desktop.
 
 ### Arquivos em uso
 - `documentacao/DESENHO-0.8.md`, `documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md`,
@@ -251,6 +251,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 12/Nov (4): `lex-conta` **v17 publicada**: ações `chamado` (grava em `sol_feedback` via `sol_enviar_feedback`, app `radar-judicial`,
+  limites 5/dia por instalação e 20/dia por licença, evento `aviso_enviado`) e `chamado_anexo` (URL assinada de envio, 2 h, PNG/JPEG/WebP,
+  5 MB, 2 por chamado). Testada com código desconhecido. Perguntas 17 e 18 retiradas (decididas pela Arquitetura, "pode" do dono em
+  chat). Prompt para a Produto em `documentacao/PROMPT-PRODUTO-0.7.33-2026-11-12.md`.
 - 12/Nov (3): **desenho dos três pedidos do dono** (teste da 0.7.31) em `documentacao/DESENHO-CRITERIOS-CHAMADOS-CNPJ-2026-11-12.md`:
   critérios e excluídas por pessoa, no computador, por área (`criterios.json`, migração única, planilha sem as abas editáveis);
   chamados pelo AssistONE até a central de feedback do RootifyONE via `lex-conta` v17 (sem chave no programa, prévia do que vai,

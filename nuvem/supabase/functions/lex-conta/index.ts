@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v16 (publicada no Supabase como v16. v15 + 'conferir' devolve a situação dos termos para o e-mail; 'verificar' devolve o histórico de versões dos termos): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v17 (publicada no Supabase como v17. v16 + ações 'chamado' e 'chamado_anexo': chamados do AssistONE na central de feedback do RootifyONE): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -29,6 +29,12 @@ const TERMO_ESCRITORIO = "lexsuiteone-termos";   // texto único (11/Nov): o res
 const TERMO_PESSOA = "lexsuiteone-termos";       // e cada pessoa aceita o MESMO texto no cadastro do programa, por versão
 const REMETENTE = "SolverONE <nao-responda@solverone.com.br>";
 const AVISOS_POR_DIA = 20;
+// Chamados pelo AssistONE (desenho documentacao/DESENHO-CRITERIOS-CHAMADOS-CNPJ-2026-11-12.md, seção 2): categorias fixas da tela,
+// gravadas na central de feedback do RootifyONE (sol_feedback) pela função sol_enviar_feedback, em nome da licença.
+const CATEGORIAS_CHAMADO = new Set(["erro", "duvida", "sugestao", "licenca-e-acesso", "planilha-e-pasta", "leitura-do-diario", "outros"]);
+const CHAMADOS_POR_DIA_INSTALACAO = 5, CHAMADOS_POR_DIA_LICENCA = 20;
+const ANEXO_MIMES = new Set(["image/png", "image/jpeg", "image/webp"]);
+const ANEXO_MAX_BYTES = 5 * 1024 * 1024, ANEXOS_POR_CHAMADO = 2, ANEXO_PRAZO_MS = 2 * 3600_000;
 // Retorno dos processos à SolverONE (decisão do dono, 09/Nov): só contagens por situação. Situações do programa:
 const SITUACOES = new Set(["novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado"]);
 
@@ -145,6 +151,71 @@ Deno.serve(async (req) => {
     const { data: cPes } = await sb.rpc("sol_aceite_situacao", { p_app: "radar-judicial", p_licenca: codigo, p_termo: TERMO_PESSOA, p_email: email });
     const termosConf = { escritorio: cEsc ?? { aceito: false }, pessoa: { ...(cPes as Record<string, unknown> ?? { aceito: false, precisa_aceitar: true }), link: `${LINK_ACEITE}?ler=1` } };
     return json({ ok: true, escritorio: c.escritorio, dominios: doms, dominio_novo: doms.length === 0 && !PUBLICOS.has(dom) ? dom : null, ja_cadastrado: !!ja, termos: termosConf });
+  }
+
+  // ---- Chamado pelo AssistONE (RADAR → servidor local → aqui → sol_enviar_feedback). O programa não tem chave: a licença
+  //      ativa é o que autoriza; limites por instalação e por licença; a ficha do RootifyONE mostra tudo. ----
+  if (e.acao === "chamado" || e.acao === "chamado_anexo") {
+    const codigo = texto(e.codigo, 13).toUpperCase();
+    const instalacao = texto(e.instalacao, 16).toLowerCase();
+    if (!CODIGO.test(codigo)) return json({ ok: false, motivo: "codigo_invalido" });
+    if (!INSTALACAO.test(instalacao)) return json({ ok: false, motivo: "dados_invalidos" });
+    const { data: c } = await sb.from("lex_contas").select("codigo, escritorio, ativo").eq("codigo", codigo).maybeSingle();
+    if (!c) return json({ ok: false, motivo: "codigo_desconhecido" });
+    if (!c.ativo) return json({ ok: false, motivo: "desativado" });
+
+    if (e.acao === "chamado") {
+      const categoria = texto(e.categoria, 40).toLowerCase();
+      const corpo = texto(e.texto, 4000);
+      if (!CATEGORIAS_CHAMADO.has(categoria) || !corpo) return json({ ok: false, motivo: "dados_invalidos" });
+      if (!(await pode(`inst:${instalacao}:chamado`, CHAMADOS_POR_DIA_INSTALACAO, 86400))) return limite();
+      if (!(await pode(`cod:${codigo}:chamado`, CHAMADOS_POR_DIA_LICENCA, 86400))) return limite();
+      const email = texto(e.email, 120).toLowerCase();
+      const trilha = Array.isArray(e.trilha) ? (e.trilha as unknown[]).slice(0, 5).map((t) => {
+        const r = (t && typeof t === "object") ? t as Record<string, unknown> : {};
+        return { quando: texto(r.quando, 30), alvo: texto(r.alvo, 80) };   // só id ou aria-label do elemento; nunca texto de processo
+      }) : [];
+      const clienteId = texto(e.cliente_id, 64);
+      const p: Record<string, unknown> = {
+        app: APP_ID, tipo: categoria === "erro" ? "problema" : categoria === "sugestao" ? "ideia" : "opiniao", categoria, texto: corpo,
+        tela: texto(e.tela, 200), titulo_tela: texto(e.titulo_tela, 200), funcao: texto(e.funcao, 200), trilha,
+        versao_app: texto(e.versao, 40), idioma: e.idioma === "en" ? "en" : "pt", fuso: texto(e.fuso, 60),
+        online: true, quando_cliente: texto(e.quando_cliente, 40) || null, anon_id: instalacao,
+        aparelho: { windows: texto(e.windows, 80), python: texto(e.python, 40), licenca: codigo, escritorio: c.escritorio, instalacao },
+        login_tipo: "licenca",
+      };
+      if (/^[A-Za-z0-9-]{8,64}$/.test(clienteId)) p.cliente_id = clienteId;
+      if (EMAIL.test(email) && e.pode_responder === true) { p.email_contato = email; p.pode_responder = true; }
+      const { data: r, error: erro } = await sb.rpc("sol_enviar_feedback", { p });
+      if (erro || !r || typeof r !== "object") {
+        const m = String(erro?.message ?? "");
+        return json({ ok: false, motivo: /Muitos envios/i.test(m) ? "limite" : /Escreva algo|inválid|grande demais/i.test(m) ? "dados_invalidos" : "erro" }, /Muitos envios/i.test(m) ? 429 : 200);
+      }
+      const a = r as Record<string, unknown>;
+      await sb.from("lex_eventos").insert({ codigo, instalacao, tipo: "aviso_enviado", detalhe: `chamado nº ${a.numero} (${categoria})${a.repetido ? ", repetido" : ""}` });
+      return json({ ok: true, numero: a.numero, id: a.id, repetido: !!a.repetido });
+    }
+
+    // chamado_anexo: valida, registra em sol_feedback_arquivos (sol_feedback_anexo) e devolve a URL assinada de envio
+    // (válida 2 horas, só para aquele caminho). O arquivo sobe do computador direto para o bucket privado sol-arquivos.
+    const chamadoId = texto(e.chamado_id, 36).toLowerCase();
+    const mime = texto(e.mime, 40).toLowerCase();
+    const tamanho = Number(e.tamanho);
+    const nome = texto(e.nome, 120) || "print.png";
+    if (!/^[0-9a-f-]{36}$/.test(chamadoId) || !ANEXO_MIMES.has(mime) || !Number.isInteger(tamanho) || tamanho <= 0 || tamanho > ANEXO_MAX_BYTES) {
+      return json({ ok: false, motivo: "dados_invalidos" });
+    }
+    if (!(await pode(`inst:${instalacao}:anexo`, CHAMADOS_POR_DIA_INSTALACAO * ANEXOS_POR_CHAMADO, 86400))) return limite();
+    const { data: f } = await sb.from("sol_feedback").select("id, app, anon_id, criado_em").eq("id", chamadoId).maybeSingle();
+    if (!f || f.app !== APP_ID || f.anon_id !== instalacao) return json({ ok: false, motivo: "dados_invalidos" });
+    if (Date.now() - new Date(String(f.criado_em)).getTime() > ANEXO_PRAZO_MS) return json({ ok: false, motivo: "prazo" });
+    const { count } = await sb.from("sol_feedback_arquivos").select("id", { count: "exact", head: true }).eq("feedback_id", chamadoId).is("apagado_em", null);
+    if ((count ?? 0) >= ANEXOS_POR_CHAMADO) return json({ ok: false, motivo: "limite_de_anexos" });
+    const { data: caminho, error: ea } = await sb.rpc("sol_feedback_anexo", { p_feedback: chamadoId, p_anon_id: instalacao, p_tipo: "print", p_nome: nome, p_mime: mime, p_tamanho: tamanho });
+    if (ea || typeof caminho !== "string") return json({ ok: false, motivo: "erro" });
+    const { data: up, error: eu } = await sb.storage.from("sol-arquivos").createSignedUploadUrl(caminho);
+    if (eu || !up) return json({ ok: false, motivo: "erro" });
+    return json({ ok: true, url: up.signedUrl, caminho, mime, validade_s: 7200 });
   }
 
   // ---- Conferência da licença (padrão) e cadastro ----
