@@ -22,7 +22,7 @@ e-mail: RootifyONE → RADAR JUDICIAL → Licenças → linha "Teste Marcelo" �
    (barra, porcentagem e Interromper) e as mensagens antigas em "Mensagens anteriores" (clique para abrir). Deixe terminar.
 8. **Painel.** Aba Painel → gráfico "Como a ação nova foi reconhecida". Esperado: não existe mais "Guardada antes da
    0.7.16"; as antigas aparecem pelo sinal do texto ou como "Sem sinal registrado".
-9. **Sazonalidade parada.** Aba Sazonalidade. Se a busca estiver rodando, clique em Pausar. Esperado: aparecem Continuar e
+9. **Sazonalidade parada.** No Painel, o quadro Sazonalidade. Se a busca estiver rodando, clique em Pausar. Esperado: aparecem Continuar e
    **Continuar à noite**; ao clicar em Continuar à noite, aparece o recado.
 10. **Lupa.** Clique em 🔍 no topo e digite "conferir agora": o resultado leva ao botão. Depois digite "abrir a pasta": leva
     ao botão da Pasta das planilhas.

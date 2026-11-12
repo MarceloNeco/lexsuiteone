@@ -531,8 +531,12 @@ class Tratador(BaseHTTPRequestHandler):
             pagina["criterio"] = crit[0] if crit else {}
             ultimo = banco.execucoes("retorno", 1)
             pagina["retorno"] = ultimo[0] if ultimo else {}
-            tent = banco.execucoes("tentativa", 1)  # 0.7.36 (dono): a faixa do Painel avisa quando a última leitura falhou
-            pagina["ultima_tentativa"] = tent[0] if tent else {}
+            # 0.7.36 (dono): a faixa do Painel avisa quando a última leitura falhou; uma leitura grava uma linha por tribunal com a
+            # mesma hora, então olha todas as linhas dessa hora e mostra a que falhou (revisão)
+            tent = banco.execucoes("tentativa", 40)
+            ult = [x for x in tent if tent and x.get("quando") == tent[0].get("quando")]
+            ruins = [x for x in ult if x.get("causa") not in ("ok", "ainda_nao_liberado_3h", "nao_publicado", "interrompida")]
+            pagina["ultima_tentativa"] = (ruins or ult or [{}])[0]
             comp = cfg["compartilhar"]
             base = compartilhar.pasta_base(cfg)
             chave = atualizar.chave_publica(s.pasta)
@@ -949,18 +953,19 @@ class Tratador(BaseHTTPRequestHandler):
             if ruins:  # 0.7.33 (dono): CPF ou CNPJ digitado tem de ser válido
                 return self._responder({"ok": False, "motivo": "CPF ou CNPJ inválido: " + ", ".join(ruins[:3]) + ". Confira os números e salve de novo.",
                                         "motivo_en": "Invalid CPF or CNPJ: " + ", ".join(ruins[:3]) + ". Check the numbers and save again."})
+            cortadas = 0
             with _TRAVA_REGRAS:
                 try:
                     preferencias.salvar_area(s.pasta, area, valores, exc, todas=todas)
                     if destinos and partes:
-                        preferencias.copiar_area(s.pasta, area, destinos, modo=modo, partes=partes)
+                        cortadas = preferencias.copiar_area(s.pasta, area, destinos, modo=modo, partes=partes)
                 except ValueError:  # revisão da 0.7.33: criterios.json ilegível e sem cópia boa: não grava uma área por cima
                     return self._responder({"ok": False, "motivo": "O arquivo dos critérios deste computador está danificado e não há cópia boa. Escreva para judicial@solverone.com.br antes de salvar.",
                                             "motivo_en": "This computer's criteria file is damaged and there is no good copy. Write to judicial@solverone.com.br before saving."})
                 except OSError:
                     return self._responder({"ok": False, "motivo": "Não consegui gravar os critérios neste computador (pasta do programa sem permissão).",
                                             "motivo_en": "Could not save the criteria on this computer (no permission in the program folder)."})
-            return self._responder({"ok": True, "area": area, "todas": todas})
+            return self._responder({"ok": True, "area": area, "todas": todas, "cortadas": cortadas})
         if caminho == "/chamado":  # 0.7.33 (dono): chamado pelo AssistONE, para a central de feedback do RootifyONE
             if not CHAMADO_LIGADO:
                 return self._responder({"ok": False, "desligado": True, "motivo": "O chamado pelo programa ainda não está disponível. Escreva para judicial@solverone.com.br.",

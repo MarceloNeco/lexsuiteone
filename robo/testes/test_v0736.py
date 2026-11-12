@@ -248,8 +248,8 @@ class Graficos0736(unittest.TestCase):
         self.assertIn('emBlocos(t("g_dia_ajuda"))', self.h)
 
     def test_buscar_estatisticas_responde_na_hora(self):
-        self.assertIn('saz_em_dia: "✓ As estatísticas já estão em dia: {p}."', self.h)
-        self.assertIn('el("span", "txt-azul", t("saz_em_dia", { p: perSaz_ }))', self.h)
+        self.assertIn('saz_em_dia: "✓ {p}."', self.h)
+        self.assertIn('el("span", "txt-azul", t("saz_em_dia", { p: perSaz_.charAt(0).toUpperCase()', self.h)
         self.assertIn('var msgH = el("span", "nota-g saz-retorno")', self.h)
 
     def test_faixa_da_leitura_numa_linha_sem_caminho(self):
@@ -316,6 +316,31 @@ class Versao0736(unittest.TestCase):
         for x in ("Destaques e exclusões", "Rotina de leitura", "Ver histórico de leituras", "Separar por", "Nada novo", "Há uma leitura em andamento"):
             self.assertIn(x, m)
         self.assertNotIn("Critérios da lista", m)
+
+
+class Revisao0736(unittest.TestCase):
+    """Revisão do revisor: repetidos só nas opções, acrescentar espera o nome, filial não some, cópia avisa o limite."""
+
+    def test_filial_e_razoes_parecidas(self):
+        from lexsuite import preferencias as p
+        ex = p.exclusoes_validas([{"nome": "Empresa Exemplo Ltda", "cnpj": "11222333000181"}, {"nome": "Empresa Exemplo Ltda", "cnpj": "11222333000262"},
+                                  {"nome": "Exemplo SA"}, {"nome": "Exemplo Ltda"}])
+        self.assertEqual(len(ex), 4)
+
+    def test_copiar_avisa_o_limite(self):
+        from lexsuite import preferencias as p
+        pasta = tempfile.mkdtemp()
+        p.salvar_area(pasta, "trabalhista", {}, [{"nome": "Empresa %d Exemplo" % i} for i in range(5)])
+        with mock.patch.object(p, "MAX_EXCLUSOES", 6):
+            p.salvar_area(pasta, "civel", {}, [{"nome": "Outra %d Exemplo" % i} for i in range(4)])
+            self.assertEqual(p.copiar_area(pasta, "trabalhista", ["civel"], modo="acrescentar", partes=["exclusoes"]), 3)
+
+    def test_tela(self):
+        h = ler("radar_modelo.html")
+        self.assertIn('titulo_ !== t("bg_opcoes") ? lista :', h)
+        self.assertIn("if (buscaP) { buscaP.then(function () { bAdd.click(); }); return; }", h)
+        self.assertIn('if (ocultos["__outros__"]) lim += 6;', h)
+        self.assertIn('ok === "ocupado" ? "lic_ocupado" : "aceite_ainda"', h)
 
 
 class UltimaTentativa(Servidor):

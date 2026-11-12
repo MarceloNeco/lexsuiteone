@@ -215,10 +215,10 @@ def exclusao_valida(nome):
     return None
 
 
-def exclusoes_validas(lista):
+def exclusoes_validas(lista, limite=None):
     """Lista de exclusões limpa: sem repetidas, sem documento inválido, até MAX_EXCLUSOES."""
     saida, vistos = [], set()
-    for e in (lista or [])[:MAX_EXCLUSOES]:
+    for e in (lista or [])[:(limite or MAX_EXCLUSOES)]:
         if not isinstance(e, dict):  # revisão da 0.7.28: item que não é {nome, motivo} é ignorado
             continue
         ok = exclusao_valida(e.get("nome"))
@@ -227,10 +227,12 @@ def exclusoes_validas(lista):
             ok = (ok[0], documento.limpar(cj))
         if not ok:
             continue
-        chave = ("cnpj", ok[1]) if ok[1] else ("nome", cl.chave_nome(ok[0]) or ok[0].lower())
-        if chave in vistos or ("nome", cl.chave_nome(ok[0]) or ok[0].lower()) in vistos:
+        # revisão da 0.7.36: com CNPJ, repete só o mesmo CNPJ (filial com o mesmo nome e outro CNPJ fica); sem CNPJ, só o
+        # mesmo nome escrito igual (sem ignorar LTDA ou S.A., para não juntar duas razões sociais diferentes)
+        nome_k = ("nome", ok[0].strip().lower())
+        if (ok[1] and ("cnpj", ok[1]) in vistos) or (not ok[1] and nome_k in vistos):
             continue
-        vistos.add(chave); vistos.add(("nome", cl.chave_nome(ok[0]) or ok[0].lower()))
+        vistos.add(("cnpj", ok[1]) if ok[1] else nome_k); vistos.add(nome_k)
         saida.append({"nome": ok[0], "cnpj": ok[1], "motivo": str(e.get("motivo") or "").strip()[:200],
                       "desde": str(e.get("desde") or dt.date.today().isoformat())[:10]})
     return saida
@@ -326,6 +328,7 @@ def copiar_area(pasta, origem, destinos, modo="substituir", partes=("valores", "
     areas = dict(d.get("areas") or {})
     o_ = areas.get(origem if origem in AREAS else "trabalhista") or {}
     val_o, exc_o = valores_validos(o_), exclusoes_validas(o_.get("exclusoes") or [])
+    cortadas = 0
     for a in destinos:
         if a not in AREAS or a == origem:
             continue
@@ -334,9 +337,12 @@ def copiar_area(pasta, origem, destinos, modo="substituir", partes=("valores", "
         if "valores" in partes:
             novo.update(val_o)
         if "exclusoes" in partes:
-            novo["exclusoes"] = exclusoes_validas((novo["exclusoes"] + exc_o) if modo == "acrescentar" else exc_o)
+            juntas = (novo["exclusoes"] + exc_o) if modo == "acrescentar" else exc_o
+            novo["exclusoes"] = exclusoes_validas(juntas)
+            cortadas = max(cortadas, len(exclusoes_validas(juntas, limite=10 ** 6)) - len(novo["exclusoes"]))
         areas[a] = novo
-    return gravar_criterios(pasta, {"origem": "tela", "areas": areas})
+    gravar_criterios(pasta, {"origem": "tela", "areas": areas})
+    return cortadas  # revisão da 0.7.36: quantas não couberam no limite (a tela avisa)
 
 
 PASTA_ANTES_0733 = "antes da 0.7.33"  # dentro de "Cópias de segurança": a planilha como era antes de perder as abas antigas
