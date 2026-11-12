@@ -3,7 +3,7 @@
 Prioridade: **depois do lançamento na KR Law**. Registrar agora como ideia no backlog ("0-SolverONE DIRETRIZES E
 BACKLOG") e como iniciativa no app de roadmap. Abaixo, os textos que o dono cola em cada conversa.
 
-## 1. Para "(SolverONE) Fable diretrizes" (vale para toda a plataforma)
+## 1. Para "diretrizes da SolverONE" (vale para toda a plataforma)
 
 ```
 Nova iniciativa da plataforma (dono, 12/Nov), prioridade logo depois do lançamento na KR Law (RADAR JUDICIAL). Registre agora como ideia na planilha "0-SolverONE DIRETRIZES E BACKLOG" e como iniciativa no app de roadmap, com a prioridade "depois da KR Law". Não implemente nada ainda: desenhe e traga ao dono.
@@ -43,13 +43,13 @@ O QUE QUERO DE VOCÊ (em um documento curto)
 Traga ao dono numa mensagem curta, com o documento em anexo, e espere o "pode" antes de qualquer implementação.
 ```
 
-## 2. Para "(JUDICIAL) Fable Arquitetura" (a parte do RADAR)
+## 2. Para "Arquitetura do JUDICIAL" (a parte do RADAR)
 
 ```
-Iniciativa nova do dono (12/Nov), prioridade depois do lançamento na KR Law: ambiente de staging e CI/CD para toda a plataforma (a conversa "(SolverONE) Fable diretrizes" desenha o padrão geral; o texto completo está em documentacao/PROMPT-STAGING-CICD-2026-11-12.md). Para o RADAR JUDICIAL, desenhe a sua parte seguindo esse padrão: (1) "Publicar versão assinada" com destino staging ou produção; em staging, o mesmo pacote assinado vai para um canal próprio (ex.: staging.judicial.solverone.com.br/atualizacao/) e "promover X" copia o mesmo pacote (hash e assinatura iguais) para produção; (2) a licença tem o canal (staging ou produção), controlado na ficha do RootifyONE e devolvido pela lex-conta; o programa busca atualizações no canal da licença e mostra a etiqueta "STAGING · ambiente de teste" no cabeçalho quando está em staging; (3) lex-conta, lex-equipe e o banco em staging (projeto, branch ou prefixo, conforme o padrão da plataforma), com as licenças e os dados de teste vivendo só lá; (4) e-mail de boas-vindas e de aceite em staging só para a lista permitida, com "[STAGING]" no assunto; (5) site e página de aceite em staging; (6) plano para tirar os dados de teste da produção depois, com cópia e o "pode" do dono; (7) um Windows de teste na nuvem, ligado só quando precisa, para a instalação, o Agendador e o aceite (custo e alternativa), já que o notebook do dono não deve rodar testes. Diga o que muda em publicar.yml, atualizar.py, conta.py, lex-conta, lex-equipe, RootifyONE e nos documentos, os riscos e quem faz cada parte. Registre no quadro como "depois da KR Law" e traga ao dono antes de implementar.
+Iniciativa nova do dono (12/Nov), prioridade depois do lançamento na KR Law: ambiente de staging e CI/CD para toda a plataforma (a conversa "diretrizes da SolverONE" desenha o padrão geral; o texto completo está em documentacao/PROMPT-STAGING-CICD-2026-11-12.md). Para o RADAR JUDICIAL, desenhe a sua parte seguindo esse padrão: (1) "Publicar versão assinada" com destino staging ou produção; em staging, o mesmo pacote assinado vai para um canal próprio (ex.: staging.judicial.solverone.com.br/atualizacao/) e "promover X" copia o mesmo pacote (hash e assinatura iguais) para produção; (2) a licença tem o canal (staging ou produção), controlado na ficha do RootifyONE e devolvido pela lex-conta; o programa busca atualizações no canal da licença e mostra a etiqueta "STAGING · ambiente de teste" no cabeçalho quando está em staging; (3) lex-conta, lex-equipe e o banco em staging (projeto, branch ou prefixo, conforme o padrão da plataforma), com as licenças e os dados de teste vivendo só lá; (4) e-mail de boas-vindas e de aceite em staging só para a lista permitida, com "[STAGING]" no assunto; (5) site e página de aceite em staging; (6) plano para tirar os dados de teste da produção depois, com cópia e o "pode" do dono; (7) um Windows de teste na nuvem, ligado só quando precisa, para a instalação, o Agendador e o aceite (custo e alternativa), já que o notebook do dono não deve rodar testes. Diga o que muda em publicar.yml, atualizar.py, conta.py, lex-conta, lex-equipe, RootifyONE e nos documentos, os riscos e quem faz cada parte. Registre no quadro como "depois da KR Law" e traga ao dono antes de implementar.
 ```
 
-## 3. Para "(JUDICIAL) Sonnet Operação" (só para saber)
+## 3. Para "Operação do JUDICIAL" (só para saber)
 
 ```
 Aviso do dono (12/Nov): depois do lançamento na KR Law vem a iniciativa de staging e CI/CD (documentacao/PROMPT-STAGING-CICD-2026-11-12.md). Quando a Arquitetura trouxer o desenho, a automação "Publicar versão assinada" vai ganhar o destino staging e a promoção para produção. Até lá, nada muda no seu processo.
