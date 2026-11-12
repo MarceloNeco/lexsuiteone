@@ -244,6 +244,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 12/Nov (6): respondido o pedido da Operação sobre a migração dos critérios com vários computadores (opção ii: cópia "antes da
+  0.7.33" na pasta de cópias e migração lendo dela), cópia dos critérios da 0.7.32 a todas as áreas (sim) e termos para o chamado
+  (versão 1.1 material antes de ligar na 0.7.34). Desenho atualizado (1.4 e 2.5).
 - 12/Nov (5): `CLAUDE.md` a pedido da Produto: pacote 46 e 45 a partir da 0.7.33 (`lexsuite/documento.py`) e linha das Novidades
   "menu ☰ → Ajuda → Novidades da versão".
 - 12/Nov (4): `lex-conta` **v17 publicada**: ações `chamado` (grava em `sol_feedback` via `sol_enviar_feedback`, app `radar-judicial`,
