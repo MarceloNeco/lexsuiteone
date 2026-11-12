@@ -148,6 +148,14 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- **Lista da 0.7.34 (teste do dono na 0.7.33, 12/Nov; nada disso bloqueia a visita):** tela de abertura "RADAR JUDICIAL ·
+  carregando" e abertura mais rápida com muitos processos (medir antes); Novidades e demais janelas usando a largura do
+  computador (botão de fechar sempre visível); cabeçalho fixo com o ☰ sem cobrir os filtros fixos; em Configurações → Pasta
+  das planilhas, botão "Abrir a pasta no Windows", título uma vez só e largura inteira; pasta antiga "Cópias" movida para
+  "Cópias da planilha"; "Continuar à noite" também com a busca parada. Pedidos a outras sessões: Arquitetura (canal de
+  teste antes dos clientes; página de aceite com o aviso "role até o fim" visível e largura no notebook; regra das
+  integrações), RootifyONE (janelas largas no computador, faixa do e-mail do responsável), e-mail de boas-vindas (aceite em
+  uma frase, "não recebe respostas" em linha própria, largura).
 - **0.7.33 pronta de novo** (12/Nov; revisões A e B da Operação atendidas): CNPJ com letras,
   critérios e empresas excluídas por pessoa e por área, chamados pelo AssistONE, Painel sem busca e sem filtros repetidos,
   etiqueta grande nos gráficos, sazonalidade lendo a fila inteira (Pausar, Continuar à noite), menu Configurações e Ajuda,
