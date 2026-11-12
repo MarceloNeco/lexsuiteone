@@ -51,6 +51,12 @@ button { cursor: pointer; }
 .faixa { background: var(--noite); color: #eef1f6; margin-bottom: 18px; }
 .faixa .miolo { padding-block: 14px 22px; display: grid; gap: 6px; }
 header { display: contents; }
+/* 0.7.36 (dono): cabeçalho fixo (☰, marca, planilha, manual, busca, ⚙, idioma, perfil); os filtros fixos ficam logo abaixo */
+.faixa-topo { position: sticky; top: 0; z-index: 40; margin-bottom: 0; box-shadow: 0 6px 16px -14px rgba(0,0,0,.6); }
+.faixa-topo .miolo { padding-block: 10px; }
+.faixa-titulo .miolo { padding-block: 2px 22px; }
+@media (max-height: 520px) { .faixa-topo { position: static; } }
+html { scroll-padding-top: var(--topo-h, 0px); }  /* ir para um ponto da página não esconde o alvo atrás do cabeçalho */
 .topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .topo > .b-menu:not([hidden]) + .marca { margin-right: auto; }
 .topo .marca { display: inline-flex; align-items: center; gap: 10px; font-size: 1.05rem; color: #fff; }
@@ -513,7 +519,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .baixar-csv { all: unset; cursor: pointer; background: var(--csv-bg); color: var(--csv-t); font-weight: 700; font-size: .84rem; border-radius: 999px; padding: 7px 16px; }
 .baixar-csv::before { content: "⤓ "; }
 .baixar-csv:hover, .baixar-csv:focus-visible { filter: brightness(1.08); outline: 2px solid var(--latao-texto); outline-offset: 2px; }
-@media (min-width: 900px) and (min-height: 620px) { .barra-lista { position: sticky; top: 0; z-index: 30; box-shadow: 0 6px 18px -12px rgba(15, 29, 51, .35); } }
+@media (min-width: 900px) and (min-height: 620px) { .barra-lista { position: sticky; top: var(--topo-h, 0px); z-index: 30; box-shadow: 0 6px 18px -12px rgba(15, 29, 51, .35); } }
 .dica-graf { position: fixed; z-index: 95; pointer-events: none; background: var(--tinta, #14213d); color: var(--papel, #fff); border-radius: 8px; padding: 8px 12px; font-size: .95rem; font-weight: 600; max-width: min(360px, 80vw); box-shadow: 0 8px 24px rgba(0,0,0,.25); line-height: 1.35; }
 .busca::placeholder { font-style: italic; }  /* 0.7.33 (dono): dica em itálico; o que se digita fica normal */
 /* 0.7.33 (dono): no Painel ficam só os filtros que não têm gráfico; os dos gráficos aparecem no alto só quando ligados (com ×) */
@@ -603,6 +609,10 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .salvo-ok { color: #1e7d3c; font-weight: 700; margin-left: 6px; }
 .carregando { position: fixed; inset: 0; z-index: 95; background: rgba(15,29,51,.9); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; font-size: 1.1rem; text-align: center; padding: 20px; }
 .carregando[hidden] { display: none; }
+.roda-mini { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--linha-2); border-top-color: var(--latao); border-radius: 50%; animation: roda 1s linear infinite; vertical-align: -2px; margin-right: 8px; }
+@media (prefers-reduced-motion: reduce) { .roda-mini { animation-duration: 3s; } }
+.arq-lento { color: var(--erro); font-size: .86rem; }
+.ajuda-linhas ul { margin: 6px 0 0; padding-left: 18px; } .ajuda-linhas li { margin: 2px 0; }
 .carregando.abertura { background: #0f1d33; }  /* 0.7.35 (dono): tela de abertura, no lugar da tela vazia enquanto o programa carrega */
 .roda { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,.25); border-top-color: var(--latao); border-radius: 50%; animation: roda 1s linear infinite; }
 @keyframes roda { to { transform: rotate(360deg); } }
@@ -669,7 +679,7 @@ footer a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
-<div class="faixa"><div class="miolo">
+<div class="faixa faixa-topo" id="faixa-topo"><div class="miolo">
 <header>
   <div class="topo">
     <button type="button" class="b-menu" id="b-menu" aria-expanded="false" aria-controls="gaveta" aria-label="Menu" hidden>☰</button>
@@ -686,9 +696,11 @@ footer a:hover { text-decoration: underline; }
       <button type="button" class="perfil-btn" id="b-perfil" aria-expanded="false" aria-controls="perfil" hidden></button>
     </div>
   </div>
+</header>
+</div></div>
+<div class="faixa faixa-titulo"><div class="miolo">  <!-- 0.7.35 (dono): o cabeçalho fica fixo no alto; o título rola com a página -->
   <h1 id="h1"></h1>
   <p class="resumo" id="resumo"></p>
-</header>
 </div></div>
 <nav class="gaveta" id="gaveta" hidden aria-label="Menu"></nav>
 <div class="busca-global" id="busca-global" role="dialog" aria-modal="true" aria-labelledby="bg-titulo" hidden>
@@ -1968,10 +1980,10 @@ window.LEXSUITE_RADAR = null;
       nao_mostrar: "Não mostrar de novo neste computador", gerar_copia: "Gerar uma cópia", entendi_abrir: "Entendi, abrir", copia_ok: "Cópia criada: {c}",
       menu_ver: "Ver", menu_planilha: "Planilha", menu_contatos: "Área logada", menu_programa: "Configurações", perfil: "Perfil",
       arq_info: "{n} ações guardadas desde {d}; o banco ocupa {mb} MB neste computador.", arq_limpar: "Limpar o que tem mais de {m} meses",
-      arq_limpar_x: "Apaga só o detalhe das ações com mais de {m} meses (o trecho do Diário). Ficam o resumo (empresa, tribunal, valor, situação) e as estatísticas.", limpar: "Limpar", arq_limpo: "{n} ação(ões) resumida(s).",
+      arq_lento: "O Arquivo guarda muitas ações e a consulta está demorando. Considere reduzir o período guardado.", arq_limpar_x: "Apaga só o detalhe das ações com mais de {m} meses (o trecho do Diário). Ficam o resumo (empresa, tribunal, valor, situação) e as estatísticas.", limpar: "Limpar", arq_limpo: "{n} ação(ões) resumida(s).",
       arq_ajuda: "O Arquivo guarda tudo o que o programa já leu, de todos os tribunais, inclusive o que foi arquivado. A Lista mostra só o que está em aberto nos tribunais marcados.",
       hist_explica: "Cada linha é uma tentativa de leitura de um tribunal: quando, de onde veio o pedido, o que o site respondeu e o que o programa fez.",
-      hist_resp_ajuda: "Código que o site do CNJ devolveu: 200 = respondeu normal; 403 antes das 3h = o Diário do dia ainda não foi liberado (não é erro); 404 = ainda não publicado; 429 ou 5xx = site do CNJ sobrecarregado ou fora do ar; \u201c-\u201d = sem resposta.",
+      hist_mais: "Mostrar mais {n}", hist_resp_ajuda: "Código que o site do CNJ devolveu: 200 = respondeu normal; 403 antes das 3h = o Diário do dia ainda não foi liberado (não é erro); 404 = ainda não publicado; 429 ou 5xx = site do CNJ sobrecarregado ou fora do ar; \u201c-\u201d = sem resposta.",
       cod_tecnico: "código {c}", n_tribunais: "{n} tribunais", aviso_3h_tribs: "{t}: o Diário de hoje só sai às 3h da manhã; li até o último dia publicado ({d}). Nada a fazer.",
       c_pasta_drive: "Google Drive", c_pasta_outra_x: "Escolha outra pasta deste computador ou da rede.", c_pasta_local_x: "Fica só neste computador, na pasta do programa; ninguém mais vê a planilha.",
       ag_expl: "Clique nos horários em que o programa lê o Diário sozinho. Cada horário é uma leitura (não é início e fim). Para um horário que não está aqui, use \u201cOutro horário\u201d.",
@@ -2065,10 +2077,10 @@ window.LEXSUITE_RADAR = null;
       nao_mostrar: "Do not show again on this computer", gerar_copia: "Make a copy", entendi_abrir: "Got it, open", copia_ok: "Copy created: {c}",
       menu_ver: "View", menu_planilha: "Spreadsheet", menu_contatos: "Logged-in area", menu_programa: "Settings", config: "Settings", perfil: "Profile",
       arq_info: "{n} lawsuits saved since {d}; the database takes {mb} MB on this computer.", arq_limpar: "Clean up what is older than {m} months",
-      arq_limpar_x: "Deletes only the detail of lawsuits older than {m} months (the gazette excerpt). The summary (company, court, value, status) and the statistics stay.", limpar: "Clean up", arq_limpo: "{n} lawsuit(s) summarized.",
+      arq_lento: "The archive holds many lawsuits and the query is taking a while. Consider shortening the period kept.", arq_limpar_x: "Deletes only the detail of lawsuits older than {m} months (the gazette excerpt). The summary (company, court, value, status) and the statistics stay.", limpar: "Clean up", arq_limpo: "{n} lawsuit(s) summarized.",
       arq_ajuda: "The Archive keeps everything the program has read, from every court, including archived items. The List shows only open items in the selected courts.",
       hist_explica: "Each line is one reading attempt for a court: when, where the request came from, what the site answered and what the program did.",
-      hist_resp_ajuda: "Code the CNJ site returned: 200 = normal answer; 403 before 3 a.m. = today\u2019s gazette not released yet (not an error); 404 = not published yet; 429 or 5xx = CNJ site overloaded or down; \u201c-\u201d = no answer.",
+      hist_mais: "Show {n} more", hist_resp_ajuda: "Code the CNJ site returned: 200 = normal answer; 403 before 3 a.m. = today\u2019s gazette not released yet (not an error); 404 = not published yet; 429 or 5xx = CNJ site overloaded or down; \u201c-\u201d = no answer.",
       cod_tecnico: "code {c}", n_tribunais: "{n} courts", aviso_3h_tribs: "{t}: today\u2019s gazette only comes out at 3 a.m.; I read up to the last published day ({d}). Nothing to do.",
       c_pasta_drive: "Google Drive", c_pasta_outra_x: "Choose another folder on this computer or the network.", c_pasta_local_x: "Stays on this computer only, in the program folder; nobody else sees the spreadsheet.",
       ag_expl: "Click the times when the program reads the gazette by itself. Each time is one reading (not a start and end). For a time not listed, use \u201cAnother time\u201d.",
@@ -2327,7 +2339,13 @@ window.LEXSUITE_RADAR = null;
       aplicarDados(d); fimAbertura();
     }).catch(function () { carregandoPer = 0; fimAbertura(); $("estado").textContent = t("falha"); });
   }
-  function fimAbertura() { var c_ = $("carregando"); if (c_ && c_.classList.contains("abertura")) { c_.classList.remove("abertura"); c_.hidden = true; } }
+  function medirTopo() {  // 0.7.36: altura do cabeçalho fixo, para os filtros fixos e os saltos pararem logo abaixo
+    var f_ = $("faixa-topo"); if (!f_) return;
+    document.documentElement.style.setProperty("--topo-h", (getComputedStyle(f_).position === "sticky" ? f_.offsetHeight : 0) + "px");
+  }
+  window.addEventListener("resize", medirTopo);
+  if (window.ResizeObserver && $("faixa-topo")) new ResizeObserver(medirTopo).observe($("faixa-topo"));
+  function fimAbertura() { medirTopo(); var c_ = $("carregando"); if (c_ && c_.classList.contains("abertura")) { c_.classList.remove("abertura"); c_.hidden = true; } }
   function aplicarDados(d) {
     {
       D = d; APP = d.app || null; if (typeof avisarRecursos === "function") setTimeout(avisarRecursos, 0); var noAssistente = !$("wizard").hidden;  // no assistente, a escolha ainda não salva fica
@@ -2416,13 +2434,20 @@ window.LEXSUITE_RADAR = null;
   }
   var historicoDiv = document.createElement("div");
   historicoDiv.className = "historico";
+  var histMostrar = 50;
+  function emLinhas(txt) {  // 0.7.36 (dono): "Título: a; b; c." vira um título e uma linha por item, no quadrinho do (?)
+    var i_ = txt.indexOf(": "), box_ = el("div", "ajuda-linhas");
+    if (i_ < 0) { box_.textContent = txt; return box_; }
+    box_.appendChild(el("b", null, txt.slice(0, i_ + 1))); var ul_ = el("ul");
+    txt.slice(i_ + 2).replace(/\.$/, "").split("; ").forEach(function (x) { ul_.appendChild(el("li", null, x)); }); box_.appendChild(ul_); return box_;
+  }
   function desenharHistorico() { var a = $("historico-aba"); a.textContent = ""; a.appendChild(el("p", "nota", t("hist_explica"))); a.appendChild(historicoDiv); carregarHistorico(); }
   function carregarHistorico() {
     fetch("/historico", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
-      var lista = (d.tentativas || []).slice(0, 60); historicoDiv.textContent = "";
+      var todas_ = d.tentativas || [], lista = todas_.slice(0, histMostrar); historicoDiv.textContent = "";  // 0.7.36 (dono): 50 por vez, a mais recente primeiro
       if (!lista.length) { historicoDiv.appendChild(el("p", "nota", t("hist_vazio"))); return; }
       var tb = el("table"), cab = el("tr");
-      ["hist_quando", "hist_origem", "hist_trib", "hist_dias", "hist_causa", "hist_fez", "hist_dur", "hist_resp"].forEach(function (k) { var th_ = el("th", null, t(k)); if (k === "hist_resp") th_.appendChild(ajuda(t("hist_resp_ajuda"))); cab.appendChild(th_); });
+      ["hist_quando", "hist_origem", "hist_trib", "hist_dias", "hist_causa", "hist_fez", "hist_dur", "hist_resp"].forEach(function (k) { var th_ = el("th", null, t(k)); if (k === "hist_resp") th_.appendChild(ajuda(function () { return emLinhas(t("hist_resp_ajuda")); })); cab.appendChild(th_); });
       var th = el("thead"); th.appendChild(cab); tb.appendChild(th); var tbody = el("tbody");
       lista.forEach(function (h) {
         var tr = el("tr"), q = String(h.quando_local || h.quando || "");
@@ -2433,6 +2458,10 @@ window.LEXSUITE_RADAR = null;
         tbody.appendChild(tr);
       });
       tb.appendChild(tbody); historicoDiv.appendChild(tb);
+      if (todas_.length > lista.length) {
+        var bm_ = el("button", "chip", t("hist_mais", { n: num(Math.min(50, todas_.length - lista.length)) })); bm_.type = "button";
+        bm_.addEventListener("click", function () { histMostrar += 50; carregarHistorico(); }); historicoDiv.appendChild(bm_);
+      }
     }).catch(function () { historicoDiv.textContent = t("falha"); });
   }
   // 0.7.14: de minuto em minuto, confere se começou uma leitura agendada (a agenda do Windows roda noutra janela)
@@ -3925,6 +3954,7 @@ window.LEXSUITE_RADAR = null;
     }
     if (!box.childNodes.length) box.appendChild(el("p", "bg-nada", t("bg_nada")));
   }
+  var lentoArq = null;
   function desenharArquivoInfo() {
     var a = $("arquivo-info"); a.textContent = ""; a.hidden = visao !== "arquivo" || MODO !== "app"; if (a.hidden) return;
     var esp = (DA && DA.espaco) || (D && D.espaco) || {};
@@ -4353,7 +4383,12 @@ window.LEXSUITE_RADAR = null;
     desenharArquivoInfo(); desenharLote();
     if (visao === "historico") { $("mais").hidden = true; desenharHistorico(); return; }
     if (visao === "painel") { $("mais").hidden = true; desenharPainel(visiveis()); return; }
-    if (visao === "arquivo" && !DA) { $("lista").textContent = ""; $("lista").appendChild(el("div", "vazio-lista", t("carregando"))); $("mais").hidden = true; return; }
+    if (visao === "arquivo" && !DA) {  // 0.7.36 (dono): indicador discreto e, depois de 5 s, um aviso sóbrio sobre o volume guardado
+      $("lista").textContent = ""; var cv_ = el("div", "vazio-lista carregando-arq"); var rm_ = el("span", "roda-mini"); rm_.setAttribute("aria-hidden", "true");
+      cv_.appendChild(rm_); cv_.appendChild(el("span", null, t("carregando"))); $("lista").appendChild(cv_); $("mais").hidden = true;
+      clearTimeout(lentoArq); lentoArq = setTimeout(function () { if (visao === "arquivo" && !DA && !$("arquivo-info").querySelector(".arq-lento")) $("arquivo-info").appendChild(el("span", "arq-lento", t("arq_lento"))); }, 5000);
+      return;
+    }
     var alvo = $("lista"); alvo.textContent = "";
     var itens = visiveis(), total = itens.length;
     if (!total) { alvo.appendChild(el("div", "vazio-lista", (D.itens || []).length ? t("vazio") : (MODO === "app" ? t("vazio_app") : t("vazio_arq")))); $("mais").hidden = true; return; }
