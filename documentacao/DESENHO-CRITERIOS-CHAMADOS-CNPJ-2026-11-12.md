@@ -2,7 +2,7 @@
 
 Resposta ao pedido da Produto "Três pedidos do dono (12/Nov, teste da 0.7.31)" (`docs/QUADRO.md`, Pedidos entre sessões) e à
 decisão do dono de 12/Nov ("Critérios da lista por pessoa, no computador (MVP), por área"). A Produto implementa na 0.7.33.
-O que mexe na nuvem (`lex-conta` v17) é da Arquitetura e só entra com o "pode" do dono (pergunta 15 do quadro).
+O que mexe na nuvem (`lex-conta` v17) é da Arquitetura e é consequência do pedido do dono (chamados): não precisa de novo "pode".
 
 Mapa do código de hoje (HEAD `50334bf`), conferido antes de desenhar:
 
@@ -98,14 +98,14 @@ KR Law já cadastrou. Teste da Produto: planilha da 0.7.32 com valores e 3 exclu
   e a frase "Os critérios são de cada pessoa, no computador dela: mude em Configuração → Critérios da lista. Esta aba não é lida pelo
   programa." Serve para quem abre a planilha de outra pessoa entender por que a lista está daquele jeito. Texto PT e EN, como hoje.
 - A aba oculta **Controle** (ativo, validade, versão mínima, mensagem) não está na decisão e fica como está.
-- Consequência que a Produto precisa decidir com o dono (pergunta 16 do quadro): a planilha de cada frente é **uma por escritório**
+- Decisão da Arquitetura (12/Nov; o dono muda se discordar): a planilha de cada frente é **uma por escritório**
   na pasta compartilhada, mas agora cada computador a regrava com **os critérios da sua pessoa**. Os critérios que só marcam ou escondem
   (`excluida`, jurídico próprio, "esconder…") não tiram linhas da planilha, então a lista continua a mesma para todos e só a marcação
   muda. O que **tira linhas** é `valor_minimo` (resumo), `minimo_acoes`/`janela_dias` (`aplicar()`), `dias_arquivo` e `limite_linhas`: com
   pessoas de critérios diferentes, a planilha passa a refletir quem leu por último. Recomendação da Arquitetura: a planilha
   compartilhada é o **registro do escritório**, gravada com a lista completa (sem `valor_minimo` e `minimo_acoes`, com `dias_arquivo` e
   `limite_linhas` fixos nos padrões), e os critérios da pessoa valem na **tela** e no `saida/` dela, que é onde cada advogado trabalha.
-  Assim ninguém apaga linha do colega sem querer. Se o dono preferir planilha filtrada por quem leu, fica como hoje e o (?) avisa.
+  Assim ninguém apaga linha do colega sem querer. É o que vale, salvo o dono dizer o contrário.
 
 ### 1.6 Depois: nuvem
 
@@ -172,7 +172,7 @@ escritório e o código entram na ficha; e os limites por licença ficam no mesm
 
 - Produto (0.7.33): balão, formulário, prévia, trilha de ids, `POST /chamado`, `conta.enviar_chamado`, fila, "Meus chamados", manual,
   AssistONE (ajuda, tour, busca: "chamado", "suporte", "falar com a SolverONE"), Novidades ("Abertura de chamado pelo AssistONE…").
-- Arquitetura: `lex-conta` v17 (`chamado` e `chamado_anexo`), depois do "pode" do dono (pergunta 15); contrato de resposta
+- Arquitetura: `lex-conta` v17 (`chamado` e `chamado_anexo`), consequência do pedido do dono; contrato de resposta
   `{ok, numero, motivo}` com motivos `limite`, `codigo_desconhecido`, `desativado`, `dados_invalidos`, `erro`.
 - Conversa do RootifyONE (pedido pelo prompt, item 3f): aceitar as categorias do RADAR na ficha (`rootify-feedback.js` 26-29 tem lista
   fixa) e mostrar `aparelho.licenca` e `aparelho.escritorio` como "Licença" e "Escritório".
@@ -237,8 +237,8 @@ numéricos de hoje continuam válidos; extração de "CNPJ 12.ABC.345/01DE-35", 
 ## 4. Ordem sugerida para a 0.7.33 e o que falta do dono
 
 1. CNPJ alfanumérico (3): só robô, sem nuvem, risco baixo, já atrasado em relação à Receita.
-2. Critérios por pessoa (1): robô e tela; depende da resposta à pergunta 16 (planilha completa ou filtrada por quem leu).
-3. Chamados (2): tela e robô na 0.7.33; `lex-conta` v17 pela Arquitetura depois do "pode" (pergunta 15); anexo na 0.7.34.
+2. Critérios por pessoa (1): robô e tela; planilha completa (decisão da Arquitetura, 1.5).
+3. Chamados (2): tela e robô na 0.7.33; `lex-conta` v17 pela Arquitetura, sem nova pergunta; anexo na 0.7.34.
 
 Definição de pronto (5 pontos) para os três: manual e (?) ("critérios são seus, neste computador"; "abrir um chamado"; "CNPJ novo"),
 AssistONE (ajuda, tour, busca), Novidades formais e curtas, termos **sem mudança** (o chamado manda só o que a pessoa vê e aprova; o
