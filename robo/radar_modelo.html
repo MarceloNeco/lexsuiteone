@@ -177,6 +177,10 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .espaco { flex: 1 1 auto; }
 .estado { font-size: .86rem; color: var(--tinta-2); display: grid; gap: 2px; }
 .estado .ok { color: var(--tinta-2); }
+.avisos-rapidos { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 60; display: flex; flex-direction: column; gap: 6px; align-items: center; max-width: min(92vw, 640px); pointer-events: none; }
+.avisos-rapidos .aviso-rapido { display: block; background: var(--folha, #fff); border: 1px solid var(--linha, #d8dde6); border-radius: 10px; padding: 10px 16px; box-shadow: 0 6px 22px rgba(15, 29, 51, .18); font-size: .95rem; pointer-events: auto; }
+.avisos-rapidos .aviso-rapido.ok { color: #2f6b3a; } .avisos-rapidos .aviso-rapido.erro { color: var(--erro); } .avisos-rapidos .aviso-rapido.nota-g { color: var(--tinta-2); }
+.lic-ativa, .txt-verde { color: #2f6b3a; font-weight: 700; } .txt-azul { color: #1f5aa6; font-weight: 700; } :root[data-theme="dark"] .lic-ativa, :root[data-theme="dark"] .txt-verde { color: #7fc48b; } :root[data-theme="dark"] .txt-azul { color: #8db8f0; } @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lic-ativa, :root:not([data-theme="light"]) .txt-verde { color: #7fc48b; } :root:not([data-theme="light"]) .txt-azul { color: #8db8f0; } }
 .estado .andando { color: var(--latao-texto); font-weight: 600; }
 .estado .log { color: var(--tinta-3); font-size: .8rem; }
 .estado .rodando-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; }
@@ -2150,7 +2154,7 @@ window.LEXSUITE_RADAR = null;
     sair_ok: "Pode fechar esta janela. O RADAR foi encerrado.", sair_rodando: "Há uma leitura em andamento: espere terminar ou clique em Interromper.",
     fechado_t: "O RADAR foi encerrado", fechado_x: "Pode fechar esta janela. Para usar de novo, abra pelo atalho da área de trabalho.",
     atualizando: "Atualizando para a versão {v}… a tela volta sozinha em alguns segundos.", reiniciando: "Reiniciando o programa…",
-    c_s_licenca: "Licença e termos", c_s_lista: "A lista", c_s_leitura: "Leitura", c_s_tela: "Tela", c_l_aone: "Assistente (AssistONE)", lic_trocar: "Trocar licença", lic_conferir: "Conferir agora", lic_conferida_ok: "Licença conferida com a SolverONE agora: ativa.", lic_sem_internet: "Sem conexão com a SolverONE: não foi possível conferir agora. Tente de novo em instantes.", lic_trocar_t: "Trocar o código de cliente?", lic_trocar_p: "Digite o novo código (está no e-mail de boas-vindas) e salve. O {c} só troca se a SolverONE confirmar o código novo; até lá, e sem internet, o atual continua valendo.", lic_trocar_ok: "Trocar", lic_salvar_dica: "Digite o código novo e clique em Salvar.", c_s_pasta: "Pasta das planilhas", c_s_sobre: "Sobre este computador",
+    c_s_licenca: "Licença e termos", c_s_lista: "A lista", c_s_leitura: "Leitura", c_s_tela: "Tela", c_l_aone: "Assistente (AssistONE)", lic_trocar: "Trocar licença", lic_conferir: "Conferir agora", lic_conferida_ok: "Licença conferida com a SolverONE agora: ativa.", lic_conferida_pre: "Licença conferida com a SolverONE agora:", lic_ativa: "ativa", lic_ocupado: "Há uma leitura em andamento; ela confere a licença sozinha.", conferindo_lic: "Conferindo a licença com a SolverONE…", lic_conferindo_btn: "Conferindo…", lic_sem_internet: "Sem conexão com a SolverONE: não foi possível conferir agora. Tente de novo em instantes.", lic_trocar_t: "Trocar o código de cliente?", lic_trocar_p: "Digite o novo código (está no e-mail de boas-vindas) e salve. O {c} só troca se a SolverONE confirmar o código novo; até lá, e sem internet, o atual continua valendo.", lic_trocar_ok: "Trocar", lic_salvar_dica: "Digite o código novo e clique em Salvar.", c_s_pasta: "Pasta das planilhas", c_s_sobre: "Sobre este computador",
     c_pasta_nota: "Mudar a pasta não move as planilhas que já existem: o RADAR cria as novas na pasta escolhida na próxima leitura, e as antigas ficam onde estão.",
     c_fechar: "Fechar", c_mudou_t: "Salvar as mudanças?", c_mudou: "Você mudou as Configurações e ainda não salvou.", c_descartar: "Descartar", c_continuar: "Continuar editando",
     arm_t: "Armazenamento", arm_planilha: "Planilha {f}", arm_linhas: "{n} de {l} linhas ({p}%)", arm_banco: "Banco do programa ({n} ações guardadas)",
@@ -2220,7 +2224,7 @@ window.LEXSUITE_RADAR = null;
     sair_ok: "You can close this window. RADAR has exited.", sair_rodando: "A reading is in progress: wait for it to finish or click Stop.",
     fechado_t: "RADAR has closed", fechado_x: "You can close this window. To use it again, open it from the desktop shortcut.",
     atualizando: "Updating to version {v}… the screen comes back by itself in a few seconds.", reiniciando: "Restarting the program…",
-    c_s_licenca: "Licence and terms", c_s_lista: "The list", c_s_leitura: "Reading", c_s_tela: "Screen", c_l_aone: "Assistant (AssistONE)", lic_trocar: "Change licence", lic_conferir: "Check now", lic_conferida_ok: "Licence checked with SolverONE just now: active.", lic_sem_internet: "No connection to SolverONE: the check could not be done now. Try again shortly.", lic_trocar_t: "Change the client code?", lic_trocar_p: "Type the new code (it is in the welcome e-mail) and save. {c} only changes it if SolverONE confirms the new code; until then, and without internet, the current one stays valid.", lic_trocar_ok: "Change", lic_salvar_dica: "Type the new code and click Save.", c_s_pasta: "Spreadsheet folder", c_s_sobre: "About this computer",
+    c_s_licenca: "Licence and terms", c_s_lista: "The list", c_s_leitura: "Reading", c_s_tela: "Screen", c_l_aone: "Assistant (AssistONE)", lic_trocar: "Change licence", lic_conferir: "Check now", lic_conferida_ok: "Licence checked with SolverONE just now: active.", lic_conferida_pre: "Licence checked with SolverONE just now:", lic_ativa: "active", lic_ocupado: "A reading is running; it checks the licence by itself.", conferindo_lic: "Checking the licence with SolverONE…", lic_conferindo_btn: "Checking…", lic_sem_internet: "No connection to SolverONE: the check could not be done now. Try again shortly.", lic_trocar_t: "Change the client code?", lic_trocar_p: "Type the new code (it is in the welcome e-mail) and save. {c} only changes it if SolverONE confirms the new code; until then, and without internet, the current one stays valid.", lic_trocar_ok: "Change", lic_salvar_dica: "Type the new code and click Save.", c_s_pasta: "Spreadsheet folder", c_s_sobre: "About this computer",
     c_pasta_nota: "Changing the folder does not move existing spreadsheets: RADAR creates new ones in the chosen folder on the next reading, and the old ones stay where they are.",
     c_fechar: "Close", c_mudou_t: "Save changes?", c_mudou: "You changed the Settings and did not save yet.", c_descartar: "Discard", c_continuar: "Keep editing",
     arm_t: "Storage", arm_planilha: "Spreadsheet {f}", arm_linhas: "{n} of {l} rows ({p}%)", arm_banco: "Program database ({n} lawsuits saved)",
@@ -2538,6 +2542,7 @@ window.LEXSUITE_RADAR = null;
     conferindoConta = post("/conta/conferir", {}).then(function (r) {
       conferindoConta = null;
       if (!r || !r.conta || r.sem_internet) return "sem";  // revisão da 0.7.35: sem conexão não é "conferido" nem "pendente"
+      if (r.ocupado) return "ocupado";  // 0.7.36 (revisão da Operação): leitura em andamento; ela mesma confere a licença
       var antes = !!(APP.conta && APP.conta.ok); APP.conta = r.conta; bannerControle();
       if (APP.conta.ok && !antes) { pararVigiaAceite(); avisoRapidoApp(t("aceite_ok")); }
       return !!APP.conta.ok;
@@ -2550,7 +2555,10 @@ window.LEXSUITE_RADAR = null;
   }
   function pararVigiaAceite() { clearInterval(vigiaAceite); vigiaAceite = null; }
   function avisoRapidoApp(txt, cls) {  // revisão da 0.7.35: entra no alto da linha de estado sem apagar o que já está lá
-    var e_ = $("estado"); if (!e_) return; var n_ = el("span", cls || "ok", txt); e_.insertBefore(n_, e_.firstChild);
+    var e_ = $("avisos-rapidos");  // 0.7.36 (revisão da Operação): faixa própria, que a linha de estado não apaga nem a leitura de outro processo
+    if (!e_) { e_ = el("div", "avisos-rapidos"); e_.id = "avisos-rapidos"; e_.setAttribute("role", "status"); e_.setAttribute("aria-live", "polite"); document.body.appendChild(e_); }
+    [].slice.call(e_.querySelectorAll(".aviso-rapido")).forEach(function (v_) { if (v_.textContent === txt) v_.parentNode.removeChild(v_); });  // 0.7.36: avisos iguais não se empilham
+    var n_ = el("span", (cls || "ok") + " aviso-rapido", txt); e_.insertBefore(n_, e_.firstChild);
     setTimeout(function () { if (n_.parentNode) n_.parentNode.removeChild(n_); }, 9000);
   }
   window.addEventListener("focus", function () { if (pendenteAceite()) conferirConta(true); });
@@ -2572,7 +2580,11 @@ window.LEXSUITE_RADAR = null;
     if (selMudou() && Object.keys(sel).length && !(APP && APP.conta && !APP.conta.ok)) { salvarTribunais(true); return; }  // revisão: licença conferida antes  // 0.7.30 (dono): marcou na mira e clicou em "Ler o Diário agora": salva e lê o que está marcado
     if (!Object.keys(sel).length) { $("painel").hidden = false; $("b-trib").setAttribute("aria-expanded", "true"); painel(); mostrarEstado({ erro: t("sem_trib") }); return; }
     if (APP && APP.conta && !APP.conta.ok) {  // 0.7.34 (dono): confere na nuvem antes (o aceite pode ter acabado de ser feito)
-      conferirConta().then(function (ok) { if (ok === true) rodar(); else { avisoLicenca(); if (ok === "sem") avisoRapidoApp(t("lic_sem_internet"), "erro"); } });  // revisão: não apaga a linha de estado
+      var bR_ = $("b-rodar"); if (bR_) bR_.disabled = true; avisoRapidoApp(t("conferindo_lic"), "nota-g");  // 0.7.36 (revisão da Operação): retorno enquanto confere
+      conferirConta().then(function (ok) {
+        if (bR_) bR_.disabled = false; [].slice.call(document.querySelectorAll("#avisos-rapidos .aviso-rapido")).forEach(function (v_) { if (v_.textContent === t("conferindo_lic")) v_.parentNode.removeChild(v_); });
+        if (ok === true) rodar(); else if (ok !== "ocupado") { avisoLicenca(); if (ok === "sem") avisoRapidoApp(t("lic_sem_internet"), "erro"); }
+      });  // revisão: não apaga a linha de estado
       return;
     }
     if (vigiaHist || (D && D.historico && D.historico.rodando && D.historico.rodando.rodando)) { avisoBuscaEstatisticas(); return; }  // 0.7.33 (dono)
@@ -2869,8 +2881,10 @@ window.LEXSUITE_RADAR = null;
     corpo.horarios = cHoras.slice(); corpo.dias = diasValor(cDias); if (!cDias.length) corpo.agendar = false; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
     post("/config", corpo).then(function (r) {
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
-      $("c-msg").textContent = t("c_salvo") + (r.agendar_msg ? " " + r.agendar_msg : ""); snapC = estadoConfig(); fecharConfig(); mostrarAviso(t("c_salvo")); carregar();
-      if (mesmoCod_) conferirConta().then(function (ok) { avisoRapidoApp(ok === true ? t("lic_conferida_ok") : ok === "sem" ? t("lic_sem_internet") : (textoConta() || t("falha")), ok === true ? "ok" : "erro"); });
+      var agM_ = r.agendar_msg && lang === "en" && r.agendar_ok ? (r.agendado ? "" : t("ag_desligada")) : (r.agendar_msg || "");  // 0.7.36 (revisão da Operação): sem frase em PT na tela em EN
+      $("c-msg").textContent = t("c_salvo") + (agM_ ? " " + agM_ : ""); snapC = estadoConfig(); fecharConfig(); mostrarAviso(t("c_salvo"));
+      var depois_ = carregar();  // 0.7.36 (revisão da Operação): confere depois do carregar, para o aviso não ser apagado por ele
+      if (mesmoCod_) Promise.resolve(depois_).then(function () { return conferirConta(); }).then(function (ok) { avisoRapidoApp(ok === true ? t("lic_conferida_ok") : ok === "sem" ? t("lic_sem_internet") : ok === "ocupado" ? t("lic_ocupado") : (textoConta() || t("falha")), ok === true ? "ok" : "erro"); });
     }).catch(function () { $("c-msg").textContent = t("falha"); });
   }
   function verificarAtualizacao() {
@@ -4495,7 +4509,7 @@ window.LEXSUITE_RADAR = null;
   }
   function abrirPlanilha(oque) {
     post("/abrir", { o_que: oque }).then(function (r) {
-      if (!r.ok) { mostrarEstado({ erro: r.motivo || t("planilha_falta") }); return; }
+      if (!r.ok) { mostrarEstado({ erro: oque === "pasta" ? t("pasta_ainda_nao") : (r.motivo || t("planilha_falta")) }); return; }  // 0.7.36: o mesmo texto do botão das Configurações
       var velho_ = $("aviso-em-uso"); if (velho_) velho_.parentNode.removeChild(velho_);  // 0.7.27: um aviso só, não empilha
       var n = el("span", r.em_uso ? "erro" : "ok", r.em_uso ? t(r.so_leitura ? "planilha_em_uso" : "planilha_em_uso_sem_excel", { c: marcaCurto() }) : t(oque === "planilha" ? "abrindo_planilha" : "abrindo_pasta"));
       if (r.em_uso) n.id = "aviso-em-uso"; $("estado").insertBefore(n, $("estado").firstChild);
@@ -4654,9 +4668,11 @@ window.LEXSUITE_RADAR = null;
   $("c-fechar").addEventListener("click", function () { fecharConfig(false); });
   var trocandoLic = false;
   $("c-conferir-lic").addEventListener("click", function () {  // 0.7.35 (dono): confere a licença e os termos na hora, sem trocar nada
-    var b_ = $("c-conferir-lic"); b_.disabled = true; $("c-msg").textContent = t("conferindo");
+    var b_ = $("c-conferir-lic"); b_.disabled = true; b_.textContent = t("lic_conferindo_btn"); $("c-msg").textContent = t("conferindo_lic");  // 0.7.36 (dono): o botão mostra que está trabalhando
     conferirConta().then(function (ok) {
-      b_.disabled = false; $("c-msg").textContent = ok === "sem" ? t("lic_sem_internet") : ok === true ? t("lic_conferida_ok") : (textoConta() || t("falha"));
+      b_.disabled = false; b_.textContent = t("lic_conferir"); var m_ = $("c-msg"); m_.textContent = "";
+      if (ok === true) { m_.appendChild(document.createTextNode(t("lic_conferida_pre") + " ")); m_.appendChild(el("b", "lic-ativa", t("lic_ativa"))); m_.appendChild(document.createTextNode(".")); }  // 0.7.36 (dono): só "ativa" em verde
+      else m_.textContent = ok === "sem" ? t("lic_sem_internet") : ok === "ocupado" ? t("lic_ocupado") : (textoConta() || t("falha"));
       desenharTermosConfig(); infoConfig();
     });
   });
@@ -4809,7 +4825,7 @@ window.LEXSUITE_RADAR = null;
         "Simplificação da faixa de andamento da leitura.",
         "Identificação de como foram reconhecidas as ações guardadas em versões anteriores, quando o texto permite.",
         "Conferência da licença também em \"Trocar licença\" com o mesmo código.",
-        "Mensagem clara quando o programa se encerra.",
+        "Mensagem ao encerrar o programa.",
         "Melhorias no design e na navegação."],
       en: ["Automatic recognition of the terms acceptance when returning to the program, without restarting.",
         "\"I have accepted\" option in the pending terms notice.",
@@ -4822,7 +4838,7 @@ window.LEXSUITE_RADAR = null;
         "Simpler reading progress strip.",
         "Identification of how actions saved by earlier versions were recognised, when the text allows it.",
         "Licence check also in \"Change licence\" with the same code.",
-        "Clear message when the program closes.",
+        "Message when closing the program.",
         "Design and navigation improvements."]
     },
     "0.7.34": {

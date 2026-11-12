@@ -678,8 +678,10 @@ class Tratador(BaseHTTPRequestHandler):
         s = self.server
         if caminho == "/conta/conferir":  # 0.7.34 (dono): depois do aceite dos termos a tela confere na hora, sem esperar a leitura
             cfg = s.config()
-            if not conta.valido(conta.normalizar((cfg.get("conta") or {}).get("codigo"))) or s.estado.rodando:
-                return self._responder({"ok": False, "conta": conta.situacao(cfg)})  # a leitura em andamento já confere sozinha
+            if not conta.valido(conta.normalizar((cfg.get("conta") or {}).get("codigo"))):
+                return self._responder({"ok": False, "conta": conta.situacao(cfg)})
+            if s.estado.rodando:  # 0.7.36 (revisão da Operação): a leitura em andamento confere sozinha; a tela diz isso
+                return self._responder({"ok": False, "ocupado": True, "conta": conta.situacao(cfg)})
             import copy as _copy
             antes_conta = _copy.deepcopy(cfg.get("conta") or {})
             c = conta.verificar(cfg, VERSAO)
@@ -789,7 +791,7 @@ class Tratador(BaseHTTPRequestHandler):
                 ligar = corpo["agendar"] if "agendar" in corpo else True
                 ligar = ligar and bool(agendar.dias_da_semana(r.get("dias")))  # 0.7.32 (dono): nenhum dia marcado = desligada
                 ok, msg = agendar.agendar(s.pasta, *agendar.do_config(cfg)) if ligar else agendar.desagendar()
-                resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg})
+                resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg, "agendar_ok": bool(ok)})  # 0.7.36: a tela em EN traduz pelo estado
             return self._responder(resposta)
         if caminho == "/interromper":  # 0.7.15: pede para a leitura (desta tela ou a agendada) parar no próximo ponto seguro
             if not (s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento)):
