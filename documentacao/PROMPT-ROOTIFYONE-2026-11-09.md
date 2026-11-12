@@ -106,6 +106,15 @@ chama `sol_enviar_feedback`; nada muda no SQL da central). Na sua ficha e na fil
 (o `anon_id` é o id da instalação); (3) a resposta ao chamado vai por e-mail só quando `pode_responder` for verdadeiro, como já é.
 Quando a `lex-conta` v17 estiver publicada, aviso aqui; até lá, nada a fazer.
 
+**3g. Contas de teste dentro da produção (pedido do dono, 12/Nov; desenho `documentacao/DESENHO-CONTAS-DE-TESTE-2026-11-12.md`).**
+A Arquitetura aplica o SQL que cria o campo `teste` em `lex_contas`, `assinaturas` e `sol_feedback` (este último preenchido sozinho).
+Na sua tela: (1) ficha da licença: interruptor "Conta de teste" (`admin_lex_listar` devolve `teste`; `admin_lex_salvar` aceita
+`teste`; `admin_lex_criar` ganhou a versão com `p_teste` para a licença já nascer marcada); (2) lista de licenças e fila de chamados
+com a etiqueta "TESTE"; (3) painéis: `admin_sol_retorno` e `admin_feedback_painel` já devolvem `sem_contas_de_teste: true` e
+excluem as contas de teste; nenhum número seu conta conta de teste; (4) ficha da pessoa dos apps web: interruptor "Pessoa de teste"
+gravando `assinaturas.teste` (crie a função admin correspondente no seu SQL e mande à Arquitetura aplicar); (5) a opção "limpar os
+dados de teste" passa a usar `teste = true` e só roda depois do staging, com cópia e o "pode" do dono.
+
 **4. O que esperar (vem do LexSuiteONE, colado por mim).** O "publicado" da página de aceite e do e-mail com `{{email}}`
 e `&nome=`; o aviso de que a trava da KR Law foi ligada; a ampliação do check de `lex_eventos` com tipos próprios
 (`termos_aceitos`, `aceite_dispensado`, `aceite_exigido`) numa sessão em que eu esteja no desktop (até lá, tudo é
