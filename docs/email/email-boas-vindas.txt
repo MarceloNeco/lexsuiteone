@@ -1,6 +1,6 @@
 Olá, {{nome}}. Seu {{marca.nome}} está pronto.
 
-O {{marca.nome}} acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) nos tribunais que você escolher e relaciona os novos processos ajuizados em face de empresas e empreendedores com CNPJ, com a ficha cadastral de cada empresa. A relação aparece na tela do {{marca.curto}} e numa planilha na pasta que o escritório escolher (no computador ou no Google Drive).
+O {{marca.nome}} lê diariamente o Diário de Justiça Eletrônico Nacional (DJEN) nos tribunais escolhidos e lista os novos processos ajuizados contra empresas e empreendedores com CNPJ, com a ficha cadastral de cada empresa, na tela do programa e numa planilha do escritório.
 
 Baixar o {{marca.nome}} (instalador de 3 KB, Windows 10 ou 11):
 https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip
@@ -10,30 +10,25 @@ Seu código de cliente: {{codigo}}
 Guarde este e-mail: o código ativa o {{marca.nome}} em cada computador do escritório.
 
 [CODIGO-FIM]
-Antes de instalar, aceite os termos. Sua licença já está ativa, mas o programa só libera a leitura depois do aceite. Leia os termos de uso, a política de privacidade e o termo de tratamento de dados e confirme (leva 3 minutos; o código e o e-mail já vão preenchidos, e o aceite fica registrado):
+Aceite dos termos: o {{marca.curto}} só começa a ler depois do aceite dos termos pelo responsável do escritório. Você pode aceitar agora ou depois de instalar (o programa mostra o mesmo link):
 https://judicial.solverone.com.br/aceite.html#codigo={{codigo}}&email={{email}}&nome={{nome}}
 
-Como instalar, em quatro passos
-1. Instale: abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Ele baixa o resto, prepara tudo e abre a tela do programa numa janela própria. Não fica nenhuma janela preta aberta: o programa trabalha por trás.
-2. Configure no assistente: a tela confere o código e pede o seu nome, e-mail e função (e o seu aceite, em seu nome, dos mesmos termos); a pasta onde ficam as planilhas, uma por área (por exemplo, "LexSuiteONE - Trabalhista.xlsx"), no computador ou, se o escritório preferir, no Google Drive; e os tribunais (de início, os 24 TRTs). A primeira leitura começa em seguida.
-3. Confira a Configuração (a engrenagem, no alto da tela): pasta das planilhas, leituras automáticas (dias e horários), critérios da lista (valor mínimo e empresas que ficam de fora), espaço do computador, termos e "O que a SolverONE recebe".
-4. Daí em diante, abra pelo atalho {{marca.nome}} na área de trabalho. Para sair, use o menu ☰ e "Sair"; se a tela for fechada, o programa se encerra sozinho alguns minutos depois.
+Como instalar
+1. Abra o arquivo baixado e dê dois cliques em INSTALAR.bat. Se o Windows pedir confirmação, clique em "Mais informações" e "Executar assim mesmo".
+2. Siga o passo a passo na tela: código de cliente, seu nome e e-mail, a pasta das planilhas (uma por área, por exemplo, Trabalhista) e os tribunais.
+3. Confira a Configuração (ícone ⚙): dias e horários da leitura automática e critérios da lista (valor mínimo e empresas que ficam de fora).
+4. Depois, abra pelo atalho {{marca.nome}} na área de trabalho. Para sair, menu ☰ → Sair. O manual está no link "Manual", no alto da tela.
 
-Não é preciso compartilhar a pasta com a SolverONE. Se o escritório quiser ajuda do suporte, pode compartilhá-la por um tempo e retirar o acesso depois; é opcional (termos, seção 6.1).
+Onde roda: no computador do escritório, nos dias e horários escolhidos. Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
 
-Onde roda: no seu computador, que lê o DJEN nos dias e horários que o escritório escolher (de início, de segunda a sexta, às 20h e às 8h). Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
-
-Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). O manual completo abre dentro da própria tela, no link "Manual", no alto da tela.
-
-Segurança e dados: o {{marca.curto}} não pede nem guarda senha, não contorna captcha e só instala atualizações assinadas digitalmente. Organiza dados da empresa processada e, com a fonte, dos sócios, administradores e do empresário individual (inclusive MEI); não organiza dados do autor da ação nem de testemunhas (termos, seção 4). A relação de processos, as fichas, os contatos e as planilhas ficam no seu computador e na pasta do escritório. À SolverONE vão só: a conferência da licença, o cadastro de quem usa (nome, e-mail e função) e o documento do escritório (CNPJ, CPF ou passaporte), o aceite dos termos, avisos técnicos de erro sem conteúdo de processo e quantidades de processos por situação, dia, tribunal, área e faixa de valor, sem nome, número de processo ou CNPJ (termos, seções 6 e 7). A Configuração mostra exatamente o que foi enviado.
-
-{{marca.nome}}: https://judicial.solverone.com.br
+Segurança e dados: o {{marca.curto}} não pede senha, não contorna captcha e só instala atualizações assinadas. Processos, fichas e planilhas ficam no computador e na pasta do escritório; à SolverONE vão só a conferência da licença, o cadastro de quem usa, o aceite dos termos e totais sem nomes nem números de processo (detalhes nos termos).
 
 Dúvidas? Escreva para {{contato}}. Este e-mail saiu de um endereço automático e não recebe respostas.
 
-In English: your {{marca.nome}} is ready. Accept the terms first (link above), then download the installer, double-click INSTALAR.bat and follow the assistant: client code, your name, e-mail and role, the spreadsheet folder (on the computer or, if the firm prefers, on Google Drive) and the courts. No black window stays open; to quit, use the ☰ menu and "Exit". Lawsuit data stays on your computer and in the firm's folder; SolverONE only receives the licence check, who uses it, the terms acceptance, technical error notices and counts by status, without names, case numbers or tax IDs (terms, sections 6 and 7). Sharing the folder with SolverONE is optional, for support only. Keep this e-mail: the client code activates {{marca.nome}} on each of the firm's computers.
+In English: your {{marca.nome}} is ready. Download the installer, accept the terms (now or after installing) and follow the steps on screen. Questions: {{contato}}.
 
 Marcelo Freitas
 SolverONE
 
-{{marca.nome}} é um produto da LexSuiteONE, da SolverONE (solverone.com.br). Você recebeu este e-mail porque o seu escritório vai usar o {{marca.nome}}.
+LexSuiteONE · {{marca.nome}} é um produto da SolverONE.
+https://judicial.solverone.com.br

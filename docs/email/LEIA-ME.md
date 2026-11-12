@@ -34,3 +34,5 @@ bloco do código; sem ele, o bloco é removido, e o cliente não consegue instal
   critérios da lista e "O que a SolverONE recebe") e os termos 1.0 (seções 4, 6 e 7); traz um resumo em inglês.
 - Um e-mail por pessoa, enviado depois que ela pediu o pacote. Não é lista nem campanha.
 - Nada de senha ou chave no corpo do e-mail. O código de cliente não é segredo: identifica a conta, não dá acesso.
+
+- 12/Nov (dono): texto mais curto e formal, largura de 760 px no computador, aceite "agora ou depois de instalar", sem prometer campos preenchidos, sem o parágrafo do compartilhamento, rodapé "LexSuiteONE · RADAR JUDICIAL é um produto da SolverONE".
