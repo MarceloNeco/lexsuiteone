@@ -569,6 +569,8 @@ class Tratador(BaseHTTPRequestHandler):
                 d = cnpj.consultar(numero)
             except Exception:
                 d = None
+            if d and d.get("situacao") == "fonte_sem_suporte":  # 0.7.36: CNPJ novo (com letras) que as fontes ainda não conhecem
+                return self._responder({"ok": False, "motivo": "fonte_sem_suporte"})
             if not d or not d.get("razao_social"):
                 return self._responder({"ok": False, "motivo": "nao_encontrado"})
             return self._responder({"ok": True, "razao_social": d.get("razao_social", ""), "nome_fantasia": d.get("nome_fantasia", ""),
@@ -629,7 +631,8 @@ class Tratador(BaseHTTPRequestHandler):
                 preferencias.migrar(s.pasta, compartilhar.pasta_base(cfg), cfg.get("radar"), banco=bd.Banco(s.caminho_db))
             erro = (preferencias.ler_criterios(s.pasta) or {}).get("erro", "")
             valores, exc = preferencias.criterios_da_area(s.pasta, area)
-            return self._responder({"ok": True, "area": area, "areas": list(preferencias.AREAS), "valores": valores, "exclusoes": exc,
+            em_uso = [a for a in preferencias.AREAS if any(cl.sem_acento(f).lower() == a for f in FRENTES)]  # 0.7.36 (dono): copiar só aparece com mais de uma
+            return self._responder({"ok": True, "area": area, "areas": list(preferencias.AREAS), "areas_em_uso": em_uso, "valores": valores, "exclusoes": exc,
                                     "limites": preferencias.LIMITES, "max_exclusoes": preferencias.MAX_EXCLUSOES, "erro_leitura": erro})
         if u.path == "/chamados":  # 0.7.33: Meus chamados (lista local) e envio dos que ficaram sem internet
             if not CHAMADO_LIGADO:
@@ -929,6 +932,9 @@ class Tratador(BaseHTTPRequestHandler):
             return self._responder({"ok": True})
         if caminho == "/regras":  # 0.7.33 (dono): grava os critérios desta pessoa (criterios.json), por área
             area, valores, exc, todas = corpo.get("area") or "trabalhista", corpo.get("valores"), corpo.get("exclusoes"), bool(corpo.get("todas"))
+            destinos = [a for a in (corpo.get("destinos") or []) if a in preferencias.AREAS]  # 0.7.36 (dono): copiar para as áreas escolhidas
+            modo = "acrescentar" if corpo.get("modo") == "acrescentar" else "substituir"
+            partes = [p_ for p_ in (corpo.get("partes") or ["valores", "exclusoes"]) if p_ in ("valores", "exclusoes")]
             if not isinstance(valores, dict) or not isinstance(exc, list) or area not in preferencias.AREAS:
                 return self._responder({"ok": False, "motivo": "Pedido incompleto: abra os critérios de novo.",
                                         "motivo_en": "Incomplete request: open the criteria again."}, status=400)
@@ -943,6 +949,8 @@ class Tratador(BaseHTTPRequestHandler):
             with _TRAVA_REGRAS:
                 try:
                     preferencias.salvar_area(s.pasta, area, valores, exc, todas=todas)
+                    if destinos and partes:
+                        preferencias.copiar_area(s.pasta, area, destinos, modo=modo, partes=partes)
                 except ValueError:  # revisão da 0.7.33: criterios.json ilegível e sem cópia boa: não grava uma área por cima
                     return self._responder({"ok": False, "motivo": "O arquivo dos critérios deste computador está danificado e não há cópia boa. Escreva para judicial@solverone.com.br antes de salvar.",
                                             "motivo_en": "This computer's criteria file is damaged and there is no good copy. Write to judicial@solverone.com.br before saving."})

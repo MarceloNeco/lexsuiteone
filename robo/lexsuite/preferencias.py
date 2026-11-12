@@ -222,9 +222,15 @@ def exclusoes_validas(lista):
         if not isinstance(e, dict):  # revisão da 0.7.28: item que não é {nome, motivo} é ignorado
             continue
         ok = exclusao_valida(e.get("nome"))
-        if not ok or ok[0].lower() in vistos:
+        cj = e.get("cnpj")
+        if ok and ok[1] is None and cj and documento.valido(cj):  # 0.7.36 (dono): nome vindo da consulta + CNPJ, os dois valem
+            ok = (ok[0], documento.limpar(cj))
+        if not ok:
             continue
-        vistos.add(ok[0].lower())
+        chave = ("cnpj", ok[1]) if ok[1] else ("nome", cl.chave_nome(ok[0]) or ok[0].lower())
+        if chave in vistos or ("nome", cl.chave_nome(ok[0]) or ok[0].lower()) in vistos:
+            continue
+        vistos.add(chave); vistos.add(("nome", cl.chave_nome(ok[0]) or ok[0].lower()))
         saida.append({"nome": ok[0], "cnpj": ok[1], "motivo": str(e.get("motivo") or "").strip()[:200],
                       "desde": str(e.get("desde") or dt.date.today().isoformat())[:10]})
     return saida
@@ -307,6 +313,29 @@ def salvar_area(pasta, area, valores, exclusoes, todas=False):
     bloco = dict(valores_validos(valores), exclusoes=exclusoes_validas(exclusoes))
     for a in (AREAS if todas else (area if area in AREAS else "trabalhista",)):
         areas[a] = dict(bloco, exclusoes=[dict(e) for e in bloco["exclusoes"]])
+    return gravar_criterios(pasta, {"origem": "tela", "areas": areas})
+
+
+def copiar_area(pasta, origem, destinos, modo="substituir", partes=("valores", "exclusoes")):
+    """0.7.36 (dono): copia os limites e opções ("valores") e/ou as empresas excluídas da área de origem para as áreas
+    escolhidas. "substituir" troca o que havia; "acrescentar" soma as empresas, sem repetir o mesmo CNPJ ou o mesmo nome
+    (os limites e opções, quando escolhidos, são sempre trocados)."""
+    d = ler_criterios(pasta) or {"areas": {}}
+    if d.get("erro"):
+        raise ValueError("criterios_ilegivel")
+    areas = dict(d.get("areas") or {})
+    o_ = areas.get(origem if origem in AREAS else "trabalhista") or {}
+    val_o, exc_o = valores_validos(o_), exclusoes_validas(o_.get("exclusoes") or [])
+    for a in destinos:
+        if a not in AREAS or a == origem:
+            continue
+        atual = areas.get(a) or {}
+        novo = dict(valores_validos(atual), exclusoes=exclusoes_validas(atual.get("exclusoes") or []))
+        if "valores" in partes:
+            novo.update(val_o)
+        if "exclusoes" in partes:
+            novo["exclusoes"] = exclusoes_validas((novo["exclusoes"] + exc_o) if modo == "acrescentar" else exc_o)
+        areas[a] = novo
     return gravar_criterios(pasta, {"origem": "tela", "areas": areas})
 
 

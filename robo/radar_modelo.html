@@ -555,6 +555,12 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .rg-busca { width: 100%; box-sizing: border-box; border: 1px solid var(--linha-2); border-radius: 999px; padding: 6px 12px; margin: 4px 0; }
 .rg-exc { max-height: 260px; overflow-y: auto; } .rg-exc-linha { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; padding: 6px 0; border-top: 1px solid var(--linha, #e3e7ee); }
 .rg-exc-linha b { flex: 1 1 220px; } .rg-exc-linha span { flex: 1 1 160px; color: var(--tinta-3); font-size: .86rem; } .rg-msg { font-size: .86rem; color: var(--tinta-3); }
+/* 0.7.36 (dono): cada empresa numa linha só, letra menor: nome · CNPJ · motivo · Tirar */
+.rg-exc-linha { flex-wrap: nowrap; font-size: .88rem; padding: 4px 0; } .rg-exc-linha > * { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rg-exc-linha b { flex: 2 1 0; font-weight: 600; } .rg-exc-linha .rg-exc-doc { flex: 0 0 170px; font-variant-numeric: tabular-nums; } .rg-exc-linha .rg-exc-mot { flex: 1 1 0; } .rg-exc-linha .fs-apagar { flex: none; }
+.rg-exc-linha.nova { background: var(--latao-wash, #f6ecd4); border-radius: 6px; padding-left: 6px; transition: background 2s; }
+.rg-busca-rot { display: grid; gap: 4px; margin-top: 10px; font-size: .84rem; color: var(--tinta-3); } .rg-copiar-grupo { display: grid; gap: 4px; margin: 4px 0 8px; }
+@media (max-width: 600px) { .rg-exc-linha { flex-wrap: wrap; } .rg-exc-linha .rg-exc-doc { flex-basis: auto; } }
 .multi-nota { font-size: .78rem; color: var(--tinta-3); margin: 6px 10px 2px; }
 .arquivo-info { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: .86rem; color: var(--tinta-2); padding: 0 0 12px; }
 /* cartões de escolha (no lugar da lista que o Windows abre cortada) */
@@ -2136,14 +2142,14 @@ window.LEXSUITE_RADAR = null;
     rodar_crit_1: "Lê {n} de {k} tribunais ({l}), do último dia útil até hoje", rodar_crit_n: "Lê {n} de {k} tribunais ({l}), dos últimos {d} dias úteis até hoje", rodar_crit_alterar: "alterar", rodar_crit_mudou: "(marcado, ainda não salvo)",
     ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
     c_trib_lidos: "Tribunais que a leitura lê: {l}.", ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Se precisar de suporte, use o DIAGNOSTICO.bat: ele leva estas linhas, sem CPF.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo",
-    ch_t: "Abrir um chamado", ch_x: "Sua mensagem vai para o suporte da SolverONE pelo próprio programa. Não escreva senhas. Se for sobre um processo, descreva sem o número, se puder.", ch_assunto: "Assunto", ch_escolha: "Escolha o assunto", ch_c_erro: "Erro", ch_c_duvida: "Dúvida", ch_c_sugestao: "Sugestão", ch_c_licenca_e_acesso: "Licença e acesso", ch_c_planilha_e_pasta: "Planilha e pasta", ch_c_leitura_do_diario: "Leitura do Diário", ch_c_outros: "Outros", ch_texto: "Mensagem", ch_texto_ph: "O que aconteceu ou o que você precisa", ch_responder: "Podem me responder por e-mail ({e})", ch_sem_email: "Sem e-mail no cadastro: a resposta vem pelo escritório", ch_previa: "Vai junto (desmarque o que não quiser enviar)", ch_p_tela: "Tela: {t}; último clique: {u}", ch_p_sistema: "Versão {v}, Windows e Python deste computador", ch_p_licenca: "Também vão o código de cliente e o escritório, para a SolverONE saber de quem é o chamado. Nenhum nome de empresa, número de processo ou contato da lista vai junto.", ch_enviar: "Enviar", ch_falta_assunto: "Escolha o assunto.", ch_falta_texto: "Escreva a mensagem.", ch_ok: "Chamado nº {n} aberto. Guarde o número.", ch_meus: "Meus chamados", ch_meu: "Nº {n}, {d}, {a}", rg_titulo: "Destaques e exclusões", rg_titulo_x: "Estes critérios são seus, neste computador. Cada pessoa do escritório tem os dela, separados por área; a planilha compartilhada não guarda critérios.", rg_intro: "O que o {c} destaca ou deixa de fora da sua lista, nesta área.", rg_area: "Área:", rg_a_trabalhista: "Trabalhista", rg_a_tributario: "Tributário", rg_a_civel: "Cível", rg_a_empresarial: "Empresarial", rg_copiar: "Copiar estes critérios para as outras áreas", rg_copiar_q: "Copiar os critérios e as empresas excluídas de {a} para as outras áreas? O que está lá hoje é substituído.", rg_copiar_ok: "Copiar", rg_invalido: "Número inválido: use só algarismos, com ponto ou vírgula.", rg_area_mudou: "Os critérios de {a} têm mudanças que ainda não foram salvas.", rg_copiado: "✓ Critérios copiados para todas as áreas.", rg_exc_n: "Empresas excluídas ({n})", rg_doc_ruim: "CPF ou CNPJ inválido. Confira os números (o CNPJ novo pode ter letras).", rg_erro_arquivo: "Não consegui ler o arquivo de critérios deste computador; aparecem os padrões. Ao salvar, ele é criado de novo.",
+    ch_t: "Abrir um chamado", ch_x: "Sua mensagem vai para o suporte da SolverONE pelo próprio programa. Não escreva senhas. Se for sobre um processo, descreva sem o número, se puder.", ch_assunto: "Assunto", ch_escolha: "Escolha o assunto", ch_c_erro: "Erro", ch_c_duvida: "Dúvida", ch_c_sugestao: "Sugestão", ch_c_licenca_e_acesso: "Licença e acesso", ch_c_planilha_e_pasta: "Planilha e pasta", ch_c_leitura_do_diario: "Leitura do Diário", ch_c_outros: "Outros", ch_texto: "Mensagem", ch_texto_ph: "O que aconteceu ou o que você precisa", ch_responder: "Podem me responder por e-mail ({e})", ch_sem_email: "Sem e-mail no cadastro: a resposta vem pelo escritório", ch_previa: "Vai junto (desmarque o que não quiser enviar)", ch_p_tela: "Tela: {t}; último clique: {u}", ch_p_sistema: "Versão {v}, Windows e Python deste computador", ch_p_licenca: "Também vão o código de cliente e o escritório, para a SolverONE saber de quem é o chamado. Nenhum nome de empresa, número de processo ou contato da lista vai junto.", ch_enviar: "Enviar", ch_falta_assunto: "Escolha o assunto.", ch_falta_texto: "Escreva a mensagem.", ch_ok: "Chamado nº {n} aberto. Guarde o número.", ch_meus: "Meus chamados", ch_meu: "Nº {n}, {d}, {a}", rg_titulo: "Destaques e exclusões", rg_titulo_x: "Estes critérios são seus, neste computador. Cada pessoa do escritório tem os dela, separados por área; a planilha compartilhada não guarda critérios.", rg_intro: "O que o {c} destaca ou deixa de fora da sua lista, nesta área.", rg_area: "Área:", rg_a_trabalhista: "Trabalhista", rg_a_tributario: "Tributário", rg_a_civel: "Cível", rg_a_empresarial: "Empresarial", rg_copiar: "Copiar para outras áreas", rg_copiar_ok: "Copiar", rg_invalido: "Número inválido: use só algarismos, com ponto ou vírgula.", rg_area_mudou: "Os critérios de {a} têm mudanças que ainda não foram salvas.", rg_exc_n: "Empresas excluídas ({n})", rg_doc_ruim: "CPF ou CNPJ inválido. Confira os números (o CNPJ novo pode ter letras).", rg_erro_arquivo: "Não consegui ler o arquivo de critérios deste computador; aparecem os padrões. Ao salvar, ele é criado de novo.",
     rg_sem_pasta: "Escolha primeiro onde ficam as planilhas (acima).", rg_valor: "Destacar ações a partir de (R$)", rg_valor_x: "Ações com valor da causa igual ou maior ficam em destaque, contam no cartão “Acima de” do Painel e no filtro “Acima de”. Nada sai da lista. Vazio ou 0: sem destaque.", rg_sem_minimo: "sem mínimo",
     rg_min: "Mínimo de ações da mesma empresa", rg_min_x: "Ex.: 3 = só destacar empresa com 3 ou mais ações novas na janela de dias. 1 = todas.", rg_janela: "Janela do mínimo de ações (dias)", rg_janela_x: "Quantos dias para trás contar as ações da mesma empresa.",
     rg_teto: "Capital social que indica jurídico próprio (R$)", rg_teto_x: "Acima disso a empresa é marcada “jurídico próprio provável” e vai para o fim da lista.", rg_esc_gig: "Esconder jurídico próprio provável", rg_esc_gig_x: "Esconde da lista as empresas acima do capital social indicado.",
     rg_esc_exc: "Esconder clientes e empresas excluídas", rg_esc_exc_x: "Esconde as empresas da lista de exclusões abaixo (clientes atuais, conflitos).", rg_socios: "Mostrar sócios e administradores", rg_socios_x: "Nomes de pessoas do cadastro público da Receita. Desligue se o escritório não precisa.",
     rg_dias_arq: "Dias na aba Arquivo da planilha", rg_dias_arq_x: "A aba Arquivo mostra os últimos N dias e todo processo trabalhado.", rg_limite: "Limite de linhas da planilha", rg_limite_x: "A 80% o RADAR avisa; a 100% guarda uma cópia de segurança e enxuga a aba Arquivo.",
-    rg_exc_t: "Empresas excluídas", rg_exc_x: "Clientes atuais, conflitos ou quem você não quer prospectar. Pode ser o nome, o CNPJ (inclusive o novo, com letras) ou o CPF.", rg_exc_busca: "Procurar na lista de excluídas", rg_exc_nome: "Nome ou CNPJ da empresa", rg_exc_motivo: "Motivo (ex.: cliente atual)",
-    rg_exc_add: "Acrescentar", rg_exc_tirar: "Tirar", rg_exc_vazio: "Nenhuma empresa excluída.", rg_exc_ja: "Essa empresa já está na lista.", rg_salvar: "Salvar critérios", rg_pendente: "Há mudanças não salvas.", rg_salvo: "✓ Critérios salvos neste computador.", rg_mudou: "Destaques e exclusões têm mudanças que ainda não foram salvas.", rg_de_novo: "Abrir os critérios de novo", rg_vazio: "Preencha este campo antes de salvar.", rg_fora: "Número fora do permitido: use de {a} a {b}.",
+    rg_exc_t: "Empresas excluídas", rg_exc_x: "Clientes atuais, conflitos ou quem você não quer prospectar. Pode ser o nome, o CNPJ (inclusive o novo, com letras) ou o CPF.", rg_exc_busca: "Procurar na lista de excluídas", rg_exc_nome: "CNPJ, CPF ou nome da empresa", rg_exc_motivo: "Motivo (ex.: cliente atual)",
+    rg_exc_add: "Acrescentar", rg_exc_tirar: "Tirar", rg_exc_vazio: "Nenhuma empresa excluída.", rg_exc_ja: "Essa empresa já está na lista.", rg_exc_ok: "✓ Acrescentada: {n}.", rg_exc_sem_doc: "Sem CNPJ: a exclusão vale só para esse nome, escrito igual.", rg_cnpj_buscando: "Procurando o nome pelo CNPJ…", rg_cnpj_achou: "Empresa encontrada:", rg_cnpj_novo: "CNPJ novo: o cadastro público ainda não tem o nome. A exclusão vale pelo CNPJ.", rg_cnpj_nao_achou: "CNPJ válido, mas não encontrado no cadastro público. A exclusão vale pelo CNPJ.", rg_cnpj_sem_net: "Sem internet para buscar o nome. A exclusão vale pelo CNPJ.", rg_busca_rot: "Procurar na lista", rg_busca_nada: "Nenhuma excluída com \u201c{q}\u201d.", rg_busca_limpar: "Limpar a busca", rg_falta_nome: "Digite o CNPJ, o CPF ou o nome da empresa.", rg_copiar_ajuda: "Copia os limites, as opções e as empresas excluídas desta área para as áreas que você escolher.", rg_copiar_para_t: "Copiar para quais áreas?", rg_copiar_o_que: "O que copiar", rg_copiar_valores: "Limites e opções", rg_copiar_exc: "Empresas excluídas", rg_copiar_modo: "Empresas já excluídas lá", rg_modo_somar: "Acrescentar (soma, sem repetir o mesmo CNPJ ou nome)", rg_modo_trocar: "Substituir (apaga as de lá e põe estas)", rg_copiado_para: "✓ Critérios copiados para {a}.", rg_copiar_nada: "Escolha pelo menos uma área e o que copiar.", rg_salvar: "Salvar critérios", rg_pendente: "Há mudanças não salvas.", rg_salvo: "✓ Critérios salvos neste computador.", rg_mudou: "Destaques e exclusões têm mudanças que ainda não foram salvas.", rg_de_novo: "Abrir os critérios de novo", rg_vazio: "Preencha este campo antes de salvar.", rg_fora: "Número fora do permitido: use de {a} a {b}.",
     fs_titulo: "Filtros salvos", fs_x: "Ficam neste computador. Arquivar esconde da lista sem apagar.", fs_renomear: "Renomear", fs_arquivar: "Arquivar", fs_desarquivar: "Voltar para a lista", fs_arquivado: "arquivado", fs_apagar: "Apagar", fs_novo_nome: "Novo nome do filtro:", fs_existe: "Já existe um filtro com esse nome.", fs_apagar_q: "Apagar o filtro “{n}”?",
     r_filtrar: "Mais filtros", bl_leitura: "Configuração da leitura", bl_filtros: "Filtros da lista", bl_filtros_painel: "Filtros do painel", mais_filtros: "Mais filtros", mais_filtros_n: "Mais filtros ({n})", per_n2: "últimos {d} dias", r_ordenar: "Ordenar por", limpar_filtros_0: "Limpar filtros", trib_so_lidos: "O filtro só mostra o que já está na lista. Para escolher o que o programa lê:",
     rodar_crit_x: "O que “Ler o Diário agora” lê: o Diário de hoje e dos últimos dias úteis com publicação, nos tribunais escolhidos. Diário já lido não é baixado de novo. Os filtros da lista não mudam o que é lido (lê tudo, para nada se perder); eles só escolhem o que aparece, e ficam guardados.",
@@ -2206,14 +2212,14 @@ window.LEXSUITE_RADAR = null;
     rodar_crit_1: "Reads {n} of {k} courts ({l}), from the last working day to today", rodar_crit_n: "Reads {n} of {k} courts ({l}), the last {d} working days to today", rodar_crit_alterar: "change", rodar_crit_mudou: "(ticked, not saved yet)",
     ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
     c_trib_lidos: "Courts the reading covers: {l}.", ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). For support, run DIAGNOSTICO.bat: it takes these lines, without CPF.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file",
-    ch_t: "Open a support ticket", ch_x: "Your message goes to SolverONE support through the program itself. Do not write passwords. If it is about a lawsuit, describe it without the number if you can.", ch_assunto: "Subject", ch_escolha: "Choose the subject", ch_c_erro: "Error", ch_c_duvida: "Question", ch_c_sugestao: "Suggestion", ch_c_licenca_e_acesso: "Licence and access", ch_c_planilha_e_pasta: "Spreadsheet and folder", ch_c_leitura_do_diario: "Gazette reading", ch_c_outros: "Other", ch_texto: "Message", ch_texto_ph: "What happened or what you need", ch_responder: "You may reply by e-mail ({e})", ch_sem_email: "No e-mail on file: the answer comes through the firm", ch_previa: "Sent along (untick what you do not want to send)", ch_p_tela: "Screen: {t}; last click: {u}", ch_p_sistema: "Version {v}, Windows and Python of this computer", ch_p_licenca: "The client code and the firm also go, so SolverONE knows whose ticket it is. No company name, lawsuit number or contact from the list goes along.", ch_enviar: "Send", ch_falta_assunto: "Choose the subject.", ch_falta_texto: "Write the message.", ch_ok: "Ticket no. {n} opened. Keep the number.", ch_meus: "My tickets", ch_meu: "No. {n}, {d}, {a}", rg_titulo: "Highlights and exclusions", rg_titulo_x: "These criteria are yours, on this computer. Each person in the firm has their own, by practice area; the shared spreadsheet does not keep criteria.", rg_intro: "What {c} highlights or leaves out of your list, in this area.", rg_area: "Area:", rg_a_trabalhista: "Labour", rg_a_tributario: "Tax", rg_a_civel: "Civil", rg_a_empresarial: "Corporate", rg_copiar: "Copy these criteria to the other areas", rg_copiar_q: "Copy the criteria and excluded companies of {a} to the other areas? What is there today is replaced.", rg_copiar_ok: "Copy", rg_invalido: "Invalid number: use digits only, with a point or comma.", rg_area_mudou: "The {a} criteria have changes that were not saved yet.", rg_copiado: "✓ Criteria copied to all areas.", rg_exc_n: "Excluded companies ({n})", rg_doc_ruim: "Invalid CPF or CNPJ. Check the numbers (the new CNPJ may have letters).", rg_erro_arquivo: "Could not read the criteria file on this computer; defaults are shown. Saving creates it again.",
+    ch_t: "Open a support ticket", ch_x: "Your message goes to SolverONE support through the program itself. Do not write passwords. If it is about a lawsuit, describe it without the number if you can.", ch_assunto: "Subject", ch_escolha: "Choose the subject", ch_c_erro: "Error", ch_c_duvida: "Question", ch_c_sugestao: "Suggestion", ch_c_licenca_e_acesso: "Licence and access", ch_c_planilha_e_pasta: "Spreadsheet and folder", ch_c_leitura_do_diario: "Gazette reading", ch_c_outros: "Other", ch_texto: "Message", ch_texto_ph: "What happened or what you need", ch_responder: "You may reply by e-mail ({e})", ch_sem_email: "No e-mail on file: the answer comes through the firm", ch_previa: "Sent along (untick what you do not want to send)", ch_p_tela: "Screen: {t}; last click: {u}", ch_p_sistema: "Version {v}, Windows and Python of this computer", ch_p_licenca: "The client code and the firm also go, so SolverONE knows whose ticket it is. No company name, lawsuit number or contact from the list goes along.", ch_enviar: "Send", ch_falta_assunto: "Choose the subject.", ch_falta_texto: "Write the message.", ch_ok: "Ticket no. {n} opened. Keep the number.", ch_meus: "My tickets", ch_meu: "No. {n}, {d}, {a}", rg_titulo: "Highlights and exclusions", rg_titulo_x: "These criteria are yours, on this computer. Each person in the firm has their own, by practice area; the shared spreadsheet does not keep criteria.", rg_intro: "What {c} highlights or leaves out of your list, in this area.", rg_area: "Area:", rg_a_trabalhista: "Labour", rg_a_tributario: "Tax", rg_a_civel: "Civil", rg_a_empresarial: "Corporate", rg_copiar: "Copy to other areas", rg_copiar_ok: "Copy", rg_invalido: "Invalid number: use digits only, with a point or comma.", rg_area_mudou: "The {a} criteria have changes that were not saved yet.", rg_exc_n: "Excluded companies ({n})", rg_doc_ruim: "Invalid CPF or CNPJ. Check the numbers (the new CNPJ may have letters).", rg_erro_arquivo: "Could not read the criteria file on this computer; defaults are shown. Saving creates it again.",
     rg_sem_pasta: "First choose where the spreadsheets live (above).", rg_valor: "Highlight lawsuits from (R$)", rg_valor_x: "Lawsuits with an equal or higher claim value are highlighted and count in the Dashboard “Above” card and the “Above” filter. Nothing leaves the list. Empty or 0: no highlight.", rg_sem_minimo: "no minimum",
     rg_min: "Minimum lawsuits per company", rg_min_x: "E.g. 3 = only highlight companies with 3 or more new lawsuits in the day window. 1 = all.", rg_janela: "Window for the minimum (days)", rg_janela_x: "How many days back to count the same company\u2019s lawsuits.",
     rg_teto: "Share capital that suggests in-house counsel (R$)", rg_teto_x: "Above it the company is marked “likely in-house counsel” and goes to the end of the list.", rg_esc_gig: "Hide likely in-house counsel", rg_esc_gig_x: "Hides companies above the given share capital.",
     rg_esc_exc: "Hide clients and excluded companies", rg_esc_exc_x: "Hides the companies in the exclusion list below (current clients, conflicts).", rg_socios: "Show partners and directors", rg_socios_x: "Names of people from the public tax registry. Turn off if the firm does not need them.",
     rg_dias_arq: "Days in the spreadsheet Archive tab", rg_dias_arq_x: "The Archive tab shows the last N days and every worked lawsuit.", rg_limite: "Spreadsheet row limit", rg_limite_x: "At 80% RADAR warns; at 100% it keeps a backup and trims the Archive tab.",
-    rg_exc_t: "Excluded companies", rg_exc_x: "Current clients, conflicts or companies you do not want to approach. Name, CNPJ (including the new one with letters) or CPF.", rg_exc_busca: "Search the excluded list", rg_exc_nome: "Company name or CNPJ", rg_exc_motivo: "Reason (e.g. current client)",
-    rg_exc_add: "Add", rg_exc_tirar: "Remove", rg_exc_vazio: "No excluded companies.", rg_exc_ja: "This company is already in the list.", rg_salvar: "Save criteria", rg_pendente: "There are unsaved changes.", rg_salvo: "✓ Criteria saved on this computer.", rg_mudou: "Highlights and exclusions have changes that were not saved yet.", rg_de_novo: "Open the criteria again", rg_vazio: "Fill in this field before saving.", rg_fora: "Number out of range: use {a} to {b}.",
+    rg_exc_t: "Excluded companies", rg_exc_x: "Current clients, conflicts or companies you do not want to approach. Name, CNPJ (including the new one with letters) or CPF.", rg_exc_busca: "Search the excluded list", rg_exc_nome: "CNPJ, CPF or company name", rg_exc_motivo: "Reason (e.g. current client)",
+    rg_exc_add: "Add", rg_exc_tirar: "Remove", rg_exc_vazio: "No excluded companies.", rg_exc_ja: "This company is already in the list.", rg_exc_ok: "✓ Added: {n}.", rg_exc_sem_doc: "No CNPJ: the exclusion only applies to this name, written the same way.", rg_cnpj_buscando: "Looking up the name by CNPJ…", rg_cnpj_achou: "Company found:", rg_cnpj_novo: "New CNPJ: the public registry does not have the name yet. The exclusion applies by CNPJ.", rg_cnpj_nao_achou: "Valid CNPJ, but not found in the public registry. The exclusion applies by CNPJ.", rg_cnpj_sem_net: "No internet to look up the name. The exclusion applies by CNPJ.", rg_busca_rot: "Search the list", rg_busca_nada: "No excluded company with \u201c{q}\u201d.", rg_busca_limpar: "Clear the search", rg_falta_nome: "Type the CNPJ, the CPF or the company name.", rg_copiar_ajuda: "Copies the limits, the options and the excluded companies of this area to the areas you choose.", rg_copiar_para_t: "Copy to which areas?", rg_copiar_o_que: "What to copy", rg_copiar_valores: "Limits and options", rg_copiar_exc: "Excluded companies", rg_copiar_modo: "Companies already excluded there", rg_modo_somar: "Add (sum, without repeating the same CNPJ or name)", rg_modo_trocar: "Replace (removes theirs and puts these)", rg_copiado_para: "✓ Criteria copied to {a}.", rg_copiar_nada: "Choose at least one area and what to copy.", rg_salvar: "Save criteria", rg_pendente: "There are unsaved changes.", rg_salvo: "✓ Criteria saved on this computer.", rg_mudou: "Highlights and exclusions have changes that were not saved yet.", rg_de_novo: "Open the criteria again", rg_vazio: "Fill in this field before saving.", rg_fora: "Number out of range: use {a} to {b}.",
     fs_titulo: "Saved filters", fs_x: "Kept on this computer. Archive hides it from the list without deleting.", fs_renomear: "Rename", fs_arquivar: "Archive", fs_desarquivar: "Back to the list", fs_arquivado: "archived", fs_apagar: "Delete", fs_novo_nome: "New filter name:", fs_existe: "A filter with this name already exists.", fs_apagar_q: "Delete the filter “{n}”?",
     r_filtrar: "More filters", bl_leitura: "Reading settings", bl_filtros: "List filters", bl_filtros_painel: "Dashboard filters", mais_filtros: "More filters", mais_filtros_n: "More filters ({n})", per_n2: "last {d} days", r_ordenar: "Sort by", limpar_filtros_0: "Clear filters", trib_so_lidos: "The filter only shows what is already in the list. To choose what the program reads:",
     rodar_crit_x: "What “Read the gazette now” reads: today\u2019s gazette and the last working days with publications, in the chosen courts. A gazette already read is not downloaded again. The list filters do not change what is read (everything is read, so nothing is lost); they only choose what shows, and they are remembered.",
@@ -3768,7 +3774,8 @@ window.LEXSUITE_RADAR = null;
         });
         seg.appendChild(b);
       });
-      box.appendChild(seg);
+      var emUso_ = d.areas_em_uso || ["trabalhista"];  // 0.7.36 (dono): com uma área só, nem o seletor nem o "Copiar" aparecem (distração)
+      if (emUso_.length > 1) box.appendChild(seg);
       box.appendChild(el("p", "agenda-info", t("rg_intro")));
       if (d.erro_leitura) box.appendChild(el("p", "agenda-info alerta", t("rg_erro_arquivo")));
       var grade = el("div", "rg-grade"), ins = {};
@@ -3787,41 +3794,69 @@ window.LEXSUITE_RADAR = null;
       });
       box.appendChild(grade);
       // empresas excluídas: recolhidas, com a contagem; abrem com busca e rolagem própria (servem 200 empresas)
-      regrasExc = (d.exclusoes || []).map(function (e) { return { nome: e.nome, motivo: e.motivo || "", desde: e.desde || "" }; });
+      regrasExc = (d.exclusoes || []).map(function (e) { return { nome: e.nome, cnpj: e.cnpj || "", motivo: e.motivo || "", desde: e.desde || "" }; });
       var det = el("details", "rg-exc-det"), sm = el("summary", "rg-sub"); det.appendChild(sm);
       function rotuloExc() { sm.textContent = t("rg_exc_n", { n: num(regrasExc.length) }); }
       det.appendChild(el("p", "agenda-info", t("rg_exc_x")));
-      var busca = el("input"); busca.type = "search"; busca.placeholder = t("rg_exc_busca"); busca.className = "rg-busca";
+      // 0.7.36 (dono): a busca fica separada do cadastro, com lupa e rótulo; ao acrescentar, ela é limpa e a empresa aparece em destaque
+      var buscaRot = el("label", "rg-busca-rot"), busca = el("input"); busca.type = "search"; busca.placeholder = "🔍 " + t("rg_exc_busca"); busca.className = "rg-busca";
+      buscaRot.appendChild(el("span", null, t("rg_busca_rot"))); buscaRot.appendChild(busca);
       var lista = el("div", "rg-exc"), add = el("div", "rg-add"), nNome = el("input"), nMot = el("input"), bAdd = el("button", "chip", t("rg_exc_add")), nMsg = el("p", "rg-doc-msg");
       nNome.placeholder = t("rg_exc_nome"); nMot.placeholder = t("rg_exc_motivo"); bAdd.type = "button"; nMsg.setAttribute("role", "status");
+      var achado = null, buscaN = 0, novaLinha = "";
+      function semPont(x) { return semAcento(String(x || "")).replace(/[.\-\/\s]/g, ""); }
       function desenharExc() {
-        lista.textContent = ""; rotuloExc(); var q = semAcento(busca.value.trim());
-        var vis = regrasExc.filter(function (e) { return !q || semAcento(e.nome + " " + e.motivo).indexOf(q) >= 0; });
+        lista.textContent = ""; rotuloExc(); var q = busca.value.trim(), qa = semAcento(q), qp = semPont(q);
+        var vis = regrasExc.filter(function (e) { return !q || semAcento(e.nome + " " + e.motivo).indexOf(qa) >= 0 || (qp && semPont(e.nome + " " + (e.cnpj || "")).indexOf(qp) >= 0); });
         if (!regrasExc.length) lista.appendChild(el("p", "agenda-info", t("rg_exc_vazio")));
+        else if (!vis.length) {  // 0.7.36 (dono): a busca não esconde em silêncio
+          var nada_ = el("p", "agenda-info", t("rg_busca_nada", { q: q }) + " "), lb_ = el("button", "btn-txt", t("rg_busca_limpar")); lb_.type = "button";
+          lb_.addEventListener("click", function () { busca.value = ""; desenharExc(); nNome.focus(); }); nada_.appendChild(lb_); lista.appendChild(nada_);
+        }
         vis.forEach(function (e) {
-          var ln = el("div", "rg-exc-linha"); ln.appendChild(el("b", null, e.nome)); ln.appendChild(el("span", null, e.motivo || "—"));
+          var ln = el("div", "rg-exc-linha" + (novaLinha && e.nome === novaLinha ? " nova" : "")); ln.appendChild(el("b", null, e.nome));
+          ln.appendChild(el("span", "rg-exc-doc", e.cnpj && e.cnpj !== semPont(e.nome) ? docFmt(e.cnpj) : "")); ln.appendChild(el("span", "rg-exc-mot", e.motivo || "—"));
           var x = el("button", "btn-txt fs-apagar", t("rg_exc_tirar")); x.type = "button";
           x.addEventListener("click", function () { regrasExc.splice(regrasExc.indexOf(e), 1); desenharExc(); marcarRegras(); });
           ln.appendChild(x); lista.appendChild(ln);
+          if (novaLinha && e.nome === novaLinha) setTimeout(function () { try { ln.scrollIntoView({ block: "nearest" }); } catch (z) {} }, 30);
         });
+        novaLinha = "";
       }
       function nomeDigitado() {  // nome é livre; CPF ou CNPJ (inclusive com letras) tem de ser válido e sai formatado
         var n = nNome.value.trim(); if (!n) return null;
         if (pareceDoc(n)) { if (!cnpjOk(n) && !cpfOk(n)) return false; return docFmt(n); }
         return n.slice(0, 160);
       }
-      nNome.addEventListener("blur", function () { var n_ = nomeDigitado(); if (n_) nNome.value = n_; nMsg.textContent = n_ === false ? t("rg_doc_ruim") : ""; });
+      function aviso(txt, cls) { nMsg.textContent = ""; if (txt) nMsg.appendChild(el("span", cls || "", txt)); }
+      function procurarNome() {  // 0.7.36 (dono): CNPJ válido busca a razão social no cadastro público (as mesmas fontes da ficha)
+        var n = nomeDigitado(); achado = null;
+        if (n === false) { aviso(t("rg_doc_ruim"), "erro"); return Promise.resolve(); }
+        if (!n) { aviso(""); return Promise.resolve(); }
+        if (!pareceDoc(n)) { aviso(t("rg_exc_sem_doc"), "nota-g"); return Promise.resolve(); }
+        if (!cnpjOk(n)) { aviso(""); return Promise.resolve(); }
+        var meu = ++buscaN; aviso(t("rg_cnpj_buscando"), "nota-g");
+        return fetch("/cnpj?n=" + encodeURIComponent(n), { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (r) {
+          if (meu !== buscaN) return;
+          if (r.ok && r.razao_social) { achado = { doc: n, nome: r.razao_social }; nMsg.textContent = ""; nMsg.appendChild(el("span", "txt-verde", t("rg_cnpj_achou") + " ")); nMsg.appendChild(el("b", null, r.razao_social + " · " + n)); return; }
+          aviso(t(r.motivo === "fonte_sem_suporte" ? "rg_cnpj_novo" : "rg_cnpj_nao_achou"), "nota-g");
+        }).catch(function () { if (meu === buscaN) aviso(t("rg_cnpj_sem_net"), "nota-g"); });
+      }
+      nNome.addEventListener("blur", function () { var n_ = nomeDigitado(); if (n_) nNome.value = n_; procurarNome(); });
+      nNome.addEventListener("input", function () { achado = null; });
       bAdd.addEventListener("click", function () {
-        var n = nomeDigitado(); if (n === null) { nNome.focus(); return; }
-        if (n === false) { nMsg.textContent = t("rg_doc_ruim"); nNome.focus(); return; }
-        if (regrasExc.some(function (e) { return e.nome.toLowerCase() === n.toLowerCase(); })) { nMsg.textContent = t("rg_exc_ja"); return; }
-        nMsg.textContent = "";
-        regrasExc.unshift({ nome: n, motivo: nMot.value.trim().slice(0, 200) }); nNome.value = nMot.value = ""; desenharExc(); marcarRegras(); nNome.focus();
+        var n = nomeDigitado(); if (n === null) { aviso(t("rg_falta_nome"), "erro"); nNome.focus(); return; }
+        if (n === false) { aviso(t("rg_doc_ruim"), "erro"); nNome.focus(); return; }
+        var doc_ = pareceDoc(n) && cnpjOk(n) ? semPont(n).toUpperCase() : "", nome_ = achado && achado.doc === n ? achado.nome : n;
+        var ja_ = regrasExc.some(function (e) { return (doc_ && semPont(e.cnpj || e.nome).toUpperCase() === doc_) || semAcento(e.nome) === semAcento(nome_); });
+        if (ja_) { aviso(t("rg_exc_ja"), "erro"); return; }
+        regrasExc.unshift({ nome: nome_, cnpj: doc_, motivo: nMot.value.trim().slice(0, 200) }); novaLinha = nome_;
+        nNome.value = nMot.value = ""; achado = null; busca.value = ""; desenharExc(); marcarRegras(); aviso(t("rg_exc_ok", { n: nome_ }), "txt-verde"); nNome.focus();
       });
-      nNome.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); bAdd.click(); } });
+      nNome.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); procurarNome().then(function () { bAdd.click(); }); } });
       [nNome, nMot].forEach(function (x) { x.addEventListener("input", function () { if (nNome.value.trim()) marcarRegras(); }); });  // revisão da 0.7.28: digitado e não acrescentado também pergunta ao fechar
       busca.addEventListener("input", desenharExc);
-      add.appendChild(nNome); add.appendChild(nMot); add.appendChild(bAdd); det.appendChild(add); det.appendChild(nMsg); det.appendChild(busca); det.appendChild(lista);
+      add.appendChild(nNome); add.appendChild(nMot); add.appendChild(bAdd); det.appendChild(add); det.appendChild(nMsg); det.appendChild(buscaRot); det.appendChild(lista);
       box.appendChild(det); desenharExc();
       // um Salvar só (o da janela); aqui ficam só a cópia para as outras áreas e o recado
       var acoes = el("div", "conf-acoes"), bc = el("button", "chip", t("rg_copiar")), msg = el("span", "rg-msg"); bc.type = "button";
@@ -3838,24 +3873,38 @@ window.LEXSUITE_RADAR = null;
         });
         return { vals: vals, fora: fora_ };
       }
-      function salvarRegras(depois, todas) {
+      function salvarRegras(depois, copia) {  // 0.7.36 (dono): copia = { destinos, modo, partes } (áreas escolhidas, Acrescentar ou Substituir)
         var n_ = nomeDigitado(); if (n_ === false) { det.open = true; nMsg.textContent = t("rg_doc_ruim"); nNome.focus(); return; }
         if (n_) bAdd.click();  // 0.7.29: nome digitado e não acrescentado entra junto (antes ficava de fora sem aviso)
         var vt = valoresTela(), fora_ = vt.fora;
         if (fora_) { msg.textContent = fora_.value === "" ? t("rg_vazio") : isNaN(numDaTela(fora_.value)) ? t("rg_invalido") : t("rg_fora", { a: numTela(fora_.getAttribute("data-min")), b: fora_.getAttribute("data-max") ? numTela(fora_.getAttribute("data-max")) : "∞" }); fora_.focus(); return; }
         msg.textContent = t("carregando");
-        post("/regras", { area: regrasArea, valores: vt.vals, exclusoes: regrasExc, todas: !!todas }).then(function (r) {
+        var corpo_ = { area: regrasArea, valores: vt.vals, exclusoes: regrasExc };
+        if (copia) { corpo_.destinos = copia.destinos; corpo_.modo = copia.modo; corpo_.partes = copia.partes; }
+        post("/regras", corpo_).then(function (r) {
           if (!r.ok) { msg.textContent = (lang === "en" && r.motivo_en) || r.motivo || t("falha"); return; }
-          regrasSujo = false; msg.textContent = todas ? t("rg_copiado") : t("rg_salvo"); marcarSalvarC(); carregar();
+          regrasSujo = false; msg.textContent = ""; marcarSalvarC(); carregar();
+          if (copia) msg.appendChild(el("span", "txt-verde", t("rg_copiado_para", { a: copia.destinos.map(function (a_) { return t("rg_a_" + a_); }).join(t("ag_e")) })));  // em verde, com as áreas
+          else msg.textContent = t("rg_salvo");
           if (typeof depois === "function") depois();
         }).catch(function () { msg.textContent = t("falha"); });
       }
       salvarRegrasAgora = salvarRegras;
-      bc.addEventListener("click", function () {
-        var c_ = el("div"); c_.appendChild(el("h3", null, t("rg_copiar"))); c_.appendChild(el("p", null, t("rg_copiar_q", { a: t("rg_a_" + regrasArea) })));
-        abrirJanela(c_, [[t("cancelar"), null], [t("rg_copiar_ok"), function () { salvarRegras(null, true); }, true]]);
+      bc.addEventListener("click", function () {  // 0.7.36 (dono): escolher as áreas, o que copiar e se soma ou substitui
+        var c_ = el("div"), outras_ = emUso_.filter(function (a_) { return a_ !== regrasArea; }), cxA = {}, cxP = {};
+        c_.appendChild(el("h3", null, t("rg_copiar_para_t")));
+        var fa_ = el("div", "rg-copiar-grupo"); outras_.forEach(function (a_) { var l_ = el("label", "conf-acoes"), i_ = el("input"); i_.type = "checkbox"; i_.checked = true; cxA[a_] = i_; l_.appendChild(i_); l_.appendChild(el("span", null, t("rg_a_" + a_))); fa_.appendChild(l_); }); c_.appendChild(fa_);
+        c_.appendChild(el("h4", "rg-sub", t("rg_copiar_o_que")));
+        var fp_ = el("div", "rg-copiar-grupo"); [["valores", "rg_copiar_valores"], ["exclusoes", "rg_copiar_exc"]].forEach(function (p_) { var l_ = el("label", "conf-acoes"), i_ = el("input"); i_.type = "checkbox"; i_.checked = true; cxP[p_[0]] = i_; l_.appendChild(i_); l_.appendChild(el("span", null, t(p_[1]))); fp_.appendChild(l_); }); c_.appendChild(fp_);
+        c_.appendChild(el("h4", "rg-sub", t("rg_copiar_modo")));
+        var fm_ = el("div", "rg-copiar-grupo"), rS = el("input"), rT = el("input"); rS.type = rT.type = "radio"; rS.name = rT.name = "rg-modo"; rS.checked = true;
+        [[rS, "rg_modo_somar"], [rT, "rg_modo_trocar"]].forEach(function (m_) { var l_ = el("label", "conf-acoes"); l_.appendChild(m_[0]); l_.appendChild(el("span", null, t(m_[1]))); fm_.appendChild(l_); }); c_.appendChild(fm_);
+        var aviso_ = el("p", "erro"); c_.appendChild(aviso_);
+        function escolha_() { return { destinos: outras_.filter(function (a_) { return cxA[a_].checked; }), partes: Object.keys(cxP).filter(function (k) { return cxP[k].checked; }), modo: rS.checked ? "acrescentar" : "substituir" }; }
+        abrirJanela(c_, [[t("cancelar"), null], [t("rg_copiar_ok"), function () { salvarRegras(null, escolha_()); }, true, function () { var e_ = escolha_(); if (!e_.destinos.length || !e_.partes.length) { aviso_.textContent = t("rg_copiar_nada"); return false; } }]]);
       });
-      acoes.appendChild(bc); acoes.appendChild(msg); box.appendChild(acoes);
+      if (emUso_.length > 1) { acoes.appendChild(bc); acoes.appendChild(ajuda(t("rg_copiar_ajuda"))); }
+      acoes.appendChild(msg); box.appendChild(acoes);
     }).catch(function () { box.textContent = t("falha"); });
   }
   function verRegistro() {

@@ -180,7 +180,63 @@ class Pasta0736(unittest.TestCase):
         self.assertIn('pasta_sub: "(o {c} cria a subpasta', self.h)
 
 
+class Exclusoes0736(unittest.TestCase):
+    """Itens 12 a 16: nome pelo CNPJ guardado junto do CNPJ, sem repetir; cópia para as áreas escolhidas, somando ou trocando."""
+
+    def setUp(self):
+        from lexsuite import preferencias
+        self.p = preferencias; self.pasta = tempfile.mkdtemp()
+
+    def test_nome_e_cnpj_juntos_sem_repetir(self):
+        ex = self.p.exclusoes_validas([{"nome": "Empresa Exemplo Ltda", "cnpj": "11.222.333/0001-81", "motivo": "cliente"},
+                                       {"nome": "11222333000181"}, {"nome": "Empresa Exemplo Ltda"}, {"nome": "Outra Exemplo SA"}])
+        self.assertEqual([e["nome"] for e in ex], ["Empresa Exemplo Ltda", "Outra Exemplo SA"])
+        self.assertEqual(ex[0]["cnpj"], "11222333000181")
+
+    def test_exclusao_vale_pelo_nome_e_pelo_cnpj(self):
+        prefs = {"exclusoes": self.p.exclusoes_validas([{"nome": "Empresa Exemplo Ltda", "cnpj": "11222333000181"}])}
+        a = {"empresas": ["Outro Nome Qualquer"], "empresa": {"cnpj": "11.222.333/0001-81"}}
+        b = {"empresas": ["EMPRESA EXEMPLO LTDA"], "empresa": {}}
+        self.p.aplicar([a, b], prefs)
+        self.assertTrue(a["excluida"]); self.assertTrue(b["excluida"])
+
+    def test_copiar_acrescentando_sem_repetir(self):
+        self.p.salvar_area(self.pasta, "trabalhista", {"valor_minimo": 5000}, [{"nome": "Empresa A Exemplo", "cnpj": "11222333000181"}])
+        self.p.salvar_area(self.pasta, "tributario", {"valor_minimo": 9}, [{"nome": "11.222.333/0001-81"}, {"nome": "Empresa B Exemplo"}])
+        self.p.copiar_area(self.pasta, "trabalhista", ["tributario"], modo="acrescentar", partes=["exclusoes"])
+        v, ex = self.p.criterios_da_area(self.pasta, "tributario")
+        self.assertEqual(len(ex), 2); self.assertEqual(v["valor_minimo"], 9)
+
+    def test_copiar_substituindo_limites_e_empresas(self):
+        self.p.salvar_area(self.pasta, "trabalhista", {"valor_minimo": 5000}, [{"nome": "Empresa A Exemplo"}])
+        self.p.salvar_area(self.pasta, "civel", {"valor_minimo": 9}, [{"nome": "Empresa B Exemplo"}])
+        self.p.copiar_area(self.pasta, "trabalhista", ["civel", "empresarial"], modo="substituir", partes=["valores", "exclusoes"])
+        for a in ("civel", "empresarial"):
+            v, ex = self.p.criterios_da_area(self.pasta, a)
+            self.assertEqual(v["valor_minimo"], 5000); self.assertEqual([e["nome"] for e in ex], ["Empresa A Exemplo"])
+
+    def test_tela(self):
+        h = ler("radar_modelo.html")
+        self.assertIn('busca.value = ""; desenharExc();', h)  # acrescentar limpa a busca
+        self.assertIn('rg_busca_nada: "Nenhuma excluída com', h); self.assertIn('rg_exc_sem_doc: "Sem CNPJ: a exclusão vale só para esse nome, escrito igual."', h)
+        self.assertIn('fetch("/cnpj?n=" + encodeURIComponent(n)', h)
+        self.assertIn("if (emUso_.length > 1) box.appendChild(seg);", h); self.assertIn("if (emUso_.length > 1) { acoes.appendChild(bc);", h)
+        self.assertIn('rg_copiado_para: "✓ Critérios copiados para {a}."', h)
+        self.assertNotIn("rg_copiar_q", h)
+
+
 class UltimaTentativa(Servidor):
+    def test_regras_dizem_as_areas_em_uso_e_copiam_para_as_escolhidas(self):
+        c = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=20)
+        c.request("GET", "/regras?area=trabalhista", headers={"X-LexSuite": "1"}); d = json.loads(c.getresponse().read()); c.close()
+        self.assertEqual(d["areas_em_uso"], ["trabalhista"])
+        r = self.pedir("/regras", {"area": "trabalhista", "valores": d["valores"], "exclusoes": [{"nome": "Empresa A Exemplo"}],
+                                   "destinos": ["civel"], "modo": "acrescentar", "partes": ["exclusoes"]})
+        self.assertTrue(r["ok"])
+        from lexsuite import preferencias
+        self.assertEqual([e["nome"] for e in preferencias.criterios_da_area(self.pasta, "civel")[1]], ["Empresa A Exemplo"])
+        self.assertEqual(preferencias.criterios_da_area(self.pasta, "tributario")[1], [])
+
     def test_dados_trazem_a_ultima_tentativa(self):
         c = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=20)
         c.request("GET", "/dados", headers={"X-LexSuite": "1"}); d = json.loads(c.getresponse().read()); c.close()
