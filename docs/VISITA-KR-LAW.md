@@ -1,8 +1,17 @@
 # Visita à KR Law (quinta, 12/Nov/2026): roteiro e prompts do Claude in Chrome
 
+**Revisão de 12/Nov/2026 (dono), a que vale:** programa na versão **0.7.33**. A extensão roda na **conta Claude do dono**,
+num perfil novo do Chrome do Leandro ("Visita SolverONE"), apagado no fim do dia; a conta do Leandro não é tocada. Antes de
+colar cada prompt, escolher na extensão o modo **"Skip all approvals"** (pular aprovações): ela só para no login e pede
+confirmação antes de baixar o único arquivo de cada prompt. Os relatórios ficam no histórico do claude.ai do dono; nada a
+compartilhar. Os quatro prompts que precisam do login do advogado também estão separados, um arquivo por sistema, em
+[`documentacao/visita-kr-law/`](https://github.com/MarceloNeco/lexsuiteone/tree/main/documentacao/visita-kr-law), com a
+lista de links do dia em [`00-LINKS-DA-VISITA.md`](https://github.com/MarceloNeco/lexsuiteone/blob/main/documentacao/visita-kr-law/00-LINKS-DA-VISITA.md).
+Os critérios da lista agora são por pessoa e por área, e o próprio Leandro os ajusta no programa (passo 6).
+
 Complementa `robo/ROTEIRO-INSTALACAO.md` (instalação do robô). Aqui ficam os prompts para usar no **Claude in Chrome**
 no computador do Leandro, com o consentimento dele, para aprender como os sistemas funcionam e planejar as integrações.
-Nada aqui produz efeito nos sistemas: é leitura e anotação. **Atualizado em 09/Nov/2026 (noite)**: programa na versão 0.7.16
+Nada aqui produz efeito nos sistemas: é leitura e anotação. Histórico das revisões anteriores (vale a de 12/Nov, acima): **09/Nov/2026 (noite)**: programa na versão 0.7.16
 (tudo o que a visita precisa: planilha por frente, cópias de segurança, armazenamento, "Trazer dados da área logada"), termos de uso 1.1 com aceite, autorização do Leandro antes de qualquer prompt na área logada e
 formato padronizado de resposta que o RADAR lê (seção "Resposta para o RADAR"). Os prompts foram escritos para o Claude
 in Chrome, mas servem em qualquer extensão de IA de navegador. Versão anterior: 08/Nov/2026 (foco na ficha de canais; prompts
@@ -90,27 +99,34 @@ RESPOSTA PARA O RADAR v1
 
 ## Como os prompts rodam na visita (leia antes)
 
-- **Conta e modelo.** A extensão Claude in Chrome roda no Chrome do Leandro, na conta Claude do escritório (provavelmente
-  Pro), com o modelo **Sonnet**, para não gastar os créditos de Opus dele. Por isso os prompts são longos e dizem tudo: o
-  que ver, em que ordem, quando parar e como relatar. Se o plano dele travar por limite de uso, espere o tempo que a tela
-  indicar ou passe para a conta do dono num perfil novo do Chrome ("Visita SolverONE"), apagado no fim do dia.
+- **Conta e modelo (12/Nov).** A extensão Claude in Chrome roda no computador do Leandro, num **perfil novo do Chrome**
+  ("Visita SolverONE") com a **conta Claude do dono** (plano pago; a extensão exige). A conta do Leandro não é tocada, e o
+  perfil é apagado no fim do dia. O certificado digital do Leandro funciona em qualquer perfil do Chrome (fica no Windows
+  ou no token). Modelo **Sonnet**, se a extensão mostrar a escolha. Os prompts são longos e dizem tudo: o que ver, em
+  que ordem, quando parar e como relatar. Se a conta do dono não entrar, use a conta do escritório no Chrome do Leandro
+  (ver "Relatório e como chega ao dono").
+- **Modo de aprovação (12/Nov).** Antes de colar cada prompt, no menu da caixa de conversa da extensão, escolha
+  **"Skip all approvals"** (pular aprovações). Os prompts só leem. Mesmo nesse modo a extensão pede confirmação antes de
+  baixar arquivo (um por prompt) e antes de ações sensíveis: quem estiver perto clica. Use esse modo só nessas janelas,
+  nos sites do tribunal e do Astrea; nesse perfil não se abre e-mail nem Drive, porque um site malicioso poderia tentar
+  dar ordens à extensão.
 - **Sem supervisão.** A extensão trabalha sozinha enquanto o Leandro testa o robô e o dono cuida de outras coisas. Ela
   para em dois casos: na tela de entrada do sistema escreve `PAUSA PARA LOGIN` (o Leandro entra e digita "continue"); e
   se o site pedir token, certificado ou captcha no meio do caminho escreve `BLOQUEIO`, entrega o que já tem e espera. Quem voltar à tela resolve o login (só o Leandro) e digita
   "continue".
 - **Janelas próprias.** A extensão roda em janelas do Chrome só para ela (A e B, uma por prompt), com a aba do sistema. Ninguém usa essa janela
-  enquanto ela trabalha; o robô e o resto ficam em outra janela. Na primeira ação em cada site a extensão pede permissão
-  para agir ("Permitir"): clicar nisso antes de sair de perto.
+  enquanto ela trabalha; o robô e o resto ficam em outra janela. Se num site ela ainda pedir permissão, escolha
+  "Always allow actions on this site" antes de sair de perto.
 - **Um prompt por conversa.** Cada prompt é colado inteiro numa conversa nova da extensão. Não misture dois prompts.
 - **Sem prints.** A extensão não salva arquivos nem entrega imagens. No lugar de prints ela escreve "telas" em texto,
   num formato fixo (endereço, título, menus, campos com rótulos, botões, o que acontece ao clicar). Para construir um
   robô isso vale mais do que uma imagem.
-- **Relatório e como chega ao dono.** Ao fim, a extensão escreve `RELATÓRIO FINAL` num bloco só, em Markdown. A
-  conversa fica guardada na conta do escritório e, pelo que sabemos, aparece no claude.ai dessa conta. Lá o Leandro usa
-  "Compartilhar" e manda o link ao dono, que copia a conversa para a conta dele e avisa para o Leandro desfazer o
-  compartilhamento. Se a conversa não aparecer no claude.ai, ele seleciona todo o texto do painel da extensão (Ctrl+A,
-  Ctrl+C) e cola num Google Doc compartilhado com `integracao@solverone.com.br`. **Testar isso no começo da visita** com
-  uma conversa curta.
+- **Relatório e como chega ao dono.** Ao fim, a extensão escreve `RELATÓRIO FINAL` num bloco só, em Markdown. Com a
+  conta do dono, cada conversa fica no histórico dele e abre no claude.ai, no celular ou no computador (a documentação da
+  extensão diz que as sessões do painel aparecem no histórico, 12/Nov): nada a compartilhar. **Testar isso no começo da
+  visita** com uma conversa curta. Se for a conta do escritório: selecionar o texto do painel da extensão (Ctrl+A, Ctrl+C)
+  e colar num e-mail para `integracao@solverone.com.br` ou num Google Doc; "Compartilhar" uma conversa da extensão não
+  aparece na documentação.
 - **Pode compartilhar porque não tem nada sensível.** Nenhuma tela de login entra no relatório, nenhuma credencial é
   vista e nomes de pessoas físicas não são copiados. Os relatórios ainda assim não entram no repositório nem no site.
 
@@ -136,31 +152,36 @@ ela só anota os avisos que o próprio site mostrar.
 Links para abrir no celular, todos sem login: este arquivo; instalação em
 [`robo/ROTEIRO-INSTALACAO.md`](https://github.com/MarceloNeco/lexsuiteone/blob/main/robo/ROTEIRO-INSTALACAO.md);
 manual em https://judicial.solverone.com.br/manual.html; pacote em https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip.
-No computador do Leandro, abrir os prompts por este arquivo no GitHub (sem login) e copiar pelo botão de copiar do bloco.
+Lista completa (GitHub, site e pastas do Drive): `documentacao/visita-kr-law/00-LINKS-DA-VISITA.md`.
+No computador do Leandro, abrir os prompts pelo GitHub (sem login), um arquivo por sistema em `documentacao/visita-kr-law/`,
+e copiar pelo botão de copiar do bloco.
 
 **Antes, em casa (até quarta).** Ensaio da instalação no PC do dono com a segunda conta Google, `DIAGNOSTICO.bat` e uma
 rodada real. Rodar no Claude in Chrome, com a conta do dono, os prompts sem login: 2 (três empresas da lista do RADAR),
 4A e 5. Confirmar com o Leandro: certificado digital em mãos para o PJe; em que pasta fica a planilha
-(no computador ou numa pasta do Google Drive; não é preciso compartilhar com a SolverONE); o texto dos termos 1.1; se a conta Claude do escritório tem a extensão
-Claude in Chrome (plano pago). Se não tiver, a extensão roda num perfil novo do Chrome dele ("Visita SolverONE") com a
-conta do dono, e o perfil é apagado no fim. O notebook do dono não recebe login nem certificado de ninguém. Combinar um
+(no computador ou numa pasta do Google Drive; não é preciso compartilhar com a SolverONE); o texto dos termos 1.1.
+Conferir que a conta Claude do dono entra e tem plano pago (a extensão roda nela, num perfil novo do Chrome do Leandro,
+"Visita SolverONE", apagado no fim). O notebook do dono não recebe login nem certificado de ninguém. Combinar um
 processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se houver, um no TJSP.
 
 1. **Chegada (15 min).** Explicar o que vai acontecer e pedir o OK: instalar o robô e até quatro observações só de
-   leitura com a extensão, que trabalham sozinhas e param só para o Leandro fazer o login. Abrir **duas janelas** do
-   Chrome só para a extensão (A e B; conta do escritório ou perfil novo, extensão instalada, modelo Sonnet). Testar com
-   uma conversa curta e conferir se ela aparece no claude.ai dessa conta e se a extensão aceita trabalhar nas duas
-   janelas ao mesmo tempo (se não aceitar, rode um prompt depois do outro).
-2. **Instalar o robô (45 a 60 min).** Seguir o `ROTEIRO-INSTALACAO.md`: baixar o pacote do site, `DIAGNOSTICO.bat`,
+   leitura com a extensão, que trabalham sozinhas e param só para o Leandro fazer o login. Criar o perfil "Visita
+   SolverONE" no Chrome dele, instalar a extensão, entrar com a conta Claude do dono e abrir **duas janelas** só para a
+   extensão (A e B; modo "Skip all approvals", modelo Sonnet). Testar com uma conversa curta e conferir se ela aparece no
+   claude.ai do dono (no celular) e se a extensão aceita trabalhar nas duas janelas ao mesmo tempo (se não aceitar, rode
+   um prompt depois do outro).
+2. **Instalar o robô, versão 0.7.33 (45 a 60 min).** Seguir o `ROTEIRO-INSTALACAO.md`: baixar o pacote do site, `DIAGNOSTICO.bat`,
    configurar, escolher a pasta da planilha (no computador ou no Drive do escritório; **não** se compartilha com a
    SolverONE), agendar a rodada diária e iniciar a primeira rodada agora (demora: deixar rodando). Instalar no
    computador que fica ligado nos horários das leituras (o do escritório ou o de casa: perguntar ao Leandro qual).
-   **Conferir o armazenamento** (Configuração → Armazenamento): espaço livre no disco (o ideal é mais de 10 GB), onde
+   **Conferir o armazenamento** (menu ☰ → Configurações → Armazenamento): espaço livre no disco (o ideal é mais de 10 GB), onde
    ficam `LexSuiteONE - Trabalhista.xlsx` e a pasta `Cópias de segurança`, e se o aviso de disco aparece. Anotar
    quantos GB livres o computador tem. A pasta escolhida aqui não precisa mudar depois: as frentes novas (tributário,
-   cível, empresarial) ganham a própria planilha na mesma pasta, sozinhas.
+   cível, empresarial) ganham a própria planilha na mesma pasta, sozinhas. As estatísticas dos meses anteriores
+   (Painel → Sazonalidade) rodam à noite, depois da leitura automática: na visita não é preciso buscá-las; se alguém
+   clicar em "Buscar estatísticas", use "Continuar à noite".
 3. **Janela A: Prompt 1A (PJe do TRT2). Janela B: Prompt 3 (Astrea).** Ao mesmo tempo. Em cada janela, conversa nova,
-   cola o prompt, "Permitir". A extensão abre a página inicial sozinha, mapeia o caminho e escreve `PAUSA PARA LOGIN`:
+   cola o prompt (o modo já está em "Skip all approvals"). A extensão abre a página inicial sozinha, mapeia o caminho e escreve `PAUSA PARA LOGIN`:
    o Leandro faz o login naquela aba (certificado no PJe) e digita "continue". Se depois ela escrever `BLOQUEIO` (token,
    nova autenticação), só o Leandro resolve e digita "continue".
 4. **Janela A: Prompt 1B (PJe do TRT15)**, igual ao 1A, numa conversa nova. **Janela B, se o Leandro quiser: Prompt 4B
@@ -174,13 +195,15 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
    perguntar: como ele descobre quem vai julgar (titular, substituto, divisão por final de número, mutirões), se no
    recurso o relator fica com o caso, e o que mais queria saber de um juiz antes de redigir.
 6. **Lista do dia pronta.** Mostrar na tela local e na planilha; validar 3 ou 4 itens com o Leandro (é ação nova? é
-   empresa? a comarca interessa?); anotar as regras que ele quer ajustar. Levar a ficha de canais do Prompt 2 (rodado
+   empresa? a comarca interessa?). O próprio Leandro ajusta os critérios no programa (menu ☰ → Configurações → Critérios
+   da lista), área por área (Trabalhista e Tributário), com as empresas excluídas; valem para ele, naquele computador. Levar a ficha de canais do Prompt 2 (rodado
    em casa) e perguntar se o formato serve ao compliance dele.
 7. **Fechamento (15 min).** Conferir: rodada agendada, Leandro sabe abrir a tela e a planilha, sabe o que fazer se
    aparecer o aviso "a planilha está ficando grande" (clicar em "Limpar a planilha (com cópia)"),
-   manual e `judicial@solverone.com.br` como contato. Entregar os relatórios: em cada conversa da extensão, no claude.ai
-   da conta do escritório, "Compartilhar" e mandar o link ao dono; se não der, selecionar todo o texto do painel e colar
-   num Google Doc compartilhado com `integracao@`. Apagar o perfil do Chrome se usou a conta do dono. Anotar feedbacks e
+   manual e `judicial@solverone.com.br` como contato. Relatórios: conferir no celular que as conversas aparecem no
+   claude.ai do dono (se usou a conta do escritório, copiar cada `RELATÓRIO FINAL` num e-mail para `integracao@`). Sair
+   da conta Claude na extensão e apagar o perfil "Visita SolverONE" do Chrome (Chrome → ícone do perfil → Gerenciar
+   perfis → Excluir); os PDFs baixados ficam no computador do Leandro. Anotar feedbacks e
    dizer o que vem na 0.8.
 
 Depois: relatórios e feedbacks vão para a sessão de Produto; dúvidas de instalação e e-mail, para a sessão de Operação.
@@ -209,7 +232,7 @@ Depois: relatórios e feedbacks vão para a sessão de Produto; dúvidas de inst
 
 ## Prompt 1A · PJe do TRT2, da página inicial à área logada (na visita, com o login do advogado)
 
-Como usar: na janela da extensão, abra uma conversa nova e cole o texto abaixo (troque o número do processo). A extensão abre sozinha a página inicial do TRT2, mapeia o caminho até a tela de login e escreve `PAUSA PARA LOGIN`. Aí o Leandro faz o login com o certificado nessa mesma aba e escreve "continue". Clique em "Permitir" quando ela pedir. Pode rodar em paralelo com o Prompt 3 (Astrea), cada um na sua janela.
+Como usar: na janela da extensão, abra uma conversa nova e cole o texto abaixo (troque o número do processo). A extensão abre sozinha a página inicial do TRT2, mapeia o caminho até a tela de login e escreve `PAUSA PARA LOGIN`. Aí o Leandro faz o login com o certificado nessa mesma aba e escreve "continue". Modo da extensão: "Skip all approvals"; ela só pede confirmação no download. Pode rodar em paralelo com o Prompt 3 (Astrea), cada um na sua janela.
 
 ```
 Comece abrindo, nesta aba, a página inicial do Tribunal Regional do Trabalho da 2ª Região: https://www.trt2.jus.br. Sua tarefa tem duas partes. Parte A, sem login: mapear a jornada pública, da página inicial até a tela de entrada do PJe. Parte B, depois que o advogado fizer o login: mapear, somente lendo, como se consulta um processo e como se baixam os documentos dele, e anotar onde aparecem os dados de contato da empresa ré (endereço, e-mail e telefone), para que um robô e prompts especialistas possam fazer isso depois. Processo de referência: 0000000-00.0000.5.02.0000 (troque pelo número real).
@@ -246,7 +269,7 @@ Parte B · Depois do login (somente leitura), nessa ordem:
 2. Abrir o processo de referência. Anote a URL que abre e se ela contém um identificador interno (um número que não é o número CNJ).
 3. Mapear os dados do processo. Na tela do processo, liste os blocos que existem e quais campos cada um mostra. Procure especialmente: classe, assunto(s), data de distribuição (ou autuação), valor da causa, órgão julgador (vara), grau e fase (conhecimento, execução, recurso), partes do polo passivo com CNPJ e endereço, advogados das partes, situação atual, última movimentação. Para cada campo, anote o rótulo exato e em qual aba ou seção ele está. Veja se o cadastro da parte ré (clicando no nome dela, se o PJe permitir só visualizar) mostra endereço, e-mail ou telefone. Registre a TELA do processo e a TELA do cadastro da parte ré.
 4. Mapear as movimentações e os documentos. Encontre a lista de movimentações e a lista de documentos (petição inicial, notificação ou citação inicial, decisões, atas). Anote como a lista é organizada (ordem, paginação, filtros) e que tipos de documento aparecem. Registre a TELA da lista de documentos.
-5. Baixar. Procure as opções de download: documento individual, "autos completos" ou "download do processo" (PDF único ou vários). Baixe a petição inicial e, se existir, o PDF dos autos completos, para a pasta padrão de downloads do Chrome. Anote: nome do botão, se é um link com endereço (qual) ou um botão sem endereço, se abre nova aba, formato, tamanho aproximado, tempo e se pediu confirmação. Não baixe mais de 3 arquivos. Registre a TELA de download.
+5. Baixar. Procure as opções de download: documento individual, "autos completos" ou "download do processo" (PDF único ou vários). Baixe só a petição inicial, para a pasta padrão de downloads do Chrome (a extensão pede confirmação a quem estiver perto). Para os autos completos, não baixe: anote o nome do botão, o endereço e o formato oferecido. Anote: nome do botão, se é um link com endereço (qual) ou um botão sem endereço, se abre nova aba, formato, tamanho aproximado, tempo e se pediu confirmação. Não baixe mais de 1 arquivo. Registre a TELA de download.
 6. Contatos da empresa ré nos autos. Abra no visualizador do PJe (sem baixar outro arquivo):
    a) A petição inicial. Ache a qualificação da reclamada (normalmente no primeiro parágrafo, depois dos dados do reclamante, com expressões como "em face de", "pessoa jurídica de direito privado", "inscrita no CNPJ", "com sede na", "endereço eletrônico", "e-mail", "telefone"). Anote em que página e em que trecho aparecem o endereço, o e-mail e o telefone da empresa, e qual expressão vem antes de cada um. Não registre essa página como TELA: ela tem dados do reclamante; anote só a posição e as expressões.
    b) A notificação ou citação inicial da ré (aba de expedientes, intimações ou documentos; anote o nome exato). Anote para qual endereço ou meio ela foi expedida (Correios, oficial de justiça, Domicílio Judicial Eletrônico, e-mail) e se há aviso de recebimento ou certidão dizendo se a empresa foi encontrada naquele endereço.
@@ -323,7 +346,7 @@ Parte B · Depois do login (somente leitura), nessa ordem:
 2. Abrir o processo de referência. Anote a URL que abre e se ela contém um identificador interno (um número que não é o número CNJ).
 3. Mapear os dados do processo. Na tela do processo, liste os blocos que existem e quais campos cada um mostra. Procure especialmente: classe, assunto(s), data de distribuição (ou autuação), valor da causa, órgão julgador (vara), grau e fase (conhecimento, execução, recurso), partes do polo passivo com CNPJ e endereço, advogados das partes, situação atual, última movimentação. Para cada campo, anote o rótulo exato e em qual aba ou seção ele está. Veja se o cadastro da parte ré (clicando no nome dela, se o PJe permitir só visualizar) mostra endereço, e-mail ou telefone. Registre a TELA do processo e a TELA do cadastro da parte ré.
 4. Mapear as movimentações e os documentos. Encontre a lista de movimentações e a lista de documentos (petição inicial, notificação ou citação inicial, decisões, atas). Anote como a lista é organizada (ordem, paginação, filtros) e que tipos de documento aparecem. Registre a TELA da lista de documentos.
-5. Baixar. Procure as opções de download: documento individual, "autos completos" ou "download do processo" (PDF único ou vários). Baixe a petição inicial e, se existir, o PDF dos autos completos, para a pasta padrão de downloads do Chrome. Anote: nome do botão, se é um link com endereço (qual) ou um botão sem endereço, se abre nova aba, formato, tamanho aproximado, tempo e se pediu confirmação. Não baixe mais de 3 arquivos. Registre a TELA de download.
+5. Baixar. Procure as opções de download: documento individual, "autos completos" ou "download do processo" (PDF único ou vários). Baixe só a petição inicial, para a pasta padrão de downloads do Chrome (a extensão pede confirmação a quem estiver perto). Para os autos completos, não baixe: anote o nome do botão, o endereço e o formato oferecido. Anote: nome do botão, se é um link com endereço (qual) ou um botão sem endereço, se abre nova aba, formato, tamanho aproximado, tempo e se pediu confirmação. Não baixe mais de 1 arquivo. Registre a TELA de download.
 6. Contatos da empresa ré nos autos. Abra no visualizador do PJe (sem baixar outro arquivo):
    a) A petição inicial. Ache a qualificação da reclamada (normalmente no primeiro parágrafo, depois dos dados do reclamante, com expressões como "em face de", "pessoa jurídica de direito privado", "inscrita no CNPJ", "com sede na", "endereço eletrônico", "e-mail", "telefone"). Anote em que página e em que trecho aparecem o endereço, o e-mail e o telefone da empresa, e qual expressão vem antes de cada um. Não registre essa página como TELA: ela tem dados do reclamante; anote só a posição e as expressões.
    b) A notificação ou citação inicial da ré (aba de expedientes, intimações ou documentos; anote o nome exato). Anote para qual endereço ou meio ela foi expedida (Correios, oficial de justiça, Domicílio Judicial Eletrônico, e-mail) e se há aviso de recebimento ou certidão dizendo se a empresa foi encontrada naquele endereço.
@@ -371,7 +394,7 @@ enviada a ninguém. O uso do que for encontrado é decisão do compliance do esc
 ```
 Preciso de uma "ficha de canais" de cada empresa abaixo, feita só em fontes públicas, para o time de compliance de um escritório de advocacia analisar e decidir se e como agir. Você não envia nada a ninguém: não liga, não manda e-mail nem mensagem, não preenche formulário, não segue perfis, não comenta, não cria conta e não burla nenhum login.
 
-Empresas (razão social, CNPJ, cidade, e o que o JUDICIAL já trouxe, se houver):
+Empresas (razão social, CNPJ, cidade, e o que o JUDICIAL já trouxe, se houver). O CNPJ pode ter letras (formato novo, de julho de 2026, como 12.ABC.345/01DE-35): copie e procure como está.
 1. [Razão social 1], [CNPJ], [cidade]
 2. [Razão social 2], [CNPJ], [cidade]
 3. [Razão social 3], [CNPJ], [cidade]
@@ -429,7 +452,7 @@ RELATÓRIO FINAL, pronto para o compliance:
 
 ## Prompt 3 · Astrea, da página inicial à área logada (na visita, com o login do advogado)
 
-Como usar: na janela da extensão, abra uma conversa nova e cole o texto. A extensão abre a página inicial do Astrea, mapeia o caminho até a tela de entrada e escreve `PAUSA PARA LOGIN`; o Leandro faz o login nessa aba e escreve "continue". Clique em "Permitir" quando ela pedir. Roda em paralelo com o Prompt 1A, cada um na sua janela. Serve para desenhar como o JUDICIAL vai entregar as ações novas e as fichas de canais dentro do sistema que o escritório já usa.
+Como usar: na janela da extensão, abra uma conversa nova e cole o texto. A extensão abre a página inicial do Astrea, mapeia o caminho até a tela de entrada e escreve `PAUSA PARA LOGIN`; o Leandro faz o login nessa aba e escreve "continue". Modo da extensão: "Skip all approvals". Roda em paralelo com o Prompt 1A, cada um na sua janela. Serve para desenhar como o JUDICIAL vai entregar as ações novas e as fichas de canais dentro do sistema que o escritório já usa.
 
 ```
 Comece abrindo, nesta aba, a página inicial do Astrea, o sistema de gestão do escritório: https://www.astrea.net.br (se redirecionar, anote para onde). Parte A, sem login: mapeie o caminho até a tela de entrada. Parte B, depois que o advogado fizer o login: mapeie, somente lendo, como o sistema organiza processos, publicações, contatos e clientes, e por onde dados podem entrar e sair, para que um outro sistema possa alimentá-lo depois. Nada aqui deve ser criado, alterado ou excluído.
@@ -499,7 +522,7 @@ Como trabalhar (você roda numa extensão do navegador, sozinho, e não salva ar
 
 Regras que não se negociam:
 - Nunca peça, digite, copie ou anote senha, token, código de certificado ou qualquer credencial.
-- Somente leitura. Nada é enviado a ninguém. Não baixe mais de 2 arquivos.
+- Somente leitura. Nada é enviado a ninguém. Não baixe mais de 1 arquivo.
 - Dados de empresas podem ser anotados. Dados de pessoas físicas, nunca: escreva "pessoa física". Nome de magistrado vira "magistrado 1", "magistrado 2".
 - Só vale o que você leu na tela nesta sessão. Não deduza qual diário vale para prazo: anote só o aviso que o próprio site mostrar, com o endereço.
 
@@ -527,7 +550,7 @@ RELATÓRIO FINAL:
 
 ## Prompt 4B · TJSP, da página inicial à área logada (na visita, se o Leandro quiser)
 
-Como usar: na visita, depois do 1A, numa janela da extensão. A extensão abre a página inicial do TJSP, mapeia o caminho até a entrada do advogado e escreve `PAUSA PARA LOGIN`; o Leandro faz o login com o certificado e escreve "continue". O DJEN não tem área logada: fica todo no 4A.
+Como usar: na visita, depois do 1A, numa janela da extensão. A extensão abre a página inicial do TJSP, mapeia o caminho até a entrada do advogado e escreve `PAUSA PARA LOGIN`; o Leandro faz o login com o certificado e escreve "continue". Modo da extensão: "Skip all approvals". O DJEN não tem área logada: fica todo no 4A.
 
 ```
 Comece abrindo, nesta aba, a página inicial do Tribunal de Justiça de São Paulo: https://www.tjsp.jus.br. Sua tarefa tem duas partes. Parte A, sem login: mapear o caminho da página inicial até a entrada do advogado no e-SAJ (Portal de Serviços) ou no sistema que o tribunal indicar. Parte B, depois que o advogado fizer o login: mapear, somente lendo, o painel do advogado (intimações, processos, prazos) e o que muda em relação à consulta pública. Processo de referência do TJSP: [número], se o escritório tiver um; se não, use um da lista de intimações dele, sem abrir mais de 2.
@@ -543,7 +566,7 @@ Como trabalhar (você roda numa extensão do navegador, sozinho, e não salva ar
 
 Regras que não se negociam:
 - Nunca peça, digite, copie ou anote senha, token, código de certificado ou qualquer credencial.
-- Somente leitura. Nada é enviado a ninguém. Não baixe mais de 2 arquivos.
+- Somente leitura. Nada é enviado a ninguém. Não baixe mais de 1 arquivo.
 - Dados de empresas podem ser anotados. Dados de pessoas físicas, nunca: escreva "pessoa física". Nome de magistrado vira "magistrado 1", "magistrado 2".
 - Só vale o que você leu na tela nesta sessão. Não deduza qual diário vale para prazo: anote só o aviso que o próprio site mostrar, com o endereço.
 
@@ -614,9 +637,8 @@ RELATÓRIO FINAL:
 
 ## Depois da visita
 
-Os relatórios chegam ao dono pela conversa compartilhada (claude.ai da conta do escritório) ou por Google Doc
-compartilhado com `integracao@solverone.com.br`. O dono copia para a conta dele e pede ao Leandro para desfazer o
-compartilhamento. Os relatórios vão para a sessão de Produto, que os transforma em desenho de integração
+Os relatórios ficam nas conversas da extensão, no claude.ai do dono (ou chegam por e-mail a `integracao@solverone.com.br`,
+se a conta do escritório foi usada). Os relatórios vão para a sessão de Produto, que os transforma em desenho de integração
 (`docs/INTEGRACOES-MERCADO.md`), em skills de navegação das áreas logadas (para o robô e para os prompts especialistas),
 no desenho da ficha de canais (`robo/PENDENCIAS.md`) e em pendências. Nenhum dado de pessoa física entra no repositório,
 e nenhum dado real de empresa cliente entra no repositório: as fichas reais ficam com o escritório.
