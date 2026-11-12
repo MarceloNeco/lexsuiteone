@@ -1,26 +1,35 @@
 # Roteiro do dono: teste da 0.7.35 e simulação de cliente novo (12/Nov/2026)
 
-## Parte 1 · Testar a 0.7.35 no computador que já tem o RADAR (uns 20 minutos)
+## Parte 1 · Testar a 0.7.35 no computador que já tem o RADAR (detalhado, 12/Nov, noite)
 
-1. **Atualizar.** Abra o RADAR pelo atalho e aceite a atualização. Deve aparecer a **tela de abertura** ("RADAR JUDICIAL ·
-   Carregando…") e, depois, a janela **Novidades da versão 0.7.35**: larga, com as linhas da 0.7.34 e da 0.7.35 e o botão
-   de fechar à vista.
-2. **Versão.** Engrenagem ⚙ → Sobre este computador: "Versão instalada 0.7.35".
-3. **Conferir agora.** ⚙ → Licença e termos → **Conferir agora**: "Licença conferida com a SolverONE agora: ativa."
-4. **Sem internet.** Desligue o Wi-Fi e clique de novo em **Conferir agora**: "Sem conexão com a SolverONE: não foi possível
-   conferir agora…". Religue o Wi-Fi.
-5. **Trocar licença com o mesmo código.** Trocar licença → Trocar → digite o mesmo código → Salvar: a janela fecha e aparece
-   "Licença conferida…" no alto da tela.
-6. **Pasta das planilhas.** "Pasta das planilhas" escrito uma vez só, cartões na largura toda e o botão **Abrir a pasta no
-   Windows**: o Explorador abre na pasta.
-7. **Ler o Diário agora.** A faixa de andamento fica numa linha (barra, porcentagem e Interromper); as mensagens anteriores
-   ficam em "Mensagens anteriores". Deixe terminar.
-8. **Painel.** No gráfico "Como a ação nova foi reconhecida" não existe mais "Guardada antes da 0.7.16".
-9. **Sazonalidade parada.** Com a busca de estatísticas parada aparece **Continuar à noite**; ao clicar, aparece o recado.
-10. **Lupa** (🔍): "conferir agora" e "abrir a pasta" acham os botões novos.
-11. **Sair.** Menu ☰ → Sair: "O RADAR foi encerrado. Pode fechar esta janela…" (a janela pode fechar sozinha).
+Licença em uso neste teste: **"Teste Marcelo"**, código terminado em **E3LF**. Para copiar o código inteiro sem procurar
+e-mail: RootifyONE → RADAR JUDICIAL → Licenças → linha "Teste Marcelo" → coluna **Código** (selecione e Ctrl+C).
 
-Anote o que estranhar (print e uma frase) e mande para a Produto: entra na lista da 0.7.36.
+1. **ATUALIZAR: JÁ FEITO.**
+2. **VERSÃO 0.7.35: JÁ FEITO.**
+3. **CONFERIR AGORA: JÁ FEITO** (anotados os itens 8 a 11 da lista de feedbacks).
+4. **Sem internet.** Desligue o Wi-Fi (ícone de rede no canto inferior direito do Windows). No RADAR: ⚙ → Licença e
+   termos → Conferir agora. Esperado, no rodapé da janela: "Sem conexão com a SolverONE: não foi possível conferir agora…";
+   a licença continua ativa (falta de internet não bloqueia). Religue o Wi-Fi.
+5. **Trocar licença com o mesmo código.** Para quê: é o caminho de quem recebe um código novo ou quer forçar a conferência
+   (por exemplo, logo depois de aceitar os termos). Na 0.7.33, com o mesmo código, o programa não conferia nada e ficou
+   preso em "Falta aceitar os termos". O teste confirma que agora ele confere, fecha a janela e não apaga nada. Passos: ⚙ →
+   Licença e termos → Trocar licença → confirme → cole o código da "Teste Marcelo" → Salvar. Esperado: a janela fecha, aparece
+   "Licença conferida com a SolverONE agora: ativa" no alto da tela, e destaques e exclusões continuam lá.
+6. **Pasta das planilhas.** ⚙ → Pasta das planilhas. Esperado: o título uma vez só, os cartões na largura toda e o botão
+   **Abrir a pasta no Windows**, que abre o Explorador em `c:\testeradar\LexSuiteONE`.
+7. **Ler o Diário agora.** Feche as Configurações e clique em Ler o Diário agora. Esperado: a faixa de andamento numa linha
+   (barra, porcentagem e Interromper) e as mensagens antigas em "Mensagens anteriores" (clique para abrir). Deixe terminar.
+8. **Painel.** Aba Painel → gráfico "Como a ação nova foi reconhecida". Esperado: não existe mais "Guardada antes da
+   0.7.16"; as antigas aparecem pelo sinal do texto ou como "Sem sinal registrado".
+9. **Sazonalidade parada.** Aba Sazonalidade. Se a busca estiver rodando, clique em Pausar. Esperado: aparecem Continuar e
+   **Continuar à noite**; ao clicar em Continuar à noite, aparece o recado.
+10. **Lupa.** Clique em 🔍 no topo e digite "conferir agora": o resultado leva ao botão. Depois digite "abrir a pasta": leva
+    ao botão da Pasta das planilhas.
+11. **Sair.** Menu ☰ → Sair. Esperado: "O RADAR foi encerrado. Pode fechar esta janela…" (a janela pode fechar sozinha).
+    Para abrir de novo: atalho RADAR JUDICIAL na área de trabalho.
+
+Estranhou algo: print e uma frase para a Produto.
 
 ## Parte 2 · Simular um cliente novo (depois que a Parte 1 passar)
 
