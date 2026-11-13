@@ -1,5 +1,7 @@
--- Central LexSuiteONE · fase 1 · nuvem (Arquitetura, 13/Nov/2026). PROPOSTA: NÃO APLICADA. Aplica-se pelo conector, inteira,
--- só depois do "pode aplicar" do dono e do passo 0 (teste de região e IP da Edge Function). Desenho:
+-- Central LexSuiteONE · fase 1 · nuvem (Arquitetura, 13/Nov/2026). APLICADO em 13/Nov (noite) pelo conector, em 5 migrações
+-- (lex_saude_chave_confere, central_saude_tabelas, central_saude_cron, central_admin_lex_central, central_lex_saude_resumir), com o
+-- "pode aplicar" do dono, depois do passo 0 (lex-saude em sa-east-1, IP de São Paulo, sem bloqueio geográfico). Primeira rodada real:
+-- 24 tribunais ok, 24 cadernos de hoje publicados. Desenho:
 -- documentacao/DESENHO-NUVEM-CENTRAL-2026-11-13.md. O "desfazer" está no fim.
 --
 -- O que cria: (1) lex_saude_diarios (detalhe, 30 dias) e lex_saude_diarios_dia (resumo diário, para sempre), com RLS e GRANT
@@ -62,8 +64,7 @@ begin
   on conflict (dia, tribunal) do update set conferencias = excluded.conferencias, ok = excluded.ok, lentos = excluded.lentos,
     fora = excluded.fora, ms_medio = excluded.ms_medio, primeira_publicacao = excluded.primeira_publicacao;
   get diagnostics n = row_count;
-  delete from public.lex_saude_diarios where quando < now() - interval '30 days';
-  return n;
+  return n;   -- a retenção (apagar o detalhe com mais de 30 dias) fica no comando do cron lex-saude-resumo, não aqui
 end $$;
 revoke execute on function public.lex_saude_resumir(date) from public, anon, authenticated;
 
@@ -130,11 +131,25 @@ grant execute on function public.admin_lex_central() to authenticated;
 -- 4. pg_net, segredo da Edge Function e cron ------------------------------------------------------------------------------
 create extension if not exists pg_net with schema extensions;
 -- Segredo compartilhado entre o cron e a Edge Function lex-saude (cabeçalho x-saude-chave). Gerado aqui, nunca escrito à mão;
--- o mesmo valor vai para os Secrets da função (SAUDE_CHAVE) pela Arquitetura, pelo conector. Não é a chave de serviço.
+-- a função confere o valor no próprio Vault por lex_saude_chave_confere (abaixo): uma fonte só, sem Secret na função, rotação =
+-- trocar no Vault. Não é a chave de serviço (a fila do pg_net guarda os cabeçalhos em texto; por isso uma chave própria).
 select vault.create_secret(encode(extensions.gen_random_bytes(24), 'hex'), 'lex_saude_chave', 'Central LexSuiteONE: chave do cron para a função lex-saude')
  where not exists (select 1 from vault.secrets where name = 'lex_saude_chave');
 select vault.create_secret('https://qvdvkqydhnadhewcidia.supabase.co', 'lex_projeto_url', 'URL do projeto (pública)')
  where not exists (select 1 from vault.secrets where name = 'lex_projeto_url');
+
+-- Conferência da chave pelo Vault (só service_role, que é a chave do ambiente da função). Aplicada antes do resto, como migração
+-- 'lex_saude_chave_confere', para o passo 0.
+create or replace function public.lex_saude_chave_confere(p_chave text)
+returns boolean language plpgsql security definer set search_path = '' as $$
+declare v text;
+begin
+  select decrypted_secret into v from vault.decrypted_secrets where name = 'lex_saude_chave';
+  if v is null or p_chave is null or length(p_chave) <> length(v) then return false; end if;
+  return extensions.digest(p_chave, 'sha256') = extensions.digest(v, 'sha256');
+end $$;
+revoke execute on function public.lex_saude_chave_confere(text) from public, anon, authenticated;
+grant execute on function public.lex_saude_chave_confere(text) to service_role;
 
 do $$ begin
   if exists (select 1 from pg_extension where extname = 'pg_cron') then
@@ -147,7 +162,10 @@ do $$ begin
                                       'x-saude-chave', (select decrypted_secret from vault.decrypted_secrets where name = 'lex_saude_chave')),
         body := jsonb_build_object('rodada', now()),
         timeout_milliseconds := 120000) $job$);
-    -- Resumo do dia anterior e retenção de 30 dias, 03:40 UTC (00:40 Brasília)
+    -- Resumo do dia anterior e retenção de 30 dias, 03:40 UTC (00:40 Brasília).
+    -- PENDENTE em 13/Nov: o conector do Supabase pede confirmação do dono para qualquer comando com "delete" e a pergunta não
+    -- chegou ao dono; o job foi criado só com o resumo. Falta trocar o comando por este (ver quadro, Arquitetura):
+    --   select public.lex_saude_resumir(); delete from public.lex_saude_diarios where quando < now() - interval '30 days';
     perform cron.schedule('lex-saude-resumo', '40 3 * * *', $job$ select public.lex_saude_resumir() $job$);
   end if;
 end $$;
@@ -166,6 +184,7 @@ commit;
 -- select cron.unschedule(jobname) from cron.job where jobname in ('lex-saude-diarios', 'lex-saude-resumo');
 -- drop function if exists public.admin_lex_central();
 -- drop function if exists public.lex_saude_resumir(date);
+-- drop function if exists public.lex_saude_chave_confere(text);
 -- drop table if exists public.lex_saude_diarios_dia;
 -- drop table if exists public.lex_saude_diarios;
 -- delete from vault.secrets where name in ('lex_saude_chave', 'lex_projeto_url');

@@ -1,8 +1,11 @@
 # Desenho da nuvem da Central LexSuiteONE · fase 1 (Arquitetura, 13/Nov/2026)
 
 Pedido da Produto (13/Nov, noite) sobre `documentacao/DESENHO-CENTRAL-LEXSUITEONE-2026-11-13.md` e `central/` (0.1.0).
-SQL proposto, **não aplicado**: `nuvem/supabase/2026-11-13-central-saude-diarios.sql` (com o "desfazer"). Só entra depois do
-"pode aplicar" do dono e do passo 0. Conferido no projeto `solverone-app` (sa-east-1, plano Free) em 13/Nov: pg_cron 1.6.4 ligado
+SQL em `nuvem/supabase/2026-11-13-central-saude-diarios.sql` (com o "desfazer"), **aplicado em 13/Nov (noite)** com o "pode aplicar"
+do dono, depois do passo 0 (seção 3): função `lex-saude` v1 publicada, rodando em `sa-east-1` com IP de São Paulo (AWS), sem
+bloqueio do CNJ; primeira rodada real com 24 tribunais ok. **Pendente**: o comando de retenção (apagar o detalhe com mais de 30
+dias) no job `lex-saude-resumo`, porque o conector do Supabase pede confirmação do dono para comandos de apagar e a pergunta não
+apareceu para ele (seção 8). Conferido no projeto `solverone-app` (sa-east-1, plano Free) em 13/Nov: pg_cron 1.6.4 ligado
 (4 jobs de retenção), **pg_net disponível mas não instalado**, Vault com 3 segredos, `equipe` com 2 pessoas (dono e admin),
 **nenhum fator MFA cadastrado**, advisor de segurança com 4 avisos (seção 5).
 
@@ -47,9 +50,10 @@ Nenhum dado de pessoa: nomes de escritório e de computador, versões, contagens
   e `lex_saude_diarios_dia` (resumo por dia e tribunal, com a hora da primeira publicação; para sempre). RLS ligado, `revoke` de
   PUBLIC, anon e authenticated, `grant` só para service_role (a Edge Function grava; a tela lê pela função). Retenção pelo job
   `lex-saude-resumo` (00:40 Brasília): resume o dia anterior e apaga o detalhe com mais de 30 dias.
-- **Edge Function `lex-saude`** (Arquitetura escreve e publica depois do "pode"; `verify_jwt` desligado, autenticada pelo
-  cabeçalho `x-saude-chave`, cujo valor fica no Vault e nos Secrets da função; **não usa a chave de serviço no cron**, de propósito:
-  a fila do pg_net guarda os cabeçalhos em texto). Para cada TRT1 a TRT24, um GET leve à ficha do caderno
+- **Edge Function `lex-saude`** (v1, publicada em 13/Nov; `nuvem/supabase/functions/lex-saude/index.ts`; `verify_jwt` desligado,
+  autenticada pelo cabeçalho `x-saude-chave`, que ela confere **no Vault** pela função `lex_saude_chave_confere` (só service_role):
+  uma fonte só, nenhum Secret na função, rotação = trocar no Vault; **não usa a chave de serviço no cron**, de propósito: a fila do
+  pg_net guarda os cabeçalhos em texto). Para cada TRT1 a TRT24, um GET leve à ficha do caderno
   `https://comunicaapi.pje.jus.br/api/v1/caderno/<TRT>/<hoje>/D` (o mesmo de `djen.py` 27, `meta_caderno`), com `User-Agent`
   "LexSuiteONE-Central/1 (+https://judicial.solverone.com.br)", 15 s de limite e 1,2 s entre pedidos (o DJEN limita a ~20 por
   minuto); **nunca baixa o ZIP**. Classificação: 200 com `status` → ok (`publicado_hoje` = status não começa com "sem comunica");
@@ -107,11 +111,17 @@ desta plataforma (só service_role e funções `security definer` tocam nelas); 
 - Demonstração: hoje qualquer falha vira demonstração em silêncio; mostrar a faixa "Demonstração" também quando só uma parte falhou.
 - CSP: alinhar ao padrão do DESENHO-0.8 (`default-src 'none'`), mantendo `connect-src` só o projeto.
 
-## 8. Ordem para aplicar (com o "pode aplicar" do dono)
+## 8. Ordem para aplicar (com o "pode aplicar" do dono) · situação em 13/Nov, noite
 
-1. Passo 0: publicar `lex-saude`, chamar uma vez com `x-region: sa-east-1`, conferir região, IP e resposta do DJEN (5 min).
-2. Aplicar o SQL (tabelas, função, pg_net, Vault, cron) e gravar `SAUDE_CHAVE` nos Secrets da função com o valor do Vault.
-3. Esperar 2 rodadas (30 min) e conferir `lex_saude_diarios` (24 linhas por rodada, região sa-east-1, estados).
+1. **Feito.** Passo 0: `x-sb-edge-region = sa-east-1`, IP 18.230.20.241 (AWS São Paulo, BR), DJEN respondendo (um 500 passageiro
+   na primeira amostra, com o CNJ fora do ar naquele momento; na rodada real, 24 ok). Sem chave: HTTP 401.
+2. **Feito.** Tabelas, `admin_lex_central()`, `lex_saude_resumir()`, pg_net, Vault (`lex_saude_chave`, `lex_projeto_url`) e os dois
+   jobs do cron. **Pendente**: a retenção no comando do job `lex-saude-resumo` (o conector pede confirmação para "delete" e a
+   pergunta não chegou ao dono). Enquanto isso o detalhe só cresce: ~2 MB por semana, sem risco por meses. Para fechar, uma de
+   duas: a Arquitetura tenta de novo numa próxima conversa (a pergunta pode aparecer), ou o dono cola no Supabase → SQL Editor:
+   `select cron.unschedule('lex-saude-resumo'); select cron.schedule('lex-saude-resumo', '40 3 * * *', $$ select public.lex_saude_resumir(); delete from public.lex_saude_diarios where quando < now() - interval '30 days'; $$);`
+3. **Feito.** Primeira rodada real (manual): 24 linhas, região sa-east-1, 24 ok, 24 cadernos de hoje publicados. As próximas vêm
+   do cron a cada 15 min.
 4. O dono faz a seção 1 (MFA e usuários) e entra na Central; a Produto ajusta a tela (seção 7).
 5. Fase 2 (contagens por tribunal vindas do RADAR, termos revisados) é desenho à parte, depois.
 
