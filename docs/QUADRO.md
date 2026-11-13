@@ -21,10 +21,10 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (nada)
+- **Revisão da 0.7.39 (13/Nov)**: só o que mudou desde a `v0.7.38` (código `67f1c01`), sem saída para a internet. NÃO publico sem o "publica a versão 0.7.39" do dono. Só mexo no quadro.
 
 ### Arquivos em uso
-- (nenhum)
+- `docs/QUADRO.md` (só a seção da Operação e os pedidos)
 
 ### Feito (mais recente primeiro)
 - 13/Nov: **0.7.38 PUBLICADA** (o dono autorizou nesta conversa: "publica a versão 0.7.38"). Desde a revisão aprovada só mudou a linha das Novidades (`ee47a08`: "Melhorias no design e na navegação." em PT e EN, ressalva da revisão atendida); 365 testes OK. Automação "Publicar versão assinada" execução 30 verde (commit `fd1d4a6`), tag `v0.7.38` criada por ela; pacote 46 arquivos (download, igual nas 3 cópias) e 45 (atualização), assinatura conferida com `atualizar.verificar` e a `chave_publica.txt`, `versao.json` com 0.7.38 no ar em judicial.solverone.com.br. Integração para RootifyONE, ArchONE ou EaglePlanONE: nenhuma.
