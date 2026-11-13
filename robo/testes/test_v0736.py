@@ -302,7 +302,7 @@ class Lupa0736(unittest.TestCase):
 class Versao0736(unittest.TestCase):
     def test_versao_e_novidades(self):
         from lexsuite import VERSAO
-        self.assertEqual(VERSAO, "0.7.36")
+        self.assertGreaterEqual(tuple(int(x) for x in VERSAO.split(".")), (0, 7, 36))  # a 0.7.37 em diante mantém as linhas da 0.7.36
         h = ler("radar_modelo.html"); bloco = h[h.index('"0.7.36": {'):h.index('"0.7.35": {')]
         pt = re.findall(r'"([^"]+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
         en = re.findall(r'"([^"]+)"', bloco[bloco.index("en: ["):])

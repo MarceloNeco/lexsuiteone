@@ -445,7 +445,7 @@ def carregar(pasta_base, frente="trabalhista", pasta=None, banco=None, cfg_radar
         if d is not None:
             if d.get("erro"):
                 prefs["erro"] = ("Não consegui ler os destaques e exclusões deste computador (criterios.json); nesta leitura valem os "
-                                 "padrões. / Could not read this computer's list criteria; defaults apply this time.")
+                                 "padrões. / Could not read this computer's highlights and exclusions (criterios.json); defaults apply this time.")
             valores, exc = criterios_da_area(pasta, prefs["area"])
             prefs.update(valores)
             prefs["exclusoes"] = exc

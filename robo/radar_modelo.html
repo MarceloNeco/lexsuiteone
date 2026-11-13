@@ -186,7 +186,8 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .estado .rodando-linha .progresso-linha { flex: 0 1 320px; min-width: 160px; }
 .estado .rodando-linha .andando { flex: 1 1 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }  /* 0.7.36 (dono): uma linha, Interromper sempre no mesmo lugar */
 .estado .rodando-linha > button, .estado .rodando-linha > .aviso-leve { flex: none; }
-@media (max-width: 600px) { .estado .rodando-linha { flex-wrap: wrap; } .estado .rodando-linha .andando { white-space: normal; } }
+/* 0.7.37 (revisão da Operação): no celular, barra e Interromper fixos na primeira linha; o texto vai inteiro na segunda */
+@media (max-width: 600px) { .estado .rodando-linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; } .estado .rodando-linha .progresso-linha { grid-column: 1; grid-row: 1; min-width: 0; } .estado .rodando-linha > button, .estado .rodando-linha > .aviso-leve { grid-column: 2; grid-row: 1; } .estado .rodando-linha .andando { grid-column: 1 / -1; grid-row: 2; white-space: normal; } }
 .estado .log-det summary { cursor: pointer; color: var(--tinta-3); font-size: .8rem; width: max-content; }
 .estado .log-det .log { display: block; }
 .estado .erro { color: var(--erro); }
@@ -2428,7 +2429,8 @@ window.LEXSUITE_RADAR = null;
       // 0.7.35 (dono): barra, andamento e Interromper numa linha só; as mensagens anteriores ficam em "ver detalhes"
       var fila_ = el("div", "rodando-linha"); fila_.appendChild(linhaB_); box.appendChild(fila_);
       if (e.atrasada) box.appendChild(el("span", "aviso-leve", t("atrasada", { h: fmtHora(e.atrasada) })));
-      ultima = String(ultima || "").replace(/\s*(Página|Page):\s*\S.*$/, "").replace(/[A-Za-z]:\\[^\s]*/g, "").trim();  // 0.7.36 (dono): sem caminho de arquivo
+      // 0.7.37 (revisão da Operação): sem caminho de arquivo e sem a frase que o anunciava ("Gravando em C:\…", pasta com espaço, rede \\servidor)
+      ultima = String(ultima || "").replace(/\s*(Página|Page):\s*\S.*$/, "").replace(/[^.;·]*(?:[A-Za-z]:\\|\\\\)[\s\S]*$/, "").replace(/[\s:·,—-]+$/, "").trim();
       var and_ = (e.externa ? t("rodando_auto", { h: String(e.inicio || "").slice(11, 16) }) : t("rodando")) + " " + pct + "%" + (ultima ? " · " + ultima : "");
       var sp_ = el("span", "andando", and_); sp_.title = and_; fila_.appendChild(sp_);  // uma linha; o texto inteiro ao passar o mouse
       if (MODO === "app") {
@@ -3884,13 +3886,15 @@ window.LEXSUITE_RADAR = null;
       nNome.addEventListener("input", function () { achado = null; });
       bAdd.addEventListener("click", function () {
         if (buscaP) { if (!bAdd._esperando) { bAdd._esperando = true; buscaP.then(function () { bAdd._esperando = false; if (nNome.value.trim()) bAdd.click(); }); } return; }  // revisão: espera o nome que está sendo procurado, uma vez só
+        // 0.7.37 (revisão da Operação): o 2º clique de um duplo clique, com o campo já vazio, não troca o "✓ Acrescentada" por erro
+        if (!nNome.value.trim() && Date.now() - (bAdd._ultimaOk || 0) < 1500) return;
         var n = nomeDigitado(); if (n === null) { aviso(t("rg_falta_nome"), "erro"); nNome.focus(); return; }
         if (n === false) { aviso(t("rg_doc_ruim"), "erro"); nNome.focus(); return; }
         var doc_ = pareceDoc(n) && cnpjOk(n) ? semPont(n).toUpperCase() : "", nome_ = achado && achado.doc === n ? achado.nome : n;
         var ja_ = regrasExc.some(function (e) { return doc_ ? semPont(e.cnpj || e.nome).toUpperCase() === doc_ : (!e.cnpj && semAcento(e.nome) === semAcento(nome_)); });  // filial com outro CNPJ entra
         if (ja_) { aviso(t("rg_exc_ja"), "erro"); return; }
         regrasExc.unshift({ nome: nome_, cnpj: doc_, motivo: nMot.value.trim().slice(0, 200) }); novaLinha = nome_;
-        nNome.value = nMot.value = ""; achado = null; ++buscaN; busca.value = ""; desenharExc(); marcarRegras(); aviso(t("rg_exc_ok", { n: nome_ }), "txt-verde"); nNome.focus();
+        nNome.value = nMot.value = ""; achado = null; ++buscaN; busca.value = ""; desenharExc(); marcarRegras(); aviso(t("rg_exc_ok", { n: nome_ }), "txt-verde"); nNome.focus(); bAdd._ultimaOk = Date.now();
       });
       nNome.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); procurarNome().then(function () { bAdd.click(); }); } });
       [nNome, nMot].forEach(function (x) { x.addEventListener("input", function () { if (nNome.value.trim()) marcarRegras(); }); });  // revisão da 0.7.28: digitado e não acrescentado também pergunta ao fechar
@@ -5038,6 +5042,16 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
+    "0.7.37": {
+      pt: ["Inclusão dos filtros Situação, Vara, Setor, Porte e Estado no Painel, sempre à vista e ligados aos gráficos.",
+        "Simplificação da janela de Configurações.",
+        "Melhorias no design e na navegação.",
+        "Melhorias de acessibilidade e correções."],
+      en: ["Status, Court unit, Sector, Size and State filters on the Dashboard, always visible and linked to the charts.",
+        "Simpler Settings window.",
+        "Design and navigation improvements.",
+        "Accessibility improvements and fixes."]
+    },
     "0.7.36": {
       pt: ["Reorganização das Configurações em Processos, Leitura do Diário, Tela e Licença e termos.",
         "Alteração dos termos \"Critérios da lista\" para \"Destaques e exclusões\" e \"Leitura automática\" para \"Rotina de leitura\".",

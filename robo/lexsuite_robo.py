@@ -254,8 +254,8 @@ def cmd_djen(a, cfg_email=None):
         novos = djen.leads(pubs, vara=a.vara, ano_minimo=hoje.year - 1 if hoje.month <= 2 else hoje.year,
                            ja_vistos=banco.processos_vistos())
         leads = processar_leads(novos, a.vara, banco, not a.sem_cnpj, a.carteira, a.so_carteira, pasta)
-        situacao = {"pt": f"Fonte: DJEN. {len(pubs)} publicações lidas, {len(novos)} ações novas contra empresas nesta rodada.",
-                    "en": f"Source: DJEN. {len(pubs)} notices read, {len(novos)} new lawsuits against companies in this run."}
+        situacao = {"pt": f"Fonte: DJEN. {len(pubs)} publicações lidas, {len(novos)} processos novos contra empresas nesta rodada.",
+                    "en": f"Source: DJEN. {len(pubs)} notices read, {len(novos)} new cases against companies in this run."}
     except rede.BloqueadoForaDoBrasil as e:
         print("  " + str(e))
         leads = processar_leads([], a.vara, banco, False, a.carteira, a.so_carteira, pasta)
@@ -391,7 +391,7 @@ def _rodada(cfg, banco, a, carteira, processos, pasta_diag, exemplo_rodada=None)
     if guardar:
         monitor.guardar(novas, banco, cadernos, rodada=rodada_id, visto_em=agora.isoformat(timespec="seconds"))
 
-    # 2) Radar: ações novas contra empresas nas varas acompanhadas
+    # 2) Radar: processos novos contra empresas nas varas acompanhadas
     novos_acoes, conferidas_radar = [], 0
     if m.get("radar", True) and cfg.get("alvos") and modo != "caderno" or (exemplo_rodada and cfg.get("alvos")):
         varas = monitor.varas_alvo(cfg, AQUI)
@@ -419,7 +419,7 @@ def _rodada(cfg, banco, a, carteira, processos, pasta_diag, exemplo_rodada=None)
                             "conferidas": conferidas, "novas_processos": len(novas), "novas_acoes": len(novos_acoes),
                             "detalhes": detalhes})
     situacao = {"pt": f"{conferidas} publicações conferidas; {len(novas)} novas nos nossos processos; "
-                      f"{len(novos_acoes)} ações novas nas varas acompanhadas.",
+                      f"{len(novos_acoes)} processos novos nas varas acompanhadas.",
                 "en": f"{conferidas} notices checked; {len(novas)} new in our cases; "
                       f"{len(novos_acoes)} new lawsuits in the watched courts."}
     print("  " + situacao["pt"])
@@ -652,14 +652,14 @@ def cmd_diagnostico(a):
 def main(argv=None):
     p = argparse.ArgumentParser(description=f"LexSuiteONE · JUDICIAL v{VERSAO}")
     sub = p.add_subparsers(dest="comando", required=True)
-    s = sub.add_parser("varas", help="ranking das varas com mais ações novas (DataJud)")
+    s = sub.add_parser("varas", help="ranking das varas com mais processos novos (DataJud)")
     s.add_argument("--tribunal", default="TRT2"); s.add_argument("--meses", type=int, default=3)
     s.add_argument("--quantas", type=int, default=30); s.set_defaults(f=cmd_varas)
     s = sub.add_parser("vara", help="raio-x de uma vara (DataJud) + painel")
     s.add_argument("--tribunal", default="TRT2"); s.add_argument("--vara", required=True)
     s.add_argument("--meses", type=int, default=12); s.add_argument("--cache")
     s.set_defaults(f=cmd_vara)
-    s = sub.add_parser("djen", help="ações novas do dia (DJEN, precisa rodar no Brasil) + planilha + painel")
+    s = sub.add_parser("djen", help="processos novos do dia (DJEN, precisa rodar no Brasil) + planilha + painel")
     s.add_argument("--tribunal", default="TRT2"); s.add_argument("--vara", required=True)
     s.add_argument("--dias", type=int, default=3); s.add_argument("--orgao-id", dest="orgao_id")
     s.add_argument("--sem-cnpj", action="store_true"); s.add_argument("--diagnostico", action="store_true")
@@ -687,7 +687,7 @@ def main(argv=None):
     s.add_argument("--sem-cnpj", action="store_true")
     s.add_argument("--diagnostico", action="store_true")
     s.set_defaults(f=cmd_monitor)
-    s = sub.add_parser("radar", help="uma rodada do Radar sem tela: ações novas contra empresas nos tribunais do config (precisa rodar no Brasil)")
+    s = sub.add_parser("radar", help="uma rodada do Radar sem tela: processos novos contra empresas nos tribunais do config (precisa rodar no Brasil)")
     s.add_argument("--config", default=os.path.join(AQUI, "config.json"))
     s.add_argument("--dias", type=int, help="dias úteis para trás (padrão: o do config.json)")
     s.add_argument("--sem-cnpj", action="store_true", help="não consultar a Receita")
@@ -707,7 +707,7 @@ def main(argv=None):
     s = sub.add_parser("atualizar", help="procura uma versão nova assinada e instala (pasta compartilhada ou endereço fixo)")
     s.add_argument("--so-verificar", action="store_true", help="só dizer se há versão nova, sem instalar")
     s.set_defaults(f=cmd_atualizar)
-    s = sub.add_parser("diagnostico", help="relatório do que o radar guardou, sem dado pessoal (para calibrar a regra de ação nova)")
+    s = sub.add_parser("diagnostico", help="relatório do que o radar guardou, sem dado pessoal (para calibrar a regra de processo novo)")
     s.add_argument("--amostras", type=int, default=40, help="quantos trechos de exemplo por grupo (padrão 40)")
     s.set_defaults(f=cmd_diagnostico)
     s = sub.add_parser("parar", help="encerra o RADAR aberto neste computador (tela e leitura), quando a tela travou")

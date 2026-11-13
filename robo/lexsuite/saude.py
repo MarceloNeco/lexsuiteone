@@ -34,7 +34,7 @@ def avaliar(pubs, novos, receita_consultas=0, receita_falhas=0, hoje=None, ja_co
             saida.append({"fonte": "Regra de processo novo", "situacao": "atenção",
                           "detalhe": "Nenhum processo novo em um Diário grande: a regra pode ter parado de casar."})
         else:
-            saida.append({"fonte": "Regra de processo novo", "situacao": "ok", "detalhe": f"{len(novos or [])} processos novos em {n} publicações."})
+            saida.append({"fonte": "Regra de processo novo", "situacao": "ok", "detalhe": ("1 processo novo" if len(novos or []) == 1 else f"{len(novos or [])} processos novos") + (" em 1 publicação." if n == 1 else f" em {n} publicações.")})
     if receita_consultas:
         taxa = receita_falhas / receita_consultas
         saida.append({"fonte": "Receita (CNPJ)", "situacao": "erro" if taxa > 0.5 else "atenção" if taxa > 0.2 else "ok",

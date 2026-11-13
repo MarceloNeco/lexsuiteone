@@ -62,6 +62,15 @@ def _processos_pt(n):
     """0.7.36: "1 processo novo" / "N processos novos" (o singular certo, fora da f-string)."""
     return "1 processo novo" if n == 1 else f"{n or 0} processos novos"
 
+
+def _publicacoes_en(n):
+    """0.7.37 (revisão da Operação): o inglês também no singular certo."""
+    return "1 notice read" if n == 1 else f"{n or 0} notices read"
+
+
+def _processos_en(n):
+    return "1 new case" if n == 1 else f"{n or 0} new cases"
+
 class Estado:
     """O que a tela pergunta a cada 2 segundos enquanto o robô roda."""
 
@@ -377,7 +386,7 @@ class Servidor(ThreadingHTTPServer):
                 continue
             if e.get("resultado") == "ok" or e.get("lidas"):
                 achou = {"quando": quando or "", "pt": f"{_publicacoes_pt(e.get('lidas', 0))}; {_processos_pt(e.get('novas', 0))} contra empresas.",
-                         "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new cases against companies."}
+                         "en": f"{_publicacoes_en(e.get('lidas', 0))}; {_processos_en(e.get('novas', 0))} against companies."}
                 if e.get("nada_novo"):  # 0.7.36 (dono): leitura sem nada novo não parece falha (revisão 2: só quando a leitura marcou)
                     achou.update({"pt": "Nada novo: os Diários já publicados tinham sido lidos. O Diário de hoje entra na próxima leitura, quando estiver liberado.",
                                   "en": "Nothing new: the gazettes already published had been read. Today's gazette comes in the next reading, once released."})

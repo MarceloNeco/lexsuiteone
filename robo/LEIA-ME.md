@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.36 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.37 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,13 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.37 (teste do dono na 0.7.36, 13/Nov):** no Painel, Situação (no alto) e Vara, Setor, Porte e Estado (em "Mais
+  filtros") ficam sempre à vista: o que sai de um gráfico aparece no filtro correspondente, em vez de surgir do nada;
+  Configurações sem o parágrafo de abertura e mais larga (1280 px); busca das empresas excluídas sem rótulo repetido; na
+  faixa da leitura, sem a frase que anunciava o caminho do arquivo e, no celular, barra e Interromper fixos na primeira
+  linha; "1 processo novo" e "1 notice read" também no inglês e na aba Saúde; o nome pelo CNPJ só diz "não encontrado"
+  quando todas as fontes responderam; duplo clique em Acrescentar sem erro falso; "processos" no e-mail de aviso e nas
+  mensagens da linha de comando.
 - **0.7.36 (teste do dono na 0.7.35, 12/Nov):** Configurações em quatro seções com faixa (Processos, Leitura do Diário,
   Tela, Licença e termos); "Critérios da lista" vira "Destaques e exclusões" e "Leitura automática" vira "Rotina de
   leitura"; "processos" no lugar de "ações" nas telas; Licença e termos com o código, a situação ("ativa" em verde) e a

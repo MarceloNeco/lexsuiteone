@@ -3,7 +3,7 @@
 JUDICIAL é o produto; LexSuiteONE é a suíte jurídica da SolverONE. Endereço: judicial.solverone.com.br.
 Frente atual: Radar Trabalhista. Próximas: Tributário, Cível e empresarial.
 
-Robô que lê o Diário de Justiça Eletrônico Nacional (DJEN, do CNJ) e monta, todo dia, o catálogo de **ações novas
+Robô que lê o Diário de Justiça Eletrônico Nacional (DJEN, do CNJ) e monta, todo dia, o catálogo de **processos novos
 contra empresas** nos tribunais escolhidos (os 24 TRTs por padrão; TJs, TRFs, STJ e TST disponíveis), com a ficha
 da empresa (cadastro público da Receita) e do processo. Roda no computador do escritório, **sem inteligência
 artificial, sem senha de ninguém e sem servidor**. A lista vai para uma planilha na pasta do Google Drive do

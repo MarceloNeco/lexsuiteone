@@ -82,6 +82,8 @@ def consultar(cnpj, banco=None, validade_dias=30, rapido=False):
         if banco:
             banco.guardar_cnpj(cnpj, resumo)
         return resumo
-    if rapido and sem_rede == len(FONTES):
-        return {"cnpj": cnpj, "situacao": "sem_resposta", "razao_social": ""}  # sem internet: a tela diz isso (não é "não encontrado")
+    # 0.7.37 (revisão da Operação): "não encontrado" só quando todas as fontes responderam que não existe;
+    # se alguma não respondeu (sem internet, ocupada, fora do ar), a tela diz que não deu para conferir
+    if rapido and sem_rede:
+        return {"cnpj": cnpj, "situacao": "sem_resposta", "razao_social": ""}
     return None

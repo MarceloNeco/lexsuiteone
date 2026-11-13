@@ -50,7 +50,7 @@ def resumo_html(painel):
     return f"""<div style="font-family:Arial,sans-serif;max-width:640px">
 <h2 style="margin:0">LexSuiteONE · JUDICIAL</h2>
 <p>{e(v.get('vara', ''))} ({e(v.get('tribunal', ''))}) — atualizado em {e(painel.get('gerado_em', ''))}</p>
-<p><b>{len(leads)}</b> ações novas contra empresas · <b>{len(altas)}</b> com prioridade alta.</p>
+<p><b>{len(leads)}</b> processos novos contra empresas · <b>{len(altas)}</b> com prioridade alta.</p>
 <table border="1" cellpadding="6" style="border-collapse:collapse;font-size:13px">
 <tr><th>Prioridade</th><th>Nota</th><th>Empresa(s)</th><th>Processo</th><th>Rito</th></tr>{linhas}</table>
 <p style="color:#666;font-size:12px">Fonte: DJEN e DataJud (CNJ), dados públicos. O autor da ação e as testemunhas não aparecem (termos, seção 4).</p></div>"""

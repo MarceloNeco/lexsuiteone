@@ -162,6 +162,17 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.37 (teste do dono na 0.7.36, 13/Nov; dono: "pronto, o resto tá bom, pode corrigir isso?") — pronta para revisão
+
+- Itens 1 a 5 de `documentacao/FEEDBACK-TESTE-0.7.36.md` (Painel com os filtros dos gráficos sempre à vista, Configurações sem
+  o parágrafo de abertura e mais larga, busca das excluídas sem rótulo repetido).
+- Ressalvas da publicação da 0.7.36 (1) e (2) e da terceira revisão (1) a (7) e (10). Ficam de fora, com o motivo: (8)
+  contraste de botão desabilitado (estado desabilitado, isento no WCAG; sem mudança desde a 0.7.35); (9) cor dos avisos de
+  perda parcial (pergunta ao dono no quadro, sem urgência); (11) documento interno; (12) o teste do Python 3.11 pula onde
+  não há `python3.11` (de propósito); (13) testes novos em `test_v0737.py` para as mutações que sobreviveram nos pontos
+  desta versão.
+- Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova nem removida.
+
 ## 0.7.36 (teste do dono na 0.7.35, 12/Nov; dono: "pode codificar todas as correções e melhorias sem esquecer nada") — pronta para revisão
 
 - Feito: os 34 itens de `documentacao/FEEDBACK-TESTE-0.7.35.md` (menos o 7, depois da visita), os itens 1 a 4b da lista da
