@@ -1,0 +1,15 @@
+{
+  "name": "Central LexSuiteONE",
+  "short_name": "Central Lex",
+  "description": "Painel da equipe SolverONE para os softwares jurídicos da LexSuiteONE.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1d33",
+  "theme_color": "#0f1d33",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

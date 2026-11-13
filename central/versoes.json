@@ -1,0 +1,5 @@
+[
+  { "versao": "0.1.0", "data": "2026-11-13", "hora": "22:00:00",
+    "pt": ["Primeira versão: entrada da equipe com senha e código do celular, Visão geral, Saúde dos Diários, Escritórios e computadores, Erros, Estatísticas e Licenças."],
+    "en": ["First version: team sign-in with password and phone code, Overview, Gazette health, Firms and computers, Errors, Statistics and Licences."] }
+]

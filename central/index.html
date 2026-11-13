@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0f1d33">
+<!-- Segurança: só fala com o próprio site e com o Supabase da SolverONE; nada de script, fonte ou imagem de fora. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https://qvdvkqydhnadhewcidia.supabase.co; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Central LexSuiteONE</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone.svg">
+<link rel="stylesheet" href="central.css">
+</head>
+<body>
+<div id="entrada">
+  <div class="caixa">
+    <h1 class="tit-entrada">Central <span>LexSuiteONE</span></h1>
+    <p class="sub" id="e-sub"></p>
+    <form id="p-senha" class="passo" novalidate>
+      <label for="e-email" id="e-l-email"></label><input id="e-email" type="email" autocomplete="username" required>
+      <label for="e-senha" id="e-l-senha"></label><input id="e-senha" type="password" autocomplete="current-password" required>
+      <button class="botao" id="e-entrar" type="submit"></button>
+    </form>
+    <form id="p-cadastrar" class="passo" hidden novalidate>
+      <p id="c-x"></p>
+      <img class="qr" id="c-qr" alt="">
+      <p class="nota" id="c-ou"></p>
+      <div class="segredo" id="c-segredo"></div>
+      <label for="c-cod" id="c-l-cod"></label><input id="c-cod" inputmode="numeric" autocomplete="one-time-code" maxlength="7" required>
+      <button class="botao" id="c-ok" type="submit"></button>
+    </form>
+    <form id="p-codigo" class="passo" hidden novalidate>
+      <label for="m-cod" id="m-l-cod"></label><input id="m-cod" inputmode="numeric" autocomplete="one-time-code" maxlength="7" required>
+      <button class="botao" id="m-ok" type="submit"></button>
+      <button class="botao-sec" id="m-voltar" type="button"></button>
+    </form>
+    <p class="erro-msg" id="e-erro" role="alert"></p>
+    <p class="nota" id="e-nota"></p>
+    <p class="nota"><button class="botao-sec" id="e-idioma" type="button">EN</button></p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header>
+    <div class="marca">Central <span>LexSuiteONE</span><small id="h-prod"></small></div>
+    <button id="b-pt" type="button" aria-pressed="true">PT</button><button id="b-en" type="button" aria-pressed="false">EN</button>
+    <button id="b-tema" type="button">◐</button>
+    <button id="b-sair" type="button"></button>
+  </header>
+  <nav class="abas" role="tablist" id="abas"></nav>
+  <main id="tela"></main>
+</div>
+<script src="central-config.js"></script>
+<script src="central.js"></script>
+</body>
+</html>
