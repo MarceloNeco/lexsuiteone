@@ -21,6 +21,9 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
+- 13/Nov (noite): **Central LexSuiteONE** (pedido do dono): desenho e protótipo prontos
+  (`documentacao/DESENHO-CENTRAL-LEXSUITEONE-2026-11-13.md`, `documentacao/prototipos/central-lexsuiteone/`); pedido à
+  Arquitetura (nuvem) e perguntas 30 a 33 ao dono. Nenhum código de nuvem nem repositório antes das respostas.
 - (nada)
 
 ### Arquivos em uso
@@ -592,6 +595,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 | Data | De | Para | Pedido | Feito? |
 |---|---|---|---|---|
+| 13/Nov | Produto | Arquitetura | **Central LexSuiteONE (pedido do dono, 13/Nov: painel web da equipe, com login, para os softwares jurídicos; começa pelo RADAR)**. Desenho da Produto e protótipo: `documentacao/DESENHO-CENTRAL-LEXSUITEONE-2026-11-13.md` e `documentacao/prototipos/central-lexsuiteone/index.html`. Pedido: fechar o desenho de nuvem da fase 1: (1) login da equipe pelo Supabase Auth com `equipe` + MFA TOTP (`aal2`), sem login social; (2) funções `admin_lex_*` só leitura (instalações, erros, estatísticas, licenças, saúde), `security definer`, `search_path` fixo, sem `anon`; (3) `lex_saude_diarios` + Edge Function em São Paulo (o CNJ bloqueia fora do Brasil) chamada pelo `pg_cron` de 15 em 15 min, um pedido leve por TRT à ficha do caderno; (4) custo e limites do plano grátis. Nada aplicado antes do "pode" do dono; as perguntas 30 a 33 decidem nome, lugar e login | pendente (Arquitetura) |
 | 09/Nov | Arquitetura | Produto | **Retorno à SolverONE** (`documentacao/DESENHO-RETORNO-E-ROOTIFY.md`, seção 1): a cada leitura, montar do banco local a tabela de totais (data, tribunal, frente, faixa de valor, situação → quantidade; situações `novo, visto, em_analise, em_contato, virou_cliente, descartado, arquivado`) e mandar no campo `retorno` da ação `verificar` da `lex-conta` (até 2.000 linhas; a resposta traz `retorno.gravadas/recusadas`); guardar a última tabela enviada; Configuração ganha o bloco "O que a SolverONE recebe" com a tabela exata, a data e a frase "só quantidades; nenhum nome, processo ou contato". Só depois de a Arquitetura avisar aqui que a `lex-conta` v6 está publicada | não |
 | 09/Nov | Arquitetura | Produto | **E-mail de boas-vindas com prévia** (seção 2 do mesmo desenho): texto final PT (e EN) e a prévia já preenchida (nome, código, links) a partir de `docs/email/`; a Arquitetura faz o botão no RootifyONE e a função de envio. Nada é enviado ao Leandro até o dono dizer "pode enviar" | sim (Produto, 09/Nov): texto final em `docs/email/email-boas-vindas.txt` e `.html` (janela própria, passo 2 com o assistente atual, link "Manual", rodapé); a prévia do RootifyONE lê esses arquivos |
 | 09/Nov | Arquitetura | Operação | Quando a ficha nova do RootifyONE estiver no ar (0.18.16): preencher na KR Law o e-mail do responsável, o e-mail de boas-vindas e o domínio. O envio do e-mail de boas-vindas só pelo botão com prévia e só com o "pode enviar" do dono | superado (09/Nov): regra do dono no `CLAUDE.md`: o envio do e-mail de boas-vindas é do dono, pelo botão do RootifyONE, e nenhuma conversa o comenta |
@@ -747,6 +751,10 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 27 | Arquitetura (para o dono) | Prints da visita: ficam só na pasta restrita do dono, fora do repositório; os do PJe (CPF e endereço de pessoas) são apagados depois do desenho? | Sim: apagar os do PJe; guardar os do Astrea com acesso restrito | aberta (13/Nov) |
 | 28 | Arquitetura (para o dono) | A petição inicial em HTML pode ser fonte do endereço da ré, mesmo com a frase variando por advogado (o v1 marca "a conferir")? | Sim, como "a conferir"; o cadastro da parte tem prioridade | aberta (13/Nov) |
 | 29 | Produto (13/Nov) | Leitura automática barrada pelo antivírus (Bitdefender na KR Law): com a tela do programa aberta, quando a hora marcada passa e a tarefa do Windows não rodou, o programa faz a leitura sozinho? **Recomendação: sim** (só com a tela aberta; sem tela, continua dependendo do Windows). | respondida: "pode" (13/Nov); feito na 0.7.45 |
+| 30 | Produto (13/Nov, Central LexSuiteONE) | Nome do painel da equipe: "Central LexSuiteONE"? | Sim, "Central LexSuiteONE" (o protótipo usa) | aberta |
+| 31 | Produto (13/Nov, Central LexSuiteONE) | Onde ele mora: repositório novo com subdomínio próprio (ex.: central.solverone.com.br), pasta no lexsuiteone ou dentro do RootifyONE? | Repositório novo + subdomínio (origem separada do site do cliente; criar repositório pede o "pode") | aberta |
+| 32 | Produto (13/Nov, Central LexSuiteONE) | Login da equipe: senha + código do aplicativo autenticador (Google Authenticator, Microsoft Authenticator)? | Sim (sem login com Google, como manda a diretriz da administração) | aberta |
+| 33 | Produto (13/Nov, Central LexSuiteONE) | Fase 2: o RADAR passa a mandar, depois de cada leitura, só contagens por tribunal (ok, CNJ fora, erro), o que pede revisar os termos (dados enviados)? | Sim, depois da fase 1 | aberta |
 
 ## Decisões do dono registradas aqui
 

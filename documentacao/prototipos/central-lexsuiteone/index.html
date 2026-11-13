@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Central LexSuiteONE · protótipo</title>
+<!-- PROTÓTIPO (13/Nov/2026, Produto): dados FICTÍCIOS, sem login de verdade e sem nenhum pedido à internet.
+     Serve para o dono ver e aprovar o desenho antes de qualquer código de nuvem (regra zero). -->
+<style>
+:root {
+  --papel: #f3f5f8; --folha: #fff; --tinta: #121a2b; --tinta-2: #4a5468; --tinta-3: #636e81; --linha: #e1e5ec;
+  --marinho: #0f1d33; --latao: #a87a2e; --latao-claro: #d4ab6a; --latao-wash: #f7f0e1;
+  --ok-t: #1f6b3a; --ok-bg: #e3f3e8; --al-t: #8a5a00; --al-bg: #fbefd5; --er-t: #a33a2e; --er-bg: #fbe6e3; --barra: #2b62ad;
+  --f: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+:root[data-tema="escuro"] { color-scheme: dark; --papel: #0b1424; --folha: #111d32; --tinta: #e4e9f1; --tinta-2: #a8b3c5; --tinta-3: #8190a6;
+  --linha: #24344e; --marinho: #0f1d33; --latao: #b58a3c; --latao-wash: #241d10; --ok-t: #8fd3a5; --ok-bg: #12301f; --al-t: #f0c36b; --al-bg: #33270e;
+  --er-t: #f4958f; --er-bg: #3a1a17; --barra: #5a8fd6; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--papel); color: var(--tinta); font: 16px/1.45 var(--f); }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--latao); outline-offset: 2px; }
+.aviso-proto { background: var(--latao-wash); color: var(--tinta); text-align: center; font-size: .85rem; padding: 6px 12px; border-bottom: 1px solid var(--linha); }
+header { background: var(--marinho); color: #fff; display: flex; align-items: center; gap: 12px; padding: 10px 18px; position: sticky; top: 0; z-index: 5; }
+header .marca { font-weight: 800; letter-spacing: .02em; flex: 1; }
+header .marca span { color: var(--latao-claro); }
+header .marca small { font-weight: 400; opacity: .75; margin-left: 8px; }
+header button { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; min-width: 44px; min-height: 36px; padding: 0 12px; }
+header button[aria-pressed="true"] { background: #fff; color: var(--marinho); }
+nav.abas { display: flex; gap: 4px; padding: 10px 18px 0; overflow-x: auto; border-bottom: 1px solid var(--linha); background: var(--folha); }
+nav.abas button { border: 0; background: transparent; color: var(--tinta-2); padding: 10px 14px; border-bottom: 3px solid transparent; white-space: nowrap; }
+nav.abas button[aria-selected="true"] { color: var(--tinta); font-weight: 700; border-bottom-color: var(--latao); }
+main { padding: 18px; max-width: 1400px; margin: 0 auto; }
+h2 { margin: 6px 0 4px; font-size: 1.25rem; } .sub { color: var(--tinta-3); margin: 0 0 16px; font-size: .92rem; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.kpi { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 14px 16px; cursor: pointer; text-align: left; color: inherit; }
+.kpi .r { font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3); }
+.kpi .v { font-size: 1.9rem; font-weight: 800; } .kpi .d { font-size: .85rem; color: var(--tinta-2); }
+.kpi.alerta { border-color: var(--er-t); } .kpi.atencao { border-color: var(--al-t); }
+.cartao { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; }
+.cartao h3 { margin: 0 0 10px; font-size: .9rem; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-2); }
+.grade2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
+@media (max-width: 600px) { .grade2 { grid-template-columns: 1fr; } main { padding: 12px; } }
+.trts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.trt { border-radius: 10px; padding: 10px 12px; border: 1px solid var(--linha); background: var(--folha); text-align: left; color: inherit; }
+.trt b { display: block; } .trt small { color: var(--tinta-3); }
+.selo { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: .78rem; font-weight: 700; }
+.ok { color: var(--ok-t); background: var(--ok-bg); } .lento { color: var(--al-t); background: var(--al-bg); } .fora { color: var(--er-t); background: var(--er-bg); }
+.trt.fora { border-color: var(--er-t); } .trt.lento { border-color: var(--al-t); }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+th { position: sticky; top: 0; background: var(--folha); color: var(--tinta-2); font-weight: 600; }
+.rolagem { overflow-x: auto; }
+.barras { display: flex; align-items: flex-end; gap: 3px; height: 150px; padding-top: 10px; }
+.barras i { flex: 1; background: var(--barra); border-radius: 3px 3px 0 0; min-width: 4px; }
+.leg { display: flex; justify-content: space-between; font-size: .75rem; color: var(--tinta-3); }
+.linha-b { display: grid; grid-template-columns: 90px 1fr 60px; gap: 8px; align-items: center; margin: 6px 0; font-size: .9rem; }
+.linha-b .t { background: var(--papel); border-radius: 4px; height: 12px; } .linha-b .t i { display: block; height: 100%; border-radius: 4px; background: var(--barra); }
+.nota { font-size: .85rem; color: var(--tinta-3); }
+.falta { border-left: 4px solid var(--latao); background: var(--latao-wash); padding: 10px 14px; border-radius: 8px; font-size: .9rem; margin-bottom: 14px; }
+/* tela de entrada (simulada) */
+#entrada { min-height: calc(100vh - 32px); display: grid; place-items: center; padding: 20px; }
+#entrada .caixa { background: var(--folha); border: 1px solid var(--linha); border-radius: 14px; padding: 26px; width: min(420px, 100%); }
+#entrada label { display: block; font-size: .88rem; color: var(--tinta-2); margin: 12px 0 4px; }
+#entrada input { width: 100%; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 8px; background: var(--papel); color: var(--tinta); font: inherit; }
+.botao { background: var(--marinho); color: #fff; border: 0; border-radius: 999px; padding: 11px 20px; font-weight: 700; margin-top: 18px; width: 100%; }
+:root[data-tema="escuro"] .botao { background: var(--latao); color: #111; }
+</style>
+</head>
+<body>
+<div class="aviso-proto" id="aviso-proto"></div>
+
+<div id="entrada">
+  <div class="caixa">
+    <h1 style="margin:0;font-size:1.3rem">Central <span style="color:var(--latao)">LexSuiteONE</span></h1>
+    <p class="sub" id="e-sub"></p>
+    <label for="e-email" id="e-l-email"></label><input id="e-email" type="email" autocomplete="username" value="dono@exemplo.com.br">
+    <label for="e-senha" id="e-l-senha"></label><input id="e-senha" type="password" autocomplete="current-password" value="••••••••••">
+    <label for="e-cod" id="e-l-cod"></label><input id="e-cod" inputmode="numeric" autocomplete="one-time-code" value="123 456">
+    <button class="botao" id="e-entrar"></button>
+    <p class="nota" id="e-nota"></p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header>
+    <div class="marca">Central <span>LexSuiteONE</span><small id="h-prod"></small></div>
+    <button id="b-pt" aria-pressed="true">PT</button><button id="b-en" aria-pressed="false">EN</button>
+    <button id="b-tema" aria-label="Tema">◐</button>
+    <button id="b-sair"></button>
+  </header>
+  <nav class="abas" role="tablist" id="abas"></nav>
+  <main id="tela"></main>
+</div>
+
+<script>
+"use strict";
+/* ---------- textos PT/EN ---------- */
+var lang = "pt";
+var T = {
+  pt: { proto: "Protótipo com dados FICTÍCIOS · nada aqui é real e nada sai deste arquivo",
+    e_sub: "Área da equipe SolverONE. Só entra quem está na lista da equipe.", e_email: "E-mail", e_senha: "Senha",
+    e_cod: "Código do aplicativo autenticador (6 números)", e_entrar: "Entrar",
+    e_nota: "Sem login com Google: a administração entra só com senha e o código de verificação. Neste protótipo, qualquer clique entra.",
+    sair: "Sair", prod: "RADAR JUDICIAL",
+    a_geral: "Visão geral", a_diarios: "Saúde dos Diários", a_inst: "Escritórios e computadores", a_leit: "Leituras dos escritórios",
+    a_erros: "Erros", a_est: "Estatísticas", a_lic: "Licenças",
+    g_t: "Como estão as coisas agora", g_s: "Atualizado às 15:30 (horário de Brasília). Cada quadro abre o detalhe.",
+    k_trib: "Diários do CNJ", k_trib_d: "{f} fora · {l} lentos", k_inst: "Computadores ativos", k_inst_d: "{n} sem conferir há 3 dias",
+    k_ver: "Na versão atual", k_ver_d: "{n} em versão antiga", k_err: "Erros em 24 h", k_err_d: "{n} computadores",
+    k_proc: "Processos novos hoje", k_proc_d: "soma de todos os escritórios", k_lic: "Licenças", k_lic_d: "{a} ativas · {t} de teste",
+    d_t: "Saúde dos Diários (CNJ)", d_s: "A cada 15 minutos, a nuvem da SolverONE pergunta ao CNJ pela ficha do Diário de cada tribunal (um pedido leve, sem baixar o Diário). Verde: respondeu; amarelo: respondeu devagar; vermelho: erro ou sem resposta.",
+    d_hoje: "Diário de hoje", d_pub: "publicado", d_nao: "ainda não", d_resp: "resposta", d_ult: "conferido às {h}",
+    d_hist: "Últimas 24 horas (todos os tribunais)", d_hist_s: "Cada barra é uma conferência; a altura é quantos tribunais responderam bem.",
+    i_t: "Escritórios e computadores", i_s: "Cada computador com o programa, a versão e a última vez que conferiu a licença.",
+    i_esc: "Escritório", i_pc: "Computador", i_ver: "Versão", i_ult: "Última conferência", i_sit: "Situação", i_ok: "em dia", i_velha: "versão antiga", i_parado: "parado há {d} dias",
+    l_t: "Leituras dos escritórios", l_s: "O que cada leitura do programa conseguiu, por tribunal (só contagens: lido, CNJ fora, erro).",
+    l_falta: "Falta para existir: o programa ainda não manda este resumo. Precisa de uma versão nova do RADAR e de revisar o que vai à SolverONE (termos, seção dos dados enviados). Pergunta ao dono no quadro.",
+    e_t: "Erros", e_s: "O que o instalador e o programa mandaram (sem caminho de pasta nem dado pessoal).",
+    e_quando: "Quando", e_orig: "Origem", e_etapa: "Etapa", e_msg: "Mensagem", e_ver: "Versão",
+    s_t: "Estatísticas", s_s: "Só contagens que os escritórios mandam (por dia, tribunal, frente e situação). Nenhum nome de empresa nem número de processo.",
+    s_dia: "Processos novos por dia (todos os escritórios, 30 dias)", s_trib: "Por tribunal (30 dias)", s_sit: "Por situação (30 dias)",
+    lic_t: "Licenças", lic_s: "Cadastro, ativar e pausar, e-mails e termos continuam no RootifyONE (B2B → LexSuiteONE). Aqui só o resumo e o atalho.",
+    lic_abrir: "Abrir no RootifyONE ↗", lic_cod: "Código", lic_mod: "Modalidade", lic_val: "Validade", lic_pc: "Computadores",
+    sit: { novo: "Novo", analise: "Em análise", contato: "Contatado", cliente: "Virou cliente", descartado: "Descartado" } },
+  en: { proto: "Prototype with FICTITIOUS data · nothing here is real and nothing leaves this file",
+    e_sub: "SolverONE team area. Only people on the team list can sign in.", e_email: "E-mail", e_senha: "Password",
+    e_cod: "Authenticator app code (6 digits)", e_entrar: "Sign in",
+    e_nota: "No Google sign-in: administration uses only password and verification code. In this prototype, any click signs in.",
+    sair: "Sign out", prod: "RADAR JUDICIAL",
+    a_geral: "Overview", a_diarios: "Gazette health", a_inst: "Firms and computers", a_leit: "Firm readings",
+    a_erros: "Errors", a_est: "Statistics", a_lic: "Licences",
+    g_t: "How things are right now", g_s: "Updated at 15:30 (Brasília time). Each card opens the detail.",
+    k_trib: "CNJ gazettes", k_trib_d: "{f} down · {l} slow", k_inst: "Active computers", k_inst_d: "{n} not checked in 3 days",
+    k_ver: "On current version", k_ver_d: "{n} on old version", k_err: "Errors in 24 h", k_err_d: "{n} computers",
+    k_proc: "New cases today", k_proc_d: "sum of all firms", k_lic: "Licences", k_lic_d: "{a} active · {t} trial",
+    d_t: "Gazette health (CNJ)", d_s: "Every 15 minutes, the SolverONE cloud asks the CNJ for each court's gazette record (a light request, without downloading the gazette). Green: answered; yellow: answered slowly; red: error or no answer.",
+    d_hoje: "Today's gazette", d_pub: "published", d_nao: "not yet", d_resp: "response", d_ult: "checked at {h}",
+    d_hist: "Last 24 hours (all courts)", d_hist_s: "Each bar is one check; the height is how many courts answered well.",
+    i_t: "Firms and computers", i_s: "Each computer with the program, its version and the last time it checked the licence.",
+    i_esc: "Firm", i_pc: "Computer", i_ver: "Version", i_ult: "Last check", i_sit: "Status", i_ok: "up to date", i_velha: "old version", i_parado: "idle for {d} days",
+    l_t: "Firm readings", l_s: "What each program reading achieved, per court (counts only: read, CNJ down, error).",
+    l_falta: "Missing to exist: the program does not send this summary yet. It needs a new RADAR version and a review of what goes to SolverONE (terms, section on data sent). Question to the owner on the board.",
+    e_t: "Errors", e_s: "What the installer and the program sent (no folder paths, no personal data).",
+    e_quando: "When", e_orig: "Source", e_etapa: "Step", e_msg: "Message", e_ver: "Version",
+    s_t: "Statistics", s_s: "Only counts the firms send (per day, court, practice and status). No company names, no case numbers.",
+    s_dia: "New cases per day (all firms, 30 days)", s_trib: "By court (30 days)", s_sit: "By status (30 days)",
+    lic_t: "Licences", lic_s: "Registration, activate/pause, e-mails and terms stay in RootifyONE (B2B → LexSuiteONE). Here, only the summary and the shortcut.",
+    lic_abrir: "Open in RootifyONE ↗", lic_cod: "Code", lic_mod: "Plan", lic_val: "Valid until", lic_pc: "Computers",
+    sit: { novo: "New", analise: "Under review", contato: "Contacted", cliente: "Became client", descartado: "Discarded" } }
+};
+function t(k, v) { var s = (T[lang][k] != null ? T[lang][k] : T.pt[k]) || k; Object.keys(v || {}).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); return s; }
+function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function $(id) { return document.getElementById(id); }
+function num(n) { return Number(n).toLocaleString(lang === "en" ? "en-US" : "pt-BR"); }
+
+/* ---------- dados FICTÍCIOS (sorteio fixo, sempre igual) ---------- */
+var semente = 7; function rnd() { semente = (semente * 9301 + 49297) % 233280; return semente / 233280; }
+var TRTS = []; for (var n = 1; n <= 24; n++) TRTS.push("TRT" + n);
+var DIARIOS = TRTS.map(function (s, i) {
+  var est = i === 8 ? "fora" : (i === 3 || i === 16) ? "lento" : "ok";
+  return { trib: s, est: est, ms: est === "ok" ? 300 + Math.round(rnd() * 900) : est === "lento" ? 6000 + Math.round(rnd() * 4000) : null,
+           hoje: est !== "fora" && rnd() > .35, hora: "15:" + (15 + Math.round(rnd() * 14)) };
+});
+var HIST24 = []; for (var h = 0; h < 96; h++) HIST24.push(h > 52 && h < 60 ? 14 + Math.round(rnd() * 6) : 22 + Math.round(rnd() * 2));
+var ESC = ["Escritório Fictício A", "Escritório Fictício B", "Escritório Fictício C (teste)"];
+var INST = [
+  { esc: ESC[0], pc: "PC-RECEPCAO", ver: "0.7.45", dias: 0, hora: "15:12" }, { esc: ESC[0], pc: "NOTEBOOK-1", ver: "0.7.44", dias: 1, hora: "08:03" },
+  { esc: ESC[1], pc: "ESTACAO-02", ver: "0.7.45", dias: 0, hora: "14:58" }, { esc: ESC[1], pc: "ESTACAO-05", ver: "0.7.40", dias: 4, hora: "20:01" },
+  { esc: ESC[2], pc: "DESKTOP-XYZ", ver: "0.7.45", dias: 0, hora: "15:20" }, { esc: ESC[2], pc: "LAPTOP-ABC", ver: "0.7.41", dias: 9, hora: "10:13" } ];
+var ERROS = [
+  { q: "13/11 14:54", o: "programa", e: "leitura", m: "CNJ respondeu 500 no Diário de hoje (TRT9)", v: "0.7.42" },
+  { q: "13/11 13:10", o: "instalador", e: "descompactar", m: "errorlevel=1 tar e powershell", v: "0.7.43" },
+  { q: "13/11 11:47", o: "programa", e: "agendar", m: "Acesso negado ao criar a tarefa do Windows", v: "0.7.44" },
+  { q: "12/11 20:05", o: "programa", e: "planilha", m: "Planilha aberta no Excel; gravada depois", v: "0.7.39" } ];
+var DIAS30 = []; for (var d = 0; d < 30; d++) DIAS30.push((d % 7 === 5 || d % 7 === 6) ? 200 + Math.round(rnd() * 300) : 1100 + Math.round(rnd() * 900));
+var POR_TRIB = [["TRT2", 14230], ["TRT15", 9870], ["TRT9", 5120], ["TRT1", 4300], ["TRT3", 3980], ["TRT4", 2750]];
+var POR_SIT = [["novo", 31200], ["analise", 4100], ["contato", 1300], ["cliente", 210], ["descartado", 2900]];
+var LIC = [{ c: "LEX-AAAA-••••", e: ESC[0], m: "Mensal", v: "13/Dez/2026", p: "2 de 3" }, { c: "LEX-BBBB-••••", e: ESC[1], m: "Anual", v: "01/Nov/2027", p: "2 de 5" },
+           { c: "LEX-CCCC-••••", e: ESC[2], m: "Teste", v: "27/Nov/2026", p: "2 de 2" }];
+
+/* ---------- telas ---------- */
+var ABAS = ["geral", "diarios", "inst", "leit", "erros", "est", "lic"], aba = "geral";
+function titulo(m, k, s) { m.appendChild(el("h2", null, t(k))); m.appendChild(el("p", "sub", t(s))); }
+function kpi(rot, v, det, cls, destino) { var b = el("button", "kpi" + (cls ? " " + cls : "")); b.type = "button";
+  b.appendChild(el("div", "r", rot)); b.appendChild(el("div", "v", v)); b.appendChild(el("div", "d", det)); b.onclick = function () { ir(destino); }; return b; }
+var TELAS = {
+  geral: function (m) {
+    titulo(m, "g_t", "g_s");
+    var k = el("div", "kpis"), fora = DIARIOS.filter(function (x) { return x.est === "fora"; }).length, lento = DIARIOS.filter(function (x) { return x.est === "lento"; }).length;
+    k.appendChild(kpi(t("k_trib"), (24 - fora) + "/24", t("k_trib_d", { f: fora, l: lento }), fora ? "alerta" : lento ? "atencao" : "", "diarios"));
+    k.appendChild(kpi(t("k_inst"), INST.length, t("k_inst_d", { n: INST.filter(function (x) { return x.dias >= 3; }).length }), "", "inst"));
+    var velhas = INST.filter(function (x) { return x.ver !== "0.7.45"; }).length;
+    k.appendChild(kpi(t("k_ver"), (INST.length - velhas) + "/" + INST.length, t("k_ver_d", { n: velhas }), velhas ? "atencao" : "", "inst"));
+    k.appendChild(kpi(t("k_err"), 3, t("k_err_d", { n: 3 }), "atencao", "erros"));
+    k.appendChild(kpi(t("k_proc"), num(DIAS30[29]), t("k_proc_d"), "", "est"));
+    k.appendChild(kpi(t("k_lic"), LIC.length, t("k_lic_d", { a: 3, t: 1 }), "", "lic"));
+    m.appendChild(k);
+    var g = el("div", "grade2"); var c1 = el("div", "cartao"); c1.appendChild(el("h3", null, t("a_diarios"))); c1.appendChild(gradeTrts(true)); g.appendChild(c1);
+    var c2 = el("div", "cartao"); c2.appendChild(el("h3", null, t("s_dia"))); c2.appendChild(barras(DIAS30)); g.appendChild(c2); m.appendChild(g);
+  },
+  diarios: function (m) {
+    titulo(m, "d_t", "d_s"); var c = el("div", "cartao"); c.appendChild(gradeTrts(false)); m.appendChild(c);
+    var h = el("div", "cartao"); h.appendChild(el("h3", null, t("d_hist"))); h.appendChild(el("p", "nota", t("d_hist_s"))); h.appendChild(barras(HIST24, 24)); m.appendChild(h);
+  },
+  inst: function (m) {
+    titulo(m, "i_t", "i_s");
+    tabela(m, [t("i_esc"), t("i_pc"), t("i_ver"), t("i_ult"), t("i_sit")], INST.map(function (x) {
+      var sit = x.dias >= 3 ? ["fora", t("i_parado", { d: x.dias })] : x.ver !== "0.7.45" ? ["lento", t("i_velha")] : ["ok", t("i_ok")];
+      return [x.esc, x.pc, x.ver, (x.dias ? x.dias + "d · " : "") + x.hora, { selo: sit }];
+    }));
+  },
+  leit: function (m) { titulo(m, "l_t", "l_s"); m.appendChild(el("div", "falta", t("l_falta"))); },
+  erros: function (m) { titulo(m, "e_t", "e_s"); tabela(m, [t("e_quando"), t("e_orig"), t("e_etapa"), t("e_msg"), t("e_ver")], ERROS.map(function (x) { return [x.q, x.o, x.e, x.m, x.v]; })); },
+  est: function (m) {
+    titulo(m, "s_t", "s_s"); var c = el("div", "cartao"); c.appendChild(el("h3", null, t("s_dia"))); c.appendChild(barras(DIAS30)); m.appendChild(c);
+    var g = el("div", "grade2"); g.appendChild(listaBarras(t("s_trib"), POR_TRIB)); g.appendChild(listaBarras(t("s_sit"), POR_SIT.map(function (x) { return [T[lang].sit[x[0]], x[1]]; }))); m.appendChild(g);
+  },
+  lic: function (m) {
+    titulo(m, "lic_t", "lic_s");
+    tabela(m, [t("lic_cod"), t("i_esc"), t("lic_mod"), t("lic_val"), t("lic_pc")], LIC.map(function (x) { return [x.c, x.e, x.m, x.v, x.p]; }));
+    var b = el("button", "kpi", t("lic_abrir")); b.type = "button"; b.style.width = "auto"; b.onclick = function () { alert(lang === "en" ? "Prototype: opens RootifyONE." : "Protótipo: abre o RootifyONE."); }; m.appendChild(b);
+  }
+};
+function gradeTrts(resumo) {
+  var g = el("div", "trts");
+  DIARIOS.forEach(function (x) {
+    var b = el("button", "trt " + x.est); b.type = "button"; b.onclick = function () { ir("diarios"); };
+    b.appendChild(el("b", null, x.trib)); b.appendChild(el("span", "selo " + x.est, x.est === "ok" ? "ok" : x.est === "lento" ? (lang === "en" ? "slow" : "lento") : (lang === "en" ? "down" : "fora")));
+    if (!resumo) {
+      b.appendChild(el("small", null, " " + t("d_resp") + ": " + (x.ms ? (x.ms / 1000).toFixed(1) + " s" : "—")));
+      b.appendChild(el("small", null, " · " + t("d_hoje") + ": " + (x.hoje ? t("d_pub") : t("d_nao"))));
+      b.appendChild(el("small", null, " · " + t("d_ult", { h: x.hora })));
+    }
+    g.appendChild(b);
+  });
+  return g;
+}
+function barras(v, max) { var w = el("div"), b = el("div", "barras"), mx = max || Math.max.apply(null, v);
+  v.forEach(function (x) { var i = el("i"); i.style.height = Math.max(2, Math.round(x / mx * 100)) + "%"; i.title = num(x); b.appendChild(i); });
+  w.appendChild(b); var l = el("div", "leg"); l.appendChild(el("span", null, lang === "en" ? "oldest" : "mais antigo")); l.appendChild(el("span", null, lang === "en" ? "now" : "agora")); w.appendChild(l); return w; }
+function listaBarras(tit, linhas) { var c = el("div", "cartao"); c.appendChild(el("h3", null, tit)); var mx = Math.max.apply(null, linhas.map(function (x) { return x[1]; }));
+  linhas.forEach(function (x) { var r = el("div", "linha-b"); r.appendChild(el("span", null, x[0])); var tr = el("div", "t"), i = el("i"); i.style.width = Math.round(x[1] / mx * 100) + "%"; tr.appendChild(i); r.appendChild(tr); r.appendChild(el("span", null, num(x[1]))); c.appendChild(r); });
+  return c; }
+function tabela(m, cab, linhas) { var c = el("div", "cartao rolagem"), tb = el("table"), tr = el("tr");
+  cab.forEach(function (h) { tr.appendChild(el("th", null, h)); }); tb.appendChild(tr);
+  linhas.forEach(function (l) { var r = el("tr"); l.forEach(function (v) { var td = el("td"); if (v && v.selo) td.appendChild(el("span", "selo " + v.selo[0], v.selo[1])); else td.textContent = v; r.appendChild(td); }); tb.appendChild(r); });
+  c.appendChild(tb); m.appendChild(c); }
+function desenharAbas() { var n = $("abas"); n.textContent = "";
+  ABAS.forEach(function (a) { var b = el("button", null, t("a_" + a)); b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(a === aba)); b.onclick = function () { ir(a); }; n.appendChild(b); }); }
+function ir(a) { aba = a; desenharAbas(); var m = $("tela"); m.textContent = ""; TELAS[a](m); window.scrollTo(0, 0); }
+function textos() {
+  document.documentElement.lang = lang === "en" ? "en" : "pt-BR";
+  $("aviso-proto").textContent = t("proto"); $("e-sub").textContent = t("e_sub"); $("e-l-email").textContent = t("e_email"); $("e-l-senha").textContent = t("e_senha");
+  $("e-l-cod").textContent = t("e_cod"); $("e-entrar").textContent = t("e_entrar"); $("e-nota").textContent = t("e_nota"); $("b-sair").textContent = t("sair"); $("h-prod").textContent = "› " + t("prod");
+  $("b-pt").setAttribute("aria-pressed", String(lang === "pt")); $("b-en").setAttribute("aria-pressed", String(lang === "en"));
+  if (!$("app").hidden) ir(aba);
+}
+$("e-entrar").onclick = function () { $("entrada").hidden = true; $("app").hidden = false; ir("geral"); };
+$("b-sair").onclick = function () { $("app").hidden = true; $("entrada").hidden = false; };
+$("b-pt").onclick = function () { lang = "pt"; textos(); }; $("b-en").onclick = function () { lang = "en"; textos(); };
+$("b-tema").onclick = function () { var r = document.documentElement; r.dataset.tema = r.dataset.tema === "escuro" ? "" : "escuro"; };
+if (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.tema = "escuro";
+textos();
+</script>
+</body>
+</html>
