@@ -52,7 +52,7 @@ class Tela0739(unittest.TestCase):
         self.assertIn('var lapis = el("button", "rg-exc-lapis", "✎");', HTML)
 
     def test_faixa_da_leitura_numa_linha(self):
-        self.assertIn('grid-template-areas: "cab txt bot" ". est bot";', HTML)
+        self.assertIn('grid-template-areas: "cab txt txt" ". est bot";', HTML)  # 0.7.40: a 1ª linha usa a largura toda
 
     def test_versao_e_novidades(self):
         import sys

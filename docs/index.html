@@ -63,6 +63,7 @@ h1 .marca-leve { display: block; font-size: .5em; font-weight: 400; letter-spaci
 .capa p.lede { margin: 0 0 28px; color: #d6dbe6; font-size: 1.15rem; line-height: 1.55; max-width: 34ch; }
 .botao { display: inline-block; background: var(--latao); color: var(--noite); text-decoration: none; font-weight: 700; padding: 15px 28px; border-radius: 999px; }
 .botao:hover { background: #e2bd80; }
+.alt-baixar { margin: 14px 0 0; color: #d6dbe6; font-size: .92rem; max-width: 46ch; } .alt-baixar a { color: #e6c98a; font-weight: 600; }
 .so-computador p { margin: 0 0 14px; color: #d6dbe6; max-width: 36ch; }
 .cel-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
 @media (max-width: 560px) { .cel-botoes { flex-direction: column; } .cel-botoes .botao, .cel-botoes .botao-sec { width: 100%; text-align: center; padding-left: 16px; padding-right: 16px; } }
@@ -209,6 +210,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
         <h1 class="nome"><span class="marca-leve">RADAR</span> <strong>JUDIC<b>IA</b>L</strong></h1>
         <p class="lede" data-t="lede">Acompanha diariamente o Diário de Justiça Eletrônico Nacional (DJEN) e relaciona os novos processos ajuizados em face de pessoas jurídicas, com a ficha cadastral de cada empresa.</p>
         <a class="botao" id="b-baixar" href="downloads/Instalar-LexSuiteONE.zip" data-t="baixar">Baixar o RADAR JUDICIAL</a>
+        <p class="alt-baixar" id="alt-baixar"><span data-t="alt_baixar">O antivírus bloqueou ou a internet do escritório é restrita?</span> <a href="downloads/Instalar-LexSuiteONE-completo.zip" data-t="alt_baixar_link">Baixe o pacote completo (11 MB)</a></p>
         <div class="so-computador" id="so-computador" hidden>
           <p data-t="cel_txt">O RADAR JUDICIAL é instalado num computador com Windows 10 ou 11. Abra este endereço no computador para instalar.</p>
           <div class="cel-botoes">
@@ -327,6 +329,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     manual_topo: "Manual",
     lede: "Monitors Brazil's National Electronic Court Gazette (DJEN) daily and lists new lawsuits filed against companies, with each company's registry profile.",
     baixar: "Download RADAR JUDICIAL",
+    alt_baixar: "Did the antivirus block it, or is the office network restricted?", alt_baixar_link: "Download the complete package (11 MB)",
     cel_txt: "RADAR JUDICIAL is installed on a computer with Windows 10 or 11. Open this address on the computer to install.", cel_email: "E-mail the link", cel_copiar: "Copy the link", cel_copiado: "Link copied", mac_txt: "Using a Mac? The Mac version is available on request: talk to us and we will set up the best way to install it.", mac_botao: "Talk to us",
     req: "For Windows 10 or 11 (Mac on request), on a computer in Brazil, with Google Drive (OneDrive on request). The installer is 3 KB and downloads the rest by itself.",
     am_aria: "Sample list",
@@ -391,7 +394,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     if (windows) return;
     // Mac de verdade (o iPad também diz "Macintosh", mas tem tela de toque): versão sob consulta.
     var mac = /Macintosh/i.test(ua) && !(navigator.maxTouchPoints > 0);
-    document.getElementById("b-baixar").hidden = true;
+    document.getElementById("b-baixar").hidden = true; document.getElementById("alt-baixar").hidden = true;
     document.getElementById(mac ? "no-mac" : "so-computador").hidden = false;
     var req = document.querySelector(".requisito"); if (req) req.hidden = true;
     var completo = document.querySelector('[data-t="completo"]'); if (completo) completo.hidden = true;

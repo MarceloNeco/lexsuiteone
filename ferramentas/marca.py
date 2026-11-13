@@ -42,6 +42,20 @@ MANIFESTO = RAIZ / "docs" / "atualizacao" / "versao.json"
 INSTALAR_TXT = RAIZ / "docs" / "atualizacao" / "instalar.txt"
 INSTALADOR = RAIZ / "instalador" / "INSTALAR.bat"
 INSTALADOR_ZIP = RAIZ / "docs" / "downloads" / "Instalar-LexSuiteONE.zip"
+# 0.7.40 (dono): pacote completo para computador com antivírus ou rede restrita: o instalador, o programa publicado, o
+# Python portátil e o ícone, sem baixar nada (só a conferência do código de cliente usa a internet)
+INSTALADOR_COMPLETO = RAIZ / "instalador" / "INSTALAR-COMPLETO.bat"
+PYTHON_EMBED = RAIZ / "instalador" / "python-3.13.9-embed-amd64.zip"
+COMPLETO_ZIP = RAIZ / "docs" / "downloads" / "Instalar-LexSuiteONE-completo.zip"
+LEIA_COMPLETO = (
+    "PACOTE COMPLETO DO RADAR JUDICIAL\r\n\r\n"
+    "1. Clique com o botao direito no arquivo Instalar-LexSuiteONE-completo.zip e escolha \"Extrair tudo\".\r\n"
+    "2. Na pasta que abrir, de dois cliques em INSTALAR.bat.\r\n"
+    "3. Se o Windows perguntar se quer executar, clique em Executar. Na tela azul, clique em\r\n"
+    "   \"Mais informacoes\" e depois em \"Executar assim mesmo\".\r\n"
+    "4. Digite o codigo de cliente que veio no e-mail de boas-vindas.\r\n\r\n"
+    "Se o antivirus bloquear, peca para liberar a pasta C:\\LexSuiteONE e rode o INSTALAR.bat de novo.\r\n"
+    "Duvidas: judicial@solverone.com.br\r\n")
 AVISO = "<!-- Gerado por ferramentas/marca.py a partir de paginas/{arquivo} e docs/marca.json. Não edite aqui. -->\n"
 # Fora: o que quebra HTML, JavaScript, o Prompt de Comando do Windows (instalador) ou nome de arquivo (atalho).
 PROIBIDOS = set('<>&"\'\\{}`()%!^|=/:*?')
@@ -123,6 +137,25 @@ def instalador_zip():
     return buf.getvalue()
 
 
+def completo_zip():
+    """0.7.40: o pacote completo, sempre com os mesmos bytes para os mesmos arquivos (data fixa). Os .zip de dentro
+    vão guardados sem compressão de novo (já são comprimidos)."""
+    campos = dict(l.split("=", 1) for l in INSTALAR_TXT.read_text(encoding="utf-8").splitlines() if "=" in l)
+    pacote = RAIZ / "docs" / "atualizacao" / campos["arquivo"].strip()
+    itens = [("INSTALAR.bat", INSTALADOR_COMPLETO.read_bytes(), zipfile.ZIP_DEFLATED),
+             ("LEIA-ME.txt", LEIA_COMPLETO.encode("utf-8"), zipfile.ZIP_DEFLATED),
+             ("dados/instalar.txt", INSTALAR_TXT.read_bytes(), zipfile.ZIP_DEFLATED),
+             ("dados/pacote.zip", pacote.read_bytes(), zipfile.ZIP_STORED),
+             ("dados/python.zip", PYTHON_EMBED.read_bytes(), zipfile.ZIP_STORED),
+             ("dados/radar.ico", (DESTINO / "radar.ico").read_bytes(), zipfile.ZIP_STORED)]
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as z:
+        for nome, dados, modo in itens:
+            info = zipfile.ZipInfo(nome, date_time=(2026, 1, 1, 0, 0, 0)); info.compress_type = modo; info.external_attr = 0o644 << 16
+            z.writestr(info, dados)
+    return buf.getvalue()
+
+
 def manual_sem_arquivos(texto):
     """Teste do dono (0.7.30): o manual de dentro do programa não tem o favicon.svg ao lado (o pacote não leva imagens);
     o ícone e o logo vão embutidos no próprio HTML, como na tela."""
@@ -150,6 +183,8 @@ def gerar(m):
     saida[MARCA_ROBO] = json.dumps(m, ensure_ascii=False, indent=1) + "\n"
     saida[INSTALAR_TXT] = instalar_txt(m)
     saida[INSTALADOR_ZIP] = instalador_zip()
+    if INSTALADOR_COMPLETO.exists() and PYTHON_EMBED.exists() and INSTALAR_TXT.exists():
+        saida[COMPLETO_ZIP] = completo_zip()
     return saida
 
 

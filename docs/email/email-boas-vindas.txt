@@ -19,6 +19,8 @@ Como instalar
 3. Confira as Configurações (ícone ⚙): a Rotina de leitura (dias e horários) e os seus Destaques e exclusões (valor mínimo e empresas que ficam de fora), por área.
 4. Depois, abra pelo atalho {{marca.nome}} na área de trabalho. Para sair, menu ☰ → Sair. O manual está no link "Manual", no alto da tela.
 
+Se o antivírus bloquear: peça para liberar a pasta C:\LexSuiteONE, ou use o pacote completo (11 MB), que não baixa nada durante a instalação: https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE-completo.zip (clique com o botão direito no arquivo, "Extrair tudo", e dê dois cliques em INSTALAR.bat).
+
 Onde roda: no computador do escritório, nos dias e horários escolhidos. Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
 
 Segurança e dados: o {{marca.curto}} não pede senha, não contorna captcha e só instala atualizações assinadas. Processos, fichas e planilhas ficam no computador e na pasta do escritório; à SolverONE vão só a conferência da licença, o cadastro de quem usa, o aceite dos termos e totais sem nomes nem números de processo (detalhes nos termos).
