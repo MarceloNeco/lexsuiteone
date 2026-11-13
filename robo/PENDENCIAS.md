@@ -162,6 +162,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.42 (13/Nov, CNJ com o caderno fora; feita pela Operação com o "pode" do dono: "Já faça")
+
+- Dia sem Diário por erro do CNJ: pula, volta até 10 dias úteis, anota o dia e lê sozinho quando o CNJ voltar.
+- Fica para a Arquitetura: caminho alternativo pela consulta (`/api/v1/comunicacao`) quando o caderno cair; atenção ao
+  limite de 10 mil resultados por consulta (um dia do TRT9 já chega nele): precisa dividir a consulta (por vara).
+
 ## 0.7.41 (13/Nov, correção urgente na instalação da KR Law; feita pela Operação com o "pode" do dono)
 
 - O CNJ respondeu 500 ("Server Error") para o caderno do dia de hoje e a leitura inteira parava em todos os tribunais.

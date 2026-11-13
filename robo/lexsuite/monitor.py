@@ -236,27 +236,45 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
     # Dias com Diário (0.7.11): volta dia útil a dia útil, até 10, e só conta os dias em que o tribunal publicou o
     # caderno. Assim feriado (nacional, estadual) e recesso não fazem a leitura sair vazia.
     candidatas = dias_uteis(hoje, 10)[::-1]
+    cnj_instavel = False  # 0.7.42: depois de um Diário com erro 5xx, os outros pedidos desta leitura tentam menos vezes
     for sigla in tribunais:
         contados, motivos, lidos_trib, inicio, ja_conferidos = 0, {}, [], time.perf_counter(), 0
         pedidas, http, erro = [], "200", None
+        # 0.7.42 (dono, 13/Nov): Diário que o CNJ não entregou não interrompe a leitura: o dia é pulado, a leitura volta
+        # mais dias (até 10 dias úteis) e o dia fica pendente, lido sozinho nas próximas leituras
+        pendentes = set(getattr(banco, "cadernos_pendentes", lambda _s: set())(sigla))
+        falhou, seguidas, erro_cnj = [], 0, None
         try:
             for d in candidatas:
                 if parar and parar():  # 0.7.15: "Interromper" pedido: para antes do próximo Diário (ponto seguro)
                     from .radar import Interrompida
                     raise Interrompida("interrompida")
-                if d != hoje and contados >= max(0, int(dias)):
+                if d != hoje and contados >= max(0, int(dias)) and d.isoformat() not in pendentes:
+                    if not pendentes or d.isoformat() < min(pendentes):
+                        break
+                    continue
+                if seguidas >= 3:  # três Diários seguidos com erro: o CNJ está fora; não insiste nos dias mais antigos
                     break
                 pedidas.append(d.isoformat())
                 try:
-                    meta = djen.meta_caderno(sigla, d.isoformat(), aviso, motivos)
-                except rede.ErroHTTP as e_hoje:
-                    # 0.7.41 (instalação na KR Law, 13/Nov): o CNJ passou a responder 500 para o caderno do dia que ainda está
-                    # sendo montado; no dia de hoje isso é "ainda não publicado": pula hoje e lê até o dia anterior
-                    if d != hoje or e_hoje.codigo < 500:
+                    meta = (djen.meta_caderno(sigla, d.isoformat(), aviso, motivos, tentativas=2) if cnj_instavel
+                            else djen.meta_caderno(sigla, d.isoformat(), aviso, motivos))
+                except rede.ErroHTTP as e_dia:
+                    if e_dia.codigo < 500:
                         raise
-                    aviso(f"  Caderno {sigla} {config.data_curta(d, False)}: o CNJ ainda não fechou o Diário de hoje; leio até o dia anterior")
-                    motivos[d.isoformat()] = "nao_publicado"
+                    cnj_instavel, seguidas, erro_cnj = True, seguidas + 1, e_dia
+                    if d == hoje:
+                        # 0.7.41 (instalação na KR Law, 13/Nov): o CNJ respondeu 500 para o caderno do dia que ainda está
+                        # sendo montado; no dia de hoje isso é "ainda não publicado": pula hoje e lê até o dia anterior
+                        aviso(f"  Caderno {sigla} {config.data_curta(d, False)}: o CNJ ainda não fechou o Diário de hoje; leio até o dia anterior")
+                        motivos[d.isoformat()] = "nao_publicado"
+                        continue
+                    aviso(f"  Caderno {sigla} {config.data_curta(d, False)}: o CNJ não entregou este Diário (erro {e_dia.codigo}); fica para a próxima leitura")
+                    falhou.append(d)
+                    if hasattr(banco, "marcar_caderno_pendente"):
+                        banco.marcar_caderno_pendente(sigla, d.isoformat())
                     continue
+                seguidas = 0
                 if meta is None:
                     continue
                 if d != hoje:
@@ -265,6 +283,8 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
                 if versao and banco.versao_caderno(sigla, d.isoformat()) == versao:
                     aviso(f"  Caderno {sigla} {config.data_curta(d, False)}: já conferido (versão {versao})")
                     lidos_trib.append(d)
+                    if d.isoformat() in pendentes and hasattr(banco, "tirar_caderno_pendente"):
+                        banco.tirar_caderno_pendente(sigla, d.isoformat())
                     ja_conferidos += 1
                     continue
                 aviso(f"  Baixando o caderno {sigla} {config.data_curta(d, False)} (pode levar alguns minutos)...")
@@ -273,8 +293,12 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
                     continue
                 pubs += lote
                 lidos_trib.append(d)
+                if d.isoformat() in pendentes and hasattr(banco, "tirar_caderno_pendente"):
+                    banco.tirar_caderno_pendente(sigla, d.isoformat())
                 if lidos is not None:
                     lidos.append((sigla, d.isoformat(), versao or "?"))
+            if not lidos_trib and erro_cnj is not None and (falhou or seguidas):
+                raise erro_cnj  # nada lido e o CNJ com erro: falha do tribunal, como antes
         except rede.BloqueadoForaDoBrasil:
             raise
         except Exception as e:  # um tribunal com problema não derruba os outros
@@ -297,11 +321,16 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
             fez = f"parou neste tribunal; leu até {ate}" if ate else "não leu este tribunal; seguiu com os outros"
         elif causa == "ainda_nao_liberado_3h":
             fez = f"pulou hoje (só às 3h); leu até {ate}" if ate else "pulou hoje (só às 3h)"
+        elif falhou:
+            dias_f = ", ".join(config.data_curta(x, False) for x in sorted(falhou))
+            fez = (f"leu até {ate}; o CNJ não entregou {dias_f} (entra sozinho na próxima leitura)" if ate
+                   else f"o CNJ não entregou {dias_f} (entra sozinho na próxima leitura)")
         else:
             fez = f"leu até {ate}" if ate else "nenhum caderno novo"
         fez_en = (f"stopped on this court; read up to {ate_en}" if ate else "could not read this court; went on with the others") if erro is not None else (
             (f"skipped today (only after 3 a.m.); read up to {ate_en}" if ate else "skipped today (only after 3 a.m.)") if causa == "ainda_nao_liberado_3h"
-            else (f"read up to {ate_en}" if ate else "no new gazette"))
+            else (f"read up to {ate_en}; the CNJ did not deliver " + ", ".join(config.data_curta(x, False, en=True) for x in sorted(falhou)) + " (read automatically next time)" if falhou
+                  else (f"read up to {ate_en}" if ate else "no new gazette")))
         tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": http, "causa": causa,
                            "fez": fez, "fez_en": fez_en, "duracao": round(time.perf_counter() - inicio, 1), "ja_conferidos": ja_conferidos,
                            "leu_ate": str(max(lidos_trib))[:10] if lidos_trib else "",  # revisão da 0.7.28: ISO; a tela mostra no idioma dela

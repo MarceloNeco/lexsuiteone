@@ -5290,6 +5290,12 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
+    "0.7.42": {
+      pt: ["Leitura que segue quando o CNJ não entrega o Diário de algum dia: o dia é pulado e os dias anteriores são lidos.",
+        "Leitura automática dos dias que faltaram, nas próximas leituras, assim que o CNJ voltar."],
+      en: ["Reading that goes on when the CNJ does not deliver a day's gazette: that day is skipped and the previous days are read.",
+        "Automatic reading of the missing days in the next readings, as soon as the CNJ is back."]
+    },
     "0.7.41": {
       pt: ["Correção da leitura quando o CNJ ainda não liberou o Diário do dia, que deixa de interromper a leitura.",
         "Leitura dos dias anteriores mesmo com o Diário de hoje indisponível; o dia de hoje fica para a próxima leitura."],
