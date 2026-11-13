@@ -137,14 +137,16 @@ def instalador_zip():
     return buf.getvalue()
 
 
-def completo_zip():
+def completo_zip(texto_instalar=None):
     """0.7.40: o pacote completo, sempre com os mesmos bytes para os mesmos arquivos (data fixa). Os .zip de dentro
-    vão guardados sem compressão de novo (já são comprimidos)."""
-    campos = dict(l.split("=", 1) for l in INSTALAR_TXT.read_text(encoding="utf-8").splitlines() if "=" in l)
+    vão guardados sem compressão de novo (já são comprimidos). Recebe o instalar.txt novo (o da versão que está sendo
+    publicada): na automação de publicação o pacote da versão anterior já foi apagado quando o marca.py roda."""
+    texto_instalar = texto_instalar if texto_instalar is not None else INSTALAR_TXT.read_text(encoding="utf-8")
+    campos = dict(l.split("=", 1) for l in texto_instalar.splitlines() if "=" in l)
     pacote = RAIZ / "docs" / "atualizacao" / campos["arquivo"].strip()
     itens = [("INSTALAR.bat", INSTALADOR_COMPLETO.read_bytes(), zipfile.ZIP_DEFLATED),
              ("LEIA-ME.txt", LEIA_COMPLETO.encode("utf-8"), zipfile.ZIP_DEFLATED),
-             ("dados/instalar.txt", INSTALAR_TXT.read_bytes(), zipfile.ZIP_DEFLATED),
+             ("dados/instalar.txt", texto_instalar.encode("utf-8"), zipfile.ZIP_DEFLATED),
              ("dados/pacote.zip", pacote.read_bytes(), zipfile.ZIP_STORED),
              ("dados/python.zip", PYTHON_EMBED.read_bytes(), zipfile.ZIP_STORED),
              ("dados/radar.ico", (DESTINO / "radar.ico").read_bytes(), zipfile.ZIP_STORED)]
@@ -183,8 +185,8 @@ def gerar(m):
     saida[MARCA_ROBO] = json.dumps(m, ensure_ascii=False, indent=1) + "\n"
     saida[INSTALAR_TXT] = instalar_txt(m)
     saida[INSTALADOR_ZIP] = instalador_zip()
-    if INSTALADOR_COMPLETO.exists() and PYTHON_EMBED.exists() and INSTALAR_TXT.exists():
-        saida[COMPLETO_ZIP] = completo_zip()
+    if INSTALADOR_COMPLETO.exists() and PYTHON_EMBED.exists():
+        saida[COMPLETO_ZIP] = completo_zip(saida[INSTALAR_TXT])  # Operação (publicação da 0.7.40): o instalar.txt novo, não o do disco
     return saida
 
 
