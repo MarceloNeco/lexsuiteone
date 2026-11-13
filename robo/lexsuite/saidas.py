@@ -5,6 +5,7 @@ painel (um HTML que abre no navegador, até sem internet) e dados.json.
 import csv
 import json
 import os
+import re
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 MODELO_PAINEL = os.path.join(os.path.dirname(AQUI), "painel_modelo.html")
@@ -79,6 +80,7 @@ def lead_para_saida(lead):
 def _embutir(modelo_html, variavel, caminho, dados):
     with open(modelo_html, encoding="utf-8") as f:
         modelo = f.read()
+    modelo = re.sub(r"/\*FUNDOS\*/.*?/\*/FUNDOS\*/", "", modelo, flags=re.S)  # 0.7.40: o retrato sai sem as imagens de fundo
     # "</" escapado para o JSON nunca fechar a tag <script> antes da hora.
     bloco = json.dumps(dados, ensure_ascii=False).replace("</", "<\\/")
     with open(caminho, "w", encoding="utf-8") as f:
