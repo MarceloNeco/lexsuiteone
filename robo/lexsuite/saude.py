@@ -28,13 +28,13 @@ def avaliar(pubs, novos, receita_consultas=0, receita_falhas=0, hoje=None, ja_co
             saida.append({"fonte": "DJEN", "situacao": "ok", "detalhe": f"{n} publicações lidas; campos esperados presentes."})
         taxa_novas = len(novos or []) / n
         if taxa_novas > 0.3:
-            saida.append({"fonte": "Regra de ação nova", "situacao": "atenção",
-                          "detalhe": f"{taxa_novas:.0%} das publicações viraram ação nova: a regra está frouxa."})
+            saida.append({"fonte": "Regra de processo novo", "situacao": "atenção",
+                          "detalhe": f"{taxa_novas:.0%} das publicações viraram processo novo: a regra está frouxa."})
         elif not novos and n > 1000:
-            saida.append({"fonte": "Regra de ação nova", "situacao": "atenção",
-                          "detalhe": "Nenhuma ação nova em um Diário grande: a regra pode ter parado de casar."})
+            saida.append({"fonte": "Regra de processo novo", "situacao": "atenção",
+                          "detalhe": "Nenhum processo novo em um Diário grande: a regra pode ter parado de casar."})
         else:
-            saida.append({"fonte": "Regra de ação nova", "situacao": "ok", "detalhe": f"{len(novos or [])} ações novas em {n} publicações."})
+            saida.append({"fonte": "Regra de processo novo", "situacao": "ok", "detalhe": f"{len(novos or [])} processos novos em {n} publicações."})
     if receita_consultas:
         taxa = receita_falhas / receita_consultas
         saida.append({"fonte": "Receita (CNPJ)", "situacao": "erro" if taxa > 0.5 else "atenção" if taxa > 0.2 else "ok",

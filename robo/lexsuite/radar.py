@@ -293,7 +293,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
             por_sinal = {}
             for n in novos:
                 por_sinal[n.get("sinal") or "outro"] = por_sinal.get(n.get("sinal") or "outro", 0) + 1
-            aviso("  Ações novas por sinal: " + "; ".join(f"{k}: {v}" for k, v in sorted(por_sinal.items(), key=lambda x: -x[1])) + ".")
+            aviso("  Processos novos por sinal: " + "; ".join(f"{k}: {v}" for k, v in sorted(por_sinal.items(), key=lambda x: -x[1])) + ".")
         consultar = bool(r.get("receita", True)) and not sem_cnpj
         com_cnpj = sum(1 for n in novos if n.get("cnpjs"))
         if consultar and com_cnpj:
@@ -382,8 +382,10 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     parcial_pt, parcial_en = (" (leitura interrompida)", " (reading stopped)") if interrompida else ("", "")
     proc_pt = "1 processo novo" if len(novos) == 1 else f"{len(novos)} processos novos"
     proc_en = "1 new case" if len(novos) == 1 else f"{len(novos)} new cases"
-    situacao = {"pt": f"{len(pubs)} publicações lidas; {proc_pt} contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
-                "en": f"{len(pubs)} notices read; {proc_en} against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
+    pubs_pt = "1 publicação lida" if len(pubs) == 1 else f"{len(pubs)} publicações lidas"
+    pubs_en = "1 notice read" if len(pubs) == 1 else f"{len(pubs)} notices read"
+    situacao = {"pt": f"{pubs_pt}; {proc_pt} contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
+                "en": f"{pubs_en}; {proc_en} against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}
     if tentativas and not pubs and not interrompida and all(t["causa"] in ("ok", "ainda_nao_liberado_3h", "nao_publicado") for t in tentativas):
         # 0.7.36 (dono): "0 publicações lidas" parecia falha; quando nada é novo, a tela diz por quê

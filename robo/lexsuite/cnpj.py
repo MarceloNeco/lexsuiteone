@@ -41,6 +41,7 @@ def consultar(cnpj, banco=None, validade_dias=30, rapido=False):
             d = rede.pedir_json(fonte.format(cnpj=cnpj), intervalo_minimo=1.2, tentativas=1 if rapido else 3, tempo_limite=6 if rapido else 120)
         except rede.ErroHTTP as e:
             recusas += e.codigo in (400, 404)
+            sem_rede += e.codigo == 429 or e.codigo >= 500  # revisão: fonte ocupada ou fora do ar não é "não encontrado"
             continue
         except (RuntimeError, OSError):
             sem_rede += 1

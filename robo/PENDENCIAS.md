@@ -172,6 +172,8 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
   Leituras automáticas, Quando algo não funciona), Novidades PT/EN da 0.7.36, AssistONE (ajuda de Configurações, Painel e
   Histórico, tour sem a aba Histórico, busca com Histórico de leituras e Sair), termos sem mudança (a consulta do nome pelo
   CNPJ usa o mesmo cadastro público da ficha), e-mails sem menção ao que mudou.
+- Revisões da Operação (12 e 13/Nov): as duas rodadas de bloqueios e médias corrigidas dentro da 0.7.36 (nada adiado), inclusive
+  site e e-mail de boas-vindas com os nomes novos (com o "pode" do dono).
 - Fica para depois: pasta antiga "Cópias" para dentro de "Cópias da planilha"; link para a Lista ao lado de cada valor dos
   gráficos (hoje há "Ver na lista →" por gráfico); o site ainda diz "ações novas" na descrição (texto público: só com o
   "pode" do dono); jornada do aceite por pessoa (Arquitetura).

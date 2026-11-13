@@ -34,13 +34,13 @@ def papel_valido(corpo):
 
 # O manual fala com a pessoa pelo papel dela (texto curto; o manual inteiro continua valendo para todos).
 PARA_VOCE = {
-    "Sócio ou sócia": ["A lista é um catálogo de oportunidades, não uma recomendação: a regra separa ações novas contra empresas e deixa a triagem com você.",
+    "Sócio ou sócia": ["A lista é um catálogo de oportunidades, não uma recomendação: a regra separa processos novos contra empresas e deixa a triagem com você.",
                        "Para saber se o robô está rodando, basta a linha \"Última atualização\" no alto da tela ou a aba oculta Log da planilha.",
                        "O uso dos contatos das empresas e dos nomes de sócios é decisão sua e do compliance; o ajuste \"Mostrar sócios e administradores\" desliga esses nomes.",
                        "Nada aqui usa inteligência artificial nem tem custo por uso: o robô lê fontes públicas e roda no seu computador."],
     "Advogado ou advogada": ["Clique na linha e a ficha abre: vara, rito, data do Diário, empresa, atividade, porte, capital social e contatos do cadastro público.",
                              "O valor da causa fica atrás do captcha do PJe: \"Abrir consulta no PJe\", cole o número, veja o valor e digite na ficha. Ele sai na planilha exportada.",
-                             "Use o status (visto, em contato, descartado) para não repassar a mesma empresa duas vezes; o filtro \"Acima de\" segue o valor mínimo dos Critérios da lista (Configurações).",
+                             "Use o status (visto, em contato, descartado) para não repassar a mesma empresa duas vezes; o filtro \"Acima de\" segue o valor mínimo de Destaques e exclusões (Configurações).",
                              "Rito ordinário indica causa acima de 40 salários mínimos; sumaríssimo, até 40. É o primeiro corte de valor que o Diário permite."],
     "Estagiário ou estagiária": ["A rotina sugerida: de manhã, abrir a tela, conferir \"Última atualização\" e passar pela lista marcando o status de cada linha.",
                                  "Para as linhas com \"valor a conferir\", abrir a consulta no PJe, resolver o captcha e digitar o valor da causa na ficha.",
@@ -52,6 +52,15 @@ PARA_VOCE = {
                               "Avise o suporte quando a tela mostrar \"robô desligado\", \"precisa atualizar\" ou quando a lista vier vazia dois dias úteis seguidos."],
 }
 
+
+
+def _publicacoes_pt(n):
+    return "1 publicação lida" if n == 1 else f"{n or 0} publicações lidas"
+
+
+def _processos_pt(n):
+    """0.7.36: "1 processo novo" / "N processos novos" (o singular certo, fora da f-string)."""
+    return "1 processo novo" if n == 1 else f"{n or 0} processos novos"
 
 class Estado:
     """O que a tela pergunta a cada 2 segundos enquanto o robô roda."""
@@ -367,7 +376,7 @@ class Servidor(ThreadingHTTPServer):
             except ValueError:
                 continue
             if e.get("resultado") == "ok" or e.get("lidas"):
-                achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {"1 processo novo" if e.get('novas') == 1 else str(e.get('novas', 0)) + " processos novos"} contra empresas.",
+                achou = {"quando": quando or "", "pt": f"{_publicacoes_pt(e.get('lidas', 0))}; {_processos_pt(e.get('novas', 0))} contra empresas.",
                          "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new cases against companies."}
                 if e.get("nada_novo"):  # 0.7.36 (dono): leitura sem nada novo não parece falha (revisão 2: só quando a leitura marcou)
                     achou.update({"pt": "Nada novo: os Diários já publicados tinham sido lidos. O Diário de hoje entra na próxima leitura, quando estiver liberado.",
@@ -1084,7 +1093,8 @@ class Tratador(BaseHTTPRequestHandler):
                     return self._responder({"ok": True, "so_leitura": True, "em_uso": em_uso})
             if abrir_no_windows(alvo):
                 return self._responder({"ok": True, "em_uso": em_uso})
-            return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Confira a pasta das planilhas em Configurações e faça uma leitura. / The spreadsheet does not exist yet.",
+            return self._responder({"ok": False, "motivo": "A planilha ainda não existe. Confira a pasta das planilhas em Configurações e faça uma leitura.",
+                                    "motivo_en": "The spreadsheet does not exist yet. Check the spreadsheet folder in Settings and run a reading.", "falta": True,
                                     "caminho": planilha})
         if caminho == "/testar-pasta":
             cfg = s.config()

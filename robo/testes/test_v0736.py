@@ -385,6 +385,42 @@ class Revisao0736Operacao(Servidor):
         self.assertEqual(len(ex), 4)
 
 
+class Revisao0736Segunda(Servidor):
+    """Segunda revisão da Operação (0.7.36)."""
+
+    def test_para_voce_sem_nome_antigo(self):
+        textos = " ".join(" ".join(v) for v in app.PARA_VOCE.values())
+        self.assertNotIn("Critérios da lista", textos); self.assertNotIn("ações novas", textos)
+
+    def test_planilha_que_falta_vem_nos_dois_idiomas_separados(self):
+        s = ler("lexsuite", "app.py")
+        self.assertNotIn("/ The spreadsheet does not exist yet.", s); self.assertIn('"falta": True', s)
+
+    def test_fonte_ocupada_nao_vira_nao_encontrado(self):
+        from lexsuite import cnpj, rede
+        def falha(url, **k):
+            raise rede.ErroHTTP(503, url, "")
+        with mock.patch.object(cnpj.rede, "pedir_json", side_effect=falha):
+            self.assertEqual(cnpj.consultar("11222333000181", rapido=True)["situacao"], "sem_resposta")
+
+    def test_roda_no_python_311(self):
+        import shutil, subprocess, glob
+        py = shutil.which("python3.11")
+        if not py:
+            self.skipTest("sem python3.11 nesta máquina")
+        for f in glob.glob(os.path.join(_ROBO_, "lexsuite", "*.py")) + glob.glob(os.path.join(_ROBO_, "*.py")):
+            r = subprocess.run([py, "-c", "import ast,sys; ast.parse(open(sys.argv[1], encoding='utf-8').read())", f], capture_output=True)
+            self.assertEqual(r.returncode, 0, f + ": " + r.stderr.decode()[-300:])
+
+    def test_tela(self):
+        h = ler("radar_modelo.html")
+        self.assertNotIn("bAdd.disabled = true", h)  # o clique que tira o foco do campo não se perde
+        self.assertIn(".rg-doc-msg { color: var(--tinta-2) !important; } .rg-doc-msg .erro { color: var(--erro); }", h)
+        self.assertIn(':root[data-theme="dark"] input.rg-busca { color: #e4e9f1; background: #172640; }', h)
+        self.assertIn(".limpar-filtros:disabled { opacity: 1; }", h)
+        self.assertIn('r.falta ? t("planilha_falta")', h)
+
+
 class UltimaTentativa(Servidor):
     def test_regras_dizem_as_areas_em_uso_e_copiam_para_as_escolhidas(self):
         c = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=20)

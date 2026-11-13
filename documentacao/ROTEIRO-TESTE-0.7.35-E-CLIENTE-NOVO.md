@@ -49,7 +49,7 @@ na mesma caixa; para o sistema é outro e-mail).
 
 **Como cliente**
 6. Abra o e-mail de boas-vindas → **Baixar o RADAR JUDICIAL** → abra o arquivo → INSTALAR.bat → cole o código.
-7. Siga o assistente (nome, e-mail o seu e-mail com "+teste2" antes do @ (ex.: `seunome+teste2@gmail.com`), pasta, tribunais).
+7. Siga o assistente (nome, o seu e-mail com "+teste2" antes do @ (ex.: `seunome+teste2@gmail.com`), pasta, tribunais).
 8. **Teste do pior caso:** não aceite os termos antes. Clique em "Ler o Diário agora": aparece "Falta aceitar os termos".
    Clique em **Aceitar os termos**, role o texto até o fim, marque, confirme e **volte ao programa**: em segundos ele deve
    liberar sozinho (ou clique em **Já aceitei**). Depois, "Ler o Diário agora" lê normalmente.

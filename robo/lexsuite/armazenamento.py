@@ -227,7 +227,8 @@ def copia_seguranca(cfg, banco, motivo="", aviso=print, agora=None, so_csv=False
     if d["nivel"] in ("baixo", "critico"):
         return False, texto_disco(d)
     agora = agora or dt.datetime.now()
-    nome = f"{agora:%Y-%m-%d %Hh%Mm%S}" + (f" - {re.sub(r'[^\w ]+', '', motivo)[:40].strip()}" if motivo else "")
+    motivo_limpo = re.sub(r"[^\w ]+", "", motivo or "")[:40].strip()  # 0.7.36: fora da f-string, para rodar também no Python 3.11
+    nome = f"{agora:%Y-%m-%d %Hh%Mm%S}" + (f" - {motivo_limpo}" if motivo else "")
     destino = os.path.join(pasta_copias(base), nome)
     try:
         os.makedirs(destino, exist_ok=True)
@@ -242,7 +243,7 @@ def copia_seguranca(cfg, banco, motivo="", aviso=print, agora=None, so_csv=False
         return False, f"Não consegui gravar a cópia de segurança ({e.__class__.__name__})."
     banco.registrar("copia_seguranca", {"pasta": nome, "motivo": motivo, "planilhas": copiadas, "linhas_csv": n,
                                         "bytes": _tamanho(destino)})
-    aviso(f"  Cópia de segurança gravada: {destino} ({copiadas} planilha(s) e {n} ações em CSV).")
+    aviso(f"  Cópia de segurança gravada: {destino} ({copiadas} planilha(s) e {n} processos em CSV).")
     _podar(base, aviso)
     return True, destino
 

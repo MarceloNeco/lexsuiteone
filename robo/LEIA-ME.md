@@ -77,7 +77,10 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
   leitura numa linha, sem caminho de arquivo; "Nada novo" quando a leitura não traz publicação nova; Histórico de
   leituras fora das abas (Configurações → Sobre este computador, e faixa vermelha no Painel quando uma leitura falha);
   lupa vazia só orienta, acha pelo começo das palavras, sem repetidos e com Sair; ressalvas da Operação (Conferir agora
-  durante a leitura, Trocar licença encadeado, avisos sem empilhar, texto em EN).
+  durante a leitura, Trocar licença encadeado, avisos sem empilhar, texto em EN). Nas revisões da Operação: nome da empresa
+  pelo CNPJ com o cache do banco, uma tentativa curta e limite de 10 s na tela ("sem internet ou fonte ocupada" separado de
+  "não encontrado"); erro sempre em vermelho e botão desabilitado em cinza; avisos de abrir planilha ou pasta sem "A leitura
+  parou"; textos do servidor e da planilha com "processos" e "Destaques e exclusões"; código que roda também no Python 3.11.
 - **0.7.35 (dono, 12/Nov):** tela de abertura enquanto carrega; "Conferir agora" em Licença e termos; "Abrir a pasta no
   Windows" em Pasta das planilhas; "Continuar à noite" também com a busca parada; faixa da leitura numa linha (mensagens
   anteriores recolhidas); Novidades largas no computador; ao encerrar, a janela tenta se fechar e diz como abrir de novo.
@@ -233,7 +236,7 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 - A opção "Ler sozinho" da Configuração cria a tarefa "LexSuiteONE Radar" no Agendador do Windows, com os horários
   escolhidos (padrão 20h e 8h, até 6, nos dias da semana marcados, de início de segunda a sexta; se o computador estava desligado, roda quando
   ele ligar). Ela roda o `RODAR.bat`; ao terminar, um aviso no canto da tela diz quantas ações novas chegaram.
-  `AGENDAR.bat` faz o mesmo à mão (botão direito, Executar como administrador), se precisar. O DJEN libera o diário a partir das 19h.
+  `AGENDAR.bat` faz o mesmo à mão (botão direito, Executar como administrador), se precisar. O DJEN termina de publicar o Diário do dia à noite (por volta das 19h); de madrugada, o Diário do dia novo só aparece depois das 3h.
 - **`RODAR.bat`**: uma rodada sem a tela, com os tribunais salvos. Também grava `saida\radar\radar.html`.
 - **`DIAGNOSTICO.bat`**: relatório `diagnostico\radar-diagnostico.txt` do que o robô guardou, sem dado de pessoa física.
 

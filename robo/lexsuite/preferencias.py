@@ -413,13 +413,13 @@ def migrar(pasta, pasta_base, cfg_radar=None, aviso=None, banco=None):
     except OSError:
         return None
     contagem = {a: len(bloco["exclusoes"]) for a in AREAS}
-    texto = (f"critérios da lista migrados para este computador ({origem}): {len(bloco['exclusoes'])} empresa(s) excluída(s), "
+    texto = (f"destaques e exclusões migrados para este computador ({origem}): {len(bloco['exclusoes'])} empresa(s) excluída(s), "
              "iguais nas quatro áreas")
     if aviso:
         aviso("  " + texto[0].upper() + texto[1:] + ".")
     if banco is not None:
         try:
-            banco.registrar("saude", {"fonte": "Critérios da lista", "situacao": "ok", "detalhe": texto[:200]})
+            banco.registrar("saude", {"fonte": "Destaques e exclusões", "situacao": "ok", "detalhe": texto[:200]})
         except Exception:  # noqa: BLE001 - o registro nunca impede a migração
             pass
     return contagem
@@ -444,7 +444,7 @@ def carregar(pasta_base, frente="trabalhista", pasta=None, banco=None, cfg_radar
         d = ler_criterios(pasta)
         if d is not None:
             if d.get("erro"):
-                prefs["erro"] = ("Não consegui ler os critérios da lista deste computador (criterios.json); nesta leitura valem os "
+                prefs["erro"] = ("Não consegui ler os destaques e exclusões deste computador (criterios.json); nesta leitura valem os "
                                  "padrões. / Could not read this computer's list criteria; defaults apply this time.")
             valores, exc = criterios_da_area(pasta, prefs["area"])
             prefs.update(valores)
