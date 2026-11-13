@@ -162,6 +162,17 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.39 (teste do dono na 0.7.38, 13/Nov; "faça a 0.7.39 com tudo, antes da minha visita ao Leandro") — pronta para revisão
+
+- Feitos: tracejado do período em andamento; título Estatísticas com (?); "Limpar filtros" coerente com as pizzas; "Ver na
+  lista" em Faixas e Empresas; 5/10/15 empresas; excluídas (defeito do motivo longo, "Remover", colunas, ▸, ✎); faixa da
+  leitura mais baixa.
+- Onde "Ver na lista" não leva tudo: Faixas só leva "Acima de…" (o que ficou ligado é "daqui para cima") ou "Sem valor",
+  porque a Lista não filtra "até" nem faixa no meio; Empresas só leva quando sobra uma empresa (pela busca); "Como o processo
+  novo foi reconhecido" não tem "Ver na lista" (a Lista não filtra por sinal).
+- Fica de fora: imagens de fundo (faltam os 4 arquivos); lista de varas mais larga (o dono ainda não decidiu).
+- Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova nem removida.
+
 ## 0.7.38 (13/Nov) — pronta para revisão
 
 - Pergunta 19 respondida pelo dono: "não couberam" em dourado. Ressalvas da revisão da 0.7.37: "✓ Acrescentada" sumia ao

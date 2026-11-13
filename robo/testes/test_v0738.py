@@ -21,7 +21,7 @@ class Tela0738(unittest.TestCase):
 
     def test_versao_e_novidades(self):
         from lexsuite import VERSAO
-        self.assertEqual(VERSAO, "0.7.38")
+        self.assertGreaterEqual(tuple(int(x) for x in VERSAO.split(".")), (0, 7, 38))
         bloco = HTML[HTML.index('"0.7.38": {'):HTML.index('"0.7.37": {')]
         self.assertIn('pt: ["Melhorias no design e na navegação.", "Melhorias de acessibilidade e correções."]', " ".join(bloco.split()))
         self.assertIn('en: ["Design and navigation improvements.", "Accessibility improvements and fixes."]', " ".join(bloco.split()))

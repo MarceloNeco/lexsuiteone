@@ -113,6 +113,17 @@ const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
     await p.click('#c-l-codigo').catch(() => {}); const aj = p.locator('#config .ajuda').first(); await aj.scrollIntoViewIfNeeded(); await aj.click(); await p.waitForTimeout(300);
     const z = await p.evaluate(() => { const q = document.querySelector('.balao'); if (!q) return 'sem balão'; const r = q.getBoundingClientRect(); const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return q.contains(e) ? 'na frente' : 'atrás'; });
     ok(z === 'na frente', `o (?) da Configuração abre na frente da janela (${z})`); await ctx.close(); }
+  // 0.7.39 (revisão da Operação): motivo de 200 caracteres nas empresas excluídas não alarga a janela (360 e 1366 px); ▸ e ✎
+  for (const w of [360, 1366]) { const ctx = await b.newContext({ viewport: { width: w, height: 800 } }); const p = await ctx.newPage();
+    await p.goto('http://127.0.0.1:' + porta + '/'); await p.waitForTimeout(1300); await p.click('.dgo-aone-x').catch(() => {});
+    await p.evaluate(() => { const d = document.getElementById('janela'); if (d && d.open) d.close(); });
+    await p.click('#b-config'); await p.waitForTimeout(500); await p.evaluate(() => { document.querySelector('.rg-exc-det').open = true; });
+    await p.locator('#c-regras input[placeholder^="CNPJ, CPF"]').fill('Empresa Ficticia Motivo Longo Ltda'); await p.locator('#c-regras input[placeholder^="Motivo"]').fill('motivo '.repeat(40).slice(0, 200));
+    await p.locator('#c-regras button', { hasText: 'Acrescentar' }).click(); await p.waitForTimeout(600);
+    const r = await p.evaluate(() => { const c = document.getElementById('config'); const ln = [...document.querySelectorAll('.rg-exc-linha')].find(l => /Motivo Longo/.test(l.textContent)); return { larg: Math.round(c.getBoundingClientRect().width), sw: c.scrollWidth, cw: c.clientWidth, mais: ln && !ln.querySelector('.rg-exc-mais').hidden, lapis: !!(ln && ln.querySelector('.rg-exc-lapis')), rem: ln && ln.querySelector('.fs-apagar').textContent }; });
+    ok(r.sw <= r.cw + 1 && r.larg <= w, `${w}px: motivo longo não alarga Configurações (${r.larg} px, ${r.sw}/${r.cw})`);
+    ok(r.mais && r.lapis && r.rem === 'Remover', `${w}px: motivo cortado tem ▸, ✎ e "Remover" (${JSON.stringify(r)})`);
+    await ctx.close(); }
   // 0.7.32: 320 px em inglês sem rolagem lateral; gráfico do Painel desliga pela legenda (apagado) sem mexer na Lista; faixa de leitura baixa
   { const ctx = await b.newContext({ viewport: { width: 320, height: 700 }, isMobile: true, hasTouch: true });
     await ctx.addInitScript(() => { try { localStorage.setItem('lexsuite:idioma', 'en'); } catch (e) {} });
@@ -121,7 +132,7 @@ const [porta, OUT] = [process.argv[2] || '8781', process.argv[3] || '.'];
     await ctx.close(); }
   { const ctx = await b.newContext({ viewport: { width: 1366, height: 900 } }); const p = await ctx.newPage();
     await p.goto('http://127.0.0.1:' + porta + '/'); await p.waitForTimeout(1300); await p.click('.dgo-aone-x').catch(() => {});
-    const h = await p.evaluate(() => Math.round(document.getElementById('bloco-leitura').getBoundingClientRect().height)); ok(h <= 120, `faixa de leitura baixa no notebook (${h} px)`);
+    const h = await p.evaluate(() => Math.round(document.getElementById('bloco-leitura').getBoundingClientRect().height)); ok(h <= 72, `faixa de leitura baixa no notebook (${h} px; 0.7.39: até 72)`);
     await p.click('#v-painel'); await p.waitForTimeout(500);
     const card = p.locator('.grade-graf > *', { hasText: /Situação no escritório|Status at the firm/ }).first();
     await card.locator('button.barra-l').first().click(); await p.waitForTimeout(400);

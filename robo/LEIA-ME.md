@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.38 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.39 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,14 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.39 (teste do dono na 0.7.38, 13/Nov):** barra do dia de hoje (Processos por dia) e do mês corrente (Sazonalidade)
+  com contorno tracejado, pela data de Brasília, até a meia-noite (o Diário do dia ainda recebe processos até a noite), com
+  legenda e etiqueta "dia em andamento"; título "Estatísticas" com (?) acima dos oito cartões; "Limpar filtros (N)" conta e
+  desfaz também o que se risca nas pizzas que não são filtro (Faixas, Empresas, Como foi reconhecido); "Ver na lista" em
+  Faixas de valor (leva "Acima de…" ou "Sem valor" quando dá) e em Empresas (leva a empresa quando só uma ficou ligada);
+  Empresas com 5, 10 ou 15 primeiras; empresas excluídas com motivo longo sem alargar a janela, "Remover", ▸ para o motivo
+  inteiro e ✎ para editar o motivo; faixa "Configuração da leitura" numa altura só no computador (de 106 para 59 px).
+  As imagens de fundo das telas de carregamento ficam para quando o dono mandar os 4 arquivos.
 - **0.7.38 (13/Nov):** o aviso "não couberam" ao copiar empresas excluídas para outra área sai em dourado (decisão do
   dono, pergunta 19); a confirmação "✓ Acrescentada" fica até a próxima digitação (antes sumia ao sair do campo).
 - **0.7.37 (teste do dono na 0.7.36, 13/Nov):** no Painel, Situação (no alto) e Vara, Setor, Porte e Estado (dentro de
