@@ -4,7 +4,8 @@ Anote o que estranhar (print e uma frase) e mande para a Produto.
 
 1. **Atualizar.** Abra o RADAR e aceite a atualização. Devem aparecer as Novidades da 0.7.37 (4 linhas).
 2. **Painel.** Ao lado de "Qualquer valor" aparece "Todas as situações". Abra "Mais filtros": aparecem "Todas as varas",
-   "Todos os setores", "Todos os portes" e "Todos os estados", mesmo sem mexer em nada.
+   "Todos os setores", "Todos os portes" e "Todos os estados", mesmo sem mexer em nada (cada um quando há mais de uma opção
+   para escolher; com um setor só no período, o de setor não aparece).
 3. **Gráfico e filtro juntos.** Lá embaixo, em Setores, clique num setor: ele fica riscado e, em "Mais filtros", o filtro
    de setor passa a dizer "7 setores" (o mesmo filtro que já estava lá). O ✕ do filtro devolve o setor ao gráfico.
 4. **Configurações (⚙).** A janela começa direto na faixa "Processos", sem parágrafo em cima, e está mais larga.

@@ -126,7 +126,7 @@ class Robo0737(unittest.TestCase):
 
     def test_versao_e_novidades(self):
         from lexsuite import VERSAO
-        self.assertEqual(VERSAO, "0.7.37")
+        self.assertGreaterEqual(tuple(int(x) for x in VERSAO.split(".")), (0, 7, 37))
         bloco = HTML[HTML.index('"0.7.37": {'):HTML.index('"0.7.36": {')]
         self.assertIn("Inclusão dos filtros Situação, Vara, Setor, Porte e Estado no Painel, ligados aos gráficos.", bloco)
         self.assertIn("Status, Court unit, Sector, Size and State filters on the Dashboard, linked to the charts.", bloco)

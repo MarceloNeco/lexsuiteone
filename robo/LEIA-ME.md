@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.37 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.38 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,8 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.38 (13/Nov):** o aviso "não couberam" ao copiar empresas excluídas para outra área sai em dourado (decisão do
+  dono, pergunta 19); a confirmação "✓ Acrescentada" fica até a próxima digitação (antes sumia ao sair do campo).
 - **0.7.37 (teste do dono na 0.7.36, 13/Nov):** no Painel, Situação (no alto) e Vara, Setor, Porte e Estado (dentro de
   "Mais filtros") aparecem mesmo sem estar ligados: o que sai de um gráfico aparece no filtro correspondente, em vez de surgir do nada;
   Configurações sem o parágrafo de abertura e mais larga (1280 px); busca das empresas excluídas sem rótulo repetido; na

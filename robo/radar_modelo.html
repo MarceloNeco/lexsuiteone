@@ -179,7 +179,7 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .avisos-rapidos { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 60; display: flex; flex-direction: column; gap: 6px; align-items: center; max-width: min(92vw, 640px); pointer-events: none; }
 .avisos-rapidos .aviso-rapido { display: block; background: var(--folha, #fff); border: 1px solid var(--linha, #d8dde6); border-radius: 10px; padding: 10px 16px; box-shadow: 0 6px 22px rgba(15, 29, 51, .18); font-size: .95rem; pointer-events: auto; }
 .avisos-rapidos .aviso-rapido.ok { color: #2f6b3a; } .avisos-rapidos .aviso-rapido.erro { color: var(--erro); } .avisos-rapidos .aviso-rapido.nota-g { color: var(--tinta-2); }
-.lic-ativa, .txt-verde { color: #2f6b3a; font-weight: 700; } .txt-azul { color: #1f5aa6; font-weight: 700; } :root[data-theme="dark"] .lic-ativa, :root[data-theme="dark"] .txt-verde { color: #7fc48b; } :root[data-theme="dark"] .txt-azul { color: #8db8f0; } @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lic-ativa, :root:not([data-theme="light"]) .txt-verde { color: #7fc48b; } :root:not([data-theme="light"]) .txt-azul { color: #8db8f0; } }
+.txt-latao { color: var(--latao-texto); font-weight: 700; } .lic-ativa, .txt-verde { color: #2f6b3a; font-weight: 700; } .txt-azul { color: #1f5aa6; font-weight: 700; } :root[data-theme="dark"] .lic-ativa, :root[data-theme="dark"] .txt-verde { color: #7fc48b; } :root[data-theme="dark"] .txt-azul { color: #8db8f0; } @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lic-ativa, :root:not([data-theme="light"]) .txt-verde { color: #7fc48b; } :root:not([data-theme="light"]) .txt-azul { color: #8db8f0; } }
 .estado .andando { color: var(--latao-texto); font-weight: 600; }
 .estado .log { color: var(--tinta-3); font-size: .8rem; }
 .estado .rodando-linha { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px 14px; width: 100%; flex: 1 1 100%; box-sizing: border-box; }
@@ -3868,7 +3868,8 @@ window.LEXSUITE_RADAR = null;
       function procurarNome() {  // 0.7.36 (dono): CNPJ válido busca a razão social no cadastro público (as mesmas fontes da ficha)
         var n = nomeDigitado(); achado = null;
         if (n === false) { aviso(t("rg_doc_ruim"), "erro"); return Promise.resolve(); }
-        if (!n) { aviso(""); return Promise.resolve(); }
+        // 0.7.38 (revisão da Operação): sair do campo vazio não apaga o "✓ Acrescentada" (some quando se digita de novo)
+        if (!n) { if (!nMsg.querySelector(".ok-acr")) aviso(""); return Promise.resolve(); }
         if (!pareceDoc(n)) { aviso(t("rg_exc_sem_doc"), "nota-g"); return Promise.resolve(); }
         if (!cnpjOk(n)) { aviso(""); return Promise.resolve(); }
         var meu = ++buscaN; aviso(t("rg_cnpj_buscando"), "nota-g");
@@ -3893,10 +3894,10 @@ window.LEXSUITE_RADAR = null;
         var ja_ = regrasExc.some(function (e) { return doc_ ? semPont(e.cnpj || e.nome).toUpperCase() === doc_ : (!e.cnpj && semAcento(e.nome) === semAcento(nome_)); });  // filial com outro CNPJ entra
         if (ja_) { aviso(t("rg_exc_ja"), "erro"); return; }
         regrasExc.unshift({ nome: nome_, cnpj: doc_, motivo: nMot.value.trim().slice(0, 200) }); novaLinha = nome_;
-        nNome.value = nMot.value = ""; achado = null; ++buscaN; busca.value = ""; desenharExc(); marcarRegras(); aviso(t("rg_exc_ok", { n: nome_ }), "txt-verde"); nNome.focus(); bAdd._ultimaOk = Date.now();
+        nNome.value = nMot.value = ""; achado = null; ++buscaN; busca.value = ""; desenharExc(); marcarRegras(); aviso(t("rg_exc_ok", { n: nome_ }), "txt-verde ok-acr"); nNome.focus(); bAdd._ultimaOk = Date.now();
       });
       nNome.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); procurarNome().then(function () { bAdd.click(); }); } });
-      [nNome, nMot].forEach(function (x) { x.addEventListener("input", function () { if (nNome.value.trim()) marcarRegras(); }); });  // revisão da 0.7.28: digitado e não acrescentado também pergunta ao fechar
+      [nNome, nMot].forEach(function (x) { x.addEventListener("input", function () { if (nNome.value.trim()) marcarRegras(); if (nMsg.querySelector(".ok-acr")) aviso(""); }); });  // revisão da 0.7.28: digitado e não acrescentado também pergunta ao fechar
       busca.addEventListener("input", desenharExc);
       add.appendChild(nNome); add.appendChild(nMot); add.appendChild(bAdd); det.appendChild(add); det.appendChild(nMsg); det.appendChild(buscaRot); det.appendChild(lista);
       box.appendChild(det); desenharExc();
@@ -3928,7 +3929,7 @@ window.LEXSUITE_RADAR = null;
           if (!r.ok) { msg.textContent = (lang === "en" && r.motivo_en) || r.motivo || t("falha"); return; }
           regrasSujo = false; msg.textContent = ""; marcarSalvarC(); carregar();
           if (copia) msg.appendChild(el("span", "txt-verde", t("rg_copiado_para", { a: copia.destinos.map(function (a_) { return t("rg_a_" + a_); }).join(t("ag_e")) })));  // em verde, com as áreas
-          if (copia && r.cortadas) msg.appendChild(el("span", "erro", " " + t("rg_copiar_limite", { n: num(r.cortadas) })));
+          if (copia && r.cortadas) msg.appendChild(el("span", "txt-latao", " " + t("rg_copiar_limite", { n: num(r.cortadas) })));  // 0.7.38 (dono): perda parcial em dourado
           else if (!copia) msg.textContent = t("rg_salvo");
           if (typeof depois === "function") depois();
         }).catch(function () { msg.textContent = t("falha"); });
@@ -5041,6 +5042,12 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
+    "0.7.38": {
+      pt: ["Aviso em dourado quando alguma empresa não cabe no limite de excluídas da área de destino.",
+        "Melhorias de acessibilidade e correções."],
+      en: ["Gold notice when a company does not fit in the excluded limit of the target area.",
+        "Accessibility improvements and fixes."]
+    },
     "0.7.37": {
       pt: ["Inclusão dos filtros Situação, Vara, Setor, Porte e Estado no Painel, ligados aos gráficos.",
         "Simplificação da janela de Configurações.",

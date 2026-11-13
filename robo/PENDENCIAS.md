@@ -162,6 +162,13 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.38 (13/Nov) — pronta para revisão
+
+- Pergunta 19 respondida pelo dono: "não couberam" em dourado. Ressalvas da revisão da 0.7.37: "✓ Acrescentada" sumia ao
+  sair do campo (corrigido); o filtro de setor com um setor só não aparece (comportamento mantido: não há o que escolher;
+  roteiro da 0.7.37 e manual explicam).
+- Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova nem removida.
+
 ## 0.7.37 (teste do dono na 0.7.36, 13/Nov; dono: "pronto, o resto tá bom, pode corrigir isso?") — pronta para revisão
 
 - Itens 1 a 5 de `documentacao/FEEDBACK-TESTE-0.7.36.md` (Painel com os filtros dos gráficos sempre à vista, Configurações sem
