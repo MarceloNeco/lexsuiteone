@@ -162,6 +162,13 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.41 (13/Nov, correção urgente na instalação da KR Law; feita pela Operação com o "pode" do dono)
+
+- O CNJ respondeu 500 ("Server Error") para o caderno do dia de hoje e a leitura inteira parava em todos os tribunais.
+  `monitor.coletar_caderno` agora pula o dia de hoje nesse caso e lê até o dia anterior; 5xx em dia anterior continua falha.
+- Continuam para a Produto (próxima versão): Empresas excluídas (CPF e sufixos), site com dois "pacote completo",
+  instalador que tenta outra pasta quando o antivírus barra, leitura automática barrada pelo Bitdefender (`schtasks`).
+
 ## 0.7.40 (teste do dono na 0.7.39, 13/Nov; dono: "junte TODOS numa 0.7.40, sem deixar nenhum para trás") — pronta para revisão
 
 - Feitos: itens 1 a 10 do pedido (lentidão e "Carregando", aspas, Empresas 5/10/15 e "Ver na lista", conferência de todos os

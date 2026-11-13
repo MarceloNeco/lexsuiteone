@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.40 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.41 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,10 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.41 (instalação na KR Law, 13/Nov, correção urgente):** o CNJ passou a responder "Server Error" (500) para o caderno
+  do dia que ainda está sendo montado, e a leitura inteira parava ("Site do CNJ fora do ar") sem ler os dias anteriores. Agora o
+  dia de hoje com esse erro conta como "ainda não publicado": a leitura pula hoje e lê até o dia anterior. Erro em dia
+  anterior continua sendo falha do tribunal.
 - **0.7.40 (teste do dono na 0.7.39, 13/Nov):** interruptor **"Último mês"** à direita das abas, ligado por padrão: a
   Lista, os números, os cartões, os filtros e a busca carregam só os últimos 30 dias (`/dados?max=30` na 1ª carga);
   Processos por dia usa os totais guardados dos 90 dias (`totais_dia`) e a Sazonalidade continua completa; 60 e 90 dias
