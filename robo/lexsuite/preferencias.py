@@ -506,15 +506,27 @@ def bloqueio(prefs, versao_atual, hoje=None):
 
 def aplicar(itens, prefs, acoes_por_empresa=None):
     """Marca item['excluida'] com o motivo (exclusão da planilha ou mínimo de ações). Não remove nada da lista."""
-    por_nome = {cl.chave_nome(e["nome"]): e for e in prefs.get("exclusoes") or [] if cl.chave_nome(e["nome"])}
-    cnpjs = {documento.limpar(e.get("cnpj") or e["nome"]) for e in prefs.get("exclusoes") or [] if documento.valido(e.get("cnpj") or e["nome"])}  # 0.7.33: CNPJ com letras também
+    # 0.7.41 (dono): o CNPJ é o critério exato; o nome vale escrito igual (só sem acento, caixa e pontuação: "Bebidas Ltda" não
+    # exclui "Bebidas S.A."); o CPF exclui o MEI ou empresário individual cujo nome traz esse CPF ("NOME 12345678901")
+    exclusoes = prefs.get("exclusoes") or []
+    cpfs = {}
+    for e in exclusoes:
+        d = re.sub(r"\D", "", str(e.get("nome") or ""))
+        if not e.get("cnpj") and len(d) == 11 and documento.cpf_valido(d):
+            cpfs[d] = e
+    por_nome = {cl.chave_exata(e["nome"]): e for e in exclusoes
+                if cl.chave_exata(e["nome"]) and not documento.valido(e["nome"]) and re.sub(r"\D", "", str(e.get("nome") or "")) not in cpfs}
+    cnpjs = {documento.limpar(e.get("cnpj") or e["nome"]) for e in exclusoes if documento.valido(e.get("cnpj") or e["nome"])}  # 0.7.33: CNPJ com letras também
     minimo = int(prefs.get("minimo_acoes") or 1)
     for it in itens:
         motivo = ""
         nomes = it.get("empresas") or []
         cnpj = documento.limpar((it.get("empresa") or {}).get("cnpj"))
-        for n in nomes:
-            e = por_nome.get(cl.chave_nome(n))
+        razao = (it.get("empresa") or {}).get("razao_social") or ""
+        for n in list(nomes) + ([razao] if razao else []):
+            e = por_nome.get(cl.chave_exata(n))
+            if not e and cpfs:
+                e = next((cpfs[c] for c in cl.cpfs_no_nome(n) if c in cpfs), None)
             if e:
                 motivo = "Exclusão: " + (e["motivo"] or e["nome"])
                 break

@@ -211,6 +211,18 @@ def nomes_batem(a, b):
     return ta[0] == tb[0] and len(sa & sb) / max(len(sa), len(sb)) >= 0.6
 
 
+def chave_exata(nome):
+    """0.7.41 (dono): nome comparável para as empresas excluídas: só sem acento, em maiúsculas e sem pontuação. Não tira
+    LTDA, S.A., ME, CIA ("Bebidas Ltda" não pode excluir "Bebidas S.A.", que é outra empresa)."""
+    return re.sub(r"[^A-Z0-9]+", " ", sem_acento(nome or "").upper()).strip()
+
+
+def cpfs_no_nome(nome):
+    """0.7.41: CPFs (11 dígitos) escritos no nome; a Receita grava o MEI como "NOME 12345678901"."""
+    texto = re.sub(r"(?<=\d)[.\-](?=\d)", "", str(nome or ""))
+    return set(re.findall(r"(?<!\d)\d{11}(?!\d)", texto))
+
+
 def chave_nome(nome):
     """Nome comparável: sem acento, sem pontuação e sem LTDA/S.A., para achar o cliente da carteira."""
     n = _SUFIXOS.sub(" ", sem_acento(nome or "").upper())

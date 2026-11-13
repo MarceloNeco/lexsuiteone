@@ -162,6 +162,26 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.41 (13/Nov) — pronta para revisão
+
+- Empresas excluídas (pedido reaberto pela Operação: estava marcado "feito na 0.7.40" sem ter sido feito; erro da Produto ao
+  marcar as linhas do quadro em lote): nome exato, CPF do MEI, (?) e aviso; testes em `test_v0741.py`.
+- Desempenho do Painel e da Lista com muitos processos (medido com 40 mil) e AssistONE na tela de carregamento.
+- Ressalvas da 0.7.40: (2) teste do pacote completo com o `instalar.txt` recebido; (3) a 360 px o "Ver na lista" das Empresas
+  desce para baixo do título porque o título não cabe na mesma linha (fica assim; no computador fica na mesma linha).
+- Teste do dono (13/Nov): Configurações reabertas logo depois de salvar mostravam o de antes (desmarcou sábado e domingo,
+  reabriu e estavam marcados; o disco estava certo, a tela não): corrigido; Salvar gira enquanto grava e não regrava pasta
+  e agendamento sem mudança; busca da Lista sem travar a digitação.
+  Efeito conhecido (revisor): como o Salvar não regrava a pasta sem mudança, a planilha apagada à mão não é mais recriada ao
+  salvar; ela volta na próxima leitura (`radar.executar` chama `criar_se_faltar`).
+- Regressão (pedido do dono, 13/Nov): `testes/tela/fluxos.js` (salvar e reabrir as Configurações com a rede lenta, busca,
+  período trocado duas vezes, Painel, riscos e Limpar filtros) e `testes/tela/rodar_tudo.sh`, que roda todos os testes
+  (unittest + fluxos + ver na lista + larguras + aviso e lupa). Conferido que o `fluxos.js` falha com o defeito de volta.
+- Para a 0.7.42 (desenho antes, com a Arquitetura): "Último mês" com os totais do período inteiro vindos de somas guardadas
+  (com as subcategorias, para os filtros) e só os detalhes dos últimos 30 dias; "Limpar filtros" ainda lento com 36 mil.
+- Site (frase do fim que baixava o arquivo errado): preparado à parte, só vai ao ar com o "pode" do dono.
+- Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova nem removida.
+
 ## 0.7.40 (teste do dono na 0.7.39, 13/Nov; dono: "junte TODOS numa 0.7.40, sem deixar nenhum para trás") — pronta para revisão
 
 - Feitos: itens 1 a 10 do pedido (lentidão e "Carregando", aspas, Empresas 5/10/15 e "Ver na lista", conferência de todos os

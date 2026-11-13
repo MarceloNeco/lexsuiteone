@@ -55,7 +55,7 @@ class Tela0740(unittest.TestCase):
         self.assertIn('return localStorage.getItem("lexsuite:ultimo-mes") !== "0";', HTML)  # ligado por padrão
         self.assertIn('"?max=" + ULTIMO_MES', HTML)
         self.assertIn("if (ultimoMes && d > ULTIMO_MES) { ultimoMes = false;", HTML)
-        self.assertIn("if (tot90) return grafDiasTotais(tot90);", HTML)
+        self.assertIn("if (tot90 && false) return grafDiasTotais(tot90);", HTML)  # 0.7.41: desligado (o dono achou confuso)
 
     def test_fundos(self):
         m = re.search(r"window\.LEX_FUNDOS = \[/\*FUNDOS\*/(.*?)/\*/FUNDOS\*/\];", HTML, re.S)
@@ -96,7 +96,7 @@ class Tela0740(unittest.TestCase):
 
     def test_versao_e_novidades(self):
         from lexsuite import VERSAO
-        self.assertEqual(VERSAO, "0.7.40")
+        self.assertGreaterEqual(tuple(int(x) for x in VERSAO.split(".")), (0, 7, 40))
         bloco = HTML[HTML.index('"0.7.40": {'):HTML.index('"0.7.39": {')]
         pt = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
         en = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("en: ["):])
