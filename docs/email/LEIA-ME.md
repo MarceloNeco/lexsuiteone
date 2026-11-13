@@ -31,7 +31,7 @@ bloco do código; sem ele, o bloco é removido, e o cliente não consegue instal
   `docs/DNS-SOLVERONE.md`). O e-mail não pede para compartilhar pasta com a SolverONE: diz que é opcional, só para
   suporte (termos, seção 6.1).
 - Revisado em 12/Nov contra o programa 0.7.35 (instalador que pede o código na primeira janela, assistente, planilha por
-  área, Configurações com critérios da lista, leitura automática por dias e horários, "O que a SolverONE recebe") e os
+  área, Configurações com Destaques e exclusões, Rotina de leitura por dias e horários, "O que a SolverONE recebe") e os
   termos vigentes; traz um resumo em inglês.
 - Um e-mail por pessoa, enviado depois que ela pediu o pacote. Não é lista nem campanha.
 - Nada de senha ou chave no corpo do e-mail. O código de cliente não é segredo: identifica a conta, não dá acesso.
