@@ -1,0 +1,57 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Questões 14 e 16 e o ramo de rascunho</title>
+<style>
+body{font-family:system-ui,Segoe UI,Arial,sans-serif;background:#eef1f6;color:#0f1d33;margin:0;padding:28px;max-width:1100px}
+h1{font-size:22px;margin:0 0 6px} h2{font-size:17px;margin:26px 0 8px;color:#8a6222;text-transform:uppercase;letter-spacing:.06em}
+p{margin:6px 0;line-height:1.45} .lado{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:#fff;border:1px solid #d8dde6;border-radius:12px;padding:14px 16px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;margin-bottom:8px}
+.antes .tag{background:#fdecea;color:#8a1c12} .depois .tag{background:#e6f3e8;color:#2f6b3a}
+.velho{background:#fdecea;padding:0 3px;border-radius:3px} .novo{background:#e6f3e8;padding:0 3px;border-radius:3px}
+.estado{font-size:13px;color:#4a5468;border-top:1px solid #eee;padding-top:8px;margin-top:8px}
+.mail{font-size:14px} .mail b.n{display:inline-block;width:22px;height:22px;border-radius:50%;background:#0f1d33;color:#fff;text-align:center;line-height:22px;margin-right:6px;font-size:12px}
+.zap{background:#dcf8c6;border-radius:10px;padding:8px;font-size:13px} .zap .prev{background:#fff;border-left:4px solid #a87a2e;padding:6px 8px;border-radius:4px;margin-top:4px}
+.ramo{display:flex;gap:16px;align-items:stretch} .ramo .card{flex:1} .ok{color:#2f6b3a;font-weight:700} .cinza{color:#7a8396}
+.dec{background:#fff8e6;border:1px solid #e9cf8f;border-radius:10px;padding:10px 14px;margin-top:10px}
+</style></head><body>
+<h1>Para entender: questões 14 e 16 e o "ramo de rascunho"</h1>
+<p class="cinza">Protótipo com os textos reais. Verde = como fica; vermelho = o que estava.</p>
+
+<h2>Questão 14 · horário do Diário (já resolvida na 0.7.36)</h2>
+<p>Quando a leitura não acha nada novo, o programa explica. Um texto dizia "19h" e outros diziam "3h da manhã": um contradizia o outro.</p>
+<div class="lado">
+ <div class="card antes"><span class="tag">ANTES (versão de ontem)</span>
+  <div class="estado">Nada novo: os cadernos até 11/NOV já tinham sido lidos. <span class="velho">O Diário de hoje sai por volta das 19h.</span></div>
+  <p class="cinza" style="font-size:13px">Em outro lugar: "Diário de hoje só a partir das 3h da manhã". Contradição.</p></div>
+ <div class="card depois"><span class="tag">AGORA (0.7.36)</span>
+  <div class="estado">Nada novo: os cadernos até 11/NOV já tinham sido lidos. <span class="novo">O Diário de hoje entra na próxima leitura, quando estiver liberado.</span></div>
+  <p class="cinza" style="font-size:13px">Verdade nos dois casos. Consequência: nenhuma; você não precisa decidir.</p></div>
+</div>
+
+<h2>Questão 16 · e-mail e site com nomes antigos (espera o seu "pode")</h2>
+<p>O programa agora diz <b>"Destaques e exclusões"</b>, <b>"Rotina de leitura"</b> e <b>"processos"</b>. O e-mail de boas-vindas e o site ainda usam os nomes antigos. Não quebra nada, mas o cliente lê um nome no e-mail e acha outro na tela.</p>
+<div class="lado">
+ <div class="card antes mail"><span class="tag">E-MAIL DE BOAS-VINDAS, HOJE</span>
+  <p><b class="n">3</b>Confira as Configurações (ícone ⚙): dias e horários da <span class="velho">leitura automática</span> e os seus <span class="velho">critérios da lista</span> (valor mínimo e empresas que ficam de fora), por área.</p></div>
+ <div class="card depois mail"><span class="tag">E-MAIL DE BOAS-VINDAS, PROPOSTO</span>
+  <p><b class="n">3</b>Confira as Configurações (ícone ⚙): a <span class="novo">Rotina de leitura</span> (dias e horários) e os seus <span class="novo">Destaques e exclusões</span> (valor mínimo e empresas que ficam de fora), por área.</p></div>
+ <div class="card antes"><span class="tag">SITE judicial.solverone.com.br, HOJE</span>
+  <p><b>Confira as Configurações.</b> No menu ☰, Configurações mostra os seus <span class="velho">critérios da lista</span> (por área), a pasta das planilhas, as <span class="velho">leituras automáticas</span>, o espaço do computador e os termos.</p></div>
+ <div class="card depois"><span class="tag">SITE, PROPOSTO</span>
+  <p><b>Confira as Configurações.</b> No menu ☰, Configurações mostra os seus <span class="novo">Destaques e exclusões</span> (por área), a pasta das planilhas, a <span class="novo">Rotina de leitura</span>, o espaço do computador e os termos.</p></div>
+ <div class="card antes"><span class="tag">LINK DO SITE NO WHATSAPP, HOJE</span>
+  <div class="zap">judicial.solverone.com.br<div class="prev"><b>RADAR JUDICIAL</b><br><span class="velho">As ações novas contra empresas</span>, todo dia, com a ficha de cada uma.</div></div></div>
+ <div class="card depois"><span class="tag">LINK NO WHATSAPP, PROPOSTO</span>
+  <div class="zap">judicial.solverone.com.br<div class="prev"><b>RADAR JUDICIAL</b><br><span class="novo">Os processos novos contra empresas</span>, todo dia, com a ficha de cada um.</div></div></div>
+</div>
+<div class="dec"><b>Sua decisão:</b> "pode atualizar e-mail e site" (recomendo depois da visita). Não muda o programa nem a 0.7.36.</div>
+
+<h2>O "ramo de rascunho" (não é problema)</h2>
+<div class="ramo">
+ <div class="card"><span class="tag" style="background:#e6f3e8;color:#2f6b3a">main · o oficial</span>
+  <p>Onde o código vale. É daqui que a Operação revisa e publica.</p><p class="ok">✓ A 0.7.36 inteira está aqui.</p></div>
+ <div class="card"><span class="tag" style="background:#eef1f6;color:#4a5468">ramo de rascunho · só da Produto</span>
+  <p>Uma cópia de trabalho desta conversa no GitHub. Ficou com uma versão antiga porque eu reorganizei o trabalho por cima da main.</p>
+  <p class="cinza">Ninguém usa. Um aviso automático desta conversa fica pedindo para atualizá-lo; por isso a mensagem repetida.</p></div>
+</div>
+<div class="dec"><b>Sua decisão (opcional):</b> "pode forçar o ramo de rascunho" faz a cópia ficar igual à main e o aviso para de aparecer. Não afeta a main, a 0.7.36 nem o cliente. Se não autorizar, também não acontece nada.</div>
+</body></html>
