@@ -1,6 +1,6 @@
 # Visita à KR Law: links do dia (revisão de 12/Nov/2026)
 
-Versão do RADAR JUDICIAL na visita: **0.7.33** (publicada). São só os 4 prompts que precisam do login do advogado; os públicos
+Versão do RADAR JUDICIAL na visita: **0.7.36** (publicada em 13/Nov). São só os 4 prompts que precisam do login do advogado; os públicos
 (2, 4A e 5) rodam em casa e estão no roteiro completo.
 
 ## Ordem dos prompts
@@ -47,7 +47,7 @@ Antes de cada um: janela anônima do Chrome do Leandro (extensão liberada no mo
 - Termos de uso e aceite: https://judicial.solverone.com.br/aceite.html
 - Site: https://judicial.solverone.com.br/
 
-O site entrega a 0.7.33. Depois de instalar, confira no programa (menu ☰ → Configurações → Sobre este computador) se é a 0.7.33.
+O site entrega a 0.7.36. Depois de instalar, confira no programa (menu ☰ → Configurações → Sobre este computador) se é a 0.7.36.
 
 ## Google Drive do dono
 

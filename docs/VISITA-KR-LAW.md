@@ -1,17 +1,17 @@
-# Visita à KR Law (quinta, 12/Nov/2026): roteiro e prompts do Claude in Chrome
+# Visita à KR Law (sexta, 13/Nov/2026): roteiro e prompts do Claude in Chrome
 
-**Revisão de 12/Nov/2026 (dono), a que vale:** programa na versão **0.7.33**. A extensão roda na **conta Claude do dono**,
+**Revisão de 12/Nov/2026 (dono), a que vale:** programa na versão **0.7.36** (atualizado em 13/Nov). A extensão roda na **conta Claude do dono**,
 num perfil novo do Chrome do Leandro ("Visita SolverONE"), apagado no fim do dia; a conta do Leandro não é tocada. Antes de
 colar cada prompt, escolher na extensão o modo **"Skip all approvals"** (pular aprovações): ela só para no login e pede
 confirmação antes de baixar o único arquivo de cada prompt. Os relatórios ficam no histórico do claude.ai do dono; nada a
 compartilhar. Os quatro prompts que precisam do login do advogado também estão separados, um arquivo por sistema, em
 [`documentacao/visita-kr-law/`](https://github.com/MarceloNeco/lexsuiteone/tree/main/documentacao/visita-kr-law), com a
 lista de links do dia em [`00-LINKS-DA-VISITA.md`](https://github.com/MarceloNeco/lexsuiteone/blob/main/documentacao/visita-kr-law/00-LINKS-DA-VISITA.md).
-Os critérios da lista agora são por pessoa e por área, e o próprio Leandro os ajusta no programa (passo 6).
+Os "Destaques e exclusões" (valor mínimo e empresas excluídas) são por pessoa e por área, e o próprio Leandro os ajusta no programa (passo 6).
 **Ajuste de 12/Nov (manhã, dono):** em vez do perfil novo, uma **janela anônima** do Chrome do Leandro com a conta Claude do
 dono. Antes, em `chrome://extensions` → Claude → Detalhes, ligar "Permitir no modo anônimo". Ao fechar todas as janelas
 anônimas, sessões e logins somem (não há perfil para apagar). Se a extensão não aparecer na janela anônima, use o perfil
-novo "Visita SolverONE", como descrito abaixo. A 0.7.33 está publicada: o botão de baixar do site já entrega essa versão.
+novo "Visita SolverONE", como descrito abaixo. A 0.7.36 está publicada: o botão de baixar do site já entrega essa versão.
 
 Complementa `robo/ROTEIRO-INSTALACAO.md` (instalação do robô). Aqui ficam os prompts para usar no **Claude in Chrome**
 no computador do Leandro, com o consentimento dele, para aprender como os sistemas funcionam e planejar as integrações.
@@ -174,11 +174,11 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
    extensão (A e B; modo "Skip all approvals", modelo Sonnet). Testar com uma conversa curta e conferir se ela aparece no
    claude.ai do dono (no celular) e se a extensão aceita trabalhar nas duas janelas ao mesmo tempo (se não aceitar, rode
    um prompt depois do outro).
-2. **Instalar o robô, versão 0.7.33 (45 a 60 min).** Seguir o `ROTEIRO-INSTALACAO.md`: baixar o pacote do site, `DIAGNOSTICO.bat`,
+2. **Instalar o robô, versão 0.7.36 (45 a 60 min).** Seguir o `ROTEIRO-INSTALACAO.md`: baixar o pacote do site, `DIAGNOSTICO.bat`,
    configurar, escolher a pasta da planilha (no computador ou no Drive do escritório; **não** se compartilha com a
    SolverONE), agendar a rodada diária e iniciar a primeira rodada agora (demora: deixar rodando). Instalar no
    computador que fica ligado nos horários das leituras (o do escritório ou o de casa: perguntar ao Leandro qual).
-   **Conferir o armazenamento** (menu ☰ → Configurações → Armazenamento): espaço livre no disco (o ideal é mais de 10 GB), onde
+   **Conferir o armazenamento** (menu ☰ → Configurações → Leitura do Diário → Armazenamento): espaço livre no disco (o ideal é mais de 10 GB), onde
    ficam `LexSuiteONE - Trabalhista.xlsx` e a pasta `Cópias de segurança`, e se o aviso de disco aparece. Anotar
    quantos GB livres o computador tem. A pasta escolhida aqui não precisa mudar depois: as frentes novas (tributário,
    cível, empresarial) ganham a própria planilha na mesma pasta, sozinhas. As estatísticas dos meses anteriores
@@ -199,8 +199,8 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
    perguntar: como ele descobre quem vai julgar (titular, substituto, divisão por final de número, mutirões), se no
    recurso o relator fica com o caso, e o que mais queria saber de um juiz antes de redigir.
 6. **Lista do dia pronta.** Mostrar na tela local e na planilha; validar 3 ou 4 itens com o Leandro (é ação nova? é
-   empresa? a comarca interessa?). O próprio Leandro ajusta os critérios no programa (menu ☰ → Configurações → Critérios
-   da lista), área por área (Trabalhista e Tributário), com as empresas excluídas; valem para ele, naquele computador. Levar a ficha de canais do Prompt 2 (rodado
+   empresa? a comarca interessa?). O próprio Leandro ajusta no programa (menu ☰ → Configurações → Processos → Destaques e
+   exclusões) o valor mínimo e as empresas excluídas (dá para digitar só o CNPJ: o nome vem sozinho); valem para ele, naquele computador. Levar a ficha de canais do Prompt 2 (rodado
    em casa) e perguntar se o formato serve ao compliance dele.
 7. **Fechamento (15 min).** Conferir: rodada agendada, Leandro sabe abrir a tela e a planilha, sabe o que fazer se
    aparecer o aviso "a planilha está ficando grande" (clicar em "Limpar a planilha (com cópia)"),
