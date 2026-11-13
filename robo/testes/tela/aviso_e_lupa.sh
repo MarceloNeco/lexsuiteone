@@ -19,7 +19,7 @@ sobe 8804 EM_USO=1 CURTO=ZETA                       # idem, outra marca
 sobe 8805 EM_USO=1 SEM_EXCEL=1 CURTO=ZETA
 sobe 8806 'RADAR_RAW="valor_minimo": Infinity, "dias_na_pagina": NaN, "teto_capital_gigante": -Infinity'
 sobe 8807 'RADAR_RAW="valor_minimo": 1000.5, "dias_na_pagina": 3, "teto_capital_gigante": 5000000'
-(cd "$AQUI" && PORTA=8781 python3 -B guarda_rede.py servidor_ficticio.py pronto >> "$W/srv.log" 2>&1) & PIDS+=($!)   # o servidor das larguras (a leitura do Diário é desligada nele)
+cd "$AQUI"; PORTA=8781 python3 -B guarda_rede.py servidor_ficticio.py pronto >> "$W/srv.log" 2>&1 & PIDS+=($!); cd - > /dev/null  # 0.7.41: sem subshell, para o kill do fim pegar o servidor (antes ficava aberto)   # o servidor das larguras (a leitura do Diário é desligada nele)
 for i in $(seq 1 60); do [ "$(grep -c '^pronto' "$W/srv.log")" -ge 8 ] && break; sleep 0.5; done
 cat "$W/srv.log"
 node "$AQUI/aviso_e_lupa.js" 8801 8802 8803 8804 8805 "$OUT" "$W/prog_8801/saida/radar/radar.html" 8806 8807 8781 2>&1 | tee "$W/saida.txt"
