@@ -162,6 +162,11 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 13/Nov (noite): **duas formas de baixar** no site e no e-mail de boas-vindas (pedido urgente do dono, já no ar): "Instalação
+  rápida (3 KB)" e "Pacote completo (11 MB), se o antivírus ou a rede do escritório bloquear", cada uma com uma linha.
+- **Para a 0.7.41 (feedback do dono, 13/Nov, não urgente):** clicar no AssistONE enquanto a tela de carregamento está aberta
+  mostra a ajuda da Lista ("Você está em Lista"); enquanto carrega, o AssistONE deve dizer "Aguarde o RADAR JUDICIAL
+  carregar" (e não a ajuda de uma tela que ainda não apareceu).
 - 13/Nov (noite): **0.7.40 na `main`, pronta para revisão da Operação** (pedido "0.7.40 pronta para revisão", 13/Nov). Todos os
   pedidos 0.7.40 de 13/Nov e o interruptor "Último mês" (decisão do dono). Roteiro do dono: `documentacao/ROTEIRO-TESTE-0.7.40.md`.
   Já no ar antes da versão, com o "urgente" do dono: o pacote completo de instalação (site e e-mail de boas-vindas).
