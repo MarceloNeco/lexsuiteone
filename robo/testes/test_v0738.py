@@ -23,8 +23,8 @@ class Tela0738(unittest.TestCase):
         from lexsuite import VERSAO
         self.assertEqual(VERSAO, "0.7.38")
         bloco = HTML[HTML.index('"0.7.38": {'):HTML.index('"0.7.37": {')]
-        self.assertIn("Aviso em dourado quando alguma empresa não cabe no limite", bloco)
-        self.assertIn("Gold notice when a company does not fit", bloco)
+        self.assertIn('pt: ["Melhorias no design e na navegação.", "Melhorias de acessibilidade e correções."]', " ".join(bloco.split()))
+        self.assertIn('en: ["Design and navigation improvements.", "Accessibility improvements and fixes."]', " ".join(bloco.split()))
 
     def test_manual(self):
         with open(os.path.join(_ROBO_, "..", "paginas", "manual.html"), encoding="utf-8") as f:
