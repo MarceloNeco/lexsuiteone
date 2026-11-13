@@ -109,7 +109,7 @@ class PacoteCompleto0743(unittest.TestCase):
 class Versao0743(unittest.TestCase):
     def test_versao_e_novidades(self):
         from lexsuite import VERSAO
-        self.assertEqual(VERSAO, "0.7.43")
+        self.assertGreaterEqual(tuple(int(x) for x in VERSAO.split(".")), (0, 7, 43))  # a versão sobe
         bloco = HTML[HTML.index('"0.7.43": {'):HTML.index('"0.7.42": {')]
         pt = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
         en = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("en: ["):])

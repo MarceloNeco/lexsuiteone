@@ -280,7 +280,8 @@ def agendar(pasta_robo, horarios=None, dias="todos"):
         args[5:5] = ["/sc", "daily"] if semana == set(range(7)) else ["/sc", "weekly", "/d", ",".join(SEMANA_SCHTASKS[d] for d in sorted(semana))]
         ok2, msg2 = _rodar(args)
         if not ok2:
-            return False, f"Não consegui criar a leitura automática ({msg2 or msg}). Tente o AGENDAR.bat como administrador."
+            return False, (f"Não consegui criar a leitura automática ({msg2 or msg}). Se o antivírus (por exemplo, o Bitdefender) "  # 0.7.44 (KR Law)
+                          "bloqueou, peça para liberar a pasta do programa e salve de novo; ou tente o AGENDAR.bat como administrador.")
     return True, f"Agendado: {descricao(horarios, dias)}, com o computador ligado na hora."
 
 

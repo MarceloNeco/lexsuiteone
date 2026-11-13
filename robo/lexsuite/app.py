@@ -342,6 +342,7 @@ class Servidor(ThreadingHTTPServer):
         self.caminho_db = os.path.join(pasta, "lexsuite.db")
         self.modelo = os.path.join(pasta, "radar_modelo.html")
         self.hist = {}  # 0.7.18: andamento das estatísticas dos meses anteriores
+        self.cnj = None  # 0.7.44 (dono): a conferência automática do CNJ ({"situacao": "fora"|"voltou", "testado", ...})
         self._ultima_cache = None  # 0.7.19: (data do arquivo do banco, última leitura) para a tela
         self.hist_trava = threading.Lock()
         import time as _t
@@ -360,6 +361,8 @@ class Servidor(ThreadingHTTPServer):
                 d.update({"rodando": True, "externa": True, "origem": fora.get("origem", ""), "inicio": fora.get("inicio"),
                           "atrasada": fora.get("atrasada", ""), "parando": os.path.exists(os.path.join(os.path.dirname(self.arquivo_andamento), "parar.json")),
                           "progresso": min(99, int(fora.get("progresso") or 1)), "mensagens": fora.get("mensagens") or []})
+        if self.cnj:
+            d["cnj"] = dict(self.cnj)
         if not d["rodando"] and not d.get("situacao") and not d.get("erro"):
             ult = self.ultima_do_banco()
             if ult:
@@ -574,7 +577,11 @@ class Tratador(BaseHTTPRequestHandler):
             tent = banco.execucoes("tentativa", 300)  # revisão: cabe uma leitura de todos os tribunais
             ult = [x for x in tent if tent and (x.get("quando_local") or x.get("quando")) == (tent[0].get("quando_local") or tent[0].get("quando"))]  # revisão 2: a leitura inteira tem o mesmo quando_local
             ruins = [x for x in ult if x.get("causa") not in ("ok", "ainda_nao_liberado_3h", "nao_publicado", "interrompida")]
-            pagina["ultima_tentativa"] = (ruins or ult or [{}])[0]
+            pagina["ultima_tentativa"] = dict((ruins or ult or [{}])[0])
+            if ruins:  # 0.7.44 (dono): a faixa vermelha diz até que dia aquele tribunal já foi lido (nada se perdeu)
+                boa = next((x for x in tent if x.get("tribunal") == ruins[0].get("tribunal") and x.get("causa") == "ok" and x.get("leu_ate")), None)
+                if boa:
+                    pagina["ultima_tentativa"]["ok_ate"] = boa["leu_ate"]
             comp = cfg["compartilhar"]
             base = compartilhar.pasta_base(cfg)
             chave = atualizar.chave_publica(s.pasta)
@@ -1655,6 +1662,88 @@ def _prefere_aba(pasta):
         return False
 
 
+VIGIAR_CNJ_S = 15 * 60  # 0.7.44 (dono): de 15 em 15 minutos, um pedido só, e só quando falta ler algum Diário
+
+
+def alvo_cnj(servidor, hoje=None):
+    """0.7.44 (dono, 13/Nov: "de tempos em tempos verifique... para dizer quando aquilo tá bom"): o (tribunal, dia) a
+    conferir no CNJ. O Diário pendente mais antigo dos tribunais escolhidos (0.7.42); sem pendente, se a última leitura
+    desta tela parou com o CNJ fora, o último dia útil antes de hoje do primeiro tribunal. None: nada a conferir."""
+    from . import monitor
+    trib = tribunais.validar(servidor.config()["radar"].get("tribunais")) or []
+    pend = []
+    try:
+        b = bd.Banco(servidor.caminho_db)
+        try:
+            pend = sorted((d, t) for t in trib for d in b.cadernos_pendentes(t))
+        finally:
+            b.con.close()
+    except Exception:  # noqa: BLE001 - banco ocupado ou antigo: só não confere desta vez
+        pend = []
+    if pend:
+        return pend[0][1], pend[0][0]
+    info = servidor.estado.erro_info or {}
+    if info.get("causa") == "governo_fora" and trib:
+        hoje = hoje or dt.date.today()
+        antes = [x for x in monitor.dias_uteis(hoje, 1) if x != hoje]
+        return trib[0], antes[-1].isoformat()
+    return None
+
+
+def conferir_cnj(servidor, meta=None, agora=None, hoje=None):
+    """Um pedido ao CNJ, com uma tentativa: erro 5xx, 429 ou sem resposta = ainda fora; ficha, 404 ou o 403 das 3h = o
+    CNJ respondeu. Quando volta (depois de ter sido visto fora) e a leitura automática está ligada, lê os Diários que
+    faltaram. Devolve o que a tela mostra (`servidor.cnj`)."""
+    from . import djen
+    alvo = alvo_cnj(servidor, hoje=hoje)
+    if not alvo:
+        if servidor.cnj and servidor.cnj.get("situacao") == "fora":
+            servidor.cnj = None  # a leitura já trouxe o que faltava
+        return servidor.cnj
+    trib, dia = alvo
+    try:
+        (meta or djen.meta_caderno)(trib, dia, aviso=lambda *_: None, tentativas=1)
+        voltou = True
+    except rede.ErroHTTP as e:
+        voltou = not (e.codigo >= 500 or e.codigo == 429)
+    except Exception:  # noqa: BLE001 - sem resposta, tempo esgotado: continua fora
+        voltou = False
+    antes = servidor.cnj or {}
+    agora = agora or dt.datetime.now()
+    # revisão: se a leitura não pôde começar na volta (outra leitura rodando), tenta de novo na conferência seguinte
+    quer_ler = voltou and (antes.get("situacao") == "fora" or antes.get("ler_pendente"))
+    novo = {"situacao": "voltou" if voltou else "fora", "testado": agora.isoformat(timespec="minutes"),
+            "tribunal": trib, "dia": dia, "lendo": False}
+    if quer_ler:
+        try:
+            ligada = agendar.disponivel() and agendar.agendado()
+        except Exception:  # noqa: BLE001
+            ligada = False
+        if ligada:
+            if not servidor.estado.rodando and servidor.rodar():
+                novo["lendo"] = True
+            else:
+                novo["ler_pendente"] = True
+    servidor.cnj = novo
+    return servidor.cnj
+
+
+def vigiar_cnj(servidor, passo_s=VIGIAR_CNJ_S, primeiro_s=60, dormir=None, vezes=None):
+    """Thread da tela aberta: confere o CNJ um minuto depois de abrir e depois de 15 em 15 minutos (só quando há motivo;
+    ver `alvo_cnj`). `vezes` só para os testes."""
+    import time as _t
+    dormir = dormir or _t.sleep
+    n = 0
+    while vezes is None or n < vezes:
+        dormir(primeiro_s if n == 0 else passo_s)
+        n += 1
+        try:  # revisão: nem durante a leitura desta tela nem durante a agendada (outro processo)
+            if not servidor.estado.rodando and not leitura_em_outro_processo(servidor.arquivo_andamento):
+                conferir_cnj(servidor)
+        except Exception:  # noqa: BLE001 - a conferência nunca derruba o programa
+            pass
+
+
 FECHAR_SEM_TELA_S = 180  # 0.7.16: a tela pergunta o estado a cada 30 s; sem pergunta por 3 minutos, ela foi fechada
 
 
@@ -1719,6 +1808,7 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
             pass
     threading.Thread(target=migrar, daemon=True, name="migrar-agenda").start()
     threading.Thread(target=vigiar_tela, args=(servidor, aviso), daemon=True, name="vigiar-tela").start()
+    threading.Thread(target=vigiar_cnj, args=(servidor,), daemon=True, name="vigiar-cnj").start()  # 0.7.44 (dono)
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:

@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.43 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.44 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,11 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.44 (13/Nov):** com a tela aberta, o programa confere o CNJ um minuto depois de abrir e de 15 em 15 minutos,
+  só quando falta ler algum Diário (`cadernos_pendentes`, da 0.7.42) ou a última leitura parou com o CNJ fora: um pedido,
+  uma tentativa (`app.conferir_cnj`, thread `vigiar-cnj`). A faixa vermelha do Painel diz até que dia o tribunal já foi lido
+  ("Nada se perdeu") e a última conferência; quando o CNJ volta, aviso verde e, com a leitura automática ligada, a leitura
+  dos Diários que faltaram começa sozinha. Falha ao criar a leitura automática orienta sobre o antivírus (Bitdefender).
 - **0.7.43 (13/Nov):** empresas excluídas pelo nome valem só para o nome escrito igual (`classificar.chave_exata`: sem acento,
   caixa e pontuação, sem tirar LTDA/S.A./ME/CIA); o CPF exclui o MEI ou empresário individual cujo nome traz esse CPF
   (`classificar.cpfs_no_nome`), sem buscar nome; o CNPJ continua exato; (?) na frase das excluídas e aviso ao digitar um CPF.

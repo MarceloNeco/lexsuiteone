@@ -162,6 +162,17 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.44 (13/Nov) — pronta para revisão
+
+- Conferência automática do CNJ (pedido do dono pela Operação, 13/Nov; desenho da Operação seguido): com a tela aberta,
+  um pedido de 15 em 15 minutos só quando há motivo; aviso verde quando volta; com a leitura automática ligada, lê sozinho
+  os Diários que faltaram. Faixa vermelha com "Nada se perdeu: o TRTx já foi lido até…". Testes: `test_v0744.py` (11) e o
+  bloco 5 de `testes/tela/fluxos.js`.
+- Leitura automática barrada pelo Bitdefender: só a orientação na mensagem (liberar a pasta do programa). Fica para decidir
+  (pergunta ao dono no quadro): com a tela aberta, o programa ler sozinho na hora marcada quando a tarefa do Windows não
+  rodou. Falta teste num Windows com Bitdefender.
+- Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova nem removida.
+
 ## 0.7.43 (13/Nov) — pronta para revisão
 
 - Empresas excluídas (pedido reaberto pela Operação: estava marcado "feito na 0.7.40" sem ter sido feito; erro da Produto ao

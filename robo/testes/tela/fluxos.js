@@ -115,6 +115,26 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.close();
   }
 
+  // 5. CNJ fora do ar (0.7.44): a faixa vermelha diz até que dia já foi lido e a última conferência; quando o CNJ volta, aviso verde
+  {
+    let cnj = { situacao: 'fora', testado: '2026-11-13T15:10', tribunal: 'TRT9', dia: '2026-11-12', lendo: false };
+    const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'painel'); } catch (e) {} });
+    await p.route('**/dados*', async r => { const resp = await r.fetch(); const j = await resp.json(); j.ultima_tentativa = { causa: 'governo_fora', tribunal: 'TRT9', quando_local: '2026-11-13T14:54:00-03:00', ok_ate: '2026-11-13' }; r.fulfill({ response: resp, body: JSON.stringify(j) }); });
+    await p.route('**/estado', async r => { const resp = await r.fetch(); const j = await resp.json(); j.cnj = cnj; r.fulfill({ response: resp, body: JSON.stringify(j) }); });
+    await p.reload(); await p.waitForFunction(() => document.getElementById('carregando').hidden, null, { timeout: 30000 });
+    await p.evaluate(() => { const d = document.getElementById('janela'); if (d && d.open) d.close(); document.getElementById('v-painel').click(); });
+    await espera(11500);  // o batimento da tela é de 10 em 10 s
+    const fx = await p.evaluate(() => { const f = document.querySelector('.faixa-falha'); return f ? f.innerText : ''; });
+    confere(/Nada se perdeu: o TRT9 já foi lido até 13\/NOV/i.test(fx), 'CNJ fora: a faixa vermelha diz até que dia já foi lido');
+    confere(/15 em 15 minutos.*15:10, ainda fora/.test(fx), 'CNJ fora: a faixa mostra a última conferência (15:10)');
+    cnj = { situacao: 'voltou', testado: '2026-11-13T15:25', tribunal: 'TRT9', dia: '2026-11-12', lendo: false };
+    await espera(11000);
+    const av = await p.evaluate(() => [...document.querySelectorAll('.aviso-rapido')].map(x => x.textContent).join(' | '));
+    confere(/O CNJ voltou a responder \(15:25\)/.test(av), 'CNJ volta: aparece o aviso verde ("' + av.slice(0, 80) + '")');
+    confere(p._erros.length === 0, 'CNJ: nenhum erro na página ' + p._erros.join(' | '));
+    await p.close();
+  }
+
   await b.close();
   console.log(res.join('\n'));
   console.log(falhas ? `\n${falhas} FALHA(S)` : '\nTUDO OK');
