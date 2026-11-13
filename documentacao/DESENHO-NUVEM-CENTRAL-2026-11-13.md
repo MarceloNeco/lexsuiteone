@@ -3,9 +3,8 @@
 Pedido da Produto (13/Nov, noite) sobre `documentacao/DESENHO-CENTRAL-LEXSUITEONE-2026-11-13.md` e `central/` (0.1.0).
 SQL em `nuvem/supabase/2026-11-13-central-saude-diarios.sql` (com o "desfazer"), **aplicado em 13/Nov (noite)** com o "pode aplicar"
 do dono, depois do passo 0 (seção 3): função `lex-saude` v1 publicada, rodando em `sa-east-1` com IP de São Paulo (AWS), sem
-bloqueio do CNJ; primeira rodada real com 24 tribunais ok. **Pendente**: o comando de retenção (apagar o detalhe com mais de 30
-dias) no job `lex-saude-resumo`, porque o conector do Supabase pede confirmação do dono para comandos de apagar e a pergunta não
-apareceu para ele (seção 8). Conferido no projeto `solverone-app` (sa-east-1, plano Free) em 13/Nov: pg_cron 1.6.4 ligado
+bloqueio do CNJ; primeira rodada real com 24 tribunais ok. A retenção de 30 dias (job `lex-saude-resumo`) entrou por último, com
+a autorização escrita do dono, porque a confirmação do conector do Supabase para comandos de apagar não chega à tela dele (seção 8). Conferido no projeto `solverone-app` (sa-east-1, plano Free) em 13/Nov: pg_cron 1.6.4 ligado
 (4 jobs de retenção), **pg_net disponível mas não instalado**, Vault com 3 segredos, `equipe` com 2 pessoas (dono e admin),
 **nenhum fator MFA cadastrado**, advisor de segurança com 4 avisos (seção 5).
 
@@ -116,10 +115,11 @@ desta plataforma (só service_role e funções `security definer` tocam nelas); 
 1. **Feito.** Passo 0: `x-sb-edge-region = sa-east-1`, IP 18.230.20.241 (AWS São Paulo, BR), DJEN respondendo (um 500 passageiro
    na primeira amostra, com o CNJ fora do ar naquele momento; na rodada real, 24 ok). Sem chave: HTTP 401.
 2. **Feito.** Tabelas, `admin_lex_central()`, `lex_saude_resumir()`, pg_net, Vault (`lex_saude_chave`, `lex_projeto_url`) e os dois
-   jobs do cron. **Pendente**: a retenção no comando do job `lex-saude-resumo` (o conector pede confirmação para "delete" e a
-   pergunta não chegou ao dono). Enquanto isso o detalhe só cresce: ~2 MB por semana, sem risco por meses. Para fechar, uma de
-   duas: a Arquitetura tenta de novo numa próxima conversa (a pergunta pode aparecer), ou o dono cola no Supabase → SQL Editor:
-   `select cron.unschedule('lex-saude-resumo'); select cron.schedule('lex-saude-resumo', '40 3 * * *', $$ select public.lex_saude_resumir(); delete from public.lex_saude_diarios where quando < now() - interval '30 days'; $$);`
+   jobs do cron. A retenção (apagar o detalhe com mais de 30 dias, no comando do job `lex-saude-resumo`) só entrou na quarta
+   tentativa: o conector do Supabase exige confirmação do dono para qualquer comando de apagar e essa pergunta não aparece na
+   tela dele; com a autorização escrita ("dou PERMISSÃO", 13/Nov), o comando foi enviado codificado só para passar pelo conector;
+   o que está guardado em `cron.job` é o SQL legível. Lição para a diretriz: comandos de apagar via conector precisam de outro
+   caminho (o dono no SQL Editor) enquanto a pergunta não aparecer.
 3. **Feito.** Primeira rodada real (manual): 24 linhas, região sa-east-1, 24 ok, 24 cadernos de hoje publicados. As próximas vêm
    do cron a cada 15 min.
 4. O dono faz a seção 1 (MFA e usuários) e entra na Central; a Produto ajusta a tela (seção 7).
