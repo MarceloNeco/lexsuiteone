@@ -5,7 +5,7 @@ Este arquivo existe para uma conversa nova do Claude Code começar sem reler o h
 
 ## O que já existe e funciona
 
-- Robô v0.7.43 (`robo/`, publicada em 13/Nov), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 404 testes verdes,
+- Robô v0.7.44 (`robo/`, publicada em 13/Nov), produto chamado **RADAR JUDICIAL** (nome é configuração em `docs/marca.json`), 404 testes verdes,
   pacote em `releases/` e `docs/downloads/`. Tela local em 127.0.0.1, planilha `LexSuiteONE.xlsx` no Drive do escritório,
   atualização assinada (chave só na nuvem), manual personalizado, revisão de segurança (risco baixo). Na 0.7.9: horários
   de leitura escolhidos pelo escritório e leitura perdida compensada. Na 0.7.10 (publicada em 08/Nov, 16:39 UTC): domingo e
