@@ -117,6 +117,16 @@ termos) fica, com a licença de teste marcada `ativo = false` e nome "(teste; mi
   com janela aberta) e desligada depois; o dono olha por área remota, sem rodar nada no notebook. Estimativa: menos de US$ 10 por mês.
   Windows 365 (~US$ 28 por mês) só se o uso virar diário.
 
+## 7b. Executor brasileiro na Oracle Cloud (ideia do dono, 13/Nov)
+
+O dono tem uma conta Oracle Cloud "Always Free" com região no Brasil. Uma máquina Linux grátis dessa conta, com IP brasileiro, pode
+ser registrada como executor do GitHub Actions ("self-hosted runner") e receber só os passos que precisam sair do Brasil (DJEN,
+BrasilAPI, Minha Receita, testes de tela com Playwright a partir do país); o resto da automação segue no GitHub. Serve também de
+plano B da conferência dos Diários (hoje na Edge Function em sa-east-1). Cuidados: Windows não entra no grátis; máquina nossa para
+manter (atualizações, chave SSH, firewall); a Oracle recolhe máquinas grátis ociosas e às vezes não tem vaga; em repositório público
+o executor só roda trabalhos da `main` e de disparo manual, nunca de fork, e de preferência como executor efêmero. Entra na fase 3,
+quando o dono disser "pode".
+
 ## 8. O que muda, onde, e quem faz
 
 | Peça | Mudança | Quem |

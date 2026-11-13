@@ -360,6 +360,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 13/Nov (5): ideia do dono registrada no desenho de staging (seção 7b): executor brasileiro do GitHub Actions numa máquina
+  Linux grátis da Oracle Cloud no Brasil, para os testes que precisam de IP do país; depois da KR Law, com o "pode".
+### Feito (mais recente primeiro)
 - 13/Nov (4): **nuvem da Central LexSuiteONE aplicada** ("pode aplicar" do dono): passo 0 ok (função `lex-saude` v1 em
   `sa-east-1`, IP de São Paulo, sem bloqueio do CNJ; sem chave devolve 401); 5 migrações (chave conferida no Vault por
   `lex_saude_chave_confere`, tabelas `lex_saude_diarios` e `_dia` com RLS e GRANT só service_role, `admin_lex_central()` com
