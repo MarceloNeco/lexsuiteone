@@ -1,4 +1,4 @@
-"""0.7.42 (dono, 13/Nov): empresas excluídas pelo nome exato e pelo CPF, desempenho do Painel, AssistONE ao carregar."""
+"""0.7.43 (dono, 13/Nov): empresas excluídas pelo nome exato e pelo CPF, desempenho do Painel, AssistONE ao carregar."""
 
 import importlib.util
 import os
@@ -23,7 +23,7 @@ def excluida(nomes, exclusoes, cnpj=None, razao=None):
     return preferencias.aplicar([it], {"exclusoes": exclusoes})[0]["excluida"]
 
 
-class Excluidas0742(unittest.TestCase):
+class Excluidas0743(unittest.TestCase):
     def test_nome_nao_exclui_outra_empresa(self):
         exc = [{"nome": "Bebidas Ltda", "motivo": ""}]
         self.assertTrue(excluida(["BEBIDAS LTDA"], exc))
@@ -56,7 +56,7 @@ class Excluidas0742(unittest.TestCase):
         self.assertIn('aviso(cpfOk(n) ? t("rg_exc_cpf") : "", "nota-g")', HTML)
 
 
-class Desempenho0742(unittest.TestCase):
+class Desempenho0743(unittest.TestCase):
     def test_painel_sem_ordenar_e_com_memoria(self):
         self.assertIn("desenharPainel(filtrados());", HTML)
         self.assertIn("function valorManual(id)", HTML)
@@ -68,7 +68,7 @@ class Desempenho0742(unittest.TestCase):
         self.assertIn("carregando: { titulo: { pt: \"Carregando\", en: \"Loading\" }", HTML)
 
 
-class Configuracoes0742(unittest.TestCase):
+class Configuracoes0743(unittest.TestCase):
     """Dono, 13/Nov: desmarcou sábado e domingo, salvou, reabriu e voltou o de antes (a carga antiga da lista sobrescrevia)."""
 
     def test_so_a_carga_mais_nova_vale(self):
@@ -89,13 +89,13 @@ class Configuracoes0742(unittest.TestCase):
         self.assertIn("reabrir logo depois de salvar mostra os dias salvos", js)
 
 
-class Busca0742(unittest.TestCase):
+class Busca0743(unittest.TestCase):
     def test_busca_nao_trava(self):
         self.assertIn("if (q_.length === 1) { if (!F.busca) return; usa_ = \"\"; }", HTML)
         self.assertIn("i._ab.indexOf(q) < 0", HTML)  # o texto de busca de cada processo é preparado uma vez
 
 
-class PacoteCompleto0742(unittest.TestCase):
+class PacoteCompleto0743(unittest.TestCase):
     def test_completo_usa_o_instalar_txt_recebido(self):
         spec = importlib.util.spec_from_file_location("marca", os.path.join(_RAIZ_, "ferramentas", "marca.py"))
         m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
@@ -106,11 +106,11 @@ class PacoteCompleto0742(unittest.TestCase):
         self.assertEqual(z.read("dados/instalar.txt").decode("utf-8"), texto)
 
 
-class Versao0742(unittest.TestCase):
+class Versao0743(unittest.TestCase):
     def test_versao_e_novidades(self):
         from lexsuite import VERSAO
-        self.assertEqual(VERSAO, "0.7.42")
-        bloco = HTML[HTML.index('"0.7.42": {'):HTML.index('"0.7.41": {')]
+        self.assertEqual(VERSAO, "0.7.43")
+        bloco = HTML[HTML.index('"0.7.43": {'):HTML.index('"0.7.42": {')]
         pt = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
         en = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("en: ["):])
         self.assertEqual(len(pt), len(en)); self.assertEqual(len(pt), 9)

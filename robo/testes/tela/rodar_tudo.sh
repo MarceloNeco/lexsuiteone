@@ -1,5 +1,5 @@
 #!/bin/bash
-# 0.7.42 (dono, 13/Nov: "tem que ter um regression"): TODOS os testes de uma vez, antes de cada "pronta para revisão".
+# 0.7.43 (dono, 13/Nov: "tem que ter um regression"): TODOS os testes de uma vez, antes de cada "pronta para revisão".
 # 1) testes do programa (unittest); 2) a tela de verdade no navegador, com dados FICTÍCIOS e guarda de rede:
 #    fluxos.js (o uso do dia a dia: salvar e reabrir as Configurações, busca, período, Painel/Lista, Limpar filtros, com a
 #    rede lenta de propósito), ver_na_lista.js (o total de cada cartão bate com a Lista), larguras.js (4 larguras, sem

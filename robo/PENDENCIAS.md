@@ -162,10 +162,10 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.42 (13/Nov) — pronta para revisão
+## 0.7.43 (13/Nov) — pronta para revisão
 
 - Empresas excluídas (pedido reaberto pela Operação: estava marcado "feito na 0.7.40" sem ter sido feito; erro da Produto ao
-  marcar as linhas do quadro em lote): nome exato, CPF do MEI, (?) e aviso; testes em `test_v0742.py`.
+  marcar as linhas do quadro em lote): nome exato, CPF do MEI, (?) e aviso; testes em `test_v0743.py`.
 - Desempenho do Painel e da Lista com muitos processos (medido com 40 mil) e AssistONE na tela de carregamento.
 - Ressalvas da 0.7.40: (2) teste do pacote completo com o `instalar.txt` recebido; (3) a 360 px o "Ver na lista" das Empresas
   desce para baixo do título porque o título não cabe na mesma linha (fica assim; no computador fica na mesma linha).
@@ -181,6 +181,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
   (com as subcategorias, para os filtros) e só os detalhes dos últimos 30 dias; "Limpar filtros" ainda lento com 36 mil.
 - Site (frase do fim que baixava o arquivo errado): preparado à parte, só vai ao ar com o "pode" do dono.
 - Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova nem removida.
+
+## 0.7.42 (13/Nov, CNJ com o caderno fora; feita pela Operação com o "pode" do dono: "Já faça")
+
+- Dia sem Diário por erro do CNJ: pula, volta até 10 dias úteis, anota o dia e lê sozinho quando o CNJ voltar.
+- Fica para a Arquitetura: caminho alternativo pela consulta (`/api/v1/comunicacao`) quando o caderno cair; atenção ao
+  limite de 10 mil resultados por consulta (um dia do TRT9 já chega nele): precisa dividir a consulta (por vara).
 
 ## 0.7.41 (13/Nov, correção urgente na instalação da KR Law; feita pela Operação com o "pode" do dono)
 

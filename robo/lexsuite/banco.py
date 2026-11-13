@@ -90,6 +90,7 @@ class Banco:
             CREATE TABLE IF NOT EXISTS historico (tribunal TEXT, data TEXT, situacao TEXT, novas INTEGER DEFAULT 0,
                 quando TEXT, PRIMARY KEY (tribunal, data));
             CREATE TABLE IF NOT EXISTS historico_processos (processo TEXT PRIMARY KEY);
+            CREATE TABLE IF NOT EXISTS cadernos_pendentes (tribunal TEXT, data TEXT, quando TEXT, PRIMARY KEY (tribunal, data));
         """)
         colunas = {r[1] for r in self.con.execute("PRAGMA table_info(leads)")}
         for nome, tipo in (("frente", "TEXT DEFAULT ''"), ("motivo", "TEXT DEFAULT ''"), ("status_em", "TEXT DEFAULT ''"),
@@ -455,6 +456,19 @@ class Banco:
     def versao_caderno(self, tribunal, data):
         r = self.con.execute("SELECT versao FROM cadernos WHERE tribunal = ? AND data = ?", (tribunal, data)).fetchone()
         return r[0] if r else None
+
+    # 0.7.42 (dono, 13/Nov): Diários que o CNJ não entregou (erro 5xx) ficam anotados e são lidos nas próximas leituras
+    def cadernos_pendentes(self, tribunal):
+        return {r[0] for r in self.con.execute("SELECT data FROM cadernos_pendentes WHERE tribunal = ?", (tribunal,))}
+
+    def marcar_caderno_pendente(self, tribunal, data):
+        self.con.execute("INSERT OR IGNORE INTO cadernos_pendentes VALUES (?,?,?)",
+                         (tribunal, data, dt.datetime.now().isoformat(timespec="seconds")))
+        self.con.commit()
+
+    def tirar_caderno_pendente(self, tribunal, data):
+        self.con.execute("DELETE FROM cadernos_pendentes WHERE tribunal = ? AND data = ?", (tribunal, data))
+        self.con.commit()
 
     def guardar_caderno(self, tribunal, data, versao):
         self.con.execute("INSERT OR REPLACE INTO cadernos VALUES (?,?,?,?)",

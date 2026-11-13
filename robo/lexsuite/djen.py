@@ -101,12 +101,12 @@ def buscar(sigla, data_inicio, data_fim, orgao_id=None, diagnostico=None, aviso=
     return buscar_filtrado(filtros, data_inicio, data_fim, diagnostico, aviso, rotulo=sigla.upper())
 
 
-def meta_caderno(sigla, data, aviso=print, motivos=None):
+def meta_caderno(sigla, data, aviso=print, motivos=None, tentativas=5):
     """Ficha do caderno do dia (status, versão, link de 5 minutos). None se ainda não saiu (404) ou se ainda não foi
     liberado (403 "só a partir das 03:00", 0.7.13); nesses casos `motivos[data]` recebe a causa."""
     from . import causas
     try:
-        return rede.pedir_json(URL_CADERNO.format(sigla=sigla.upper(), data=data), intervalo_minimo=1.0)
+        return rede.pedir_json(URL_CADERNO.format(sigla=sigla.upper(), data=data), intervalo_minimo=1.0, tentativas=tentativas)
     except RuntimeError as e:
         if causas.ainda_nao_liberado(e):
             aviso(f"  Caderno {sigla} {_dc(data)}: o Diário de hoje só fica disponível a partir das 3h; leio até o dia anterior")

@@ -1,6 +1,6 @@
-# Roteiro do dono: teste da 0.7.42 (cerca de 5 minutos)
+# Roteiro do dono: teste da 0.7.43 (cerca de 5 minutos)
 
-1. **Atualizar.** Aceite a atualização: as Novidades da 0.7.42 têm 9 linhas.
+1. **Atualizar.** Aceite a atualização: as Novidades da 0.7.43 têm 9 linhas.
 2. **AssistONE ao abrir.** Enquanto a tela de carregamento estiver aberta, clique no (?) do AssistONE: ele diz "Aguarde o
    RADAR JUDICIAL carregar". Quando a tela abrir, a ajuda muda sozinha para a tela certa.
 3. **Velocidade.** Com os seus 36 mil processos, troque Lista ↔ Painel, risque um setor e clique em "Limpar filtros": deve

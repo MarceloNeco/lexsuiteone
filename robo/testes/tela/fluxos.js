@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-// 0.7.42 (dono: "tem que ter um regression"): o que o escritório faz todo dia, conferido na tela de verdade, com dados
+// 0.7.43 (dono: "tem que ter um regression"): o que o escritório faz todo dia, conferido na tela de verdade, com dados
 // FICTÍCIOS e com a rede lenta de propósito (como numa máquina com dezenas de milhares de processos).
 // Uso: PORTA=8781 python3 -B guarda_rede.py servidor_ficticio.py pronto &   e depois   node fluxos.js
 // Termina com código 1 se qualquer conferência falhar. Cada falha diz o que a pessoa veria de errado.

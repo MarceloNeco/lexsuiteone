@@ -64,8 +64,8 @@ MENSAGENS = {
         "pt": "O tribunal ainda não publicou o Diário desse dia.",
         "en": "The court has not published the gazette for that day yet."},
     "governo_fora": {
-        "pt": "O site do CNJ (Diário de Justiça Eletrônico) não respondeu ou está em manutenção. Não é problema do seu computador. Tente mais tarde.",
-        "en": "The CNJ site (Electronic Justice Gazette) did not respond or is under maintenance. It is not a problem with your computer. Try again later."},
+        "pt": "O site do CNJ (Diário de Justiça Eletrônico) não respondeu ou está em manutenção. Não é problema do seu computador. Os Diários que faltaram são lidos sozinhos na próxima leitura.",
+        "en": "The CNJ site (Electronic Justice Gazette) did not respond or is under maintenance. It is not a problem with your computer. The missing gazettes are read automatically in the next reading."},
     "bloqueio_fora_do_brasil": {
         "pt": "O Diário só responde a pedidos feitos do Brasil. Use o programa num computador no Brasil (sem VPN de fora).",
         "en": "The gazette only answers requests made from Brazil. Use the program on a computer in Brazil (no foreign VPN)."},
