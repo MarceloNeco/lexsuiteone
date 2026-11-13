@@ -6,8 +6,9 @@
    baixado e dê dois cliques em `INSTALAR.bat`. Confira: o atalho **RADAR JUDICIAL** apareceu na área de trabalho, a
    tela abriu no navegador, a janela Configurações aceitou a sua pasta do Drive e "Ler o Diário agora" com 2 TRTs criou a planilha
    `LexSuiteONE - Trabalhista.xlsx` (e a pasta `Cópias de segurança`) na pasta da planilha, dentro da pasta escolhida.
-2. **Plano B no pen drive:** baixe também o pacote completo (link "Baixe o pacote completo" no fim da página inicial).
-   Serve se a rede do cliente bloquear o instalador.
+2. **Plano B no pen drive:** baixe também o **pacote completo** (link "Baixe o pacote completo (11 MB)", logo abaixo do botão
+   de baixar, ou https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE-completo.zip). Ele traz o programa e o
+   Python e não baixa nada durante a instalação: serve se o antivírus ou a rede do cliente bloquearem o instalador.
 3. A planilha não precisa ser levada: ela nasce no Drive de quem instala, na primeira leitura.
 
 ## No cliente (30 a 45 minutos, mais o tempo da primeira leitura)
@@ -24,6 +25,18 @@ Passos:
    cliques em `INSTALAR.bat` ("Executar"; ou "Mais informações" e "Executar assim mesmo"). Ele instala em
    `C:\LexSuiteONE` (ou na pasta do usuário, se o Windows não deixar), cria o atalho e abre a tela. Na primeira janela
    ele pede o **código de cliente** (está no e-mail de boas-vindas): cole com o botão direito do mouse e aperte Enter.
+
+   **Se o Windows ou o antivírus bloquear (aconteceu em 13/Nov com o Bitdefender do Leandro):**
+   - Aviso "O fornecedor não pôde ser verificado" ou tela azul do Windows: clicar em **Executar** (ou "Mais informações" →
+     "Executar assim mesmo"). É o nosso instalador; ele ainda não tem assinatura digital.
+   - Bitdefender "Comportamento malicioso bloqueado": é falso positivo. Clicar em **Reiniciar**. Depois, no Bitdefender:
+     **Proteção → Antivírus → Configurações → Gerenciar exceções → Adicionar uma exceção**, pasta `C:\LexSuiteONE`
+     (e `C:\Users\<usuário>\AppData\Local\LexSuiteONE`), marcando Antivírus e Defesa contra Ameaças. Salvar.
+   - Usar o **pacote completo** (11 MB), que não baixa nada durante a instalação:
+     https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE-completo.zip → botão direito no arquivo → **Extrair
+     tudo** → dois cliques em `INSTALAR.bat` → Executar → código de cliente.
+   - Se ainda bloquear: desligar a Defesa contra Ameaças só durante a instalação e ligar de novo logo depois (o Leandro ou a
+     TI decide). Rede controlada pela TI: liberar `judicial.solverone.com.br` e `qvdvkqydhnadhewcidia.supabase.co`.
 2. Na tela (janela própria), o assistente de 4 passos: documento, escritório, nome, e-mail e função; onde fica a
    planilha (Google Drive, outra pasta ou só neste computador); frente e tribunais; o resumo mostra onde a
    planilha ficou. Instale no computador que fica ligado nos horários das leituras.

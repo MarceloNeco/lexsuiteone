@@ -1,6 +1,6 @@
 # Visita à KR Law (sexta, 13/Nov/2026): roteiro e prompts do Claude in Chrome
 
-**Revisão de 12/Nov/2026 (dono), a que vale:** programa na versão **0.7.36** (atualizado em 13/Nov). A extensão roda na **conta Claude do dono**,
+**Revisão de 12/Nov/2026 (dono), a que vale:** programa na versão **0.7.39** (atualizado em 13/Nov, à tarde). A extensão roda na **conta Claude do dono**,
 num perfil novo do Chrome do Leandro ("Visita SolverONE"), apagado no fim do dia; a conta do Leandro não é tocada. Antes de
 colar cada prompt, escolher na extensão o modo **"Skip all approvals"** (pular aprovações): ela só para no login e pede
 confirmação antes de baixar o único arquivo de cada prompt. Os relatórios ficam no histórico do claude.ai do dono; nada a
@@ -11,7 +11,7 @@ Os "Destaques e exclusões" (valor mínimo e empresas excluídas) são por pesso
 **Ajuste de 12/Nov (manhã, dono):** em vez do perfil novo, uma **janela anônima** do Chrome do Leandro com a conta Claude do
 dono. Antes, em `chrome://extensions` → Claude → Detalhes, ligar "Permitir no modo anônimo". Ao fechar todas as janelas
 anônimas, sessões e logins somem (não há perfil para apagar). Se a extensão não aparecer na janela anônima, use o perfil
-novo "Visita SolverONE", como descrito abaixo. A 0.7.36 está publicada: o botão de baixar do site já entrega essa versão.
+novo "Visita SolverONE", como descrito abaixo. A 0.7.39 está publicada: o botão de baixar do site já entrega essa versão.
 
 Complementa `robo/ROTEIRO-INSTALACAO.md` (instalação do robô). Aqui ficam os prompts para usar no **Claude in Chrome**
 no computador do Leandro, com o consentimento dele, para aprender como os sistemas funcionam e planejar as integrações.
@@ -174,10 +174,23 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
    extensão (A e B; modo "Skip all approvals", modelo Sonnet). Testar com uma conversa curta e conferir se ela aparece no
    claude.ai do dono (no celular) e se a extensão aceita trabalhar nas duas janelas ao mesmo tempo (se não aceitar, rode
    um prompt depois do outro).
-2. **Instalar o robô, versão 0.7.36 (45 a 60 min).** Seguir o `ROTEIRO-INSTALACAO.md`: baixar o pacote do site, `DIAGNOSTICO.bat`,
+2. **Instalar o robô, versão 0.7.39 (45 a 60 min).** Seguir o `ROTEIRO-INSTALACAO.md`: baixar o pacote do site, `DIAGNOSTICO.bat`,
    configurar, escolher a pasta da planilha (no computador ou no Drive do escritório; **não** se compartilha com a
    SolverONE), agendar a rodada diária e iniciar a primeira rodada agora (demora: deixar rodando). Instalar no
    computador que fica ligado nos horários das leituras (o do escritório ou o de casa: perguntar ao Leandro qual).
+
+   **Se o Windows ou o antivírus bloquear (aconteceu em 13/Nov com o Bitdefender do Leandro):**
+   - Aviso "O fornecedor não pôde ser verificado" ou tela azul do Windows: clicar em **Executar** (ou "Mais informações" →
+     "Executar assim mesmo"). É o nosso instalador; ele ainda não tem assinatura digital.
+   - Bitdefender "Comportamento malicioso bloqueado": é falso positivo. Clicar em **Reiniciar**. Depois, no Bitdefender:
+     **Proteção → Antivírus → Configurações → Gerenciar exceções → Adicionar uma exceção**, pasta `C:\LexSuiteONE`
+     (e `C:\Users\<usuário>\AppData\Local\LexSuiteONE`), marcando Antivírus e Defesa contra Ameaças. Salvar.
+   - Usar o **pacote completo** (11 MB), que não baixa nada durante a instalação:
+     https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE-completo.zip → botão direito no arquivo → **Extrair
+     tudo** → dois cliques em `INSTALAR.bat` → Executar → código de cliente.
+   - Se ainda bloquear: desligar a Defesa contra Ameaças só durante a instalação e ligar de novo logo depois (o Leandro ou a
+     TI decide). Rede controlada pela TI: liberar `judicial.solverone.com.br` e `qvdvkqydhnadhewcidia.supabase.co`.
+
    **Conferir o armazenamento** (menu ☰ → Configurações → Leitura do Diário → Armazenamento): espaço livre no disco (o ideal é mais de 10 GB), onde
    ficam `LexSuiteONE - Trabalhista.xlsx` e a pasta `Cópias de segurança`, e se o aviso de disco aparece. Anotar
    quantos GB livres o computador tem. A pasta escolhida aqui não precisa mudar depois: as frentes novas (tributário,

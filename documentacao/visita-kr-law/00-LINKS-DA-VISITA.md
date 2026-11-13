@@ -1,6 +1,6 @@
 # Visita à KR Law: links do dia (revisão de 12/Nov/2026)
 
-Versão do RADAR JUDICIAL na visita: **0.7.36** (publicada em 13/Nov). São só os 4 prompts que precisam do login do advogado; os públicos
+Versão do RADAR JUDICIAL na visita: **0.7.39** (publicada em 13/Nov). São só os 4 prompts que precisam do login do advogado; os públicos
 (2, 4A e 5) rodam em casa e estão no roteiro completo.
 
 ## Ordem dos prompts
@@ -42,12 +42,26 @@ Antes de cada um: janela anônima do Chrome do Leandro (extensão liberada no mo
 ## Site (abre sem login)
 
 - Instalador (o botão do site): https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE.zip
+- **Pacote completo, se o antivírus ou a rede bloquearem** (11 MB, não baixa nada; botão direito → Extrair tudo → INSTALAR.bat): https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE-completo.zip
 - Download completo do programa: https://judicial.solverone.com.br/downloads/LexSuiteONE-RADAR.zip
 - Manual: https://judicial.solverone.com.br/manual.html
 - Termos de uso e aceite: https://judicial.solverone.com.br/aceite.html
 - Site: https://judicial.solverone.com.br/
 
-O site entrega a 0.7.36. Depois de instalar, confira no programa (menu ☰ → Configurações → Sobre este computador) se é a 0.7.36.
+O site entrega a 0.7.39. Depois de instalar, confira no programa (menu ☰ → Configurações → Sobre este computador) se é a 0.7.39.
+
+**Se o Windows ou o antivírus bloquear (aconteceu em 13/Nov com o Bitdefender do Leandro):**
+- Aviso "O fornecedor não pôde ser verificado" ou tela azul do Windows: clicar em **Executar** (ou "Mais informações" →
+  "Executar assim mesmo"). É o nosso instalador; ele ainda não tem assinatura digital.
+- Bitdefender "Comportamento malicioso bloqueado": é falso positivo. Clicar em **Reiniciar**. Depois, no Bitdefender:
+  **Proteção → Antivírus → Configurações → Gerenciar exceções → Adicionar uma exceção**, pasta `C:\LexSuiteONE`
+  (e `C:\Users\<usuário>\AppData\Local\LexSuiteONE`), marcando Antivírus e Defesa contra Ameaças. Salvar.
+- Usar o **pacote completo** (11 MB), que não baixa nada durante a instalação:
+  https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE-completo.zip → botão direito no arquivo → **Extrair
+  tudo** → dois cliques em `INSTALAR.bat` → Executar → código de cliente.
+- Se ainda bloquear: desligar a Defesa contra Ameaças só durante a instalação e ligar de novo logo depois (o Leandro ou a
+  TI decide). Rede controlada pela TI: liberar `judicial.solverone.com.br` e `qvdvkqydhnadhewcidia.supabase.co`.
+
 
 ## Google Drive do dono
 
