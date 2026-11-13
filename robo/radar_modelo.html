@@ -538,8 +538,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 @media (min-width: 601px) { .barra-lista { position: sticky; top: var(--topo-h, 0px); z-index: 30; box-shadow: 0 6px 18px -12px rgba(15, 29, 51, .35); } }
 .dica-graf { position: fixed; z-index: 95; pointer-events: none; background: var(--tinta, #14213d); color: var(--papel, #fff); border-radius: 8px; padding: 8px 12px; font-size: .95rem; font-weight: 600; max-width: min(360px, 80vw); box-shadow: 0 8px 24px rgba(0,0,0,.25); line-height: 1.35; }
 .busca::placeholder { font-style: italic; }  /* 0.7.33 (dono): dica em itálico; o que se digita fica normal */
-/* 0.7.33 (dono): no Painel ficam só os filtros que não têm gráfico; os dos gráficos aparecem no alto só quando ligados (com ×) */
-/* 0.7.37 (dono): no Painel, os filtros que os gráficos mudam (Situação, Vara, Setor, Porte, Estado) ficam sempre à vista; Tribunal e Data já estão em "Estes números" */
+/* 0.7.37 (dono): no Painel, os filtros que os gráficos mudam (Situação no alto; Vara, Setor, Porte e Estado em "Mais filtros") aparecem mesmo sem estar ligados; Tribunal e Data já estão em "Estes números" */
 .barra-lista.no-painel #f-busca, .barra-lista.no-painel .campo-data, .barra-lista.no-painel #f-trib.multi-vazio, .barra-lista.no-painel #f-data.multi-vazio { display: none !important; }
 .busca { flex: 1 1 280px; min-width: 200px; border: 1px solid var(--linha-2); background: var(--folha); border-radius: 999px; padding: 8px 16px; min-height: 38px; font-size: .9rem; }
 /* 0.7.28 (dono): filtros (azul-marinho claro) e ordenação (dourado) em cores diferentes; "Limpar filtros" ao lado dos filtros */
@@ -5043,11 +5042,11 @@ window.LEXSUITE_RADAR = null;
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
     "0.7.37": {
-      pt: ["Inclusão dos filtros Situação, Vara, Setor, Porte e Estado no Painel, sempre à vista e ligados aos gráficos.",
+      pt: ["Inclusão dos filtros Situação, Vara, Setor, Porte e Estado no Painel, ligados aos gráficos.",
         "Simplificação da janela de Configurações.",
         "Melhorias no design e na navegação.",
         "Melhorias de acessibilidade e correções."],
-      en: ["Status, Court unit, Sector, Size and State filters on the Dashboard, always visible and linked to the charts.",
+      en: ["Status, Court unit, Sector, Size and State filters on the Dashboard, linked to the charts.",
         "Simpler Settings window.",
         "Design and navigation improvements.",
         "Accessibility improvements and fixes."]

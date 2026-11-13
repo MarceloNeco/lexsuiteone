@@ -63,8 +63,8 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
-- **0.7.37 (teste do dono na 0.7.36, 13/Nov):** no Painel, Situação (no alto) e Vara, Setor, Porte e Estado (em "Mais
-  filtros") ficam sempre à vista: o que sai de um gráfico aparece no filtro correspondente, em vez de surgir do nada;
+- **0.7.37 (teste do dono na 0.7.36, 13/Nov):** no Painel, Situação (no alto) e Vara, Setor, Porte e Estado (dentro de
+  "Mais filtros") aparecem mesmo sem estar ligados: o que sai de um gráfico aparece no filtro correspondente, em vez de surgir do nada;
   Configurações sem o parágrafo de abertura e mais larga (1280 px); busca das empresas excluídas sem rótulo repetido; na
   faixa da leitura, sem a frase que anunciava o caminho do arquivo e, no celular, barra e Interromper fixos na primeira
   linha; "1 processo novo" e "1 notice read" também no inglês e na aba Saúde; o nome pelo CNPJ só diz "não encontrado"
