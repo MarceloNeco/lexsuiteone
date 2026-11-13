@@ -43,6 +43,15 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
   detalhe. Aplicativo novo desenha manual, AssistONE e Novidades desde o começo. Os testes `Novo…` da Produto conferem o que
   dá para automatizar; o resto é revisão: Produto, Arquitetura e Operação conferem em todo envio, o revisor trata a falta como
   **bloqueio** e a Operação não publica versão em que falte. A mesma regra está na diretriz geral do `rootify-one`.
+- **Aviso do dono (13/Nov): a Definition of done da plataforma passa a ter 12 pontos** (manual e orientações, AssistONE, Novidades
+  da versão, termos, comunicações e e-mails, RootifyONE, ArchONE, EaglePlanONE (roadmap), retrocompatibilidade, segurança e LGPD,
+  qualidade verificável e registro) e vai nascer uma teia de integrações entre os apps, o RootifyONE, o ArchONE e o EaglePlanONE
+  (eventos e comandos com aprovação). A conversa de diretrizes da SolverONE está desenhando; quando a diretriz nova sair, ela vale.
+  Cada ponto vale quando for aplicável ao estágio atual do app; o que não se aplica hoje recebe "não aplicável hoje" e o motivo em
+  uma linha. NÃO criar login, NÃO migrar para banco e NÃO criar integração por causa do aviso; quando o app ganhar login, banco ou
+  integração nova, já nasce cumprindo os pontos que passaram a valer. Até a diretriz nova: (1) este aviso vale em todas as
+  conversas deste repositório; (2) em cada entrega, o resumo diz o que o RootifyONE, o ArchONE ou o EaglePlanONE precisariam saber
+  (integração nova ou removida, recurso novo, item do roadmap concluído); (3) nenhuma integração nova sem a regra zero.
 - Nunca reescreva histórico nem force push sem o dono pedir na hora. Nunca commite `config.json`, `*.db`, `saida/`,
   `diagnostico/`, `chave_privada.txt`.
 - O robô é só biblioteca padrão do Python, sem IA no caminho principal, sem contornar captcha, sem dado fictício no
