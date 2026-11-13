@@ -342,6 +342,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 13/Nov (1): **resultados da visita à KR Law** guardados e desenhados: relatórios do PJe TRT2 (prompt 1A) e do Astrea (prompt 3)
+  em `documentacao/visita-kr-law/resultados/` (só texto, varridos: sem senha, token, código LEX nem pessoa física; nada apagado; os
+  prints ficam FORA do repositório público porque mostram CPF, endereço e clientes); resumo de uma página por sistema e três
+  caminhos de integração em `2026-11-13-RESUMO-E-INTEGRACAO.md` (A: PJe → RADAR pelo caminho "área logada" já existente, com
+  prompt v2; B: planilha no formato do contato PJ do Astrea, sem API nem importação lá; C: clientes do Astrea como excluídas, só CNPJ);
+  recomendação A e C na 0.7.34, B depois da Aurum. Perguntas 21 a 28 no quadro. Nada implementado (regra zero).
 - 12/Nov (11): respondido o pedido da Operação "Perguntas da revisão da 0.7.36": gatilho das contas de teste reforçado (SECURITY
   DEFINER, migração aplicada e provada); termos não mudam pela consulta do nome da empresa excluída (condições à Produto: mesmo
   interruptor da Receita e um (?)); horário do Diário de hoje: 3h da manhã (resposta do próprio DJEN), não 19h; texto único sugerido.
@@ -715,6 +721,14 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 18 | Arquitetura | Critérios por pessoa: a planilha compartilhada de cada frente fica **completa** (registro do escritório; os critérios da pessoa valem na tela e no `saida/` dela) ou **filtrada por quem leu por último** (como hoje, mas agora cada computador grava com critérios diferentes e apaga linha do colega)? | Completa | **decidida pela Arquitetura (12/Nov)**: planilha completa; os critérios de cada pessoa valem na tela dela. O dono só precisa falar se discordar; **confirmada pelo dono (12/Nov): (a) completa** |
 | 19 | Operação (terceira revisão da 0.7.36) | Avisos de perda parcial (por exemplo, "não couberam" ao copiar empresas excluídas para outra área) saem em cinza, como os avisos comuns. Devem sair em latão (dourado), para chamar mais atenção sem parecer erro? Recomendação da Produto: latão. Sem urgência. | respondida (13/Nov): dourado |
 | 20 | Operação | Painel: o que se risca nos 8 cartões de baixo deve valer **só para os cartões** (os números do alto e "Processos por dia" ficam como estão, com Limpar e Salvar próprios da seção) ou **para o Painel todo**, como hoje acontece com Situação, Vara, Setor, Porte e Estado? Hoje é misturado (Faixas de valor, Empresas e "Como foi reconhecido" só escondem a fatia). Decide como fica a faixa fixa da seção nova. | **Só para os cartões**: é o que o dono descreveu ("filtro exclusivo dessa parte estatística"), deixa o Limpar e o Salvar da seção claros e acaba com a mistura; os filtros do alto continuam valendo para tudo | **respondida (13/Nov)**: nenhum filtro novo; os filtros do alto continuam valendo para tudo, como hoje; só um título na seção dos cartões |
+| 21 | Arquitetura (visita KR Law, para o Leandro) | PJe: autoriza a extensão Claude in Chrome a rodar o prompt do PJe nos próprios autos, até 30 processos por dia, só leitura? | Sim, com o prompt v2 (nunca abrir login.seam, expediente nem "Baixar processo completo") | aberta (13/Nov) |
+| 22 | Arquitetura (para o Leandro) | PJe: precisa de processos de terceiros (onde a KR Law não atua), sabendo do risco de bloqueio por excesso de acessos? | Não no início; só os próprios autos | aberta (13/Nov) |
+| 23 | Arquitetura (para o Leandro) | Astrea: aceita receber as empresas escolhidas como contato PJ com etiqueta JUDICIAL, digitadas pela extensão na sessão dele, ou prefere a planilha para a equipe digitar? | Planilha primeiro; extensão só se a Aurum não vetar automação | aberta (13/Nov) |
+| 24 | Arquitetura (para o Leandro) | Astrea: exporta os contatos de tempos em tempos para o RADAR marcar os clientes (só CNPJ) como empresas excluídas? | Sim, mensal; o RADAR lê só a coluna CNPJ | aberta (13/Nov) |
+| 25 | Arquitetura (para o Leandro) | Pergunta à Aurum, como cliente, se existe API ou importação de contatos e o que os termos dizem sobre automação na tela? | Sim, antes de qualquer automação no Astrea | aberta (13/Nov) |
+| 26 | Arquitetura (para o dono) | Integrações da visita: ordem na 0.7.34 = A (PJe → RADAR, prompt v2 + formato v1) e C (clientes do Astrea como excluídas) primeiro; B (planilha no formato do Astrea) depois? | Sim | aberta (13/Nov) |
+| 27 | Arquitetura (para o dono) | Prints da visita: ficam só na pasta restrita do dono, fora do repositório; os do PJe (CPF e endereço de pessoas) são apagados depois do desenho? | Sim: apagar os do PJe; guardar os do Astrea com acesso restrito | aberta (13/Nov) |
+| 28 | Arquitetura (para o dono) | A petição inicial em HTML pode ser fonte do endereço da ré, mesmo com a frase variando por advogado (o v1 marca "a conferir")? | Sim, como "a conferir"; o cadastro da parte tem prioridade | aberta (13/Nov) |
 
 ## Decisões do dono registradas aqui
 
