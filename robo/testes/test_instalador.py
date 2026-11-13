@@ -45,13 +45,13 @@ class Instalador(unittest.TestCase):
         self.assertIn('set "CHAVE=%s"' % chave, self.texto)
 
     def test_confere_antes_de_instalar(self):
-        ordem = [self.texto.index(t) for t in ("instalar.txt", "certutil.exe -hashfile", "tar.exe -xf", "INSTALAR-PYTHON.bat", "CreateShortcut", "ABRIR.bat")]
+        ordem = [self.texto.index(t) for t in ("instalar.txt", "certutil.exe -hashfile", "call :extrair_pacote", "INSTALAR-PYTHON.bat", "CreateShortcut", "ABRIR.bat")]
         self.assertEqual(ordem, sorted(ordem))
         self.assertIn('if /i not "%H%"=="%sha256%" goto hash_ruim', self.texto)
 
     def test_pede_e_confere_o_codigo_antes_de_baixar(self):
         self.assertLess(self.texto.index('set /p "CODIGO='), self.texto.index("instalar.txt"))
-        self.assertLess(self.texto.index('"versao\\":\\"instalador'), self.texto.index("tar.exe -xf"))
+        self.assertLess(self.texto.index('"versao\\":\\"instalador'), self.texto.index("call :extrair_pacote"))
         self.assertIn("conta-inicial.json", self.texto)
         self.assertIn('\\"codigo\\":\\"%CODIGO_OK%\\",\\"instalacao\\":\\"%INST%\\"}', self.texto)  # todo aviso de erro diz a origem
 

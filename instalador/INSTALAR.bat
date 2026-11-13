@@ -112,8 +112,21 @@ if /i not "%H%"=="%sha256%" goto hash_ruim
 echo          Impressao digital conferida.
 
 echo  3 de 5  Instalando em %DEST%...
-tar.exe -xf "%T%\pacote.zip" -C "%DEST%" || goto falha_extrair
-if not exist "%DEST%\lexsuite_robo.py" goto falha_extrair
+rem 0.7.41 (KR Law, 13/Nov: o antivirus barrou o tar.exe em C:\LexSuiteONE): tenta com o PowerShell e, numa instalacao
+rem nova, na pasta do usuario, antes de desistir. Onde ja ha um programa instalado (lexsuite.db), nao muda de pasta.
+set "TENTOU=%DEST%"
+call :extrair_pacote
+if "%EXTRAIU%"=="sim" goto extraiu
+if /i "%DEST%"=="%LOCALAPPDATA%\LexSuiteONE" goto falha_extrair
+if exist "%DEST%\lexsuite.db" goto falha_extrair
+echo          O Windows nao deixou gravar os arquivos em %DEST% ^(o antivirus pode ter bloqueado^).
+echo          Tentando na pasta do usuario: %LOCALAPPDATA%\LexSuiteONE
+set "DEST=%LOCALAPPDATA%\LexSuiteONE"
+set "TENTOU=%TENTOU% e %DEST%"
+if not exist "%DEST%\" mkdir "%DEST%" 2>nul
+call :extrair_pacote
+if not "%EXTRAIU%"=="sim" goto falha_extrair
+:extraiu
 if exist "%DEST%\chave_publica.txt" goto chave_ok
 >"%DEST%\chave_publica.txt" echo %CHAVE%
 :chave_ok
@@ -175,8 +188,10 @@ echo  Rode o instalador de novo; se repetir, avise o suporte.
 goto erro
 :falha_extrair
 set "ETAPA=descompactar"
-set "DETALHE=errorlevel=%errorlevel%"
-echo  Nao consegui descompactar o pacote em %DEST%.
+set "DETALHE=errorlevel=%errorlevel% tar e powershell"
+echo  Nao consegui descompactar o pacote ^(tentei em %TENTOU%^).
+echo  O mais provavel e o antivirus ter bloqueado a criacao dos arquivos do programa.
+echo  Peca para liberar a pasta C:\LexSuiteONE ^(e %LOCALAPPDATA%\LexSuiteONE^) no antivirus e rode o instalador de novo.
 goto erro
 :sem_python
 set "ETAPA=preparar python"
@@ -195,3 +210,19 @@ rd /s /q "%T%" 2>nul
 echo.
 pause
 exit /b 1
+
+:extrair_pacote
+rem 1o o tar.exe do Windows; se o arquivo principal nao apareceu, o Expand-Archive do PowerShell (le T e DEST do ambiente).
+rem Numa atualizacao, o arquivo principal antigo sai do caminho antes (e volta se nada extrair): so conta o que veio agora.
+set "EXTRAIU=nao"
+if exist "%DEST%\lexsuite_robo.py" move /y "%DEST%\lexsuite_robo.py" "%DEST%\lexsuite_robo.py.antes" >nul 2>nul
+tar.exe -xf "%T%\pacote.zip" -C "%DEST%" 2>nul
+if exist "%DEST%\lexsuite_robo.py" goto extrair_ok
+powershell.exe -NoProfile -Command "Expand-Archive -LiteralPath (Join-Path $env:T 'pacote.zip') -DestinationPath $env:DEST -Force" >nul 2>nul
+if exist "%DEST%\lexsuite_robo.py" goto extrair_ok
+if exist "%DEST%\lexsuite_robo.py.antes" move /y "%DEST%\lexsuite_robo.py.antes" "%DEST%\lexsuite_robo.py" >nul 2>nul
+goto :eof
+:extrair_ok
+del /q "%DEST%\lexsuite_robo.py.antes" 2>nul
+set "EXTRAIU=sim"
+goto :eof
