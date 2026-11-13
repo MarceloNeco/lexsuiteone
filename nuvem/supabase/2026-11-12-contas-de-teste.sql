@@ -17,8 +17,10 @@ comment on column public.assinaturas.teste  is 'Pessoa/assinatura de teste dos a
 comment on column public.sol_feedback.teste is 'Chamado ou feedback vindo de conta de teste (preenchido pelo gatilho sol_feedback_marcar_teste).';
 
 -- 2. Chamado/feedback: marcado sozinho quando vem de licença de teste (RADAR: aparelho.licenca) ou de pessoa de teste (apps web).
+-- (12/Nov, noite, relato da Operação: SECURITY DEFINER, para a leitura de lex_contas e assinaturas não depender de quem insere;
+--  o insert só acontece dentro de sol_enviar_feedback, que já é SECURITY DEFINER. Aplicado como migração 'sol_feedback_marcar_teste_definer'.)
 create or replace function public.sol_feedback_marcar_teste()
-returns trigger language plpgsql set search_path = '' as $$
+returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   if new.teste then return new; end if;
   if (new.aparelho ->> 'licenca') is not null
@@ -33,6 +35,7 @@ end $$;
 drop trigger if exists sol_feedback_marcar_teste on public.sol_feedback;
 create trigger sol_feedback_marcar_teste before insert on public.sol_feedback
   for each row execute function public.sol_feedback_marcar_teste();
+revoke execute on function public.sol_feedback_marcar_teste() from public, anon, authenticated;
 
 -- 3. admin_lex_listar: devolve `teste`.
 create or replace function public.admin_lex_listar()
