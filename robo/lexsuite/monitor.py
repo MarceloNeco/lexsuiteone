@@ -247,7 +247,16 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
                 if d != hoje and contados >= max(0, int(dias)):
                     break
                 pedidas.append(d.isoformat())
-                meta = djen.meta_caderno(sigla, d.isoformat(), aviso, motivos)
+                try:
+                    meta = djen.meta_caderno(sigla, d.isoformat(), aviso, motivos)
+                except rede.ErroHTTP as e_hoje:
+                    # 0.7.41 (instalação na KR Law, 13/Nov): o CNJ passou a responder 500 para o caderno do dia que ainda está
+                    # sendo montado; no dia de hoje isso é "ainda não publicado": pula hoje e lê até o dia anterior
+                    if d != hoje or e_hoje.codigo < 500:
+                        raise
+                    aviso(f"  Caderno {sigla} {config.data_curta(d, False)}: o CNJ ainda não fechou o Diário de hoje; leio até o dia anterior")
+                    motivos[d.isoformat()] = "nao_publicado"
+                    continue
                 if meta is None:
                     continue
                 if d != hoje:

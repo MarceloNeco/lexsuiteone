@@ -332,7 +332,7 @@ button.leg-cor { all: unset; box-sizing: border-box; width: 14px; height: 14px; 
 .pp-rot { font-size: .8rem; color: var(--tinta-3); margin-right: 4px; }
 .pp-seg button { all: unset; cursor: pointer; font-size: .84rem; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--linha-2); color: var(--tinta-2); }
 .pp-seg button:hover, .pp-seg button:focus-visible { border-color: var(--latao); outline: none; }
-.pp-seg button.carregando { opacity: 1; } .pp-seg button .girando { margin-left: 6px; font-size: 1em; font-weight: 700; } .pp-seg button[aria-pressed="true"] .girando { color: #f2d48c; }  /* 0.7.41 (dono): o girando do período mais visível */
+.pp-seg button.carregando { opacity: 1; } .pp-seg button .girando { margin-left: 6px; font-size: 1em; font-weight: 700; } .pp-seg button[aria-pressed="true"] .girando { color: #f2d48c; }  /* 0.7.42 (dono): o girando do período mais visível */
 .pp-seg button[aria-pressed="true"] { background: var(--marinho); border-color: var(--marinho); color: #fff; font-weight: 600; }
 .graf { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
 .graf.largo { grid-column: 1 / -1; }
@@ -650,7 +650,7 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 :root[data-theme="dark"] .faixa-falha { background: #3a1a17; color: #ffb4ab; border-color: #6b2a24; } @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .faixa-falha { background: #3a1a17; color: #ffb4ab; border-color: #6b2a24; } }
 #config .painel-rodape { position: sticky; bottom: 0; background: var(--folha); padding: 12px 0 16px; border-top: 1px solid var(--linha); z-index: 2; }
 #c-salvar:disabled { opacity: .45; cursor: default; }
-/* 0.7.41 (dono): enquanto grava, o Salvar gira (a janela tampa o cabeçalho, então o aviso fica no próprio botão) */
+/* 0.7.42 (dono): enquanto grava, o Salvar gira (a janela tampa o cabeçalho, então o aviso fica no próprio botão) */
 #c-salvar.salvando, #c-salvar.salvando:disabled { opacity: 1; cursor: progress; }
 #c-salvar.salvando::before { content: ""; display: inline-block; width: .9em; height: .9em; margin-right: .45em; vertical-align: -.12em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: gira-salvar .8s linear infinite; }
 @keyframes gira-salvar { to { transform: rotate(360deg); } }
@@ -2413,7 +2413,7 @@ window.LEXSUITE_RADAR = null;
   function titulo(s) { return String(s || "").replace(/^[\s\-–—,:;"'“”‘’«»]+|[\s\-–—,:;"'“”‘’«»]+$/g, "").toLowerCase().replace(/(^|\s|\.|-|\/)([a-zà-ú])/g, function (m, a, b) { return a + b.toUpperCase(); }).replace(/\bS\.a\./g, "S.A.").replace(/\bLtda\b/g, "Ltda").replace(/\b(De|Da|Do|Das|Dos|E)\b/g, function (m) { return m.toLowerCase(); }); }
   function guardado(chave) { try { return localStorage.getItem("lexsuite:radar:" + chave); } catch (e) { return null; } }
   function guardar(chave, v) { try { if (v == null || v === "") localStorage.removeItem("lexsuite:radar:" + chave); else localStorage.setItem("lexsuite:radar:" + chave, String(v)); } catch (e) {} if (String(chave).indexOf("valor:") === 0) valoresManuais = null; }
-  // 0.7.41 (dono, desempenho com 36 mil processos): os valores digitados à mão são lidos do navegador uma vez só, num índice,
+  // 0.7.42 (dono, desempenho com 36 mil processos): os valores digitados à mão são lidos do navegador uma vez só, num índice,
   // em vez de uma leitura do localStorage por processo a cada desenho (era o maior gasto de tempo do Painel e da Lista)
   var valoresManuais = null;
   function valorManual(id) {
@@ -2476,13 +2476,13 @@ window.LEXSUITE_RADAR = null;
     var c_ = cacheDados[d];
     post("/config", { dias_na_pagina: d });
     if (c_ && Date.now() - c_.t < 5 * 60000) { aplicarDados(Object.assign({}, c_.d, { app: APP || c_.d.app })); return; }  // na memória: troca na hora (estado e licença, os de agora)
-    carregandoPer = d; desenhar(); ocupadoLigar(t("carregando_dias", { d: d }));  // 0.7.41 (dono): o aviso no alto também enquanto carrega
+    carregandoPer = d; desenhar(); ocupadoLigar(t("carregando_dias", { d: d }));  // 0.7.42 (dono): o aviso no alto também enquanto carrega
     carregar().then(function () { carregandoPer = 0; ocupadoDesligar(); comEspera(desenhar); }, function () { carregandoPer = 0; ocupadoDesligar(); });
   }
   function carregar() {
     $("estado").textContent = t("carregando");
     // 0.7.30: a 1ª carga usa o período salvo (antes pedia 1 dia)
-    var pedido_ = APP ? periodo : 0, ger_ = geracaoCache, meu_ = ++seqCarga;  // 0.7.41 (dono): só a carga mais nova vale
+    var pedido_ = APP ? periodo : 0, ger_ = geracaoCache, meu_ = ++seqCarga;  // 0.7.42 (dono): só a carga mais nova vale
     return ultimaCarga = fetch("/dados" + (APP ? "?dias=" + diasCarga() : (ultimoMes && MODO === "app" ? "?max=" + ULTIMO_MES : "")), { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
       var dc_ = Number((d.app && d.app.config && d.app.config.dias_na_pagina) || 1); if (!APP && ultimoMes) dc_ = Math.min(dc_, ULTIMO_MES);
       if (ger_ === geracaoCache) cacheDados[pedido_ ? diasCarga() : dc_] = { d: d, t: Date.now() };  // gravou algo no meio: não guarda
@@ -3093,7 +3093,7 @@ window.LEXSUITE_RADAR = null;
     if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
     if ($("c-agendar").checked && !cHoras.length) { $("c-msg").textContent = t("ag_um"); return; }
     corpo.horarios = cHoras.slice(); corpo.dias = diasValor(cDias); if (!cDias.length) corpo.agendar = false; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
-    // 0.7.41 (dono: "o salvar demorou muito"): a pasta e o agendamento do Windows só vão quando mudaram (cada um leva segundos)
+    // 0.7.42 (dono: "o salvar demorou muito"): a pasta e o agendamento do Windows só vão quando mudaram (cada um leva segundos)
     if (cA_.pasta && corpo.pasta === cA_.pasta) { delete corpo.pasta; delete corpo.criar; }
     var mesmaAgenda_ = JSON.stringify(cHoras.slice().sort()) === JSON.stringify((cA_.horarios || []).slice().sort()) && JSON.stringify(diasValor(cDias)) === JSON.stringify(diasValor(diasLista(cA_.dias || "todos")));
     if (mesmaAgenda_ && ("agendar" in corpo ? corpo.agendar === !!cA_.agendado : true)) { delete corpo.agendar; delete corpo.horarios; delete corpo.dias; }
@@ -3102,7 +3102,7 @@ window.LEXSUITE_RADAR = null;
     post("/config", corpo).then(function (r) {
       fimS_();
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
-      // 0.7.41 (dono): a tela fica na hora com o que foi salvo (reabrir antes de a lista recarregar mostrava o de antes)
+      // 0.7.42 (dono): a tela fica na hora com o que foi salvo (reabrir antes de a lista recarregar mostrava o de antes)
       if (APP && APP.config && r.radar) {
         ["horarios", "dias", "avisar_ao_terminar", "abrir_em_aba"].forEach(function (k) { if (k in r.radar) APP.config[k] = r.radar[k]; });
         if ("pasta" in r) APP.config.pasta = r.pasta; if ("agendado" in r) APP.config.agendado = r.agendado;
@@ -3490,7 +3490,7 @@ window.LEXSUITE_RADAR = null;
   }
 
   /* ---------- a lista ---------- */
-  // 0.7.41 (dono, desempenho): durante um desenho (cabeçalho, filtros, cartões), cada processo é avaliado uma vez só; a memória
+  // 0.7.42 (dono, desempenho): durante um desenho (cabeçalho, filtros, cartões), cada processo é avaliado uma vez só; a memória
   // vale só até o fim do desenho (some na próxima tarefa), então nunca fica velha depois de uma mudança
   var memoF = null, genMemo = 0;
   function ativarMemo() { if (memoF) return; memoF = { g: ++genMemo, cx: null }; Promise.resolve().then(function () { memoF = null; }); }
@@ -3507,7 +3507,7 @@ window.LEXSUITE_RADAR = null;
   function avaliarFiltros(i, min, esconder, q) {  // false: não passa nos filtros simples; senão, a lista dos filtros de várias opções em que não passa
       if (visao === "lista" && i.situacao === "arquivado") return false;
       if (i.excluida && (i.esconder_exc != null ? i.esconder_exc : esconder) && !F.exc && visao !== "arquivo") return false;  // revisão da 0.7.33: pela área
-      if (q) { if (i._ab == null) { var e_ = i.empresa || {}; i._ab = semAcento([nomeDe(i), (i.empresas || []).join(" "), i.processo, i.vara, i.tribunal, e_.cnpj, e_.municipio, e_.nome_fantasia].join(" ")).replace(/[.\-\/]/g, ""); } if (i._ab.indexOf(q) < 0) return false; }  // 0.7.41 (dono): o texto de busca de cada processo é preparado uma vez
+      if (q) { if (i._ab == null) { var e_ = i.empresa || {}; i._ab = semAcento([nomeDe(i), (i.empresas || []).join(" "), i.processo, i.vara, i.tribunal, e_.cnpj, e_.municipio, e_.nome_fantasia].join(" ")).replace(/[.\-\/]/g, ""); } if (i._ab.indexOf(q) < 0) return false; }  // 0.7.42 (dono): o texto de busca de cada processo é preparado uma vez
       if (F.valorSel === "sem" && valorDe(i).v != null) return false;
       if (F.valorSel && F.valorSel !== "sem" && !(valorDe(i).v >= Number(F.valorSel))) return false;
       if (F.contato === "com" && !(i.contato && i.contato.tem)) return false;
@@ -4003,7 +4003,7 @@ window.LEXSUITE_RADAR = null;
       var det = el("details", "rg-exc-det"), sm = el("summary", "rg-sub"); det.appendChild(sm); det.addEventListener("toggle", function () { if (det.open) requestAnimationFrame(medirMotivos); });
       medirExcAtual = function () { if (det.open && det.isConnected && !$("config").hidden) medirMotivos(); };  // revisão: ▸ certo também ao mudar a largura
       function rotuloExc() { sm.textContent = t("rg_exc_n", { n: num(regrasExc.length) }); }
-      var px_ = el("p", "agenda-info", t("rg_exc_x") + " "); px_.appendChild(ajuda(function () { return emBlocos(t("rg_exc_ajuda")); })); det.appendChild(px_);  // 0.7.41 (dono): o que vale com CNPJ, nome e CPF
+      var px_ = el("p", "agenda-info", t("rg_exc_x") + " "); px_.appendChild(ajuda(function () { return emBlocos(t("rg_exc_ajuda")); })); det.appendChild(px_);  // 0.7.42 (dono): o que vale com CNPJ, nome e CPF
       // 0.7.36 (dono): a busca fica separada do cadastro, com lupa e rótulo; ao acrescentar, ela é limpa e a empresa aparece em destaque
       var buscaRot = el("label", "rg-busca-rot"), busca = el("input"); busca.type = "search"; busca.placeholder = "🔍 " + t("rg_exc_busca"); busca.className = "rg-busca";
       // 0.7.37 (dono): o rótulo da busca fica só para leitor de tela
@@ -4061,7 +4061,7 @@ window.LEXSUITE_RADAR = null;
         // 0.7.38 (revisão da Operação): sair do campo vazio não apaga o "✓ Acrescentada" (some quando se digita de novo)
         if (!n) { if (!nMsg.querySelector(".ok-acr")) aviso(""); return Promise.resolve(); }
         if (!pareceDoc(n)) { aviso(t("rg_exc_sem_doc"), "nota-g"); return Promise.resolve(); }
-        if (!cnpjOk(n)) { aviso(cpfOk(n) ? t("rg_exc_cpf") : "", "nota-g"); return Promise.resolve(); }  // 0.7.41 (dono): o que o CPF faz
+        if (!cnpjOk(n)) { aviso(cpfOk(n) ? t("rg_exc_cpf") : "", "nota-g"); return Promise.resolve(); }  // 0.7.42 (dono): o que o CPF faz
         var meu = ++buscaN; aviso(t("rg_cnpj_buscando"), "nota-g");
         // revisão da Operação (0.7.36): no máximo 10 s; Acrescentar e Salvar não se desabilitam (o clique que tirou o foco do campo
         // não se perde): eles esperam a resposta, uma vez só
@@ -4596,7 +4596,7 @@ window.LEXSUITE_RADAR = null;
   function grafDias(itens) {
     // 0.7.40 (dono): com o "Último mês" ligado, os totais guardados dos 90 dias (sem os outros filtros; separar só por tribunal)
     var tot90 = ultimoMes && MODO === "app" && visao === "painel" && D && D.totais_dia && Object.keys(D.totais_dia).length ? D.totais_dia : null;
-    if (tot90 && false) return grafDiasTotais(tot90);  // 0.7.41 (dono): com o Último mês, o gráfico mostra os mesmos 30 dias dos números (os totais de outro período confundiam)
+    if (tot90 && false) return grafDiasTotais(tot90);  // 0.7.42 (dono): com o Último mês, o gráfico mostra os mesmos 30 dias dos números (os totais de outro período confundiam)
     var dias = contar(itens, function (i) { var d = diaDe(i); return d ? [d, d] : null; }).sort(function (a, b) { return a.k.localeCompare(b.k); });
     var porMes = dias.length > 31;
     if (porMes) dias = contar(itens, function (i) { var d = diaDe(i); return d ? [d.slice(0, 7), d.slice(0, 7)] : null; }).sort(function (a, b) { return a.k.localeCompare(b.k); });
@@ -4912,7 +4912,7 @@ window.LEXSUITE_RADAR = null;
     var oc = ["ordem", "ordem2", "exportar"]; oc.forEach(function (id) { $(id).style.visibility = visao === "painel" ? "hidden" : ""; });
     desenharArquivoInfo(); desenharLote();
     if (visao === "historico") { $("mais").hidden = true; desenharHistorico(); return; }
-    if (visao === "painel") { $("mais").hidden = true; desenharPainel(filtrados()); return; }  // 0.7.41: o Painel não precisa ordenar
+    if (visao === "painel") { $("mais").hidden = true; desenharPainel(filtrados()); return; }  // 0.7.42: o Painel não precisa ordenar
     if (visao === "arquivo" && !DA) {  // 0.7.36 (dono): indicador discreto e, depois de 5 s, um aviso sóbrio sobre o volume guardado
       $("lista").textContent = ""; var cv_ = el("div", "vazio-lista carregando-arq"); var rm_ = el("span", "roda-mini"); rm_.setAttribute("aria-hidden", "true");
       cv_.appendChild(rm_); cv_.appendChild(el("span", null, t("carregando"))); $("lista").appendChild(cv_); $("mais").hidden = true;
@@ -5093,7 +5093,7 @@ window.LEXSUITE_RADAR = null;
       var q = e.target.value.trim(); clearTimeout(buscaArqTimer); buscaArqTimer = setTimeout(function () { carregarArquivo(q.length >= 3 ? q : ""); }, 600);
     }
   });
-  // 0.7.41 (dono): digitar não trava: a busca espera uma pausa na digitação e começa com 2 letras (apagar tudo vale na hora)
+  // 0.7.42 (dono): digitar não trava: a busca espera uma pausa na digitação e começa com 2 letras (apagar tudo vale na hora)
   $("f-busca").addEventListener("input", function (e) {
     clearTimeout(buscaTimer); var v_ = e.target.value, q_ = semAcento(v_).replace(/[.\-\/\s]/g, ""), usa_ = v_;
     if (q_.length === 1) { if (!F.busca) return; usa_ = ""; }  // apagou até sobrar 1 letra: volta a lista inteira
@@ -5237,7 +5237,7 @@ window.LEXSUITE_RADAR = null;
   // 0.7.19: AssistONE no RADAR (sem IA, sem pedido externo): ajuda da tela atual, tour, dicas e busca
   var AONE_IMG = "data:image/png;base64,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";
   function telaAone() {
-    if ($("carregando") && !$("carregando").hidden) return "carregando";  // 0.7.41 (dono): enquanto carrega, a ajuda pede para aguardar
+    if ($("carregando") && !$("carregando").hidden) return "carregando";  // 0.7.42 (dono): enquanto carrega, a ajuda pede para aguardar
     if (!$("wizard").hidden) return "cadastro";
     if (!$("config").hidden) return $("config").classList.contains("ver-hist") ? "historico" : "configuracao";  // 0.7.36: o histórico abre na janela das Configurações
     if (!$("perfil").hidden) return "perfil";
@@ -5344,7 +5344,7 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
-    "0.7.41": {
+    "0.7.42": {
       pt: ["Correção das empresas excluídas pelo nome, que passam a valer só para o nome escrito igual ao da Receita.",
         "Inclusão da exclusão pelo CPF, que vale para o MEI com esse CPF no nome.",
         "Inclusão de ajuda sobre CNPJ, nome e CPF nas empresas excluídas.",
@@ -5363,6 +5363,12 @@ window.LEXSUITE_RADAR = null;
         "Progress indication on the Settings Save button.",
         "List search without freezing while typing, from 2 letters on.",
         "Accessibility improvements and fixes."]
+    },
+    "0.7.41": {
+      pt: ["Correção da leitura quando o CNJ ainda não liberou o Diário do dia, que deixa de interromper a leitura.",
+        "Leitura dos dias anteriores mesmo com o Diário de hoje indisponível; o dia de hoje fica para a próxima leitura."],
+      en: ["Fix to the reading when the CNJ has not yet released the day's gazette, which no longer stops the reading.",
+        "Reading of the previous days even when today's gazette is unavailable; today is left for the next reading."]
     },
     "0.7.40": {
       pt: ["Inclusão do interruptor \"Último mês\" (ligado por padrão), que limita a Lista, os números e os cartões aos últimos 30 dias para deixar o programa mais rápido.",

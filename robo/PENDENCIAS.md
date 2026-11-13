@@ -162,10 +162,10 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.41 (13/Nov) — pronta para revisão
+## 0.7.42 (13/Nov) — pronta para revisão
 
 - Empresas excluídas (pedido reaberto pela Operação: estava marcado "feito na 0.7.40" sem ter sido feito; erro da Produto ao
-  marcar as linhas do quadro em lote): nome exato, CPF do MEI, (?) e aviso; testes em `test_v0741.py`.
+  marcar as linhas do quadro em lote): nome exato, CPF do MEI, (?) e aviso; testes em `test_v0742.py`.
 - Desempenho do Painel e da Lista com muitos processos (medido com 40 mil) e AssistONE na tela de carregamento.
 - Ressalvas da 0.7.40: (2) teste do pacote completo com o `instalar.txt` recebido; (3) a 360 px o "Ver na lista" das Empresas
   desce para baixo do título porque o título não cabe na mesma linha (fica assim; no computador fica na mesma linha).
@@ -181,6 +181,13 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
   (com as subcategorias, para os filtros) e só os detalhes dos últimos 30 dias; "Limpar filtros" ainda lento com 36 mil.
 - Site (frase do fim que baixava o arquivo errado): preparado à parte, só vai ao ar com o "pode" do dono.
 - Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova nem removida.
+
+## 0.7.41 (13/Nov, correção urgente na instalação da KR Law; feita pela Operação com o "pode" do dono)
+
+- O CNJ respondeu 500 ("Server Error") para o caderno do dia de hoje e a leitura inteira parava em todos os tribunais.
+  `monitor.coletar_caderno` agora pula o dia de hoje nesse caso e lê até o dia anterior; 5xx em dia anterior continua falha.
+- Continuam para a Produto (próxima versão): Empresas excluídas (CPF e sufixos), site com dois "pacote completo",
+  instalador que tenta outra pasta quando o antivírus barra, leitura automática barrada pelo Bitdefender (`schtasks`).
 
 ## 0.7.40 (teste do dono na 0.7.39, 13/Nov; dono: "junte TODOS numa 0.7.40, sem deixar nenhum para trás") — pronta para revisão
 
