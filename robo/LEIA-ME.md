@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.39 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.40 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,18 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.40 (teste do dono na 0.7.39, 13/Nov):** interruptor **"Último mês"** à direita das abas, ligado por padrão: a
+  Lista, os números, os cartões, os filtros e a busca carregam só os últimos 30 dias (`/dados?max=30` na 1ª carga);
+  Processos por dia usa os totais guardados dos 90 dias (`totais_dia`) e a Sazonalidade continua completa; 60 e 90 dias
+  desligam o interruptor com aviso. Riscar empresa, faixa ou "Outros" redesenha só o cartão; as trocas pesadas mostram
+  "Volume grande de processos, aguarde…". Filtro **Tipo de publicação** (antes "Como o processo novo foi reconhecido"),
+  rótulos com a mesma caixa e "Não registrado (leitura antiga)". "Ver na lista" das Empresas leva as empresas mostradas
+  (filtro "N empresas ✕"); 5/10/15 manda e fica embaixo do anel; nas barras, "Outros (N)" para o total bater com a Lista.
+  Busca da Lista: a empresa procurada em destaque em "Também no processo" e primeiro onde é a empresa principal. Nomes sem
+  aspas soltas (robô e tela). Balões (?) com o dobro da largura; etiqueta das barras em linhas, com plural. "A mira do
+  escritório" curta, com atalhos. Próxima leitura automática na linha dos tribunais; no celular, os dois botões lado a lado.
+  Imagens de fundo sorteadas (4, dentro da página) nas telas de abertura, atualização, reinício e Sair. Pacote completo de
+  instalação (`instalador/INSTALAR-COMPLETO.bat`, montado por `ferramentas/marca.py`) para antivírus ou rede restrita.
 - **0.7.39 (teste do dono na 0.7.38, 13/Nov):** barra do dia de hoje (Processos por dia) e do mês corrente (Sazonalidade)
   com contorno tracejado, pela data de Brasília, até a meia-noite (o Diário do dia ainda recebe processos até a noite), com
   legenda e etiqueta "dia em andamento"; título "Estatísticas" com (?) acima dos oito cartões; "Limpar filtros (N)" conta e

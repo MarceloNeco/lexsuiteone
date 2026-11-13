@@ -58,7 +58,7 @@ class Tela0739(unittest.TestCase):
         import sys
         sys.path.insert(0, _ROBO_)
         from lexsuite import VERSAO
-        self.assertEqual(VERSAO, "0.7.39")
+        self.assertGreaterEqual(tuple(int(x) for x in VERSAO.split(".")), (0, 7, 39))
         bloco = HTML[HTML.index('"0.7.39": {'):HTML.index('"0.7.38": {')]
         pt = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
         en = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("en: ["):])

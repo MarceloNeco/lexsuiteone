@@ -162,6 +162,15 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.40 (teste do dono na 0.7.39, 13/Nov; dono: "junte TODOS numa 0.7.40, sem deixar nenhum para trás") — pronta para revisão
+
+- Feitos: itens 1 a 10 do pedido (lentidão e "Carregando", aspas, Empresas 5/10/15 e "Ver na lista", conferência de todos os
+  "Ver na lista" em `testes/tela/ver_na_lista.js`, busca com a empresa procurada, Tipo de publicação, balões, etiqueta,
+  mira, faixa da leitura, ressalvas da 0.7.39, imagens de fundo) e o interruptor "Último mês" (decisão do dono, 13/Nov).
+- Fora, com o motivo: lista de varas mais larga (o dono ainda não decidiu); assinatura digital do instalador (preços
+  levantados em 13/Nov; decisão do dono e da Arquitetura); envio de falso positivo ao Bitdefender (sugestão).
+- Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova nem removida.
+
 ## 0.7.39 (teste do dono na 0.7.38, 13/Nov; "faça a 0.7.39 com tudo, antes da minha visita ao Leandro") — pronta para revisão
 
 - Feitos: tracejado do período em andamento; título Estatísticas com (?); "Limpar filtros" coerente com as pizzas; "Ver na
