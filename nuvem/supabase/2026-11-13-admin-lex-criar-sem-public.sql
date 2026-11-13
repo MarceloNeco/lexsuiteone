@@ -5,8 +5,8 @@
 revoke execute on function public.admin_lex_criar(text, date, integer, text, text[], boolean) from public, anon;
 grant execute on function public.admin_lex_criar(text, date, integer, text, text[], boolean) to authenticated;
 
--- Conferência (deve dar false):
--- select p.proacl::text like '%=X/%' from pg_proc p where p.proname = 'admin_lex_criar' and pg_get_function_identity_arguments(p.oid) like '%p_teste%';
+-- Conferência (deve dar false; conferido em 13/Nov: false nas 3 versões):
+-- select (p.proacl::text like '{=X/%' or p.proacl::text like '%,=X/%') from pg_proc p where p.proname = 'admin_lex_criar';
 
 -- DESFAZER (volta ao estado de 12/Nov; não recomendado):
 -- grant execute on function public.admin_lex_criar(text, date, integer, text, text[], boolean) to public;
