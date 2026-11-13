@@ -21,10 +21,10 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (nada)
+- **Revisão da 0.7.37 (13/Nov)**: só o que mudou desde a `v0.7.36` (código `8ef1b79`), testes, tela e roteiro do dono, sem saída para a internet. NÃO publico sem o "publica a versão 0.7.37" do dono. Só mexo no quadro.
 
 ### Arquivos em uso
-- (nenhum)
+- `docs/QUADRO.md` (só a seção da Operação e os pedidos)
 
 ### Feito (mais recente primeiro)
 - 13/Nov (madrugada): **0.7.36 PUBLICADA** (o dono autorizou: "publica a versão 0.7.36", dito à Operação desta conversa nova). Revisão focada do que mudou desde a `4e4cad5` (código `09c314c`), sem saída para a internet: 347 testes OK, `larguras.js` 84, `aviso_e_lupa.sh` 399, e um roteiro de tela com dados fictícios para os passos 3, 4, 7 e 11 do `documentacao/ROTEIRO-TESTE-0.7.36.md`, claro e escuro: "ativa" verde ao lado do código, "Conferindo…" cinza, rodapé só com "ativa" verde, Sobre sem Licença e Validade; "Nada a atualizar" verde; CNPJ achado sem vermelho, clique direto em Acrescentar espera o nome e entra uma vez, inválido e só nome com aviso, busca vazia com "Limpar a busca", sem "Copiar para outras áreas", Salvar grava; faixa da leitura numa linha a 1366 px, Interromper parado, sem caminho de arquivo; 0 pedidos externos. Sem bloqueio (a terceira revisão da conversa antiga, `25f1656`, também aprovou). Automação "Publicar versão assinada" execução 28 verde (commit `f354dd0`), tag `v0.7.36` criada por ela; pacote 46 arquivos (download) e 45 (atualização), assinatura conferida com `atualizar.verificar` e a `chave_publica.txt` do pacote, `versao.json` com 0.7.36 no ar em judicial.solverone.com.br. Ressalvas novas para a 0.7.37 no pedido "Ressalvas da publicação da 0.7.36". Integração para RootifyONE, ArchONE ou EaglePlanONE: nenhuma criada nem removida.
