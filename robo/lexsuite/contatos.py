@@ -12,7 +12,7 @@ import os
 import re
 
 CANAIS = ("telefone", "email", "site", "endereco", "linkedin", "instagram", "outro")
-FONTES = ("Receita", "PJe petição inicial", "PJe citação", "site da empresa", "outro")
+FONTES = ("Receita", "PJe dados do processo", "PJe petição inicial", "PJe citação", "site da empresa", "outro")  # 0.7.45: "dados do processo" (Arquitetura)
 COLUNAS = ("processo", "empresa", "canal", "valor", "de_pessoa", "fonte", "data", "observacao")
 _CPF = re.compile(r"\b\d{3}\.\d{3}\.\d{3}-\d{2}\b|\bcpf\b", re.I)
 _PROIBIDO = ("reclamante", "autor", "autora", "testemunha", "preposto", "advogado da parte", "advogada da parte")
@@ -163,25 +163,68 @@ DADOS_V1 = ("valor_causa", "data_ajuizamento", "telefone", "email", "site", "end
 RESULTADOS_V1 = ("encontrado", "nao_consta", "tentar_depois")
 _CANAL_DO_DADO = {"telefone": "telefone", "email": "email", "site": "site", "endereco": "endereco", "socio_contato": "outro", "outro": "outro"}
 
+# 0.7.45 (Arquitetura, 13/Nov, mapa real do PJe do TRT2; o do TRT15 usa a mesma interface "pjekz"): o prompt v2, que a
+# extensão Claude in Chrome segue na área logada do advogado. Os processos vêm agrupados por tribunal.
 PEDIDO_V1 = """# Pedido de dados ao PJe ({data}) · {produto}
 
-Quem abre os processos é o advogado, logado no PJe com a credencial dele (só leitura). Abra no máximo {limite} processos
-por dia. Para cada processo abaixo, procure **só o que está na coluna "falta"**, na petição inicial e na citação.
-
-Nunca anote dado do autor da ação, de testemunha ou de advogado da outra parte. Nunca anote CPF.
-
-Responda **só** com o bloco abaixo, uma linha por dado procurado (copie e cole de volta no {produto}: menu ☰,
-"Área logada" → "Trazer dados da área logada"):
+Como usar: no Chrome, com o PJe do tribunal (1º grau) **já logado** pelo advogado (painel "Meu Painel - PJE"), abra o Claude
+in Chrome e cole este arquivo inteiro. Quando terminar, copie o bloco "{cabecalho}" e cole no {produto}: menu ☰,
+"Área logada" → "Trazer dados da área logada".
 
 ```
+Você está na aba do PJe (1º grau) do tribunal dos processos abaixo, já logado como advogado (painel "Meu Painel - PJE").
+Trabalhe SÓ nesta aba, SÓ LEITURA, no máximo {limite} processos nesta sessão, um de cada vez, e devolva no fim a tabela
+"{cabecalho}". Se a lista tiver processos de mais de um tribunal, faça só os do tribunal desta aba e devolva os
+outros como tentar_depois, observação "outro tribunal". Procure SÓ os dados da coluna "falta", SÓ da empresa ré indicada
+(confira pelo CNPJ).
+
+NUNCA (cada um destes anula o trabalho):
+- abrir a tela de login do PJe (endereço terminado em /primeirograu/login.seam) nem qualquer tela de login (derruba a sessão);
+- clicar em "Baixar processo completo", "Baixar processo por instância" ou "Baixar documentos filtrados";
+- abrir "Meus Expedientes", "Visualizar Expediente", "Detalhar Expediente" nem o ícone de envelope de uma intimação (pode
+  registrar ciência e abrir prazo);
+- clicar em Peticionar, Responder, Apresentação de Renúncia, Solicitação de Habilitação, Novo Processo ou em qualquer botão
+  que grave, assine ou envie;
+- anotar dado do reclamante, de testemunha, de perito, de preposto ou de advogado (de qualquer lado); anotar CPF; anotar
+  dado de outra empresa que não a da lista.
+
+ROTEIRO POR PROCESSO:
+1. No painel, campo "Entre com o número do processo para consulta": digite o número CNJ e Enter. Se a lista ficar vazia,
+   o processo não está no acervo do advogado: devolva todas as linhas dele como tentar_depois, com observação "fora do
+   acervo", e passe ao próximo (não use "Consulta Processos de Terceiros").
+2. Clique no número do processo (abre o endereço .../pjekz/processo/<id>/detalhe). Pode abrir esse endereço nesta mesma
+   aba. Nunca volte pelo histórico para a tela de login.
+3. No cabeçalho do processo leia "Valor da causa:" (dado valor_causa; fonte "PJe dados do processo") e "Distribuído:"
+   (dado data_ajuizamento, formato aaaa-mm-dd; mesma fonte).
+4. Clique no número do processo no cabeçalho: abre "Dados do processo". Em "Polo Passivo", ache a empresa com o CNPJ da
+   lista. Na linha depois do CNPJ está o endereço cadastrado (dado endereco) e, entre parênteses "(email: …)", o e-mail
+   (dado email). Fonte: "PJe dados do processo". Ignore tudo em "Polo Ativo" e os blocos dos advogados. Feche a janela (×).
+5. Se ainda faltar telefone, e-mail, site ou endereço: na linha do tempo, ative a ordenação ascendente (ícone de setas) e abra
+   o PRIMEIRO documento, "Petição Inicial". Se ele abrir como texto (HTML), leia só o parágrafo que qualifica a empresa ré
+   ("em face de … inscrita no CNPJ … requerendo seja notificada na …"): endereço, telefone, e-mail, site da EMPRESA
+   (fonte "PJe petição inicial"; para endereço vindo daqui, observação "a conferir"). Se o documento abrir como PDF dentro da
+   página e o texto não for selecionável, não baixe: devolva os dados que faltam como tentar_depois, observação "petição
+   em PDF". Se a inicial citar sócio ou administrador DA EMPRESA com telefone ou e-mail, devolva como socio_contato
+   (valor = "Nome do sócio: canal"); nunca CPF.
+6. Se ainda faltar endereço: abra o segundo documento, "Notificação" (da ré), e leia o campo "DESTINATÁRIO:" (fonte "PJe
+   citação"). Não clique no ícone de envelope "Visualizar Expedientes".
+7. Volte ao painel pelo menu lateral "Meu Painel" (nunca pelo endereço de login) e passe ao próximo processo.
+
+SE A TELA MOSTRAR "Acesso Negado", "É preciso logar" ou "SJT-004": pare. Devolva o que já tem e marque o resto como
+tentar_depois, observação "sessão expirou".
+
+RESPOSTA: no fim, devolva SÓ este bloco, uma linha para cada dado da coluna "falta" de cada processo (nunca invente;
+"nao_consta" quando leu o lugar certo e não havia):
+
 {cabecalho}
 | processo | dado | valor | resultado | fonte | data | observação |
 |---|---|---|---|---|---|---|
-```
 
 - dado: valor_causa, data_ajuizamento, telefone, email, site, endereco, socio_contato, outro
-- resultado: encontrado (com valor e fonte), nao_consta (o processo não traz), tentar_depois (sessão expirou, site fora)
-- fonte: PJe petição inicial, PJe citação, site da empresa ou outro · data: o dia da consulta (aaaa-mm-dd)
+- resultado: encontrado, nao_consta ou tentar_depois
+- fonte: PJe dados do processo, PJe petição inicial, PJe citação ou outro
+- data: aaaa-mm-dd de hoje · valor_causa só números com vírgula (105000,00) · data_ajuizamento aaaa-mm-dd
+```
 
 ## Processos ({n})
 
@@ -211,6 +254,7 @@ def preparar_v1(itens, pasta, produto="RADAR JUDICIAL", limite=30, hoje=None):
     hoje = hoje or dt.date.today()
     escolhidos = [(i, faltando(i)) for i in itens]
     escolhidos = [(i, f) for i, f in escolhidos if f][: max(1, int(limite))]
+    escolhidos.sort(key=lambda x: str(x[0].get("tribunal") or ""))  # 0.7.45: um tribunal de cada vez (uma aba do PJe por tribunal)
     linhas = "\n".join(
         f"| {_cel(i.get('processo'))} | {_cel(i.get('tribunal'))} | "
         f"{_cel((i.get('empresa') or {}).get('razao_social') or (i.get('empresas') or [''])[0])} | "
@@ -314,9 +358,14 @@ def colar_v1(texto, empresas_por_processo, hoje=None):
             continue
         if dado == "endereco" and uf_do_endereco(normal):  # o painel e os filtros passam a ter o estado da empresa
             saida["completar"].append({"processo": proc, "campo": "uf", "valor": uf_do_endereco(normal), "fonte": fonte[:80], "data": data})
+        # 0.7.45 (Arquitetura): o cadastro da parte ("PJe dados do processo") vale mais; endereço "a conferir" (da petição)
+        # entra marcado assim
+        conf = "alta" if cl_sem_acento(fonte).lower().startswith("pje dados do processo") else "media"
+        if dado == "endereco" and "a conferir" in cl_sem_acento(obs).lower():
+            conf = "baixa"
         saida["contatos"].append({"processo": proc, "empresa": empresas_por_processo[proc], "canal": _CANAL_DO_DADO[dado],
                                   "valor": str(normal)[:300], "de_pessoa": dado == "socio_contato", "fonte": fonte[:80],
-                                  "data": data, "confianca": "media", "origem": "área logada", "observacao": obs[:300]})
+                                  "data": data, "confianca": conf, "origem": "área logada", "observacao": obs[:300]})
     return saida
 
 

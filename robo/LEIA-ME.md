@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.44 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.45 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,12 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.45 (13/Nov):** com a tela aberta, se a hora marcada passa (folga de 10 minutos, até 12 horas) sem leitura, o
+  programa lê sozinho, uma vez por horário (`app.conferir_agenda`, thread `vigiar-agenda`; vale com "Ler sozinho" ligado,
+  guardado em `radar.agendar_quer`, ou com a tarefa do Windows existente): resposta ao antivírus que impede a tarefa (KR Law).
+  "Trazer dados da área logada" com o prompt v2 do PJe (Arquitetura, mapa real do TRT2): roteiro só de leitura no pedido,
+  processos agrupados por tribunal, fonte "PJe dados do processo" (confiança alta, primeiro na ficha), endereço "a
+  conferir" da petição marcado (confiança baixa), texto da janela com 7 colunas.
 - **0.7.44 (13/Nov):** com a tela aberta, o programa confere o CNJ um minuto depois de abrir e de 15 em 15 minutos,
   só quando falta ler algum Diário (`cadernos_pendentes`, da 0.7.42) ou a última leitura parou com o CNJ fora: um pedido,
   uma tentativa (`app.conferir_cnj`, thread `vigiar-cnj`). A faixa vermelha do Painel diz até que dia o tribunal já foi lido

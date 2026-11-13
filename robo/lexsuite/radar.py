@@ -93,6 +93,7 @@ def item_de_lead(lead, cfg_radar, contatos=None):
     teto = float(cfg_radar.get("teto_capital_gigante") or 0)
     from . import banco as _bd
     extras = [c for c in (contatos or {}).get(lead.get("processo"), []) if c.get("validacao") != "descartado"]
+    extras.sort(key=lambda c: {"alta": 0, "media": 1, "baixa": 2}.get(c.get("confianca") or "media", 1))  # 0.7.45: o cadastro da parte primeiro
     return {
         "situacao": _bd.situacao_valida(lead.get("status")) or "novo", "motivo": lead.get("motivo") or "",
         "situacao_em": lead.get("status_em") or "", "frente": lead.get("frente") or "trabalhista",

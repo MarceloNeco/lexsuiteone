@@ -444,7 +444,7 @@ class Servidor(ThreadingHTTPServer):
         threading.Thread(target=alvo, daemon=True, name="planilha").start()
         return True
 
-    def rodar(self, dias=None):
+    def rodar(self, dias=None, origem="botão"):
         """Começa uma rodada numa thread. Devolve False se já há uma rodando (aqui ou agendada, em outro processo)."""
         if not _TRAVA_REGRAS.acquire(blocking=False):  # 0.7.29: não começa enquanto as regras estão sendo gravadas
             return False
@@ -459,7 +459,7 @@ class Servidor(ThreadingHTTPServer):
                 cfg = self.config()
                 banco = bd.Banco(self.caminho_db)
                 situacao = radar.executar(cfg, banco, self.estado.aviso, self.pasta, dias=dias, versao=VERSAO,
-                                          caminho_config=self.caminho_config, parar=self.estado.parar)
+                                          caminho_config=self.caminho_config, parar=self.estado.parar, origem=origem)
                 self.estado.terminar(situacao)
                 if situacao.get("aviso_planilha"):
                     self.planilha_depois()
@@ -839,6 +839,8 @@ class Tratador(BaseHTTPRequestHandler):
                         compartilhar.criar_se_faltar(cfg, VERSAO, s.pasta, s.estado.aviso)
                     except Exception as e:
                         return self._responder({"ok": False, "motivo": f"Não consegui criar a planilha ({e.__class__.__name__})."})
+            if "agendar" in corpo:  # 0.7.45: a escolha "Ler sozinho" fica guardada (a tela lê sozinha se o Windows não rodar)
+                r["agendar_quer"] = bool(corpo["agendar"])
             config.salvar(s.caminho_config, cfg)
             base_nova = compartilhar.pasta_base(cfg)
             resposta = {"ok": True, "radar": r, "escritorio": cfg.get("escritorio", ""), "pasta": cfg["compartilhar"].get("pasta", ""),
@@ -1744,6 +1746,81 @@ def vigiar_cnj(servidor, passo_s=VIGIAR_CNJ_S, primeiro_s=60, dormir=None, vezes
             pass
 
 
+def horario_perdido(cfg, ultima, agora=None, folga_min=10, janela_h=12):
+    """0.7.45 (dono, 13/Nov; KR Law: o antivírus pode impedir a tarefa do Windows de rodar): o horário marcado mais recente
+    que já passou há pelo menos `folga_min` minutos (e há menos de `janela_h` horas) sem leitura depois dele; senão None.
+    `ultima`: quando terminou a última leitura (texto ISO local), ou ''."""
+    agora = agora or dt.datetime.now()
+    horarios, dias = agendar.do_config(cfg)
+    semana = agendar.dias_da_semana(dias)
+    vagas = []
+    for atras in (0, 1):
+        dia = (agora - dt.timedelta(days=atras)).date()
+        if dia.weekday() not in semana:
+            continue
+        for h in horarios or []:
+            try:
+                hh, mm = (int(x) for x in str(h).split(":")[:2])
+            except ValueError:
+                continue
+            vaga = dt.datetime.combine(dia, dt.time(hh, mm))
+            if agora - dt.timedelta(hours=janela_h) <= vaga <= agora - dt.timedelta(minutes=folga_min):
+                vagas.append(vaga)
+    if not vagas:
+        return None
+    vaga = max(vagas)
+    if ultima and str(ultima)[:19] >= vaga.isoformat(timespec="seconds"):
+        return None
+    return vaga
+
+
+def conferir_agenda(servidor, agora=None):
+    """Com a tela aberta: se a hora marcada passou sem leitura (a do Windows não rodou), lê uma vez por horário.
+    Devolve o horário lido ou None."""
+    if servidor.estado.rodando or leitura_em_outro_processo(servidor.arquivo_andamento):
+        return None
+    cfg = servidor.config()
+    ultima = ""
+    try:
+        b = bd.Banco(servidor.caminho_db)
+        try:
+            ex = b.execucoes("radar", 1)
+        finally:
+            b.con.close()
+        ultima = ex[0]["quando"] if ex else ""
+    except Exception:  # noqa: BLE001 - banco ocupado: tenta no próximo minuto
+        return None
+    if not ultima:  # revisão: instalação nova (nenhuma leitura ainda) não dispara leitura ao abrir
+        return None
+    vaga = horario_perdido(cfg, ultima, agora)
+    if not vaga or vaga == getattr(servidor, "_vaga_lida", None):
+        return None
+    servidor._vaga_lida = vaga  # revisão: um horário é conferido uma vez só (sem chamar o schtasks a cada minuto)
+    try:
+        ligada = bool(cfg["radar"].get("agendar_quer")) or (agendar.disponivel() and agendar.agendado())
+    except Exception:  # noqa: BLE001
+        ligada = False
+    if not ligada:
+        return None
+    if servidor.rodar(origem="tela (horário das %s)" % vaga.strftime("%H:%M")):
+        return vaga
+    return None
+
+
+def vigiar_agenda(servidor, passo_s=60, primeiro_s=90, dormir=None, vezes=None):
+    """Thread da tela aberta: de minuto em minuto, confere se a leitura marcada deixou de rodar (ver `conferir_agenda`)."""
+    import time as _t
+    dormir = dormir or _t.sleep
+    n = 0
+    while vezes is None or n < vezes:
+        dormir(primeiro_s if n == 0 else passo_s)
+        n += 1
+        try:
+            conferir_agenda(servidor)
+        except Exception:  # noqa: BLE001 - nunca derruba o programa
+            pass
+
+
 FECHAR_SEM_TELA_S = 180  # 0.7.16: a tela pergunta o estado a cada 30 s; sem pergunta por 3 minutos, ela foi fechada
 
 
@@ -1809,6 +1886,7 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
     threading.Thread(target=migrar, daemon=True, name="migrar-agenda").start()
     threading.Thread(target=vigiar_tela, args=(servidor, aviso), daemon=True, name="vigiar-tela").start()
     threading.Thread(target=vigiar_cnj, args=(servidor,), daemon=True, name="vigiar-cnj").start()  # 0.7.44 (dono)
+    threading.Thread(target=vigiar_agenda, args=(servidor,), daemon=True, name="vigiar-agenda").start()  # 0.7.45 (dono)
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:

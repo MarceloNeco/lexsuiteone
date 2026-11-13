@@ -145,7 +145,7 @@ class Tela0744(unittest.TestCase):
     def test_versao_e_novidades(self):
         import re
         from lexsuite import VERSAO
-        self.assertEqual(VERSAO, "0.7.44")
+        self.assertGreaterEqual(tuple(int(x) for x in VERSAO.split(".")), (0, 7, 44))  # a versão sobe
         bloco = HTML[HTML.index('"0.7.44": {'):HTML.index('"0.7.43": {')]
         pt = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
         en = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("en: ["):])

@@ -162,6 +162,17 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.45 (13/Nov) — pronta para revisão
+
+- Pergunta 29 respondida pelo dono ("pode", 13/Nov): com a tela aberta, a leitura que o Windows não rodou na hora marcada é
+  feita pelo programa. Falta teste num Windows com Bitdefender.
+  Limites conhecidos (revisor): só depois de já ter havido uma leitura (instalação nova não lê ao abrir); se a tarefa do
+  Windows rodar atrasada depois que a tela já leu o horário (computador ligado depois), as duas leituras acontecem em
+  sequência (a segunda não traz nada novo; nada se duplica no banco). O roteiro do PJe foi feito sobre o TRT2 e vale para o
+  TRT15 (mesma interface); outros TRTs ainda não foram conferidos.
+- Pedido da Arquitetura (prompt v2 do PJe, "pode" do dono em 13/Nov): os 5 ajustes feitos. Testes em `test_v0745.py`.
+- Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova nem removida.
+
 ## 0.7.44 (13/Nov) — pronta para revisão
 
 - Conferência automática do CNJ (pedido do dono pela Operação, 13/Nov; desenho da Operação seguido): com a tela aberta,
