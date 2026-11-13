@@ -218,7 +218,9 @@ def exclusao_valida(nome):
 def exclusoes_validas(lista, limite=None):
     """Lista de exclusões limpa: sem repetidas, sem documento inválido, até MAX_EXCLUSOES."""
     saida, vistos = [], set()
-    for e in (lista or [])[:(limite or MAX_EXCLUSOES)]:
+    for e in (lista or []):  # revisão da Operação: deduplica antes de cortar no limite
+        if len(saida) >= (limite or MAX_EXCLUSOES):
+            break
         if not isinstance(e, dict):  # revisão da 0.7.28: item que não é {nome, motivo} é ignorado
             continue
         ok = exclusao_valida(e.get("nome"))
@@ -482,7 +484,7 @@ def linhas_criterios(prefs, pessoa=""):
             ["Empresas excluídas (quantidade) / Excluded companies (count)", len(prefs.get("exclusoes") or [])],
             ["", ""],
             ["Os critérios são de cada pessoa, no computador dela: mude em Configurações → Destaques e exclusões. Esta aba não é lida pelo programa.", ""],
-            ["Criteria belong to each person, on their computer: change them in Settings → List criteria. The program does not read this tab.", ""]]
+            ["Criteria belong to each person, on their computer: change them in Settings → Highlights and exclusions. The program does not read this tab.", ""]]
 
 
 def bloqueio(prefs, versao_atual, hoje=None):
@@ -522,6 +524,6 @@ def aplicar(itens, prefs, acoes_por_empresa=None):
             qtd = max((acoes_por_empresa.get(cl.chave_nome(n), 0) for n in nomes), default=0)
             it["acoes_na_janela"] = qtd
             if qtd < minimo:
-                motivo = f"Menos de {minimo} ações em {int(prefs.get('janela_dias') or 30)} dias"
+                motivo = f"Menos de {minimo} processos em {int(prefs.get('janela_dias') or 30)} dias"
         it["excluida"] = motivo
     return itens

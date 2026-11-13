@@ -380,17 +380,20 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     if interrompida:  # 0.7.16: depois de uma parada na Receita, conta só o que foi feito (antes misturava parcial e total)
         com_cnpj = sum(1 for n in novos_feitos if n.get("cnpjs"))
     parcial_pt, parcial_en = (" (leitura interrompida)", " (reading stopped)") if interrompida else ("", "")
-    situacao = {"pt": f"{len(pubs)} publicações lidas; {len(novos)} processos novos contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
-                "en": f"{len(pubs)} notices read; {len(novos)} new cases against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
+    proc_pt = "1 processo novo" if len(novos) == 1 else f"{len(novos)} processos novos"
+    proc_en = "1 new case" if len(novos) == 1 else f"{len(novos)} new cases"
+    situacao = {"pt": f"{len(pubs)} publicações lidas; {proc_pt} contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
+                "en": f"{len(pubs)} notices read; {proc_en} against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}
     if tentativas and not pubs and not interrompida and all(t["causa"] in ("ok", "ainda_nao_liberado_3h", "nao_publicado") for t in tentativas):
         # 0.7.36 (dono): "0 publicações lidas" parecia falha; quando nada é novo, a tela diz por quê
         ate = max((str(t.get("leu_ate") or "")[:10] for t in tentativas), default="")
-        ate_br = f"{ate[8:10]}/{ate[5:7]}" if len(ate) == 10 else ""
+        ate_br, ate_en = (config.data_curta(ate, ano=False), config.data_curta(ate, ano=False, en=True)) if len(ate) == 10 else ("", "")
+        # revisão da Operação: sem prometer horário (o DJEN libera o Diário de hoje em horários diferentes); a próxima leitura pega
         situacao["pt"] = (f"Nada novo: os cadernos até {ate_br} já tinham sido lidos." if ate_br else "Nada novo: os Diários já publicados tinham sido lidos.") + \
-            " O Diário de hoje sai por volta das 19h."
-        situacao["en"] = (f"Nothing new: the issues up to {ate_br} had already been read." if ate_br else "Nothing new: the gazettes already published had been read.") + \
-            " Today's gazette comes out around 7 pm."
+            " O Diário de hoje entra na próxima leitura, quando estiver liberado."
+        situacao["en"] = (f"Nothing new: the issues up to {ate_en} had already been read." if ate_en else "Nothing new: the gazettes already published had been read.") + \
+            " Today's gazette comes in the next reading, once released."
         situacao["nada_novo"] = True
     from . import causas
     for t in tentativas:  # avisos que não são erro (Diário de hoje só às 3h) e tribunais que falharam

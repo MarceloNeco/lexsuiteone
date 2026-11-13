@@ -164,7 +164,7 @@ class TestMonitor(unittest.TestCase):
         acoes = [{"empresas": ["LOGISTICA X LTDA"], "tribunal": "TRT2", "cliente": "LOGISTICA X LTDA", "acoes_no_periodo": 3},
                  {"empresas": ["LOGISTICA X LTDA", "RH Y LTDA"], "tribunal": "TRT15", "cliente": "", "acoes_no_periodo": 3}]
         monitor.sinais_das_acoes(acoes)
-        self.assertEqual(acoes[0]["sinais"], ["Cliente da carteira", "3 ações no período", "Em 2 tribunais"])
+        self.assertEqual(acoes[0]["sinais"], ["Cliente da carteira", "3 processos no período", "Em 2 tribunais"])
         self.assertIn("Terceirização", acoes[1]["sinais"])
         self.assertEqual(acoes[0]["setor"], "Logística e transporte")
 

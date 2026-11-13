@@ -185,7 +185,7 @@ def processar(banco, limite=None, aviso=print, parar=None, pausa=PAUSA_S, andame
             time.sleep(pausa)
     if fila:
         aviso(f"  Estatísticas antigas: {feitos['lidos']} Diário(s) lido(s), {feitos['sem_diario']} sem Diário, "
-              f"{feitos['novas']} ações novas contadas. / {feitos['lidos']} gazette(s) read, {feitos['novas']} new lawsuits counted.")
+              f"{feitos['novas']} processos novos contados. / {feitos['lidos']} gazette(s) read, {feitos['novas']} new lawsuits counted.")
     return feitos
 
 

@@ -367,11 +367,11 @@ class Servidor(ThreadingHTTPServer):
             except ValueError:
                 continue
             if e.get("resultado") == "ok" or e.get("lidas"):
-                achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {e.get('novas', 0)} processos novos contra empresas.",
+                achou = {"quando": quando or "", "pt": f"{e.get('lidas', 0)} publicações lidas; {"1 processo novo" if e.get('novas') == 1 else str(e.get('novas', 0)) + " processos novos"} contra empresas.",
                          "en": f"{e.get('lidas', 0)} notices read; {e.get('novas', 0)} new cases against companies."}
                 if e.get("nada_novo"):  # 0.7.36 (dono): leitura sem nada novo não parece falha (revisão 2: só quando a leitura marcou)
-                    achou.update({"pt": "Nada novo: os Diários já publicados tinham sido lidos. O Diário de hoje sai por volta das 19h.",
-                                  "en": "Nothing new: the gazettes already published had been read. Today's gazette comes out around 7 pm."})
+                    achou.update({"pt": "Nada novo: os Diários já publicados tinham sido lidos. O Diário de hoje entra na próxima leitura, quando estiver liberado.",
+                                  "en": "Nothing new: the gazettes already published had been read. Today's gazette comes in the next reading, once released."})
                 break
         self._ultima_cache = (marca_, achou)
         return achou
@@ -533,7 +533,7 @@ class Tratador(BaseHTTPRequestHandler):
             pagina["retorno"] = ultimo[0] if ultimo else {}
             # 0.7.36 (dono): a faixa do Painel avisa quando a última leitura falhou; uma leitura grava uma linha por tribunal com a
             # mesma hora, então olha todas as linhas dessa hora e mostra a que falhou (revisão)
-            tent = banco.execucoes("tentativa", 40)
+            tent = banco.execucoes("tentativa", 300)  # revisão: cabe uma leitura de todos os tribunais
             ult = [x for x in tent if tent and (x.get("quando_local") or x.get("quando")) == (tent[0].get("quando_local") or tent[0].get("quando"))]  # revisão 2: a leitura inteira tem o mesmo quando_local
             ruins = [x for x in ult if x.get("causa") not in ("ok", "ainda_nao_liberado_3h", "nao_publicado", "interrompida")]
             pagina["ultima_tentativa"] = (ruins or ult or [{}])[0]
@@ -572,10 +572,12 @@ class Tratador(BaseHTTPRequestHandler):
             numero = conta.limpar_cnpj((qs.get("n") or [""])[0])
             if not conta.cnpj_valido(numero):
                 return self._responder({"ok": False, "motivo": "cnpj_invalido"})
-            try:
-                d = cnpj.consultar(numero)
+            try:  # revisão (0.7.36): usa o cache do banco (o mesmo CNPJ não volta à internet) e uma tentativa curta
+                d = cnpj.consultar(numero, banco=bd.Banco(self.server.caminho_db), rapido=True)
             except Exception:
                 d = None
+            if d and d.get("situacao") == "sem_resposta":
+                return self._responder({"ok": False, "motivo": "sem_internet"})
             if d and d.get("situacao") == "fonte_sem_suporte":  # 0.7.36: CNPJ novo (com letras) que as fontes ainda não conhecem
                 return self._responder({"ok": False, "motivo": "fonte_sem_suporte"})
             if not d or not d.get("razao_social"):

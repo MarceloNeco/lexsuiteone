@@ -4,7 +4,7 @@ Resumo para quem audita. O robô roda no computador do escritório. Com a Solver
 licença (código, versão e só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou
 contato), o cadastro de quem usa (nome, e-mail, função e documento do
 escritório), o aceite dos termos (versão, data e fuso horário), avisos técnicos de erro (sem conteúdo de processos) e a
-procura de versão nova; ver "Rede". A relação de ações, as fichas, os contatos, as anotações e as estatísticas dos meses
+procura de versão nova; ver "Rede". A relação de processos, as fichas, os contatos, as anotações e as estatísticas dos meses
 anteriores (totais e, só no computador, o número dos processos já contados) não saem do computador e da pasta do escritório.
 
 - **Sem segredos no código ou no pacote.** Nenhuma senha, chave de API ou certificado. A chave privada que assina
@@ -35,7 +35,7 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
   `@` recebe um apóstrofo, para o texto do Diário não virar fórmula no Excel.
 - **Dados pessoais.** Pessoas físicas das publicações são descartadas antes de gravar. Os contatos de empresa vêm do
   cadastro público da Receita; o uso é decisão do compliance do escritório, e os nomes de sócios podem ser desligados
-  em Configurações → Critérios da lista (cada pessoa, por área). O relatório de diagnóstico mascara nomes e CPFs. O banco local guarda as ações com um trecho
+  em Configurações → Destaques e exclusões (cada pessoa, por área). O relatório de diagnóstico mascara nomes e CPFs. O banco local guarda os processos com um trecho
   curto do texto; depois de 12 meses (`radar.guardar_dias`) o trecho do Diário é apagado e fica um resumo (número do
   processo, tribunal, vara, classe, data, link, valor, empresas, CNPJ e, da Receita, porte, atividade, cidade, endereço,
   telefone, e-mail e nomes de sócios, sem o autor da ação), e os totais diários (estatísticas) ficam para sempre. Contatos de sócios só com fonte e data

@@ -167,7 +167,7 @@ def nota(lead, rito_ordinario_desde=40):
         motivos.append("empresa de pequeno porte")
     if lead.get("acoes_no_periodo", 1) >= 2:
         pontos += 10
-        motivos.append(f"{lead['acoes_no_periodo']} ações contra a mesma empresa em 30 dias")
+        motivos.append(f"{lead['acoes_no_periodo']} processos contra a mesma empresa em 30 dias")
     return min(pontos, 100), motivos
 
 

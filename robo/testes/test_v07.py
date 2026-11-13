@@ -54,7 +54,7 @@ class Preferencias(unittest.TestCase):
         itens = [{"empresas": ["TRANSPORTADORA EXEMPLO LTDA"], "empresa": {}}, {"empresas": ["OUTRA S.A."], "empresa": {"cnpj": "11222333000181"}},
                  {"empresas": ["TERCEIRA LTDA"], "empresa": {}}, {"empresas": ["QUARTA LTDA"], "empresa": {}}]
         preferencias.aplicar(itens, p, {"TERCEIRA": 3, "QUARTA": 1})
-        self.assertEqual([i["excluida"] for i in itens], ["Exclusão: cliente atual", "Exclusão: CNPJ na lista", "", "Menos de 2 ações em 30 dias"])
+        self.assertEqual([i["excluida"] for i in itens], ["Exclusão: cliente atual", "Exclusão: CNPJ na lista", "", "Menos de 2 processos em 30 dias"])
 
 
 class Atualizacao(unittest.TestCase):
@@ -484,7 +484,7 @@ class Agenda079(unittest.TestCase):
         from lexsuite import agendar
         self.assertIn("12 processos novos", agendar.texto_aviso({"novas": 12}, "RADAR"))  # 0.7.36: termo Processos
         self.assertIn("1 processo novo", agendar.texto_aviso({"novas": 1}))
-        self.assertIn("nenhuma ação nova", agendar.texto_aviso({}))
+        self.assertIn("nenhum processo novo", agendar.texto_aviso({}))
         if os.name != "nt":
             self.assertFalse(agendar.notificar("t", "x"))
             self.assertEqual(agendar.agendar("/tmp")[0], False)

@@ -338,9 +338,51 @@ class Revisao0736(unittest.TestCase):
     def test_tela(self):
         h = ler("radar_modelo.html")
         self.assertIn('titulo_ !== t("bg_opcoes") ? lista :', h)
-        self.assertIn("if (buscaP) { buscaP.then(function () { bAdd.click(); }); return; }", h)
+        self.assertIn("if (buscaP) { if (!bAdd._esperando)", h)
         self.assertIn('if (ocultos["__outros__"]) lim += 6;', h)
         self.assertIn('ok === "ocupado" ? "lic_ocupado" : "aceite_ainda"', h)
+
+
+class Revisao0736Operacao(Servidor):
+    """Revisão da Operação (0.7.36): testes que pegam as mutações apontadas."""
+
+    def get(self, rota):
+        c = http.client.HTTPConnection("127.0.0.1", self.srv.server_address[1], timeout=20)
+        c.request("GET", rota, headers={"X-LexSuite": "1"}); d = json.loads(c.getresponse().read()); c.close(); return d
+
+    def test_cnpj_com_cpf_nunca_vai_a_internet(self):
+        with mock.patch.object(conta.rede, "pedir_json") as r_, mock.patch("lexsuite.rede.pedir_json") as r2_:
+            d = self.get("/cnpj?n=52998224725")  # CPF válido fictício
+        r_.assert_not_called(); r2_.assert_not_called(); self.assertFalse(d["ok"])
+
+    def test_cnpj_sem_internet_e_fonte_sem_suporte(self):
+        from lexsuite import cnpj
+        with mock.patch.object(cnpj, "consultar", return_value={"situacao": "sem_resposta", "razao_social": ""}):
+            self.assertEqual(self.get("/cnpj?n=11222333000181")["motivo"], "sem_internet")
+        with mock.patch.object(cnpj, "consultar", return_value={"situacao": "fonte_sem_suporte", "razao_social": ""}):
+            self.assertEqual(self.get("/cnpj?n=11222333000181")["motivo"], "fonte_sem_suporte")
+
+    def test_faixa_mostra_o_tribunal_que_falhou(self):
+        from lexsuite import banco as bd
+        b = bd.Banco(self.srv.caminho_db)
+        for trib, causa in (("TRT2", "ok"), ("TRT9", "fora_do_ar"), ("TRT15", "ok")):
+            b.registrar("tentativa", {"tribunal": trib, "causa": causa, "quando_local": "2026-11-12 20:00:01 (Brasília)"})
+        d = self.get("/dados")
+        self.assertEqual(d["ultima_tentativa"]["tribunal"], "TRT9")
+
+    def test_copiar_so_os_valores_nao_mexe_nas_empresas(self):
+        from lexsuite import preferencias as p
+        p.salvar_area(self.pasta, "trabalhista", {"valor_minimo": 777}, [{"nome": "Empresa A Exemplo"}])
+        p.salvar_area(self.pasta, "civel", {"valor_minimo": 1}, [{"nome": "Empresa B Exemplo"}])
+        p.copiar_area(self.pasta, "trabalhista", ["civel"], modo="substituir", partes=["valores"])
+        v, ex = p.criterios_da_area(self.pasta, "civel")
+        self.assertEqual(v["valor_minimo"], 777); self.assertEqual([e["nome"] for e in ex], ["Empresa B Exemplo"])
+
+    def test_limite_deduplica_antes_de_cortar(self):
+        from lexsuite import preferencias as p
+        with mock.patch.object(p, "MAX_EXCLUSOES", 4):
+            ex = p.exclusoes_validas([{"nome": "A Exemplo"}, {"nome": "A Exemplo"}, {"nome": "B Exemplo"}, {"nome": "B Exemplo"}, {"nome": "C Exemplo"}, {"nome": "D Exemplo"}])
+        self.assertEqual(len(ex), 4)
 
 
 class UltimaTentativa(Servidor):

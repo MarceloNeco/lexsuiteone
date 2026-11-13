@@ -26,7 +26,7 @@ def _telefone(bruto):
 SEM_SUPORTE_DIAS = 7  # 0.7.33: CNPJ com letras que as fontes ainda não conhecem é tentado de novo depois de 7 dias
 
 
-def consultar(cnpj, banco=None, validade_dias=30):
+def consultar(cnpj, banco=None, validade_dias=30, rapido=False):
     cnpj = documento.limpar(cnpj)  # 0.7.33: os 14 caracteres, com as letras (CNPJ alfanumérico)
     if banco:
         guardado = banco.cnpj_em_cache(cnpj, validade_dias)
@@ -34,14 +34,16 @@ def consultar(cnpj, banco=None, validade_dias=30):
             guardado = None
         if guardado:
             return guardado
-    recusas = 0
+    recusas, sem_rede = 0, 0
     for fonte in FONTES:
         try:
-            d = rede.pedir_json(fonte.format(cnpj=cnpj), intervalo_minimo=1.2, tentativas=3)
+            # revisão (0.7.36): a tela (empresas excluídas) pede uma tentativa só, com tempo curto, para não travar o Salvar
+            d = rede.pedir_json(fonte.format(cnpj=cnpj), intervalo_minimo=1.2, tentativas=1 if rapido else 3, tempo_limite=6 if rapido else 120)
         except rede.ErroHTTP as e:
             recusas += e.codigo in (400, 404)
             continue
-        except RuntimeError:
+        except (RuntimeError, OSError):
+            sem_rede += 1
             continue
         resumo = {
             "cnpj": cnpj,
@@ -79,4 +81,6 @@ def consultar(cnpj, banco=None, validade_dias=30):
         if banco:
             banco.guardar_cnpj(cnpj, resumo)
         return resumo
+    if rapido and sem_rede == len(FONTES):
+        return {"cnpj": cnpj, "situacao": "sem_resposta", "razao_social": ""}  # sem internet: a tela diz isso (não é "não encontrado")
     return None

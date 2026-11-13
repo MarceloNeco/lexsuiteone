@@ -471,7 +471,7 @@ def sinais_das_acoes(acoes):
             s.append("Cliente da carteira")
         n = int(a.get("acoes_no_periodo") or 1)
         if n >= 2:
-            s.append(f"{n} ações no período")
+            s.append(f"{n} processos no período")
         tribs = max((len(tribunais_por_empresa.get(cl.chave_nome(e), ())) for e in a.get("empresas") or []), default=0)
         if tribs >= 2:
             s.append(f"Em {tribs} tribunais")

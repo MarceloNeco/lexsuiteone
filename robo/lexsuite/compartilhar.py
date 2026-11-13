@@ -361,7 +361,7 @@ def como_usar(produto="RADAR JUDICIAL"):
          "A claim value with a light brass background is above the minimum value of whoever saved it (Criteria of this reading tab)."],
         ["Excluir uma empresa", "No programa: Configurações → Destaques e exclusões → Empresas excluídas. Os critérios são de cada "
          "pessoa, no computador dela, por área; a planilha não guarda critérios e traz só a aba Critérios desta leitura, para consulta.",
-         "In the program: Settings → List criteria → Excluded companies. Criteria belong to each person, on their computer, by area; "
+         "In the program: Settings → Highlights and exclusions → Excluded companies. Criteria belong to each person, on their computer, by area; "
          "the spreadsheet keeps no criteria and only has the Criteria of this reading tab, for reference."],
         ["Planilha aberta", "Se a planilha estiver aberta no Excel na hora da leitura, o programa avisa e grava depois. "
          "Feche e use o botão \"Gravar a planilha agora\".",
