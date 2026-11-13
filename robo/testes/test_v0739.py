@@ -41,7 +41,7 @@ class Tela0739(unittest.TestCase):
 
     def test_ver_na_lista_e_primeiras(self):
         self.assertIn("verLista: verFaixas", HTML)
-        self.assertIn('return filtrarPor("busca", vis_[0].doc || vis_[0].r);', HTML)
+        self.assertIn('return filtrarPor("empresa", vis_.map(function (l) { return l.ek; }));', HTML)  # 0.7.40: todas as mostradas
         self.assertIn('localStorage.setItem("lexsuite:emp-top", String(n_))', HTML)
         self.assertIn("var lim = opc.topN ? opc.topN : Math.min(opc.max || 8, 6)", HTML)
 

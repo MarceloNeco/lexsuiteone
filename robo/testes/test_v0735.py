@@ -81,7 +81,7 @@ class SinalGuardado(unittest.TestCase):
         self.assertEqual(radar.sinal_guardado({"texto_curto": "Intimação para manifestação"}), "")
         self.assertEqual(radar.sinal_guardado({}), "")
         h = ler(_ROBO_, "radar_modelo.html")
-        self.assertNotIn("antes da 0.7.16", h); self.assertIn('sinal_antigo: "Sem sinal registrado"', h)
+        self.assertNotIn("antes da 0.7.16", h); self.assertIn('sinal_antigo: "Não registrado (leitura antiga)"', h)  # 0.7.40: nome que se entende
 
 
 class SinalComExemplos(unittest.TestCase):

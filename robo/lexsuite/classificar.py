@@ -185,8 +185,13 @@ _E_OUTROS = re.compile(r"\s+e\s+outr[oa]s?\s*(\(\s*\d+\s*\))?\s*$", re.I)
 def limpar_nome(nome):
     """Tira do fim do nome as palavras de cabeçalho do Diário ("... Ltda Intimação" vira "... Ltda") e, desde a 0.7.16,
     o "e Outros (1)" que o Diário acrescenta quando há mais de uma ré (as outras já aparecem em "Outras empresas")."""
-    n = _RABO.sub("", re.sub(r"\s+", " ", nome or "").strip()).strip(" -–,:;")
-    return _E_OUTROS.sub("", n).strip(" -–,:;")
+    n = _RABO.sub("", re.sub(r"\s+", " ", nome or "").strip()).strip(_SOLTOS)
+    return _E_OUTROS.sub("", n).strip(_SOLTOS)
+
+
+# 0.7.40 (dono): aspas, travessão, ponto e vírgula soltos no começo ou no fim do nome (o Diário abre a citação com aspas:
+# '" Escola Crista…', '"alves & Batista…'); o ponto final fica ("S.A.")
+_SOLTOS = " -–—,:;\"'“”‘’«»"  # o ponto fica ("S.A.")
 
 
 _LIGACOES = {"DE", "DA", "DO", "DAS", "DOS", "E", "EM", "A", "O", "S"}

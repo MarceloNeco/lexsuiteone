@@ -54,6 +54,22 @@ PARA_VOCE = {
 
 
 
+def totais_por_dia(banco, dias=90):
+    """0.7.40: {data: {tribunal: novos}} dos últimos `dias` dias, das estatísticas já guardadas (não carrega processo por processo)."""
+    import datetime as _dt
+    desde = (_dt.date.today() - _dt.timedelta(days=dias - 1)).isoformat()
+    saida = {}
+    try:
+        linhas = banco.estatisticas(desde=desde)
+    except Exception:  # nosec B110 - sem estatísticas, o gráfico usa os processos carregados
+        return {}
+    for e in linhas:
+        tr = (e.get("tribunal") or "").upper() or "—"
+        dia = saida.setdefault(e["data"], {})
+        dia[tr] = dia.get(tr, 0) + int(e.get("novas") or 0)
+    return saida
+
+
 def _publicacoes_pt(n):
     return "1 publicação lida" if n == 1 else f"{n or 0} publicações lidas"
 
@@ -521,9 +537,13 @@ class Tratador(BaseHTTPRequestHandler):
             cfg = s.config()
             r = cfg["radar"]
             dias = config.inteiro(qs.get("dias", [r.get("dias_na_pagina", 1)])[0], 1, 1, 90)  # 0.7.25: Infinity não derruba
+            if qs.get("max"):  # 0.7.40 (dono): interruptor "Último mês" na 1ª carga: nunca carrega mais que 30 dias de processos
+                dias = min(dias, config.inteiro(qs.get("max", ["90"])[0], 90, 1, 90))
             banco = bd.Banco(s.caminho_db)
             visao = "arquivo" if qs.get("visao", [""])[0] == "arquivo" else "lista"
             pagina = radar.montar_radar(cfg, banco, situacao=s.estado.situacao, dias=dias, visao=visao)
+            if visao == "lista":  # 0.7.40 (dono): totais por dia e por tribunal dos últimos 90 dias, para "Processos por dia" com o "Último mês"
+                pagina["totais_dia"] = totais_por_dia(banco, 90)
             if visao == "arquivo":  # 0.7.16: com dezenas de milhares de ações, a tela recebe as 5 mil mais recentes; a busca vai ao programa
                 q = cl.sem_acento(str(qs.get("q", [""])[0] or "")).lower().strip()[:80]
                 if q:

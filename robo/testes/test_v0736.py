@@ -234,7 +234,7 @@ class Graficos0736(unittest.TestCase):
     def test_barras_empilhadas_com_escolha(self):
         self.assertIn('seletorSeparar("lexsuite:graf-separar", ["nada", "trib", "sit", "faixa", "setor"], dim)', self.h)
         self.assertIn('seletorSeparar("lexsuite:saz-separar", ["nada", "trib"], dimS)', self.h)
-        self.assertIn('g_dica_pilha: "{r}: {n} — {p}"', self.h)
+        self.assertIn('g_dica_pilha: "{r}: {n}\\n{p}"', self.h)  # 0.7.40: uma informação por linha
         self.assertNotIn('el("div", "col" + (m === pico ? " pico" : ""))', self.h)  # sem o dourado nas barras
 
     def test_pizza_se_refaz_e_tudo_clicavel(self):
@@ -294,7 +294,7 @@ class Lupa0736(unittest.TestCase):
 
     def test_termo_processos(self):
         for k in ('g_dia: "Processos por dia"', 'g_empresas: "Empresas com mais processos"', 'k_acoes: "Processos"', 'saz_t: "Sazonalidade: processos novos por mês"',
-                  'g_sinal: "Como o processo novo foi reconhecido"', 'g_acoes_n: "{n} processos"'):
+                  'g_sinal: "Tipo de publicação"', 'g_acoes_n: "{n} processos"'):
             self.assertIn(k, self.h)
         self.assertNotIn("Lawsuits per day", self.h)
 
@@ -339,7 +339,7 @@ class Revisao0736(unittest.TestCase):
         h = ler("radar_modelo.html")
         self.assertIn('titulo_ !== t("bg_opcoes") ? lista :', h)
         self.assertIn("if (buscaP) { if (!bAdd._esperando)", h)
-        self.assertIn('if (ocultos["__outros__"]) lim += 6;', h)
+        self.assertIn('if (ocultos["__outros__"] && !opc.topN) lim += 6;', h)  # 0.7.40: nas Empresas, 5/10/15 manda
         self.assertIn('ok === "ocupado" ? "lic_ocupado" : "aceite_ainda"', h)
 
 
