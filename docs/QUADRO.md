@@ -21,10 +21,10 @@ Dona de: `docs/NOVA-SESSAO.md`, `docs/QUADRO.md` (este arquivo, exceto as seçõ
 Cloudflare, Resend, publicação de versões.
 
 ### Fazendo agora
-- (nada)
+- **Revisão da 0.7.40 (13/Nov)**: só o que mudou desde a `v0.7.39` (código `4ea1337`), sem saída para a internet. O dono já autorizou publicar se não houver bloqueio. Só mexo no quadro.
 
 ### Arquivos em uso
-- (nenhum)
+- `docs/QUADRO.md` (só a seção da Operação e os pedidos)
 
 ### Feito (mais recente primeiro)
 - 13/Nov: **0.7.39 PUBLICADA** (o dono autorizou nesta conversa: "publica a versão 0.7.39"). Código igual ao revisado (`67f1c01`; depois só mudou o quadro). Automação "Publicar versão assinada" execução 31 verde (commit `6a14e5e`), tag `v0.7.39` criada por ela; pacote 46 arquivos (download, igual nas 3 cópias) e 45 (atualização), assinatura conferida com `atualizar.verificar` e a `chave_publica.txt`, `versao.json` com 0.7.39 no ar em judicial.solverone.com.br. Roteiro de teste rápido passado ao dono no chat.
