@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protótipo · Área logada v2 · RADAR JUDICIAL 0.7.46</title>
+<style>
+:root{--noite:#0f1d33;--latao:#c9a227;--latao-claro:#f4ecd2;--papel:#fff;--papel-2:#f3f5f9;--fio:#d9dee8;--tinta:#1a2238;--tinta-2:#4a5468;--tinta-3:#6b7489;--ok:#1d7a46;--ok-bg:#e7f5ec;--erro:#b3261e;--erro-bg:#fdecea;--aviso-bg:#fff6dc;--f:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 var(--f);color:var(--tinta);background:#eef1f6}
+header{background:var(--noite);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px}
+header .nome{font-weight:800;letter-spacing:.04em}header .nome b{color:var(--latao)}header .mudo{color:#c9d2e0;font-size:.9rem}
+header .proto{margin-left:auto;background:var(--latao);color:var(--noite);font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:999px}
+main{max-width:1180px;margin:0 auto;padding:18px 20px 60px}
+.barra{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.chip{border:1px solid var(--fio);background:var(--papel-2);border-radius:999px;padding:4px 12px;font-size:.88rem}
+.chip.on{background:var(--latao-claro);border-color:var(--latao);font-weight:600}
+.conta{margin-left:auto;color:var(--tinta-2)}.conta b{color:var(--tinta)}
+.lote{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--latao-claro);border:1px solid var(--latao);border-radius:12px;padding:10px 14px;margin-bottom:12px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--fio);background:var(--papel);padding:8px 14px}
+button.forte{background:var(--noite);color:#fff;border-color:var(--noite);font-weight:700}
+button.latao{background:var(--latao);color:var(--noite);border-color:var(--latao);font-weight:700}
+button.txt{border:0;background:none;color:var(--noite);text-decoration:underline;padding:4px 6px}
+button[disabled]{opacity:.45;cursor:not-allowed}
+.ajuda{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--papel-2);border:1px solid var(--fio);align-items:center;justify-content:center;font-size:.8rem;color:var(--tinta-3);cursor:help}
+table{width:100%;border-collapse:collapse;background:var(--papel);border:1px solid var(--fio);border-radius:14px;overflow:hidden}
+th,td{padding:9px 10px;border-bottom:1px solid var(--fio);text-align:left;font-size:.9rem;vertical-align:top}th{background:var(--papel-2);font-weight:600;color:var(--tinta-2)}
+.falta{color:var(--tinta-3)}.tem{color:var(--ok);font-weight:600}.novo{background:#fffbe9}
+.selo{display:inline-block;font-size:.75rem;border-radius:999px;padding:1px 8px;background:var(--papel-2);border:1px solid var(--fio);margin-left:6px}
+.selo.novo{background:var(--latao-claro);border-color:var(--latao)}
+/* janela */
+.fundo{position:fixed;inset:0;background:rgba(15,29,51,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+.fundo.aberta{display:flex}
+.jan{background:var(--papel);border-radius:18px;width:min(760px,100%);max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.jan .topo{padding:16px 22px 0;display:flex;align-items:center;gap:12px}.jan h2{margin:0;font-size:1.15rem}
+.passos{display:flex;gap:6px;margin-left:auto}.passos span{width:28px;height:28px;border-radius:50%;background:var(--papel-2);border:1px solid var(--fio);display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--tinta-3)}
+.passos span.on{background:var(--noite);color:#fff;border-color:var(--noite)}.passos span.ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.jan .corpo{padding:14px 22px 6px}.jan .rodape{padding:12px 22px 18px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid var(--fio)}
+.opc{display:grid;gap:8px;margin:8px 0 14px}.opc label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--fio);border-radius:12px;cursor:pointer}
+.opc label.on{border-color:var(--latao);background:var(--latao-claro)}.opc input[type=radio],.opc input[type=checkbox]{margin-top:4px}
+.opc small{display:block;color:var(--tinta-3)}
+.aviso{border-radius:12px;padding:10px 14px;margin:8px 0}.aviso.info{background:var(--latao-claro)}.aviso.ok{background:var(--ok-bg);color:var(--ok)}.aviso.erro{background:var(--erro-bg);color:var(--erro)}.aviso.quente{background:var(--aviso-bg)}
+.linha{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=number]{font:inherit;width:90px;padding:7px 10px;border:1px solid var(--fio);border-radius:10px}
+textarea{width:100%;min-height:150px;font:13px/1.4 ui-monospace,Consolas,monospace;padding:10px;border:1px solid var(--fio);border-radius:12px}
+.abas{display:flex;gap:6px;margin:10px 0}.abas button{border-radius:999px}.abas button.on{background:var(--noite);color:#fff;border-color:var(--noite)}
+.solta{border:2px dashed var(--fio);border-radius:14px;padding:26px;text-align:center;color:var(--tinta-2);background:var(--papel-2)}
+.solta b{display:block;color:var(--tinta)}
+.prog{height:12px;background:var(--papel-2);border-radius:999px;overflow:hidden;border:1px solid var(--fio)}.prog i{display:block;height:100%;background:var(--latao);width:0;transition:width .35s}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+.card{border:1px solid var(--fio);border-radius:14px;padding:12px 14px;background:var(--papel-2)}.card .n{font-size:1.7rem;font-weight:800;line-height:1.1}.card .r{color:var(--tinta-3);font-size:.85rem}
+.card.ok .n{color:var(--ok)}.card.erro .n{color:var(--erro)}
+.bar{display:grid;grid-template-columns:140px 1fr 70px;gap:10px;align-items:center;font-size:.9rem;margin:5px 0}
+.bar .t{height:10px;background:var(--papel-2);border-radius:999px;overflow:hidden;border:1px solid var(--fio)}.bar .t i{display:block;height:100%;background:var(--ok)}
+.nota{color:var(--tinta-3);font-size:.86rem}
+code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
+.leg{background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:12px 16px;margin-top:18px;font-size:.9rem;color:var(--tinta-2)}
+.leg h3{margin:0 0 6px;font-size:1rem;color:var(--tinta)}
+.hist{background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:12px 16px;margin-top:14px}
+.hist h3{margin:0 0 8px;font-size:1rem}.hist li{margin:4px 0;font-size:.9rem}
+@media (max-width:700px){.bar{grid-template-columns:100px 1fr 60px}}
+</style>
+</head>
+<body>
+<header><span class="nome">RADAR <b>JUDICIAL</b></span><span class="mudo">· LexSuiteONE · Lista de ações</span><span class="proto">PROTÓTIPO 0.7.46 · dados fictícios</span></header>
+<main>
+  <div class="barra">
+    <span class="chip on">TRT2</span><span class="chip on">Setor: Comércio</span><span class="chip on">Últimos 30 dias</span><span class="chip">Situação: todas</span>
+    <span class="conta">Na lista: <b id="n-lista">1.248</b> ações · marcadas: <b id="n-marc">12</b></span>
+  </div>
+
+  <div class="lote">
+    <span>Com a lista filtrada:</span>
+    <button class="latao" id="b-abrir">Trazer dados da área logada…</button>
+    <span class="ajuda" title="O programa monta um pedido com os processos escolhidos e só o que falta em cada um. O advogado cola na extensão de IA do navegador (Claude in Chrome, Codex ou outra), com o PJe aberto e logado. Nada sai do computador por conta do programa.">?</span>
+    <button>Mudar situação…</button><button>Arquivar 12</button>
+    <span class="nota" style="margin-left:auto">Última busca na área logada: 12/Nov, 48 processos, 41 com dado novo</span>
+  </div>
+
+  <table id="tabela">
+    <thead><tr><th><input type="checkbox" checked aria-label="Marcar todos"></th><th>Processo</th><th>Empresa ré</th><th>Valor da causa</th><th>Contatos da empresa</th><th>Porte</th></tr></thead>
+    <tbody>
+      <tr><td><input type="checkbox" checked></td><td>0000001-11.2026.5.02.0001<br><span class="nota">19ª VT São Paulo · 10/11</span></td><td>Empresa Exemplo Um Ltda</td><td class="falta" data-c="valor">não publicado</td><td class="falta" data-c="cont">só endereço (Receita)</td><td>Pequeno</td></tr>
+      <tr><td><input type="checkbox" checked></td><td>0000002-22.2026.5.02.0002<br><span class="nota">3ª VT Guarulhos · 09/11</span></td><td>Comércio Exemplo Dois S.A.</td><td class="falta" data-c="valor">não publicado</td><td class="falta" data-c="cont">nenhum</td><td>Médio</td></tr>
+      <tr><td><input type="checkbox" checked></td><td>0000003-33.2026.5.02.0003<br><span class="nota">7ª VT São Paulo · 08/11</span></td><td>Loja Exemplo Três ME</td><td class="tem">R$ 32.000,00</td><td class="falta" data-c="cont">telefone (Receita)</td><td>Micro</td></tr>
+      <tr><td><input type="checkbox" checked></td><td>0000004-44.2026.5.02.0004<br><span class="nota">1ª VT Osasco · 08/11</span></td><td>Atacado Exemplo Quatro Ltda</td><td class="falta" data-c="valor">não publicado</td><td class="falta" data-c="cont">nenhum</td><td>Médio</td></tr>
+      <tr><td colspan="6" class="nota">… mais 1.244 ações na lista (8 marcadas a mais)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="hist">
+    <h3>Pedidos à área logada (histórico desta pessoa, neste computador)</h3>
+    <ul>
+      <li>12/Nov 17:40 · 48 processos · 2 lotes · 41 com dado novo · 5 nada no processo · 2 tentar depois · ferramenta: Claude in Chrome</li>
+      <li>11/Nov 09:12 · 30 processos · 1 lote · 22 com dado novo · 6 nada no processo · 2 tentar depois</li>
+    </ul>
+  </div>
+
+  <div class="leg">
+    <h3>Onde isso fica na aplicação</h3>
+    <p>Na <b>Lista de ações</b>, a barra de lote (a mesma de "Mudar situação" e "Arquivar") ganha o botão <b>Trazer dados da área logada…</b>. O botão respeita o filtro ativo e as marcações. O mesmo botão existe no cartão de cada ação (um processo só) e no menu ☰ → Área logada, que abre direto no passo 3 para quem só quer colar uma resposta. Nada disso faz pedido à internet: o programa só monta texto e lê texto.</p>
+  </div>
+</main>
+
+<!-- Janela com os passos -->
+<div class="fundo" id="fundo" role="dialog" aria-modal="true" aria-labelledby="jt">
+  <div class="jan">
+    <div class="topo"><h2 id="jt">Trazer dados da área logada</h2><div class="passos"><span id="p1" class="on">1</span><span id="p2">2</span><span id="p3">3</span><span id="p4">4</span></div></div>
+    <div class="corpo" id="corpo"></div>
+    <div class="rodape" id="rodape"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var S = { escopo:"marcados", n:50, dados:{valor:true,data:true,contato:true,socio:false}, ferramenta:"claude", modo:"texto", passo:1 };
+  var LISTA = 1248, MARC = 12, FALTA_LISTA = 1102, LIMITE_DIA = 100, USADOS_HOJE = 0;
+  var fundo = document.getElementById("fundo"), corpo = document.getElementById("corpo"), rodape = document.getElementById("rodape");
+  function el(t,c,x){var e=document.createElement(t); if(c) e.className=c; if(x!=null) e.textContent=x; return e;}
+  function num(n){return n.toLocaleString("pt-BR");}
+  function setPasso(p){ S.passo=p; for(var i=1;i<=4;i++){ var s=document.getElementById("p"+i); s.className = i<p?"ok":(i===p?"on":""); } render(); }
+  function quantos(){ if(S.escopo==="marcados") return MARC; if(S.escopo==="lista") return Math.min(FALTA_LISTA, LIMITE_DIA-USADOS_HOJE); return Math.min(S.n, FALTA_LISTA, LIMITE_DIA-USADOS_HOJE); }
+  function lotes(q){ return Math.max(1, Math.ceil(q/25)); }
+
+  function render(){
+    corpo.innerHTML=""; rodape.innerHTML="";
+    if(S.passo===1){
+      corpo.appendChild(el("p",null,"O que pedir ao PJe? O programa só pede o que ainda falta em cada processo."));
+      var g=el("div","opc");
+      [["marcados","Só os "+MARC+" processos marcados","Os que você marcou na lista."],
+       ["primeiros","Os primeiros N da lista filtrada","Na ordem da lista (mais recentes primeiro). Hoje a lista tem "+num(LISTA)+" ações; "+num(FALTA_LISTA)+" ainda têm algo faltando."],
+       ["lista","Toda a lista filtrada, até o limite do dia","Vai pedir "+num(Math.min(FALTA_LISTA,LIMITE_DIA))+" hoje; o resto fica para os próximos dias, sempre começando pelo que falta."]].forEach(function(o){
+        var l=el("label", S.escopo===o[0]?"on":""), r=document.createElement("input"); r.type="radio"; r.name="esc"; r.checked=S.escopo===o[0];
+        r.addEventListener("change",function(){S.escopo=o[0]; render();}); l.appendChild(r);
+        var d=el("div"); d.appendChild(document.createTextNode(o[1])); d.appendChild(el("small",null,o[2]));
+        if(o[0]==="primeiros"){ var w=el("div","linha"); var inp=document.createElement("input"); inp.type="number"; inp.min=1; inp.max=LIMITE_DIA; inp.value=S.n; inp.addEventListener("input",function(){S.n=Math.max(1,Math.min(LIMITE_DIA,parseInt(inp.value||"1",10))); atualizaResumo();}); w.appendChild(el("span",null,"N =")); w.appendChild(inp); w.appendChild(el("span","nota","(máximo "+LIMITE_DIA+" por dia)")); d.appendChild(w); }
+        l.appendChild(d); g.appendChild(l);
+      });
+      corpo.appendChild(g);
+      corpo.appendChild(el("p",null,"Quais dados:"));
+      var h=el("div","linha");
+      [["valor","Valor da causa"],["data","Data de ajuizamento"],["contato","Contatos da empresa (endereço, e-mail, telefone, site)"],["socio","Sócio ou administrador citado nos autos (nunca CPF)"]].forEach(function(o){
+        var l=el("label",null); var c=document.createElement("input"); c.type="checkbox"; c.checked=S.dados[o[0]]; c.addEventListener("change",function(){S.dados[o[0]]=c.checked;}); l.appendChild(c); l.appendChild(document.createTextNode(" "+o[1])); h.appendChild(l); });
+      corpo.appendChild(h);
+      var r=el("div","aviso info"); r.id="resumo1"; corpo.appendChild(r); atualizaResumo();
+      corpo.appendChild(el("p","nota","Limite do dia: "+LIMITE_DIA+" processos (Configuração → Área logada). Processos em que o advogado não atua podem ser bloqueados pelo tribunal por excesso de acessos; o pedido avisa a ferramenta para pular esses."));
+      bot("Cancelar",fechar); bot("Continuar",function(){setPasso(2);},"forte");
+    }
+    if(S.passo===2){
+      var q=quantos();
+      corpo.appendChild(el("p",null,"Pedido pronto: "+num(q)+" processos em "+lotes(q)+" lote(s) de até 25. Em qual ferramenta você vai colar?"));
+      var g2=el("div","opc");
+      [["claude","Claude in Chrome","Extensão da Anthropic. Testada com o PJe do TRT2 em 13/Nov."],["codex","Codex / Operator (OpenAI)","Navegação no Chrome pela OpenAI. Mesmo texto; testar uma vez com 3 processos antes de usar no dia a dia."],["outra","Outra extensão de IA","Qualquer uma que navegue na aba logada e devolva texto."]].forEach(function(o){
+        var l=el("label",S.ferramenta===o[0]?"on":""), r=document.createElement("input"); r.type="radio"; r.name="fer"; r.checked=S.ferramenta===o[0]; r.addEventListener("change",function(){S.ferramenta=o[0]; render();}); l.appendChild(r);
+        var d=el("div"); d.appendChild(document.createTextNode(o[1])); d.appendChild(el("small",null,o[2])); l.appendChild(d); g2.appendChild(l); });
+      corpo.appendChild(g2);
+      var passos=el("ol"); ["Abra o PJe no Chrome e entre com o seu token/certificado (como sempre).","Clique em Copiar pedido abaixo e cole na ferramenta, na mesma aba do PJe. Ela vai percorrer os processos sozinha; não mexa na aba enquanto roda (uns 20 s por processo).","Quando ela terminar, copie a resposta (ou baixe o arquivo que ela oferecer) e volte aqui: passo 3."].forEach(function(t){passos.appendChild(el("li",null,t));});
+      corpo.appendChild(passos);
+      var l2=el("div","linha"); var bc=el("button","latao","Copiar pedido"); bc.addEventListener("click",function(){bc.textContent="Copiado ✓"; setTimeout(function(){bc.textContent="Copiar pedido";},1800);}); l2.appendChild(bc);
+      var bs=el("button",null,"Salvar como arquivo (.md)"); l2.appendChild(bs); l2.appendChild(el("span","nota","O arquivo também fica em saida\\contatos\\pedido-pje-2026-11-14.md")); corpo.appendChild(l2);
+      var det=document.createElement("details"); var sm=el("summary",null,"Ver o pedido (o que vai colado)"); det.appendChild(sm); var pre=el("pre",null,"# Pedido de dados ao PJe (14/11/2026) · RADAR JUDICIAL · lote 1 de "+lotes(q)+"\n\nVocê está numa aba do PJe do TRT da 2ª Região, 1º grau, já logado como advogado…\nNUNCA: abrir tela de login; baixar processo completo; abrir expedientes; peticionar; anotar dado de pessoa ou CPF.\nROTEIRO POR PROCESSO: painel → número → processo → Valor da causa, Distribuído → Dados do processo (Polo Passivo: endereço, e-mail) → petição inicial → notificação…\nRESPOSTA PARA O RADAR v1 · lote 1 de "+lotes(q)+"\n| processo | dado | valor | resultado | fonte | data | observação |\n\n## Processos (25 de "+num(q)+")\n| 0000001-11.2026.5.02.0001 | TRT2 | Empresa Exemplo Um Ltda | 11.222.333/0001-81 | valor_causa, email, telefone |\n…"); pre.style.cssText="font-size:12px;white-space:pre-wrap;background:var(--papel-2);padding:10px;border-radius:10px"; det.appendChild(pre); corpo.appendChild(det);
+      corpo.appendChild(el("p","nota","O que nunca entra, mesmo que a ferramenta devolva: CPF, dado do autor da ação, de testemunhas, de peritos ou de advogados. O programa recusa linha por linha."));
+      bot("Voltar",function(){setPasso(1);}); bot("Já tenho a resposta: passo 3",function(){setPasso(3);},"forte");
+    }
+    if(S.passo===3){
+      corpo.appendChild(el("p",null,"Traga a resposta da ferramenta. Pode ser o texto copiado ou o arquivo que ela gerou; pode vir em partes (lotes), em qualquer ordem."));
+      var abas=el("div","abas"); var ta=el("button",S.modo==="texto"?"on":"","Colar texto"), tb=el("button",S.modo==="arquivo"?"on":"","Subir arquivo (.md, .txt ou .zip)");
+      ta.addEventListener("click",function(){S.modo="texto";render();}); tb.addEventListener("click",function(){S.modo="arquivo";render();}); abas.appendChild(ta); abas.appendChild(tb); corpo.appendChild(abas);
+      if(S.modo==="texto"){ var t=document.createElement("textarea"); t.placeholder="Cole aqui tudo o que a ferramenta devolveu. O programa acha sozinho os blocos \"RESPOSTA PARA O RADAR v1\" e ignora o resto."; corpo.appendChild(t); }
+      else { var z=el("div","solta"); z.appendChild(el("b",null,"Arraste o arquivo aqui ou clique para escolher")); z.appendChild(document.createTextNode("resposta-radar-lote-1.md, .txt ou um .zip com vários lotes · até 20 MB · nada é executado, só lido")); corpo.appendChild(z); }
+      corpo.appendChild(el("p","nota","Recebido até agora hoje: lote 1 de 2 (lido às 10:12). Falta o lote 2."));
+      bot("Voltar",function(){setPasso(2);}); bot("Ler a resposta",function(){setPasso(4); processar();},"forte");
+    }
+    if(S.passo===4){
+      corpo.appendChild(el("p",null,"Lendo a resposta, linha por linha, sem IA…"));
+      var p=el("div","prog"); var i=el("i"); p.appendChild(i); corpo.appendChild(p); var st=el("p","nota","Lote 1 de 2 · 0 de 25 processos"); st.id="st"; corpo.appendChild(st);
+      var res=el("div"); res.id="res"; corpo.appendChild(res);
+    }
+  }
+  function atualizaResumo(){ var r=document.getElementById("resumo1"); if(!r) return; var q=quantos(); r.innerHTML=""; r.appendChild(document.createTextNode("Vão no pedido: ")); r.appendChild(el("b",null,num(q)+" processos")); r.appendChild(document.createTextNode(" em "+lotes(q)+" lote(s) de até 25, só com o que falta em cada um. Tempo estimado na ferramenta: ~"+Math.ceil(q*20/60)+" min.")); if(S.escopo==="lista" && FALTA_LISTA>LIMITE_DIA){ r.appendChild(el("div","nota","Ficam para os próximos dias: "+num(FALTA_LISTA-LIMITE_DIA)+" processos (o programa lembra o que já pediu).")); } }
+  function bot(t,f,c){ var b=el("button",c||"",t); b.addEventListener("click",f); rodape.appendChild(b); }
+  function fechar(){ fundo.classList.remove("aberta"); }
+  function processar(){
+    var i=corpo.querySelector(".prog i"), st=document.getElementById("st"), total=50, k=0;
+    var tm=setInterval(function(){ k+=5; i.style.width=Math.min(100,k*2)+"%"; st.textContent=(k<=25?"Lote 1 de 2 · ":"Lote 2 de 2 · ")+Math.min(k,total)+" de "+total+" processos"; if(k>=total){ clearInterval(tm); resultado(); } },260);
+  }
+  function resultado(){
+    var res=document.getElementById("res"); res.innerHTML="";
+    res.appendChild(el("h3",null,"Resultado do pedido de hoje (50 processos, 2 lotes)"));
+    var c=el("div","cards");
+    [["50","processos pedidos",""],["41","com dado novo","ok"],["6","nada no processo","" ],["3","tentar depois","erro"]].forEach(function(x){ var d=el("div","card "+x[2]); d.appendChild(el("div","n",x[0])); d.appendChild(el("div","r",x[1])); c.appendChild(d); });
+    res.appendChild(c);
+    res.appendChild(el("p",null,"Por tipo de dado (achado / pedido):"));
+    [["Valor da causa",44,50],["Data de ajuizamento",48,50],["Endereço",38,50],["E-mail",19,50],["Telefone",7,50],["Site",4,50],["Sócio citado",2,50]].forEach(function(b){ var l=el("div","bar"); l.appendChild(el("span",null,b[0])); var t=el("div","t"); var i=el("i"); i.style.width=Math.round(b[1]/b[2]*100)+"%"; t.appendChild(i); l.appendChild(t); l.appendChild(el("span","nota",b[1]+" / "+b[2])); res.appendChild(l); });
+    var a1=el("div","aviso quente"); a1.innerHTML="<b>Tentar depois (3):</b> 2 com petição em PDF sem texto (0000003-33…, 0000017-77…) e 1 fora do acervo do advogado (0000029-19…). O próximo pedido inclui só estes, se você quiser."; res.appendChild(a1);
+    var a2=el("div","aviso erro"); a2.innerHTML="<b>Recusadas (2 linhas):</b> linha 31: CPF na coluna valor · linha 44: dado do reclamante. Não entraram no programa."; res.appendChild(a2);
+    var a3=el("div","aviso ok"); a3.innerHTML="Lista, fichas e planilha atualizadas. Os 41 processos com dado novo ficam marcados com o selo <span class='selo novo'>área logada · hoje</span> e aparecem no filtro \"Completados hoje\"."; res.appendChild(a3);
+    rodape.innerHTML=""; bot("Ver os 41 na lista",function(){fechar(); marcarNovos();},"forte"); bot("Novo pedido só com o que faltou (3)",function(){setPasso(2);}); bot("Fechar",fechar);
+  }
+  function marcarNovos(){
+    document.querySelectorAll("#tabela tbody tr").forEach(function(tr,idx){ if(idx>3) return; tr.classList.add("novo");
+      var v=tr.querySelector('[data-c="valor"]'); if(v&&idx!==2){ v.className="tem"; v.innerHTML=["R$ 105.000,00","R$ 48.250,50","","R$ 210.000,00"][idx]+' <span class="selo novo">área logada · hoje</span>'; }
+      var k=tr.querySelector('[data-c="cont"]'); if(k){ k.className="tem"; k.innerHTML=["e-mail, endereço","endereço (a conferir)","telefone (Receita) · petição em PDF: tentar depois","e-mail, telefone, site"][idx]+(idx!==2?' <span class="selo novo">área logada · hoje</span>':''); } });
+    document.getElementById("n-marc").textContent="0";
+  }
+  document.getElementById("b-abrir").addEventListener("click",function(){ S.passo=1; setPasso(1); fundo.classList.add("aberta"); });
+})();
+</script>
+</body>
+</html>
