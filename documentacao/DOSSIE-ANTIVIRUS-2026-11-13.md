@@ -24,6 +24,37 @@ manual, recortar só a janela do antivírus, sem nada do cliente.
 | ~13h50 | — | Exceção salva, computador reiniciado, instalação de novo: **funcionou** (foto 10 mostra o RADAR 0.7.40 aberto). |
 | 14h00–14h54 | 10 a 15 | Outro problema, sem relação com o antivírus: o **serviço de caderno do CNJ caiu** (erro 500 em 11, 12 e 13/11, TRT2, TRT7 e TRT9, também na casa do dono). Fotos 16 a 18: testes no navegador (caderno com 500; a consulta respondia, com o limite de 10 mil). Ver a seção 5. |
 
+## 1A. As mensagens exatas que apareceram (para o programa reconhecer e orientar)
+
+| Onde | Texto que apareceu | O que significava |
+|---|---|---|
+| Windows, ao abrir o `INSTALAR.bat` (foto 00a) | "Abrir Arquivo – Aviso de Segurança. O fornecedor não pôde ser verificado. Tem certeza de que deseja executar este software? … Fornecedor: Fornecedor Desconhecido. Tipo: Arquivo em Lotes do Windows. Origem: C:\Users\<usuário>\AppData\Local\Temp\…" | Instalador sem assinatura digital, rodando de dentro do .zip (pasta temporária). Não é bloqueio: é aviso; "Executar" segue. |
+| Bitdefender, Notificações → Crítico (fotos 00b e 03) | "Comportamento malicioso bloqueado. Recurso: Defesa contra Ameaças. Você precisa reiniciar seu dispositivo para finalizar o processo de limpeza. O Bitdefender detectou um comportamento potencialmente malicioso e bloqueou todos os aplicativos envolvidos. ID da detecção: SuspiciousBehavior.CF5CA6A45DED44C4" | Bloqueio por comportamento (não por arquivo). O programa e a tarefa do Windows foram barrados; só termina de "limpar" depois de reiniciar. |
+| Bitdefender, Defesa contra Ameaças (foto 04) | "62 aplicativos foram bloqueados. Malware: schtasks.exe … schtasks /create /f /tn "LexSuiteONE Radar" /xml C:\Users\<usuário>\AppData\Local\Temp\lexsuite-tarefa-….xml; pythonw.exe C:\LexSuiteONE\python; chrome.exe …" | O gatilho foi a criação da leitura automática pelo `pythonw` com XML da pasta temporária. |
+| Instalador, passo 3 (foto 01) | "3 de 5 Instalando em C:\LexSuiteONE... lexsuite_robo.py: Can't create '\\?\C:\LexSuiteONE\lexsuite_robo.py': No such file or directory / tar.exe: Error exit delayed from previous errors / Nao consegui descompactar o pacote em C:\LexSuiteONE. A SolverONE recebeu um aviso tecnico deste erro (sem dados pessoais)." | O antivírus (com a limpeza pendente) impediu a criação do arquivo `.py`, mesmo com a pasta gravável. |
+| Bitdefender, exceção (fotos 07 e 08) | Com `C:\LexSuiteONE\*` o botão Salvar fica apagado; com `c:\LexSuiteONE\` acende. | A exceção do Bitdefender é a pasta, sem asterisco. |
+| RADAR, faixa da leitura (fotos 10 a 15) | "A leitura parou. O site do CNJ (Diário de Justiça Eletrônico) não respondeu ou está em manutenção. Não é problema do seu computador. Tente mais tarde." / "ErroHTTP: HTTP 500 em https://comunicaapi.pje.jus.br/api/v1/caderno/TRT9/2026-11-13/D: {"message": "Server Error"}" | **Não é antivírus**: o CNJ estava fora (seção 5). O texto já dizia isso; vale manter a distinção na tela. |
+
+## 1B. Sinais que servem para QUALQUER antivírus (não só o Bitdefender)
+
+O programa e o instalador não precisam conhecer cada antivírus para orientar. Estes sinais, juntos com o nome lido da
+Central de Segurança do Windows (seção 4.1), bastam para dizer "o seu antivírus provavelmente bloqueou" em vez de "erro":
+
+1. **Arquivo some ou não pode ser criado numa pasta gravável** (o teste de escrita passou, mas o `tar`/`Expand-Archive` não
+   criou o `.py`, ou o `python.exe` sumiu depois de instalado): quarentena ou bloqueio na hora de gravar.
+2. **O programa morre logo depois de abrir** ou o `pythonw` não sobe (o atalho não abre nada): processo encerrado pelo
+   antivírus.
+3. **`schtasks /create` falha** com "acesso negado" ou a tarefa é criada e some, ou **existe e nunca roda** no horário
+   (a 0.7.45 já percebe a hora perdida com a tela aberta): bloqueio de "persistência".
+4. **Conexões recusadas só para os nossos endereços** (CNJ, Receita, `judicial.solverone.com.br`, `supabase.co`) enquanto
+   o navegador abre os mesmos sites: proteção de rede/web do antivírus ou firewall (diferente do CNJ fora, que responde 500
+   também no navegador).
+5. **Aviso do Windows "fornecedor desconhecido"** e SmartScreen: não é bloqueio, mas antecipa que o antivírus vai olhar o
+   programa com desconfiança (falta de assinatura digital).
+
+Em cada um, a mensagem deve dizer **o que aconteceu, qual antivírus foi encontrado, o passo a passo para liberar (se
+conhecido) e o texto pronto para a TI**, e nunca sugerir desligar a proteção de vez.
+
 ## 2. Por que o antivírus barrou (o que o nosso pacote faz que parece ataque)
 
 O Bitdefender (Defesa contra Ameaças, por comportamento) somou, em poucos minutos:
