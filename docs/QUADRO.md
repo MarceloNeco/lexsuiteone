@@ -370,6 +370,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 14/Nov (10): prompt único da 0.7.47 para a Produto (`documentacao/PROMPT-PRODUTO-0.7.47-2026-11-14.md`), entregue ao dono para colar.
 - 14/Nov (9): **página `antivirus.html` no site** (decisão 36 do dono): `paginas/antivirus.html` → `docs/antivirus.html`
   (judicial.solverone.com.br/antivirus.html), PT e EN, sem pedido externo; por que acontece, o que liberar (pasta
   `C:\LexSuiteONE` e `python\pythonw.exe`/`python.exe`), texto pronto para a TI (botão copiar) e passo a passo de 13
