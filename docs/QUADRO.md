@@ -171,8 +171,8 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 14/Nov: **0.7.46 (Área logada v2) pronta para publicar** (commit no fim desta linha, depois do envio). Conferido: itens a a i do
-  pedido; `test_v0746.py` (18) e o bloco 6 do `fluxos.js` (11 conferências da tela: (?) fixo, passos 1 a 4, faixa que sobrevive a
+- 14/Nov: **0.7.46 (Área logada v2) pronta para publicar** (commit `74cf13a`). Conferido: itens a a i do
+  pedido; `test_v0746.py` (21) e o bloco 6 do `fluxos.js` (11 conferências da tela: (?) fixo, passos 1 a 4, faixa que sobrevive a
   recarregar, "Não achei a tabela", totais, filtro, selo, interruptor desligado esconde barra, cartão, filtro e faixa); celular
   sem estouro; `rodar_tudo.sh` TUDO OK; manual (seção reescrita), AssistONE (ajuda da Lista, tour na faixa, busca: área logada,
   pedido, lote, pendente, trazer resposta, subir arquivo), Novidades (7 linhas), termos e e-mail sem mudança. Roteiro do dono:
