@@ -10,7 +10,8 @@ manual, recortar só a janela do antivírus, sem nada do cliente.
 
 | Hora | Foto | O que se viu |
 |---|---|---|
-| ~11h30 | (não há foto nesta conversa; ver a seção 6) | 1ª instalação. O programa instalou e abriu. Ao criar a leitura automática, o Bitdefender barrou: notificação "Comportamento malicioso bloqueado" (2 h antes da foto 03). |
+| 10h57 | 00a | 1ª instalação, com o instalador rápido (3 KB). O Windows mostrou "Abrir Arquivo – Aviso de Segurança: **O fornecedor não pôde ser verificado**… Fornecedor Desconhecido, Arquivo em Lotes do Windows". Detalhe importante: o `INSTALAR.bat` estava rodando **de dentro do .zip** (origem `C:\Users\<usuário>\AppData\Local\Temp\…\Instalar-LexSuiteONE.zip…\INSTALAR.bat`), sem "Extrair tudo" antes. O programa instalou e abriu. |
+| 10h59 | 00b | Bitdefender, Notificações → Crítico: **"Comportamento malicioso bloqueado – 2 minutos atrás"**, Defesa contra Ameaças, mesmo ID `SuspiciousBehavior.CF5CA6A45DED44C4` da foto 03. Foi o momento em que o programa criou a leitura automática. (Fotos 00a e 00b vieram da conversa da Produto.) |
 | 13h35 | 01 | 2ª instalação, com o **pacote completo** baixado antes da 0.7.40 (instalou a 0.7.39). Código confirmado, impressão digital conferida, e no passo 3: `lexsuite_robo.py: Can't create '\\?\C:\LexSuiteONE\lexsuite_robo.py': No such file or directory` / `tar.exe: Error exit delayed from previous errors` / "Não consegui descompactar o pacote em C:\LexSuiteONE". O teste de escrita na pasta tinha passado: o Windows deixava criar arquivo; o antivírus barrava o `.py`. |
 | 13h36 | 02 | Bitdefender **Total Security**, painel "Você está seguro" (nenhum alerta em destaque: o bloqueio fica escondido em Notificações). |
 | 13h37 | 03 | Notificações → Crítico: **"Comportamento malicioso bloqueado"**, recurso **Defesa contra Ameaças**, "Você precisa reiniciar seu dispositivo para finalizar o processo de limpeza", "bloqueou todos os aplicativos envolvidos", ID `SuspiciousBehavior.CF5CA6A45DED44C4`. Botões: Ver cronologia de ataques, Ver aplicativos, Reiniciar. (Abaixo, "Conexão suspeita bloqueada" de 22 h e de 28/Out: anteriores, sem relação conhecida.) |
@@ -118,12 +119,17 @@ consulta, dividindo por vara por causa do limite de 10 mil resultados.
 
 ## 6. Material em outras conversas
 
-- A 1ª instalação (~11h30) e o primeiro bloqueio foram contados à conversa da Produto ou da visita; o resumo está em
-  `docs/VISITA-KR-LAW.md` (seção "Se o Windows ou o antivírus bloquear"). Resultado da busca nas outras conversas: ver a
-  linha do quadro "Dossiê do antivírus".
+- Conversa da Produto (13/Nov, 10h57 e 10h59): as fotos 00a e 00b (já no pacote) e os pedidos do dono que levaram ao pacote
+  completo de 11 MB ("um mais enxuto… e, se tiver antivírus, um mais pesado") e à pergunta sobre preço de assinatura
+  digital. Também a preocupação com escritórios que não deixam criar pasta na raiz do C: (a 0.7.43 já cai para a pasta do
+  usuário). Conversa da visita à KR Law: só documentos, sem fotos do antivírus. Resumo antigo em `docs/VISITA-KR-LAW.md`.
+- Achado a mais: na 1ª instalação o `INSTALAR.bat` rodou **de dentro do .zip** (foto 00a). Rodar de dentro do zip faz o
+  Windows extrair para a pasta temporária e aumenta a chance de bloqueio; o instalador pode detectar isso (pasta atual
+  dentro de `%TEMP%` e nome terminando em `.zip…`) e pedir "Extrair tudo" antes de continuar.
 
 ## 7. Lista das fotos (pacote do dono)
 
+00a aviso do Windows "fornecedor desconhecido" (bat rodando de dentro do zip) · 00b primeiro bloqueio do Bitdefender ·
 01 instalador com erro no tar · 02 Bitdefender painel · 03 notificação "Comportamento malicioso bloqueado" · 04 62
 aplicativos bloqueados (schtasks como malware) · 05 Configurações e Administrar exceções · 06 Opções de exceções vazio ·
 07 asterisco não aceito · 08 pasta sem asterisco aceita · 09 opções do Antivírus · 10 a 15 RADAR com o CNJ fora · 16 a 18
