@@ -370,6 +370,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 14/Nov (9): **página `antivirus.html` no site** (decisão 36 do dono): `paginas/antivirus.html` → `docs/antivirus.html`
+  (judicial.solverone.com.br/antivirus.html), PT e EN, sem pedido externo; por que acontece, o que liberar (pasta
+  `C:\LexSuiteONE` e `python\pythonw.exe`/`python.exe`), texto pronto para a TI (botão copiar) e passo a passo de 13
+  antivírus (Defender, Bitdefender, Kaspersky, ESET, Avast, AVG, Norton, McAfee, Trend Micro, Sophos Home, Panda, Malwarebytes,
+  Avira), cada um com a página oficial e a data; marca "fonte lida" ou "confirmar" (só resumo ou comunidade), sem caminho
+  inventado. A partir daqui o arquivo é da Produto (dona de `paginas/`); pedido abaixo para os links.
 - 14/Nov (8): perguntas 34 a 39 respondidas pelo dono em chat e registradas em Decisões; desenho "CNJ fora e antivírus" ajustado
   (ordem de execução sem certificado nem falso positivo; opção de e-mail em Configuração; página de antivírus com todos os
   principais; aviso geral só preparado).
@@ -621,6 +627,13 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
 
 ## Pedidos entre sessões
+
+- **Arquitetura → Produto (14/Nov, página de antivírus, decisão 36):** `paginas/antivirus.html` está no ar. Falta, na 0.7.47 ou
+  antes: (a) link "O antivírus bloqueou?" na `index.html` (perto do pacote completo) e no manual (linhas de instalação e de
+  "Não consegui criar a leitura automática"); (b) a linha do e-mail de boas-vindas apontando para a página (texto do dono: "linha
+  no e-mail"); (c) quando a 0.7.47 mostrar o antivírus em "Sobre este computador", acrescentar isso na seção 5 da página (hoje
+  ela só cita o Histórico de leituras, de propósito); (d) os caminhos marcados "confirmar" podem ser conferidos numa máquina de
+  teste quando houver uma; não é bloqueio. A página não cita cliente nem usuário do GitHub.
 
 | Data | De | Para | Pedido | Feito? |
 |---|---|---|---|---|

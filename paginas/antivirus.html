@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antivírus e o {{marca.nome}} · como liberar · LexSuiteONE</title>
+<meta name="description" content="O antivírus bloqueou o {{marca.nome}}? Entenda por que acontece e veja o passo a passo oficial de cada fabricante para liberar a pasta e o programa, sem desligar a proteção.">
+<meta name="theme-color" content="#102038">
+<!-- Esta página não faz nenhum pedido externo: sem fontes de fora, sem rastreador, sem script de terceiros. Os links para os fabricantes só abrem quando a pessoa clica. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="preload" href="fontes/figtree.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: "Figtree"; src: url("fontes/figtree.woff2") format("woff2"); font-weight: 300 900; font-style: normal; font-display: swap; }
+:root { color-scheme: light; --noite: #102038; --tinta: #0f1d33; --tinta-2: #45506a; --tinta-3: #6b7489; --papel: #fff; --papel-2: #f3f5f8; --fio: #dbe1ea;
+  --latao: #d4ab6a; --latao-texto: #85601f; --latao-fundo: #f6efe0; --ok: #1f7a4d; --erro: #b3261e; --f: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--papel-2); color: var(--tinta); font: 400 1.0625rem/1.6 var(--f); -webkit-font-smoothing: antialiased; }
+a { color: var(--latao-texto); }
+:focus-visible { outline: 3px solid var(--latao); outline-offset: 3px; border-radius: 4px; }
+header { background: var(--noite); color: #fff; padding: 14px 20px; }
+header .miolo { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+header nav { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+header nav a { color: #d6dbe6; text-decoration: none; font-size: .95rem; } header nav a:hover { color: #fff; text-decoration: underline; }
+.nome { font-weight: 400; letter-spacing: -.01em; } .nome strong { font-weight: 800; } .nome strong b { color: var(--latao); font-weight: 800; }
+.idioma { display: flex; gap: 4px; }
+.idioma button { font: inherit; font-size: .85rem; min-width: 44px; min-height: 36px; padding: 4px 10px; border: 1px solid rgba(255,255,255,.28); background: transparent; color: #d6dbe6; border-radius: 999px; cursor: pointer; margin: 0; }
+.idioma button[aria-pressed="true"] { background: #fff; color: var(--noite); border-color: #fff; }
+.miolo { max-width: 100rem; margin: 0 auto; padding: 0 clamp(16px, 3vw, 56px); }
+main .miolo { padding: 28px clamp(16px, 3vw, 56px) 48px; }
+.grade { display: grid; grid-template-columns: minmax(200px, 17rem) minmax(0, 80ch); gap: clamp(16px, 2.5vw, 40px); align-items: start; margin-top: 18px; }
+@media (max-width: 860px) { .grade { grid-template-columns: 1fr; } .indice { position: static !important; } }
+h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 8px; } h2 { font-size: 1.25rem; margin: 30px 0 8px; } h3 { font-size: 1.02rem; margin: 16px 0 6px; }
+p, li { margin: 0 0 10px; } .mudo { color: var(--tinta-2); } small, .fonte { color: var(--tinta-3); font-size: .9rem; }
+ol, ul { padding-left: 1.4em; }
+code { font: .92em/1.4 ui-monospace, Consolas, "Courier New", monospace; background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6px; border-radius: 4px; }
+.cartao { background: var(--papel); border: 1px solid var(--fio); border-radius: 16px; padding: 20px 24px; margin-top: 16px; }
+.indice { position: sticky; top: 16px; font-size: .92rem; background: var(--papel); border: 1px solid var(--fio); border-radius: 12px; padding: 12px 14px; }
+.indice b { display: block; margin-bottom: 6px; } .indice ol { margin: 0; padding-left: 1.3em; } .indice li { margin: 3px 0; } .indice a { text-decoration: none; } .indice a:hover { text-decoration: underline; }
+.aviso { border-radius: 12px; padding: 12px 16px; margin: 14px 0; } .aviso.info { background: var(--latao-fundo); color: var(--latao-texto); } .aviso.ok { background: #e7f5ec; color: var(--ok); } .aviso.erro { background: #fdecea; color: var(--erro); }
+.aviso p:last-child { margin-bottom: 0; }
+.liberar { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 12px 0; }
+.liberar div { background: var(--papel-2); border-radius: 12px; padding: 12px 14px; } .liberar b { display: block; margin-bottom: 4px; }
+.ti { background: var(--papel-2); border: 1px dashed var(--fio); border-radius: 12px; padding: 14px 16px; font-size: .95rem; white-space: pre-wrap; margin: 8px 0; }
+button.copiar { font: 600 .95rem var(--f); background: var(--latao); color: var(--noite); border: 0; border-radius: 10px; padding: 10px 16px; cursor: pointer; min-height: 40px; }
+section.av { border-top: 1px solid var(--fio); padding-top: 6px; margin-top: 26px; } section.av:first-of-type { border-top: 0; margin-top: 0; }
+.etiqueta { display: inline-block; font-size: .78rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; border-radius: 999px; padding: 2px 10px; margin-left: 6px; vertical-align: middle; }
+.etiqueta.lida { background: #e7f5ec; color: var(--ok); } .etiqueta.parcial { background: var(--latao-fundo); color: var(--latao-texto); }
+.menu { color: var(--tinta-2); } .menu b { color: var(--tinta); font-weight: 600; }
+footer { color: var(--tinta-3); font-size: .9rem; padding: 10px 20px 30px; text-align: center; }
+[hidden] { display: none !important; }
+@media print { header nav, footer, button { display: none; } body { background: #fff; } .cartao { border: 0; padding: 0; } .indice { display: none; } .grade { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header><div class="miolo"><a href="./" style="color:inherit;text-decoration:none" aria-label="{{marca.nome}}, início"><span class="nome">{{marca.logo}}</span></a><span class="mudo" style="color:#c9d2e0">· LexSuiteONE · SolverONE</span>
+  <nav><a href="manual.html" data-t="manual">Manual</a>
+    <div class="idioma" role="group" aria-label="Idioma / Language"><button type="button" id="b-pt" aria-pressed="true">PT</button><button type="button" id="b-en" aria-pressed="false">EN</button></div></nav></div></header>
+
+<main><div class="miolo">
+
+<!-- ===================== PORTUGUÊS ===================== -->
+<div id="pt" lang="pt-BR">
+<h1>O antivírus bloqueou o {{marca.nome}}? Veja como liberar</h1>
+<p class="mudo">Esta página é para o escritório e para a sua equipe de TI. Ela explica por que alguns antivírus estranham o {{marca.nome}}, o que exatamente precisa ser liberado e onde fica essa opção em cada antivírus, sempre com a página oficial do fabricante ao lado. <b>Nenhum passo pede para desligar o antivírus.</b></p>
+
+<div class="grade">
+<nav class="indice" aria-label="Nesta página"><b>Nesta página</b>
+<ol>
+<li><a href="#pt-porque">Por que acontece</a></li>
+<li><a href="#pt-oque">O que liberar</a></li>
+<li><a href="#pt-ti">Texto para a TI</a></li>
+<li><a href="#pt-lista">Passo a passo por antivírus</a>
+  <ol>
+  <li><a href="#pt-defender">Microsoft Defender</a></li><li><a href="#pt-bitdefender">Bitdefender</a></li><li><a href="#pt-kaspersky">Kaspersky</a></li><li><a href="#pt-eset">ESET</a></li><li><a href="#pt-avast">Avast</a></li><li><a href="#pt-avg">AVG</a></li><li><a href="#pt-norton">Norton</a></li><li><a href="#pt-mcafee">McAfee</a></li><li><a href="#pt-trend">Trend Micro</a></li><li><a href="#pt-sophos">Sophos Home</a></li><li><a href="#pt-panda">Panda Dome</a></li><li><a href="#pt-malwarebytes">Malwarebytes</a></li><li><a href="#pt-avira">Avira</a></li>
+  </ol></li>
+<li><a href="#pt-depois">Depois de liberar</a></li>
+<li><a href="#pt-fontes">Sobre as fontes</a></li>
+</ol></nav>
+
+<div>
+<div class="cartao">
+<h2 id="pt-porque" style="margin-top:0">1. Por que acontece</h2>
+<p>O {{marca.nome}} é um programa pequeno, instalado na pasta <code>C:\LexSuiteONE</code>, que lê fontes públicas da Justiça e grava a relação de processos numa planilha do escritório. Para funcionar sem ninguém abrir a tela, ele cria uma tarefa no Agendador de Tarefas do Windows (chamada <code>LexSuiteONE Radar</code>) e roda pelo Python portátil que vem junto.</p>
+<p>Alguns antivírus tratam esses passos como suspeitos: um instalador em <code>.bat</code> que baixa arquivos, um programa que cria tarefa agendada, um executável sem assinatura digital conhecida. É um <b>falso positivo</b>: o programa não é malicioso, mas se parece com um padrão que o antivírus vigia. Os sinais mais comuns são "comportamento malicioso", o instalador apagado logo depois de baixado, ou a mensagem "Não consegui criar a leitura automática" ao salvar a Rotina de leitura.</p>
+<div class="aviso info"><p><b>O que o programa faz e não faz.</b> O código é público (publicado no GitHub) e as atualizações são assinadas pela SolverONE; o programa não acessa áreas logadas, não envia a planilha nem os dados do escritório a ninguém e não instala nada fora da própria pasta. Se preferir não liberar nada no antivírus, use o <a href="./">pacote completo</a>, que não baixa arquivos durante a instalação; a leitura automática ainda precisará da tarefa agendada.</p></div>
+</div>
+
+<div class="cartao">
+<h2 id="pt-oque" style="margin-top:0">2. O que liberar</h2>
+<p>Em quase todo antivírus há duas listas diferentes: a de <b>pastas e arquivos</b> que a proteção em tempo real deixa passar e a de <b>programas</b> que a proteção por comportamento deixa rodar. Para o {{marca.nome}} funcionar inteiro, libere nos dois lugares:</p>
+<div class="liberar">
+<div><b>A pasta</b><code>C:\LexSuiteONE</code><br><small>com as subpastas. Em instalações antigas pode ser <code>%LOCALAPPDATA%\LexSuiteONE</code>.</small></div>
+<div><b>Os programas</b><code>C:\LexSuiteONE\python\pythonw.exe</code><br><code>C:\LexSuiteONE\python\python.exe</code><br><small>o primeiro roda a leitura automática sem janela; o segundo, a tela e o instalador.</small></div>
+</div>
+<p>Se o antivírus perguntar na hora ("permitir este programa?"), permitir ali já resolve na maioria dos casos. Se ele tiver apagado o instalador ou colocado algo em quarentena, restaure o item e depois adicione a exceção. Em cada seção abaixo há o caminho da quarentena.</p>
+</div>
+
+<div class="cartao">
+<h2 id="pt-ti" style="margin-top:0">3. Texto para a TI</h2>
+<p>Se quem cuida do antivírus for outra pessoa ou empresa, copie e envie este texto:</p>
+<div class="ti" id="pt-ti-texto">Pedido de exceção no antivírus para o RADAR JUDICIAL (LexSuiteONE, SolverONE)
+
+Programa: RADAR JUDICIAL, leitor do Diário de Justiça Eletrônico Nacional. Código público (GitHub, link na página inicial do produto); atualizações assinadas; sem acesso a área logada; não envia dados do escritório para fora.
+
+Por favor, adicione às exceções (proteção em tempo real e proteção por comportamento):
+- Pasta, com subpastas: C:\LexSuiteONE
+- Processos: C:\LexSuiteONE\python\pythonw.exe e C:\LexSuiteONE\python\python.exe
+- O programa cria uma tarefa no Agendador de Tarefas do Windows chamada "LexSuiteONE Radar" (schtasks), que roda o pythonw.exe nos horários configurados pelo escritório.
+
+Se algum item foi para a quarentena, favor restaurar. Não é necessário desligar a proteção. Dúvidas: judicial@solverone.com.br</div>
+<button type="button" class="copiar" id="pt-copiar">Copiar o texto</button> <span id="pt-copiado" class="mudo" hidden>Copiado.</span>
+</div>
+
+<div class="cartao">
+<h2 id="pt-lista" style="margin-top:0">4. Passo a passo por antivírus</h2>
+<p class="mudo">Os caminhos de menu estão como a documentação do fabricante escreve (quase sempre em inglês; a versão em português do programa usa os termos equivalentes). As telas mudam de uma versão para outra: se o seu antivírus não bater com o texto, procure "exclusões", "exceções" ou "lista de permitidos" nas configurações, ou abra a página oficial indicada. A marca <span class="etiqueta lida">fonte lida</span> quer dizer que lemos a página oficial inteira; <span class="etiqueta parcial">confirmar</span> quer dizer que só vimos o resumo da página oficial ou que o passo veio da comunidade do fabricante, e vale conferir na tela antes de confiar.</p>
+
+<section class="av" id="pt-defender"><h3>Microsoft Defender (Windows 10 e 11) <span class="etiqueta lida">fonte lida</span></h3>
+<ol>
+<li><b>Pasta e programas.</b> <span class="menu">Segurança do Windows → <b>Proteção contra vírus e ameaças</b> → Gerenciar configurações → <b>Exclusões</b> → Adicionar ou remover exclusões → <b>Adicionar uma exclusão</b> → Pasta</span> e escolha <code>C:\LexSuiteONE</code>. Repita com <b>Processo</b> para <code>C:\LexSuiteONE\python\pythonw.exe</code> e <code>python.exe</code> (a Microsoft recomenda o caminho completo do executável). A pasta inclui tudo o que está dentro dela.</li>
+<li><b>Acesso controlado a pastas</b> (se estiver ligado e bloquear a planilha). <span class="menu">Proteção contra vírus e ameaças → Gerenciar configurações → <b>Gerenciar acesso controlado a pastas</b> → Permitir um aplicativo pelo acesso controlado a pastas → <b>Adicionar um aplicativo permitido</b> → Aplicativos bloqueados recentemente</span> (ou "Procurar todos os aplicativos") e escolha o <code>pythonw.exe</code> e o <code>python.exe</code> acima. O Windows pede confirmação de administrador.</li>
+<li><b>Quarentena.</b> <span class="menu">Proteção contra vírus e ameaças → <b>Histórico de proteção</b></span>, filtre "Itens em quarentena" e escolha <b>Restaurar</b>. O histórico guarda cerca de duas semanas.</li>
+</ol>
+<p class="fonte">Fontes oficiais: <a href="https://support.microsoft.com/en-gb/topic/what-are-exclusions-in-windows-security-8b248399-5e63-4a4b-897f-52ea2dddb962" rel="noopener">What are exclusions in Windows Security</a> (Microsoft Support, em inglês) · <a href="https://learn.microsoft.com/en-us/defender-endpoint/customize-controlled-folders" rel="noopener">Customize controlled folder access</a> (Microsoft Learn, atualizada em 31/Ago/2026) · <a href="https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app" rel="noopener">Protection history in the Windows Security app</a> (Microsoft Support, resumo). Lidas em 14/Nov/2026. A varredura completa ou agendada ainda examina a pasta excluída; só a proteção em tempo real deixa passar.</p>
+</section>
+
+<section class="av" id="pt-bitdefender"><h3>Bitdefender (Total Security, Internet Security, Antivirus Plus) <span class="etiqueta lida">fonte lida</span></h3>
+<ol>
+<li><b>Pasta.</b> <span class="menu"><b>Protection</b> → Antivirus → Open → aba <b>Settings</b> → <b>Manage Exceptions</b> → <b>+ Add an Exception</b></span>. Digite <code>C:\LexSuiteONE</code> (sem asterisco no fim) ou localize a pasta pela lupa, ligue o interruptor <b>Antivirus</b> e clique em <b>Save</b>. A pasta vale com as subpastas.</li>
+<li><b>Programas (Advanced Threat Defense).</b> O Bitdefender tem uma lista própria de exceções para a proteção por comportamento, que aceita um executável por vez: em <span class="menu">Protection → <b>Advanced Threat Defense</b> → Open → Settings → <b>Manage exceptions</b></span>, adicione <code>C:\LexSuiteONE\python\pythonw.exe</code> e depois <code>python.exe</code>. <span class="etiqueta parcial">confirmar</span> Este caminho vem da comunidade do fabricante; não encontramos página oficial que o descreva. Num escritório cliente (nov/2026) foi este o bloqueio: o Bitdefender impediu a criação da tarefa agendada e liberou depois da exceção da pasta.</li>
+<li><b>Quarentena.</b> <span class="menu">Protection → Antivirus → Open → Settings → <b>Manage Quarantine</b></span>, selecione o item e clique em <b>Restore</b> (precisa de conta de administrador). Marque "Create exceptions for restored files" para não bloquear de novo. Itens com mais de 30 dias são apagados.</li>
+</ol>
+<p class="fonte">Fontes oficiais: <a href="https://www.bitdefender.com/consumer/support/answer/13427/" rel="noopener">How to exclude files and folders from Bitdefender Antivirus scan</a> (atualizada em 12/Ago/2022) · <a href="https://www.bitdefender.com/consumer/support/answer/2092/" rel="noopener">Restore quarantined files</a> (resumo). Lidas em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-kaspersky"><h3>Kaspersky (Standard, Plus, Premium) <span class="etiqueta lida">fonte lida</span></h3>
+<ol>
+<li><b>Pasta.</b> Nas configurações (⚙), abra <span class="menu"><b>Manage exclusions</b> → <b>Add</b></span> (a ajuda do Kaspersky descreve a partir desse ponto; o caminho até ele varia com a versão) e, no campo <b>File or folder</b> escolha <code>C:\LexSuiteONE</code>. Para garantir as subpastas, a documentação aceita máscaras: <code>C:\LexSuiteONE\**</code> (<code>**</code> cobre qualquer nível de subpasta). Cada exclusão pode ser limitada a componentes da proteção; deixe valer para todos.</li>
+<li><b>Programas.</b> Na mesma tela, <span class="menu"><b>Specify trusted applications</b> → Add</span>, escolha <code>C:\LexSuiteONE\python\pythonw.exe</code> e marque <b>Do not monitor application activity</b>; repita para <code>python.exe</code>. Atenção: um aplicativo confiável ainda é examinado como arquivo, por isso a exclusão da pasta do passo 1 continua necessária.</li>
+<li><b>Quarentena.</b> Na tela inicial, <span class="menu"><b>Security</b> → botão <b>Quarantine</b></span> (canto superior direito), selecione o item e clique em <b>Restore</b>.</li>
+</ol>
+<p class="fonte">Fontes oficiais: <a href="https://support.kaspersky.com/help/Kaspersky/Win21.22/en-US/201385.htm" rel="noopener">Configuring exclusions and trusted applications</a> (ajuda do Kaspersky para Windows 21.22) · <a href="https://support.kaspersky.com/kaspersky-for-windows/70904" rel="noopener">Quarantine</a> (resumo). Lidas em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-eset"><h3>ESET (NOD32, Internet Security, HOME Security) <span class="etiqueta lida">fonte lida</span></h3>
+<ol>
+<li><b>Pasta.</b> Abra o ESET e pressione <b>F5</b> (Advanced setup). Em <span class="menu"><b>Scans</b> → <b>Performance exclusions</b> → Edit → <b>Add</b></span>, clique em <b>…</b> ao lado de <i>Path</i>, escolha a pasta e confirme. A ajuda da ESET escreve a pasta com <code>\*</code> no fim: <code>C:\LexSuiteONE\*</code>. A exclusão vale para a proteção em tempo real e para as varreduras.</li>
+<li><b>Programas.</b> A ESET não tem lista separada de processos nos produtos domésticos; a exclusão da pasta cobre o <code>pythonw.exe</code> e o <code>python.exe</code>, que ficam dentro dela. Se o ESET mostrar um aviso perguntando sobre eles, escolha permitir. <span class="etiqueta parcial">confirmar</span> A ESET também oferece "exclusão por detecção", que ela própria descreve como de alto risco; não use.</li>
+<li><b>Quarentena.</b> <span class="menu"><b>Tools</b> → <b>Quarantine</b></span>, clique com o botão direito no item e escolha <b>Restore</b> ou <b>Restore and exclude from scanning</b>.</li>
+</ol>
+<p class="fonte">Fontes oficiais: <a href="https://support.eset.com/en/kb2769" rel="noopener">Exclude files or folders from scanning in ESET home products for Windows</a> (KB2769, atualizada em 12/Nov/2026) · <a href="https://support.eset.com/en/kb3195-restore-a-quarantined-file-in-eset-windows-home-products" rel="noopener">Restore a quarantined file</a> (KB3195, resumo). Lidas em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-avast"><h3>Avast (Free Antivirus, Premium Security, One) <span class="etiqueta lida">fonte lida</span></h3>
+<ol>
+<li><b>Pasta e programas numa vez.</b> <span class="menu"><b>Menu</b> → Settings → <b>General</b> → <b>Exceptions</b> → <b>Add exception</b></span>. Na aba <b>File/Folder</b>, clique no ícone de pasta, escolha <code>C:\LexSuiteONE</code> e confirme com <b>Add</b>. Em <b>Advanced options</b> deixe todos os escudos marcados (All scans, Behavior Shield, File Shield, Hardened Mode, CyberCapture): assim a mesma exceção vale para a proteção por comportamento. Se preferir, adicione também <code>C:\LexSuiteONE\python\pythonw.exe</code> e <code>python.exe</code> como arquivos.</li>
+<li><b>Quarentena.</b> Procure <b>Quarantine</b> no menu do Avast, selecione o item e restaure-o. <span class="etiqueta parcial">confirmar</span> O artigo de exceções remete a um artigo separado de quarentena que não lemos.</li>
+</ol>
+<p class="fonte">Fonte oficial: <a href="https://support.avast.com/en-ph/article/168/?option=av" rel="noopener">Adjusting exceptions in Avast Antivirus</a> (artigo 168, atualizado em 21/Jan/2026; o Avast One tem artigo próprio, com o mesmo caminho de Settings → Exceptions). Lida em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-avg"><h3>AVG (AntiVirus Free, Internet Security) <span class="etiqueta lida">fonte lida</span></h3>
+<ol>
+<li><b>Pasta e programas numa vez.</b> <span class="menu"><b>Menu</b> → Settings → <b>General</b> → <b>Exceptions</b> → <b>Add exception</b> → Next</span>. Na aba <b>File/Folder</b>, escolha <code>C:\LexSuiteONE</code>. Em <b>Advanced options</b> deixe todos os escudos marcados (All scans, Behavior Shield, File Shield, Hardened Mode, CyberCapture). Se o AVG pedir a pasta com asterisco, use <code>C:\LexSuiteONE\*</code>.</li>
+<li><b>Quarentena.</b> Procure <b>Quarantine</b> no menu do AVG, selecione o item e restaure-o. <span class="etiqueta parcial">confirmar</span> A página de exceções remete a um artigo separado que não lemos.</li>
+</ol>
+<p class="fonte">Fonte oficial: <a href="https://support.avg.com/SupportArticleView?l=en&amp;urlname=AVG-Antivirus-scan-exclusions" rel="noopener">How to exclude items from scans in AVG AntiVirus</a>. Lida em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-norton"><h3>Norton 360 (e Norton AntiVirus Plus) <span class="etiqueta lida">fonte lida</span></h3>
+<ol>
+<li><b>Pasta.</b> Abra o Norton, em <span class="menu"><b>Security</b> → <b>Scans</b> → aba <b>Exclusions</b> → <b>Add Exclusion</b></span>, clique no ícone de procurar, escolha <code>C:\LexSuiteONE</code> e confirme com <b>Add</b>. A documentação diz que a exclusão vale para o Auto-Protect e para a Behavioral Protection.</li>
+<li><b>Programas.</b> <span class="etiqueta parcial">confirmar</span> O Norton avisa que um item excluído de um componente ainda pode ser detectado por outro (Behavioral Protection, File Insight, Data Protector). Se aparecer um aviso sobre <code>pythonw.exe</code> ou <code>python.exe</code>, escolha <b>Trust</b>/<b>Allow</b> no próprio aviso; o fabricante não tem página oficial que descreva uma lista separada de programas nos produtos domésticos.</li>
+<li><b>Quarentena.</b> Abra o histórico de segurança do Norton (<span class="menu">Security → <b>History</b></span>), procure os itens em quarentena e restaure o item. <span class="etiqueta parcial">confirmar</span> A página oficial "Act on quarantined risks or threats" não foi lida inteira.</li>
+</ol>
+<p class="fonte">Fonte oficial: <a href="https://support.norton.com/sp/en/us/home/current/solutions/v3672136" rel="noopener">Exclude files and folders from Norton scans</a> (atualizada em 24/Abr/2025). Lida em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-mcafee"><h3>McAfee (Total Protection, LiveSafe) <span class="etiqueta parcial">confirmar</span></h3>
+<ol>
+<li><b>Arquivos (proteção em tempo real).</b> <span class="menu">Configurações (⚙) → <b>Verificação em tempo real</b> → <b>Arquivos excluídos</b> → <b>Adicionar arquivo</b></span>: adicione <code>C:\LexSuiteONE\python\pythonw.exe</code> e <code>C:\LexSuiteONE\python\python.exe</code>. Na ajuda oficial que localizamos, a proteção em tempo real exclui <b>arquivos</b>, não pastas inteiras; a pasta só entra na verificação agendada ou personalizada.</li>
+<li><b>Programas e quarentena.</b> Não encontramos página oficial atual do fabricante para liberar um programa na proteção por comportamento nem para restaurar da quarentena. Procure "Itens em quarentena" nas configurações do McAfee ou confira com o fabricante ou a TI do escritório.</li>
+</ol>
+<p class="fonte">Fonte: <a href="https://www.mcafee.com/support/" rel="noopener">suporte oficial da McAfee</a>; a ajuda que lemos é da versão 13.6 do Total Protection (antiga), só pelo resumo. Lida em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-trend"><h3>Trend Micro (Maximum Security, Internet Security) <span class="etiqueta parcial">confirmar</span></h3>
+<ol>
+<li><b>Pasta.</b> <span class="menu"><b>Settings</b> (⚙) → <b>Exception Lists</b></span>, na aba de arquivos e pastas (nome não confirmado), <b>+ Add</b> e escolha <code>C:\LexSuiteONE</code>. A documentação atual dessa tela estava indisponível quando lemos; o caminho vem de artigos do fabricante sobre outras abas da mesma lista.</li>
+<li><b>Programas (Folder Shield).</b> Se a proteção contra ransomware bloquear a gravação da planilha, em <span class="menu">Settings → <b>Folder Shield</b> → <b>Trusted Program List</b> → Add → Browse</span>, adicione <code>C:\LexSuiteONE\python\pythonw.exe</code> e depois <code>python.exe</code> (um por vez). Este caminho vem da comunidade do fabricante.</li>
+<li><b>Quarentena.</b> Não encontramos página oficial atual. Procure "Quarantine" ou "Logs" na tela inicial ou confira com o fabricante ou a TI.</li>
+</ol>
+<p class="fonte">Fonte: <a href="https://helpcenter.trendmicro.com/en-us/" rel="noopener">central de ajuda da Trend Micro</a> (artigo sobre Exception Lists, tmka-11379). Lida em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-sophos"><h3>Sophos Home <span class="etiqueta parcial">confirmar</span></h3>
+<ol>
+<li><b>Pasta.</b> No Sophos Home a configuração fica no <b>painel online</b> do Sophos Home (com o login do escritório), não no programa: escolha o computador, <span class="menu"><b>PROTECTION</b> → <b>General</b> → <b>Exceptions</b></span> e adicione a pasta com a barra no fim: <code>C:\LexSuiteONE\</code> (inclui as subpastas).</li>
+<li><b>Programas (exploits e comportamento).</b> No programa, <span class="menu"><b>Help</b> → <b>Troubleshooting</b> → <b>Local Exclusions</b> → <b>Add</b></span>, escolha <code>C:\LexSuiteONE\python\pythonw.exe</code> e <code>python.exe</code>. A exclusão passa a valer depois de reiniciar o computador ou de esperar cerca de duas horas.</li>
+<li><b>Quarentena.</b> Não encontramos página oficial atual; confira com o fabricante ou a TI.</li>
+</ol>
+<p class="fonte">Fontes: <a href="https://support.home.sophos.com/hc/en-us/articles/115005499966" rel="noopener">Setting Scan Exceptions</a> e <a href="https://support.home.sophos.com/hc/en-us/articles/360000501206" rel="noopener">Local Exclusions</a> (Sophos Home; só pelo resumo, a página recusou a leitura automática). Lidas em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-panda"><h3>Panda Dome <span class="etiqueta parcial">confirmar</span></h3>
+<ol>
+<li><b>Pasta.</b> <span class="menu"><b>Advanced settings</b> (⚙) → <b>Exclusions</b> → <b>Add</b></span>, marque a pasta <code>C:\LexSuiteONE</code> e confirme. A ajuda oficial que lemos é genérica (sem versão); o caminho dentro do Panda Dome atual pode variar.</li>
+<li><b>Programas e quarentena.</b> Não encontramos página oficial para liberar um programa na proteção por comportamento. A ajuda oficial tem uma <a href="https://www.pandasecurity.com/homeusers/downloads/docs/product/help/pd/en/55.htm" rel="noopener">página sobre a quarentena</a> (não lida); restaure o item por ela e adicione a exclusão, ou confira com o fabricante ou a TI.</li>
+</ol>
+<p class="fonte">Fonte: <a href="https://www.pandasecurity.com/homeusers/downloads/docs/product/help/pd/en/43.htm" rel="noopener">ajuda do Panda Dome: Exclusions</a>. Lida em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-malwarebytes"><h3>Malwarebytes Premium <span class="etiqueta parcial">confirmar</span></h3>
+<ol>
+<li><b>Pasta e programas.</b> <span class="menu"><b>Detection History</b> → aba <b>Allow list</b> → <b>Add item</b></span>. A lista aceita arquivo, pasta, aplicativo ou site: adicione a pasta <code>C:\LexSuiteONE</code> e, como aplicativo, <code>C:\LexSuiteONE\python\pythonw.exe</code> e <code>python.exe</code>.</li>
+<li><b>Quarentena.</b> <span class="menu">Detection History</span>, na aba dos itens em quarentena, selecione o item, clique em <b>Restore</b> e marque "Exclude this from future detections".</li>
+</ol>
+<p class="fonte">Fontes: <a href="https://help.malwarebytes.com/hc/en-us/articles/22766550894867" rel="noopener">Add and remove items from the Allow list</a> e <a href="https://help.malwarebytes.com/hc/en-us/articles/22745887319955" rel="noopener">Manage quarantined items</a> (Malwarebytes; só pelo resumo, a página recusou a leitura automática). Lidas em 14/Nov/2026.</p>
+</section>
+
+<section class="av" id="pt-avira"><h3>Avira (Free Security, Prime) <span class="etiqueta parcial">confirmar</span></h3>
+<ol>
+<li><b>Pasta.</b> <span class="menu"><b>Security</b> → <b>Protection options</b> → <b>Real-time protection</b> (⚙) → <b>Exceptions</b></span>, adicione a pasta com a barra no fim: <code>C:\LexSuiteONE\</code>. A Avira tem listas separadas para a proteção em tempo real e para o <b>System Scanner</b>; adicione a pasta nas duas.</li>
+<li><b>Programas.</b> A mesma tela de exceções aceita processos; adicione <code>C:\LexSuiteONE\python\pythonw.exe</code> e <code>python.exe</code>. Não conseguimos ler o passo exato na página oficial.</li>
+<li><b>Quarentena.</b> Não encontramos página oficial atual; procure "Quarantine" em Security ou confira com o fabricante ou a TI.</li>
+</ol>
+<p class="fonte">Fonte: <a href="https://support.avira.com/hc/en-us/articles/360002884254" rel="noopener">How do I exclude files or processes from scanning?</a> (Avira; só pelo resumo, a página recusou a leitura automática). Lida em 14/Nov/2026.</p>
+</section>
+</div>
+
+<div class="cartao">
+<h2 id="pt-depois" style="margin-top:0">5. Depois de liberar</h2>
+<ol>
+<li>Se o instalador tinha sido apagado, baixe de novo na <a href="./">página inicial</a> e rode o <code>INSTALAR.bat</code>.</li>
+<li>Abra o {{marca.nome}}, vá em <b>Configurações → Leitura do Diário</b> e clique em <b>Salvar</b>: o programa cria a tarefa agendada de novo e confirma na tela.</li>
+<li>Em <b>Configurações → Sobre este computador → Ver histórico de leituras</b> dá para conferir se a leitura voltou a acontecer. Se continuar bloqueando, escreva para <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a> dizendo o nome do antivírus e a mensagem que apareceu.</li>
+</ol>
+</div>
+
+<div class="cartao">
+<h2 id="pt-fontes" style="margin-top:0">6. Sobre as fontes</h2>
+<p class="mudo">Cada seção aponta a página oficial do fabricante e a data em que a lemos. Não inventamos caminhos de menu: onde a página oficial não foi encontrada ou não pôde ser lida inteira, a seção diz isso e pede para conferir com o fabricante ou a TI. Encontrou um caminho desatualizado? Avise em <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>. Esta página não pede nada a nenhum servidor: os links só abrem quando você clica.</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ===================== ENGLISH ===================== -->
+<div id="en" lang="en" hidden>
+<h1>Antivirus blocked {{marca.nome}}? Here is how to allow it</h1>
+<p class="mudo">This page is for the law firm and its IT team. It explains why some antivirus products flag {{marca.nome}}, exactly what needs to be allowed and where that option lives in each product, always next to the vendor's official page. <b>No step asks you to turn the antivirus off.</b></p>
+
+<div class="grade">
+<nav class="indice" aria-label="On this page"><b>On this page</b>
+<ol>
+<li><a href="#en-why">Why it happens</a></li>
+<li><a href="#en-what">What to allow</a></li>
+<li><a href="#en-it">Text for IT</a></li>
+<li><a href="#en-list">Step by step per antivirus</a>
+  <ol>
+  <li><a href="#en-defender">Microsoft Defender</a></li><li><a href="#en-bitdefender">Bitdefender</a></li><li><a href="#en-kaspersky">Kaspersky</a></li><li><a href="#en-eset">ESET</a></li><li><a href="#en-avast">Avast</a></li><li><a href="#en-avg">AVG</a></li><li><a href="#en-norton">Norton</a></li><li><a href="#en-mcafee">McAfee</a></li><li><a href="#en-trend">Trend Micro</a></li><li><a href="#en-sophos">Sophos Home</a></li><li><a href="#en-panda">Panda Dome</a></li><li><a href="#en-malwarebytes">Malwarebytes</a></li><li><a href="#en-avira">Avira</a></li>
+  </ol></li>
+<li><a href="#en-after">After allowing</a></li>
+<li><a href="#en-sources">About the sources</a></li>
+</ol></nav>
+
+<div>
+<div class="cartao">
+<h2 id="en-why" style="margin-top:0">1. Why it happens</h2>
+<p>{{marca.nome}} is a small program installed in <code>C:\LexSuiteONE</code>. It reads public court sources and writes the list of lawsuits to the firm's spreadsheet. To run without anyone opening the window, it creates a task in Windows Task Scheduler (named <code>LexSuiteONE Radar</code>) and runs on the portable Python that ships with it.</p>
+<p>Some antivirus products treat those steps as suspicious: a <code>.bat</code> installer that downloads files, a program that creates a scheduled task, an executable without a well-known digital signature. It is a <b>false positive</b>: the program is not malicious, but it resembles a pattern the antivirus watches. The usual signs are "malicious behavior", the installer deleted right after download, or the message "Could not create the automatic reading" when saving the reading schedule.</p>
+<div class="aviso info"><p><b>What the program does and does not do.</b> The code is public (published on GitHub) and updates are signed by SolverONE; the program does not access logged-in areas, does not send the spreadsheet or the firm's data to anyone and installs nothing outside its own folder. If you prefer not to allow anything in the antivirus, use the <a href="./">complete package</a>, which downloads nothing during installation; automatic reading will still need the scheduled task.</p></div>
+</div>
+
+<div class="cartao">
+<h2 id="en-what" style="margin-top:0">2. What to allow</h2>
+<p>Almost every antivirus has two different lists: <b>folders and files</b> that real-time protection lets through, and <b>programs</b> that behavior protection lets run. For {{marca.nome}} to work fully, allow it in both:</p>
+<div class="liberar">
+<div><b>The folder</b><code>C:\LexSuiteONE</code><br><small>with subfolders. Older installations may use <code>%LOCALAPPDATA%\LexSuiteONE</code>.</small></div>
+<div><b>The programs</b><code>C:\LexSuiteONE\python\pythonw.exe</code><br><code>C:\LexSuiteONE\python\python.exe</code><br><small>the first runs the automatic reading without a window; the second runs the screen and the installer.</small></div>
+</div>
+<p>If the antivirus asks at the moment ("allow this program?"), allowing it there solves most cases. If it deleted the installer or quarantined something, restore the item and then add the exception. Each section below gives the quarantine path.</p>
+</div>
+
+<div class="cartao">
+<h2 id="en-it" style="margin-top:0">3. Text for IT</h2>
+<p>If someone else manages the antivirus, copy and send this text:</p>
+<div class="ti" id="en-ti-texto">Antivirus exception request for RADAR JUDICIAL (LexSuiteONE, SolverONE)
+
+Program: RADAR JUDICIAL, a reader of Brazil's National Electronic Court Gazette (DJEN). Public code (GitHub, linked from the product's home page); signed updates; no access to logged-in areas; sends no firm data out.
+
+Please add to the exceptions (real-time protection and behavior protection):
+- Folder, with subfolders: C:\LexSuiteONE
+- Processes: C:\LexSuiteONE\python\pythonw.exe and C:\LexSuiteONE\python\python.exe
+- The program creates a Windows Task Scheduler task named "LexSuiteONE Radar" (schtasks), which runs pythonw.exe at the times set by the firm.
+
+If any item was quarantined, please restore it. There is no need to turn protection off. Questions: judicial@solverone.com.br</div>
+<button type="button" class="copiar" id="en-copiar">Copy the text</button> <span id="en-copiado" class="mudo" hidden>Copied.</span>
+</div>
+
+<div class="cartao">
+<h2 id="en-list" style="margin-top:0">4. Step by step per antivirus</h2>
+<p class="mudo">Menu paths are written as the vendor's documentation writes them. Screens change between versions: if yours does not match, look for "exclusions", "exceptions" or "allow list" in the settings, or open the official page given. <span class="etiqueta lida">source read</span> means we read the whole official page; <span class="etiqueta parcial">verify</span> means we only saw the official page's summary or the step comes from the vendor's community, so check it on screen before relying on it.</p>
+
+<section class="av" id="en-defender"><h3>Microsoft Defender (Windows 10 and 11) <span class="etiqueta lida">source read</span></h3>
+<ol>
+<li><b>Folder and programs.</b> <span class="menu">Windows Security → <b>Virus &amp; threat protection</b> → Manage settings → <b>Exclusions</b> → Add or remove exclusions → <b>Add an exclusion</b> → Folder</span>, pick <code>C:\LexSuiteONE</code>. Repeat with <b>Process</b> for <code>C:\LexSuiteONE\python\pythonw.exe</code> and <code>python.exe</code> (Microsoft recommends the full path to the executable). A folder exclusion covers everything inside it.</li>
+<li><b>Controlled folder access</b> (if enabled and blocking the spreadsheet). <span class="menu">Virus &amp; threat protection → Manage settings → <b>Manage controlled folder access</b> → Allow an app through Controlled folder access → <b>+ Add an allowed app</b> → Recently blocked apps</span> (or "Browse all apps") and choose the <code>pythonw.exe</code> and <code>python.exe</code> above. Windows asks for administrator confirmation.</li>
+<li><b>Quarantine.</b> <span class="menu">Virus &amp; threat protection → <b>Protection history</b></span>, filter "Quarantined items" and choose <b>Restore</b>. History keeps about two weeks.</li>
+</ol>
+<p class="fonte">Official sources: <a href="https://support.microsoft.com/en-gb/topic/what-are-exclusions-in-windows-security-8b248399-5e63-4a4b-897f-52ea2dddb962" rel="noopener">What are exclusions in Windows Security</a> (Microsoft Support) · <a href="https://learn.microsoft.com/en-us/defender-endpoint/customize-controlled-folders" rel="noopener">Customize controlled folder access</a> (Microsoft Learn, updated 31 Aug 2026) · <a href="https://support.microsoft.com/en-us/windows/security/windows-security/protection-history-in-the-windows-security-app" rel="noopener">Protection history in the Windows Security app</a> (Microsoft Support, summary). Read on 14 Nov 2026. Full or scheduled scans still examine an excluded folder; only real-time protection lets it through.</p>
+</section>
+
+<section class="av" id="en-bitdefender"><h3>Bitdefender (Total Security, Internet Security, Antivirus Plus) <span class="etiqueta lida">source read</span></h3>
+<ol>
+<li><b>Folder.</b> <span class="menu"><b>Protection</b> → Antivirus → Open → <b>Settings</b> tab → <b>Manage Exceptions</b> → <b>+ Add an Exception</b></span>. Type <code>C:\LexSuiteONE</code> (no trailing asterisk) or browse to the folder, switch <b>Antivirus</b> on and click <b>Save</b>. The folder counts with its subfolders.</li>
+<li><b>Programs (Advanced Threat Defense).</b> Bitdefender keeps a separate exception list for behavior protection, which takes one executable at a time: under <span class="menu">Protection → <b>Advanced Threat Defense</b> → Open → Settings → <b>Manage exceptions</b></span>, add <code>C:\LexSuiteONE\python\pythonw.exe</code> and then <code>python.exe</code>. <span class="etiqueta parcial">verify</span> This path comes from the vendor's community; we found no official page describing it. At our first client (Nov 2026) this was the block: Bitdefender prevented the scheduled task from being created and allowed it after the folder exception.</li>
+<li><b>Quarantine.</b> <span class="menu">Protection → Antivirus → Open → Settings → <b>Manage Quarantine</b></span>, select the item and click <b>Restore</b> (administrator account required). Tick "Create exceptions for restored files" so it is not blocked again. Items older than 30 days are deleted.</li>
+</ol>
+<p class="fonte">Official sources: <a href="https://www.bitdefender.com/consumer/support/answer/13427/" rel="noopener">How to exclude files and folders from Bitdefender Antivirus scan</a> (updated 12 Aug 2022) · <a href="https://www.bitdefender.com/consumer/support/answer/2092/" rel="noopener">Restore quarantined files</a> (summary). Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-kaspersky"><h3>Kaspersky (Standard, Plus, Premium) <span class="etiqueta lida">source read</span></h3>
+<ol>
+<li><b>Folder.</b> In the settings (⚙), open <span class="menu"><b>Manage exclusions</b> → <b>Add</b></span> (Kaspersky's help describes it from that point; the path to it varies by version) and in <b>File or folder</b> pick <code>C:\LexSuiteONE</code>. To be sure subfolders are covered, the documentation accepts masks: <code>C:\LexSuiteONE\**</code> (<code>**</code> covers any depth of subfolders). Each exclusion can be limited to protection components; leave it for all.</li>
+<li><b>Programs.</b> On the same screen, <span class="menu"><b>Specify trusted applications</b> → Add</span>, choose <code>C:\LexSuiteONE\python\pythonw.exe</code> and tick <b>Do not monitor application activity</b>; repeat for <code>python.exe</code>. Note: a trusted application is still scanned as a file, so the folder exclusion in step 1 is still needed.</li>
+<li><b>Quarantine.</b> On the home screen, <span class="menu"><b>Security</b> → <b>Quarantine</b> button</span> (top right), select the item and click <b>Restore</b>.</li>
+</ol>
+<p class="fonte">Official sources: <a href="https://support.kaspersky.com/help/Kaspersky/Win21.22/en-US/201385.htm" rel="noopener">Configuring exclusions and trusted applications</a> (Kaspersky for Windows 21.22 help) · <a href="https://support.kaspersky.com/kaspersky-for-windows/70904" rel="noopener">Quarantine</a> (summary). Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-eset"><h3>ESET (NOD32, Internet Security, HOME Security) <span class="etiqueta lida">source read</span></h3>
+<ol>
+<li><b>Folder.</b> Open ESET and press <b>F5</b> (Advanced setup). Under <span class="menu"><b>Scans</b> → <b>Performance exclusions</b> → Edit → <b>Add</b></span>, click <b>…</b> next to <i>Path</i>, choose the folder and confirm. ESET's help writes the folder with <code>\*</code> at the end: <code>C:\LexSuiteONE\*</code>. The exclusion applies to real-time protection and to scans.</li>
+<li><b>Programs.</b> ESET has no separate process list in its home products; the folder exclusion covers <code>pythonw.exe</code> and <code>python.exe</code>, which live inside it. If ESET shows a prompt about them, choose to allow. <span class="etiqueta parcial">verify</span> ESET also offers "detection exclusions", which it describes as high risk; do not use them.</li>
+<li><b>Quarantine.</b> <span class="menu"><b>Tools</b> → <b>Quarantine</b></span>, right-click the item and choose <b>Restore</b> or <b>Restore and exclude from scanning</b>.</li>
+</ol>
+<p class="fonte">Official sources: <a href="https://support.eset.com/en/kb2769" rel="noopener">Exclude files or folders from scanning in ESET home products for Windows</a> (KB2769, updated 12 Nov 2026) · <a href="https://support.eset.com/en/kb3195-restore-a-quarantined-file-in-eset-windows-home-products" rel="noopener">Restore a quarantined file</a> (KB3195, summary). Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-avast"><h3>Avast (Free Antivirus, Premium Security, One) <span class="etiqueta lida">source read</span></h3>
+<ol>
+<li><b>Folder and programs at once.</b> <span class="menu"><b>Menu</b> → Settings → <b>General</b> → <b>Exceptions</b> → <b>Add exception</b></span>. On the <b>File/Folder</b> tab, click the folder icon, pick <code>C:\LexSuiteONE</code> and confirm with <b>Add</b>. Under <b>Advanced options</b> keep every shield ticked (All scans, Behavior Shield, File Shield, Hardened Mode, CyberCapture): the same exception then covers behavior protection. Optionally add <code>C:\LexSuiteONE\python\pythonw.exe</code> and <code>python.exe</code> as files too.</li>
+<li><b>Quarantine.</b> Look for <b>Quarantine</b> in Avast's menu, select the item and restore it. <span class="etiqueta parcial">verify</span> The exceptions article points to a separate quarantine article we did not read.</li>
+</ol>
+<p class="fonte">Official source: <a href="https://support.avast.com/en-ph/article/168/?option=av" rel="noopener">Adjusting exceptions in Avast Antivirus</a> (article 168, updated 21 Jan 2026; Avast One has its own article with the same Settings → Exceptions path). Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-avg"><h3>AVG (AntiVirus Free, Internet Security) <span class="etiqueta lida">source read</span></h3>
+<ol>
+<li><b>Folder and programs at once.</b> <span class="menu"><b>Menu</b> → Settings → <b>General</b> → <b>Exceptions</b> → <b>Add exception</b> → Next</span>. On the <b>File/Folder</b> tab pick <code>C:\LexSuiteONE</code>. Under <b>Advanced options</b> keep every shield ticked (All scans, Behavior Shield, File Shield, Hardened Mode, CyberCapture). If AVG wants the folder with an asterisk, use <code>C:\LexSuiteONE\*</code>.</li>
+<li><b>Quarantine.</b> Look for <b>Quarantine</b> in AVG's menu, select the item and restore it. <span class="etiqueta parcial">verify</span> The exceptions page points to a separate article we did not read.</li>
+</ol>
+<p class="fonte">Official source: <a href="https://support.avg.com/SupportArticleView?l=en&amp;urlname=AVG-Antivirus-scan-exclusions" rel="noopener">How to exclude items from scans in AVG AntiVirus</a>. Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-norton"><h3>Norton 360 (and Norton AntiVirus Plus) <span class="etiqueta lida">source read</span></h3>
+<ol>
+<li><b>Folder.</b> Open Norton, go to <span class="menu"><b>Security</b> → <b>Scans</b> → <b>Exclusions</b> tab → <b>Add Exclusion</b></span>, click the browse icon, pick <code>C:\LexSuiteONE</code> and confirm with <b>Add</b>. The documentation says the exclusion applies to Auto-Protect and Behavioral Protection.</li>
+<li><b>Programs.</b> <span class="etiqueta parcial">verify</span> Norton warns that an item excluded from one component may still be detected by another (Behavioral Protection, File Insight, Data Protector). If a warning about <code>pythonw.exe</code> or <code>python.exe</code> appears, choose <b>Trust</b>/<b>Allow</b> in the warning itself; the vendor has no official page describing a separate program list in its home products.</li>
+<li><b>Quarantine.</b> Open Norton's security history (<span class="menu">Security → <b>History</b></span>), look for quarantined items and restore the item. <span class="etiqueta parcial">verify</span> The official page "Act on quarantined risks or threats" was not read in full.</li>
+</ol>
+<p class="fonte">Official source: <a href="https://support.norton.com/sp/en/us/home/current/solutions/v3672136" rel="noopener">Exclude files and folders from Norton scans</a> (updated 24 Apr 2025). Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-mcafee"><h3>McAfee (Total Protection, LiveSafe) <span class="etiqueta parcial">verify</span></h3>
+<ol>
+<li><b>Files (real-time protection).</b> <span class="menu">Settings (⚙) → <b>Real-Time Scanning</b> → <b>Excluded Files</b> → <b>Add file</b></span>: add <code>C:\LexSuiteONE\python\pythonw.exe</code> and <code>C:\LexSuiteONE\python\python.exe</code>. In the official help we located, real-time protection excludes <b>files</b>, not whole folders; folders only apply to scheduled or custom scans.</li>
+<li><b>Programs and quarantine.</b> We found no current official vendor page for allowing a program in behavior protection or for restoring from quarantine. Look for "Quarantined items" in McAfee's settings, or check with the vendor or the firm's IT.</li>
+</ol>
+<p class="fonte">Source: <a href="https://www.mcafee.com/support/" rel="noopener">McAfee official support</a>; the help we read is for Total Protection 13.6 (old), summary only. Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-trend"><h3>Trend Micro (Maximum Security, Internet Security) <span class="etiqueta parcial">verify</span></h3>
+<ol>
+<li><b>Folder.</b> <span class="menu"><b>Settings</b> (⚙) → <b>Exception Lists</b></span>, on the files and folders tab (name not confirmed), <b>+ Add</b> and pick <code>C:\LexSuiteONE</code>. The current documentation for this screen was unavailable when we read it; the path comes from vendor articles about other tabs of the same list.</li>
+<li><b>Programs (Folder Shield).</b> If ransomware protection blocks writing the spreadsheet, under <span class="menu">Settings → <b>Folder Shield</b> → <b>Trusted Program List</b> → Add → Browse</span>, add <code>C:\LexSuiteONE\python\pythonw.exe</code> and then <code>python.exe</code> (one at a time). This path comes from the vendor's community.</li>
+<li><b>Quarantine.</b> No current official page found. Look for "Quarantine" or "Logs" on the home screen, or check with the vendor or IT.</li>
+</ol>
+<p class="fonte">Source: <a href="https://helpcenter.trendmicro.com/en-us/" rel="noopener">Trend Micro help center</a> (Exception Lists article, tmka-11379). Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-sophos"><h3>Sophos Home <span class="etiqueta parcial">verify</span></h3>
+<ol>
+<li><b>Folder.</b> In Sophos Home the setting lives in the Sophos Home <b>online dashboard</b> (with the firm's login), not in the program: pick the computer, <span class="menu"><b>PROTECTION</b> → <b>General</b> → <b>Exceptions</b></span> and add the folder with a trailing backslash: <code>C:\LexSuiteONE\</code> (includes subfolders).</li>
+<li><b>Programs (exploit and behavior protection).</b> In the program, <span class="menu"><b>Help</b> → <b>Troubleshooting</b> → <b>Local Exclusions</b> → <b>Add</b></span>, choose <code>C:\LexSuiteONE\python\pythonw.exe</code> and <code>python.exe</code>. The exclusion takes effect after a restart or about two hours.</li>
+<li><b>Quarantine.</b> No current official page found; check with the vendor or IT.</li>
+</ol>
+<p class="fonte">Sources: <a href="https://support.home.sophos.com/hc/en-us/articles/115005499966" rel="noopener">Setting Scan Exceptions</a> and <a href="https://support.home.sophos.com/hc/en-us/articles/360000501206" rel="noopener">Local Exclusions</a> (Sophos Home; summary only, the page refused automated reading). Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-panda"><h3>Panda Dome <span class="etiqueta parcial">verify</span></h3>
+<ol>
+<li><b>Folder.</b> <span class="menu"><b>Advanced settings</b> (⚙) → <b>Exclusions</b> → <b>Add</b></span>, tick the folder <code>C:\LexSuiteONE</code> and confirm. The official help we read is generic (no version); the path in the current Panda Dome may differ.</li>
+<li><b>Programs and quarantine.</b> We found no official page for allowing a program in behavior protection. The official help has a <a href="https://www.pandasecurity.com/homeusers/downloads/docs/product/help/pd/en/55.htm" rel="noopener">quarantine page</a> (not read); restore the item following it and add the exclusion, or check with the vendor or IT.</li>
+</ol>
+<p class="fonte">Source: <a href="https://www.pandasecurity.com/homeusers/downloads/docs/product/help/pd/en/43.htm" rel="noopener">Panda Dome help: Exclusions</a>. Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-malwarebytes"><h3>Malwarebytes Premium <span class="etiqueta parcial">verify</span></h3>
+<ol>
+<li><b>Folder and programs.</b> <span class="menu"><b>Detection History</b> → <b>Allow list</b> tab → <b>Add item</b></span>. The list takes a file, folder, application or website: add the folder <code>C:\LexSuiteONE</code> and, as applications, <code>C:\LexSuiteONE\python\pythonw.exe</code> and <code>python.exe</code>.</li>
+<li><b>Quarantine.</b> <span class="menu">Detection History</span>, on the quarantined items tab, select the item, click <b>Restore</b> and tick "Exclude this from future detections".</li>
+</ol>
+<p class="fonte">Sources: <a href="https://help.malwarebytes.com/hc/en-us/articles/22766550894867" rel="noopener">Add and remove items from the Allow list</a> and <a href="https://help.malwarebytes.com/hc/en-us/articles/22745887319955" rel="noopener">Manage quarantined items</a> (Malwarebytes; summary only, the page refused automated reading). Read on 14 Nov 2026.</p>
+</section>
+
+<section class="av" id="en-avira"><h3>Avira (Free Security, Prime) <span class="etiqueta parcial">verify</span></h3>
+<ol>
+<li><b>Folder.</b> <span class="menu"><b>Security</b> → <b>Protection options</b> → <b>Real-time protection</b> (⚙) → <b>Exceptions</b></span>, add the folder with a trailing backslash: <code>C:\LexSuiteONE\</code>. Avira keeps separate lists for real-time protection and for the <b>System Scanner</b>; add the folder to both.</li>
+<li><b>Programs.</b> The same exceptions screen accepts processes; add <code>C:\LexSuiteONE\python\pythonw.exe</code> and <code>python.exe</code>. We could not read the exact step on the official page.</li>
+<li><b>Quarantine.</b> No current official page found; look for "Quarantine" under Security, or check with the vendor or IT.</li>
+</ol>
+<p class="fonte">Source: <a href="https://support.avira.com/hc/en-us/articles/360002884254" rel="noopener">How do I exclude files or processes from scanning?</a> (Avira; summary only, the page refused automated reading). Read on 14 Nov 2026.</p>
+</section>
+</div>
+
+<div class="cartao">
+<h2 id="en-after" style="margin-top:0">5. After allowing</h2>
+<ol>
+<li>If the installer had been deleted, download it again from the <a href="./">home page</a> and run <code>INSTALAR.bat</code>.</li>
+<li>Open {{marca.nome}}, go to <b>Settings → Gazette reading</b> and click <b>Save</b>: the program recreates the scheduled task and confirms on screen.</li>
+<li>Under <b>Settings → About this computer → Reading history</b> you can check that reading is happening again. If it keeps blocking, write to <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a> with the antivirus name and the message shown.</li>
+</ol>
+</div>
+
+<div class="cartao">
+<h2 id="en-sources" style="margin-top:0">6. About the sources</h2>
+<p class="mudo">Each section points to the vendor's official page and the date we read it. We do not invent menu paths: where the official page was not found or could not be read in full, the section says so and asks you to check with the vendor or IT. Found an outdated path? Tell us at <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>. This page requests nothing from any server: links only open when you click them.</p>
+</div>
+</div>
+</div>
+</div>
+
+</div></main>
+<footer><span data-t="rod">{{marca.nome}} é um produto da LexSuiteONE, da <a href="https://solverone.com.br">SolverONE</a>. Dúvidas: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a></span></footer>
+
+<script>
+(function () {
+  // Só conteúdo fixo desta página; a troca de idioma mostra um bloco e esconde o outro. Nada vem de fora.
+  var EN = { manual: "Manual", rod: '{{marca.nome}} is a LexSuiteONE product by <a href="https://solverone.com.br">SolverONE</a>. Questions: <a href="mailto:judicial@solverone.com.br">judicial@solverone.com.br</a>' };
+  var PT = {};
+  document.querySelectorAll("[data-t]").forEach(function (n) { PT[n.getAttribute("data-t")] = n.innerHTML; });
+  function aplicar(lang) {
+    var en = lang === "en";
+    document.getElementById("pt").hidden = en; document.getElementById("en").hidden = !en;
+    document.querySelectorAll("[data-t]").forEach(function (n) { var k = n.getAttribute("data-t"); n.innerHTML = en ? EN[k] : PT[k]; });
+    document.documentElement.lang = en ? "en" : "pt-BR";
+    document.getElementById("b-pt").setAttribute("aria-pressed", String(!en));
+    document.getElementById("b-en").setAttribute("aria-pressed", String(en));
+    try { localStorage.setItem("judicial-idioma", lang); } catch (e) {}
+  }
+  document.getElementById("b-pt").addEventListener("click", function () { aplicar("pt"); });
+  document.getElementById("b-en").addEventListener("click", function () { aplicar("en"); });
+  var guardado = null; try { guardado = localStorage.getItem("judicial-idioma"); } catch (e) {}
+  if (guardado === "en" || (!guardado && /^en\b/i.test(navigator.language || ""))) aplicar("en");
+  // Se o endereço veio com #en-… ou #pt-…, mostra o idioma daquele trecho.
+  if (/^#en-/.test(location.hash)) aplicar("en"); else if (/^#pt-/.test(location.hash)) aplicar("pt");
+  ["pt", "en"].forEach(function (l) {
+    document.getElementById(l + "-copiar").addEventListener("click", function () {
+      var texto = document.getElementById(l + "-ti-texto").textContent, ok = document.getElementById(l + "-copiado");
+      (navigator.clipboard ? navigator.clipboard.writeText(texto) : Promise.reject()).then(function () {
+        ok.hidden = false; setTimeout(function () { ok.hidden = true; }, 2500);
+      }).catch(function () { window.prompt("", texto); });
+    });
+  });
+})();
+</script>
+</body>
+</html>
