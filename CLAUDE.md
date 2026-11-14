@@ -66,7 +66,11 @@ nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUAD
   congelada em 08/Nov/2026; não a toque. Na mudança para a organização `solverone`, ela será refeita a partir da `main`.
 - Publicar versão do robô: nunca crie tag à mão. Suba a versão no código, envie para a `main` e dispare a automação
   "Publicar versão assinada" (workflow_dispatch, `publicar.yml`); ela assina, publica e cria a tag. Ver `docs/PUBLICAR.md`.
-- Textos para o usuário em PT e EN. Nenhum identificador de modelo de IA em commits, PRs ou código.
+- Textos para o usuário em PT, EN e ES (diretriz do dono, 14/Nov/2026: três idiomas oficiais, PT do Brasil, EN dos EUA e ES
+  da Espanha; um seletor só, bandeira em SVG + sigla, componente do módulo comum, nunca emoji nem botão próprio; ES entra num
+  produto só quando ele estiver 100 % traduzido e revisado, e texto jurídico em ES passa por advogado antes de publicar; até lá,
+  PT e EN. Detalhe na diretriz geral do `rootify-one`, seção "Idioma e datas"). Nenhum identificador de modelo de IA em
+  commits, PRs ou código.
 - Commits sem rastro de ferramenta de IA (decisão do dono, 08/Nov): nenhuma linha `Co-Authored-By`, `Claude-Session`,
   `Generated with` ou parecida, nenhum nome de modelo ou de fornecedor. O histórico antigo fica como está (nunca
   reescrever); ele será refeito na migração para a organização `solverone`.
