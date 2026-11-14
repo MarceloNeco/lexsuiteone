@@ -64,7 +64,7 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
 <header><span class="nome">RADAR <b>JUDICIAL</b></span><span class="mudo">· LexSuiteONE · Lista de ações</span><span class="proto">PROTÓTIPO 0.7.46 · dados fictícios</span></header>
 <main>
   <div class="barra">
-    <span class="chip on">TRT2</span><span class="chip on">Setor: Comércio</span><span class="chip on">Últimos 30 dias</span><span class="chip">Situação: todas</span>
+    <span class="chip on">TRT2</span><span class="chip on">Setor: Comércio</span><span class="chip on">Últimos 30 dias</span><span class="chip">Situação: todas</span><span class="chip" title="Aparece depois do primeiro pedido à área logada">Área logada: todos ▾</span>
     <span class="conta">Na lista: <b id="n-lista">1.248</b> ações · marcadas: <b id="n-marc">12</b></span>
   </div>
 
@@ -113,7 +113,7 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
 <script>
 (function(){
   var S = { escopo:"marcados", n:50, dados:{valor:true,data:true,contato:true,socio:false}, ferramenta:"claude", modo:"texto", passo:1 };
-  var LISTA = 1248, MARC = 12, FALTA_LISTA = 1102, LIMITE_DIA = 100, USADOS_HOJE = 0;
+  var LISTA = 1248, MARC = 12, FALTA_LISTA = 1102, LIMITE_DIA = 50, USADOS_HOJE = 0;   // LIMITE_DIA = limite por pedido (uma sessão do PJe)
   var fundo = document.getElementById("fundo"), corpo = document.getElementById("corpo"), rodape = document.getElementById("rodape");
   function el(t,c,x){var e=document.createElement(t); if(c) e.className=c; if(x!=null) e.textContent=x; return e;}
   function num(n){return n.toLocaleString("pt-BR");}
@@ -128,11 +128,11 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
       var g=el("div","opc");
       [["marcados","Só os "+MARC+" processos marcados","Os que você marcou na lista."],
        ["primeiros","Os primeiros N da lista filtrada","Na ordem da lista (mais recentes primeiro). Hoje a lista tem "+num(LISTA)+" ações; "+num(FALTA_LISTA)+" ainda têm algo faltando."],
-       ["lista","Toda a lista filtrada, até o limite do dia","Vai pedir "+num(Math.min(FALTA_LISTA,LIMITE_DIA))+" hoje; o resto fica para os próximos dias, sempre começando pelo que falta."]].forEach(function(o){
+       ["lista","Os próximos da lista filtrada que ainda não foram ao PJe","Pega os "+LIMITE_DIA+" primeiros que ainda têm algo faltando e nunca foram pedidos (ou estão como \"tentar depois\"). Os outros "+num(FALTA_LISTA-LIMITE_DIA)+" ficam para os próximos pedidos: cada pedido é uma sessão do PJe (o login com token expira; a ferramenta roda uma sessão por vez)."]].forEach(function(o){
         var l=el("label", S.escopo===o[0]?"on":""), r=document.createElement("input"); r.type="radio"; r.name="esc"; r.checked=S.escopo===o[0];
         r.addEventListener("change",function(){S.escopo=o[0]; render();}); l.appendChild(r);
         var d=el("div"); d.appendChild(document.createTextNode(o[1])); d.appendChild(el("small",null,o[2]));
-        if(o[0]==="primeiros"){ var w=el("div","linha"); var inp=document.createElement("input"); inp.type="number"; inp.min=1; inp.max=LIMITE_DIA; inp.value=S.n; inp.addEventListener("input",function(){S.n=Math.max(1,Math.min(LIMITE_DIA,parseInt(inp.value||"1",10))); atualizaResumo();}); w.appendChild(el("span",null,"N =")); w.appendChild(inp); w.appendChild(el("span","nota","(máximo "+LIMITE_DIA+" por dia)")); d.appendChild(w); }
+        if(o[0]==="primeiros"){ var w=el("div","linha"); var inp=document.createElement("input"); inp.type="number"; inp.min=1; inp.max=LIMITE_DIA; inp.value=S.n; inp.addEventListener("input",function(){S.n=Math.max(1,Math.min(LIMITE_DIA,parseInt(inp.value||"1",10))); atualizaResumo();}); w.appendChild(el("span",null,"N =")); w.appendChild(inp); w.appendChild(el("span","nota","(máximo "+LIMITE_DIA+" por pedido: é o que cabe numa sessão do PJe antes de o login expirar)")); d.appendChild(w); }
         l.appendChild(d); g.appendChild(l);
       });
       corpo.appendChild(g);
@@ -142,7 +142,7 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
         var l=el("label",null); var c=document.createElement("input"); c.type="checkbox"; c.checked=S.dados[o[0]]; c.addEventListener("change",function(){S.dados[o[0]]=c.checked;}); l.appendChild(c); l.appendChild(document.createTextNode(" "+o[1])); h.appendChild(l); });
       corpo.appendChild(h);
       var r=el("div","aviso info"); r.id="resumo1"; corpo.appendChild(r); atualizaResumo();
-      corpo.appendChild(el("p","nota","Limite do dia: "+LIMITE_DIA+" processos (Configuração → Área logada). Processos em que o advogado não atua podem ser bloqueados pelo tribunal por excesso de acessos; o pedido avisa a ferramenta para pular esses."));
+      corpo.appendChild(el("p","nota","Limite por pedido: "+LIMITE_DIA+" processos (Configuração → Área logada), em lotes de 25. O programa marca o que já pediu: o próximo pedido começa do que falta. Processos em que o advogado não atua podem ser bloqueados pelo tribunal; o pedido manda a ferramenta pular esses."));
       bot("Cancelar",fechar); bot("Continuar",function(){setPasso(2);},"forte");
     }
     if(S.passo===2){
@@ -157,7 +157,7 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
       corpo.appendChild(passos);
       var l2=el("div","linha"); var bc=el("button","latao","Copiar pedido"); bc.addEventListener("click",function(){bc.textContent="Copiado ✓"; setTimeout(function(){bc.textContent="Copiar pedido";},1800);}); l2.appendChild(bc);
       var bs=el("button",null,"Salvar como arquivo (.md)"); l2.appendChild(bs); l2.appendChild(el("span","nota","O arquivo também fica em saida\\contatos\\pedido-pje-2026-11-14.md")); corpo.appendChild(l2);
-      var det=document.createElement("details"); var sm=el("summary",null,"Ver o pedido (o que vai colado)"); det.appendChild(sm); var pre=el("pre",null,"# Pedido de dados ao PJe (14/11/2026) · RADAR JUDICIAL · lote 1 de "+lotes(q)+"\n\nVocê está numa aba do PJe do TRT da 2ª Região, 1º grau, já logado como advogado…\nNUNCA: abrir tela de login; baixar processo completo; abrir expedientes; peticionar; anotar dado de pessoa ou CPF.\nROTEIRO POR PROCESSO: painel → número → processo → Valor da causa, Distribuído → Dados do processo (Polo Passivo: endereço, e-mail) → petição inicial → notificação…\nRESPOSTA PARA O RADAR v1 · lote 1 de "+lotes(q)+"\n| processo | dado | valor | resultado | fonte | data | observação |\n\n## Processos (25 de "+num(q)+")\n| 0000001-11.2026.5.02.0001 | TRT2 | Empresa Exemplo Um Ltda | 11.222.333/0001-81 | valor_causa, email, telefone |\n…"); pre.style.cssText="font-size:12px;white-space:pre-wrap;background:var(--papel-2);padding:10px;border-radius:10px"; det.appendChild(pre); corpo.appendChild(det);
+      var cx=el("div"); cx.style.cssText="border:1px solid var(--fio);border-radius:12px;margin-top:10px;overflow:hidden"; var cxt=el("div","linha"); cxt.style.cssText="padding:6px 10px;background:var(--papel-2);border-bottom:1px solid var(--fio)"; cxt.appendChild(el("b",null,"O pedido (o que vai colado), "+num(q)+" processos")); var bc2=el("button","txt","Copiar de novo"); bc2.addEventListener("click",function(){bc2.textContent="Copiado ✓"; setTimeout(function(){bc2.textContent="Copiar de novo";},1500);}); cxt.appendChild(bc2); cx.appendChild(cxt); corpo.appendChild(cx); var det=cx; var pre=el("pre",null,"# Pedido de dados ao PJe (14/11/2026) · RADAR JUDICIAL · lote 1 de "+lotes(q)+"\n\nVocê está numa aba do PJe do TRT da 2ª Região, 1º grau, já logado como advogado…\nNUNCA: abrir tela de login; baixar processo completo; abrir expedientes; peticionar; anotar dado de pessoa ou CPF.\nROTEIRO POR PROCESSO: painel → número → processo → Valor da causa, Distribuído → Dados do processo (Polo Passivo: endereço, e-mail) → petição inicial → notificação…\nRESPOSTA PARA O RADAR v1 · lote 1 de "+lotes(q)+"\n| processo | dado | valor | resultado | fonte | data | observação |\n\n## Processos (25 de "+num(q)+")\n| 0000001-11.2026.5.02.0001 | TRT2 | Empresa Exemplo Um Ltda | 11.222.333/0001-81 | valor_causa, email, telefone |\n…"); pre.style.cssText="font-size:12px;white-space:pre-wrap;padding:10px;margin:0;max-height:160px;overflow:auto"; det.appendChild(pre);
       corpo.appendChild(el("p","nota","O que nunca entra, mesmo que a ferramenta devolva: CPF, dado do autor da ação, de testemunhas, de peritos ou de advogados. O programa recusa linha por linha."));
       bot("Voltar",function(){setPasso(1);}); bot("Já tenho a resposta: passo 3",function(){setPasso(3);},"forte");
     }
@@ -167,7 +167,7 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
       ta.addEventListener("click",function(){S.modo="texto";render();}); tb.addEventListener("click",function(){S.modo="arquivo";render();}); abas.appendChild(ta); abas.appendChild(tb); corpo.appendChild(abas);
       if(S.modo==="texto"){ var t=document.createElement("textarea"); t.placeholder="Cole aqui tudo o que a ferramenta devolveu. O programa acha sozinho os blocos \"RESPOSTA PARA O RADAR v1\" e ignora o resto."; corpo.appendChild(t); }
       else { var z=el("div","solta"); z.appendChild(el("b",null,"Arraste o arquivo aqui ou clique para escolher")); z.appendChild(document.createTextNode("resposta-radar-lote-1.md, .txt ou um .zip com vários lotes · até 20 MB · nada é executado, só lido")); corpo.appendChild(z); }
-      corpo.appendChild(el("p","nota","Recebido até agora hoje: lote 1 de 2 (lido às 10:12). Falta o lote 2."));
+      corpo.appendChild(el("p","nota","Recebido até agora hoje: lote 1 de 2 (lido às 10:12). Falta o lote 2. Se o texto não tiver nenhum bloco reconhecível, o programa diz \"Não achei a tabela RESPOSTA PARA O RADAR v1 neste texto\" e mostra as 3 primeiras linhas do que recebeu, para você conferir se colou a coisa certa."));
       bot("Voltar",function(){setPasso(2);}); bot("Ler a resposta",function(){setPasso(4); processar();},"forte");
     }
     if(S.passo===4){
@@ -176,7 +176,7 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
       var res=el("div"); res.id="res"; corpo.appendChild(res);
     }
   }
-  function atualizaResumo(){ var r=document.getElementById("resumo1"); if(!r) return; var q=quantos(); r.innerHTML=""; r.appendChild(document.createTextNode("Vão no pedido: ")); r.appendChild(el("b",null,num(q)+" processos")); r.appendChild(document.createTextNode(" em "+lotes(q)+" lote(s) de até 25, só com o que falta em cada um. Tempo estimado na ferramenta: ~"+Math.ceil(q*20/60)+" min.")); if(S.escopo==="lista" && FALTA_LISTA>LIMITE_DIA){ r.appendChild(el("div","nota","Ficam para os próximos dias: "+num(FALTA_LISTA-LIMITE_DIA)+" processos (o programa lembra o que já pediu).")); } }
+  function atualizaResumo(){ var r=document.getElementById("resumo1"); if(!r) return; var q=quantos(); r.innerHTML=""; r.appendChild(document.createTextNode("Vão no pedido: ")); r.appendChild(el("b",null,num(q)+" processos")); r.appendChild(document.createTextNode(" em "+lotes(q)+" lote(s) de até 25, só com o que falta em cada um. Tempo estimado na ferramenta: ~"+Math.ceil(q*20/60)+" min.")); if(S.escopo==="lista" && FALTA_LISTA>LIMITE_DIA){ r.appendChild(el("div","nota","Ficam para os próximos pedidos: "+num(FALTA_LISTA-LIMITE_DIA)+" processos (o programa lembra o que já pediu; use o filtro \"Área logada: ainda não pedido\").")); } }
   function bot(t,f,c){ var b=el("button",c||"",t); b.addEventListener("click",f); rodape.appendChild(b); }
   function fechar(){ fundo.classList.remove("aberta"); }
   function processar(){
@@ -193,6 +193,14 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
     [["Valor da causa",44,50],["Data de ajuizamento",48,50],["Endereço",38,50],["E-mail",19,50],["Telefone",7,50],["Site",4,50],["Sócio citado",2,50]].forEach(function(b){ var l=el("div","bar"); l.appendChild(el("span",null,b[0])); var t=el("div","t"); var i=el("i"); i.style.width=Math.round(b[1]/b[2]*100)+"%"; t.appendChild(i); l.appendChild(t); l.appendChild(el("span","nota",b[1]+" / "+b[2])); res.appendChild(l); });
     var a1=el("div","aviso quente"); a1.innerHTML="<b>Tentar depois (3):</b> 2 com petição em PDF sem texto (0000003-33…, 0000017-77…) e 1 fora do acervo do advogado (0000029-19…). O próximo pedido inclui só estes, se você quiser."; res.appendChild(a1);
     var a2=el("div","aviso erro"); a2.innerHTML="<b>Recusadas (2 linhas):</b> linha 31: CPF na coluna valor · linha 44: dado do reclamante. Não entraram no programa."; res.appendChild(a2);
+    var mud=el("div"); mud.style.cssText="border:1px solid var(--fio);border-radius:12px;margin:8px 0;overflow:hidden";
+    var mt=el("div","linha"); mt.style.cssText="padding:8px 12px;background:var(--papel-2);border-bottom:1px solid var(--fio)"; mt.appendChild(el("b",null,"O que mudou nas fichas")); mt.appendChild(el("span","nota","(clique num processo para ver antes → depois)")); mud.appendChild(mt);
+    var tb=document.createElement("table"); tb.style.border="0"; tb.innerHTML="<thead><tr><th>Processo</th><th>Acrescentado</th><th>Alterado</th><th>Igual (já tinha)</th></tr></thead><tbody>"+
+      "<tr><td><button class='txt'>0000001-11.2026.5.02.0001</button></td><td>valor R$ 105.000,00 · e-mail</td><td>—</td><td>endereço (Receita)</td></tr>"+
+      "<tr><td><button class='txt'>0000002-22.2026.5.02.0002</button></td><td>valor R$ 48.250,50 · data 30/10/2026</td><td><span title='antes: Av. Antiga, 10 (Receita, 2025) → depois: Rua Exemplo, 100 (PJe, a conferir)'>endereço (Receita → PJe, a conferir)</span></td><td>—</td></tr>"+
+      "<tr><td><button class='txt'>0000004-44.2026.5.02.0004</button></td><td>e-mail · site</td><td><span title='antes: (41) 3333-0000 (Receita) → depois: (41) 99999-0000 (PJe petição)'>telefone (Receita → PJe)</span></td><td>valor</td></tr>"+
+      "<tr><td colspan='4' class='nota'>… mais 38 processos · totais: 61 dados acrescentados · 9 alterados (o anterior fica no histórico da ficha) · 14 iguais · 0 removidos (a área logada nunca apaga nada)</td></tr></tbody>";
+    mud.appendChild(tb); res.appendChild(mud);
     var a3=el("div","aviso ok"); a3.innerHTML="Lista, fichas e planilha atualizadas. Os 41 processos com dado novo ficam marcados com o selo <span class='selo novo'>área logada · hoje</span> e aparecem no filtro \"Completados hoje\"."; res.appendChild(a3);
     rodape.innerHTML=""; bot("Ver os 41 na lista",function(){fechar(); marcarNovos();},"forte"); bot("Novo pedido só com o que faltou (3)",function(){setPasso(2);}); bot("Fechar",fechar);
   }

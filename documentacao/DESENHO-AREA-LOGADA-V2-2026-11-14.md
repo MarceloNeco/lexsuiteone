@@ -45,6 +45,44 @@ e já pode ser usado por cima do pedido atual, à mão, hoje.
 7. Definição de pronto: manual (seção "Área logada"), AssistONE (ajuda, tour, busca: "área logada", "prompt", "colar resposta",
    "subir arquivo"), Novidades formais, termos sem mudança (seção 5 da 1.0 já descreve exatamente este fluxo), e-mail sem mudança.
 
+## 2b. Correções do dono no teste da 0.7.45 (14/Nov, 0h) e o que muda no desenho
+
+Defeitos vistos na 0.7.45 (Produto corrige na 0.7.46, junto com o resto):
+- O (?) da barra de lote abre fora da área visível no monitor do notebook e rola junto com a lista; tem de abrir para cima, dentro
+  da tela, fixo enquanto a lista rola (como os outros balões de ajuda).
+- A janela "Pedido pronto e copiado" aparece mais de uma vez por clique e não mostra o texto: passa a ter uma caixa com o pedido
+  (rolável, pequena) e o botão "Copiar de novo"; sem abrir a pasta sozinha.
+- O texto "8 colunas" na janela de colar.
+
+Mudanças de regra, a partir do que o dono viu no PJe:
+1. **Não existe "100 por dia"**. A sessão do PJe expira em pouco tempo e o login exige token físico (USB) com MFA, então cada pedido é
+   **uma sessão**: limite **por pedido** (padrão 25, máximo 50, em lotes de 25), sem promessa diária. A terceira opção do passo 1 vira
+   "os próximos N da lista filtrada que ainda não foram ao PJe".
+2. **Memória do que já foi pedido**: cada processo guarda "pedido em / respondido em / resultado" por dado. A lista ganha o filtro
+   **"Área logada: ainda não pedido · com dados · nada no processo · tentar depois"** e o selo "área logada · <data>" no cartão. O
+   filtro só aparece depois do primeiro pedido respondido.
+3. **Dado que já existia**: nunca se apaga nada. Valor e data novos substituem o antigo só se a fonte for mais forte (cadastro da
+   parte > petição > Receita > digitado) ou mais nova; o anterior fica no histórico da ficha. Contato novo é acrescentado; contato
+   igual não duplica. Tudo isso aparece no relatório como "acrescentado / alterado (antes → depois) / igual".
+4. **Relatório do resultado** (passo 4): totais (pedidos, com dado novo, nada no processo, tentar depois, recusadas), achados por
+   tipo de dado, tabela "o que mudou" por processo com antes → depois ao passar o mouse, e os botões "Ver na lista" e "Novo pedido
+   só com o que faltou". Se o texto não tiver nenhum bloco reconhecível: "Não achei a tabela RESPOSTA PARA O RADAR v1 neste texto",
+   com as 3 primeiras linhas do que chegou, para a pessoa ver se colou a coisa certa. Se o formato vier parecido mas diferente
+   (coluna a mais, cabeçalho mudado), o leitor aceita o que der para reconhecer e lista o resto como recusado com o motivo, nunca
+   trava.
+5. **Menu ☰ → Área logada** oferece as duas coisas: "Gerar pedido…" (abre o passo 1 com a lista atual) e "Trazer resposta…" (passo 3).
+6. **Arquivo**: além do texto colado, subir `.md`, `.txt` ou `.zip` (ferramentas que entregam artefato em vez de texto).
+
+## 2c. Interruptor por licença (feature flag) no RootifyONE
+
+Viável e barato: a `lex-conta` já devolve `recursos` {id: ligado} dos arquivos master do RootifyONE e o programa já esconde o que
+tem `data-recurso` desligado (interruptor do AssistONE). Falta o **nível por licença**: coluna `lex_contas.recursos` (jsonb), ficha do
+RootifyONE com o interruptor "Área logada", `lex-conta` v19 aplicando a licença por cima do global, e o programa marcando a barra,
+o menu e o botão do cartão com `data-recurso="area-logada"` (conferido a cada abertura, na verificação da licença, como hoje).
+Padrão inicial: **desligado na KR Law**, ligado na licença de teste, até o dono ligar pela ficha. SQL proposto em
+`nuvem/supabase/2026-11-14-lex-recursos-por-licenca.sql` (não aplicado; entra com o "pode aplicar"). Serve para qualquer recurso
+futuro (chamados, exportação para o Astrea), não só para este.
+
 ## 3. O que o Astrea tem a ver com isso
 
 Nada para **completar** a lista: o Astrea não tem dado de processo que o PJe não tenha. Ele entra em outro fluxo, já desenhado
