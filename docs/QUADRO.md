@@ -171,6 +171,7 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 14/Nov: **0.7.47 (CNJ fora e antivírus), em andamento** (prioridade do dono; desenho `documentacao/DESENHO-LEITURA-E-ANTIVIRUS-2026-11-14.md`, decisões 34 a 39). Arquivos: `robo/lexsuite/` (rede, causas, conta, agendar, saude, monitor, radar, app, config), `instalador/INSTALAR.bat` e `INSTALAR-COMPLETO.bat`, `robo/radar_modelo.html`, `paginas/` (manual, index, antivirus), `docs/email/` (conteúdo), `robo/ROTEIRO-INSTALACAO.md`, `docs/VISITA-KR-LAW.md`, testes, LEIA-ME, ARQUITETURA, PENDENCIAS (Produto).
 - 14/Nov: **0.7.46 (Área logada v2) pronta para publicar** (commit `74cf13a`). Conferido: itens a a i do
   pedido; `test_v0746.py` (21) e o bloco 6 do `fluxos.js` (11 conferências da tela: (?) fixo, passos 1 a 4, faixa que sobrevive a
   recarregar, "Não achei a tabela", totais, filtro, selo, interruptor desligado esconde barra, cartão, filtro e faixa); celular
