@@ -184,7 +184,25 @@ judicial.solverone.com.br/antivirus". Site e e-mail são coisa que o cliente vê
 | decisão | certificado OV de assinatura e instalador `.exe` | Arquitetura (desenho), dono (compra) | pergunta 34 |
 | contínuo | falso positivo aos fabricantes a cada versão grande | Operação | pergunta 39 |
 
-## Perguntas ao dono (na lista única do quadro, 34 a 39)
+## Decisões do dono (14/Nov, em chat; registradas no quadro)
+
+- 34 **Sem certificado de assinatura por enquanto.** Sai da ordem; fica o item 2.6.1 (tarefa às claras) e o 2.6.4.
+- 35 **Só a faixa**, mais uma **opção em Configuração: "Avisar por e-mail quando o CNJ ficar fora por mais de 4 horas"**, no e-mail
+  cadastrado para aquela instalação. Como: o programa manda a preferência na `verificar` (`avisar_cnj: true`), a `lex-conta` grava em
+  `lex_instalacoes.avisar_cnj`; a `lex-saude`, ao detectar queda longa em dia útil, manda um e-mail por instalação marcada (Resend, 1
+  por queda e 1 na volta). Termos: aviso de serviço ao e-mail já cadastrado, dentro da finalidade "prestar o serviço" (6.3); sem mudança.
+- 36 **Página de antivírus no site e linha no e-mail de boas-vindas: sim**, cobrindo **todos os principais antivírus do mercado**
+  (Microsoft Defender, Bitdefender, Kaspersky, ESET, Avast, AVG, Norton, McAfee, Trend Micro, Sophos, Panda, Malwarebytes, Avira),
+  cada um com fonte oficial e data; onde não houver fonte oficial, a página diz "confira com o fabricante ou a TI".
+- 37 **Leitura pela consulta quando o caderno cai: sim**, por padrão, só na leitura automática e a pedido (0.7.48).
+- 38 **Aviso geral do CNJ: deixar preparado** (tabela, resposta da `lex-conta` e faixa), sem equipe para alimentar agora.
+- 39 **Falso positivo aos fabricantes: aguardar** por enquanto.
+
+Ordem revista: 0.7.47 (Produto) = 1.1, 2.1, 2.2, 2.4, 2.6.1, opção de e-mail (35) e textos; Arquitetura junto = `lex-conta` v19
+(`estado_cnj`, campos do registro, `avisar_cnj`), SQL (`lex_registros`, `lex_instalacoes`), `lex-saude` com alerta à SolverONE e aos
+que marcaram; página `antivirus.html` (36) com a pesquisa oficial por fabricante; 0.7.48 = 1.3; preparado sem uso = 38.
+
+## Perguntas ao dono (na lista única do quadro, 34 a 39; respondidas)
 
 34. Certificado de assinatura (OV, ~US$ 300/ano + token, mais um instalador .exe): comprar agora ou adiar até 3 escritórios? Recomendo adiar.
 35. Queda longa do CNJ (mais de 4 h em dia útil): mandar e-mail ao escritório, ou só a faixa na tela? Recomendo só a faixa.
