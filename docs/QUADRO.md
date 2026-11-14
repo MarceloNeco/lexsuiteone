@@ -360,6 +360,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 14/Nov (2): protótipos do pedido gerado e da resposta esperada em `documentacao/prototipos/area-logada/` (dados fictícios) e
+  prompt para a Produto começar a 0.7.46 (`documentacao/PROMPT-PRODUTO-0.7.46-2026-11-14.md`). Agnóstico à ferramenta (Claude in
+  Chrome, Codex, Gemini): texto comum na ida, tabela Markdown na volta; o RADAR recusa linha a linha.
 - 14/Nov (1): **desenho "Área logada v2"** (`documentacao/DESENHO-AREA-LOGADA-V2-2026-11-14.md`): o que já existe desde a 0.7.16
   (filtro → Preparar busca → clipboard → colar resposta → lista), o que falta (prompt v2 embutido, lotes, arquivo, fonte nova,
   textos) e como o Leandro usa hoje com a 0.7.45. Pedido prioritário à Produto (0.7.46). Nenhum insumo a mais do dono.
