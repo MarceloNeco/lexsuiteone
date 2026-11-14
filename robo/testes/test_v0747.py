@@ -398,6 +398,11 @@ class Tela0747(unittest.TestCase):
         self.assertIn("var or_ = linhaOrigem(inf);", HTML)  # faixa da leitura que parou
         self.assertIn("function linhaSolverone()", HTML)
 
+    def test_novidades_de_quem_pula_versao(self):
+        # publicação conjunta (14/Nov): quem vai da 0.7.45 direto para a 0.7.47 vê também as Novidades da 0.7.46
+        self.assertIn("num_(k) > num_(visto_) && num_(k) < num_(v_)", HTML)
+        self.assertIn('"0.7.46": {', HTML); self.assertIn('"0.7.47": {', HTML)
+
     def test_licenca_conferida_de_30_em_30_minutos(self):
         self.assertIn("var MEIA_HORA = 30 * 60000;", HTML)
         self.assertIn("APP.conta = r.conta; bannerControle(); avisarRecursos();", HTML)

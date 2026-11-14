@@ -6030,8 +6030,15 @@ window.LEXSUITE_RADAR = null;
     try { localStorage.setItem("lexsuite:novidades-vistas", v_); } catch (e) {}
     if (!sempre && !visto_ && !USADO_ANTES) return;  // instalação nova (nada guardado deste programa): não há "novidade"; quem atualizou já tem outras escolhas guardadas
     var c_ = el("div"); c_.appendChild(el("h3", null, t("nov_t", { v: v_ })));
+    // 0.7.47: quem pula versões (ex.: da 0.7.45 direto para a 0.7.47) vê também as Novidades das que ficaram no meio
+    var num_ = function (x) { return String(x).split(".").map(function (p) { return ("000" + (parseInt(p, 10) || 0)).slice(-4); }).join("."); };
+    var meio_ = !sempre && visto_ && NOVIDADES[visto_] ? Object.keys(NOVIDADES).filter(function (k) { return num_(k) > num_(visto_) && num_(k) < num_(v_); }).sort(function (a, b) { return num_(b) < num_(a) ? -1 : 1; }) : [];
     if (n_) { var ul_ = el("ul", "novidades"); (n_[lang] || n_.pt).forEach(function (x) { ul_.appendChild(el("li", null, x)); }); c_.appendChild(ul_); }
     else c_.appendChild(el("p", null, t("nov_sem")));
+    meio_.forEach(function (k) {
+      c_.appendChild(el("h4", null, t("nov_t", { v: k }))); var u2_ = el("ul", "novidades");
+      (NOVIDADES[k][lang] || NOVIDADES[k].pt).forEach(function (x) { u2_.appendChild(el("li", null, x)); }); c_.appendChild(u2_);
+    });
     c_.appendChild(el("p", "nota-registro", t("nov_onde")));  // 0.7.32 (dono): onde rever
     abrirJanela(c_, [[t("nov_ok"), null, true]]); $("janela").classList.add("larga");  // 0.7.35 (dono): larga no computador
   }

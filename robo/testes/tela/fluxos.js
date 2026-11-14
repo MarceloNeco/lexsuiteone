@@ -221,6 +221,18 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.close();
   }
 
+  // 8. Quem pula versões (0.7.45 → 0.7.47) vê as Novidades das duas (revisão da publicação conjunta, 14/Nov)
+  {
+    const p = await b.newPage({ viewport: { width: 1366, height: 900 } }); p._erros = []; p.on('pageerror', e => p._erros.push(String(e)));
+    await p.addInitScript(() => { try { localStorage.setItem('lexsuite:novidades-vistas', '0.7.45'); localStorage.setItem('lexsuite:visao', 'lista'); } catch (e) {} });
+    await p.goto(URL_); await p.waitForFunction(() => document.getElementById('carregando').hidden, null, { timeout: 30000 }); await espera(800);
+    const nv = await p.evaluate(() => { const d = document.getElementById('janela'); return d && d.open ? d.innerText : ''; });
+    confere(/Novidades da versão 0\.7\.47/.test(nv) && /Novidades da versão 0\.7\.46/.test(nv) && !/Novidades da versão 0\.7\.45/.test(nv),
+      'Novidades: da 0.7.45 para a 0.7.47 mostra a 0.7.47 e a 0.7.46 (e não a 0.7.45, já vista)');
+    confere(p._erros.length === 0, 'Novidades: nenhum erro na página ' + p._erros.join(' | '));
+    await p.close();
+  }
+
   await b.close();
   console.log(res.join('\n'));
   console.log(falhas ? `\n${falhas} FALHA(S)` : '\nTUDO OK');
