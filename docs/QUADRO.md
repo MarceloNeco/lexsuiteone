@@ -172,7 +172,7 @@ Arquitetura (pedido no quadro).
 
 ### Fazendo agora
 - 14/Nov: **Planejado para a 0.7.48 (pedido do dono, 14/Nov): filtro de cidade na Lista**, ao lado de Estado; escolher o estado limita as cidades. Desenho em `robo/PENDENCIAS.md` (0.7.48): só na tela, com a cidade que já vem em cada processo, índice estado → cidades montado uma vez por carga, busca por digitação; sem consulta, coluna ou pedido novo. Junto com a leitura pela consulta (1.3).
-- 14/Nov: **0.7.47 (CNJ fora e antivírus) pronta para publicar** (commit da `main`: COMMIT_MAIN; instaladores no commit COMMIT_INST da
+- 14/Nov: **0.7.47 (CNJ fora e antivírus) pronta para publicar** (commit da `main`: `bd90e9b`; instaladores no commit `849904a` da
   branch `claude/lexsuiteone-judicial-product-22f871`, ver pedido à Operação). Conferido: itens a a i do pedido (h já estava na
   0.7.46; somou a conferência da licença de 30 em 30 min e "Recursos da licença"); `test_v0747.py` e `test_v0747_instalador.py`
   (classificador com respostas gravadas: 5xx JSON do CNJ + sonda ok, HTML da CloudFront, tempo esgotado + sonda falha, reset só no
@@ -655,8 +655,8 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 - **Produto → Operação (14/Nov, publicação da 0.7.47):** os instaladores novos (`instalador/INSTALAR.bat`, `INSTALAR-COMPLETO.bat`,
   os dois `.zip` de `docs/downloads/` gerados pelo `marca.py` e `robo/testes/test_v0747_instalador.py`) NÃO estão na `main`, porque o
-  site serve o instalador na hora do envio. Estão no commit COMMIT_INST da branch `claude/lexsuiteone-judicial-product-22f871`.
-  Ao publicar a 0.7.47 (com o "publica a versão 0.7.47" do dono), traga esse commit para a `main` (`git cherry-pick COMMIT_INST`;
+  site serve o instalador na hora do envio. Estão no commit `849904a` da branch `claude/lexsuiteone-judicial-product-22f871`.
+  Ao publicar a 0.7.47 (com o "publica a versão 0.7.47" do dono), traga esse commit para a `main` (`git cherry-pick `849904a``;
   se o `marca.py --conferir` reclamar, rode `python ferramentas/marca.py` e envie junto). O instalador novo chama
   `lexsuite_robo.py tarefa`, que só existe a partir da 0.7.47: por isso vão juntos.
 - **Produto → Arquitetura (14/Nov, 0.7.47, desvio de desenho para conferir):** (1) a leitura automática é criada sempre pelo XML
