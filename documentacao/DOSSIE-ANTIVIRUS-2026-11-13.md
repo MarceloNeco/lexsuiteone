@@ -148,6 +148,44 @@ Não era o antivírus nem a rede do hotspot (a resposta vinha do servidor do CNJ
 volta), 0.7.44 (confere o CNJ de 15 em 15 minutos com a tela aberta). Falta (Arquitetura): caminho alternativo pela
 consulta, dividindo por vara por causa do limite de 10 mil resultados.
 
+## 5A. Contexto do dia: a falha global da Microsoft 365 (12 e 13/Nov) — tem relação?
+
+**O que aconteceu (fontes abaixo, lidas em 14/Nov):** a Microsoft teve uma das maiores falhas da sua história, a partir
+de ~16h GMT de quinta 12/Nov (13h de Brasília), com Outlook, Teams, Copilot e SharePoint fora (centro: Exchange Online),
+recuperação ao longo de sexta 13/Nov; a Microsoft disse que não foi ataque. **O CNJ suspendeu a contagem dos prazos
+processuais em todo o país em 12 e 13/Nov** (Portaria Presidência n. 551, de 13/11, a pedido do Conselho Federal da OAB),
+"devido à instabilidade nos serviços da Microsoft 365, que comprometeu ferramentas de comunicação e de trabalho usadas
+pelos órgãos do Poder Judiciário"; os prazos voltam a correr em 16/11.
+
+**O que a Operação conferiu (14/Nov):**
+- O serviço que o RADAR usa (`comunicaapi.pje.jus.br`, o caderno do DJEN) fica atrás da **Amazon CloudFront** (cabeçalhos
+  `server: CloudFront`, `x-amz-cf-id`; endereço `dshng6yz6lla3.cloudfront.net`), não da Microsoft. A página do erro
+  ("500 | Server Error") é a do **próprio sistema do CNJ** (a aplicação), não da CloudFront nem da Microsoft.
+- Na casa do dono, o RADAR **leu o caderno de 13/11 às 10h13**, já com a Microsoft fora; o caderno passou a dar 500 à
+  tarde (13h30 em diante), para 11, 12 e 13/11, e a consulta pública continuava respondendo.
+
+**Conclusão honesta:** a coincidência de datas é forte, mas **não dá para afirmar** que a falha do caderno veio da
+Microsoft: o serviço não é hospedado nela, e o caderno funcionou de manhã com a Microsoft já fora. Pode haver
+dependência interna do CNJ que não aparece de fora (por exemplo, a geração dos cadernos usar algum serviço Microsoft), ou
+pode ter sido falha independente no mesmo dia. **O antivírus da KR Law não tem relação nenhuma com isso** (o bloqueio foi
+local, às 10h57, por comportamento).
+
+**O que isso ensina ao produto:** (1) quando o CNJ falha, a tela deve dizer que é do CNJ e que nada se perde (já faz:
+0.7.42 e 0.7.44); (2) vale a tela mostrar, quando houver, o **aviso oficial** do CNJ (ex.: "prazos suspensos em 12 e
+13/11") ao lado da falha, para o advogado entender que é geral e não do computador dele (avaliar com a Arquitetura:
+fonte oficial, sem raspar site); (3) no dia de uma falha geral, separar logo "é do CNJ" de "é do computador" evita horas
+de diagnóstico, como no dia 13.
+
+**Fontes:**
+- CNJ: [CNJ suspende prazos processuais por instabilidade no Microsoft 365](https://www.cnj.jus.br/cnj-suspende-prazos-processuais-por-instabilidade-no-microsoft-365/) (13/11/2026)
+- [Migalhas: CNJ suspende prazos processuais no país por instabilidade da Microsoft](https://www.migalhas.com.br/quentes/468607/cnj-suspende-prazos-processuais-no-pais-por-instabilidade-da-microsoft)
+- [OAB SP: CNJ suspende prazos processuais em todo o País nos dias 12 e 13 de novembro](https://www.oabsp.org.br/jornaldaadvocacia/26-11-13-1532-cnj-suspende-prazos-processuais-em-todo-o-pais-nos-dias-e-de-novembro)
+- [TRT11: CNJ suspende prazos processuais em 12 e 13 de novembro](https://portal.trt11.jus.br/index.php/comunicacao/11861-cnj-suspende-prazos-processuais-em-12-e-13-de-novembro-em-todo-pais)
+- [Al Jazeera: Microsoft hit by global outages: what happened and why?](https://www.aljazeera.com/news/2026/11/13/microsoft-hit-by-global-outages-what-happened-and-why)
+- [CNN: Microsoft says email service is approaching normal levels](https://www.cnn.com/2026/11/12/business/live-news/microsoft-global-outage-intl-hnk)
+- [RTÉ: Microsoft gradually restoring service after global outage](https://www.rte.ie/news/business/2026/1113/1599061-microsoft-tech-outage/)
+- [NBC News: Microsoft scrambles to fix major outage](https://www.nbcnews.com/tech/tech-news/live-blog/microsoft-outage-outlook-teams-updates-fix-rcna609118)
+
 ## 6. Material em outras conversas
 
 - Conversa da Produto (13/Nov, 10h57 e 10h59): as fotos 00a e 00b (já no pacote) e os pedidos do dono que levaram ao pacote
