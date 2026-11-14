@@ -166,6 +166,11 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 
 - Leitura pela consulta pública quando o caderno cai (desenho "CNJ fora e antivírus", 1.3; decisão 37: ligada por padrão, só na
   leitura automática e a pedido).
+- **Limpeza automática** (pedido do dono, 14/Nov; decisões 40 a 42): a cada leitura, resumir com 6 meses (sai o texto pesado do
+  Diário, fica o resumo) e apagar com 24 meses (o processo sai do programa e fica só nas estatísticas e no gráfico de tendência),
+  menos os trabalhados, que nunca saem; os dois prazos ajustáveis em Configurações → Armazenamento, que mostra a última limpeza
+  (quando, quantos resumidos, quantos apagados), também registrada no Histórico. Estatísticas nunca se apagam. Antes de
+  implementar: desenho curto da Arquitetura (muda o que o banco guarda; pedido no quadro).
 - **Filtro de cidade na Lista** (pedido do dono, 14/Nov), ao lado de Estado: escolher o estado limita a lista de cidades.
   Desenho rápido, sem peso na arquitetura: a cidade já vem em cada processo (`empresa.municipio`, da Receita), então o filtro é
   só da tela, sem consulta nova, sem coluna nova e sem pedido ao programa. Ele entra no mesmo passo que já conta as outras

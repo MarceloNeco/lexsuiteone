@@ -653,6 +653,16 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Arquitetura (14/Nov, limpeza automática, decisões 40 a 42; muda o que o banco guarda):** desenho curto antes da
+  Produto implementar (0.7.48). Hoje (conferido no código): `banco.limpar_antigos(guardar_dias=365)` a cada leitura resume os
+  processos com mais de ~12 meses (`limpar_detalhe`) e apaga publicações do monitor e execuções com mais de 365 dias; acima de
+  1 GB resume os nunca abertos com mais de 6 meses e faz VACUUM; a tela não mostra nada disso (só a mensagem da leitura). Pedido:
+  (1) resumir com 6 meses; (2) **apagar a linha** com 24 meses, menos os trabalhados (situação ≠ novo, contato em `contatos`,
+  anotação, pedido da área logada), sempre depois de `atualizar_estatisticas` e sem tocar em `estatisticas_diarias`; o que fazer
+  com `contatos_historico`, `acoes`, `area_logada` desses processos e com a "memória" que impede o processo apagado de voltar como
+  novo numa releitura do mesmo Diário (hoje a chave é o processo); (3) prazos em `config.radar` (ajustáveis em Armazenamento) e um
+  registro `limpeza` no histórico; VACUUM depois de apagar; (4) termos e manual: a retenção é ponto material (DoD 4)? Hoje o
+  manual diz "depois de 12 meses (ajustável)" e a seção de privacidade descreve o resumo.
 - **Produto → Operação (14/Nov, publicação da 0.7.47):** os instaladores novos (`instalador/INSTALAR.bat`, `INSTALAR-COMPLETO.bat`,
   os dois `.zip` de `docs/downloads/` gerados pelo `marca.py` e `robo/testes/test_v0747_instalador.py`) NÃO estão na `main`, porque o
   site serve o instalador na hora do envio. Estão no commit `849904a` da branch `claude/lexsuiteone-judicial-product-22f871`.
@@ -872,11 +882,16 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 37 | Arquitetura (CNJ) | Leitura pela consulta pública quando o caderno cai (vara por vara, 1 pedido/s): ligada por padrão para todos, só na leitura automática e a pedido? | Sim | respondida (14/Nov): sim |
 | 38 | Arquitetura (CNJ) | Aviso geral do CNJ (ex.: "prazos suspensos em 12 e 13/11") escrito pela equipe no RootifyONE com o link oficial e mostrado na faixa do programa (não há endereço oficial consultável; nada de raspar site): pode? | Sim | respondida (14/Nov): idealmente sim, mas sem equipe para alimentar; deixar só preparado |
 | 39 | Arquitetura (antivírus) | Envio do pacote como falso positivo à Microsoft e ao Bitdefender a cada versão grande, pela Operação, em nome da SolverONE: pode? | Sim | respondida (14/Nov): aguardar por enquanto |
+| 40 | Produto (limpeza automática, pedido do dono 14/Nov) | O que a limpeza automática faz: resumir com 6 meses e apagar com 24 meses; resumir com 12 e apagar com 24; ou só resumir? | Resumir 6, apagar 24 | respondida (14/Nov): resumir com 6 meses, apagar com 24, estatísticas sempre guardadas |
+| 41 | Produto (limpeza) | Processos trabalhados (situação diferente de Novo, contato achado ou anotação) também são apagados? | Nunca apagar | respondida (14/Nov): nunca apagar; só perdem o texto pesado |
+| 42 | Produto (limpeza) | O prazo pode ser mudado pelo escritório? | Sim, em Armazenamento | respondida (14/Nov): sim, em Configurações → Armazenamento, que mostra também a última limpeza |
 
 ## Decisões do dono registradas aqui
 
 | Data | Decisão |
 |---|---|
+| 14/Nov | **Limpeza automática** (perguntas 40 a 42): a cada leitura, os processos com mais de 6 meses perdem o texto pesado do Diário (fica o resumo) e os com mais de 24 meses saem do programa, ficando só nas estatísticas e no gráfico de tendência; os trabalhados (situação diferente de Novo, contato ou anotação) nunca saem; os dois prazos são ajustáveis em Configurações → Armazenamento, que mostra a última limpeza (quando, quantos resumidos, quantos apagados), também registrada no histórico. As estatísticas nunca se apagam. |
+| 14/Nov | **Filtro de cidade** na Lista, ao lado de Estado, limitado pelo estado escolhido, rápido (0.7.48). |
 | 14/Nov | **CNJ fora e antivírus** (perguntas 34 a 39): sem certificado de assinatura por enquanto; queda longa do CNJ = só a faixa na tela, mais uma opção em Configuração para receber e-mail no e-mail cadastrado da instalação; página de antivírus no site e linha no e-mail de boas-vindas: sim, cobrindo todos os principais antivírus do mercado; leitura pela consulta quando o caderno cai: sim, por padrão; aviso geral do CNJ no RootifyONE: deixar preparado, sem equipe para alimentar; envio de falso positivo aos fabricantes: aguardar. |
 | 13/Nov (noite) | **Central LexSuiteONE** (perguntas 30 a 33): nome "Central LexSuiteONE"; repositório novo com endereço próprio; entrada da equipe com senha + código do celular (sem Google); fase 2 (RADAR manda contagens das leituras por tribunal, com termos revisados) depois da fase 1. |
 | 13/Nov (noite) | **Pergunta 29: "pode"**: com a tela aberta, quando o Windows não roda a leitura na hora marcada (antivírus), o programa lê sozinho (0.7.45). **Prompt v2 do PJe (Arquitetura): "pode"** para os 5 ajustes no "Trazer dados da área logada" (0.7.45). |
