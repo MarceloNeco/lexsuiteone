@@ -3,10 +3,10 @@
   "app": "radar-judicial",
   "suite": "lexsuiteone",
   "declaracao": "1",
-  "atualizado_em": "2026-11-10",
+  "atualizado_em": "2026-11-14",
   "nota": {
-    "pt": "O RADAR JUDICIAL é instalado e não faz pedido externo: ele recebe estes interruptores pela resposta da função lex-conta (campo recursos), que lê recursos/global.json e recursos/radar-judicial.json em solverone-dados a cada 5 minutos.",
-    "en": "RADAR JUDICIAL is installed software and makes no external requests: it receives these switches in the lex-conta response (recursos field), which reads recursos/global.json and recursos/radar-judicial.json from solverone-dados every 5 minutes."
+    "pt": "O RADAR JUDICIAL é instalado e não faz pedido externo: ele recebe estes interruptores pela resposta da função lex-conta (campo recursos), que lê recursos/global.json e recursos/radar-judicial.json em solverone-dados a cada 5 minutos. Desde 14/Nov/2026 a licença do escritório pode ter exceções (ficha no RootifyONE, campo recursos da lex_contas), aplicadas por cima do global; \"padrao\" é o que vale no pacote enquanto a licença não responde.",
+    "en": "RADAR JUDICIAL is installed software and makes no external requests: it receives these switches in the lex-conta response (recursos field), which reads recursos/global.json and recursos/radar-judicial.json from solverone-dados every 5 minutes. Since 14 Nov 2026 the firm's licence may hold exceptions (RootifyONE record, recursos field of lex_contas) applied over the global switches; \"padrao\" is what the package uses until the licence answers."
   },
   "recursos": [
     {
@@ -19,6 +19,18 @@
         "pt": "Tela do programa → canto inferior direito (ajuda por tela, tour, dicas e busca)",
         "en": "Program screen → bottom right corner (help per screen, tour, tips and search)"
       }
+    },
+    {
+      "id": "area-logada",
+      "nome": {
+        "pt": "Área logada (pedido de pesquisa e trazer resposta)",
+        "en": "Logged-in area (research request and bring the answer)"
+      },
+      "onde": {
+        "pt": "Lista de processos → barra de lote \"Preparar busca\"; menu ☰ → Área logada; botão da ficha do processo",
+        "en": "Lawsuit list → batch bar \"Prepare search\"; ☰ menu → Logged-in area; button on the lawsuit record"
+      },
+      "padrao": false
     }
   ]
 }

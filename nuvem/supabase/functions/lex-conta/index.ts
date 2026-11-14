@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v18 (publicada no Supabase como v18: v17 + CORS para a página de aceite. v17: v16 + ações 'chamado' e 'chamado_anexo': chamados do AssistONE na central de feedback do RootifyONE): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v19 (publicada no Supabase como v21: v18 + interruptores por licença: `verificar` devolve `recursos` com as exceções de lex_contas.recursos por cima do global do RootifyONE. v18: v17 + CORS para a página de aceite. v17: v16 + ações 'chamado' e 'chamado_anexo': chamados do AssistONE na central de feedback do RootifyONE): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -235,7 +235,7 @@ Deno.serve(async (req) => {
   if (!(await pode(`cod:${codigo}:${acao}`, 120, 3600))) return limite();
 
   const { data: conta, error } = await sb.from("lex_contas")
-    .select("codigo, escritorio, documento, max_pessoas, max_computadores, ativo, validade, mensagem, dominios, email_boas_vindas, exigir_aprovacao, modalidade, exigir_aceite, email_responsavel")
+    .select("codigo, escritorio, documento, max_pessoas, max_computadores, ativo, validade, mensagem, dominios, email_boas_vindas, exigir_aprovacao, modalidade, exigir_aceite, email_responsavel, recursos")
     .eq("codigo", codigo).maybeSingle();
   if (error) return json({ ok: false, motivo: "erro" }, 500);
   if (!conta) return json({ ok: false, motivo: "codigo_desconhecido" });
@@ -418,7 +418,13 @@ Deno.serve(async (req) => {
   }
   const resposta: Record<string, unknown> = { ok, motivo, escritorio: conta.escritorio, validade: conta.validade ?? "", mensagem,
     modalidade: conta.modalidade ?? "instalado", aceite: aceiteInfo, termos };   // item F: "nuvem" = a tela avisa e continua lendo
-  if (acao === "verificar") { const rec = await recursosDoRootify(); if (rec) resposta.recursos = rec; }   // interruptores do RootifyONE (ex.: assistone)
+  if (acao === "verificar") {   // interruptores: global.json + radar-judicial.json do RootifyONE e, por cima, as exceções desta licença (lex_contas.recursos; v19)
+    const rec = await recursosDoRootify();
+    const daLicenca = (conta.recursos && typeof conta.recursos === "object" && !Array.isArray(conta.recursos)) ? conta.recursos as Record<string, unknown> : {};
+    const saida: Record<string, boolean> = { ...(rec ?? {}) };
+    for (const [id, v] of Object.entries(daLicenca)) if (typeof v === "boolean" && /^[a-z0-9.-]{1,40}$/.test(id)) saida[id] = v;
+    if (rec || Object.keys(saida).length) resposta.recursos = saida;   // sem nada de nenhum lado, o campo não vai (o programa usa o padrão do pacote)
+  }
   if (aprovacaoPessoa) resposta.aprovacao = aprovacaoPessoa;
   if (emUso) resposta.em_uso = emUso;
   if (retorno) resposta.retorno = retorno;
