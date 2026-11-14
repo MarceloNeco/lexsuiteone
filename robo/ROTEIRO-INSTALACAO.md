@@ -26,17 +26,28 @@ Passos:
    `C:\LexSuiteONE` (ou na pasta do usuário, se o Windows não deixar), cria o atalho e abre a tela. Na primeira janela
    ele pede o **código de cliente** (está no e-mail de boas-vindas): cole com o botão direito do mouse e aperte Enter.
 
-   **Se o Windows ou o antivírus bloquear (aconteceu em 13/Nov com o Bitdefender do Leandro):**
-   - Aviso "O fornecedor não pôde ser verificado" ou tela azul do Windows: clicar em **Executar** (ou "Mais informações" →
-     "Executar assim mesmo"). É o nosso instalador; ele ainda não tem assinatura digital.
-   - Bitdefender "Comportamento malicioso bloqueado": é falso positivo. Clicar em **Reiniciar**. Depois, no Bitdefender:
-     **Proteção → Antivírus → Configurações → Gerenciar exceções → Adicionar uma exceção**, pasta `C:\LexSuiteONE`
-     (e `C:\Users\<usuário>\AppData\Local\LexSuiteONE`), marcando Antivírus e Defesa contra Ameaças. Salvar.
-   - Usar o **pacote completo** (11 MB), que não baixa nada durante a instalação:
+   **Antivírus: checklist antes de instalar** (0.7.47; regra do dono: detectar, explicar e orientar, sem tirar a proteção.
+   Em 13/Nov o Bitdefender do Leandro barrou a leitura automática):
+   - [ ] **Extrair o .zip antes** (botão direito → Extrair tudo) e rodar o `INSTALAR.bat` de dentro da pasta extraída. Aberto
+     de dentro do .zip, o instalador para e pede isso.
+   - [ ] **Ver qual antivírus o computador tem**: o instalador mostra no começo ("Antivírus encontrado: …"), antes de baixar.
+   - [ ] **Cadastrar a exceção antes de continuar**: a pasta `C:\LexSuiteONE` (com as subpastas) e os programas
+     `C:\LexSuiteONE\python\pythonw.exe` e `python.exe`. No Bitdefender: Proteção → Defesa contra Ameaças → Configurações →
+     Administrar exceções → `C:\LexSuiteONE\` sem asterisco, ligando Antivírus (Verificação ao acessar, Análise a pedido,
+     Scripts incorporados) e Defesa contra Ameaças → Salvar; se já houve bloqueio, Notificações → **Reiniciar** antes de
+     instalar de novo. Os outros antivírus, com a fonte oficial: judicial.solverone.com.br/antivirus.html.
+   - [ ] **Se a TI cuida do antivírus ou da rede**: mandar o "Texto para a TI" da página (botão Copiar): pasta, programas,
+     tarefa "LexSuiteONE Radar" e os endereços `judicial.solverone.com.br`, `comunicaapi.pje.jus.br`,
+     `qvdvkqydhnadhewcidia.supabase.co`, `brasilapi.com.br` e `minhareceita.org`.
+   - [ ] Aviso "O fornecedor não pôde ser verificado": clicar em **Executar** (ou "Mais informações" → "Executar assim mesmo").
+     O programa ainda não tem assinatura digital.
+   - [ ] No passo "5 de 6" o instalador cria a leitura automática (tarefa "LexSuiteONE Radar") na própria janela e confere.
+     Se não conseguir, diz qual antivírus impediu e mostra os passos; a tela aberta lê sozinha enquanto isso.
+   - [ ] Se o instalador disser que o programa "fechou logo ao abrir" ou que não conseguiu gravar os arquivos: é o
+     antivírus. Restaurar da quarentena, cadastrar a exceção e rodar o instalador de novo. Não é preciso tirar a proteção.
+   - Plano B: o **pacote completo** (11 MB), que não baixa nada durante a instalação:
      https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE-completo.zip → botão direito no arquivo → **Extrair
      tudo** → dois cliques em `INSTALAR.bat` → Executar → código de cliente.
-   - Se ainda bloquear: desligar a Defesa contra Ameaças só durante a instalação e ligar de novo logo depois (o Leandro ou a
-     TI decide). Rede controlada pela TI: liberar `judicial.solverone.com.br` e `qvdvkqydhnadhewcidia.supabase.co`.
 2. Na tela (janela própria), o assistente de 4 passos: documento, escritório, nome, e-mail e função; onde fica a
    planilha (Google Drive, outra pasta ou só neste computador); frente e tribunais; o resumo mostra onde a
    planilha ficou. Instale no computador que fica ligado nos horários das leituras.
@@ -47,8 +58,8 @@ Passos:
    a planilha e a pasta `Cópias de segurança`. Nada é compartilhado com a SolverONE.
 4. "Ler o Diário agora" (os 24 TRTs já vêm escolhidos; em Tribunais dá para reduzir a 2 ou 3 para a primeira leitura ser
    rápida). Enquanto roda, mostre a ficha, os filtros, a exportação e a planilha no Drive.
-5. Se o agendamento automático falhar (a janela Configurações avisa): em `C:\LexSuiteONE`, `AGENDAR.bat` com botão direito,
-   Executar como administrador.
+5. A leitura automática é criada pelo instalador (passo "5 de 6"). Se ele avisar que não conseguiu, depois de cadastrar a
+   exceção do antivírus abra Configurações → Leitura do Diário e clique em **Salvar**: o programa cria a tarefa de novo e confirma.
 6. Deixe anotado: abre pelo atalho RADAR JUDICIAL; desde a 0.7.29 não há janela preta (para sair: ☰ → Sair; se travar: DIAGNOSTICO.bat, opção 2; suporte: ABRIR.bat --ver); os destaques
    e as empresas excluídas são de cada pessoa, em Configurações → Destaques e exclusões (a planilha é completa); "Sair do RADAR" (menu ☰) fecha tudo; se aparecer "a planilha
    está ficando grande", clique em "Limpar a planilha (com cópia)"; dúvidas para **judicial@solverone.com.br**.

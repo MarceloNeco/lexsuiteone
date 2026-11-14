@@ -573,6 +573,26 @@ def cmd_agendar(a):
         raise SystemExit(1)
 
 
+def cmd_tarefa(a):
+    """0.7.47 (2.6.1): o instalador cria a leitura automática às claras, na janela dele. Isto grava o XML da tarefa em
+    C:\\LexSuiteONE\\tarefa.xml e diz MODO=xml (ou MODO=nenhum, sem dia marcado). Com a leitura automática desligada nas
+    Configurações, MODO=desligada (o instalador não cria)."""
+    from lexsuite import agendar
+    caminho = os.path.join(AQUI, "config.json")
+    cfg = carregar_config(caminho) if os.path.exists(caminho) else {}
+    if (cfg.get("radar") or {}).get("agendar_quer") is False:
+        print("MODO=desligada")
+        return
+    try:
+        p = agendar.plano(AQUI, *agendar.do_config(cfg))
+    except OSError:
+        print("MODO=erro")
+        raise SystemExit(1)
+    for k in ("modo", "xml"):
+        if p.get(k):
+            print(f"{k.upper()}={p[k]}")
+
+
 def cmd_parar(a):
     """0.7.29: "Encerrar o RADAR" (DIAGNOSTICO.bat), para quando a tela travou e não há janela preta para fechar."""
     from lexsuite import app
@@ -701,6 +721,8 @@ def main(argv=None):
     s.set_defaults(f=cmd_app)
     s = sub.add_parser("agendar", help="cria a leitura automática no Agendador do Windows com os horários do config.json")
     s.set_defaults(f=cmd_agendar)
+    s = sub.add_parser("tarefa", help="(instalador) diz como criar a leitura automática às claras e grava o XML na pasta do programa")
+    s.set_defaults(f=cmd_tarefa)
     s = sub.add_parser("orgaos", help="descobre o código (idOrgao) das varas de um tribunal, uma vez (precisa rodar no Brasil)")
     s.add_argument("--tribunal", default="TRT2"); s.add_argument("--data", help="aaaa-mm-dd (padrão: último dia útil)")
     s.add_argument("--diagnostico", action="store_true"); s.set_defaults(f=cmd_orgaos)

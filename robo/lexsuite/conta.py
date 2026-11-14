@@ -100,6 +100,9 @@ def verificar(cfg, versao, hoje=None, pedir=None, retorno=None):
     pedir = pedir or rede.pedir_json
     try:
         corpo = {"codigo": codigo, "instalacao": c["instalacao"], "versao": versao}
+        # 0.7.47 (decisão 35): "Avisar por e-mail quando o CNJ ficar fora por mais de 4 horas em dia útil" (a lex-conta v20
+        # grava; antes disso o campo é ignorado sem erro)
+        corpo["avisar_cnj"] = bool(((cfg or {}).get("radar") or {}).get("avisar_cnj"))
         if retorno:  # 0.7.14: só quantidades por situação (sem nome, processo, CNPJ ou contato); a Configuração mostra
             corpo["retorno"] = list(retorno)[:2000]
         r = pedir(c.get("url") or URL_PADRAO, corpo, tentativas=2, tempo_limite=20)
@@ -344,16 +347,81 @@ def enviar_chamado(cfg, versao, dados, pedir=None):
     return {"ok": True, "numero": r.get("numero"), "repetido": bool(r.get("repetido"))}
 
 
-def registrar_erro(cfg, versao, etapa, mensagem, pedir=None):
+def registrar_erro(cfg, versao, etapa, mensagem, pedir=None, antivirus="", antivirus_ligado=None, sinal=""):
     """Envia à SolverONE um registro técnico de erro (etapa, versão, Windows, mensagem sem caminhos pessoais).
+    0.7.47 (2.3): também o nome do antivírus (só o nome do produto), se está ligado e o sinal do bloqueio; nada de pessoa
+    (a lex-conta v20 grava; antes disso os campos são ignorados sem erro).
     Nunca levanta exceção e nunca atrasa o programa mais que alguns segundos."""
     import platform
+    from . import computador
     c = (cfg or {}).get("conta") or {}
     corpo = {"acao": "registro", "origem": "programa", "etapa": str(etapa)[:60], "versao": str(versao)[:20],
              "mensagem": _sem_caminho_pessoal(mensagem)[:2000], "windows": f"{platform.system()} {platform.release()} {platform.version()}"[:80],
              "instalacao": c.get("instalacao", ""), "codigo": normalizar(c.get("codigo"))}
+    if antivirus:
+        corpo["antivirus"] = computador.nome_limpo(antivirus)
+        if antivirus_ligado is not None:
+            corpo["antivirus_ligado"] = "sim" if antivirus_ligado else "não"
+    if sinal in computador.SINAIS:
+        corpo["sinal"] = sinal
     try:
         (pedir or rede.pedir_json)(c.get("url") or URL_PADRAO, corpo, tentativas=1, tempo_limite=10)
         return True
     except Exception:
         return False
+
+
+# ---------- 0.7.47: a SolverONE também vê o CNJ fora? (ação estado_cnj da lex-conta v20) ----------
+_ESTADO_CNJ = {"em": None, "r": None}
+INTERVALO_ESTADO_CNJ = 300  # no máximo 1 pedido a cada 5 minutos, e só quando há falha do CNJ
+
+
+def _hora_curta(v):
+    m = re.search(r"(\d{1,2}):(\d{2})", str(v or ""))
+    return f"{int(m.group(1)):02d}:{m.group(2)}" if m else ""
+
+
+def ler_estado_cnj(r):
+    """{fora, total, desde} da resposta, ou None quando ela não diz que há tribunal fora (vazia, com erro, formato novo)."""
+    if not isinstance(r, dict):
+        return None
+    d = r.get("estado") if isinstance(r.get("estado"), dict) else r
+    fora = d.get("fora")
+    n_fora = len(fora) if isinstance(fora, list) else (fora if isinstance(fora, int) and not isinstance(fora, bool) else 0)
+    n_ok = d.get("ok") if isinstance(d.get("ok"), int) and not isinstance(d.get("ok"), bool) else 0
+    if n_fora <= 0:
+        return None
+    return {"fora": int(n_fora), "total": int(n_fora + n_ok), "desde": _hora_curta(d.get("desde")), "hora": str(d.get("hora") or "")[:25]}
+
+
+def frase_estado_cnj(e, lang="pt"):
+    if not e:
+        return ""
+    h = e.get("desde", "")
+    if lang == "en":
+        return f"SolverONE also sees the CNJ down{' since ' + h if h else ''} ({e['fora']} of {e['total']} courts)."
+    return f"A SolverONE também vê o CNJ fora{' desde ' + h.replace(':', 'h') if h else ''} ({e['fora']} de {e['total']} tribunais)."
+
+
+def estado_cnj(cfg, versao, pedir=None, agora=None):
+    """Pergunta à SolverONE (lex-conta, ação estado_cnj) o que o observador no Brasil vê. Devolve {fora, total, desde,
+    pt, en} ou None. Nunca levanta exceção nem trava: sem resposta, resposta vazia ou com erro = None."""
+    import time as _t
+    agora = _t.monotonic() if agora is None else agora
+    if _ESTADO_CNJ["em"] is not None and agora - _ESTADO_CNJ["em"] < INTERVALO_ESTADO_CNJ:
+        return _ESTADO_CNJ["r"]
+    _ESTADO_CNJ["em"] = agora
+    c = (cfg or {}).get("conta") or {}
+    if not valido(c.get("codigo")):  # sem licença confirmada, nada a perguntar
+        _ESTADO_CNJ["r"] = None
+        return None
+    corpo = {"acao": "estado_cnj", "codigo": normalizar(c.get("codigo")), "instalacao": c.get("instalacao", ""), "versao": str(versao)[:20]}
+    try:
+        r = (pedir or rede.pedir_json)(c.get("url") or URL_PADRAO, corpo, tentativas=1, tempo_limite=10)
+    except Exception:  # noqa: BLE001 - a lex-conta v20 ainda não tem a ação, sem internet: a linha não aparece
+        r = None
+    e = ler_estado_cnj(r)
+    if e:
+        e.update({"pt": frase_estado_cnj(e, "pt"), "en": frase_estado_cnj(e, "en")})
+    _ESTADO_CNJ["r"] = e
+    return e

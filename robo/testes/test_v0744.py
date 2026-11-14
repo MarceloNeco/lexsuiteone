@@ -156,7 +156,7 @@ class Tela0744(unittest.TestCase):
             self.assertEqual(HTML.count(k), 2, k)
 
     def test_batimento_le_a_conferencia(self):
-        self.assertIn("if (e) avaliarCnj(e.cnj);", HTML)
+        self.assertIn("avaliarCnj(e.cnj); }", HTML)  # 0.7.47: junto com o que a SolverONE vê
         self.assertIn("if (c.lendo) vigiar();", HTML)
 
     def test_estado_leva_o_cnj(self):

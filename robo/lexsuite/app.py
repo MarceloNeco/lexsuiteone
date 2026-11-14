@@ -344,6 +344,8 @@ class Servidor(ThreadingHTTPServer):
         self.modelo = os.path.join(pasta, "radar_modelo.html")
         self.hist = {}  # 0.7.18: andamento das estatísticas dos meses anteriores
         self.cnj = None  # 0.7.44 (dono): a conferência automática do CNJ ({"situacao": "fora"|"voltou", "testado", ...})
+        self.cnj_solverone = None  # 0.7.47: o que o observador da SolverONE vê ({fora, total, desde, pt, en}) ou None
+        self.sinais = {}  # 0.7.47: sinais de bloqueio do antivírus nesta abertura (a tela mostra com o link dos passos)
         self._ultima_cache = None  # 0.7.19: (data do arquivo do banco, última leitura) para a tela
         self.hist_trava = threading.Lock()
         import time as _t
@@ -351,6 +353,23 @@ class Servidor(ThreadingHTTPServer):
 
     def config(self):
         return config.carregar(self.caminho_config, aviso=lambda *_: None)
+
+    def computador(self):
+        """0.7.47: antivírus e firewall deste computador (lidos uma vez por dia)."""
+        from . import computador
+        return computador.guardado(self.pasta)  # quem lê do Windows é a thread "ler-computador" (a tela nunca espera)
+
+    def antivirus_nome(self):
+        from . import computador
+        return computador.principal(self.computador())
+
+    def estado_cnj_solverone(self):
+        """0.7.47: a SolverONE também vê o CNJ fora? Guarda em `self.cnj_solverone` (a tela mostra a linha). Nunca trava."""
+        try:
+            self.cnj_solverone = conta.estado_cnj(self.config(), VERSAO)
+        except Exception:  # noqa: BLE001
+            self.cnj_solverone = None
+        return self.cnj_solverone
 
     def estado_atual(self):
         """O estado desta tela; se ela não está lendo, mas há leitura agendada (ou outra janela) rodando agora noutro
@@ -364,6 +383,10 @@ class Servidor(ThreadingHTTPServer):
                           "progresso": min(99, int(fora.get("progresso") or 1)), "mensagens": fora.get("mensagens") or []})
         if self.cnj:
             d["cnj"] = dict(self.cnj)
+        if self.cnj_solverone:
+            d["cnj_solverone"] = dict(self.cnj_solverone)
+        if self.sinais:
+            d["sinais"] = list(self.sinais.values())
         if not d["rodando"] and not d.get("situacao") and not d.get("erro"):
             ult = self.ultima_do_banco()
             if ult:
@@ -480,8 +503,17 @@ class Servidor(ThreadingHTTPServer):
             except Exception as e:  # a tela precisa saber que parou, qualquer que seja o motivo; em palavras claras
                 from . import causas
                 causa = causas.classificar(e)
+                org_ = getattr(e, "origem", "") or causas.origem(e)  # 0.7.47: "é do CNJ ou é daqui"
                 info = {"causa": causa, "pt": causas.mensagem(causa, "pt"), "en": causas.mensagem(causa, "en"),
-                        "detalhe": f"{e.__class__.__name__}: {e}"[:600]}
+                        "detalhe": (getattr(e, "tecnico", "") or f"{e.__class__.__name__}: {e}")[:1500], "origem": org_}
+                if org_:
+                    av_ = self.antivirus_nome()
+                    info.update({"origem_pt": causas.mensagem_origem(org_, "pt", av_), "origem_en": causas.mensagem_origem(org_, "en", av_)})
+                    if org_ == "bloqueio_local":  # 0.7.47 (2.4): rede recusada só para os nossos endereços: os passos do antivírus
+                        from . import computador
+                        info.update({"antivirus_link": computador.link(av_, "pt"), "antivirus_link_en": computador.link(av_, "en")})
+                if causa == "governo_fora" or org_ in ("cnj_aplicacao", "cnj_borda", "caderno_fora"):
+                    self.estado_cnj_solverone()  # 0.7.47: a SolverONE também vê o CNJ fora? (1 pedido a cada 5 minutos, no máximo)
                 self.estado.aviso(info["pt"])
                 self.estado.terminar(erro=info["pt"], info=info)
                 if causa in ("erro_do_programa", "bloqueio_fora_do_brasil"):  # site do governo fora não é defeito nosso
@@ -579,7 +611,7 @@ class Tratador(BaseHTTPRequestHandler):
             ult = [x for x in tent if tent and (x.get("quando_local") or x.get("quando")) == (tent[0].get("quando_local") or tent[0].get("quando"))]  # revisão 2: a leitura inteira tem o mesmo quando_local
             ruins = [x for x in ult if x.get("causa") not in ("ok", "ainda_nao_liberado_3h", "nao_publicado", "interrompida")]
             pagina["area_logada"] = {"tem_resposta": banco.area_tem_resposta(), "pendente": banco.area_pedido()}  # 0.7.46
-            pagina["ultima_tentativa"] = dict((ruins or ult or [{}])[0])
+            pagina["ultima_tentativa"] = _com_origem(s, [dict((ruins or ult or [{}])[0])])[0]
             if ruins:  # 0.7.44 (dono): a faixa vermelha diz até que dia aquele tribunal já foi lido (nada se perdeu)
                 boa = next((x for x in tent if x.get("tribunal") == ruins[0].get("tribunal") and x.get("causa") == "ok" and x.get("leu_ate")), None)
                 if boa:
@@ -605,6 +637,7 @@ class Tratador(BaseHTTPRequestHandler):
                            "horarios": horarios, "dias": dias, "tem_noite": agendar.tem_noite(horarios),
                            "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
                            "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True)),
+                           "avisar_cnj": bool(r.get("avisar_cnj")),  # 0.7.47 (decisão 35), desligada por padrão
                            "area_logada_por_dia": config.inteiro(r.get("area_logada_por_dia", 30), 30, 1, 365),
                            "area_logada_por_pedido": limite_por_pedido(r),  # 0.7.46: cada pedido é uma sessão do PJe
                            "abrir_em_aba": bool(r.get("abrir_em_aba")),
@@ -613,6 +646,7 @@ class Tratador(BaseHTTPRequestHandler):
                                 "url": cfg["atualizacao"].get("url", ""), "pasta": compartilhar.pasta_atualizacao(cfg)},
                 "versao": VERSAO, "estado": s.estado_atual(), "pasta_robo": s.pasta,
                 "conta": conta.situacao(cfg), "marca": marca(s.pasta),
+                "computador": _computador_para_tela(s),  # 0.7.47: Configuração → Sobre este computador
             }
             return self._responder(pagina)
         if u.path == "/cnpj":
@@ -635,7 +669,7 @@ class Tratador(BaseHTTPRequestHandler):
         if u.path == "/historico":  # 0.7.13: as últimas tentativas de leitura, uma por tribunal
             try:
                 banco = bd.Banco(self.server.caminho_db)
-                return self._responder({"tentativas": banco.execucoes("tentativa", 120)})
+                return self._responder({"tentativas": _com_origem(s, banco.execucoes("tentativa", 120))})
             except Exception:  # noqa: BLE001 - banco ausente ou ilegível: lista vazia
                 return self._responder({"tentativas": []})
         if u.path == "/estatisticas":  # 0.7.18: andamento das estatísticas dos meses anteriores
@@ -820,6 +854,8 @@ class Tratador(BaseHTTPRequestHandler):
                 r["dias"] = agendar.validar_dias(corpo["dias"])
             if "avisar_ao_terminar" in corpo:
                 r["avisar_ao_terminar"] = bool(corpo["avisar_ao_terminar"])
+            if "avisar_cnj" in corpo:  # 0.7.47 (decisão 35): vai à SolverONE na próxima conferência da licença
+                r["avisar_cnj"] = bool(corpo["avisar_cnj"])
             if "abrir_em_aba" in corpo:
                 r["abrir_em_aba"] = bool(corpo["abrir_em_aba"])
             if "nome" in corpo:
@@ -858,7 +894,12 @@ class Tratador(BaseHTTPRequestHandler):
                 ligar = corpo["agendar"] if "agendar" in corpo else True
                 ligar = ligar and bool(agendar.dias_da_semana(r.get("dias")))  # 0.7.32 (dono): nenhum dia marcado = desligada
                 ok, msg = agendar.agendar(s.pasta, *agendar.do_config(cfg)) if ligar else agendar.desagendar()
-                resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg, "agendar_ok": bool(ok)})  # 0.7.36: a tela em EN traduz pelo estado
+                resposta.update({"agendado": agendar.agendado(), "agendar_msg": msg, "agendar_ok": bool(ok)})
+                if ligar and not ok:
+                    try:
+                        resposta["sinal"] = sinal_do_computador(s, "tarefa_nao_criada")  # 0.7.47: histórico da saúde e registro técnico
+                    except Exception:  # noqa: BLE001
+                        pass  # 0.7.36: a tela em EN traduz pelo estado
             return self._responder(resposta)
         if caminho == "/interromper":  # 0.7.15: pede para a leitura (desta tela ou a agendada) parar no próximo ponto seguro
             if not (s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento)):
@@ -1781,6 +1822,10 @@ def conferir_cnj(servidor, meta=None, agora=None, hoje=None):
             else:
                 novo["ler_pendente"] = True
     servidor.cnj = novo
+    if not voltou and hasattr(servidor, "estado_cnj_solverone"):
+        servidor.estado_cnj_solverone()  # 0.7.47: a linha "A SolverONE também vê o CNJ fora…"
+    elif voltou:
+        servidor.cnj_solverone = None
     return servidor.cnj
 
 
@@ -1828,6 +1873,102 @@ def horario_perdido(cfg, ultima, agora=None, folga_min=10, janela_h=12):
     return vaga
 
 
+# ---------- 0.7.47 (desenho "CNJ fora e antivírus", 2.4): sinais de bloqueio no programa instalado ----------
+TEXTOS_SINAL = {
+    "tarefa_nao_criada": ("tarefa_falhou",
+        "A leitura automática não foi criada neste computador. {quem} pode ter impedido. Cadastre a exceção da pasta {pasta} e, "
+        "depois, em Configurações → Leitura do Diário, clique em Salvar. Enquanto isso, o programa lê sozinho com a tela aberta.",
+        "The automatic reading was not created on this computer. {quem_en} may have blocked it. Add the exception for the folder "
+        "{pasta} and then, in Settings → Gazette reading, click Save. Meanwhile, the program reads by itself while the screen is open."),
+    "tarefa_nunca": ("tarefa_falhou",
+        "A leitura automática das {h} não rodou, embora a tarefa exista. {quem} pode estar impedindo. Cadastre a exceção da pasta "
+        "{pasta}. Enquanto isso, o programa lê sozinho com a tela aberta.",
+        "The automatic reading at {h} did not run, although the task exists. {quem_en} may be blocking it. Add the exception for "
+        "the folder {pasta}. Meanwhile, the program reads by itself while the screen is open."),
+    "pythonw_sumiu": ("bloqueio_gravacao",
+        "O arquivo python\\pythonw.exe sumiu da pasta do programa. {quem} pode tê-lo posto em quarentena. Restaure o item, "
+        "cadastre a exceção da pasta {pasta} e rode o instalador de novo.",
+        "The file python\\pythonw.exe disappeared from the program folder. {quem_en} may have quarantined it. Restore the item, "
+        "add the exception for the folder {pasta} and run the installer again."),
+    "db_sumiu": ("bloqueio_gravacao",
+        "O banco do programa (lexsuite.db) sumiu da pasta. {quem} pode tê-lo posto em quarentena. Restaure o item e cadastre a "
+        "exceção da pasta {pasta}; até lá, o programa começa um banco novo.",
+        "The program database (lexsuite.db) disappeared from the folder. {quem_en} may have quarantined it. Restore the item and "
+        "add the exception for the folder {pasta}; until then, the program starts a new database."),
+}
+
+
+def sinal_do_computador(servidor, chave, h=""):
+    """Um sinal de bloqueio: a mensagem nomeia o antivírus e aponta os passos (tela), vai para o histórico da saúde e, uma
+    vez por dia por sinal, para o registro técnico da SolverONE (só o nome do antivírus e o sinal; nada de pessoa)."""
+    from . import computador
+    sinal, pt, en = TEXTOS_SINAL[chave]
+    info = computador.guardado(servidor.pasta)
+    av = computador.principal(info)
+    quem, quem_en = (f"O {av}", av) if av else ("O antivírus", "The antivirus")
+    campos = {"quem": quem, "quem_en": quem_en, "pasta": servidor.pasta, "h": h}
+    item = {"sinal": sinal, "chave": chave, "pt": pt.format(**campos), "en": en.format(**campos),
+            "link": computador.link(av, "pt"), "link_en": computador.link(av, "en"), "quando": dt.datetime.now().isoformat(timespec="minutes")}
+    if not hasattr(servidor, "sinais") or servidor.sinais is None:
+        servidor.sinais = {}
+    novo = chave not in servidor.sinais
+    servidor.sinais[chave] = item
+    if not novo or not _sinal_novo_hoje(servidor, chave):
+        return item
+    try:
+        b = bd.Banco(servidor.caminho_db)
+        try:
+            b.registrar("saude", {"fonte": "Este computador", "situacao": "atenção", "detalhe": item["pt"], "sinal": sinal, "antivirus": av})
+        finally:
+            b.con.close()
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        cfg = servidor.config()
+        if conta.valido(conta.normalizar((cfg.get("conta") or {}).get("codigo"))):
+            conta.registrar_erro(cfg, VERSAO, f"sinal: {chave}", item["pt"], antivirus=av, antivirus_ligado=computador.ligado_principal(info), sinal=sinal)
+    except Exception:  # noqa: BLE001
+        pass
+    return item
+
+
+def _sinal_novo_hoje(servidor, chave, hoje=None):
+    """Cada sinal vai ao histórico da saúde e à SolverONE uma vez por dia (guardado em saida/sinais.json), mesmo com a tela
+    aberta e fechada várias vezes."""
+    hoje = (hoje or dt.date.today()).isoformat()
+    arq = os.path.join(servidor.pasta, "saida", "sinais.json")
+    try:
+        with open(arq, encoding="utf-8") as f:
+            vistos = json.load(f)
+        vistos = vistos if isinstance(vistos, dict) else {}
+    except (OSError, ValueError):
+        vistos = {}
+    if vistos.get(chave) == hoje:
+        return False
+    vistos[chave] = hoje
+    try:
+        os.makedirs(os.path.dirname(arq), exist_ok=True)
+        with open(arq, "w", encoding="utf-8") as f:
+            json.dump(vistos, f)
+    except OSError:
+        pass
+    return True
+
+
+def conferir_arquivos(servidor, db_existia=True, tinha_saida=False):
+    """Ao abrir: arquivo do programa que sumiu (python\\pythonw.exe; o banco, quando já houve leitura) e a leitura automática
+    que a pessoa ligou e não existe mais."""
+    if os.path.isfile(os.path.join(servidor.pasta, "python", "python.exe")) and not os.path.isfile(os.path.join(servidor.pasta, "python", "pythonw.exe")):
+        sinal_do_computador(servidor, "pythonw_sumiu")
+    if not db_existia and tinha_saida:
+        sinal_do_computador(servidor, "db_sumiu")
+    try:
+        if agendar.disponivel() and (servidor.config().get("radar") or {}).get("agendar_quer") and not agendar.agendado():
+            sinal_do_computador(servidor, "tarefa_nao_criada")
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def conferir_agenda(servidor, agora=None):
     """Com a tela aberta: se a hora marcada passou sem leitura (a do Windows não rodou), lê uma vez por horário.
     Devolve o horário lido ou None."""
@@ -1856,6 +1997,11 @@ def conferir_agenda(servidor, agora=None):
         ligada = False
     if not ligada:
         return None
+    try:  # 0.7.47 (2.4): a tarefa existe e não rodou (ou sumiu): o antivírus pode estar impedindo
+        if agendar.disponivel() and hasattr(servidor, "pasta"):
+            sinal_do_computador(servidor, "tarefa_nunca" if agendar.agendado() else "tarefa_nao_criada", vaga.strftime("%H:%M"))
+    except Exception:  # noqa: BLE001
+        pass
     if servidor.rodar(origem="tela (horário das %s)" % vaga.strftime("%H:%M")):
         return vaga
     return None
@@ -1873,6 +2019,29 @@ def vigiar_agenda(servidor, passo_s=60, primeiro_s=90, dormir=None, vezes=None):
             conferir_agenda(servidor)
         except Exception:  # noqa: BLE001 - nunca derruba o programa
             pass
+
+
+def _com_origem(s, tentativas):
+    """0.7.47: a frase "é do CNJ ou é daqui" de cada tentativa, em PT e EN (com o nome do antivírus, quando há)."""
+    from . import causas
+    av = ""
+    for t in tentativas:
+        cod = t.get("origem_falha") if isinstance(t, dict) else ""
+        if cod:
+            av = av or s.antivirus_nome()
+            t["origem_pt"], t["origem_en"] = causas.mensagem_origem(cod, "pt", av), causas.mensagem_origem(cod, "en", av)
+            if cod == "bloqueio_local":
+                from . import computador
+                t["antivirus_link"], t["antivirus_link_en"] = computador.link(av, "pt"), computador.link(av, "en")
+    return tentativas
+
+
+def _computador_para_tela(s):
+    from . import computador
+    try:
+        return computador.para_tela(s.computador())
+    except Exception:  # noqa: BLE001
+        return {}
 
 
 def limite_por_pedido(r):
@@ -2001,6 +2170,8 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
                 abrir_janela(ja, aba=_prefere_aba(pasta))
             time.sleep(3)
             return
+    db_existia = os.path.exists(os.path.join(pasta, "lexsuite.db"))  # 0.7.47: o antivírus pode ter posto o banco em quarentena
+    tinha_saida = os.path.exists(os.path.join(pasta, "saida", "radar", "radar.html"))
     servidor = criar(pasta, porta, espera=20 if espera else 0)
     url = f"http://127.0.0.1:{servidor.server_address[1]}/"
     aviso(f"  LexSuiteONE aberto em {url}")
@@ -2018,10 +2189,16 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
             atualizar_atalho(pasta)
         except Exception:  # migrar a leitura automática nunca impede a tela de abrir
             pass
+        try:
+            conferir_arquivos(servidor, db_existia, tinha_saida)  # 0.7.47
+        except Exception:  # noqa: BLE001
+            pass
     threading.Thread(target=migrar, daemon=True, name="migrar-agenda").start()
     threading.Thread(target=vigiar_tela, args=(servidor, aviso), daemon=True, name="vigiar-tela").start()
     threading.Thread(target=vigiar_cnj, args=(servidor,), daemon=True, name="vigiar-cnj").start()  # 0.7.44 (dono)
     threading.Thread(target=vigiar_agenda, args=(servidor,), daemon=True, name="vigiar-agenda").start()  # 0.7.45 (dono)
+    from . import computador as _comp
+    threading.Thread(target=_comp.vigiar, args=(servidor.pasta,), daemon=True, name="ler-computador").start()  # 0.7.47
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:

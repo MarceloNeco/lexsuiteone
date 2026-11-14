@@ -223,7 +223,7 @@ def dias_uteis(hoje, dias):
     return sorted(datas)
 
 
-def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=None, lidos=None, tentativas=None, parar=None):
+def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=None, lidos=None, tentativas=None, parar=None, sondar=None):
     """Cadernos dos últimos dias úteis. Só baixa de novo se o CNJ reprocessou (versão mudou).
     Os cadernos lidos vão para `lidos`; quem marca como conferido é `guardar`, no fim da rodada.
     0.7.13: cada tribunal é uma tentativa à parte (vai para `tentativas`, com a causa); um tribunal com problema não
@@ -237,6 +237,18 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
     # caderno. Assim feriado (nacional, estadual) e recesso não fazem a leitura sair vazia.
     candidatas = dias_uteis(hoje, 10)[::-1]
     cnj_instavel = False  # 0.7.42: depois de um Diário com erro 5xx, os outros pedidos desta leitura tentam menos vezes
+    # 0.7.47 ("é do CNJ ou é daqui"): na primeira falha de rede desta leitura, duas sondas de controle (uma vez só)
+    sondas_ = {"feitas": False, "r": None}
+
+    def diagnosticar(e):
+        if not sondas_["feitas"] and causas.sondas_cabem(e):
+            sondas_["feitas"] = True
+            try:
+                sondas_["r"] = (sondar or rede.sondar)()
+            except Exception:  # noqa: BLE001 - a sonda nunca derruba a leitura
+                sondas_["r"] = None
+        cod = causas.origem(e, sondas_["r"])
+        return cod, causas.detalhe_tecnico(e, sondas_["r"], cod)
     for sigla in tribunais:
         contados, motivos, lidos_trib, inicio, ja_conferidos = 0, {}, [], time.perf_counter(), 0
         pedidas, http, erro = [], "200", None
@@ -310,6 +322,10 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
             erro = e
             primeiro_erro = primeiro_erro or e
             http = str(getattr(e, "codigo", "") or "-")
+            try:
+                e.origem, e.tecnico = diagnosticar(e)
+            except AttributeError:
+                pass
             aviso(f"  {sigla}: {causas.mensagem(causas.classificar(e))}")
         causa = causas.classificar(erro) if erro else (
             "ainda_nao_liberado_3h" if hoje.isoformat() in motivos and motivos[hoje.isoformat()] == "ainda_nao_liberado_3h" else "ok")
@@ -331,7 +347,10 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
             (f"skipped today (only after 3 a.m.); read up to {ate_en}" if ate else "skipped today (only after 3 a.m.)") if causa == "ainda_nao_liberado_3h"
             else (f"read up to {ate_en}; the CNJ did not deliver " + ", ".join(config.data_curta(x, False, en=True) for x in sorted(falhou)) + " (read automatically next time)" if falhou
                   else (f"read up to {ate_en}" if ate else "no new gazette")))
+        org_, tec_ = (getattr(erro, "origem", ""), getattr(erro, "tecnico", "")) if erro is not None else (
+            diagnosticar(erro_cnj) if (erro_cnj is not None and falhou) else ("", ""))
         tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": http, "causa": causa,
+                           "origem_falha": org_, "tecnico": tec_,
                            "fez": fez, "fez_en": fez_en, "duracao": round(time.perf_counter() - inicio, 1), "ja_conferidos": ja_conferidos,
                            "leu_ate": str(max(lidos_trib))[:10] if lidos_trib else "",  # revisão da 0.7.28: ISO; a tela mostra no idioma dela
                            "detalhe": f"{erro.__class__.__name__}: {erro}"[:300] if erro else ""})

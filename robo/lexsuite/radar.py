@@ -229,6 +229,15 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     }
 
 
+def _antivirus(pasta_base):
+    """0.7.47: o nome do antivírus deste computador (lido uma vez por dia pela tela), ou ""."""
+    from . import computador
+    try:
+        return computador.principal(computador.guardado(pasta_base)) if pasta_base else ""
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def registrar_tentativas(banco, tentativas, origem, versao, quando=None):
     """Histórico de leituras (0.7.13): uma linha por tribunal, com a hora local e o fuso, a origem, o que foi pedido,
     a resposta, a causa e o que o programa fez. Sem dado pessoal."""
@@ -407,6 +416,14 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         situacao.setdefault("avisos", []).append({
             "tribunal": t["tribunal"], "causa": t["causa"], "aviso": causas.e_aviso(t["causa"]), "leu_ate": t.get("leu_ate", ""),
             "pt": f"{t['tribunal']}: {causas.mensagem(t['causa'], 'pt')}", "en": f"{t['tribunal']}: {causas.mensagem(t['causa'], 'en')}"})
+    for t in tentativas:  # 0.7.47: "é do CNJ ou é daqui", uma frase por origem (vale também para o dia que o CNJ não entregou)
+        if t.get("origem_falha"):
+            av_ = _antivirus(pasta_base)
+            o_ = situacao.setdefault("origens", {})[t["origem_falha"]] = {
+                "pt": causas.mensagem_origem(t["origem_falha"], "pt", av_), "en": causas.mensagem_origem(t["origem_falha"], "en", av_)}
+            if t["origem_falha"] == "bloqueio_local":
+                from . import computador
+                o_.update({"link": computador.link(av_, "pt"), "link_en": computador.link(av_, "en")})
     aviso("  " + situacao["pt"])
     if pasta_base:
         pagina = gravar_saida(cfg, banco, os.path.join(pasta_base, "saida", "radar"), agora, situacao, aviso, versao)  # 0.7.33: critérios por área

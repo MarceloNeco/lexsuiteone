@@ -162,6 +162,43 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.48 (planejada): leitura pela consulta e filtro de cidade
+
+- Leitura pela consulta pública quando o caderno cai (desenho "CNJ fora e antivírus", 1.3; decisão 37: ligada por padrão, só na
+  leitura automática e a pedido).
+- **Filtro de cidade na Lista** (pedido do dono, 14/Nov), ao lado de Estado: escolher o estado limita a lista de cidades.
+  Desenho rápido, sem peso na arquitetura: a cidade já vem em cada processo (`empresa.municipio`, da Receita), então o filtro é
+  só da tela, sem consulta nova, sem coluna nova e sem pedido ao programa. Ele entra no mesmo passo que já conta as outras
+  opções de filtro (uma passada pela lista, como Estado e Vara); as opções de cidade saem de um índice estado → cidades montado
+  uma vez a cada carga dos dados (não a cada clique). Como pode haver centenas de cidades, a caixa ganha uma busca por digitação
+  e mostra primeiro as cidades com mais processos; o nome é comparado sem acento e sem maiúsculas ("Sao Paulo" = "São Paulo").
+  Cidade escolhida que some quando o estado muda sai do filtro com aviso. Processo sem cidade fica em "Sem cidade". Conferir
+  com 60 mil processos no teste de tela (rede lenta) antes de dar como pronto. Também na planilha? (pergunta à Arquitetura).
+
+## 0.7.47 (14/Nov, CNJ fora e antivírus) — pronta para publicar
+
+- Feito: itens a a i do pedido (desenho `documentacao/DESENHO-LEITURA-E-ANTIVIRUS-2026-11-14.md`; decisões 34 a 39).
+  (a) `rede.py` guarda cabeçalhos de origem, 300 caracteres do corpo, tempo, tentativas e IP; duas sondas de controle na primeira
+  falha de rede de cada leitura; `causas.origem` com as seis frases, na faixa do Painel, no Histórico e em "Detalhes técnicos".
+  (b) `conta.estado_cnj` (1 pedido a cada 5 min, só com falha do CNJ; resposta vazia ou com erro = a linha não aparece).
+  (c) "Avisar por e-mail quando o CNJ ficar fora…" (desligada), enviada em `avisar_cnj` na conferência da licença.
+  (d) e (e) instaladores: passo 0 (zip na pasta temporária, antivírus e firewall, saída para os nossos endereços, aviso antes de
+  continuar), os seis sinais com mensagem, passos do Bitdefender e do Defender, texto para a TI; tarefa criada na janela do
+  instalador (`lexsuite_robo.py tarefa` + `schtasks`), XML só em `C:\LexSuiteONE\tarefa.xml` com autor e descrição.
+  (f) `computador.py` (antivírus e firewall, uma vez por dia) e "Sobre este computador"; mensagens que nomeiam o antivírus
+  (leitura automática não criada ou não executada, `pythonw.exe` ou banco que sumiram, rede recusada só para os nossos
+  endereços); o sinal vai para o histórico da saúde. (g) `registro` com `antivirus`, `antivirus_ligado`, `sinal`.
+  (h) já estava na 0.7.46; agora também a conferência da licença de 30 em 30 minutos e "Recursos da licença".
+- **Os instaladores novos não vão para a `main` antes da publicação** (o site os serve na hora): estão num commit à parte na
+  branch `claude/lexsuiteone-judicial-product-22f871` (ver o quadro). A Operação traz esse commit junto com a publicação.
+- Não feito: "planilha não gravada" como sinal do antivírus (o aviso de planilha em uso continua o mesmo); teste num Windows
+  de verdade com Bitdefender e com Defender (os .bat foram conferidos só por leitura e por testes de texto).
+- Termos sem mudança (6.2 c); e-mail de boas-vindas com a linha da página de antivírus e o "Extrair tudo".
+- Integração para RootifyONE, ArchONE e EaglePlanONE: campos novos no registro técnico e na conferência (`antivirus`,
+  `antivirus_ligado`, `sinal`, `avisar_cnj`) e a ação nova `estado_cnj` (todos da `lex-conta` v20, da Arquitetura); o
+  RootifyONE pode mostrar "quais antivírus aparecem e quanto bloqueiam"; item de roadmap "CNJ fora e antivírus" concluído na
+  parte do programa.
+
 ## 0.7.46 (14/Nov, Área logada v2) — pronta para publicar
 
 - Feito: itens a a i do pedido da Arquitetura (`documentacao/PROMPT-PRODUTO-0.7.46-2026-11-14.md`). Testes: `test_v0746.py` (18:

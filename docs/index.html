@@ -63,7 +63,7 @@ h1 .marca-leve { display: block; font-size: .5em; font-weight: 400; letter-spaci
 .capa p.lede { margin: 0 0 28px; color: #d6dbe6; font-size: 1.15rem; line-height: 1.55; max-width: 34ch; }
 .botao { display: inline-block; background: var(--latao); color: var(--noite); text-decoration: none; font-weight: 700; padding: 15px 28px; border-radius: 999px; }
 .botao:hover { background: #e2bd80; }
-.baixar-opcoes { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: flex-start; } .op-baixar { flex: 1 1 240px; max-width: 320px; } .op-baixar p { margin: 10px 0 0; color: #d6dbe6; font-size: .9rem; line-height: 1.45; } .op-baixar p b { color: #fff; } a.botao-sec { display: inline-block; text-decoration: none; } .baixar-opcoes[hidden] { display: none; }
+.baixar-opcoes { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: flex-start; } .op-baixar { flex: 1 1 240px; max-width: 320px; } .op-baixar p { margin: 10px 0 0; color: #d6dbe6; font-size: .9rem; line-height: 1.45; } .op-baixar p b { color: #fff; } .op-baixar .link-antivirus { margin-top: 6px; } .op-baixar .link-antivirus a { color: #f0d39a; text-decoration: underline; } a.botao-sec { display: inline-block; text-decoration: none; } .baixar-opcoes[hidden] { display: none; }
 .so-computador p { margin: 0 0 14px; color: #d6dbe6; max-width: 36ch; }
 .cel-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
 @media (max-width: 560px) { .cel-botoes { flex-direction: column; } .cel-botoes .botao, .cel-botoes .botao-sec { width: 100%; text-align: center; padding-left: 16px; padding-right: 16px; } }
@@ -217,6 +217,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
           <div class="op-baixar">
             <a class="botao-sec" id="b-baixar-completo" href="downloads/Instalar-LexSuiteONE-completo.zip" data-t="baixar_completo">Baixar o pacote completo</a>
             <p data-t="op_completa"><b>Se o antivírus ou a rede do escritório bloquear</b> (11 MB). Antes de abrir: botão direito no arquivo, "Extrair tudo".</p>
+            <p class="link-antivirus"><a href="antivirus.html" data-t="antivirus_link">O antivírus bloqueou?</a></p>
           </div>
         </div>
         <div class="so-computador" id="so-computador" hidden>
@@ -316,7 +317,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section class="instalar">
   <h2 data-t="inst">Instalar em quatro passos</h2>
   <ol class="passos quatro">
-    <li><b data-t="i1t">Instale</b><span data-t="i1">Abra o arquivo baixado e dê dois cliques em <code>INSTALAR.bat</code>. Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo").</span></li>
+    <li><b data-t="i1t">Instale</b><span data-t="i1">Clique com o botão direito no arquivo baixado, escolha "Extrair tudo" e, na pasta extraída, dê dois cliques em <code>INSTALAR.bat</code>. Se o Windows pedir confirmação, clique em "Executar" (ou em "Mais informações" e "Executar assim mesmo"). Se o antivírus bloquear, <a href="antivirus.html">veja como liberar</a>.</span></li>
     <li><b data-t="i2t">Configure</b><span data-t="i2">A tela abre sozinha: informe o escritório, quem vai usar e a pasta da planilha. A primeira leitura começa em seguida.</span></li>
     <li><b data-t="i3t">Confira as Configurações</b><span data-t="i3">No menu ☰, Configurações mostra os seus Destaques e exclusões (por área), a pasta das planilhas, a Rotina de leitura, o espaço do computador e os termos. Não é preciso compartilhar nada com a SolverONE.</span></li>
     <li><b data-t="i4t">Use o atalho</b><span data-t="i4">Daí em diante, abra pelo atalho RADAR JUDICIAL na área de trabalho.</span></li>
@@ -337,7 +338,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     manual_topo: "Manual",
     lede: "Monitors Brazil's National Electronic Court Gazette (DJEN) daily and lists new lawsuits filed against companies, with each company's registry profile.",
     baixar: "Download RADAR JUDICIAL",
-    op_rapida: "<b>Quick install</b> (3 KB). Downloads the rest from the internet.", baixar_completo: "Download the complete package", op_completa: "<b>If the antivirus or the office network blocks it</b> (11 MB). Before opening: right-click the file, \"Extract all\".",
+    op_rapida: "<b>Quick install</b> (3 KB). Downloads the rest from the internet.", baixar_completo: "Download the complete package", antivirus_link: "Did the antivirus block it?", op_completa: "<b>If the antivirus or the office network blocks it</b> (11 MB). Before opening: right-click the file, \"Extract all\".",
     cel_txt: "RADAR JUDICIAL is installed on a computer with Windows 10 or 11. Open this address on the computer to install.", cel_email: "E-mail the link", cel_copiar: "Copy the link", cel_copiado: "Link copied", mac_txt: "Using a Mac? The Mac version is available on request: talk to us and we will set up the best way to install it.", mac_botao: "Talk to us",
     req: "For Windows 10 or 11 (Mac on request), on a computer in Brazil, with Google Drive (OneDrive on request).",
     am_aria: "Sample list",
@@ -368,7 +369,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     s5: "Updates install only after the digital signature is checked. The code is open for anyone to review.",
     s6: "SolverONE does not access the computer or the spreadsheets: it receives the licence check, who uses it, the terms acceptance, technical error notices and anonymous totals per status.",
     inst: "Install in four steps",
-    i1t: "Install", i1: "Open the downloaded file and double-click <code>INSTALAR.bat</code>. If Windows asks for confirmation, click \"Run\" (or \"More info\" and \"Run anyway\").",
+    i1t: "Install", i1: "Right-click the downloaded file, choose \"Extract all\" and, in the extracted folder, double-click <code>INSTALAR.bat</code>. If Windows asks for confirmation, click \"Run\" (or \"More info\" and \"Run anyway\"). If the antivirus blocks it, <a href=\"antivirus.html\">see how to allow it</a>.",
     i2t: "Set up", i2: "The screen opens by itself: enter the firm, who will use it and the spreadsheet folder. The first reading starts right after.",
     i3t: "Check Settings", i3: "In the ☰ menu, Settings shows your Highlights and exclusions (by area), the spreadsheets folder, the Reading routine, the computer's storage and the terms. Nothing needs to be shared with SolverONE.",
     i4t: "Use the shortcut", i4: "From then on, open it from the RADAR JUDICIAL shortcut on the desktop.",

@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.46 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.47 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,12 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.47 (14/Nov, CNJ fora e antivírus, desenho da Arquitetura):** quando o CNJ falha, o programa diz se é do CNJ ou deste
+  computador (duas sondas leves de controle; frase na faixa, no Histórico e em "Detalhes técnicos") e, quando a SolverONE também
+  vê o CNJ fora, mostra isso; opção de aviso por e-mail quando o CNJ ficar fora por mais de 4 horas em dia útil (desligada).
+  Configurações → Sobre este computador mostra o antivírus e o firewall, com o link dos passos para liberar; as mensagens de
+  bloqueio nomeiam o antivírus. O instalador confere o computador antes de baixar, orienta em cada bloqueio (nunca manda
+  desligar o antivírus) e cria a leitura automática na própria janela; o XML da tarefa fica em `C:\LexSuiteONE\tarefa.xml`.
 - **0.7.46 (14/Nov, Área logada v2, desenho da Arquitetura):** "Trazer dados da área logada…" em quatro passos numa janela
   que não trava o programa: (1) o que pedir (marcados, primeiros N da lista filtrada ou os próximos que ainda não foram ao PJe;
   quais dados), com contagem, lotes e tempo estimado; limite POR PEDIDO (padrão 25, máximo 50, `radar.area_logada_por_pedido`,

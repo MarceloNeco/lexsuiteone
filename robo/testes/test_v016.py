@@ -1256,7 +1256,7 @@ class V0729Revisao(unittest.TestCase):
             return True, ""
         with mock.patch.object(agendar, "disponivel", return_value=True), mock.patch.object(agendar, "_apagar_tudo"), \
                 mock.patch.object(agendar, "_rodar", side_effect=rodar):
-            self.assertTrue(agendar.agendar(pasta, ["20:00"], "todos")[0])
+            self.assertTrue(agendar.agendar(pasta, ["20:00", "08:00"], "todos")[0])
         self.assertIn("pythonw.exe</Command>", vistos[0]); self.assertNotIn("RODAR.bat", vistos[0])
 
     def test_registro_aceita_bytes_e_mascara_o_diagnostico(self):

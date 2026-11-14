@@ -179,17 +179,28 @@ processo de referência no TRT2 e um no TRT15 (do próprio escritório) e, se ho
    SolverONE), agendar a rodada diária e iniciar a primeira rodada agora (demora: deixar rodando). Instalar no
    computador que fica ligado nos horários das leituras (o do escritório ou o de casa: perguntar ao Leandro qual).
 
-   **Se o Windows ou o antivírus bloquear (aconteceu em 13/Nov com o Bitdefender do Leandro):**
-   - Aviso "O fornecedor não pôde ser verificado" ou tela azul do Windows: clicar em **Executar** (ou "Mais informações" →
-     "Executar assim mesmo"). É o nosso instalador; ele ainda não tem assinatura digital.
-   - Bitdefender "Comportamento malicioso bloqueado": é falso positivo. Clicar em **Reiniciar**. Depois, no Bitdefender:
-     **Proteção → Antivírus → Configurações → Gerenciar exceções → Adicionar uma exceção**, pasta `C:\LexSuiteONE`
-     (e `C:\Users\<usuário>\AppData\Local\LexSuiteONE`), marcando Antivírus e Defesa contra Ameaças. Salvar.
-   - Usar o **pacote completo** (11 MB), que não baixa nada durante a instalação:
+   **Antivírus: checklist antes de instalar** (0.7.47; regra do dono: detectar, explicar e orientar, sem tirar a proteção.
+   Em 13/Nov o Bitdefender do Leandro barrou a leitura automática):
+   - [ ] **Extrair o .zip antes** (botão direito → Extrair tudo) e rodar o `INSTALAR.bat` de dentro da pasta extraída. Aberto
+     de dentro do .zip, o instalador para e pede isso.
+   - [ ] **Ver qual antivírus o computador tem**: o instalador mostra no começo ("Antivírus encontrado: …"), antes de baixar.
+   - [ ] **Cadastrar a exceção antes de continuar**: a pasta `C:\LexSuiteONE` (com as subpastas) e os programas
+     `C:\LexSuiteONE\python\pythonw.exe` e `python.exe`. No Bitdefender: Proteção → Defesa contra Ameaças → Configurações →
+     Administrar exceções → `C:\LexSuiteONE\` sem asterisco, ligando Antivírus (Verificação ao acessar, Análise a pedido,
+     Scripts incorporados) e Defesa contra Ameaças → Salvar; se já houve bloqueio, Notificações → **Reiniciar** antes de
+     instalar de novo. Os outros antivírus, com a fonte oficial: judicial.solverone.com.br/antivirus.html.
+   - [ ] **Se a TI cuida do antivírus ou da rede**: mandar o "Texto para a TI" da página (botão Copiar): pasta, programas,
+     tarefa "LexSuiteONE Radar" e os endereços `judicial.solverone.com.br`, `comunicaapi.pje.jus.br`,
+     `qvdvkqydhnadhewcidia.supabase.co`, `brasilapi.com.br` e `minhareceita.org`.
+   - [ ] Aviso "O fornecedor não pôde ser verificado": clicar em **Executar** (ou "Mais informações" → "Executar assim mesmo").
+     O programa ainda não tem assinatura digital.
+   - [ ] No passo "5 de 6" o instalador cria a leitura automática (tarefa "LexSuiteONE Radar") na própria janela e confere.
+     Se não conseguir, diz qual antivírus impediu e mostra os passos; a tela aberta lê sozinha enquanto isso.
+   - [ ] Se o instalador disser que o programa "fechou logo ao abrir" ou que não conseguiu gravar os arquivos: é o
+     antivírus. Restaurar da quarentena, cadastrar a exceção e rodar o instalador de novo. Não é preciso tirar a proteção.
+   - Plano B: o **pacote completo** (11 MB), que não baixa nada durante a instalação:
      https://judicial.solverone.com.br/downloads/Instalar-LexSuiteONE-completo.zip → botão direito no arquivo → **Extrair
      tudo** → dois cliques em `INSTALAR.bat` → Executar → código de cliente.
-   - Se ainda bloquear: desligar a Defesa contra Ameaças só durante a instalação e ligar de novo logo depois (o Leandro ou a
-     TI decide). Rede controlada pela TI: liberar `judicial.solverone.com.br` e `qvdvkqydhnadhewcidia.supabase.co`.
 
    **Conferir o armazenamento** (menu ☰ → Configurações → Leitura do Diário → Armazenamento): espaço livre no disco (o ideal é mais de 10 GB), onde
    ficam `LexSuiteONE - Trabalhista.xlsx` e a pasta `Cópias de segurança`, e se o aviso de disco aparece. Anotar

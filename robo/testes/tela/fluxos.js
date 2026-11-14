@@ -175,6 +175,52 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.close();
   }
 
+  // 7. CNJ fora e antivírus (0.7.47): "é do CNJ ou é daqui" na faixa e no histórico, a linha da SolverONE, a opção de
+  //    e-mail e o antivírus em Sobre este computador (dados fictícios injetados nas respostas do programa)
+  {
+    const AV = { identificado: true, lido_em: '2026-11-14', antivirus: [{ nome: 'Windows Defender', ligado: false }, { nome: 'Bitdefender Antivirus', ligado: true }],
+      firewall: [{ nome: 'Bitdefender Firewall', ligado: true }], principal: 'Bitdefender Antivirus',
+      link: 'https://judicial.solverone.com.br/antivirus.html#pt-bitdefender', link_en: 'https://judicial.solverone.com.br/antivirus.html#en-bitdefender' };
+    const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'painel'); } catch (e) {} });
+    await p.route('**/dados*', async r => { const resp = await r.fetch(); const j = await resp.json();
+      j.ultima_tentativa = { causa: 'governo_fora', tribunal: 'TRT9', quando_local: '2026-11-13T14:54:00-03:00', origem_falha: 'cnj_aplicacao',
+        origem_pt: 'O servidor do CNJ respondeu erro (aplicação). Sua internet está normal. Não é problema deste computador.', origem_en: 'x' };
+      if (j.app) j.app.computador = AV; r.fulfill({ response: resp, body: JSON.stringify(j) }); });
+    await p.route('**/estado', async r => { const resp = await r.fetch(); const j = await resp.json();
+      j.cnj = { situacao: 'fora', testado: '2026-11-13T15:10', tribunal: 'TRT9', dia: '2026-11-12', lendo: false };
+      j.cnj_solverone = { fora: 23, total: 24, desde: '13:30', pt: 'A SolverONE também vê o CNJ fora desde 13h30 (23 de 24 tribunais).', en: 'y' };
+      j.sinais = [{ sinal: 'tarefa_falhou', chave: 'tarefa_nunca', pt: 'A leitura automática das 20:00 não rodou, embora a tarefa exista. O Bitdefender Antivirus pode estar impedindo.', en: 'z', link: AV.link, link_en: AV.link_en }];
+      r.fulfill({ response: resp, body: JSON.stringify(j) }); });
+    await p.route('**/historico', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ tentativas: [{ quando_local: '2026-11-13T14:54:00-03:00', origem: 'agendamento', tribunal: 'TRT9',
+      dias_pedidos: '2026-11-13', http: '500', causa: 'governo_fora', fez: 'não leu este tribunal; seguiu com os outros', duracao: 3.2, origem_falha: 'cnj_aplicacao',
+      origem_pt: 'O servidor do CNJ respondeu erro (aplicação). Sua internet está normal. Não é problema deste computador.',
+      tecnico: 'Diagnóstico: O servidor do CNJ respondeu erro (aplicação).\nCabeçalhos: server: CloudFront; x-amz-cf-pop: GRU3-P1' }] }) }));
+    await p.reload(); await p.waitForFunction(() => document.getElementById('carregando').hidden, null, { timeout: 30000 });
+    await p.evaluate(() => { const d = document.getElementById('janela'); if (d && d.open) d.close(); document.getElementById('v-painel').click(); });
+    await espera(11500);  // o batimento traz o estado (CNJ e o que a SolverONE vê)
+    const fx = await p.evaluate(() => { const f = document.querySelector('.faixa-falha'); return f ? f.innerText : ''; });
+    confere(/O servidor do CNJ respondeu erro \(aplicação\)\. Sua internet está normal/.test(fx), 'CNJ fora: a faixa do Painel diz que é do CNJ, não deste computador');
+    confere(/A SolverONE também vê o CNJ fora desde 13h30 \(23 de 24 tribunais\)/.test(fx), 'CNJ fora: a faixa mostra a linha da SolverONE');
+    const est = await p.evaluate(() => { const s_ = document.querySelector('.sinal-pc'); return s_ ? { t: s_.innerText, href: (s_.querySelector('a') || {}).href || '' } : null; });
+    confere(est && /Bitdefender Antivirus pode estar impedindo/.test(est.t) && /#pt-bitdefender$/.test(est.href), 'Antivírus: o aviso do programa nomeia o antivírus e leva aos passos dele');
+    await abrirConfig(p); await espera(600);
+    const sobre = await p.evaluate(() => { const i = document.getElementById('c-info'); const a = i.querySelector('a.link-antivirus'); return { t: i.innerText, href: a ? a.href : '', a: a ? a.textContent : '' }; });
+    confere(/Bitdefender Antivirus \(ligado\)/.test(sobre.t) && /Windows Defender \(desligado\)/.test(sobre.t) && /Bitdefender Firewall/.test(sobre.t), 'Sobre este computador: antivírus e firewall, ligados ou não');
+    confere(/#pt-bitdefender$/.test(sobre.href) && /Como liberar o RADAR no Bitdefender Antivirus/.test(sobre.a), 'Sobre este computador: "Como liberar o RADAR no Bitdefender Antivirus" abre a seção dele');
+    confere(/Recursos da licença[\s\S]*Trazer dados da área logada: ligado/.test(sobre.t), 'Sobre este computador: recursos da licença');
+    const cnjOpc = await p.evaluate(() => ({ marcado: document.getElementById('c-avisar-cnj').checked, rot: document.getElementById('c-l-avisar-cnj').textContent, x: document.getElementById('c-avisar-cnj-x').textContent }));
+    confere(!cnjOpc.marcado && /mais de 4 horas em dia útil/.test(cnjOpc.rot) && /um e-mail na queda e um na volta/.test(cnjOpc.x), 'Aviso por e-mail do CNJ: desligado por padrão, com a explicação');
+    await p.evaluate(() => { document.getElementById('c-avisar-cnj').click(); document.getElementById('c-salvar').click(); }); await espera(1500);
+    await abrirConfig(p); await espera(600);
+    confere(await p.evaluate(() => document.getElementById('c-avisar-cnj').checked), 'Aviso por e-mail do CNJ: fica marcado depois de salvar e reabrir');
+    await p.evaluate(() => { document.getElementById('c-avisar-cnj').click(); document.getElementById('c-salvar').click(); }); await espera(1200);  // volta ao padrão
+    await p.evaluate(() => document.getElementById('c-historico').click()); await espera(900);
+    const h = await p.evaluate(() => { const r = document.querySelector('.historico tbody tr'); return r ? { o: (r.querySelector('.origem-hist') || {}).textContent || '', tec: !!r.querySelector('details.tec-hist code') } : null; });
+    confere(h && /Não é problema deste computador/.test(h.o) && h.tec, 'Histórico de leituras: a frase do diagnóstico e os detalhes técnicos');
+    confere(p._erros.length === 0, 'CNJ e antivírus: nenhum erro na página ' + p._erros.join(' | '));
+    await p.close();
+  }
+
   await b.close();
   console.log(res.join('\n'));
   console.log(falhas ? `\n${falhas} FALHA(S)` : '\nTUDO OK');

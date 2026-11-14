@@ -53,7 +53,7 @@ class Instalador(unittest.TestCase):
         self.assertLess(self.texto.index('set /p "CODIGO='), self.texto.index("instalar.txt"))
         self.assertLess(self.texto.index('"versao\\":\\"instalador'), self.texto.index("call :extrair_pacote"))
         self.assertIn("conta-inicial.json", self.texto)
-        self.assertIn('\\"codigo\\":\\"%CODIGO_OK%\\",\\"instalacao\\":\\"%INST%\\"}', self.texto)  # todo aviso de erro diz a origem
+        self.assertIn('\\"codigo\\":\\"%CODIGO_OK%\\",\\"instalacao\\":\\"%INST%\\"', self.texto)  # todo aviso de erro diz a origem
 
     def test_programa_le_o_codigo_do_instalador(self):
         import json, tempfile

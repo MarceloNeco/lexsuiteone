@@ -10,7 +10,6 @@ import datetime as dt
 import os
 import re
 import subprocess  # nosec B404 - só schtasks e powershell, sem shell, com argumentos fixos
-import tempfile
 
 # Padrão (decisão de 08/Nov): o Diário de Justiça Eletrônico Nacional sai a partir das 19h; às 20h a leitura já pega o
 # dia, e às 8h pega o que entrou tarde da noite, antes de o escritório começar. Horas cheias são fáceis de lembrar.
@@ -18,6 +17,10 @@ PADRAO = ("20:00", "08:00")
 MAXIMO = 6
 DIAS = ("todos", "uteis")
 TAREFA = "LexSuiteONE Radar"
+# 0.7.47 (desenho "CNJ fora e antivírus", 2.6.1): tarefa às claras. Nada na pasta temporária: quando precisa de XML (dias da
+# semana, vários horários), ele fica na pasta do programa, com autor e descrição que dizem de quem é.
+AUTOR = "SolverONE · LexSuiteONE · RADAR JUDICIAL"
+ARQ_XML = "tarefa.xml"
 ANTIGAS = ("LexSuiteONE Radar (noite)", "LexSuiteONE Radar (manha)")
 HORA = re.compile(r"^([01]?\d|2[0-3]):([0-5]\d)$")
 DIAS_UTEIS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
@@ -185,7 +188,7 @@ def xml_tarefa(bat, horarios, dias="todos", hoje=None, oculta=None):
     pasta = os.path.dirname(bat)
     return ('<?xml version="1.0" encoding="UTF-16"?>\n'
             '<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">'
-            "<RegistrationInfo><Description>RADAR JUDICIAL (LexSuiteONE): leitura automática do Diário.</Description></RegistrationInfo>"
+            f"<RegistrationInfo><Author>{escape(AUTOR)}</Author><Description>{escape(AUTOR)}: leitura automática do Diário de Justiça Eletrônico Nacional.</Description></RegistrationInfo>"
             f"<Triggers>{''.join(gatilhos)}</Triggers>"
             '<Principals><Principal id="Author"><LogonType>InteractiveToken</LogonType><RunLevel>LeastPrivilege</RunLevel></Principal></Principals>'
             "<Settings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>"
@@ -244,8 +247,28 @@ def descricao(horarios, dias="todos"):
     return quando + " às " + lista
 
 
+def gravar_xml(pasta_robo, horarios, dias="todos"):
+    """0.7.47: o XML da tarefa na pasta do programa (C:\\LexSuiteONE\\tarefa.xml), nunca na pasta temporária. Devolve o caminho."""
+    bat = os.path.join(pasta_robo, "RODAR.bat")
+    arq = os.path.join(pasta_robo, ARQ_XML)
+    with open(arq, "w", encoding="utf-16") as f:
+        f.write(xml_tarefa(bat, validar(horarios), validar_dias(dias), oculta=acao_oculta(pasta_robo)))
+    return arq
+
+
+def plano(pasta_robo, horarios=None, dias="todos"):
+    """Para o instalador (0.7.47): como criar a tarefa às claras, na janela dele: {"modo": "xml", "xml"} (o XML já gravado
+    na pasta do programa) ou {"modo": "nenhum"} (nenhum dia marcado). Sempre pelo XML, mesmo com um horário só: a tarefa
+    simples do schtasks (/sc daily) não roda na bateria nem compensa o horário perdido (revisão da 0.7.47)."""
+    horarios, dias = validar(horarios), validar_dias(dias)
+    if not dias_da_semana(dias):
+        return {"modo": "nenhum"}
+    return {"modo": "xml", "xml": gravar_xml(pasta_robo, horarios, dias)}
+
+
 def agendar(pasta_robo, horarios=None, dias="todos"):
-    """Cria (ou recria) a leitura automática que roda o RODAR.bat desta pasta. Devolve (ok, mensagem)."""
+    """Cria (ou recria) a leitura automática desta pasta. Devolve (ok, mensagem). 0.7.47: o XML fica na pasta do programa
+    (C:\\LexSuiteONE\\tarefa.xml), nunca na pasta temporária, com autor e descrição da SolverONE."""
     if not disponivel():
         return False, "Agendamento automático só no Windows."
     bat = os.path.join(pasta_robo, "RODAR.bat")
@@ -255,20 +278,10 @@ def agendar(pasta_robo, horarios=None, dias="todos"):
     if not dias_da_semana(dias):  # revisão da 0.7.32: nenhum dia marcado = sem leitura automática (XML vazio é inválido)
         return desagendar()
     _apagar_tudo()
-    arq = None
     try:
-        fd, arq = tempfile.mkstemp(suffix=".xml", prefix="lexsuite-tarefa-")
-        with os.fdopen(fd, "w", encoding="utf-16") as f:
-            f.write(xml_tarefa(bat, horarios, dias, oculta=acao_oculta(pasta_robo)))
-        ok, msg = _rodar(["schtasks", "/create", "/f", "/tn", TAREFA, "/xml", arq])
+        ok, msg = _rodar(["schtasks", "/create", "/f", "/tn", TAREFA, "/xml", gravar_xml(pasta_robo, horarios, dias)])
     except OSError as e:
         ok, msg = False, str(e)
-    finally:
-        if arq:
-            try:
-                os.remove(arq)
-            except OSError:
-                pass
     if ok:
         return True, f"Agendado: {descricao(horarios, dias)}. Se o computador estiver desligado na hora, a leitura acontece quando ele ligar."
     # Jeito antigo (sem compensar horário perdido): uma tarefa por horário.
@@ -280,9 +293,18 @@ def agendar(pasta_robo, horarios=None, dias="todos"):
         args[5:5] = ["/sc", "daily"] if semana == set(range(7)) else ["/sc", "weekly", "/d", ",".join(SEMANA_SCHTASKS[d] for d in sorted(semana))]
         ok2, msg2 = _rodar(args)
         if not ok2:
-            return False, (f"Não consegui criar a leitura automática ({msg2 or msg}). Se o antivírus (por exemplo, o Bitdefender) "  # 0.7.44 (KR Law)
-                          "bloqueou, peça para liberar a pasta do programa e salve de novo; ou tente o AGENDAR.bat como administrador.")
+            return False, mensagem_tarefa_falhou(pasta_robo, msg2 or msg)
     return True, f"Agendado: {descricao(horarios, dias)}, com o computador ligado na hora."
+
+
+def mensagem_tarefa_falhou(pasta_robo, detalhe=""):
+    """0.7.47 (2.4): a mensagem nomeia o antivírus encontrado e aponta os passos (página de antivírus). Nunca "desligue"."""
+    from . import computador
+    av = computador.principal(computador.guardado(pasta_robo))
+    quem = f"O {av}" if av and not computador.so_defender(computador.guardado(pasta_robo)) else "O antivírus"
+    return (f"Não consegui criar a leitura automática{f' ({detalhe})' if detalhe else ''}. {quem} pode ter impedido. "
+            f"Cadastre a exceção da pasta {pasta_robo} (passos em {computador.link(av)}) ou peça à TI, e salve de novo. "
+            "Enquanto isso, o programa lê sozinho com a tela aberta.")
 
 
 def migrar_antigas(pasta_robo, cfg):

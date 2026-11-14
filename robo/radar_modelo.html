@@ -224,7 +224,7 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .titem b { font-weight: 600; min-width: 3.4rem; }
 .titem span { color: var(--tinta-2); min-width: 0; overflow-wrap: anywhere; line-height: 1.3; }
 .titem small { color: var(--tinta-3); }
-.titem input, .gcab input, #c-agendar, #c-avisar, #w-agendar { width: 16px; height: 16px; margin: 0; accent-color: var(--latao); }
+.titem input, .gcab input, #c-agendar, #c-avisar, #c-avisar-cnj, #w-agendar { width: 16px; height: 16px; margin: 0; accent-color: var(--latao); }
 .painel-rodape { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; border-top: 1px solid var(--linha); padding-top: 12px; }
 .painel-rodape .cont { color: var(--tinta-2); font-size: .86rem; flex: 1 1 auto; }
 .painel .dica { font-size: .8rem; color: var(--tinta-3); }
@@ -688,6 +688,11 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .termos-linha { margin: 4px 0; } .c-voltar { margin-right: 10px; font-weight: 600; }
 #config.ver-hist > :not(.conf-cab):not(#c-hist) { display: none !important; } #config .c-hist { padding-bottom: 18px; }
 .faixa-falha .falha-ok { font-weight: 400; } .faixa-falha .falha-cnj { font-weight: 400; font-size: .9rem; margin-top: 4px; } .faixa-falha .falha-cnj:empty { display: none; }
+/* 0.7.47: "é do CNJ ou é daqui", a linha da SolverONE e o link dos passos do antivírus */
+.origem-falha, .cnj-solverone { display: block; font-weight: 400; font-size: .92rem; margin-top: 3px; }
+.cnj-solverone { font-style: italic; } .link-antivirus { font-weight: 600; white-space: normal; }
+.historico .origem-hist { color: var(--tinta-2); font-weight: 400; } .historico details.tec-hist summary { cursor: pointer; font-size: .8rem; }
+.historico details.tec-hist code { display: block; white-space: pre-wrap; word-break: break-word; font-size: .75rem; max-width: 420px; }
 .faixa-falha { background: #fdecea; color: #8a1c12; border: 1px solid #f3c2bc; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-weight: 600; }
 :root[data-theme="dark"] .faixa-falha { background: #3a1a17; color: #ffb4ab; border-color: #6b2a24; } @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .faixa-falha { background: #3a1a17; color: #ffb4ab; border-color: #6b2a24; } }
 #config .painel-rodape { position: sticky; bottom: 0; background: var(--folha); padding: 12px 0 16px; border-top: 1px solid var(--linha); z-index: 2; }
@@ -968,6 +973,8 @@ window.lexSortearFundo();</script>
       <p class="agenda-info" id="c-agenda-info" aria-live="polite"></p>
       <p class="agenda-info alerta" id="c-agenda-alerta" hidden></p>
       <label class="conf-acoes"><input type="checkbox" id="c-avisar"> <span id="c-l-avisar"></span></label>
+      <label class="conf-acoes"><input type="checkbox" id="c-avisar-cnj"> <span id="c-l-avisar-cnj"></span></label>
+      <p class="agenda-info" id="c-avisar-cnj-x"></p>
     </fieldset>
     <fieldset class="agenda" id="c-arm-wrap"><legend id="c-l-arm"></legend><div id="c-arm"></div></fieldset>
     <h4 class="conf-sec" id="c-s-tela"></h4>
@@ -2325,7 +2332,7 @@ window.LEXSUITE_RADAR = null;
     arm_feito: "Pronto.", arm_ajuda: "A planilha é a vitrine; o arquivo completo fica no programa. Acima de 80% do limite o RADAR avisa; a 100% guarda uma cópia e enxuga a aba Arquivo sozinho. Ficam as 6 cópias mais recentes. Com pouco espaço no disco, o RADAR não faz cópia nova e avisa. As cópias ficam na mesma pasta das planilhas: se a pasta for compartilhada, quem tem acesso a ela também vê as cópias.",
     arm_ver: "Ver armazenamento",
     termos_t: "Termos e condições", termos_esc: "Escritório (licença, privacidade e tratamento de dados)", termos_pes: "Você (termos de uso)",
-    termos_aceito: "aceitos por {n} em {d}", termos_linha: "Versão {v}, aceitos por {n} em {d}.", hist_ver: "Ver histórico de leituras", falha_ok_ate: "Nada se perdeu: o {t} já foi lido até {d}; o que faltou entra na próxima leitura.", cnj_fora: "O programa confere o CNJ de 15 em 15 minutos e avisa quando voltar. Última conferência: {h}, ainda fora do ar.", cnj_voltou: "O CNJ voltou a responder ({h}). Clique em Ler o Diário agora para ler os Diários que faltaram.", cnj_voltou_lendo: "O CNJ voltou a responder ({h}). Lendo os Diários que faltaram.", ver_registro_tec: "Ver registro técnico", c_voltar: "← Configurações", c_chave_ajuda: "Confere que cada atualização veio mesmo da SolverONE. É a mesma em todo computador e não muda com a licença.", falha_painel: "A última leitura não deu certo em {t} ({q}): {c}", c_ret_ajuda: "Ao fim de cada leitura, o programa envia à SolverONE só estas quantidades. Este é o horário do último envio, não da conferência da licença.", termos_vigente: "versão vigente {v}", termos_nao: "ainda não aceitos", termos_ler: "ler os termos",
+    termos_aceito: "aceitos por {n} em {d}", termos_linha: "Versão {v}, aceitos por {n} em {d}.", hist_ver: "Ver histórico de leituras", falha_ok_ate: "Nada se perdeu: o {t} já foi lido até {d}; o que faltou entra na próxima leitura.", cnj_fora: "O programa confere o CNJ de 15 em 15 minutos e avisa quando voltar. Última conferência: {h}, ainda fora do ar.", cnj_voltou: "O CNJ voltou a responder ({h}). Clique em Ler o Diário agora para ler os Diários que faltaram.", cnj_voltou_lendo: "O CNJ voltou a responder ({h}). Lendo os Diários que faltaram.", ver_registro_tec: "Ver registro técnico", pc_como_liberar: "Como liberar o {c} no {a}", bg_diag_cnj: "CNJ fora: é daqui ou do CNJ?", bg_leitura_auto: "Leitura automática (tarefa do Windows)", pc_seu_antivirus: "seu antivírus", ag_avisar_cnj: "Avisar por e-mail quando o CNJ ficar fora por mais de 4 horas em dia útil", ag_avisar_cnj_x: "O aviso vai para o e-mail cadastrado para esta instalação; um e-mail na queda e um na volta.", pc_lendo: "Lendo o que o Windows informa…", pc_so_windows: "Só no Windows.", pc_nao_ident: "Não identificado (este Windows não informa o antivírus instalado).", pc_nenhum: "Nenhum encontrado.", pc_ligado: "ligado", pc_desligado: "desligado", pc_sem_estado: "estado não informado", pc_lido: "Conferido em {d} (uma vez por dia).", pc_antivirus: "Antivírus", pc_antivirus_ajuda: "O que a Central de Segurança do Windows informa sobre este computador. Se o antivírus bloquear a leitura automática ou um arquivo do programa, o link mostra onde cadastrar a exceção da pasta C:\\LexSuiteONE, com a fonte oficial do fabricante. Nunca é preciso desligar o antivírus.", pc_firewall: "Firewall", pc_recursos: "Recursos da licença", pc_recursos_ajuda: "O que a licença do escritório liga ou desliga neste computador. É conferido com a SolverONE ao abrir e de 30 em 30 minutos com a tela aberta; sem internet, vale o último estado.", pc_rec_area: "Trazer dados da área logada", pc_rec_on: "ligado", pc_rec_off: "desligado pela licença", c_voltar: "← Configurações", c_chave_ajuda: "Confere que cada atualização veio mesmo da SolverONE. É a mesma em todo computador e não muda com a licença.", falha_painel: "A última leitura não deu certo em {t} ({q}): {c}", c_ret_ajuda: "Ao fim de cada leitura, o programa envia à SolverONE só estas quantidades. Este é o horário do último envio, não da conferência da licença.", termos_vigente: "versão vigente {v}", termos_nao: "ainda não aceitos", termos_ler: "ler os termos",
     termos_sem: "A situação dos termos aparece depois da próxima conferência da licença.", termos_antiga: "aceitos na versão {v}; a versão {w} precisa de novo aceite",
     w_termos: "Li e aceito os termos de uso", w_termos_falta: "Para continuar, marque que leu e aceita os termos de uso.",
     arq_parcial: "Mostrando os {m} processos mais recentes de {n}. Para achar um mais antigo, use a busca (ela procura em tudo o que o programa guarda).",
@@ -2426,7 +2433,7 @@ window.LEXSUITE_RADAR = null;
     arm_feito: "Done.", arm_ajuda: "The spreadsheet is the shop window; the full archive stays in the program. Above 80% of the limit RADAR warns; at 100% it saves a backup and trims the Archive sheet by itself. The 6 newest backups are kept. With little disk space, RADAR makes no new backup and warns. Backups stay in the spreadsheets folder: if that folder is shared, whoever can open it also sees the backups.",
     arm_ver: "See storage",
     termos_t: "Terms and conditions", termos_esc: "Firm (licence, privacy and data processing)", termos_pes: "You (terms of use)",
-    termos_aceito: "accepted by {n} on {d}", termos_linha: "Version {v}, accepted by {n} on {d}.", hist_ver: "View reading history", falha_ok_ate: "Nothing was lost: {t} has been read up to {d}; what was missing comes in the next reading.", cnj_fora: "The program checks the CNJ every 15 minutes and lets you know when it is back. Last check: {h}, still down.", cnj_voltou: "The CNJ is responding again ({h}). Click Read the gazette now to read the missing gazettes.", cnj_voltou_lendo: "The CNJ is responding again ({h}). Reading the missing gazettes.", ver_registro_tec: "View technical log", c_voltar: "← Settings", c_chave_ajuda: "Checks that each update really came from SolverONE. It is the same on every computer and does not change with the licence.", falha_painel: "The last reading did not work for {t} ({q}): {c}", c_ret_ajuda: "At the end of each reading, the program sends SolverONE only these counts. This is the time of the last sending, not of the licence check.", termos_vigente: "current version {v}", termos_nao: "not accepted yet", termos_ler: "read the terms",
+    termos_aceito: "accepted by {n} on {d}", termos_linha: "Version {v}, accepted by {n} on {d}.", hist_ver: "View reading history", falha_ok_ate: "Nothing was lost: {t} has been read up to {d}; what was missing comes in the next reading.", cnj_fora: "The program checks the CNJ every 15 minutes and lets you know when it is back. Last check: {h}, still down.", cnj_voltou: "The CNJ is responding again ({h}). Click Read the gazette now to read the missing gazettes.", cnj_voltou_lendo: "The CNJ is responding again ({h}). Reading the missing gazettes.", ver_registro_tec: "View technical log", pc_como_liberar: "How to allow {c} in {a}", bg_diag_cnj: "CNJ down: is it here or the CNJ?", bg_leitura_auto: "Automatic reading (Windows task)", pc_seu_antivirus: "your antivirus", ag_avisar_cnj: "E-mail me when the CNJ is down for more than 4 hours on a business day", ag_avisar_cnj_x: "The notice goes to the e-mail registered for this installation; one e-mail when it goes down and one when it is back.", pc_lendo: "Reading what Windows reports…", pc_so_windows: "Windows only.", pc_nao_ident: "Not identified (this Windows does not report the installed antivirus).", pc_nenhum: "None found.", pc_ligado: "on", pc_desligado: "off", pc_sem_estado: "status not reported", pc_lido: "Checked on {d} (once a day).", pc_antivirus: "Antivirus", pc_antivirus_ajuda: "What Windows Security Center reports about this computer. If the antivirus blocks the automatic reading or a program file, the link shows where to add the exception for the folder C:\\LexSuiteONE, with the vendor's official source. Turning the antivirus off is never needed.", pc_firewall: "Firewall", pc_recursos: "Licence features", pc_recursos_ajuda: "What the firm's licence turns on or off on this computer. It is checked with SolverONE on opening and every 30 minutes while the screen is open; without internet, the last state applies.", pc_rec_area: "Bring data from the logged-in area", pc_rec_on: "on", pc_rec_off: "turned off by the licence", c_voltar: "← Settings", c_chave_ajuda: "Checks that each update really came from SolverONE. It is the same on every computer and does not change with the licence.", falha_painel: "The last reading did not work for {t} ({q}): {c}", c_ret_ajuda: "At the end of each reading, the program sends SolverONE only these counts. This is the time of the last sending, not of the licence check.", termos_vigente: "current version {v}", termos_nao: "not accepted yet", termos_ler: "read the terms",
     termos_sem: "The terms status shows after the next licence check.", termos_antiga: "accepted in version {v}; version {w} needs a new acceptance",
     w_termos: "I have read and accept the terms of use", w_termos_falta: "To continue, tick that you have read and accept the terms of use.",
     arq_parcial: "Showing the {m} most recent cases out of {n}. To find an older one, use the search (it searches everything the program keeps).",
@@ -2668,6 +2675,8 @@ window.LEXSUITE_RADAR = null;
     if (e.erro && !(licFaixa_ && /aceitar os termos|aceite dos termos|licença deste escritório|código de cliente|terms still need|licence|client code/i.test(e.erro))) {
       var inf = e.erro_info || {}, txtErro = inf[lang] || inf.pt || e.erro;
       box.appendChild(inf.causa === "interrompida" ? el("span", "aviso-leve", txtErro) : el("span", "erro", t("erro", { e: txtErro })));
+      var or_ = linhaOrigem(inf); if (or_) box.appendChild(or_);
+      if (inf.causa === "governo_fora") { var sv2_ = linhaSolverone(); if (sv2_) box.appendChild(sv2_); }
       if (inf.detalhe) { var det = el("details"); det.appendChild(el("summary", null, t("ver_detalhes"))); det.appendChild(el("code", null, inf.detalhe)); box.appendChild(det); }
     }
     if (!e.erro && e.situacao && e.situacao.avisos && e.situacao.avisos.length) {
@@ -2681,6 +2690,10 @@ window.LEXSUITE_RADAR = null;
         box.appendChild(el("span", g[0].aviso ? "aviso-leve" : "erro", c === "ainda_nao_liberado_3h" ? t("aviso_3h_tribs", { t: nomes, d: ate }) : nomes + ": " + msg));
       });
     }
+    if (!e.erro && e.situacao && e.situacao.origens) Object.keys(e.situacao.origens).forEach(function (k) { var o_ = linhaOrigem(e.situacao.origens[k]); if (o_) box.appendChild(o_); });
+    (e.sinais || []).forEach(function (g) {  // 0.7.47 (2.4): o antivírus barrou algo neste computador; a mensagem nomeia e aponta os passos
+      var sp_ = el("span", "erro sinal-pc", (g[lang] || g.pt) + " "); sp_.appendChild(linkAntivirus(lang === "en" ? g.link_en : g.link)); box.appendChild(sp_);
+    });
     if (e.situacao) {
       box.appendChild(el("span", "ok", t("ultima", { q: dataHora(e.situacao.quando || e.fim), s: e.situacao[lang] || e.situacao.pt })));
       if (e.situacao.aviso_planilha) {
@@ -2742,7 +2755,10 @@ window.LEXSUITE_RADAR = null;
         var cls = h.causa === "ok" ? "ok" : (h.causa === "ainda_nao_liberado_3h" || h.causa === "nao_publicado" || h.causa === "interrompida") ? "aviso" : "ruim";
         [q.slice(8, 10) + "/" + q.slice(5, 7) + " " + q.slice(11, 16) + (q.length > 19 ? " (" + q.slice(19) + ")" : ""), (lang === "en" ? ({ "botão": "button", "agendamento": "schedule", "fora do horário": "off schedule", "à mão (RODAR.bat)": "by hand (RODAR.bat)" })[h.origem] : "") || h.origem || "", h.tribunal || "", h.dias_pedidos || "",
          null, (lang === "en" && h.fez_en) || h.fez || "", h.duracao != null ? h.duracao + " s" : "", h.http ? t("cod_tecnico", { c: h.http }) : ""].forEach(function (v, ix) {
-          var td = ix === 4 ? el("td", cls, t("c_" + (h.causa || "erro_do_programa"))) : el("td", ix === 7 ? "cinza" : null, v); tr.appendChild(td); });
+          var td = ix === 4 ? el("td", cls, t("c_" + (h.causa || "erro_do_programa"))) : el("td", ix === 7 ? "cinza" : null, v);
+          if (ix === 4 && (h["origem_" + lang] || h.origem_pt)) { td.appendChild(el("br")); td.appendChild(el("small", "origem-hist", h["origem_" + lang] || h.origem_pt)); }  // 0.7.47
+          if (ix === 7 && h.tecnico) { var dt7_ = el("details", "tec-hist"); dt7_.appendChild(el("summary", null, t("ver_detalhes"))); dt7_.appendChild(el("code", null, h.tecnico)); td.appendChild(dt7_); }
+          tr.appendChild(td); });
         tbody.appendChild(tr);
       });
       tb.appendChild(tbody); historicoDiv.appendChild(tb);
@@ -2768,7 +2784,9 @@ window.LEXSUITE_RADAR = null;
   setInterval(function () {
     if (MODO !== "app" || reiniciando) return;
     fetch("/estado", { headers: cabecalhosApp(), cache: "no-store" }).then(function (r) { falhasBatimento = 0; return r.json(); }).then(function (e) {
-      if (e) avaliarCnj(e.cnj);  // 0.7.44 (dono): conferência automática do CNJ
+      if (e) { cnjSolverone = e.cnj_solverone || null; avaliarCnj(e.cnj); }  // 0.7.44 (dono): conferência automática do CNJ; 0.7.47: o que a SolverONE vê
+      var nSin_ = e && e.sinais ? e.sinais.map(function (g) { return g.chave; }).join(",") : "";  // 0.7.47: sinal novo do antivírus aparece sem recarregar
+      if (e && nSin_ !== sinaisVistos && !e.rodando && !vigia) { sinaisVistos = nSin_; mostrarEstado(e); }
       if (e && e.chamado) {  // 0.7.28 (dono): clicaram no atalho de novo; esta tela avisa e tenta vir para a frente
         mostrarAviso(t("ja_aberto", { m: marcaInfo().curto })); try { window.focus(); } catch (x) {}
         var tit_ = document.title, n_ = 0, pisca_ = setInterval(function () { document.title = n_++ % 2 ? tit_ : "● " + t("ja_aberto_curto", { m: marcaInfo().curto }); if (n_ > 9) { clearInterval(pisca_); document.title = tit_; } }, 700);
@@ -2781,10 +2799,23 @@ window.LEXSUITE_RADAR = null;
   /* 0.7.44 (dono, 13/Nov: "de tempos em tempos verifique… para dizer quando aquilo tá bom"): o programa confere o CNJ de
      15 em 15 minutos quando falta ler algum Diário; a faixa vermelha mostra a última conferência e, quando o CNJ volta, um
      aviso verde (e, com a leitura automática ligada, a leitura dos Diários que faltaram já começa sozinha) */
-  var cnjAgora = null, cnjViuFora = false;
+  var cnjAgora = null, cnjViuFora = false, cnjSolverone = null, sinaisVistos = "";
   function mostrarCnj() {
     var c_ = $("cnj-situacao"); if (!c_) return; c_.textContent = "";
-    if (cnjAgora && cnjAgora.situacao === "fora") c_.textContent = t("cnj_fora", { h: String(cnjAgora.testado || "").slice(11, 16) });
+    if (cnjAgora && cnjAgora.situacao === "fora") c_.appendChild(el("span", null, t("cnj_fora", { h: String(cnjAgora.testado || "").slice(11, 16) })));
+    var sv_ = linhaSolverone(); if (sv_) c_.appendChild(sv_);
+  }
+  function linhaSolverone() {  // 0.7.47: "A SolverONE também vê o CNJ fora desde 13h30 (23 de 24 tribunais)"; sem resposta da nuvem, nada
+    var tx_ = cnjSolverone && (cnjSolverone[lang] || cnjSolverone.pt); return tx_ ? el("span", "cnj-solverone", " " + tx_) : null;
+  }
+  function linkAntivirus(href) {  // 0.7.47: "Como liberar o RADAR no <antivírus>" abre a página de antivírus na seção dele
+    var pc_ = (APP && APP.computador) || {}, a_ = el("a", "link-antivirus", t("pc_como_liberar", { c: marcaCurto(), a: pc_.principal || t("pc_seu_antivirus") }));
+    a_.href = href || (lang === "en" ? pc_.link_en : pc_.link) || "https://judicial.solverone.com.br/antivirus.html"; a_.target = "_blank"; a_.rel = "noopener noreferrer"; return a_;
+  }
+  function linhaOrigem(o, cls) {  // 0.7.47: "é do CNJ ou é daqui", com o link dos passos quando algo neste computador barra
+    var tx_ = o && (o["origem_" + lang] || o[lang] || o.origem_pt || o.pt); if (!tx_) return null;
+    var sp_ = el("span", cls || "origem-falha", tx_ + " "), lk_ = o["antivirus_link" + (lang === "en" ? "_en" : "")] || o["link" + (lang === "en" ? "_en" : "")];
+    if (lk_ || o.origem_falha === "bloqueio_local") sp_.appendChild(linkAntivirus(lk_)); return sp_;
   }
   function avaliarCnj(c) {
     var antes_ = cnjAgora; cnjAgora = c || null; mostrarCnj();
@@ -2842,7 +2873,7 @@ window.LEXSUITE_RADAR = null;
   /* 0.7.34 (dono): "depois que aceita os termos, volta para o programa e ele reconhece e libera". A tela pede ao programa
      que confira na nuvem (/conta/conferir) ao voltar para a janela, a cada 15 s por até 10 min depois de abrir a página de
      aceite, ao abrir com o aceite pendente e antes de "Ler o Diário agora". Sem F5, sem esperar a leitura automática. */
-  var conferindoConta = null, vigiaAceite = null, ultimaConferencia = 0;
+  var conferindoConta = null, vigiaAceite = null, ultimaConferencia = Date.now();  // 0.7.47: a abertura já conferiu
   function pendenteAceite() { return !!(MODO === "app" && APP && APP.conta && APP.conta.codigo && !APP.conta.ok && APP.conta.estado === "aceite_pendente"); }
   function conferirConta(sozinho) {  // sozinho = foco, visibilidade ou vigia: no máximo 1 pedido a cada 10 s (limite da nuvem)
     if (MODO !== "app" || !APP) return Promise.resolve(false);
@@ -2853,7 +2884,7 @@ window.LEXSUITE_RADAR = null;
       conferindoConta = null;
       if (!r || !r.conta || r.sem_internet) return "sem";  // revisão da 0.7.35: sem conexão não é "conferido" nem "pendente"
       if (r.ocupado) return "ocupado";  // 0.7.36 (revisão da Operação): leitura em andamento; ela mesma confere a licença
-      var antes = !!(APP.conta && APP.conta.ok); APP.conta = r.conta; bannerControle();
+      var antes = !!(APP.conta && APP.conta.ok); APP.conta = r.conta; bannerControle(); avisarRecursos();  // 0.7.47: interruptores na hora
       if (APP.conta.ok && !antes) { pararVigiaAceite(); avisoRapidoApp(t("aceite_ok")); }
       return !!APP.conta.ok;
     }).catch(function () { conferindoConta = null; return "sem"; });
@@ -2871,8 +2902,13 @@ window.LEXSUITE_RADAR = null;
     var n_ = el("span", (cls || "ok") + " aviso-rapido", txt); e_.insertBefore(n_, e_.firstChild);
     setTimeout(function () { if (n_.parentNode) n_.parentNode.removeChild(n_); }, 9000);
   }
-  window.addEventListener("focus", function () { if (pendenteAceite()) conferirConta(true); });
-  document.addEventListener("visibilitychange", function () { if (!document.hidden && pendenteAceite()) conferirConta(true); });
+  // 0.7.47 (seção 2d do desenho da área logada): conferência leve da licença de 30 em 30 minutos com a tela aberta e ao voltar
+  // para a janela (se a última foi há mais de 30 min); os interruptores da licença valem sem reabrir. Sem internet, vale o último estado.
+  var MEIA_HORA = 30 * 60000;
+  function conferirSeVelha() { if (MODO === "app" && APP && APP.conta && APP.conta.codigo && Date.now() - ultimaConferencia > MEIA_HORA) conferirConta(true); }
+  window.addEventListener("focus", function () { if (pendenteAceite()) conferirConta(true); else conferirSeVelha(); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { if (pendenteAceite()) conferirConta(true); else conferirSeVelha(); } });
+  setInterval(function () { if (!document.hidden) conferirSeVelha(); }, 5 * 60000);
   setTimeout(function () { if (pendenteAceite()) conferirConta(true); }, 1500);
   function avisoLicenca() {
     var c_ = APP.conta || {}, c = el("div"); c.appendChild(el("h3", null, c_.aceite_link ? t("lic_aceite_t") : t("lic_bloq_t")));
@@ -2986,7 +3022,7 @@ window.LEXSUITE_RADAR = null;
     if (id) window.scrollTo(0, 0);
   }
   function estadoConfig() {
-    return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), JSON.stringify(diasValor(cDias)), $("c-avisar").checked, $("c-aba").checked, $("c-al-n").value]);
+    return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), JSON.stringify(diasValor(cDias)), $("c-avisar").checked, $("c-aba").checked, $("c-al-n").value, $("c-avisar-cnj").checked]);
   }
   function marcarSalvarC() { if (!$("config").hidden) $("c-salvar").disabled = $("c-salvar").classList.contains("salvando") || (estadoConfig() === snapC && !regrasSujo); }  // 0.7.33: um Salvar só, também para os critérios
   var regrasSujo = false, salvarRegrasAgora = null;  // revisão da 0.7.28: fechar a Configuração pergunta também pelas regras
@@ -3094,6 +3130,7 @@ window.LEXSUITE_RADAR = null;
     var ag = APP && APP.config.agendavel; $("c-agendar").disabled = !ag; $("c-agendar").checked = !!(APP && APP.config.agendado) || (ag && !(APP && APP.config.pasta));
     cHoras = ((APP && APP.config.horarios) || ["20:00", "08:00"]).slice(); cDias = diasLista((APP && APP.config.dias) || "todos");
     $("c-avisar").checked = !(APP && APP.config.avisar_ao_terminar === false); $("c-aba").checked = !!(APP && APP.config.abrir_em_aba);
+    $("c-avisar-cnj").checked = !!(APP && APP.config.avisar_cnj);  // 0.7.47 (decisão 35): desligada por padrão
     $("c-al-n").value = String(alLimite()); $("c-l-al").textContent = t("c_al_t"); $("c-l-al-n").textContent = t("c_al_rot");  // 0.7.46: limite por pedido
     var caj_ = $("c-al-aj"); caj_.textContent = ""; caj_.appendChild(ajuda(t("c_al_ajuda")));
     $("c-l-tela").textContent = t("c_tela"); $("c-l-aba").textContent = t("c_aba"); $("c-hora-nova").value = "";
@@ -3193,6 +3230,21 @@ window.LEXSUITE_RADAR = null;
     par(t("c_controle"), APP.config.planilha || (APP.config.pasta_base ? t("c_controle_falta") : t("c_sem_pasta")));
     par(t("c_chave"), APP.atualizacao && APP.atualizacao.chave ? APP.atualizacao.impressao : t("c_chave_falta"), t("c_chave_ajuda"));
     par(t("c_atu_pasta"), (APP.atualizacao && (APP.atualizacao.pasta || APP.atualizacao.url)) || t("c_sem_pasta"));
+    // 0.7.47 (2.4): antivírus e firewall encontrados (lidos uma vez por dia), ligados ou não, e o caminho para liberar o programa
+    var pc_ = APP.computador || {}, ddA_ = el("dd"), ddF_ = el("dd");
+    function produtos(lista, dd_) {
+      if (!pc_.lido_em) { dd_.textContent = APP.config.agendavel ? t("pc_lendo") : t("pc_so_windows"); return; }
+      if (!pc_.identificado) { dd_.textContent = t("pc_nao_ident"); return; }
+      if (!lista.length) { dd_.textContent = t("pc_nenhum"); return; }
+      dd_.textContent = lista.map(function (p) { return p.nome + " (" + (p.ligado === true ? t("pc_ligado") : p.ligado === false ? t("pc_desligado") : t("pc_sem_estado")) + ")"; }).join(" · ");
+    }
+    produtos(pc_.antivirus || [], ddA_); produtos(pc_.firewall || [], ddF_);
+    if (pc_.lido_em) { ddA_.appendChild(el("br")); ddA_.appendChild(linkAntivirus()); ddA_.appendChild(el("br")); ddA_.appendChild(el("small", null, t("pc_lido", { d: dataCurta(pc_.lido_em, true) }))); }
+    var dtA_ = el("dt", null, t("pc_antivirus")); dtA_.appendChild(document.createTextNode(" ")); dtA_.appendChild(ajuda(t("pc_antivirus_ajuda"))); dl.appendChild(dtA_); dl.appendChild(ddA_);
+    dl.appendChild(el("dt", null, t("pc_firewall"))); dl.appendChild(ddF_);
+    // 0.7.47 (seção 2d do desenho da área logada): o que a licença liga e desliga neste computador
+    var rec_ = (APP.conta && APP.conta.recursos) || {}, ddR_ = el("dd", null, t("pc_rec_area") + ": " + (rec_["area-logada"] === false ? t("pc_rec_off") : t("pc_rec_on")));
+    var dtR2_ = el("dt", null, t("pc_recursos")); dtR2_.appendChild(document.createTextNode(" ")); dtR2_.appendChild(ajuda(t("pc_recursos_ajuda"))); dl.appendChild(dtR2_); dl.appendChild(ddR_);
     // 0.7.14: o que a SolverONE recebe (só quantidades por situação), exatamente como foi enviado
     var rt = (D && D.retorno) || {}, linhas = rt.linhas || [], tot = {};
     linhas.forEach(function (l) { tot[l.situacao] = (tot[l.situacao] || 0) + (l.qtd || 0); });
@@ -3226,6 +3278,7 @@ window.LEXSUITE_RADAR = null;
     if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
     if ($("c-agendar").checked && !cHoras.length) { $("c-msg").textContent = t("ag_um"); return; }
     corpo.horarios = cHoras.slice(); corpo.dias = diasValor(cDias); if (!cDias.length) corpo.agendar = false; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
+    var mudouCnj_ = !!(APP && APP.config.avisar_cnj) !== $("c-avisar-cnj").checked; corpo.avisar_cnj = $("c-avisar-cnj").checked;
     var aln_ = Math.max(1, Math.min(50, parseInt($("c-al-n").value, 10) || 25)); if (aln_ !== alLimite()) corpo.area_logada_por_pedido = aln_;
     // 0.7.43 (dono: "o salvar demorou muito"): a pasta e o agendamento do Windows só vão quando mudaram (cada um leva segundos)
     if (cA_.pasta && corpo.pasta === cA_.pasta) { delete corpo.pasta; delete corpo.criar; }
@@ -3238,7 +3291,8 @@ window.LEXSUITE_RADAR = null;
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
       // 0.7.43 (dono): a tela fica na hora com o que foi salvo (reabrir antes de a lista recarregar mostrava o de antes)
       if (APP && APP.config && r.radar) {
-        ["horarios", "dias", "avisar_ao_terminar", "abrir_em_aba", "area_logada_por_pedido"].forEach(function (k) { if (k in r.radar) APP.config[k] = r.radar[k]; });
+        ["horarios", "dias", "avisar_ao_terminar", "abrir_em_aba", "area_logada_por_pedido", "avisar_cnj"].forEach(function (k) { if (k in r.radar) APP.config[k] = r.radar[k]; });
+        if (mudouCnj_) conferirConta(false);  // 0.7.47: a preferência do aviso por e-mail chega à SolverONE já, na conferência da licença
         if ("pasta" in r) APP.config.pasta = r.pasta; if ("agendado" in r) APP.config.agendado = r.agendado;
       }
       var agM_ = r.agendar_msg && lang === "en" ? (r.agendar_ok ? (r.agendado ? "" : t("ag_desligada")) : t("ag_falhou")) : (r.agendar_msg || "");  // 0.7.36 (revisão da Operação): sem frase em PT na tela em EN
@@ -3406,7 +3460,7 @@ window.LEXSUITE_RADAR = null;
   }
   function desenharAgenda() {
     var on = $("c-agendar").checked && !$("c-agendar").disabled;
-    $("c-l-agenda").textContent = t("ag_titulo"); $("c-l-avisar").textContent = t("ag_avisar"); $("c-l-hora-nova").textContent = t("ag_nova"); $("c-hora-add").textContent = t("ag_add");
+    $("c-l-agenda").textContent = t("ag_titulo"); $("c-l-avisar").textContent = t("ag_avisar"); $("c-l-avisar-cnj").textContent = t("ag_avisar_cnj"); $("c-avisar-cnj-x").textContent = t("ag_avisar_cnj_x"); $("c-l-hora-nova").textContent = t("ag_nova"); $("c-hora-add").textContent = t("ag_add");
     $("c-l-agendar").textContent = $("c-agendar").disabled ? t("c_agendar_nao") : t("c_agendar");
     var sd = $("c-dias"); sd.textContent = ""; $("c-l-dias").textContent = t("ag_dias_rot"); $("c-l-horas").textContent = t("ag_horas_rot");
     [6, 0, 1, 2, 3, 4, 5].forEach(function (d) {  // domingo e sábado nas pontas, como no calendário
@@ -4629,7 +4683,11 @@ window.LEXSUITE_RADAR = null;
       [t("rg_exc_menu"), t("config"), "excluir empresa excluir uma empresa excluir cliente empresas excluidas exclusoes conflito exclude company exclude a company exclude client excluded companies", function () { abrirConfig(true, "c-regras-wrap"); abrirExcluidas(); }],
       [t("bg_cnpj"), t("link_manual"), "cnpj com letras cnpj alfanumerico cnpj novo alphanumeric cnpj new cnpj cnpj with letters", function () { window.open("/manual#perguntas", "_blank", "noopener"); }],
       [t("saz_t"), t("v_painel"), "sazonalidade estatisticas buscar estatisticas pausar continuar a noite seasonality statistics fetch statistics pause continue tonight", function () { trocarVisao("painel"); setTimeout(function () { var s_ = document.querySelector(".saz-cab"); if (s_) s_.scrollIntoView({ block: "start" }); }, 200); }],
-      [t("c_s_sobre"), t("config"), "sobre este computador about this computer ver registro", function () { abrirConfig(true, "c-s-sobre"); }],
+      [t("c_s_sobre"), t("config"), "sobre este computador about this computer ver registro antivirus firewall bitdefender defender kaspersky excecao liberar quarentena recursos da licenca licence features", function () { abrirConfig(true, "c-s-sobre"); }],
+      [t("pc_antivirus"), t("c_s_sobre"), "antivirus bloqueou bloqueio excecao liberar quarentena bitdefender defender kaspersky eset avast norton mcafee firewall antivirus blocked allow exception", function () { abrirConfig(true, "c-sobre-wrap"); }],  // 0.7.47
+      [t("bg_diag_cnj"), t("v_historico"), "cnj fora e daqui ou do cnj diario fora site do cnj sem internet diagnostico detalhes tecnicos cnj down is it here or the cnj", function () { abrirHistorico(false); }],
+      [t("ag_avisar_cnj"), t("c_s_leitura"), "aviso por e mail email avisar cnj fora 4 horas queda volta e-mail alert", function () { abrirConfig(true, "c-agendar-wrap"); }],
+      [t("bg_leitura_auto"), t("c_s_leitura"), "leitura automatica tarefa agendador lexsuiteone radar agendar automatic reading scheduled task", function () { abrirConfig(true, "c-agendar-wrap"); }],
       [t("sair"), "", "sair encerrar fechar o programa sair do radar exit quit close", sairDoRadar],
       [t("v_historico"), t("c_s_sobre"), "historico de leituras leituras falhas tentativas reading history", function () { abrirHistorico(false); }],
       [t("lic_trocar"), t("c_s_licenca"), "trocar o codigo novo codigo", function () { abrirConfig(true, "c-s-licenca"); }],
@@ -5155,6 +5213,7 @@ window.LEXSUITE_RADAR = null;
     var ut_ = (D && D.ultima_tentativa) || {};  // 0.7.36 (dono): faixa vermelha só quando a última leitura falhou, com o caminho para o histórico
     if (MODO === "app" && ut_.causa && ["ok", "ainda_nao_liberado_3h", "nao_publicado", "interrompida"].indexOf(ut_.causa) < 0) {
       var q_ = String(ut_.quando_local || ut_.quando || ""), fx_ = el("div", "faixa-falha", t("falha_painel", { t: ut_.tribunal || "—", q: q_.slice(8, 10) + "/" + q_.slice(5, 7) + " " + q_.slice(11, 16), c: t("c_" + ut_.causa) }) + " ");
+      var orP_ = linhaOrigem(ut_); if (orP_) fx_.appendChild(orP_);  // 0.7.47: "é do CNJ ou é daqui"
       if (ut_.ok_ate) fx_.appendChild(el("span", "falha-ok", t("falha_ok_ate", { t: ut_.tribunal || "—", d: dataCurta(ut_.ok_ate) }) + " "));  // 0.7.44 (dono): nada se perdeu
       var bh_ = el("button", "btn-txt", t("hist_ver")); bh_.type = "button"; bh_.addEventListener("click", function () { abrirHistorico(false); }); fx_.appendChild(bh_);
       var cn_ = el("div", "falha-cnj"); cn_.id = "cnj-situacao"; fx_.appendChild(cn_); alvo.appendChild(fx_); mostrarCnj();
@@ -5592,8 +5651,8 @@ window.LEXSUITE_RADAR = null;
         exemploBusca: { pt: "Ex.: valor da causa, pasta, horário, termos", en: "e.g. claim value, folder, schedule, terms" },
         telas: {
           painel: { titulo: { pt: "Painel", en: "Dashboard" },
-            frase: { pt: "Os números dos processos novos contra empresas no período e nos tribunais escolhidos. Passe o mouse num gráfico para ver nome, processos, % e valor numa etiqueta grande; clique num item para tirá-lo ou devolvê-lo (fica riscado e a pizza se refaz só com o que ficou; o gráfico e o filtro são a mesma escolha: o que sai do gráfico aparece no filtro correspondente, com ✕, e conta em \u201cLimpar filtros (N)\u201d); \u201cMostrar todos\u201d desfaz o cartão, \u201cLimpar filtros\u201d desfaz tudo o que foi riscado (inclusive nas pizzas) e \u201cVer na lista →\u201d leva para a Lista. A barra de hoje e o mês corrente ficam tracejados: ainda podem entrar processos. Acima dos cartões, o título Estatísticas tem um (?) que explica o riscar; em Empresas, escolha 5, 10 ou 15 (\u201cVer na lista\u201d leva os processos dessas empresas). O interruptor \u201cÚltimo mês\u201d, ao lado das abas, deixa tudo rápido: a Lista, os números, os cartões e Processos por dia usam só os últimos 30 dias; a Sazonalidade continua completa. O Painel tem filtros próprios, separados dos da Lista (situação e valor no alto; vara, setor, porte e estado em Mais filtros), e sem busca. A cor de cada item se escolhe no quadradinho da legenda. \u201cSeparar por\u201d divide as barras de Processos por dia por tribunal, situação, faixa de valor ou setor. Mais abaixo, os meses anteriores (sazonalidade, com Buscar estatísticas, Pausar e Continuar à noite) e como cada processo foi reconhecido. Quando uma leitura falha, uma faixa vermelha no alto leva ao histórico de leituras.",
-                     en: "The figures for new cases against companies in the chosen period and courts. Hover a chart to see name, cases, % and value in a large label; click an item to take it out or bring it back (it is struck through and the pie redraws with what is left; the chart and the filter are the same choice: what leaves the chart shows in the matching filter, with an ✕, and counts in \u201cClear filters (N)\u201d); \u201cShow all\u201d undoes the card, \u201cClear filters\u201d undoes everything struck out (pie charts included) and \u201cSee in the list →\u201d goes to the List. Today\u2019s bar and the current month are dashed: more cases may still come in. Above the cards, the Statistics title has a (?) explaining how to strike items out; in Companies, choose 5, 10 or 15 (\u201cSee in the list\u201d brings those companies\u2019 cases). The \u201cLast month\u201d switch, next to the tabs, keeps everything fast: the List, figures, cards and Cases per day use only the last 30 days; Seasonality stays complete. The Dashboard has its own filters, separate from the List (status and value at the top; court unit, sector, size and state in More filters), and no search box. Pick each item\u2019s colour in the legend square. \u201cSplit by\u201d divides the Cases per day bars by court, status, value range or sector. Further down, previous months (seasonality, with Fetch statistics, Pause and Continue tonight) and how each case was recognised. When a reading fails, a red notice at the top leads to the reading history." },
+            frase: { pt: "Os números dos processos novos contra empresas no período e nos tribunais escolhidos. Passe o mouse num gráfico para ver nome, processos, % e valor numa etiqueta grande; clique num item para tirá-lo ou devolvê-lo (fica riscado e a pizza se refaz só com o que ficou; o gráfico e o filtro são a mesma escolha: o que sai do gráfico aparece no filtro correspondente, com ✕, e conta em \u201cLimpar filtros (N)\u201d); \u201cMostrar todos\u201d desfaz o cartão, \u201cLimpar filtros\u201d desfaz tudo o que foi riscado (inclusive nas pizzas) e \u201cVer na lista →\u201d leva para a Lista. A barra de hoje e o mês corrente ficam tracejados: ainda podem entrar processos. Acima dos cartões, o título Estatísticas tem um (?) que explica o riscar; em Empresas, escolha 5, 10 ou 15 (\u201cVer na lista\u201d leva os processos dessas empresas). O interruptor \u201cÚltimo mês\u201d, ao lado das abas, deixa tudo rápido: a Lista, os números, os cartões e Processos por dia usam só os últimos 30 dias; a Sazonalidade continua completa. O Painel tem filtros próprios, separados dos da Lista (situação e valor no alto; vara, setor, porte e estado em Mais filtros), e sem busca. A cor de cada item se escolhe no quadradinho da legenda. \u201cSeparar por\u201d divide as barras de Processos por dia por tribunal, situação, faixa de valor ou setor. Mais abaixo, os meses anteriores (sazonalidade, com Buscar estatísticas, Pausar e Continuar à noite) e como cada processo foi reconhecido. Quando uma leitura falha, uma faixa vermelha no alto leva ao histórico de leituras e diz se a falha é do CNJ ou deste computador; quando a SolverONE também vê o CNJ fora, a faixa mostra isso.",
+                     en: "The figures for new cases against companies in the chosen period and courts. Hover a chart to see name, cases, % and value in a large label; click an item to take it out or bring it back (it is struck through and the pie redraws with what is left; the chart and the filter are the same choice: what leaves the chart shows in the matching filter, with an ✕, and counts in \u201cClear filters (N)\u201d); \u201cShow all\u201d undoes the card, \u201cClear filters\u201d undoes everything struck out (pie charts included) and \u201cSee in the list →\u201d goes to the List. Today\u2019s bar and the current month are dashed: more cases may still come in. Above the cards, the Statistics title has a (?) explaining how to strike items out; in Companies, choose 5, 10 or 15 (\u201cSee in the list\u201d brings those companies\u2019 cases). The \u201cLast month\u201d switch, next to the tabs, keeps everything fast: the List, figures, cards and Cases per day use only the last 30 days; Seasonality stays complete. The Dashboard has its own filters, separate from the List (status and value at the top; court unit, sector, size and state in More filters), and no search box. Pick each item\u2019s colour in the legend square. \u201cSplit by\u201d divides the Cases per day bars by court, status, value range or sector. Further down, previous months (seasonality, with Fetch statistics, Pause and Continue tonight) and how each case was recognised. When a reading fails, a red notice at the top leads to the reading history and says whether the failure is the CNJ's or this computer's; when SolverONE also sees the CNJ down, the notice shows it." },
             atalhos: [{ rotulo: LER, acao: "#b-rodar", principal: true }, { rotulo: { pt: "Ver a Lista", en: "Open the List" }, acao: function () { trocarVisao("lista"); } }, { rotulo: { pt: "Procurar", en: "Search" }, acao: abrirBusca }] },
           carregando: { titulo: { pt: "Carregando", en: "Loading" },
             frase: { pt: "Aguarde o " + marcaNome() + " carregar. Com muitos processos, pode levar alguns segundos; a ajuda desta tela aparece assim que ela abrir.", en: "Please wait for " + marcaNome() + " to load. With many cases it may take a few seconds; the help for this screen appears as soon as it opens." },
@@ -5611,8 +5670,8 @@ window.LEXSUITE_RADAR = null;
                      en: "Each gazette reading, per court: when it ran, what was requested and the result. If something failed, the cause shows here in plain words. Opens from Settings → About this computer and from the red Dashboard notice when a reading fails (it says up to which day was read and, with the CNJ down, when the program last checked it: it checks every 15 minutes and lets you know when it is back); \u201c← Settings\u201d goes back." },
             atalhos: [{ rotulo: { pt: "Voltar às Configurações", en: "Back to Settings" }, acao: function () { var v_ = $("c-hist-voltar"); if (v_ && !v_.hidden) v_.click(); else fecharConfig(false); }, principal: true }] },
           configuracao: { titulo: { pt: "Configurações", en: "Settings" },
-            frase: { pt: "Em blocos: Processos (Destaques e exclusões, seus, neste computador, por área; Filtros salvos; Pasta das planilhas), Leitura do Diário (Rotina de leitura, por dias da semana e horários; Armazenamento), Tela (onde abre, aparência, assistente) e Licença e termos (código de cliente, termos e Sobre este computador). Um Salvar só, que acende quando algo mudou. Da lista, à SolverONE vão só quantidades (por situação, dia, tribunal, frente e faixa de valor); nenhum nome, processo ou contato. Se o Windows não rodar a leitura na hora marcada (por exemplo, por causa do antivírus), a tela aberta lê sozinha.",
-                     en: "In blocks: Cases (Highlights and exclusions, yours, on this computer, by area; Saved filters; Spreadsheet folder), Gazette reading (Reading routine, by weekday and time; Storage), Screen (where it opens, appearance, assistant) and Licence and terms (client code, terms and About this computer). One Save button, which lights up when something changed. From the list, only counts go to SolverONE (by status, day, court, practice and value range); no names, case numbers or contacts. If Windows does not run the reading at the set time (for example, because of the antivirus), the open screen reads by itself." },
+            frase: { pt: "Em blocos: Processos (Destaques e exclusões, seus, neste computador, por área; Filtros salvos; Pasta das planilhas), Leitura do Diário (Rotina de leitura, por dias da semana e horários; Armazenamento), Tela (onde abre, aparência, assistente) e Licença e termos (código de cliente, termos e Sobre este computador). Um Salvar só, que acende quando algo mudou. Da lista, à SolverONE vão só quantidades (por situação, dia, tribunal, frente e faixa de valor); nenhum nome, processo ou contato. Se o Windows não rodar a leitura na hora marcada (por exemplo, por causa do antivírus), a tela aberta lê sozinha. Em Leitura do Diário, a opção \u201cAvisar por e-mail quando o CNJ ficar fora por mais de 4 horas em dia útil\u201d (desligada no começo) manda um e-mail na queda e um na volta. Em Sobre este computador, o antivírus e o firewall encontrados e o link \u201cComo liberar\u201d, com os passos daquele antivírus.",
+                     en: "In blocks: Cases (Highlights and exclusions, yours, on this computer, by area; Saved filters; Spreadsheet folder), Gazette reading (Reading routine, by weekday and time; Storage), Screen (where it opens, appearance, assistant) and Licence and terms (client code, terms and About this computer). One Save button, which lights up when something changed. From the list, only counts go to SolverONE (by status, day, court, practice and value range); no names, case numbers or contacts. If Windows does not run the reading at the set time (for example, because of the antivirus), the open screen reads by itself. Under Gazette reading, the option \u201cE-mail me when the CNJ is down for more than 4 hours on a business day\u201d (off at first) sends one e-mail when it goes down and one when it is back. Under About this computer, the antivirus and firewall found and the \u201cHow to allow\u201d link, with that antivirus's steps." },
             atalhos: [{ rotulo: { pt: "Destaques e exclusões", en: "Highlights and exclusions" }, acao: irPara("#c-regras-wrap"), principal: true }, { rotulo: { pt: "Pasta das planilhas", en: "Spreadsheet folder" }, acao: irPara("#c-s-pasta") },
                       { rotulo: { pt: "Rotina de leitura", en: "Reading routine" }, acao: irPara("#c-agendar-wrap") }, { rotulo: { pt: "Armazenamento", en: "Storage" }, acao: irPara("#c-arm-wrap") }, { rotulo: { pt: "Licença e termos", en: "Licence and terms" }, acao: irPara("#c-s-licenca") }] },
           perfil: { titulo: { pt: "Perfil", en: "Profile" },
@@ -5625,7 +5684,7 @@ window.LEXSUITE_RADAR = null;
         tour: [
           { seletor: "#b-menu", titulo: { pt: "Menu", en: "Menu" }, texto: { pt: "Todas as telas e funções, por grupo: Ver, Planilha, Área logada, Configurações (com os mesmos nomes da janela) e Ajuda (Novidades da versão e manual).", en: "Every screen and function, by group: View, Spreadsheet, Logged-in area, Settings (with the same names as the window) and Help (What\u2019s new and manual)." } },
           { seletor: "#b-busca", titulo: { pt: "Procurar", en: "Search" }, texto: { pt: "Empresa, processo, CNPJ, cidade, uma opção do programa ou um assunto do manual.", en: "Company, case number, CNPJ, city, a program option or a manual topic." } },
-          { seletor: "#b-config", titulo: { pt: "Configurações", en: "Settings" }, texto: { pt: "Seus destaques e empresas excluídas (por área), filtros salvos, pasta das planilhas, rotina de leitura (dias e horários), aparência, licença e termos deste computador.", en: "Your highlights and excluded companies (by area), saved filters, spreadsheet folder, reading routine (days and times), appearance, licence and terms of this computer." } },
+          { seletor: "#b-config", titulo: { pt: "Configurações", en: "Settings" }, texto: { pt: "Seus destaques e empresas excluídas (por área), filtros salvos, pasta das planilhas, rotina de leitura (dias e horários) e aviso por e-mail quando o CNJ ficar fora, aparência, licença e termos e, em Sobre este computador, o antivírus encontrado e como liberar o programa.", en: "Your highlights and excluded companies (by area), saved filters, spreadsheet folder, reading routine (days and times) and e-mail notice when the CNJ is down, appearance, licence and terms and, under About this computer, the antivirus found and how to allow the program." } },
           { seletor: "#b-perfil", titulo: { pt: "Perfil", en: "Profile" }, texto: { pt: "Quem usa o programa e a licença do escritório.", en: "Who uses the program and the firm's licence." } },
           { seletor: "#b-trib", titulo: { pt: "Tribunais", en: "Courts" }, texto: { pt: "Os tribunais que o RADAR lê. Marque só os que interessam ao escritório.", en: "The courts RADAR reads. Tick only those the firm cares about." } },
           { seletor: "#b-rodar", titulo: LER, texto: { pt: "Lê o Diário na hora, sem esperar o horário marcado.", en: "Reads the gazette now, without waiting for the scheduled time." } },
@@ -5641,7 +5700,10 @@ window.LEXSUITE_RADAR = null;
           { termo: { pt: "Ler o Diário agora", en: "Read the gazette now" }, sinonimos: ["rodar", "leitura", "buscar", "run"], destino: "#b-rodar", icone: "›", descricao: { pt: "Lê na hora os tribunais marcados", en: "Reads the ticked courts now" } },
           { termo: { pt: "Tribunais", en: "Courts" }, sinonimos: ["TRT", "tribunal"], destino: "#b-trib", icone: "›", descricao: { pt: "Quais tribunais o RADAR lê", en: "Which courts RADAR reads" } },
           { termo: { pt: "Pasta das planilhas", en: "Spreadsheet folder" }, sinonimos: ["drive", "google drive", "pasta", "folder", "caminho"], destino: function () { abrirConfig(true, "c-pasta-cartoes"); }, icone: "›", descricao: { pt: "Configurações → Pasta das planilhas", en: "Settings → Spreadsheet folder" } },
-          { termo: { pt: "Rotina de leitura: dias da semana e horários", en: "Reading routine: weekdays and times" }, sinonimos: ["agenda", "horario", "schedule", "agendar", "dias da semana", "segunda a sexta", "fim de semana", "desligar", "weekday", "weekdays", "days of the week", "monday to friday", "turn off"], destino: function () { abrirConfig(true, "c-agendar-wrap"); }, icone: "›", descricao: { pt: "Configurações → Leitura do Diário → Rotina de leitura", en: "Settings → Gazette reading → Reading routine" } },
+          { termo: { pt: "Antivírus deste computador", en: "This computer's antivirus" }, sinonimos: ["antivírus", "antivirus", "bloqueou", "exceção", "excecao", "liberar", "quarentena", "bitdefender", "defender", "kaspersky", "firewall", "allow", "blocked"], destino: function () { abrirConfig(true, "c-sobre-wrap"); }, icone: "›", descricao: { pt: "Configurações → Sobre este computador: o antivírus encontrado e como liberar o programa", en: "Settings → About this computer: the antivirus found and how to allow the program" } },
+          { termo: { pt: "CNJ fora: é daqui ou do CNJ?", en: "CNJ down: is it here or the CNJ?" }, sinonimos: ["CNJ fora", "é daqui ou do CNJ", "e daqui ou do cnj", "cnj caiu", "site do cnj", "sem internet", "diagnóstico", "detalhes técnicos", "cnj down", "is it here"], destino: function () { abrirHistorico(false); }, icone: "›", descricao: { pt: "Histórico de leituras, com o diagnóstico de cada falha", en: "Reading history, with the diagnosis of each failure" } },
+          { termo: { pt: "Aviso por e-mail quando o CNJ ficar fora", en: "E-mail notice when the CNJ is down" }, sinonimos: ["aviso por e-mail", "aviso por email", "e-mail", "email", "avisar", "4 horas", "e-mail alert"], destino: function () { abrirConfig(true, "c-agendar-wrap"); }, icone: "›", descricao: { pt: "Configurações → Leitura do Diário (desligada no começo)", en: "Settings → Gazette reading (off at first)" } },
+          { termo: { pt: "Rotina de leitura: dias da semana e horários", en: "Reading routine: weekdays and times" }, sinonimos: ["agenda", "horario", "schedule", "agendar", "dias da semana", "segunda a sexta", "fim de semana", "desligar", "weekday", "weekdays", "days of the week", "monday to friday", "turn off", "leitura automática", "leitura automatica", "tarefa", "agendador", "automatic reading", "scheduled task"], destino: function () { abrirConfig(true, "c-agendar-wrap"); }, icone: "›", descricao: { pt: "Configurações → Leitura do Diário → Rotina de leitura", en: "Settings → Gazette reading → Reading routine" } },
           { termo: { pt: "Armazenamento e cópias de segurança", en: "Storage and backups" }, sinonimos: ["disco", "espaco", "backup", "copia", "limpar"], destino: function () { abrirConfig(true, "c-arm-wrap"); }, icone: "›", descricao: { pt: "Espaço no disco, limite da planilha, cópias", en: "Disk space, spreadsheet limit, backups" } },
           { termo: { pt: "Termos e condições", en: "Terms and conditions" }, sinonimos: ["aceite", "lgpd", "privacidade", "contrato"], destino: function () { abrirConfig(true, "c-termos-wrap"); }, icone: "›", descricao: { pt: "Ler os termos e ver o aceite", en: "Read the terms and see the acceptance" } },
           { termo: { pt: "Estatísticas dos meses anteriores", en: "Previous months statistics" }, sinonimos: ["sazonalidade", "historico", "meses", "pico", "seasonality", "buscar estatisticas", "pausar", "continuar a noite", "fetch statistics", "pause", "continue tonight"], destino: function () { trocarVisao("painel"); setTimeout(irPara(".saz, #graficos"), 200); }, icone: "›", descricao: { pt: "Painel → Sazonalidade", en: "Dashboard → Seasonality" } },
@@ -5675,6 +5737,24 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
+    "0.7.47": {
+      pt: ["Inclusão do diagnóstico da falha de leitura: CNJ fora do ar, internet deste computador ou bloqueio local.",
+        "Inclusão da confirmação pela SolverONE quando o CNJ está fora para vários tribunais.",
+        "Opção de aviso por e-mail quando o CNJ ficar fora por mais de 4 horas em dia útil.",
+        "Inclusão do antivírus e do firewall do computador em Sobre este computador, com os passos para liberar o programa.",
+        "Mensagens de bloqueio que nomeiam o antivírus e indicam a exceção a cadastrar.",
+        "Criação da leitura automática durante a instalação, sem arquivo na pasta temporária.",
+        "Inclusão dos recursos da licença em Sobre este computador, conferidos a cada 30 minutos.",
+        "Atualização do manual."],
+      en: ["Diagnosis of reading failures: CNJ down, this computer's internet or a local block.",
+        "Confirmation by SolverONE when the CNJ is down for several courts.",
+        "Option of an e-mail notice when the CNJ is down for more than 4 hours on a business day.",
+        "This computer's antivirus and firewall under About this computer, with the steps to allow the program.",
+        "Block messages that name the antivirus and indicate the exception to add.",
+        "Automatic reading created during installation, with no file in the temporary folder.",
+        "Licence features under About this computer, checked every 30 minutes.",
+        "Manual update."]
+    },
     "0.7.46": {
       pt: ["Inclusão do pedido à área logada em quatro passos: escolha dos processos e dos dados, pedido com o roteiro do PJe, resposta e resultado.",
         "Limite por pedido (padrão 25, máximo 50), em lotes de 25, no lugar do limite por dia.",

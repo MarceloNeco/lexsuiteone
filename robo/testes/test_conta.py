@@ -40,7 +40,7 @@ class Licenca(unittest.TestCase):
         cfg = {"conta": {"codigo": CODIGO}}
         conta.verificar(cfg, "0.7.7", HOJE, pedir=lambda url, corpo, **kw: (enviado.update(corpo), {"ok": True, "validade": "2027-01-31"})[1])
         self.assertEqual(conta.bloqueio(cfg, HOJE), "")
-        self.assertEqual(set(enviado), {"codigo", "instalacao", "versao"})  # nada pessoal sai daqui
+        self.assertEqual(set(enviado), {"codigo", "instalacao", "versao", "avisar_cnj"})  # nada pessoal sai daqui (0.7.47: a preferência do aviso do CNJ)
         self.assertEqual(len(cfg["conta"]["instalacao"]), 16)
         self.assertEqual(conta.situacao(cfg)["validade"], "2027-01-31")  # 0.7.21: a validade vai em linha própria na tela
 
