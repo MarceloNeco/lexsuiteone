@@ -76,7 +76,8 @@ class Configuracoes0743(unittest.TestCase):
         self.assertIn("if (meu_ !== seqCarga) return ultimaCarga;", HTML)
 
     def test_tela_fica_com_o_que_foi_salvo(self):
-        self.assertIn('["horarios", "dias", "avisar_ao_terminar", "abrir_em_aba"].forEach(function (k) { if (k in r.radar) APP.config[k] = r.radar[k]; });', HTML)
+        self.assertIn('"avisar_ao_terminar", "abrir_em_aba"', HTML)  # 0.7.46: + area_logada_por_pedido
+        self.assertIn('.forEach(function (k) { if (k in r.radar) APP.config[k] = r.radar[k]; });', HTML)
 
     def test_salvar_gira_e_so_manda_o_que_mudou(self):
         self.assertIn('$("c-salvar").classList.add("salvando"); ocupadoLigar(t("c_salvando"));', HTML)

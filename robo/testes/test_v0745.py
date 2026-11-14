@@ -128,7 +128,7 @@ class Versao0745(unittest.TestCase):
     def test_versao_e_novidades(self):
         import re
         from lexsuite import VERSAO
-        self.assertEqual(VERSAO, "0.7.45")
+        self.assertGreaterEqual(tuple(int(x) for x in VERSAO.split(".")), (0, 7, 45))  # a versão sobe
         bloco = HTML[HTML.index('"0.7.45": {'):HTML.index('"0.7.44": {')]
         pt = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
         en = re.findall(r'"((?:[^"\\]|\\.)+)"', bloco[bloco.index("en: ["):])
@@ -174,7 +174,7 @@ class AreaLogadaV2(unittest.TestCase):
         self.assertEqual([c["valor"] for c in item["contatos"]], ["Av. B", "Rua A"])
 
     def test_tela(self):
-        self.assertEqual(HTML.count("tabela de 7 colunas") + HTML.count("7-column table"), 2)
+        # 0.7.46: a janela antiga de colar (com o texto das colunas) foi trocada pelos 4 passos da área logada
         self.assertNotIn("(8 colunas)", HTML)
         self.assertEqual(HTML.count("ct_a_conferir:"), 2)
         self.assertIn('(c.confianca === "baixa" ? ", " + t("ct_a_conferir") : "")', HTML)

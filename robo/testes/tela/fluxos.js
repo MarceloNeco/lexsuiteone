@@ -135,6 +135,46 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.close();
   }
 
+  // 6. Área logada v2 (0.7.46): passos, faixa pendente, resposta com 2 lotes, relatório, filtro, selo, (?) fixo e interruptor
+  {
+    const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); localStorage.removeItem('lexsuite:filtro-atual'); } catch (e) {} });
+    await p.evaluate(() => document.getElementById('v-lista').click()); await espera(400);
+    await p.evaluate(() => [...document.querySelectorAll('#lista article.item input[type=checkbox]')].slice(0, 2).forEach(c => c.click())); await espera(300);
+    const bal = await p.evaluate(() => { document.querySelector('#lote .ajuda').click(); const q = document.querySelector('.balao'); const r = q.getBoundingClientRect(); return { pos: getComputedStyle(q).position, dentro: r.top >= 0 && r.bottom <= innerHeight }; });
+    confere(bal.pos === 'fixed' && bal.dentro, 'Área logada: o (?) da barra de seleção abre fixo e dentro da tela');
+    await p.evaluate(() => document.body.click());
+    await p.evaluate(() => [...document.querySelectorAll('#lote button')].find(x => /área logada|logged-in area/.test(x.textContent)).click()); await espera(800);
+    const p1 = await p.evaluate(() => document.querySelector('#janela .al-resumo').textContent);
+    confere(/2 processos, em 1 lote/.test(p1), 'Área logada: passo 1 conta os processos e os lotes ("' + p1.slice(0, 60) + '")');
+    await p.evaluate(() => [...document.querySelectorAll('#janela .botoes button')].pop().click()); await espera(900);
+    const p2 = await p.evaluate(() => ({ caixa: (document.querySelector('#janela .al-pedido') || {}).value || '', dialogos: document.querySelectorAll('dialog[open]').length }));
+    confere(p2.caixa.includes('RESPOSTA PARA O RADAR v1 · lote 1 de 1') && p2.dialogos === 1, 'Área logada: passo 2 mostra o pedido na caixa, numa janela só');
+    const ids = [...p2.caixa.matchAll(/\| (\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}) \| TRT/g)].map(m => m[1]);
+    await p.evaluate(() => [...document.querySelectorAll('#janela .botoes button')].pop().click()); await espera(400);
+    confere(await p.evaluate(() => !document.getElementById('faixa-area').hidden && !document.getElementById('janela').open), 'Área logada: "Fechar e voltar" fecha a janela e deixa a faixa do pedido pendente');
+    await p.reload(); await p.waitForFunction(() => document.getElementById('carregando').hidden, null, { timeout: 30000 });
+    await p.evaluate(() => { const d = document.getElementById('janela'); if (d && d.open) d.close(); document.getElementById('v-lista').click(); }); await espera(400);
+    confere(await p.evaluate(() => !document.getElementById('faixa-area').hidden), 'Área logada: o pedido pendente continua depois de recarregar');
+    await p.evaluate(() => document.querySelector('#faixa-area button').click()); await espera(300);
+    await p.fill('#janela .al-resposta', 'Oi!\nNão deu para entrar.'); await p.evaluate(() => [...document.querySelectorAll('#janela .botoes button')].pop().click()); await espera(700);
+    confere(/Não achei a tabela|did not find/.test(await p.evaluate(() => document.querySelector('#janela .al-msg').innerText)), 'Área logada: texto sem bloco avisa "Não achei a tabela" e mostra o começo');
+    const cab = '| processo | dado | valor | resultado | fonte | data | observação |\n|---|---|---|---|---|---|---|\n';
+    const resp = 'Pronto!\nRESPOSTA PARA O RADAR v1 · lote 1 de 1\n' + cab + '| ' + ids[0] + ' | data_ajuizamento | 2026-11-01 | encontrado | PJe dados do processo | 2026-11-14 | |\n| ' + ids[1] + ' | email | | tentar_depois | | 2026-11-14 | petição em PDF |\n| ' + ids[1] + ' | telefone | 123.456.789-09 | encontrado | PJe petição inicial | 2026-11-14 | |\nFim.';
+    await p.fill('#janela .al-resposta', resp); await p.evaluate(() => [...document.querySelectorAll('#janela .botoes button')].pop().click()); await espera(1300);
+    const p4 = await p.evaluate(() => { const c = [...document.querySelectorAll('#janela .al-card b')].map(x => x.textContent); return { cards: c, tabela: !!document.querySelector('#janela .al-tabela'), passo: document.querySelector('#janela .al-passos .on').textContent }; });
+    confere(p4.passo === '4' && p4.cards.join(',') === '2,1,0,1,1' && p4.tabela, 'Área logada: passo 4 com totais (2 pedidos, 1 novo, 1 tentar depois, 1 recusada) e o que mudou (' + p4.cards.join(',') + ')');
+    await p.evaluate(() => [...document.querySelectorAll('#janela .botoes button')].pop().click()); await espera(1500);
+    const fl = await p.evaluate(() => ({ filtro: !document.getElementById('f-area').hidden, selo: document.querySelectorAll('.selo-area').length, faixa: document.getElementById('faixa-area').hidden }));
+    confere(fl.filtro && fl.selo >= 1 && fl.faixa, 'Área logada: depois da resposta, filtro e selo aparecem e a faixa some');
+    await p.evaluate(() => { const o = window.SolverRecursos.ligado; window.SolverRecursos.ligado = (id, pd) => id === 'area-logada' ? false : o(id, pd); document.getElementById('v-arquivo').click(); });
+    await espera(300); await p.evaluate(() => document.getElementById('v-lista').click()); await espera(300);
+    await p.evaluate(() => [...document.querySelectorAll('#lista article.item input[type=checkbox]')].slice(0, 1).forEach(c => c.click())); await espera(200);
+    const vis = await p.evaluate(() => [...document.querySelectorAll('[data-recurso="area-logada"]')].filter(x => x.offsetParent !== null).length);
+    confere(vis === 0, 'Área logada: com o recurso desligado na licença, barra, cartão, filtro e faixa somem (' + vis + ' visíveis)');
+    confere(p._erros.length === 0, 'Área logada: nenhum erro na página ' + p._erros.join(' | '));
+    await p.close();
+  }
+
   await b.close();
   console.log(res.join('\n'));
   console.log(falhas ? `\n${falhas} FALHA(S)` : '\nTUDO OK');

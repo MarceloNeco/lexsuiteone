@@ -263,7 +263,7 @@ class TestTelaEProcessos(unittest.TestCase):
         proc = "0000001-00.2026.5.02.0001"
         item = {"processo": proc, "tribunal": "TRT2", "empresa": {"razao_social": "Empresa Fictícia Ltda", "cnpj": "", "logradouro": "Rua X"},
                 "contato": {"canais": ["telefone"]}, "valor_causa": None, "ajuizada_em": ""}
-        self.assertEqual(ct.faltando(item), ["valor_causa", "data_ajuizamento", "email"])
+        self.assertEqual(ct.faltando(item), ["valor_causa", "data_ajuizamento", "email", "site"])  # 0.7.46: o site também é pedido
         pasta = tempfile.mkdtemp()
         caminho, n, texto = ct.preparar_v1([item], pasta, limite=30, hoje=dt.date(2026, 11, 12))
         self.assertEqual(n, 1)

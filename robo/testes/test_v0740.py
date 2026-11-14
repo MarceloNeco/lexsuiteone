@@ -68,7 +68,7 @@ class Tela0740(unittest.TestCase):
         self.assertIn('ocp.hidden = false; document.body.classList.add("ocupado");', HTML)
 
     def test_empresas_e_tipo_de_publicacao(self):
-        self.assertIn('var MULTI = ["sit", "frente", "trib", "data", "vara", "setor", "porte", "uf", "sinal", "empresa"];', HTML)
+        self.assertIn('var MULTI = ["sit", "frente", "trib", "data", "vara", "setor", "porte", "uf", "sinal", "empresa"', HTML)  # 0.7.46: + "area"
         self.assertIn('if (ocultos["__outros__"] && !opc.topN) lim += 6;', HTML)
         self.assertIn('return filtrarPor("empresa", vis_.map(function (l) { return l.ek; }));', HTML)
         self.assertIn('{ campo: "sinal", max: 8 }', HTML)

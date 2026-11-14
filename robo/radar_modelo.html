@@ -273,7 +273,7 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .interr-trilho > i { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: left .2s; }
 #b-ultimo-mes[aria-checked="true"] { color: var(--latao-texto); } #b-ultimo-mes[aria-checked="true"] .interr-trilho { background: var(--latao); } #b-ultimo-mes[aria-checked="true"] .interr-trilho > i { left: 18px; }
 @media (prefers-reduced-motion: reduce) { .interr-trilho, .interr-trilho > i { transition: none; } }
-@media (max-width: 480px) { .visao .interr-mes { padding-left: 8px; } .visao #b-ultimo-mes { font-size: .8rem; gap: 6px; } }
+@media (max-width: 480px) { .visao .interr-mes { padding-left: 4px; } .visao .interr-mes .ajuda { flex: none; } .visao #b-ultimo-mes { font-size: .8rem; gap: 6px; } }
 .visao button:focus-visible { outline: 2px solid var(--latao); outline-offset: -2px; }
 .graficos { display: grid; gap: 16px; padding-bottom: 8px; }
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 165px), 1fr)); gap: 12px; }
@@ -425,6 +425,7 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 .ajuda { all: unset; box-sizing: border-box; cursor: pointer; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--linha-2); color: var(--tinta-2); font-size: .72rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; position: relative; }
 .ajuda:focus-visible { outline: 2px solid var(--latao); }
 .visao .interr-mes button.ajuda { box-sizing: border-box; cursor: pointer; width: 20px; height: 20px; padding: 0; border-radius: 50%; border: 1px solid var(--linha-2); color: var(--tinta-2); font-size: .72rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; position: relative; background: none; }  /* 0.7.40: o (?) do Último mês, dentro das abas */
+.balao.balao-fixo { position: fixed; max-height: calc(100vh - 16px); overflow: auto; }
 .balao { position: absolute; z-index: 90; max-width: min(760px, 92vw); background: var(--folha); color: var(--tinta); border: 1px solid var(--linha-2); border-radius: 10px; box-shadow: 0 8px 28px rgba(15,29,51,.18); padding: 10px 12px; font-size: .82rem; line-height: 1.45; text-align: left; white-space: normal; }
 .balao dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 10px; } .balao dt { font-weight: 700; }
 /* menu ☰ */
@@ -473,6 +474,46 @@ button.col:hover .pe, button.col:focus-visible .pe { background: var(--latao); }
 /* barra de seleção ("Com os selecionados"): azul-marinho, diferente das pílulas de filtro */
 .lote { position: sticky; bottom: 10px; z-index: 30; margin-top: 10px; background: var(--marinho); color: #fff; border-radius: 14px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; box-shadow: 0 10px 30px rgba(15,29,51,.3); }
 .lote[hidden] { display: none; }
+/* 0.7.46: Área logada v2 */
+.recurso-off-area-logada [data-recurso="area-logada"] { display: none !important; }
+.faixa-area { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; background: var(--latao-wash); border: 1px solid var(--latao); border-radius: 12px; padding: 10px 14px; margin: 0 0 12px; }
+.faixa-area[hidden] { display: none; }
+#c-al-n { width: 84px; padding: 5px 8px; border: 1px solid var(--linha-2); border-radius: 8px; font: inherit; background: var(--folha); color: var(--tinta); }
+.faixa-area button { border-radius: 999px; border: 1px solid var(--linha-2); background: var(--folha); color: var(--tinta); padding: 6px 14px; min-height: 34px; font: inherit; cursor: pointer; }
+.faixa-area button.forte { background: var(--marinho); border-color: var(--marinho); color: #fff; font-weight: 700; }
+.al-janela h3 { margin-bottom: 4px; }
+.al-passos { display: flex; gap: 6px; margin: 0 0 10px; }
+.al-passos span { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: .82rem; border: 1px solid var(--linha-2); color: var(--tinta-3); }
+.al-passos span.on { background: var(--marinho); color: #fff; border-color: var(--marinho); } .al-passos span.ok { background: var(--ok-bg); color: var(--ok-t); border-color: var(--ok-t); }
+.al-opcoes { display: grid; gap: 8px; margin: 8px 0 12px; }
+.al-opcao { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 12px; cursor: pointer; }
+.al-opcao.on { border-color: var(--latao); background: var(--latao-wash); }
+.al-opcao > span { display: flex; flex-direction: column; flex: 1 1 260px; } .al-opcao small { color: var(--tinta-3); }
+.al-opcao .al-n { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; }
+.al-opcao input[type="number"] { width: 72px; padding: 5px 8px; border: 1px solid var(--linha-2); border-radius: 8px; font: inherit; background: var(--folha); color: var(--tinta); }
+.al-ferr { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.al-dados { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.al-sub { font-weight: 600; margin: 10px 0 4px; }
+.al-resumo { background: var(--latao-wash); border-radius: 10px; padding: 9px 12px; margin: 10px 0 6px; } .al-resumo small { color: var(--tinta-2); }
+.al-pedido, .al-resposta { width: 100%; font: 12.5px/1.4 ui-monospace, Consolas, monospace; padding: 10px; border: 1px solid var(--linha-2); border-radius: 10px; background: var(--papel-2); color: var(--tinta); resize: vertical; }
+.al-pedido { max-height: 220px; }
+.al-linha, .al-abas { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.al-abas .chip.on { background: var(--marinho); color: #fff; border-color: var(--marinho); }
+.al-instr { margin: 6px 0 10px; padding-left: 20px; } .al-instr li { margin: 3px 0; }
+.al-solta { display: flex; flex-direction: column; gap: 6px; border: 2px dashed var(--linha-2); border-radius: 12px; padding: 20px; text-align: center; background: var(--papel-2); cursor: pointer; }
+.al-solta[hidden] { display: none; }
+.al-msg { color: var(--erro); margin-top: 8px; } .al-msg ul { margin: 4px 0 0; padding-left: 18px; color: var(--tinta-2); font: 12.5px ui-monospace, Consolas, monospace; }
+.al-lote, .al-bar { display: grid; grid-template-columns: 150px 1fr auto; gap: 10px; align-items: center; margin: 5px 0; font-size: .9rem; }
+.al-trilho { height: 10px; background: var(--trilho); border-radius: 999px; overflow: hidden; display: block; } .al-trilho i { display: block; height: 100%; background: var(--ok-t); }
+.al-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 12px 0; }
+.al-card { border: 1px solid var(--linha); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; } .al-card b { font-size: 1.5rem; }
+.al-card.ok b { color: var(--ok-t); } .al-card.aviso b { color: var(--al-t); } .al-card.erro b { color: var(--er-t); }
+.al-aviso { background: var(--al-bg); color: var(--al-t); border-radius: 10px; padding: 8px 12px; margin: 8px 0; }
+.al-tabela { overflow-x: auto; border: 1px solid var(--linha); border-radius: 10px; }
+.al-tabela table { width: 100%; border-collapse: collapse; font-size: .86rem; } .al-tabela th, .al-tabela td { padding: 6px 8px; border-bottom: 1px solid var(--linha); text-align: left; vertical-align: top; }
+.al-tabela th { position: sticky; top: 0; background: var(--folha); }
+.selo-area { display: inline-block; font-size: .74rem; border-radius: 999px; padding: 1px 8px; background: var(--latao-wash); border: 1px solid var(--latao); color: var(--tinta); }
+@media (max-width: 600px) { .al-lote, .al-bar { grid-template-columns: 1fr; gap: 3px; } }
 .lote b { color: var(--latao-claro); }
 .lote button, .lote select { border: 1px solid rgba(255,255,255,.35); background: transparent; color: #fff; border-radius: 999px; padding: 6px 12px; min-height: 34px; font: inherit; font-size: .84rem; cursor: pointer; }
 .lote select option { color: #121a2b; }
@@ -682,7 +723,7 @@ body.modo-pagina .conf-cab { position: static; border-radius: 10px 10px 0 0; }
 .rodar-criterio { font-size: .82rem; color: var(--tinta-3); display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; justify-content: flex-end; }  /* 0.7.28: uma linha ao lado do botão */
 .rodar-criterio .rc-txt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .rodar-criterio .btn-txt { flex: none; }
-.rodar-criterio { flex-wrap: wrap; column-gap: 0; } .rodar-criterio .rc-prox { white-space: nowrap; } .rodar-criterio .rc-traco[hidden] { display: none; }
+.rodar-criterio { flex-wrap: wrap; column-gap: 0; } .rodar-criterio .rc-prox { white-space: nowrap; } @media (max-width: 480px) { .rodar-criterio .rc-prox { white-space: normal; } }  /* 0.7.46: a 360 px a frase da próxima leitura quebra linha (antes passava da tela em alguns horários) */ .rodar-criterio .rc-traco[hidden] { display: none; }
 .rodar-criterio .rc-nao-salvo { color: var(--latao-texto); font-weight: 600; }
 .rodar-criterio .btn-txt { font-size: .82rem; }
 @media (max-width: 760px) { .rodar-criterio { flex: 1 1 100%; justify-content: flex-start; order: 5; } .rodar-criterio .rc-txt { white-space: normal; } }
@@ -897,6 +938,9 @@ window.lexSortearFundo();</script>
     <h4 class="conf-sec" id="c-s-lista"></h4>
     <fieldset class="agenda" id="c-regras-wrap"><legend id="c-l-regras"></legend><div id="c-regras"></div></fieldset>
     <fieldset class="agenda" id="c-filtros-wrap"><legend id="c-l-filtros"></legend><div id="c-filtros"></div></fieldset>
+    <fieldset class="agenda" id="c-al-wrap" data-recurso="area-logada"><legend id="c-l-al"></legend>
+      <label class="conf-acoes"><span id="c-l-al-n"></span> <input type="number" id="c-al-n" min="1" max="50" step="1" class="campo-curto"> <span id="c-al-aj"></span></label>
+    </fieldset>
     <fieldset class="agenda" id="c-pasta-wrap"><legend id="c-s-pasta"></legend>
     <label class="campo-conf so-campo"><span id="c-l-pasta" class="so-leitor"></span><select id="c-pasta" hidden></select><span class="opcoes-cartao pasta-cartoes" id="c-pasta-cartoes" role="radiogroup"></span></label>
     <!-- 0.7.36 (dono): o caminho e os botões ficam junto da opção "Outra pasta"; o lugar final aparece uma vez só, na linha verde -->
@@ -996,6 +1040,7 @@ window.lexSortearFundo();</script>
     <input type="search" class="busca" id="f-busca" autocomplete="off" spellcheck="false">
     <label class="campo campo-data"><span id="l-periodo" class="so-leitor"></span><select id="periodo"></select></label>
     <div class="multi" id="f-sit" data-rotulo="Situação"></div>
+    <div class="multi" id="f-area" data-rotulo="Área logada" data-recurso="area-logada"></div>
     <select id="f-valor-sel" aria-label="Valor da causa"></select>
     <button type="button" class="chip ligado" id="chip-empresa" hidden></button>
     <button type="button" class="chip mais-filtros" id="b-mais-filtros" aria-expanded="false" aria-controls="filtros-avancados"></button>
@@ -1034,6 +1079,7 @@ window.lexSortearFundo();</script>
 <div class="graficos" id="graficos" role="tabpanel" hidden></div>
 <div class="arquivo-info" id="arquivo-info" hidden></div>
 <div class="historico-aba" id="historico-aba" role="tabpanel" hidden></div>
+<div class="faixa-area" id="faixa-area" data-recurso="area-logada" hidden></div>
 <div class="selecionar-todos" id="selecionar-todos" hidden></div>
 <div class="lista" id="lista" role="tabpanel"></div>
 <div class="lote" id="lote" hidden></div>
@@ -2082,18 +2128,18 @@ window.LEXSUITE_RADAR = null;
       falta_conferir: "não informado: o CNPJ do Diário é de outro nome", falta_sem_cnpj: "não informado: o Diário não trouxe o CNPJ", endereco: "Endereço", outros_contatos: "Outros contatos", de_socio: "de sócio", ct_a_conferir: "a conferir",
       canal_telefone: "telefone", canal_email: "e-mail", canal_site: "site", canal_endereco: "endereço", canal_linkedin: "LinkedIn", canal_instagram: "Instagram", canal_outro: "outro",
       selecionar: "Selecionar", ajuda: "O que é isto?", contato_tem: "Contato", contato_falta: "Sem contato",
-      motivo_sem_cnpj: "O Diário não trouxe o CNPJ desta empresa, então não deu para consultar a Receita. Dá para buscar na área logada do PJe (marque e use \u201cPreparar busca na área logada\u201d).",
+      motivo_sem_cnpj: "O Diário não trouxe o CNPJ desta empresa, então não deu para consultar a Receita. Dá para buscar na área logada do PJe (marque e use \u201cTrazer dados da área logada…\u201d).",
       motivo_receita_sem: "A Receita não tem telefone nem e-mail desta empresa. Dá para buscar na área logada do PJe (petição inicial).",
       motivo_cnpj_a_conferir: "O CNPJ que veio no Diário é de outro nome na Receita; confira no PJe antes de usar.",
       feito_n: "{n} processo(s) agora em \u201c{s}\u201d.", conf_titulo_n: "Mudar {n} processos para \u201c{s}\u201d?", conf_titulo_1: "Mudar para \u201c{s}\u201d?",
       conf_arquivar: "Eles saem da Lista e continuam no Arquivo e na planilha. Dá para desfazer logo depois.", conf_mudar: "A situação de {n} processo(s) muda agora. Dá para desfazer logo depois.",
       mot_sem_interesse: "sem interesse", mot_ja_cliente: "já é cliente", mot_fora_perfil: "fora do perfil", mot_outro: "outro motivo", motivo: "Motivo", cancelar: "Cancelar",
       aplicar_n: "Mudar {n} processos", aplicar_1: "Mudar", desfazer: "Desfazer", sel_todos: "Selecionar todos os {n} desta lista", sel_limpar: "Limpar seleção", com_sel: "Com os selecionados:",
-      mudar_sit: "Mudar a situação", arquivar_n: "Arquivar {n}", preparar_busca: "Preparar busca na área logada",
-      preparar_ajuda: "Gera um arquivo com os processos selecionados que ainda não têm contato (no máximo {n} por dia) e as instruções para buscar na área logada do PJe, à mão ou com o Claude in Chrome. Quem abre os processos é o advogado, com a credencial dele. Telefone e e-mail quase nunca estão no processo; o endereço e o valor da causa, sim.",
-      busca_pronta_t: "Arquivo pronto com {n} processo(s)", busca_pronta: "A pasta abriu com o arquivo ({c}). Com o PJe do tribunal já logado (1º grau), abra o Claude in Chrome e cole o arquivo inteiro: ele traz o roteiro do PJe, só leitura, um tribunal de cada vez. Depois cole a resposta no menu ☰, \u201cÁrea logada\u201d \u2192 \u201cTrazer dados da área logada\u201d.",
-      fechar: "Fechar", colar_contatos: "Trazer dados da área logada", colar_explica: "Cole aqui o bloco \u201cRESPOSTA PARA O RADAR v1\u201d que o Claude in Chrome devolveu (tabela de 7 colunas). O programa confere linha por linha, sem IA, e recusa CPF e dado de reclamante.",
-      ler_resposta: "Ler a resposta", colar_res: "{a} contato(s) entraram; {r} linha(s) recusada(s).", colar_rep: "{n} já estavam guardados.", linha_n: "Linha {n}",
+      mudar_sit: "Mudar a situação", arquivar_n: "Arquivar {n}", preparar_busca: "Trazer dados da área logada…",
+      preparar_ajuda: "O programa monta um pedido com os processos escolhidos e só o que falta em cada um. O advogado cola na ferramenta de navegação (Claude in Chrome, Codex ou outra) com o PJe aberto e logado; ela devolve uma tabela que o programa lê sem IA. Até {n} processos por pedido (uma sessão do PJe), em lotes de 25.",
+      busca_pronta_t: "Arquivo pronto com {n} processo(s)",
+      fechar: "Fechar", colar_contatos: "Trazer dados da área logada",
+      ler_resposta: "Ler a resposta", colar_res: "{a} contato(s) entraram; {r} linha(s) recusada(s).", linha_n: "Linha {n}",
       aviso_pl_t: "A planilha abre só para leitura", aviso_pl: "Ela é regravada pelo programa a cada leitura. Filtrar e ordenar funciona normalmente. Para anotar ou mexer, use \u201cGerar uma cópia\u201d: a cópia fica na pasta Cópias e o programa nunca mexe nela.",
       nao_mostrar: "Não mostrar de novo neste computador", gerar_copia: "Gerar uma cópia", entendi_abrir: "Entendi, abrir", copia_ok: "Cópia criada: {c}",
       menu_ver: "Ver", menu_planilha: "Planilha", menu_contatos: "Área logada", menu_programa: "Configurações", perfil: "Perfil",
@@ -2179,18 +2225,18 @@ window.LEXSUITE_RADAR = null;
       falta_conferir: "not informed: the gazette tax ID belongs to another name", falta_sem_cnpj: "not informed: the gazette did not bring the tax ID", endereco: "Address", outros_contatos: "Other contacts", de_socio: "partner's", ct_a_conferir: "to be checked",
       canal_telefone: "phone", canal_email: "e-mail", canal_site: "website", canal_endereco: "address", canal_linkedin: "LinkedIn", canal_instagram: "Instagram", canal_outro: "other",
       selecionar: "Select", ajuda: "What is this?", contato_tem: "Contact", contato_falta: "No contact",
-      motivo_sem_cnpj: "The gazette did not bring this company's tax ID, so the Federal Revenue could not be checked. It can be searched in the PJe logged-in area (select it and use \u201cPrepare logged-in search\u201d).",
+      motivo_sem_cnpj: "The gazette did not bring this company's tax ID, so the Federal Revenue could not be checked. It can be searched in the PJe logged-in area (select it and use \u201cBring in logged-in area data…\u201d).",
       motivo_receita_sem: "The Federal Revenue has no phone or e-mail for this company. It can be searched in the PJe logged-in area (initial petition).",
       motivo_cnpj_a_conferir: "The tax ID in the gazette belongs to another name at the Federal Revenue; check in PJe before using it.",
       feito_n: "{n} case(s) now \u201c{s}\u201d.", conf_titulo_n: "Change {n} cases to \u201c{s}\u201d?", conf_titulo_1: "Change to \u201c{s}\u201d?",
       conf_arquivar: "They leave the List and stay in the Archive and the spreadsheet. You can undo right after.", conf_mudar: "The status of {n} case(s) changes now. You can undo right after.",
       mot_sem_interesse: "not interested", mot_ja_cliente: "already a client", mot_fora_perfil: "outside the profile", mot_outro: "other reason", motivo: "Reason", cancelar: "Cancel",
       aplicar_n: "Change {n} cases", aplicar_1: "Change", desfazer: "Undo", sel_todos: "Select all {n} in this list", sel_limpar: "Clear selection", com_sel: "With the selected:",
-      mudar_sit: "Change status", arquivar_n: "Archive {n}", preparar_busca: "Prepare logged-in search",
-      preparar_ajuda: "Creates a file with the selected cases that still have no contact (at most {n} a day) and instructions to search the PJe logged-in area, by hand or with Claude in Chrome. The lawyer opens the cases with their own credentials. Phone and e-mail are rarely in the case; address and claim value usually are.",
-      busca_pronta_t: "File ready with {n} case(s)", busca_pronta: "The folder opened with the file ({c}). With the court's PJe already logged in (1st instance), open Claude in Chrome and paste the whole file: it carries the PJe route, read-only, one court at a time. Then paste the answer in the ☰ menu, \u201cLogged-in area\u201d \u2192 \u201cBring in logged-in area data\u201d.",
-      fechar: "Close", colar_contatos: "Bring in logged-in area data", colar_explica: "Paste here the \u201cRESPOSTA PARA O RADAR v1\u201d block Claude in Chrome returned (7-column table). The program checks line by line, without AI, and refuses tax IDs of individuals and claimant data.",
-      ler_resposta: "Read the answer", colar_res: "{a} contact(s) added; {r} line(s) refused.", colar_rep: "{n} were already saved.", linha_n: "Line {n}",
+      mudar_sit: "Change status", arquivar_n: "Archive {n}", preparar_busca: "Bring in logged-in area data…",
+      preparar_ajuda: "The program builds a request with the chosen cases and only what each one is missing. The lawyer pastes it into the browsing tool (Claude in Chrome, Codex or another) with PJe open and logged in; it returns a table the program reads without AI. Up to {n} cases per request (one PJe session), in batches of 25.",
+      busca_pronta_t: "File ready with {n} case(s)",
+      fechar: "Close", colar_contatos: "Bring in logged-in area data",
+      ler_resposta: "Read the answer", colar_res: "{a} contact(s) added; {r} line(s) refused.", linha_n: "Line {n}",
       aviso_pl_t: "The spreadsheet opens read-only", aviso_pl: "The program rewrites it at every reading. Filtering and sorting work normally. To take notes or edit, use \u201cMake a copy\u201d: the copy goes to the Copies folder and the program never touches it.",
       nao_mostrar: "Do not show again on this computer", gerar_copia: "Make a copy", entendi_abrir: "Got it, open", copia_ok: "Copy created: {c}",
       menu_ver: "View", menu_planilha: "Spreadsheet", menu_contatos: "Logged-in area", menu_programa: "Settings", config: "Settings", perfil: "Profile",
@@ -2284,10 +2330,41 @@ window.LEXSUITE_RADAR = null;
     w_termos: "Li e aceito os termos de uso", w_termos_falta: "Para continuar, marque que leu e aceita os termos de uso.",
     arq_parcial: "Mostrando os {m} processos mais recentes de {n}. Para achar um mais antigo, use a busca (ela procura em tudo o que o programa guarda).",
     arq_busca: "Busca no programa: {n} processo(s) com \"{q}\".",
-    buscar_logada: "Buscar na área logada", buscar_logada_t: "Pedido pronto e copiado", buscar_logada_x: "O texto já está copiado. 1) Abra o PJe com o seu login, na janela da extensão de IA que o escritório usa. 2) Cole o texto na extensão e espere a resposta. 3) Copie o bloco \"RESPOSTA PARA O RADAR v1\" e cole aqui em \"Trazer dados da área logada\". O texto pede só o que falta neste processo.",
-    buscar_logada_ajuda: "Só o advogado, com o login dele, abre o processo. O RADAR prepara o pedido (só o que falta) e lê a resposta padronizada; funciona com qualquer extensão de IA ou à mão. Até {n} processos por dia.",
+    al_titulo: "Trazer dados da área logada", al_passo_1: "O que pedir", al_passo_2: "O pedido", al_passo_3: "A resposta", al_passo_4: "O que mudou", al_passo_n: "Passo {n} de 4",
+    al_p1_x: "O que pedir ao PJe? O programa só pede o que ainda falta em cada processo.", al_esc_marc: "Só os {n} processos marcados", al_esc_marc_x: "Os que você marcou na lista.",
+    al_esc_prim: "Os primeiros da lista filtrada", al_esc_prim_x: "Na ordem da lista de agora ({n} processos na tela).", al_esc_prox: "Os próximos da lista filtrada que ainda não foram ao PJe",
+    al_esc_prox_x: "Pula os que já foram pedidos (os marcados \u201ctentar depois\u201d voltam). O próximo pedido continua de onde este parou.", al_n_rot: "Quantos:",
+    al_dados_rot: "Quais dados:", al_d_valor: "Valor da causa", al_d_data: "Data de ajuizamento", al_d_contato: "Contatos da empresa (endereço, e-mail, telefone, site)", al_d_socio: "Sócio ou administrador citado nos autos (nunca CPF)", al_d_uf: "Estado (UF)",
+    al_resumo: "Vão no pedido: {q} processos, em {l} lote(s) de até 25, só com o que falta em cada um. Tempo estimado na ferramenta: uns {m} min.", al_fora: "({n} da lista também têm algo faltando e ficam para o próximo pedido.)",
+    al_nada: "Nenhum processo com dado faltando nessa escolha.", al_limite_x: "Limite por pedido: {n} processos (Configuração → Área logada), em lotes de 25.",
+    al_limite_ajuda: "Cada pedido é uma sessão do PJe: o login com token expira em pouco tempo. Por isso o limite é por pedido, não por dia. Processos em que o advogado não atua podem ser bloqueados pelo tribunal; o pedido manda a ferramenta pular esses.",
+    al_continuar: "Gerar o pedido", al_p2_x: "Pedido pronto e copiado: {q} processos em {l} lote(s). Tempo estimado: uns {m} min.", al_ferr_rot: "Em qual ferramenta você vai colar?", al_f_outra: "Outra ferramenta",
+    al_i1: "Abra o PJe no Chrome e entre com o seu token ou certificado, como sempre.", al_i2: "Cole o pedido na ferramenta, na mesma aba do PJe. Ela percorre os processos sozinha; não mexa na aba enquanto ela trabalha.",
+    al_i3: "Quando terminar, copie a resposta (ou salve o arquivo) e volte aqui: menu ☰ → Área logada → Trazer resposta, ou o botão da faixa no alto da lista.",
+    al_pedido_rot: "O pedido (o texto que vai colado)", al_copiar: "Copiar", al_copiar_de_novo: "Copiar de novo", al_salvar_arq: "Salvar como arquivo (.md)",
+    al_nunca: "O que nunca entra, mesmo que a ferramenta devolva: CPF e dado do autor da ação, de testemunhas, de peritos ou de advogados. O programa recusa linha por linha.",
+    al_ja_tenho: "Já tenho a resposta", al_fechar_volto: "Fechar e voltar quando tiver a resposta",
+    al_p3_x: "Traga a resposta da ferramenta: o texto copiado ou o arquivo que ela gerou. Pode vir em partes (lotes), em qualquer ordem e com conversa em volta.",
+    al_p3_pend: "Pedido de {d} ({q} processos, {l} lote(s)). Lotes recebidos: {r}.", al_nenhum: "nenhum", al_colar: "Colar texto", al_subir: "Subir arquivo (.md, .txt ou .zip)",
+    al_colar_ph: "Cole aqui tudo o que a ferramenta devolveu. O programa acha sozinho os blocos \u201cRESPOSTA PARA O RADAR v1\u201d e ignora o resto.",
+    al_solta_t: "Arraste o arquivo aqui ou clique para escolher", al_solta_x: ".md, .txt ou um .zip com vários lotes · até 20 MB · nada é executado, só lido", al_grande: "Arquivo maior que 20 MB.", al_arq_ok: "Arquivo escolhido: {n}",
+    al_falta_txt: "Cole o texto da resposta.", al_falta_arq: "Escolha o arquivo da resposta.", al_lendo: "Lendo a resposta, linha por linha, sem IA…",
+    al_nao_achei: "Não achei a tabela RESPOSTA PARA O RADAR v1 neste texto. As primeiras linhas do que chegou:",
+    al_lote_n: "Lote {n} de {m}", al_lote_unico: "Resposta", al_lote_res: "{a} aceitas · {r} recusadas · {p} repetidas", al_col_extra: "coluna a mais ignorada",
+    al_falta_lote: "Recebidos os lotes {r} de {l}. O pedido continua aguardando os que faltam.",
+    al_c_pedidos: "processos pedidos", al_c_novo: "com dado novo", al_c_nada: "nada no processo", al_c_tentar: "tentar depois", al_c_recusadas: "linhas recusadas",
+    al_achados: "Achados por tipo de dado (achado / pedido):", al_tentar_x: "{n} processo(s) ficaram para tentar depois (petição em PDF, fora do acervo ou sessão expirada). O botão abaixo monta um pedido só com eles.",
+    al_mudou: "O que mudou nas fichas", al_m_proc: "Processo", al_m_acr: "Acrescentado", al_m_alt: "Alterado (antes → depois)", al_m_igual: "Igual ou mantido", al_antes_depois: "antes: {a} → depois: {d}",
+    al_nunca_apaga: "A área logada nunca apaga nada: dado novo só troca o anterior quando a fonte é mais forte (cadastro da parte no PJe > petição > citação > Receita > digitado) ou mais nova, e o anterior fica no histórico da ficha.",
+    al_recusadas_t: "Linhas recusadas ({n}): ver o motivo", al_novo_faltou: "Novo pedido só com o que faltou ({n})", al_ver_lista: "Ver na lista",
+    al_faixa: "Pedido de {d} ({q} processos, {l} lote(s)) aguardando a resposta da ferramenta.", al_faixa_rec: "recebidos os lotes {r} de {l}", al_trazer: "Trazer resposta", al_cancelar_pedido: "Cancelar pedido",
+    al_cancelar_t: "Cancelar o pedido?", al_cancelar_x: "Os {q} processos deste pedido voltam a \u201cainda não pedido\u201d. O que já chegou de resposta continua na ficha.", al_manter: "Manter o pedido", al_cancelar_sim: "Cancelar o pedido",
+    al_gerar: "Gerar pedido…", al_trazer_menu: "Trazer resposta…", al_desligada: "A área logada está desligada para esta licença.",
+    al_selo: "área logada · {d}", al_f_todos: "Área logada: todos", al_f_n: "Área logada: {n}", al_f_nao: "Ainda não pedido", al_f_pedido: "Aguardando resposta", al_f_com_dados: "Com dados da área logada", al_f_nada: "Nada no processo", al_f_tentar: "Tentar depois",
+    c_al_t: "Área logada", c_al_rot: "Processos por pedido (uma sessão do PJe)", c_al_ajuda: "Quantos processos vão em cada pedido à área logada (padrão 25, máximo 50), em lotes de 25. O login do PJe com token expira em pouco tempo, então o limite é por pedido, não por dia.",
+    buscar_logada: "Buscar na área logada",
+    buscar_logada_ajuda: "Só o advogado, com o login dele, abre o processo. O programa prepara o pedido (só o que falta) e lê a resposta padronizada; funciona com qualquer ferramenta de navegação ou à mão. Até {n} processos por pedido.",
     buscar_logada_nada: "Este processo já tem valor, data e contatos: nada a pedir.", colar_logada: "Trazer dados da área logada",
-    colar_v1_res: "{c} dado(s) do processo completados; {n} não consta(m) no processo; {d} para tentar depois.",
     valor_salvo: "✓ salvo", sit_salva: "✓"
   });
   Object.assign(T.en, {
@@ -2354,19 +2431,50 @@ window.LEXSUITE_RADAR = null;
     w_termos: "I have read and accept the terms of use", w_termos_falta: "To continue, tick that you have read and accept the terms of use.",
     arq_parcial: "Showing the {m} most recent cases out of {n}. To find an older one, use the search (it searches everything the program keeps).",
     arq_busca: "Program search: {n} case(s) with \"{q}\".",
-    buscar_logada: "Search the logged-in area", buscar_logada_t: "Request ready and copied", buscar_logada_x: "The text is already copied. 1) Open PJe with your login, in the window of the AI extension the firm uses. 2) Paste the text into the extension and wait for the answer. 3) Copy the \"RESPOSTA PARA O RADAR v1\" block and paste it here in \"Bring in logged-in area data\". The text asks only for what is missing in this case.",
-    buscar_logada_ajuda: "Only the lawyer, with their own login, opens the case. RADAR prepares the request (only what is missing) and reads the standard answer; works with any AI extension or by hand. Up to {n} cases a day.",
+    al_titulo: "Bring in logged-in area data", al_passo_1: "What to ask", al_passo_2: "The request", al_passo_3: "The answer", al_passo_4: "What changed", al_passo_n: "Step {n} of 4",
+    al_p1_x: "What to ask PJe? The program only asks what each case is still missing.", al_esc_marc: "Only the {n} selected cases", al_esc_marc_x: "The ones you selected in the list.",
+    al_esc_prim: "The first ones in the filtered list", al_esc_prim_x: "In the current list order ({n} cases on screen).", al_esc_prox: "The next ones in the filtered list not yet sent to PJe",
+    al_esc_prox_x: "Skips the ones already asked (the \u201ctry later\u201d ones come back). The next request continues where this one stopped.", al_n_rot: "How many:",
+    al_dados_rot: "Which data:", al_d_valor: "Claim value", al_d_data: "Filing date", al_d_contato: "Company contacts (address, e-mail, phone, website)", al_d_socio: "Partner or director mentioned in the case (never a personal tax ID)", al_d_uf: "State",
+    al_resumo: "In the request: {q} cases, in {l} batch(es) of up to 25, only with what each one is missing. Estimated time in the tool: about {m} min.", al_fora: "({n} more in the list are also missing something and stay for the next request.)",
+    al_nada: "No case with missing data in this choice.", al_limite_x: "Limit per request: {n} cases (Settings → Logged-in area), in batches of 25.",
+    al_limite_ajuda: "Each request is one PJe session: the token login expires quickly. That is why the limit is per request, not per day. Cases where the lawyer does not act may be blocked by the court; the request tells the tool to skip them.",
+    al_continuar: "Create the request", al_p2_x: "Request ready and copied: {q} cases in {l} batch(es). Estimated time: about {m} min.", al_ferr_rot: "Which tool will you paste it into?", al_f_outra: "Another tool",
+    al_i1: "Open PJe in Chrome and sign in with your token or certificate, as usual.", al_i2: "Paste the request into the tool, in the same PJe tab. It goes through the cases by itself; do not touch the tab while it works.",
+    al_i3: "When it finishes, copy the answer (or save the file) and come back here: ☰ menu → Logged-in area → Bring in the answer, or the button on the bar at the top of the list.",
+    al_pedido_rot: "The request (the text to paste)", al_copiar: "Copy", al_copiar_de_novo: "Copy again", al_salvar_arq: "Save as file (.md)",
+    al_nunca: "What never comes in, even if the tool returns it: personal tax IDs and data about the plaintiff, witnesses, experts or lawyers. The program refuses it line by line.",
+    al_ja_tenho: "I already have the answer", al_fechar_volto: "Close and come back with the answer",
+    al_p3_x: "Bring the tool's answer: the copied text or the file it created. It may come in parts (batches), in any order and with chat around it.",
+    al_p3_pend: "Request of {d} ({q} cases, {l} batch(es)). Batches received: {r}.", al_nenhum: "none", al_colar: "Paste text", al_subir: "Upload file (.md, .txt or .zip)",
+    al_colar_ph: "Paste here everything the tool returned. The program finds the \u201cRESPOSTA PARA O RADAR v1\u201d blocks by itself and ignores the rest.",
+    al_solta_t: "Drag the file here or click to choose", al_solta_x: ".md, .txt or a .zip with several batches · up to 20 MB · nothing is run, only read", al_grande: "File larger than 20 MB.", al_arq_ok: "File chosen: {n}",
+    al_falta_txt: "Paste the answer text.", al_falta_arq: "Choose the answer file.", al_lendo: "Reading the answer, line by line, without AI…",
+    al_nao_achei: "I did not find the RESPOSTA PARA O RADAR v1 table in this text. The first lines received:",
+    al_lote_n: "Batch {n} of {m}", al_lote_unico: "Answer", al_lote_res: "{a} accepted · {r} refused · {p} repeated", al_col_extra: "extra column ignored",
+    al_falta_lote: "Batches {r} of {l} received. The request keeps waiting for the rest.",
+    al_c_pedidos: "cases asked", al_c_novo: "with new data", al_c_nada: "nothing in the case", al_c_tentar: "try later", al_c_recusadas: "lines refused",
+    al_achados: "Found by data type (found / asked):", al_tentar_x: "{n} case(s) were left to try later (PDF petition, outside the lawyer's cases or session expired). The button below builds a request with only those.",
+    al_mudou: "What changed in the records", al_m_proc: "Case", al_m_acr: "Added", al_m_alt: "Changed (before → after)", al_m_igual: "Same or kept", al_antes_depois: "before: {a} → after: {d}",
+    al_nunca_apaga: "The logged-in area never deletes anything: new data only replaces the previous one when the source is stronger (party record in PJe > petition > summons > Federal Revenue > typed) or newer, and the previous one stays in the record history.",
+    al_recusadas_t: "Refused lines ({n}): see the reason", al_novo_faltou: "New request with only what was missing ({n})", al_ver_lista: "See in the list",
+    al_faixa: "Request of {d} ({q} cases, {l} batch(es)) waiting for the tool's answer.", al_faixa_rec: "batches {r} of {l} received", al_trazer: "Bring in the answer", al_cancelar_pedido: "Cancel request",
+    al_cancelar_t: "Cancel the request?", al_cancelar_x: "The {q} cases of this request go back to \u201cnot asked yet\u201d. Answers already received stay in the record.", al_manter: "Keep the request", al_cancelar_sim: "Cancel the request",
+    al_gerar: "Create request…", al_trazer_menu: "Bring in the answer…", al_desligada: "The logged-in area is turned off for this licence.",
+    al_selo: "logged-in area · {d}", al_f_todos: "Logged-in area: all", al_f_n: "Logged-in area: {n}", al_f_nao: "Not asked yet", al_f_pedido: "Waiting for answer", al_f_com_dados: "With logged-in area data", al_f_nada: "Nothing in the case", al_f_tentar: "Try later",
+    c_al_t: "Logged-in area", c_al_rot: "Cases per request (one PJe session)", c_al_ajuda: "How many cases go in each logged-in area request (default 25, maximum 50), in batches of 25. The PJe token login expires quickly, so the limit is per request, not per day.",
+    buscar_logada: "Search the logged-in area",
+    buscar_logada_ajuda: "Only the lawyer, with their own login, opens the case. The program prepares the request (only what is missing) and reads the standard answer; works with any browsing tool or by hand. Up to {n} cases per request.",
     buscar_logada_nada: "This case already has value, date and contacts: nothing to ask.", colar_logada: "Bring in logged-in area data",
-    colar_v1_res: "{c} case field(s) completed; {n} not in the case; {d} to try later.",
     valor_salvo: "✓ saved", sit_salva: "✓"
   });
   var visao = "painel"; try { visao = localStorage.getItem("lexsuite:visao") || "painel"; } catch (e) {}
   if (visao === "historico") visao = "painel";  // 0.7.36 (dono): o Histórico de leituras saiu das abas
-  var lang = "pt", F = { valor: false, gig: false, exc: false, trib: [], cnpj: false, data: [], vara: [], setor: [], porte: [], uf: [], busca: "", valorSel: "", sit: [], contato: "", frente: [], sinal: [], empresa: [] }, ordem = "valor", ordem2 = "", aberto = {};
+  var lang = "pt", F = { valor: false, gig: false, exc: false, trib: [], cnpj: false, data: [], vara: [], setor: [], porte: [], uf: [], busca: "", valorSel: "", sit: [], contato: "", frente: [], sinal: [], empresa: [], area: [] }, ordem = "valor", ordem2 = "", aberto = {};
   var DA = null, selecionados = {}, ultimoDesfazer = null, migrou = false;
   var SITS = ["novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado"];
-  var FILTROS_PADRAO = JSON.stringify({ valor: false, gig: false, exc: false, trib: [], cnpj: false, data: [], vara: [], setor: [], porte: [], uf: [], busca: "", valorSel: "", sit: [], contato: "", frente: [], sinal: [], empresa: [] });
-  var MULTI = ["sit", "frente", "trib", "data", "vara", "setor", "porte", "uf", "sinal", "empresa"];  // 0.7.40: tipo de publicação e empresas (do "Ver na lista")  // 0.7.17: filtros com várias opções
+  var FILTROS_PADRAO = JSON.stringify({ valor: false, gig: false, exc: false, trib: [], cnpj: false, data: [], vara: [], setor: [], porte: [], uf: [], busca: "", valorSel: "", sit: [], contato: "", frente: [], sinal: [], empresa: [], area: [] });
+  var MULTI = ["sit", "frente", "trib", "data", "vara", "setor", "porte", "uf", "sinal", "empresa", "area"];  // 0.7.46: área logada  // 0.7.40: tipo de publicação e empresas (do "Ver na lista")  // 0.7.17: filtros com várias opções
   try {  // 0.7.28 (dono): a lista lembra os últimos filtros e a ordem (menos busca e datas, que envelhecem)
     var ult_ = MODO === "app" && JSON.parse(localStorage.getItem("lexsuite:filtro-atual") || "null");
     if (ult_ && ult_.F) { Object.keys(F).forEach(function (k) { if (k !== "busca" && k !== "data" && k in ult_.F) F[k] = MULTI.indexOf(k) >= 0 ? [].concat(ult_.F[k] || []) : ult_.F[k]; }); ordem = ult_.ordem || ordem; ordem2 = ult_.ordem2 || ""; }
@@ -2383,6 +2491,7 @@ window.LEXSUITE_RADAR = null;
     if (k === "trib") return i.tribunal || ""; if (k === "data") return diaDe(i); if (k === "vara") return i.vara || "";
     if (k === "setor") return i.setor || "__nao__"; if (k === "porte") return porteCurto(i) || "__nao__"; if (k === "uf") return (i.empresa || {}).uf || "__nao__";
     if (k === "sit") return statusDe(i); if (k === "sinal") return i.sinal || "__nao__";
+    if (k === "area") { var a_ = (i.area || {}).estado; return a_ === "com_dados" || a_ === "nada" || a_ === "tentar" || a_ === "pedido" ? a_ : "nao"; }
     if (k === "empresa") { var e_ = i.empresa || {}; return e_.cnpj || nomeDe(i).toLowerCase(); }
     return i.frente || "trabalhista";
   }
@@ -2390,6 +2499,7 @@ window.LEXSUITE_RADAR = null;
   function rotuloFacet(k, v) {
     // 0.7.32: "__nenhum__" = tudo desligado no gráfico do Painel
     if (k === "sinal") return rotuloSinal(v);
+    if (k === "area") return t("al_f_" + v);
     if (v === "__nao__") return t("nao_informado"); if (v === "__nenhum__") return t("g_nenhum"); if (k === "data") return dataSemana(v); if (k === "sit") return t("st_" + v); if (k === "frente") return t("fr_" + v); return v;
   }
   try { lang = localStorage.getItem("lexsuite:idioma") || "pt"; } catch (e) {}
@@ -2876,7 +2986,7 @@ window.LEXSUITE_RADAR = null;
     if (id) window.scrollTo(0, 0);
   }
   function estadoConfig() {
-    return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), JSON.stringify(diasValor(cDias)), $("c-avisar").checked, $("c-aba").checked]);
+    return JSON.stringify([$("c-codigo").value.trim().toUpperCase(), pastaEscolhida(), $("c-agendar").checked, cHoras.slice().sort(), JSON.stringify(diasValor(cDias)), $("c-avisar").checked, $("c-aba").checked, $("c-al-n").value]);
   }
   function marcarSalvarC() { if (!$("config").hidden) $("c-salvar").disabled = $("c-salvar").classList.contains("salvando") || (estadoConfig() === snapC && !regrasSujo); }  // 0.7.33: um Salvar só, também para os critérios
   var regrasSujo = false, salvarRegrasAgora = null;  // revisão da 0.7.28: fechar a Configuração pergunta também pelas regras
@@ -2984,6 +3094,8 @@ window.LEXSUITE_RADAR = null;
     var ag = APP && APP.config.agendavel; $("c-agendar").disabled = !ag; $("c-agendar").checked = !!(APP && APP.config.agendado) || (ag && !(APP && APP.config.pasta));
     cHoras = ((APP && APP.config.horarios) || ["20:00", "08:00"]).slice(); cDias = diasLista((APP && APP.config.dias) || "todos");
     $("c-avisar").checked = !(APP && APP.config.avisar_ao_terminar === false); $("c-aba").checked = !!(APP && APP.config.abrir_em_aba);
+    $("c-al-n").value = String(alLimite()); $("c-l-al").textContent = t("c_al_t"); $("c-l-al-n").textContent = t("c_al_rot");  // 0.7.46: limite por pedido
+    var caj_ = $("c-al-aj"); caj_.textContent = ""; caj_.appendChild(ajuda(t("c_al_ajuda")));
     $("c-l-tela").textContent = t("c_tela"); $("c-l-aba").textContent = t("c_aba"); $("c-hora-nova").value = "";
     desenharAgenda();
     fetch("/pastas", { headers: cabecalhosApp() }).then(function (r) { return r.json(); }).then(function (d) {
@@ -3114,6 +3226,7 @@ window.LEXSUITE_RADAR = null;
     if (!$("c-agendar").disabled) corpo.agendar = $("c-agendar").checked;
     if ($("c-agendar").checked && !cHoras.length) { $("c-msg").textContent = t("ag_um"); return; }
     corpo.horarios = cHoras.slice(); corpo.dias = diasValor(cDias); if (!cDias.length) corpo.agendar = false; corpo.avisar_ao_terminar = $("c-avisar").checked; corpo.abrir_em_aba = $("c-aba").checked;
+    var aln_ = Math.max(1, Math.min(50, parseInt($("c-al-n").value, 10) || 25)); if (aln_ !== alLimite()) corpo.area_logada_por_pedido = aln_;
     // 0.7.43 (dono: "o salvar demorou muito"): a pasta e o agendamento do Windows só vão quando mudaram (cada um leva segundos)
     if (cA_.pasta && corpo.pasta === cA_.pasta) { delete corpo.pasta; delete corpo.criar; }
     var mesmaAgenda_ = JSON.stringify(cHoras.slice().sort()) === JSON.stringify((cA_.horarios || []).slice().sort()) && JSON.stringify(diasValor(cDias)) === JSON.stringify(diasValor(diasLista(cA_.dias || "todos")));
@@ -3125,7 +3238,7 @@ window.LEXSUITE_RADAR = null;
       if (!r.ok) { $("c-msg").textContent = r.motivo || t("falha"); return; }
       // 0.7.43 (dono): a tela fica na hora com o que foi salvo (reabrir antes de a lista recarregar mostrava o de antes)
       if (APP && APP.config && r.radar) {
-        ["horarios", "dias", "avisar_ao_terminar", "abrir_em_aba"].forEach(function (k) { if (k in r.radar) APP.config[k] = r.radar[k]; });
+        ["horarios", "dias", "avisar_ao_terminar", "abrir_em_aba", "area_logada_por_pedido"].forEach(function (k) { if (k in r.radar) APP.config[k] = r.radar[k]; });
         if ("pasta" in r) APP.config.pasta = r.pasta; if ("agendado" in r) APP.config.agendado = r.agendado;
       }
       var agM_ = r.agendar_msg && lang === "en" ? (r.agendar_ok ? (r.agendado ? "" : t("ag_desligada")) : t("ag_falhou")) : (r.agendar_msg || "");  // 0.7.36 (revisão da Operação): sem frase em PT na tela em EN
@@ -3632,15 +3745,16 @@ window.LEXSUITE_RADAR = null;
     $("r-filtrar").textContent = t("r_filtrar"); $("r-ordenar").textContent = t("r_ordenar");
   }
   var multiAberto = "", multiBusca = {};
-  var ROTULO_TODOS = { sinal: "f_todos_sinais", sit: "f_todas_sit", frente: "f_todas_frentes", trib: "trib_todos", data: "f_todas_datas", vara: "f_todas_varas", setor: "f_todos_setores", porte: "f_todos_portes", uf: "f_todas_ufs" };
-  var ROTULO_N = { sinal: "m_sinal", sit: "m_sit", frente: "m_frente", trib: "m_trib", data: "m_data", vara: "m_vara", setor: "m_setor", porte: "m_porte", uf: "m_uf" };
+  var ROTULO_TODOS = { area: "al_f_todos", sinal: "f_todos_sinais", sit: "f_todas_sit", frente: "f_todas_frentes", trib: "trib_todos", data: "f_todas_datas", vara: "f_todas_varas", setor: "f_todos_setores", porte: "f_todos_portes", uf: "f_todas_ufs" };
+  var ROTULO_N = { area: "al_f_n", sinal: "m_sinal", sit: "m_sit", frente: "m_frente", trib: "m_trib", data: "m_data", vara: "m_vara", setor: "m_setor", porte: "m_porte", uf: "m_uf" };
   function desenharMulti(k, bi, cx) {  // contagem das opções considera todos os outros filtros; opção com zero some (menos a marcada)
     var box = $("f-" + k); if (!box) return; box.textContent = "";
     var cont = {}; bi.forEach(function (i) { if (passaFiltros(i, k, cx.min, cx.esconder, cx.q)) { var v = valorFacet(i, k); if (v !== "") cont[v] = (cont[v] || 0) + 1; } });
     var sel = lista_(F[k]).filter(function (v) { return v; }); F[k] = sel;
     sel.forEach(function (v) { if (!(v in cont)) cont[v] = 0; });
     var chaves = Object.keys(cont);
-    box.hidden = chaves.length < 2 && !sel.length; box.classList.toggle("multi-vazio", !sel.length);
+    box.hidden = (chaves.length < 2 && !sel.length) || (k === "area" && !(D && D.area_logada && D.area_logada.tem_resposta) && !sel.length);  // 0.7.46: só depois do 1º resultado
+    box.classList.toggle("multi-vazio", !sel.length);
     var b = el("button", sel.length ? "ligado" : null); b.type = "button"; b.setAttribute("aria-expanded", String(multiAberto === k)); b.setAttribute("aria-haspopup", "true");
     b.textContent = !sel.length ? t(ROTULO_TODOS[k]) : sel.length === 1 ? rotuloFacet(k, sel[0]) + " (" + num(cont[sel[0]] || 0) + ")" : t(ROTULO_N[k], { n: sel.length });
     b.title = box.getAttribute("data-rotulo") || "";
@@ -3809,8 +3923,8 @@ window.LEXSUITE_RADAR = null;
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(i.processo).then(ok, function () { window.prompt(t("copiar"), i.processo); }); else window.prompt(t("copiar"), i.processo); });
     ac.appendChild(bc);
     if (MODO === "app") {  // 0.7.16 (item 91): pedido à área logada, só com o que falta, para qualquer extensão de IA
-      var bl = el("button", "btn-txt", t("buscar_logada")); bl.type = "button"; bl.addEventListener("click", function () { prepararBusca([i.id]); });
-      ac.appendChild(bl); ac.appendChild(ajuda(t("buscar_logada_ajuda", { n: (APP && APP.config.area_logada_por_dia) || 30 })));
+      var bl = el("button", "btn-txt", t("buscar_logada")); bl.type = "button"; bl.setAttribute("data-recurso", "area-logada"); bl.addEventListener("click", function () { areaLogada([i.id]); });
+      var ajl_ = ajuda(t("buscar_logada_ajuda", { n: alLimite() })); ajl_.setAttribute("data-recurso", "area-logada"); ac.appendChild(bl); ac.appendChild(ajl_);
     }
     ficha.appendChild(ac);
     ficha.appendChild(el("div", "nota", t("nota_valor")));
@@ -3836,8 +3950,14 @@ window.LEXSUITE_RADAR = null;
       var q = el("div", "balao"); q._dono = b; q.setAttribute("role", "note");
       var c = typeof conteudo === "function" ? conteudo() : conteudo; if (typeof c === "string") q.textContent = c; else q.appendChild(c);
       document.body.appendChild(q); balaoAberto = q;
-      var r = b.getBoundingClientRect(), w = q.offsetWidth;
-      q.style.top = (window.scrollY + r.bottom + 6) + "px"; q.style.left = Math.max(8, Math.min(window.scrollX + r.left - 10, window.scrollX + document.documentElement.clientWidth - w - 8)) + "px";
+      // 0.7.46 (dono): dentro de barra fixa ou grudada (barra de lote), o balão fica parado na tela e abre para cima se não
+      // couber embaixo; nunca fora da área visível
+      var fixo_ = false; for (var p_ = b; p_ && p_ !== document.body; p_ = p_.parentElement) { var ps_ = getComputedStyle(p_).position; if (ps_ === "fixed" || ps_ === "sticky") { fixo_ = true; break; } }
+      var r = b.getBoundingClientRect(), w = q.offsetWidth, h = q.offsetHeight, vh = window.innerHeight, vw = document.documentElement.clientWidth;
+      var cima_ = r.bottom + 6 + h > vh - 8 && r.top - 6 - h >= 8;
+      var topo_ = cima_ ? r.top - 6 - h : Math.min(r.bottom + 6, Math.max(8, vh - h - 8)), esq_ = Math.max(8, Math.min(r.left - 10, vw - w - 8));
+      if (fixo_) { q.classList.add("balao-fixo"); q.style.top = topo_ + "px"; q.style.left = esq_ + "px"; }
+      else { q.style.top = (window.scrollY + (cima_ ? topo_ : r.bottom + 6)) + "px"; q.style.left = (window.scrollX + esq_) + "px"; }
     });
     return b;
   }
@@ -3856,6 +3976,8 @@ window.LEXSUITE_RADAR = null;
     if (c.tem) f.appendChild(el("span", "selo tem", "✓ " + t("contato_tem") + ": " + c.canais.map(function (x) { return t("canal_" + x); }).join(", ")));
     else { f.appendChild(el("span", "selo falta", "✕ " + t("contato_falta"))); f.appendChild(ajuda(t("motivo_" + (c.motivo || "sem_cnpj")))); }
     if (i.frente && i.frente !== "trabalhista") f.appendChild(el("span", "frente-tag", t("fr_" + i.frente)));
+    var ar_ = i.area || {};  // 0.7.46: o que a área logada já trouxe (ou se está pedido)
+    if (MODO === "app" && ar_.estado && ar_.estado !== "pedido") { var sa_ = el("span", "selo-area", t("al_selo", { d: dataCurta(ar_.em, true) })); sa_.title = t("al_f_" + ar_.estado); sa_.setAttribute("data-recurso", "area-logada"); f.appendChild(sa_); }
     return f;
   }
   function acharItem(id) { var achou = null; [(D && D.itens) || [], (DA && DA.itens) || []].forEach(function (l) { l.forEach(function (x) { if (x.id === id) achou = achou || x; }); }); return achou; }
@@ -3889,7 +4011,7 @@ window.LEXSUITE_RADAR = null;
     var bb = el("div", "botoes");
     botoes.forEach(function (b) { var x = el("button", b[2] ? "primario" : "chip", b[0]); x.type = "button"; x.addEventListener("click", function () { if (b[3] && b[3]() === false) return; j.close(); if (b[1]) b[1](); }); bb.appendChild(x); });
     box.appendChild(bb);
-    if (j.showModal) j.showModal(); else j.setAttribute("open", "");
+    if (!j.open) { if (j.showModal) j.showModal(); else j.setAttribute("open", ""); }  // 0.7.46: um passo troca o conteúdo da janela já aberta
     var ult = bb.lastChild; if (ult) ult.focus();
   }
   function mostrarAviso(txt) { var n = el("span", "erro", txt); $("estado").insertBefore(n, $("estado").firstChild); setTimeout(function () { if (n.parentNode) n.remove(); }, 9000); }
@@ -3919,33 +4041,216 @@ window.LEXSUITE_RADAR = null;
     SITS.forEach(function (k) { var o = el("option", null, t("st_" + k)); o.value = k; ms.appendChild(o); });
     ms.addEventListener("change", function () { if (ms.value) pedirSituacao(ids, ms.value); ms.value = ""; }); lote.appendChild(ms);
     var ba = el("button", "forte", t("arquivar_n", { n: num(ids.length) })); ba.type = "button"; ba.addEventListener("click", function () { pedirSituacao(ids, "arquivado"); }); lote.appendChild(ba);
-    var bp = el("button", null, t("preparar_busca")); bp.type = "button"; bp.addEventListener("click", function () { prepararBusca(ids); }); lote.appendChild(bp);
-    lote.appendChild(ajuda(t("preparar_ajuda", { n: (APP && APP.config.area_logada_por_dia) || 30 })));
+    var bp = el("button", null, t("preparar_busca")); bp.type = "button"; bp.setAttribute("data-recurso", "area-logada"); bp.addEventListener("click", function () { areaLogada(ids); }); lote.appendChild(bp);
+    var aj_ = ajuda(t("preparar_ajuda", { n: alLimite() })); aj_.setAttribute("data-recurso", "area-logada"); lote.appendChild(aj_);
     var bx = el("button", null, t("sel_limpar")); bx.type = "button"; bx.addEventListener("click", function () { selecionados = {}; desenhar(); }); lote.appendChild(bx);
   }
-  function prepararBusca(ids) {  // 0.7.16: o texto vai copiado; o arquivo fica em saida/contatos
-    post("/contatos/preparar", { processos: ids, abrir_pasta: false }).then(function (r) {
-      if (!r.quantos) { mostrarAviso(t("buscar_logada_nada")); return; }
-      var mostrar = function () {
-        var c = el("div"); c.appendChild(el("h3", null, t("buscar_logada_t")));
-        c.appendChild(el("p", null, t("buscar_logada_x"))); c.appendChild(el("p", "nota", t("busca_pronta", { c: r.caminho || "" })));
-        abrirJanela(c, [[t("fechar"), null], [t("colar_logada"), colarContatos, true]]);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText && r.texto) navigator.clipboard.writeText(r.texto).then(mostrar, mostrar); else mostrar();
-    }).catch(function () { mostrarAviso(t("falha")); });
+  /* ---------- 0.7.46: Área logada v2 (desenho da Arquitetura, 14/Nov) ----------
+     Passo 1 o que pedir (escopo, dados, limite POR PEDIDO, lotes de 25) → passo 2 o pedido (copiar, salvar, ferramenta) →
+     fechar e voltar depois (faixa "pedido aguardando resposta") → passo 3 colar ou subir arquivo → passo 4 o que mudou.
+     Nada trava a tela: cada passo é a janela comum; o pedido pendente fica gravado no programa. */
+  var AL = (function () { var x = {}; try { x = JSON.parse(localStorage.getItem("lexsuite:area-logada") || "{}") || {}; } catch (e) {} return x; })();
+  AL.dados = AL.dados || { valor: true, data: true, contato: true, socio: false }; AL.ferramenta = AL.ferramenta || "claude";
+  function guardarAL() { try { localStorage.setItem("lexsuite:area-logada", JSON.stringify({ dados: AL.dados, ferramenta: AL.ferramenta, escopo: AL.escopo, n: AL.n })); } catch (e) {} }
+  function alLigado() { return window.SolverRecursos.ligado("area-logada", true); }
+  function aplicarRecursosTela() { document.documentElement.classList.toggle("recurso-off-area-logada", !alLigado()); }
+  function alPendente() { return (D && D.area_logada && D.area_logada.pendente) || null; }
+  function alLimite() { return (APP && APP.config && APP.config.area_logada_por_pedido) || 25; }
+  function quandoCurto(iso) { var s_ = String(iso || ""); return s_.slice(8, 10) + "/" + s_.slice(5, 7) + " " + s_.slice(11, 16); }
+  function janelaLarga() { $("janela").classList.add("larga"); }
+  var alOcupado = false;
+  function prepararBusca(ids) { areaLogada(ids && ids.length ? ids : null); }  // nome antigo (cartão, lote, busca)
+  function areaLogada(marcados) {
+    if (!alLigado()) { mostrarAviso(t("al_desligada")); return; }
+    var ordem = visiveis().map(function (i) { return i.id; });
+    var tem_ = marcados && marcados.length;
+    AL.escopo = tem_ ? "marcados" : (AL.escopo && AL.escopo !== "marcados" ? AL.escopo : "proximos");
+    AL.n = Math.min(Number(AL.n) || alLimite(), alLimite());
+    var c = el("div", "al-janela"); c.appendChild(el("h3", null, t("al_titulo"))); c.appendChild(alPassos(1));
+    c.appendChild(el("p", null, t("al_p1_x")));
+    var g = el("div", "al-opcoes"), resumo = el("div", "al-resumo"); resumo.setAttribute("aria-live", "polite");
+    var opcoes = [];
+    if (tem_) opcoes.push(["marcados", t("al_esc_marc", { n: num(marcados.length) }), t("al_esc_marc_x")]);
+    opcoes.push(["primeiros", t("al_esc_prim"), t("al_esc_prim_x", { n: num(ordem.length) })]);
+    opcoes.push(["proximos", t("al_esc_prox"), t("al_esc_prox_x")]);
+    var campoN = el("input"); campoN.type = "number"; campoN.min = "1"; campoN.max = String(alLimite()); campoN.value = String(AL.n); campoN.setAttribute("aria-label", t("al_n_rot"));
+    campoN.addEventListener("input", function () { AL.n = Math.max(1, Math.min(alLimite(), parseInt(campoN.value, 10) || 1)); simular(); });
+    opcoes.forEach(function (o) {
+      var l = el("label", "al-opcao" + (AL.escopo === o[0] ? " on" : "")), r = el("input"); r.type = "radio"; r.name = "al-esc"; r.checked = AL.escopo === o[0];
+      r.addEventListener("change", function () { AL.escopo = o[0]; [].forEach.call(g.querySelectorAll(".al-opcao"), function (x) { x.classList.remove("on"); }); l.classList.add("on"); simular(); });
+      l.appendChild(r); var d = el("span"); d.appendChild(el("b", null, o[1])); d.appendChild(el("small", null, o[2])); l.appendChild(d);
+      if (o[0] !== "marcados") { var ln = el("span", "al-n"); ln.appendChild(document.createTextNode(t("al_n_rot") + " ")); ln.appendChild(o[0] === "primeiros" ? campoN : campoN.cloneNode()); l.appendChild(ln); }
+      g.appendChild(l);
+    });
+    [].forEach.call(g.querySelectorAll('input[type="number"]'), function (x) { x.addEventListener("input", function () { AL.n = Math.max(1, Math.min(alLimite(), parseInt(x.value, 10) || 1)); [].forEach.call(g.querySelectorAll('input[type="number"]'), function (y) { if (y !== x) y.value = String(AL.n); }); simular(); }); });
+    c.appendChild(g);
+    c.appendChild(el("p", "al-sub", t("al_dados_rot")));
+    var dd = el("div", "al-dados");
+    [["valor", "al_d_valor"], ["data", "al_d_data"], ["contato", "al_d_contato"], ["socio", "al_d_socio"]].forEach(function (d_) {
+      var l = el("label", "conf-acoes"), cb = el("input"); cb.type = "checkbox"; cb.checked = !!AL.dados[d_[0]];
+      cb.addEventListener("change", function () { AL.dados[d_[0]] = cb.checked; simular(); }); l.appendChild(cb); l.appendChild(document.createTextNode(" " + t(d_[1]))); dd.appendChild(l);
+    });
+    c.appendChild(dd); c.appendChild(resumo);
+    var nl = el("p", "nota"); nl.appendChild(document.createTextNode(t("al_limite_x", { n: alLimite() }) + " ")); nl.appendChild(ajuda(t("al_limite_ajuda"))); c.appendChild(nl);
+    var corpo = function () { return { processos: AL.escopo === "marcados" ? marcados : ordem, modo: AL.escopo, n: AL.n, dados: AL.dados, ferramenta: AL.ferramenta }; };
+    var tm_ = null, ultimo_ = null;
+    function simular() {
+      clearTimeout(tm_); resumo.textContent = t("carregando");
+      tm_ = setTimeout(function () { post("/area-logada/simular", corpo()).then(function (r) {
+        ultimo_ = r; resumo.textContent = "";
+        if (!r.quantos) { resumo.appendChild(el("span", "erro", t("al_nada"))); return; }
+        resumo.appendChild(document.createTextNode(t("al_resumo", { q: num(r.quantos), l: num(r.lotes), m: num(r.minutos) })));
+        if (r.fora_do_limite) resumo.appendChild(el("small", null, " " + t("al_fora", { n: num(r.fora_do_limite) })));
+      }).catch(function () { resumo.textContent = t("falha"); }); }, 250);
+    }
+    simular();
+    abrirJanela(c, [[t("cancelar"), null], [t("al_continuar"), null, true, function () {
+      if (alOcupado) return false;
+      if (ultimo_ && !ultimo_.quantos) { resumo.textContent = ""; resumo.appendChild(el("span", "erro", t("al_nada"))); return false; }
+      alOcupado = true; guardarAL();
+      post("/area-logada/preparar", corpo()).then(function (r) {
+        alOcupado = false;
+        if (!r.ok || !r.quantos) { mostrarAviso(r.motivo || t("al_nada")); return; }
+        if (D) { D.area_logada = D.area_logada || {}; D.area_logada.pendente = r.pendente; }
+        alPasso2(r); desenharFaixaArea();
+      }).catch(function () { alOcupado = false; mostrarAviso(t("falha")); });
+      return false;
+    }]]);
+    janelaLarga();
   }
-  function colarContatos() {
-    var c = el("div"), ta = el("textarea"); ta.setAttribute("aria-label", t("colar_contatos"));
-    c.appendChild(el("h3", null, t("colar_contatos"))); c.appendChild(el("p", null, t("colar_explica"))); c.appendChild(ta);
-    abrirJanela(c, [[t("cancelar"), null], [t("ler_resposta"), function () {
-      post("/contatos/colar", { texto: ta.value }).then(function (r) {
-        var d = el("div"); d.appendChild(el("h3", null, t("colar_res", { a: num(r.aceitas || 0), r: num((r.recusadas || []).length) })));
-        if (r.repetidas) d.appendChild(el("p", null, t("colar_rep", { n: num(r.repetidas) })));
-        if (r.completados != null) d.appendChild(el("p", null, t("colar_v1_res", { c: num(r.completados), n: num(r.nao_consta || 0), d: num(r.tentar_depois || 0) })));
-        (r.recusadas || []).slice(0, 30).forEach(function (x) { d.appendChild(el("p", "nota", t("linha_n", { n: x.linha }) + ": " + x.motivo)); });
-        abrirJanela(d, [[t("fechar"), null, true]], carregar);
+  function alPassos(n) { var p = el("div", "al-passos"); [1, 2, 3, 4].forEach(function (k) { var x = el("span", k < n ? "ok" : k === n ? "on" : "", String(k)); x.title = t("al_passo_" + k); p.appendChild(x); }); p.setAttribute("aria-label", t("al_passo_n", { n: n })); return p; }
+  function copiarTexto(txt, botao) {
+    var ok = function () { if (!botao) return; var o_ = botao.textContent; botao.textContent = t("copiado"); setTimeout(function () { botao.textContent = o_; }, 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, function () { window.prompt(t("copiar"), txt.slice(0, 2000)); });
+  }
+  function baixarTexto(nome, txt) {
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([txt], { type: "text/markdown;charset=utf-8" })); a.download = nome;
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function alPasso2(r) {
+    var c = el("div", "al-janela"); c.appendChild(el("h3", null, t("al_titulo"))); c.appendChild(alPassos(2));
+    c.appendChild(el("p", null, t("al_p2_x", { q: num(r.quantos), l: num(r.lotes), m: num(r.minutos) })));
+    var g = el("div", "al-opcoes al-ferr");
+    [["claude", "Claude in Chrome"], ["codex", "Codex (OpenAI)"], ["outra", t("al_f_outra")]].forEach(function (o) {
+      var l = el("label", "al-opcao" + (AL.ferramenta === o[0] ? " on" : "")), rd = el("input"); rd.type = "radio"; rd.name = "al-fer"; rd.checked = AL.ferramenta === o[0];
+      rd.addEventListener("change", function () { AL.ferramenta = o[0]; guardarAL(); [].forEach.call(g.querySelectorAll(".al-opcao"), function (x) { x.classList.remove("on"); }); l.classList.add("on"); });
+      l.appendChild(rd); l.appendChild(el("b", null, o[1])); g.appendChild(l);
+    });
+    c.appendChild(el("p", "al-sub", t("al_ferr_rot"))); c.appendChild(g);
+    var ol = el("ol", "al-instr"); ["al_i1", "al_i2", "al_i3"].forEach(function (k) { ol.appendChild(el("li", null, t(k))); }); c.appendChild(ol);
+    var cx = el("textarea", "al-pedido"); cx.readOnly = true; cx.value = r.texto || ""; cx.setAttribute("aria-label", t("al_pedido_rot")); cx.rows = 7;
+    var lb = el("div", "al-linha");
+    var bc = el("button", "chip", t("al_copiar")); bc.type = "button"; bc.addEventListener("click", function () { copiarTexto(cx.value, bc); }); lb.appendChild(bc);
+    var bs = el("button", "chip", t("al_salvar_arq")); bs.type = "button"; bs.addEventListener("click", function () { baixarTexto("pedido-pje-" + hojeBR() + ".md", cx.value); }); lb.appendChild(bs);
+    c.appendChild(el("p", "al-sub", t("al_pedido_rot"))); c.appendChild(cx); c.appendChild(lb);
+    c.appendChild(el("p", "nota", t("al_nunca")));
+    copiarTexto(r.texto || "", null);  // já vai copiado; "Copiar de novo" repete
+    abrirJanela(c, [[t("al_ja_tenho"), function () { alPasso3(); }], [t("al_fechar_volto"), function () { desenharFaixaArea(); }, true]]);
+    janelaLarga(); bc.textContent = t("al_copiar_de_novo");
+  }
+  function alPasso3() {
+    if (!alLigado()) { mostrarAviso(t("al_desligada")); return; }
+    var c = el("div", "al-janela"); c.appendChild(el("h3", null, t("al_titulo"))); c.appendChild(alPassos(3));
+    c.appendChild(el("p", null, t("al_p3_x")));
+    var p_ = alPendente();
+    if (p_) c.appendChild(el("p", "nota", t("al_p3_pend", { d: quandoCurto(p_.criado_em), q: num(p_.processos), l: num(p_.lotes), r: (p_.recebidos || []).length ? (p_.recebidos || []).join(", ") : t("al_nenhum") })));
+    var abas = el("div", "al-abas"), ta = el("button", "chip on", t("al_colar")), tb = el("button", "chip", t("al_subir")); ta.type = tb.type = "button";
+    abas.appendChild(ta); abas.appendChild(tb); c.appendChild(abas);
+    var area = el("textarea", "al-resposta"); area.rows = 8; area.placeholder = t("al_colar_ph"); area.setAttribute("aria-label", t("al_colar"));
+    var solta = el("label", "al-solta"); solta.hidden = true; var fi = el("input"); fi.type = "file"; fi.accept = ".md,.txt,.zip,text/markdown,text/plain,application/zip";
+    solta.appendChild(el("b", null, t("al_solta_t"))); solta.appendChild(el("span", null, t("al_solta_x"))); solta.appendChild(fi);
+    var nomeArq = el("p", "nota"); var arq_ = null;
+    fi.addEventListener("change", function () {
+      var f = fi.files && fi.files[0]; arq_ = null; nomeArq.textContent = ""; if (!f) return;
+      if (f.size > 20 * 1024 * 1024) { nomeArq.textContent = t("al_grande"); return; }
+      var rd = new FileReader(); rd.onload = function () { arq_ = { nome: f.name, b64: String(rd.result).split(",")[1] || "" }; nomeArq.textContent = t("al_arq_ok", { n: f.name }); }; rd.readAsDataURL(f);
+    });
+    ["dragover", "drop"].forEach(function (ev) { solta.addEventListener(ev, function (e) { e.preventDefault(); if (ev === "drop" && e.dataTransfer.files[0]) { fi.files = e.dataTransfer.files; fi.dispatchEvent(new Event("change")); } }); });
+    ta.addEventListener("click", function () { ta.classList.add("on"); tb.classList.remove("on"); area.hidden = false; solta.hidden = true; });
+    tb.addEventListener("click", function () { tb.classList.add("on"); ta.classList.remove("on"); area.hidden = true; solta.hidden = false; });
+    c.appendChild(area); c.appendChild(solta); c.appendChild(nomeArq);
+    var msg = el("div", "al-msg"); msg.setAttribute("role", "alert"); c.appendChild(msg);
+    abrirJanela(c, [[t("cancelar"), null], [t("ler_resposta"), null, true, function () {
+      if (alOcupado) return false;
+      var corpo = area.hidden ? (arq_ ? { arquivo_nome: arq_.nome, arquivo_b64: arq_.b64 } : null) : (area.value.trim() ? { texto: area.value } : null);
+      if (!corpo) { msg.textContent = t(area.hidden ? "al_falta_arq" : "al_falta_txt"); return false; }
+      alOcupado = true; msg.textContent = t("al_lendo");
+      post("/area-logada/resposta", corpo).then(function (r) {
+        alOcupado = false;
+        if (r.nao_achou) { msg.textContent = ""; msg.appendChild(el("b", null, t("al_nao_achei"))); var u = el("ul"); (r.inicio || []).forEach(function (x) { u.appendChild(el("li", null, x)); }); msg.appendChild(u); return; }
+        if (!r.ok) { msg.textContent = r.motivo || t("falha"); return; }
+        $("janela").close(); alPasso4(r);
+      }).catch(function () { alOcupado = false; msg.textContent = t("falha"); });
+      return false;
+    }]]);
+    janelaLarga(); area.focus();
+  }
+  var ROT_DADO = { valor_causa: "al_d_valor", data_ajuizamento: "al_d_data", telefone: "canal_telefone", email: "canal_email", site: "canal_site", endereco: "canal_endereco", socio_contato: "al_d_socio", outro: "canal_outro", uf: "al_d_uf" };
+  function rotDado(d) { return t(ROT_DADO[d] || d); }
+  function alPasso4(r) {
+    var c = el("div", "al-janela"); c.appendChild(el("h3", null, t("al_titulo"))); c.appendChild(alPassos(4));
+    if (r.formato === "antigo") { c.appendChild(el("p", null, t("colar_res", { a: num(r.aceitas || 0), r: num((r.recusadas || []).length) }))); }
+    else {
+      var rs = r.resumo || {};
+      (r.lotes || []).forEach(function (lt) {
+        var b = el("div", "al-lote"); var tot = (lt.aceitas || 0) + (lt.recusadas || 0) || 1;
+        b.appendChild(el("span", null, lt.lote ? t("al_lote_n", { n: lt.lote, m: lt.de || "?" }) : t("al_lote_unico")));
+        var tr = el("span", "al-trilho"), i_ = el("i"); i_.style.width = Math.round((lt.aceitas || 0) / tot * 100) + "%"; tr.appendChild(i_); b.appendChild(tr);
+        b.appendChild(el("small", null, t("al_lote_res", { a: num(lt.aceitas || 0), r: num(lt.recusadas || 0), p: num(lt.repetidas || 0) }) + (lt.extras ? " · " + t("al_col_extra") : "")));
+        c.appendChild(b);
       });
-    }, true]]);
+      var p_ = r.pedido; if (p_ && p_.estado === "pendente") c.appendChild(el("p", "nota", t("al_falta_lote", { r: (p_.recebidos || []).join(", "), l: p_.lotes })));
+      var cards = el("div", "al-cards");
+      [[rs.pedidos, "al_c_pedidos", ""], [rs.com_dado_novo, "al_c_novo", "ok"], [rs.nada, "al_c_nada", ""], [rs.tentar, "al_c_tentar", "aviso"], [rs.recusadas, "al_c_recusadas", rs.recusadas ? "erro" : ""]].forEach(function (x) {
+        var d = el("div", "al-card " + x[2]); d.appendChild(el("b", null, num(x[0] || 0))); d.appendChild(el("span", null, t(x[1]))); cards.appendChild(d); });
+      c.appendChild(cards);
+      var ach = r.achados || {}, ks = Object.keys(ach);
+      if (ks.length) {
+        c.appendChild(el("p", "al-sub", t("al_achados")));
+        ks.forEach(function (k) { var a = ach[k], l = el("div", "al-bar"); l.appendChild(el("span", null, rotDado(k))); var tr = el("span", "al-trilho"), i_ = el("i"); i_.style.width = Math.round(a[0] / Math.max(1, a[1]) * 100) + "%"; tr.appendChild(i_); l.appendChild(tr); l.appendChild(el("small", null, num(a[0]) + " / " + num(a[1]))); c.appendChild(l); });
+      }
+      if ((r.tentar_lista || []).length) c.appendChild(el("div", "al-aviso", t("al_tentar_x", { n: num(r.tentar_lista.length) })));
+      var mud = r.mudou || {}, procs = Object.keys(mud);
+      if (procs.length) {
+        c.appendChild(el("p", "al-sub", t("al_mudou")));
+        var w = el("div", "al-tabela"), tb = el("table"), h = el("tr");
+        ["al_m_proc", "al_m_acr", "al_m_alt", "al_m_igual"].forEach(function (k) { h.appendChild(el("th", null, t(k))); }); tb.appendChild(h);
+        procs.forEach(function (pid) {
+          var m = mud[pid], tr = el("tr"); tr.appendChild(el("td", null, pid));
+          var cel = function (lista, comTitulo) { var td = el("td"); (lista || []).forEach(function (x, k) { if (k) td.appendChild(document.createTextNode(" · ")); var s_ = el("span", null, rotDado(x.dado) + (x.depois && !comTitulo ? ": " + x.depois : "")); if (comTitulo) { s_.title = t("al_antes_depois", { a: x.antes, d: x.depois }); s_.textContent = rotDado(x.dado) + " (" + x.antes + " → " + x.depois + ")"; } td.appendChild(s_); }); if (!td.firstChild) td.textContent = "—"; return td; };
+          tr.appendChild(cel(m.acrescentado)); tr.appendChild(cel(m.alterado, true)); tr.appendChild(cel((m.igual || []).concat(m.mantido || [])));
+          tb.appendChild(tr);
+        });
+        w.appendChild(tb); c.appendChild(w);
+        c.appendChild(el("p", "nota", t("al_nunca_apaga")));
+      }
+      if ((r.recusadas || []).length) {
+        var dt_ = el("details", "al-recusadas"); dt_.appendChild(el("summary", null, t("al_recusadas_t", { n: num(r.recusadas.length) })));
+        r.recusadas.slice(0, 60).forEach(function (x) { dt_.appendChild(el("p", "nota", t("linha_n", { n: x.linha }) + ": " + x.motivo)); }); c.appendChild(dt_);
+      }
+    }
+    var botoes = [[t("fechar"), null]];
+    if ((r.tentar_lista || []).length) botoes.push([t("al_novo_faltou", { n: num(r.tentar_lista.length) }), function () { carregar().then(function () { areaLogada(r.tentar_lista); }); }]);
+    botoes.push([t("al_ver_lista"), function () { if (visao !== "lista") trocarVisao("lista"); F.area = ["com_dados"]; cabecalho(); desenhar(); }, true]);
+    abrirJanela(c, botoes, function () { carregar(); });
+    janelaLarga();
+  }
+  function colarContatos() { alPasso3(); }  // nome antigo (menu, busca, AssistONE)
+  function cancelarPedidoArea() {
+    var p_ = alPendente(); if (!p_) return;
+    var c = el("div"); c.appendChild(el("h3", null, t("al_cancelar_t"))); c.appendChild(el("p", null, t("al_cancelar_x", { q: num(p_.processos) })));
+    abrirJanela(c, [[t("al_manter"), null], [t("al_cancelar_sim"), function () { post("/area-logada/cancelar", { id: p_.id }).then(function (r) { if (D && D.area_logada) D.area_logada.pendente = r.pendente; desenharFaixaArea(); carregar(); }); }, true]]);
+  }
+  function desenharFaixaArea() {
+    var f = $("faixa-area"); if (!f) return; f.textContent = "";
+    var p_ = alPendente(); f.hidden = !(MODO === "app" && p_ && visao !== "historico");
+    if (f.hidden) return;
+    f.appendChild(el("span", "al-relogio", "⏳"));
+    var tx = el("span"); tx.appendChild(el("b", null, t("al_faixa", { d: quandoCurto(p_.criado_em), q: num(p_.processos), l: num(p_.lotes) })));
+    if ((p_.recebidos || []).length) tx.appendChild(document.createTextNode(" · " + t("al_faixa_rec", { r: p_.recebidos.join(", "), l: p_.lotes })));
+    f.appendChild(tx);
+    var b1 = el("button", "forte", t("al_trazer")); b1.type = "button"; b1.addEventListener("click", alPasso3); f.appendChild(b1);
+    var b2 = el("button", null, t("al_cancelar_pedido")); b2.type = "button"; b2.addEventListener("click", cancelarPedidoArea); f.appendChild(b2);
   }
   function abrirPlanilhaComAviso() {
     // 0.7.21 (dono): o "não mostrar de novo" vale para esta versão, esta licença e esta pessoa; mudou algo, o aviso volta
@@ -4239,7 +4544,7 @@ window.LEXSUITE_RADAR = null;
     return [
       [t("menu_ver"), [["painel", "v_painel"], ["lista", "v_lista"], ["arquivo", "v_arquivo"]].map(function (v) { return [t(v[1]), function () { trocarVisao(v[0]); }, visao === v[0]]; })],
       [t("menu_planilha"), [[t("planilha_abrir"), abrirPlanilhaComAviso], [t("gerar_copia"), gerarCopia], [t("pasta_abrir"), function () { abrirPlanilha("pasta"); }]]],
-      [t("menu_contatos"), [[t("colar_logada"), colarContatos]]],
+      [t("menu_contatos"), [[t("al_gerar"), function () { areaLogada(Object.keys(selecionados).length ? Object.keys(selecionados) : null); }, false, !alLigado()], [t("al_trazer_menu"), alPasso3, false, !alLigado()]]],
       // 0.7.32 (dono): "Configurações", na mesma ordem da janela
       // 0.7.33 (dono): os mesmos nomes e a mesma ordem da janela Configurações; ajuda num grupo à parte
       // 0.7.36 (dono): Processos, Leitura do Diário, Tela, Licença e termos, na ordem da janela
@@ -4259,7 +4564,7 @@ window.LEXSUITE_RADAR = null;
     var x = el("button", "gv-x", "✕"); x.type = "button"; x.setAttribute("aria-label", t("fechar")); x.addEventListener("click", fecharMenu);
     topo.appendChild(nm); topo.appendChild(x); g.appendChild(topo);
     var add = function (txt, fn, atual, cls) { var b = el("button", "gv-item" + (cls ? " " + cls : ""), txt); b.type = "button"; if (atual) b.setAttribute("aria-current", "true"); b.addEventListener("click", function () { fecharMenu(); setTimeout(fn, 200); }); g.appendChild(b); };
-    gruposMenu().forEach(function (gr) { g.appendChild(el("div", "grupo-menu", gr[0])); gr[1].forEach(function (it) { if (!it[3]) add(it[0], it[1], it[2]); }); });
+    gruposMenu().forEach(function (gr) { if (!gr[1].some(function (it) { return !it[3]; })) return; g.appendChild(el("div", "grupo-menu", gr[0])); gr[1].forEach(function (it) { if (!it[3]) add(it[0], it[1], it[2]); }); });
     g.appendChild(el("div", "gv-linha")); add(t("sair"), sairDoRadar, false, "gv-sair");
   }
   var menuTimer = null;
@@ -4933,7 +5238,7 @@ window.LEXSUITE_RADAR = null;
     $("historico-aba").hidden = visao !== "historico";
     $("barra-lista").hidden = visao === "historico"; $("barra-lista").classList.toggle("no-painel", visao === "painel"); $("bl-filtros-t").textContent = t(visao === "painel" ? "bl_filtros_painel" : "bl_filtros"); $("controles").hidden = visao === "historico"; $("filtros-extra").hidden = visao === "historico"; $("ordenacao").hidden = visao === "historico" || visao === "painel";
     var oc = ["ordem", "ordem2", "exportar"]; oc.forEach(function (id) { $(id).style.visibility = visao === "painel" ? "hidden" : ""; });
-    desenharArquivoInfo(); desenharLote();
+    desenharArquivoInfo(); desenharLote(); desenharFaixaArea(); aplicarRecursosTela();
     if (visao === "historico") { $("mais").hidden = true; desenharHistorico(); return; }
     if (visao === "painel") { $("mais").hidden = true; desenharPainel(filtrados()); return; }  // 0.7.43: o Painel não precisa ordenar
     if (visao === "arquivo" && !DA) {  // 0.7.36 (dono): indicador discreto e, depois de 5 s, um aviso sóbrio sobre o volume guardado
@@ -5275,7 +5580,7 @@ window.LEXSUITE_RADAR = null;
     valor: function (id, padrao) { return window.SolverRecursos.ligado(id, padrao); },
     aoMudar: function (fn) { recursosOuvintes.push(fn); }
   };
-  function avisarRecursos() { recursosOuvintes.forEach(function (fn) { try { fn(); } catch (e) {} }); }
+  function avisarRecursos() { try { aplicarRecursosTela(); } catch (e) {} recursosOuvintes.forEach(function (fn) { try { fn(); } catch (e) {} }); }
   if (window.AssistONE && MODO !== "app") AssistONE.configurar({ app: "radar-judicial", assistente: { ativo: false } });  // retrato salvo: sem assistente
   if (window.AssistONE && MODO === "app") {
     var LER = { pt: "Ler o Diário agora", en: "Read the gazette now" };
@@ -5294,9 +5599,9 @@ window.LEXSUITE_RADAR = null;
             frase: { pt: "Aguarde o " + marcaNome() + " carregar. Com muitos processos, pode levar alguns segundos; a ajuda desta tela aparece assim que ela abrir.", en: "Please wait for " + marcaNome() + " to load. With many cases it may take a few seconds; the help for this screen appears as soon as it opens." },
             atalhos: [] },
           lista: { titulo: { pt: "Lista", en: "List" },
-            frase: { pt: "Cada cartão é um processo novo contra uma empresa. Mude a situação (Em análise, Contatado, Virou cliente...), complete valor e contato, ou selecione vários cartões para buscar na área logada do tribunal.",
-                     en: "Each card is a new case against a company. Change its status (Under review, Contacted, Became a client...), fill in value and contact, or select several cards to look them up in the court's logged-in area." },
-            atalhos: [{ rotulo: { pt: "Filtrar", en: "Filter" }, acao: "#f-busca", principal: true }, { rotulo: { pt: "Abrir a planilha", en: "Open the spreadsheet" }, acao: abrirPlanilhaComAviso }, { rotulo: { pt: "Trazer dados da área logada", en: "Bring in logged-in area data" }, acao: colarContatos }] },
+            frase: { pt: "Cada cartão é um processo novo contra uma empresa. Mude a situação (Em análise, Contatado, Virou cliente...), complete valor e contato, ou selecione vários cartões para buscar na área logada do tribunal: o programa monta o pedido (até 25 por pedido, padrão), você cola na ferramenta de navegação com o PJe aberto e depois traz a resposta, colada ou em arquivo. Enquanto isso, a faixa no alto da lista mostra o pedido pendente.",
+                     en: "Each card is a new case against a company. Change its status (Under review, Contacted, Became a client...), fill in value and contact, or select several cards to look them up in the court's logged-in area: the program builds the request (up to 25 per request, by default), you paste it into the browsing tool with PJe open and then bring back the answer, pasted or as a file. Meanwhile, the bar at the top of the list shows the pending request." },
+            atalhos: [{ rotulo: { pt: "Filtrar", en: "Filter" }, acao: "#f-busca", principal: true }, { rotulo: { pt: "Abrir a planilha", en: "Open the spreadsheet" }, acao: abrirPlanilhaComAviso }, { rotulo: { pt: "Gerar pedido à área logada", en: "Create logged-in area request" }, acao: function () { areaLogada(null); }, recurso: "area-logada" }, { rotulo: { pt: "Trazer resposta", en: "Bring in the answer" }, acao: colarContatos, recurso: "area-logada" }] },
           arquivo: { titulo: { pt: "Arquivo", en: "Archive" },
             frase: { pt: "Tudo o que já passou pela Lista, com busca e filtros. O que foi trabalhado fica guardado neste computador.",
                      en: "Everything that has been through the List, with search and filters. Worked items stay saved on this computer." },
@@ -5324,11 +5629,12 @@ window.LEXSUITE_RADAR = null;
           { seletor: "#b-perfil", titulo: { pt: "Perfil", en: "Profile" }, texto: { pt: "Quem usa o programa e a licença do escritório.", en: "Who uses the program and the firm's licence." } },
           { seletor: "#b-trib", titulo: { pt: "Tribunais", en: "Courts" }, texto: { pt: "Os tribunais que o RADAR lê. Marque só os que interessam ao escritório.", en: "The courts RADAR reads. Tick only those the firm cares about." } },
           { seletor: "#b-rodar", titulo: LER, texto: { pt: "Lê o Diário na hora, sem esperar o horário marcado.", en: "Reads the gazette now, without waiting for the scheduled time." } },
+          { seletor: "#faixa-area", titulo: { pt: "Pedido à área logada", en: "Logged-in area request" }, texto: { pt: "Enquanto a ferramenta de navegação percorre o PJe, o pedido fica aqui. \u201cTrazer resposta\u201d lê o texto ou o arquivo que ela devolveu; nada se apaga.", en: "While the browsing tool goes through PJe, the request stays here. \u201cBring in the answer\u201d reads the text or file it returned; nothing is deleted." } },
           { seletor: "#v-painel", titulo: { pt: "Painel, Lista e Arquivo", en: "Dashboard, List and Archive" }, texto: { pt: "Os números, os processos para trabalhar e o que já passou. O histórico de leituras fica em Configurações → Sobre este computador.", en: "The figures, cases to work on and past items. The reading history is in Settings → About this computer." } }
         ],
         dicas: {
           painel: { pt: "Dica: clique num item do gráfico para tirá-lo ou devolvê-lo; \u201cVer na lista →\u201d leva os filtros do Painel para a Lista.", en: "Tip: click a chart item to take it out or bring it back; \u201cSee in the list →\u201d takes the Dashboard filters to the List." },
-          lista: { pt: "Dica: marque vários cartões para mudar a situação de uma vez ou buscar na área logada.", en: "Tip: select several cards to change their status at once or look them up in the logged-in area." },
+          lista: { pt: "Dica: marque vários cartões para mudar a situação de uma vez ou trazer dados da área logada.", en: "Tip: select several cards to change their status at once or bring in logged-in area data." },
           configuracao: { pt: "Dica: Destaques e exclusões são seus, por área. Quando houver mais de uma área em uso, \u201cCopiar para outras áreas\u201d leva os limites e as empresas para as áreas que você escolher. Depois é só Salvar.", en: "Tip: Highlights and exclusions are yours, by area. When more than one area is in use, \u201cCopy to other areas\u201d takes the limits and the companies to the areas you choose. Then just Save." }
         },
         busca: [
@@ -5344,7 +5650,9 @@ window.LEXSUITE_RADAR = null;
           { termo: { pt: "Destaques e exclusões (seus, por área)", en: "Highlights and exclusions (yours, by area)" }, sinonimos: ["regras", "criterios", "valor minimo", "destacar", "preferencia", "por area", "so meus", "meus criterios", "criteria", "by area", "only mine"], destino: editarPreferencias, icone: "›", descricao: { pt: "Seus, neste computador, por área", en: "Yours, on this computer, by area" } },
           { termo: { pt: "Excluir empresa (cliente ou conflito)", en: "Exclude a company (client or conflict)" }, sinonimos: ["excluir", "exclusoes", "empresas excluidas", "cliente", "conflito", "cnpj", "cpf", "exclude", "excluded companies"], destino: function () { abrirConfig(true, "c-regras-wrap"); abrirExcluidas(); }, icone: "›", descricao: { pt: "Configurações → Processos → Destaques e exclusões → Empresas excluídas", en: "Settings → Cases → Highlights and exclusions → Excluded companies" } },
           { termo: { pt: "CNPJ com letras (CNPJ novo)", en: "Tax ID with letters (new CNPJ)" }, sinonimos: ["cnpj com letras", "cnpj alfanumerico", "cnpj novo", "alphanumeric"], destino: function () { window.open("/manual#perguntas", "_blank", "noopener"); }, icone: "›", descricao: { pt: "Reconhecido no Diário, nas exclusões e na ficha", en: "Recognised in the gazette, exclusions and profile" } },
-          { termo: { pt: "Trazer dados da área logada", en: "Bring in logged-in area data" }, sinonimos: ["contato", "valor da causa", "telefone", "email", "area logada", "colar", "pje"], destino: colarContatos, icone: "›", descricao: { pt: "Valor da causa, contatos e partes que o advogado vê com o próprio login", en: "Claim value, contacts and parties the lawyer sees with their own login" } },
+          { termo: { pt: "Gerar pedido à área logada", en: "Create logged-in area request" }, sinonimos: ["area logada", "área logada", "pedido", "lote", "prompt", "pje", "claude in chrome", "codex", "logged-in area", "request", "batch"], destino: function () { areaLogada(null); }, icone: "›", descricao: { pt: "Escolha os processos e os dados; o programa monta o pedido em lotes de 25", en: "Choose the cases and data; the program builds the request in batches of 25" } },
+          { termo: { pt: "Pedido pendente da área logada", en: "Pending logged-in area request" }, sinonimos: ["pendente", "aguardando resposta", "cancelar pedido", "pending"], destino: function () { if (alPendente()) alPasso3(); else areaLogada(null); }, icone: "›", descricao: { pt: "Trazer a resposta ou cancelar o pedido que está aguardando", en: "Bring in the answer or cancel the waiting request" } },
+          { termo: { pt: "Trazer resposta da área logada", en: "Bring in logged-in area answer" }, sinonimos: ["trazer resposta", "subir arquivo", "colar resposta", "zip", "contato", "valor da causa", "telefone", "email", "colar", "upload file", "paste answer"], destino: colarContatos, icone: "›", descricao: { pt: "Valor da causa, contatos e partes que o advogado vê com o próprio login", en: "Claim value, contacts and parties the lawyer sees with their own login" } },
           { termo: { pt: "Manual", en: "Manual" }, sinonimos: ["ajuda", "help", "como"], destino: function () { window.open("/manual", "_blank", "noopener"); }, icone: "›", descricao: { pt: "O manual completo do escritório", en: "The firm's full manual" } },
           { termo: { pt: "Perfil", en: "Profile" }, sinonimos: ["usuario", "nome", "cargo", "user"], destino: function () { abrirPerfil(false); }, icone: "›", descricao: { pt: "Quem usa este computador", en: "Who uses this computer" } },
           { termo: { pt: "Licença e termos: conferir agora", en: "Licence and terms: check now" }, sinonimos: ["conferir agora", "conferir licenca", "ja aceitei", "aceite", "aceitar os termos", "termos", "check now", "check licence", "accept", "accepted", "terms"], destino: function () { abrirConfig(true, "c-s-licenca"); }, icone: "›", descricao: { pt: "Configurações → Licença e termos → Conferir agora", en: "Settings → Licence and terms → Check now" } },
@@ -5367,6 +5675,22 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_ !== "lexsuite:novidades-vistas"; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
+    "0.7.46": {
+      pt: ["Inclusão do pedido à área logada em quatro passos: escolha dos processos e dos dados, pedido com o roteiro do PJe, resposta e resultado.",
+        "Limite por pedido (padrão 25, máximo 50), em lotes de 25, no lugar do limite por dia.",
+        "Opção de fechar a janela e trazer a resposta depois, com o pedido pendente no alto da lista.",
+        "Leitura da resposta colada ou em arquivo (.md, .txt ou .zip), com vários lotes em qualquer ordem.",
+        "Inclusão do relatório do que mudou em cada processo, sem apagar dado anterior.",
+        "Inclusão do filtro e do selo da área logada na lista.",
+        "Melhorias de acessibilidade e correções."],
+      en: ["Logged-in area request in four steps: choice of cases and data, request with the PJe route, answer and result.",
+        "Limit per request (default 25, maximum 50), in batches of 25, instead of a daily limit.",
+        "Option to close the window and bring the answer later, with the pending request at the top of the list.",
+        "Reading of the answer pasted or as a file (.md, .txt or .zip), with several batches in any order.",
+        "Report of what changed in each case, without deleting previous data.",
+        "Logged-in area filter and badge in the list.",
+        "Accessibility improvements and fixes."]
+    },
     "0.7.45": {
       pt: ["Leitura feita pelo programa aberto quando o Windows não roda a leitura automática na hora marcada.",
         "Inclusão, no pedido à área logada, do roteiro do PJe só de leitura, com os processos agrupados por tribunal.",

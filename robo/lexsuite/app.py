@@ -9,6 +9,7 @@ import datetime as dt
 import json
 import os
 import threading
+import re
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -577,6 +578,7 @@ class Tratador(BaseHTTPRequestHandler):
             tent = banco.execucoes("tentativa", 300)  # revisão: cabe uma leitura de todos os tribunais
             ult = [x for x in tent if tent and (x.get("quando_local") or x.get("quando")) == (tent[0].get("quando_local") or tent[0].get("quando"))]  # revisão 2: a leitura inteira tem o mesmo quando_local
             ruins = [x for x in ult if x.get("causa") not in ("ok", "ainda_nao_liberado_3h", "nao_publicado", "interrompida")]
+            pagina["area_logada"] = {"tem_resposta": banco.area_tem_resposta(), "pendente": banco.area_pedido()}  # 0.7.46
             pagina["ultima_tentativa"] = dict((ruins or ult or [{}])[0])
             if ruins:  # 0.7.44 (dono): a faixa vermelha diz até que dia aquele tribunal já foi lido (nada se perdeu)
                 boa = next((x for x in tent if x.get("tribunal") == ruins[0].get("tribunal") and x.get("causa") == "ok" and x.get("leu_ate")), None)
@@ -604,6 +606,7 @@ class Tratador(BaseHTTPRequestHandler):
                            "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
                            "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True)),
                            "area_logada_por_dia": config.inteiro(r.get("area_logada_por_dia", 30), 30, 1, 365),
+                           "area_logada_por_pedido": limite_por_pedido(r),  # 0.7.46: cada pedido é uma sessão do PJe
                            "abrir_em_aba": bool(r.get("abrir_em_aba")),
                            "guardar_meses": config.inteiro(r.get("guardar_meses", 12), 12, 1, 120)},
                 "atualizacao": {"chave": bool(chave), "impressao": assinatura.impressao(chave) if chave else "",
@@ -729,6 +732,8 @@ class Tratador(BaseHTTPRequestHandler):
             return None
         try:
             tamanho = int(self.headers.get("Content-Length") or 0)
+            if tamanho > 40 * 1024 * 1024:  # 0.7.46 (revisão): o maior pedido é a resposta da área logada em arquivo (20 MB em base64)
+                return self._responder({"ok": False, "motivo": "Pedido grande demais. / Request too large."}, status=413)
             corpo = json.loads(self.rfile.read(tamanho) or b"{}")
         except ValueError:
             return self._responder({"erro": "JSON inválido"}, status=400)
@@ -761,7 +766,8 @@ class Tratador(BaseHTTPRequestHandler):
             if "tribunais" in corpo:
                 r["tribunais"] = tribunais.validar(corpo["tribunais"])
             limites = (("valor_minimo", float, 0, 1e12), ("dias_na_pagina", int, 1, 90),
-                       ("teto_capital_gigante", float, 0, 1e15), ("dias_para_tras", int, 0, 10))
+                       ("teto_capital_gigante", float, 0, 1e15), ("dias_para_tras", int, 0, 10),
+                       ("area_logada_por_pedido", int, 1, 50))  # 0.7.46
             for chave, tipo, minimo, maximo in limites:
                 if chave in corpo:
                     try:
@@ -1055,6 +1061,59 @@ class Tratador(BaseHTTPRequestHandler):
             if ok and corpo.get("abrir", False):
                 abrir_no_windows(resultado)
             return self._responder({"ok": ok, "caminho" if ok else "motivo": resultado})
+        if caminho in ("/area-logada/preparar", "/area-logada/simular"):  # 0.7.46: passo 1 (simular) e passo 2 (preparar)
+            from . import contatos as ct
+            cfg = s.config()
+            banco = bd.Banco(s.caminho_db)
+            pagina = radar.montar_radar(cfg, banco, dias=90, visao="arquivo")
+            por_id = {i["processo"]: i for i in pagina["itens"]}
+            ordem = [str(x) for x in (corpo.get("processos") or []) if isinstance(x, (str, int)) and str(x) in por_id]
+            limite = limite_por_pedido(cfg["radar"])
+            modo = corpo.get("modo") if corpo.get("modo") in ("marcados", "primeiros", "proximos") else "marcados"
+            n = config.inteiro(corpo.get("n", limite), limite, 1, limite) if modo != "marcados" else limite
+            dados = corpo.get("dados") if isinstance(corpo.get("dados"), dict) else None
+            area = banco.area_por_processo()
+            nada = {(p_, d_) for p_, d_ in banco.con.execute("SELECT processo, dado FROM area_logada WHERE resultado = 'nao_consta'")}
+            faltas, total_falta = {}, 0
+            for pid in ordem:
+                if modo == "proximos" and (area.get(pid) or {}).get("estado") not in (None, "", "tentar"):
+                    continue
+                f = [d for d in ct.filtrar_falta(ct.faltando(por_id[pid]), dados) if (pid, d) not in nada]  # o que não existe no processo não se pede de novo
+                if f:
+                    total_falta += 1
+                    if len(faltas) < n:
+                        faltas[pid] = f
+            q = len(faltas)
+            resumo = {"ok": True, "quantos": q, "lotes": ct.lotes_de(q), "limite": limite, "com_falta": total_falta,
+                      "fora_do_limite": max(0, total_falta - q), "minutos": max(1, round(q * 20 / 60)) if q else 0}
+            if caminho == "/area-logada/simular" or not q:
+                return self._responder(resumo)
+            import uuid
+            ident = dt.datetime.now().strftime("%H%M%S") + uuid.uuid4().hex[:4]
+            itens = [por_id[p_] for p_ in faltas]
+            caminho_md, q, texto = ct.preparar_v1(itens, s.pasta, marca(s.pasta)["nome"], limite, faltas=faltas, ident=ident)
+            banco.area_registrar_pedido(ident, ct.preparar_v1.ultimo["faltas"], ct.preparar_v1.ultimo["lotes"], caminho_md, str(corpo.get("ferramenta") or ""))
+            banco.registrar_acao(cfg["usuario"].get("email", ""), "area_logada:pedido", ident, "", f"{q} processos", q)
+            banco.con.commit()
+            return self._responder(dict(resumo, id=ident, caminho=caminho_md, texto=texto, quantos=q, pendente=banco.area_pedido(ident)))
+        if caminho == "/area-logada/cancelar":
+            banco = bd.Banco(s.caminho_db)
+            banco.area_cancelar(str(corpo.get("id") or "")[:40])
+            return self._responder({"ok": True, "pendente": banco.area_pedido()})
+        if caminho == "/area-logada/estado":
+            banco = bd.Banco(s.caminho_db)
+            return self._responder({"ok": True, "pendente": banco.area_pedido(), "tem_resposta": banco.area_tem_resposta(),
+                                    "historico": banco.area_pedidos(5), "limite": limite_por_pedido(s.config()["radar"])})
+        if caminho == "/area-logada/resposta":  # 0.7.46: passo 3 → passo 4 (texto colado ou arquivo .md/.txt/.zip)
+            from . import contatos as ct
+            import base64
+            texto, nome_arq = str(corpo.get("texto") or ""), str(corpo.get("arquivo_nome") or "")[:120]
+            if corpo.get("arquivo_b64"):
+                try:
+                    texto = ct.ler_arquivo(nome_arq, base64.b64decode(str(corpo["arquivo_b64"])[: ct.ARQ_MAX * 2], validate=False))
+                except (ValueError, TypeError) as e:
+                    return self._responder({"ok": False, "motivo": str(e)})
+            return self._responder(ler_resposta_area(s, texto[:5_000_000], nome_arq))
         if caminho == "/contatos/preparar":
             from . import contatos as ct
             cfg = s.config()
@@ -1091,14 +1150,9 @@ class Tratador(BaseHTTPRequestHandler):
                 empresas[l["processo"]] = emp
             texto = str(corpo.get("texto") or "")[:200000]
             extra = {}
-            if ct.e_resposta_v1(texto):  # 0.7.16: a resposta padronizada da área logada
-                r1 = ct.colar_v1(texto, empresas)
-                aceitas, recusadas = r1["contatos"], r1["recusadas"]
-                perfil = s.config()["usuario"].get("email", "")
-                completados = sum(1 for c in r1["completar"] if banco.completar(c["processo"], c["campo"], c["valor"], c["fonte"], c["data"], perfil))
-                extra = {"completados": completados, "nao_consta": len(r1["nao_consta"]), "tentar_depois": len(r1["tentar_depois"])}
-            else:
-                aceitas, recusadas = ct.colar(texto, empresas)
+            if ct.e_resposta_v1(texto):  # 0.7.46: o leitor novo (vários blocos, lotes, relatório)
+                return self._responder(ler_resposta_area(s, texto, str(corpo.get("arquivo") or "")[:120]))
+            aceitas, recusadas = ct.colar(texto, empresas)
             novas = sum(1 for c in aceitas if banco.guardar_contato(c))
             banco.registrar_colagem(s.config()["usuario"].get("email", ""), str(corpo.get("arquivo") or "")[:120], novas, len(recusadas),
                                     "; ".join(f"linha {r['linha']}: {r['motivo']}" for r in recusadas)[:2000])
@@ -1819,6 +1873,87 @@ def vigiar_agenda(servidor, passo_s=60, primeiro_s=90, dormir=None, vezes=None):
             conferir_agenda(servidor)
         except Exception:  # noqa: BLE001 - nunca derruba o programa
             pass
+
+
+def limite_por_pedido(r):
+    """0.7.46: processos por pedido à área logada (uma sessão do PJe): padrão 25, máximo 50."""
+    return config.inteiro((r or {}).get("area_logada_por_pedido", 25), 25, 1, 50)
+
+
+def _norm_contato(canal, v):
+    from . import classificar as cl
+    v = str(v or "")
+    if canal == "telefone":
+        return re.sub(r"\D", "", v)[-11:]
+    return re.sub(r"[^a-z0-9@]", "", cl.sem_acento(v).lower())
+
+
+def ler_resposta_area(s, texto, nome_arq=""):
+    """0.7.46: lê a resposta (todos os blocos v1), aplica no banco sem apagar nada e devolve o relatório do passo 4."""
+    from . import contatos as ct
+    banco = bd.Banco(s.caminho_db)
+    cfg = s.config()
+    perfil = cfg["usuario"].get("email", "")
+    leads = {l["processo"]: l for l in banco.todos_leads()}
+    empresas = {p: (l.get("empresa_receita") or {}).get("razao_social") or (l.get("empresas") or [""])[0] for p, l in leads.items()}
+    r = ct.ler_resposta(texto, empresas)
+    if not r["achou"]:
+        aceitas, recusadas = ct.colar(texto, empresas)  # o formato antigo de contatos (8 colunas) continua valendo
+        if not aceitas and not recusadas:
+            return {"ok": False, "nao_achou": True, "inicio": r["inicio"]}
+        novas = sum(1 for c in aceitas if banco.guardar_contato(c, perfil))
+        s.planilha_depois()
+        return {"ok": True, "aceitas": novas, "repetidas": len(aceitas) - novas, "recusadas": recusadas[:200], "formato": "antigo"}
+    pend = banco.area_pedido()
+    mudou = {}
+    def anota(proc, tipo, item):
+        mudou.setdefault(proc, {"acrescentado": [], "alterado": [], "igual": [], "mantido": []})[tipo].append(item)
+    for c in r["completar"]:
+        sit, antes, depois = banco.completar_fonte(c["processo"], c["campo"], c["valor"], c["fonte"], c["data"], perfil)
+        if sit:
+            anota(c["processo"], sit, {"dado": c["campo"], "antes": antes, "depois": depois, "fonte": c["fonte"]})
+    for c in r["contatos"]:
+        l = leads.get(c["processo"]) or {}
+        emp = l.get("empresa_receita") or {}
+        existentes = [(x["valor"], x["fonte"]) for x in banco.contatos(c["processo"]) if x["canal"] == c["canal"]]
+        if c["canal"] == "telefone" and emp.get("telefone"):
+            existentes.append((emp.get("telefone"), "Receita"))
+        if c["canal"] == "email" and emp.get("email"):
+            existentes.append((emp.get("email"), "Receita"))
+        if c["canal"] == "endereco" and emp.get("logradouro"):
+            existentes.append((radar.endereco(emp), "Receita"))
+        novo = _norm_contato(c["canal"], c["valor"])
+        if any(_norm_contato(c["canal"], v) == novo for v, _ in existentes):
+            anota(c["processo"], "igual", {"dado": c["canal"], "antes": c["valor"], "depois": c["valor"], "fonte": c["fonte"]})
+            continue
+        banco.guardar_contato(dict(c, arquivo=nome_arq), perfil)  # contato nunca é apagado nem trocado: o novo entra junto
+        if existentes:
+            anota(c["processo"], "alterado", {"dado": c["canal"], "antes": f"{existentes[0][0]} ({existentes[0][1]})", "depois": f"{c['valor']} ({c['fonte']})", "fonte": c["fonte"]})
+        else:
+            anota(c["processo"], "acrescentado", {"dado": c["canal"], "antes": "", "depois": c["valor"], "fonte": c["fonte"]})
+    procs = sorted({l_["processo"] for l_ in r["linhas"]})
+    por_proc = {p: [l_ for l_ in r["linhas"] if l_["processo"] == p] for p in procs}
+    com_novo = [p for p in procs if (mudou.get(p) or {}).get("acrescentado") or (mudou.get(p) or {}).get("alterado")]
+    nada = [p for p in procs if all(l_["resultado"] == "nao_consta" for l_ in por_proc[p])]
+    tentar = [p for p in procs if any(l_["resultado"] == "tentar_depois" for l_ in por_proc[p])]
+    achados = {}
+    for l_ in r["linhas"]:
+        a = achados.setdefault(l_["dado"], [0, 0])
+        a[1] += 1
+        if l_["resultado"] == "encontrado":
+            a[0] += 1
+    resumo = {"pedidos": (pend or {}).get("processos") or len(procs), "processos": len(procs), "com_dado_novo": len(com_novo),
+              "nada": len(nada), "tentar": len(tentar), "recusadas": len(r["recusadas"]), "repetidas": r["repetidas"]}
+    banco.area_registrar_resposta(r["linhas"], (pend or {}).get("id"), [b["lote"] for b in r["lotes"]], resumo)
+    banco.registrar_colagem(perfil, nome_arq, sum(len(v["acrescentado"]) + len(v["alterado"]) for v in mudou.values()), len(r["recusadas"]),
+                            "; ".join(f"linha {x['linha']}: {x['motivo']}" for x in r["recusadas"])[:2000])
+    s.planilha_depois()
+    return {"ok": True, "resumo": resumo, "lotes": r["lotes"], "achados": achados, "mudou": mudou, "recusadas": r["recusadas"][:200],
+            "tentar_lista": tentar, "com_dado_novo_lista": com_novo, "pendente": banco.area_pedido(),
+            "pedido": (banco.area_pedido((pend or {}).get("id")) if pend else None),
+            # compatível com a janela antiga
+            "aceitas": sum(len(v["acrescentado"]) + len(v["alterado"]) for v in mudou.values()), "completados": len(r["completar"]),
+            "nao_consta": len(r["nao_consta"]), "tentar_depois": len(r["tentar_depois"])}
 
 
 FECHAR_SEM_TELA_S = 180  # 0.7.16: a tela pergunta o estado a cada 30 s; sem pergunta por 3 minutos, ela foi fechada

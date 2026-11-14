@@ -91,6 +91,11 @@ class Banco:
                 quando TEXT, PRIMARY KEY (tribunal, data));
             CREATE TABLE IF NOT EXISTS historico_processos (processo TEXT PRIMARY KEY);
             CREATE TABLE IF NOT EXISTS cadernos_pendentes (tribunal TEXT, data TEXT, quando TEXT, PRIMARY KEY (tribunal, data));
+            CREATE TABLE IF NOT EXISTS area_logada (processo TEXT, dado TEXT, pedido_em TEXT DEFAULT '', pedido_id TEXT DEFAULT '',
+                respondido_em TEXT DEFAULT '', resultado TEXT DEFAULT '', fonte TEXT DEFAULT '', PRIMARY KEY (processo, dado));
+            CREATE TABLE IF NOT EXISTS area_pedidos (id TEXT PRIMARY KEY, criado_em TEXT, processos INTEGER, lotes INTEGER,
+                ferramenta TEXT DEFAULT '', estado TEXT DEFAULT 'pendente', arquivo TEXT DEFAULT '', recebidos TEXT DEFAULT '[]',
+                resumo TEXT DEFAULT '{}');
         """)
         colunas = {r[1] for r in self.con.execute("PRAGMA table_info(leads)")}
         for nome, tipo in (("frente", "TEXT DEFAULT ''"), ("motivo", "TEXT DEFAULT ''"), ("status_em", "TEXT DEFAULT ''"),
@@ -262,6 +267,132 @@ class Banco:
         self.registrar_acao(perfil, "completar:" + campo, processo, antes, str(valor or ""), 1)
         self.con.commit()
         return True
+
+    # --- 0.7.46 (Área logada v2): fonte mais forte, memória por processo e dado, pedido pendente ---
+
+    FORCA_FONTE = (("pje dados do processo", 6), ("pje peticao inicial", 5), ("pje citacao", 4), ("diario", 3), ("receita", 2))
+
+    @classmethod
+    def forca(cls, fonte):
+        """Quanto vale uma fonte: cadastro da parte no PJe > petição > citação > Diário > Receita > digitado/outro."""
+        from . import classificar as cl
+        f = cl.sem_acento(str(fonte or "")).lower()
+        return next((v for k, v in cls.FORCA_FONTE if f.startswith(k)), 1)
+
+    def completar_fonte(self, processo, campo, valor, fonte, data="", perfil=""):
+        """Como completar(), mas NUNCA apaga e só troca o que existe por fonte mais forte (ou igual e mais nova); o anterior vai
+        para o histórico da ficha (dados.manual_historico). Devolve (situação, antes, depois) com situação "acrescentado",
+        "alterado", "igual", "mantido" (fonte mais fraca: fica o que estava) ou "" (processo não existe)."""
+        if campo not in self.CAMPOS_MANUAIS or valor in (None, ""):
+            return "", "", ""
+        linha = self.con.execute("SELECT dados FROM leads WHERE processo = ?", (processo,)).fetchone()
+        if not linha:
+            return "", "", ""
+        dados = json.loads(linha[0])
+        atual = (dados.get("manual") or {}).get(campo) or {}
+        if not atual and campo == "valor_causa" and dados.get("valor_causa"):
+            atual = {"valor": dados.get("valor_causa"), "fonte": "Diário", "data": ""}
+        def mesmo(a, b):
+            try:
+                return abs(float(a) - float(b)) < 0.005
+            except (TypeError, ValueError):
+                return str(a or "").strip().upper() == str(b or "").strip().upper()
+        if atual and mesmo(atual.get("valor"), valor):
+            return "igual", str(atual.get("valor")), str(valor)
+        data = str(data or dt.date.today().isoformat())[:10]
+        if atual:
+            fa, fn = self.forca(atual.get("fonte")), self.forca(fonte)
+            if fn < fa or (fn == fa and data < str(atual.get("data") or "")):
+                return "mantido", str(atual.get("valor")), str(valor)
+            hist = dados.setdefault("manual_historico", [])
+            hist.append(dict(atual, campo=campo, trocado_em=dt.datetime.now().isoformat(timespec="seconds"), por=str(fonte)[:80]))
+            del hist[:-50]
+            self.con.execute("UPDATE leads SET dados = ? WHERE processo = ?", (json.dumps(dados, ensure_ascii=False), processo))
+        self.completar(processo, campo, valor, fonte, data, perfil)
+        return ("alterado" if atual else "acrescentado"), str(atual.get("valor") or "") if atual else "", str(valor)
+
+    def area_registrar_pedido(self, ident, faltas, lotes, arquivo, ferramenta=""):
+        """Grava o pedido (pendente) e marca "pedido em" em cada processo e dado. Um pedido pendente anterior vira "substituído"."""
+        agora = dt.datetime.now().isoformat(timespec="seconds")
+        for (velho,) in self.con.execute("SELECT id FROM area_pedidos WHERE estado = 'pendente'").fetchall():
+            # revisão: os processos do pedido substituído que não tiveram resposta voltam a "ainda não pedido"
+            self.con.execute("UPDATE area_logada SET pedido_em = '', pedido_id = '' WHERE pedido_id = ? AND respondido_em = ''", (velho,))
+        self.con.execute("DELETE FROM area_logada WHERE pedido_em = '' AND respondido_em = ''")
+        self.con.execute("UPDATE area_pedidos SET estado = 'substituido' WHERE estado = 'pendente'")
+        self.con.execute("INSERT OR REPLACE INTO area_pedidos (id, criado_em, processos, lotes, ferramenta, estado, arquivo) VALUES (?,?,?,?,?,?,?)",
+                         (ident, agora, len(faltas), int(lotes), str(ferramenta)[:40], "pendente", str(arquivo)[:300]))
+        for proc, dados in faltas.items():
+            for d in dados:
+                self.con.execute("INSERT INTO area_logada (processo, dado, pedido_em, pedido_id) VALUES (?,?,?,?) "
+                                 "ON CONFLICT(processo, dado) DO UPDATE SET pedido_em = excluded.pedido_em, pedido_id = excluded.pedido_id",
+                                 (proc, d, agora, ident))
+        self.con.commit()
+
+    def area_pedido(self, ident=None):
+        """O pedido pendente (ou o de `ident`): {id, criado_em, processos, lotes, ferramenta, estado, arquivo, recebidos, resumo}."""
+        cols = ("id", "criado_em", "processos", "lotes", "ferramenta", "estado", "arquivo", "recebidos", "resumo")
+        sql = "SELECT " + ",".join(cols) + " FROM area_pedidos " + ("WHERE id = ?" if ident else "WHERE estado = 'pendente' ORDER BY criado_em DESC LIMIT 1")  # nosec B608 - fixo
+        r = self.con.execute(sql, (ident,) if ident else ()).fetchone()
+        if not r:
+            return None
+        p = dict(zip(cols, r))
+        for k, padrao in (("recebidos", []), ("resumo", {})):
+            try:
+                p[k] = json.loads(p[k] or "")
+            except ValueError:
+                p[k] = padrao
+        return p
+
+    def area_pedidos(self, limite=10):
+        return [p for p in (self.area_pedido(r[0]) for r in self.con.execute(
+            "SELECT id FROM area_pedidos WHERE estado IN ('respondido', 'pendente') ORDER BY criado_em DESC LIMIT ?", (int(limite),))) if p]
+
+    def area_cancelar(self, ident):
+        """Cancela o pedido: os processos dele que não tiveram resposta voltam a "ainda não pedido"."""
+        self.con.execute("UPDATE area_pedidos SET estado = 'cancelado' WHERE id = ? AND estado = 'pendente'", (ident,))
+        self.con.execute("UPDATE area_logada SET pedido_em = '', pedido_id = '' WHERE pedido_id = ? AND respondido_em = ''", (ident,))
+        self.con.execute("DELETE FROM area_logada WHERE pedido_em = '' AND respondido_em = ''")
+        self.con.commit()
+
+    def area_registrar_resposta(self, linhas, ident=None, lotes=(), resumo=None):
+        """Grava o resultado de cada processo e dado da resposta; com `ident`, junta os lotes recebidos ao pedido e o fecha
+        quando todos chegaram."""
+        agora = dt.datetime.now().isoformat(timespec="seconds")
+        for l in linhas:
+            self.con.execute("INSERT INTO area_logada (processo, dado, respondido_em, resultado, fonte, pedido_id) VALUES (?,?,?,?,?,?) "
+                             "ON CONFLICT(processo, dado) DO UPDATE SET respondido_em = excluded.respondido_em, "
+                             "resultado = CASE WHEN area_logada.resultado = 'encontrado' AND excluded.resultado <> 'encontrado' THEN area_logada.resultado "
+                             "ELSE excluded.resultado END, fonte = CASE WHEN area_logada.resultado = 'encontrado' AND excluded.resultado <> 'encontrado' "
+                             "THEN area_logada.fonte ELSE excluded.fonte END",  # revisão: um "nada" depois não apaga o que já foi achado
+                             (l["processo"], l["dado"], agora, l["resultado"], str(l.get("fonte") or "")[:80], ident or ""))
+        if ident:
+            p = self.area_pedido(ident)
+            if p:
+                rec = sorted({int(x) for x in (p["recebidos"] or []) + [x for x in lotes if x]})
+                estado = "respondido" if (not p["lotes"] or len(rec) >= int(p["lotes"]) or not [x for x in lotes if x]) else "pendente"
+                self.con.execute("UPDATE area_pedidos SET recebidos = ?, estado = ?, resumo = ? WHERE id = ?",
+                                 (json.dumps(rec), estado, json.dumps(resumo or {}, ensure_ascii=False)[:20000], ident))
+        self.con.commit()
+
+    def area_por_processo(self):
+        """{processo: {estado, em}}: estado = com_dados | tentar | nada | pedido; "em" = a data da última resposta (ou do pedido)."""
+        saida = {}
+        for proc, res, resp, ped in self.con.execute("SELECT processo, resultado, respondido_em, pedido_em FROM area_logada"):
+            s_ = saida.setdefault(proc, {"enc": 0, "td": 0, "nc": 0, "pend": 0, "em": ""})
+            if res == "encontrado":
+                s_["enc"] += 1
+            elif res == "tentar_depois":
+                s_["td"] += 1
+            elif res == "nao_consta":
+                s_["nc"] += 1
+            elif ped:
+                s_["pend"] += 1
+            s_["em"] = max(s_["em"], (resp or ped or "")[:10])
+        return {p: {"estado": "com_dados" if v["enc"] else "tentar" if v["td"] else "nada" if v["nc"] else "pedido", "em": v["em"]}
+                for p, v in saida.items()}
+
+    def area_tem_resposta(self):
+        return self.con.execute("SELECT 1 FROM area_logada WHERE respondido_em <> '' LIMIT 1").fetchone() is not None
 
     def acoes(self, limite=500):
         cols = ("quando_utc", "fuso", "perfil", "acao", "alvo", "antes", "depois", "quantos")

@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.45 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.46 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,20 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.46 (14/Nov, Área logada v2, desenho da Arquitetura):** "Trazer dados da área logada…" em quatro passos numa janela
+  que não trava o programa: (1) o que pedir (marcados, primeiros N da lista filtrada ou os próximos que ainda não foram ao PJe;
+  quais dados), com contagem, lotes e tempo estimado; limite POR PEDIDO (padrão 25, máximo 50, `radar.area_logada_por_pedido`,
+  Configurações → Área logada), em lotes de 25; (2) o pedido numa caixa com "Copiar de novo" e "Salvar como arquivo", roteiro do
+  PJe dos TRTs (mapa pjekz) ou genérico para os outros tribunais, um bloco de resposta por lote; "Fechar e voltar" deixa a faixa
+  "pedido aguardando resposta" (gravada no banco: `area_pedidos`); (3) colar ou subir .md/.txt/.zip (até 20 MB, `zipfile`, só
+  leitura): `contatos.ler_resposta` acha todos os blocos v1 em qualquer ordem, lê as colunas pelo nome do cabeçalho, conta linha
+  repetida uma vez e recusa o resto com o motivo; sem bloco, "Não achei a tabela…" + 3 primeiras linhas; (4) o que mudou:
+  `banco.completar_fonte` nunca apaga e só troca por fonte mais forte (PJe dados do processo > petição > citação > Diário >
+  Receita > digitado) ou igual e mais nova, com o anterior em `manual_historico`; contato novo entra junto. Memória por processo
+  e dado (`area_logada`), filtro "Área logada" (depois da 1ª resposta), selo "área logada · data", menu ☰ → Área logada com
+  "Gerar pedido…" e "Trazer resposta…", interruptor por licença `data-recurso="area-logada"` (barra, cartão, menu, filtro,
+  faixa; até a nuvem mandar, ligado). Defeitos da 0.7.45: (?) da barra de lote fixo e dentro da tela, janela do pedido uma só
+  e com o texto, "7 colunas", sem abrir a pasta.
 - **0.7.45 (13/Nov):** com a tela aberta, se a hora marcada passa (folga de 10 minutos, até 12 horas) sem leitura, o
   programa lê sozinho, uma vez por horário (`app.conferir_agenda`, thread `vigiar-agenda`; vale com "Ler sozinho" ligado,
   guardado em `radar.agendar_quer`, ou com a tarefa do Windows existente): resposta ao antivírus que impede a tarefa (KR Law).

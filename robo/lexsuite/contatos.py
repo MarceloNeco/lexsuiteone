@@ -163,20 +163,20 @@ DADOS_V1 = ("valor_causa", "data_ajuizamento", "telefone", "email", "site", "end
 RESULTADOS_V1 = ("encontrado", "nao_consta", "tentar_depois")
 _CANAL_DO_DADO = {"telefone": "telefone", "email": "email", "site": "site", "endereco": "endereco", "socio_contato": "outro", "outro": "outro"}
 
-# 0.7.45 (Arquitetura, 13/Nov, mapa real do PJe do TRT2; o do TRT15 usa a mesma interface "pjekz"): o prompt v2, que a
-# extensão Claude in Chrome segue na área logada do advogado. Os processos vêm agrupados por tribunal.
-PEDIDO_V1 = """# Pedido de dados ao PJe ({data}) · {produto}
+# 0.7.45/0.7.46 (Arquitetura, mapa real do PJe do TRT2; o do TRT15 usa a mesma interface "pjekz"): o prompt v2, que a
+# ferramenta de navegação (Claude in Chrome, Codex ou outra) segue na área logada do advogado. 0.7.46: em lotes de 25,
+# um bloco de resposta por lote; roteiro dos TRTs (mapa pjekz) e roteiro genérico para os outros tribunais.
+PEDIDO_V1 = """# Pedido de dados ao PJe ({data}) · {produto} · {lotes_txt}
 
-Como usar: no Chrome, com o PJe do tribunal (1º grau) **já logado** pelo advogado (painel "Meu Painel - PJE"), abra o Claude
-in Chrome e cole este arquivo inteiro. Quando terminar, copie o bloco "{cabecalho}" e cole no {produto}: menu ☰,
-"Área logada" → "Trazer dados da área logada".
+Como usar: no Chrome, com o PJe do tribunal (1º grau) **já logado** pelo advogado (painel "Meu Painel - PJE"), abra a
+ferramenta de navegação (Claude in Chrome, Codex ou outra) e cole este texto inteiro. Quando ela terminar, copie os blocos
+"{cabecalho}" (ou salve o arquivo que ela gerar) e traga para o {produto}: menu ☰, "Área logada" → "Trazer resposta".
 
 ```
 Você está na aba do PJe (1º grau) do tribunal dos processos abaixo, já logado como advogado (painel "Meu Painel - PJE").
-Trabalhe SÓ nesta aba, SÓ LEITURA, no máximo {limite} processos nesta sessão, um de cada vez, e devolva no fim a tabela
-"{cabecalho}". Se a lista tiver processos de mais de um tribunal, faça só os do tribunal desta aba e devolva os
-outros como tentar_depois, observação "outro tribunal". Procure SÓ os dados da coluna "falta", SÓ da empresa ré indicada
-(confira pelo CNPJ).
+Trabalhe SÓ nesta aba, SÓ LEITURA, nos {n} processos das tabelas "Processos" abaixo ({lotes_txt}), um de cada vez.
+Se a lista tiver processos de mais de um tribunal, faça só os do tribunal desta aba e devolva os outros como tentar_depois,
+observação "outro tribunal". Procure SÓ os dados da coluna "falta", SÓ da empresa ré indicada (confira pelo CNPJ).
 
 NUNCA (cada um destes anula o trabalho):
 - abrir a tela de login do PJe (endereço terminado em /primeirograu/login.seam) nem qualquer tela de login (derruba a sessão);
@@ -187,8 +187,28 @@ NUNCA (cada um destes anula o trabalho):
   que grave, assine ou envie;
 - anotar dado do reclamante, de testemunha, de perito, de preposto ou de advogado (de qualquer lado); anotar CPF; anotar
   dado de outra empresa que não a da lista.
+{roteiro}
+SE A TELA MOSTRAR "Acesso Negado", "É preciso logar" ou "SJT-004": pare. Devolva o que já tem e marque o resto como
+tentar_depois, observação "sessão expirou".
 
-ROTEIRO POR PROCESSO:
+RESPOSTA: termine um lote antes de começar o próximo. Ao terminar CADA lote, devolva SÓ o bloco dele, com o cabeçalho
+"RESPOSTA PARA O RADAR v1 · lote N de {m}", uma linha para cada dado da coluna "falta" de cada processo do lote (nunca
+invente; "nao_consta" quando leu o lugar certo e não havia). Se a sua ferramenta oferecer "baixar como arquivo", salve cada
+bloco como resposta-radar-lote-N.md; senão, deixe os blocos inteiros na tela para copiar.
+
+{cabecalho} · lote 1 de {m}
+| processo | dado | valor | resultado | fonte | data | observação |
+|---|---|---|---|---|---|---|
+
+- dado: valor_causa, data_ajuizamento, telefone, email, site, endereco, socio_contato, outro
+- resultado: encontrado, nao_consta ou tentar_depois
+- fonte: PJe dados do processo, PJe petição inicial, PJe citação ou outro
+- data: aaaa-mm-dd de hoje · valor_causa só números com vírgula (105000,00) · data_ajuizamento aaaa-mm-dd
+```
+{tabelas}"""
+
+ROTEIRO_TRT = """
+ROTEIRO POR PROCESSO (Justiça do Trabalho, PJe "pjekz"):
 1. No painel, campo "Entre com o número do processo para consulta": digite o número CNJ e Enter. Se a lista ficar vazia,
    o processo não está no acervo do advogado: devolva todas as linhas dele como tentar_depois, com observação "fora do
    acervo", e passe ao próximo (não use "Consulta Processos de Terceiros").
@@ -208,29 +228,19 @@ ROTEIRO POR PROCESSO:
    (valor = "Nome do sócio: canal"); nunca CPF.
 6. Se ainda faltar endereço: abra o segundo documento, "Notificação" (da ré), e leia o campo "DESTINATÁRIO:" (fonte "PJe
    citação"). Não clique no ícone de envelope "Visualizar Expedientes".
-7. Volte ao painel pelo menu lateral "Meu Painel" (nunca pelo endereço de login) e passe ao próximo processo.
+7. Volte ao painel pelo menu lateral "Meu Painel" (nunca pelo endereço de login) e passe ao próximo processo. Um processo
+   por vez, sem abrir várias janelas.
+"""
 
-SE A TELA MOSTRAR "Acesso Negado", "É preciso logar" ou "SJT-004": pare. Devolva o que já tem e marque o resto como
-tentar_depois, observação "sessão expirou".
-
-RESPOSTA: no fim, devolva SÓ este bloco, uma linha para cada dado da coluna "falta" de cada processo (nunca invente;
-"nao_consta" quando leu o lugar certo e não havia):
-
-{cabecalho}
-| processo | dado | valor | resultado | fonte | data | observação |
-|---|---|---|---|---|---|---|
-
-- dado: valor_causa, data_ajuizamento, telefone, email, site, endereco, socio_contato, outro
-- resultado: encontrado, nao_consta ou tentar_depois
-- fonte: PJe dados do processo, PJe petição inicial, PJe citação ou outro
-- data: aaaa-mm-dd de hoje · valor_causa só números com vírgula (105000,00) · data_ajuizamento aaaa-mm-dd
-```
-
-## Processos ({n})
-
-| processo | tribunal | empresa ré | CNPJ | falta |
-|---|---|---|---|---|
-{linhas}
+ROTEIRO_GENERICO = """
+ROTEIRO POR PROCESSO (outros tribunais; esta tela ainda não foi mapeada pela SolverONE):
+1. Use a busca do painel do advogado pelo número CNJ (nunca a consulta de processos de terceiros). Processo que não aparece
+   no acervo do advogado: devolva as linhas dele como tentar_depois, observação "fora do acervo".
+2. Nos dados do processo (cabeçalho ou "Dados do processo"): valor da causa e data de distribuição/ajuizamento; nas partes,
+   SÓ a empresa ré com o CNPJ da lista: endereço e e-mail cadastrados. Fonte "PJe dados do processo".
+3. Se ainda faltar contato da empresa: a petição inicial, só se abrir como texto, só o parágrafo que qualifica a empresa ré
+   (fonte "PJe petição inicial"; endereço daqui com observação "a conferir"). PDF sem texto: tentar_depois, "petição em PDF".
+4. Nunca baixe documentos, nunca abra intimação/expediente, nunca clique em botão que grave ou envie.
 """
 
 
@@ -243,30 +253,67 @@ def faltando(item):
     if not item.get("ajuizada_em"):
         falta.append("data_ajuizamento")
     canais = set((item.get("contato") or {}).get("canais") or [])
-    for d in ("telefone", "email", "endereco"):
-        if d not in canais and not (d == "endereco" and e.get("logradouro")):
+    for d in ("telefone", "email", "endereco", "site"):  # 0.7.46: site também (a petição às vezes traz)
+        if d not in canais and not (d == "endereco" and e.get("logradouro")) and not (d == "telefone" and e.get("telefone")) \
+                and not (d == "email" and e.get("email")):
             falta.append(d)
     return falta
 
 
-def preparar_v1(itens, pasta, produto="RADAR JUDICIAL", limite=30, hoje=None):
-    """Grava saida/contatos/pedido-pje-AAAA-MM-DD.md com até `limite` processos e, em cada um, só o que falta."""
+def lotes_de(n, tam=25):
+    return max(1, -(-int(n) // int(tam))) if n else 0
+
+
+def preparar_v1(itens, pasta, produto="RADAR JUDICIAL", limite=25, hoje=None, dados=None, faltas=None, ident=None):
+    """Grava saida/contatos/pedido-pje-AAAA-MM-DD[-id].md com até `limite` processos (lotes de 25) e, em cada um, só o que
+    falta (ou `faltas` {processo: [dados]} já calculadas). `dados`: quais tipos pedir (valor, data, contato, socio; None =
+    o padrão). Devolve (caminho, n, texto); a lista final e as faltas ficam em preparar_v1.ultimo."""
     hoje = hoje or dt.date.today()
-    escolhidos = [(i, faltando(i)) for i in itens]
+    if faltas is None:
+        escolhidos = [(i, filtrar_falta(faltando(i), dados)) for i in itens]
+    else:
+        escolhidos = [(i, list(faltas.get(i.get("processo"), []))) for i in itens]
     escolhidos = [(i, f) for i, f in escolhidos if f][: max(1, int(limite))]
-    escolhidos.sort(key=lambda x: str(x[0].get("tribunal") or ""))  # 0.7.45: um tribunal de cada vez (uma aba do PJe por tribunal)
-    linhas = "\n".join(
-        f"| {_cel(i.get('processo'))} | {_cel(i.get('tribunal'))} | "
-        f"{_cel((i.get('empresa') or {}).get('razao_social') or (i.get('empresas') or [''])[0])} | "
-        f"{_cel((i.get('empresa') or {}).get('cnpj') or i.get('cnpj_a_conferir'))} | {', '.join(f)} |" for i, f in escolhidos)
-    texto = PEDIDO_V1.format(data=hoje.strftime("%d/%m/%Y"), produto=produto, limite=int(limite), cabecalho=CABECALHO_V1,
-                             n=len(escolhidos), linhas=linhas or "| (nenhum processo com dado faltando) | | | | |")
+    escolhidos.sort(key=lambda x: (str(x[0].get("tribunal") or ""), str(x[0].get("processo") or "")))  # um tribunal de cada vez
+    m = lotes_de(len(escolhidos))
+    def linha(i, f):
+        return (f"| {_cel(i.get('processo'))} | {_cel(i.get('tribunal'))} | "
+                f"{_cel((i.get('empresa') or {}).get('razao_social') or (i.get('empresas') or [''])[0])} | "
+                f"{_cel((i.get('empresa') or {}).get('cnpj') or i.get('cnpj_a_conferir'))} | {', '.join(f)} |")
+    tabelas = []
+    for k in range(m):
+        parte = escolhidos[k * LOTE_TAM:(k + 1) * LOTE_TAM]
+        tabelas.append(f"\n## Processos · lote {k + 1} de {m} ({len(parte)} de {len(escolhidos)})\n\n"
+                       "| processo | tribunal | empresa ré | CNPJ | falta |\n|---|---|---|---|---|\n" + "\n".join(linha(i, f) for i, f in parte))
+    if not escolhidos:
+        tabelas.append("\n## Processos (0)\n\n| processo | tribunal | empresa ré | CNPJ | falta |\n|---|---|---|---|---|\n| (nenhum processo com dado faltando) | | | | |")
+    tribs = {str(i.get("tribunal") or "").upper() for i, _ in escolhidos}
+    roteiro = (ROTEIRO_TRT if any(t.startswith("TRT") for t in tribs) or not tribs else "") + \
+              (ROTEIRO_GENERICO if any(t and not t.startswith("TRT") for t in tribs) else "")
+    lotes_txt = "lote único" if m <= 1 else f"{m} lotes de até {LOTE_TAM}"
+    texto = PEDIDO_V1.format(data=hoje.strftime("%d/%m/%Y"), produto=produto, cabecalho=CABECALHO_V1, n=len(escolhidos),
+                             m=max(1, m), lotes_txt=lotes_txt, roteiro=roteiro, tabelas="\n".join(tabelas) + "\n")
     destino = os.path.join(pasta, "saida", "contatos")
     os.makedirs(destino, exist_ok=True)
-    caminho = os.path.join(destino, f"pedido-pje-{hoje.isoformat()}.md")
+    caminho = os.path.join(destino, f"pedido-pje-{hoje.isoformat()}" + (f"-{ident}" if ident else "") + ".md")
     with open(caminho, "w", encoding="utf-8") as f:
         f.write(texto)
+    preparar_v1.ultimo = {"processos": [i.get("processo") for i, _ in escolhidos], "faltas": {i.get("processo"): f for i, f in escolhidos}, "lotes": m}
     return caminho, len(escolhidos), texto
+
+
+DADOS_GRUPOS = {"valor": ("valor_causa",), "data": ("data_ajuizamento",), "contato": ("telefone", "email", "endereco", "site"),
+                "socio": ("socio_contato",)}
+
+
+def filtrar_falta(falta, dados=None):
+    """0.7.46: só os tipos de dado escolhidos no passo 1 (padrão: valor, data e contatos; sócio só se pedido)."""
+    dados = dados if dados is not None else {"valor": True, "data": True, "contato": True, "socio": False}
+    quero = {d for g, on in dados.items() if on for d in DADOS_GRUPOS.get(g, ())}
+    saida = [d for d in falta if d in quero]
+    if dados.get("socio") and saida and "socio_contato" not in saida:
+        saida.append("socio_contato")  # sócio só junto de outro dado que falta (não abre processo só para isso)
+    return saida
 
 
 def _valor_v1(dado, valor):
@@ -372,3 +419,140 @@ def colar_v1(texto, empresas_por_processo, hoje=None):
 def cl_sem_acento(s):
     from . import classificar as cl
     return cl.sem_acento(str(s or ""))
+
+# --- 0.7.46 (Área logada v2, Arquitetura 14/Nov): vários blocos, lotes, arquivo, colunas pelo nome -------------------------
+
+LOTE_TAM = 25  # processos por lote do pedido
+LIMITE_PEDIDO = (25, 50)  # padrão e máximo por pedido (cada pedido é uma sessão do PJe; não há limite por dia)
+ARQ_MAX = 20 * 1024 * 1024
+_CAB_V1 = re.compile(r"resposta\s+para\s+o\s+radar\s+v1(?:\W+lote\s+(\d+)\s+de\s+(\d+))?", re.I)
+_NOMES_COL = {"processo": "processo", "dado": "dado", "valor": "valor", "resultado": "resultado", "fonte": "fonte", "data": "data",
+              "observacao": "obs", "observação": "obs", "obs": "obs"}
+
+
+def ler_arquivo(nome, conteudo):
+    """Texto de um arquivo enviado: .md/.txt, ou .zip com .md/.txt dentro (só lido em memória, nada é extraído nem executado).
+    Levanta ValueError com o motivo em PT/EN."""
+    import io
+    import zipfile
+    nome = str(nome or "").lower()
+    if len(conteudo or b"") > ARQ_MAX:
+        raise ValueError("Arquivo maior que 20 MB. / File larger than 20 MB.")
+    def texto_de(b):
+        for cod in ("utf-8-sig", "cp1252", "latin-1"):
+            try:
+                return b.decode(cod)
+            except UnicodeDecodeError:
+                continue
+        return b.decode("utf-8", "replace")
+    if nome.endswith((".md", ".txt", ".markdown")):
+        return texto_de(conteudo)
+    if nome.endswith(".zip"):
+        try:
+            z = zipfile.ZipFile(io.BytesIO(conteudo))
+        except zipfile.BadZipFile:
+            raise ValueError("O .zip está corrompido. / The .zip is corrupted.")
+        partes, total = [], 0
+        membros = sorted((i for i in z.infolist() if not i.is_dir() and i.filename.lower().endswith((".md", ".txt", ".markdown"))),
+                         key=lambda i: i.filename)
+        if not membros:
+            raise ValueError("O .zip não tem arquivo .md nem .txt. / The .zip has no .md or .txt file.")
+        import zlib
+        for i in membros[:50]:
+            total += i.file_size
+            if total > ARQ_MAX:  # zip-bomba: confere o tamanho descompactado antes de ler
+                raise ValueError("O conteúdo do .zip passa de 20 MB. / The .zip content exceeds 20 MB.")
+            try:
+                with z.open(i) as f:
+                    partes.append(texto_de(f.read(ARQ_MAX + 1)))
+            except (RuntimeError, NotImplementedError, zlib.error, OSError, zipfile.BadZipFile, EOFError):
+                # revisão: zip com senha, compressão que a biblioteca padrão não lê ou arquivo danificado
+                raise ValueError("O .zip não pôde ser lido (senha, formato ou arquivo danificado). / The .zip could not be read.")
+        return "\n\n".join(partes)
+    raise ValueError("Use um arquivo .md, .txt ou .zip. / Use a .md, .txt or .zip file.")
+
+
+def blocos_v1(texto):
+    """Todos os blocos "RESPOSTA PARA O RADAR v1" do texto, em qualquer ordem e com qualquer conversa em volta.
+    Cada bloco: {lote, de, linhas: [(nº da linha no texto, {coluna: valor}, texto da linha)], extras: bool}. A tabela do bloco
+    acaba na primeira linha que não começa com "|" depois de ela ter começado. As colunas são lidas pelo NOME do cabeçalho
+    (coluna a mais é ignorada); sem cabeçalho reconhecível, pela posição."""
+    linhas = str(texto or "").splitlines()[:20000]
+    blocos, atual = [], None
+    for n, bruta in enumerate(linhas, 1):
+        linha = bruta.strip()
+        m = _CAB_V1.search(linha) if not linha.startswith("|") else None
+        if m:
+            atual = {"lote": int(m.group(1)) if m.group(1) else None, "de": int(m.group(2)) if m.group(2) else None,
+                     "linhas": [], "mapa": None, "extras": False, "comecou": False}
+            blocos.append(atual)
+            continue
+        if atual is None:
+            continue
+        if not linha.startswith("|"):
+            if atual["comecou"]:
+                atual = None  # a tabela terminou: o resto até o próximo cabeçalho é conversa
+            continue
+        atual["comecou"] = True
+        cels = [c.strip() for c in linha.strip("|").split("|")]
+        if set("".join(cels)) <= set("-: "):
+            continue
+        normal = [cl_sem_acento(c).lower().strip() for c in cels]
+        if atual["mapa"] is None and "processo" in normal and "dado" in normal:
+            atual["mapa"] = {k: _NOMES_COL[c] for k, c in enumerate(normal) if c in _NOMES_COL}
+            atual["extras"] = len(atual["mapa"]) < len(cels)
+            continue
+        mapa = atual["mapa"] or {0: "processo", 1: "dado", 2: "valor", 3: "resultado", 4: "fonte", 5: "data", 6: "obs"}
+        reg = {v: (cels[k] if k < len(cels) else "") for k, v in mapa.items()}
+        atual["linhas"].append((n, reg, linha))
+    for b in blocos:
+        b.pop("mapa", None); b.pop("comecou", None)
+    return blocos
+
+
+def inicio_do_texto(texto, n=3):
+    """As primeiras linhas não vazias, para a pessoa conferir se colou a coisa certa."""
+    return [l.strip()[:160] for l in str(texto or "").splitlines() if l.strip()][:n]
+
+
+def ler_resposta(texto, empresas_por_processo, hoje=None):
+    """0.7.46: lê TODOS os blocos v1 (lotes em qualquer ordem), linha a linha, sem IA. Mesmo resultado de colar_v1 e mais:
+    `lotes` [{lote, de, aceitas, recusadas, repetidas, extras}], `linhas` (cada linha válida: processo, dado, resultado, fonte,
+    valor normalizado), `achou` (algum bloco) e `inicio` (3 primeiras linhas, quando não achou). Linha igual em dois lotes
+    conta uma vez."""
+    hoje = hoje or dt.date.today()
+    saida = {"contatos": [], "completar": [], "nao_consta": [], "tentar_depois": [], "recusadas": [], "lotes": [], "linhas": [],
+             "repetidas": 0, "achou": False, "inicio": []}
+    blocos = blocos_v1(texto)
+    if not blocos:
+        saida["inicio"] = inicio_do_texto(texto)
+        return saida
+    saida["achou"] = True
+    vistos = set()
+    for b in sorted(blocos, key=lambda x: (x["lote"] or 0)):
+        st = {"lote": b["lote"], "de": b["de"], "aceitas": 0, "recusadas": 0, "repetidas": 0, "extras": b["extras"]}
+        for n, reg, linha in b["linhas"]:
+            cels = [reg.get(k, "") for k in ("processo", "dado", "valor", "resultado", "fonte", "data", "obs")]
+            if not any(cels):
+                continue
+            r = colar_v1("RESPOSTA PARA O RADAR v1\n| " + " | ".join(c.replace("|", "/") for c in cels) + " |", empresas_por_processo, hoje)
+            if r["recusadas"]:
+                for x in r["recusadas"]:
+                    x["linha"], x["texto"], x["lote"] = n, linha[:160], b["lote"]
+                    saida["recusadas"].append(x)
+                st["recusadas"] += 1
+                continue
+            chave = (re.sub(r"[^\d.\-]", "", cels[0]), cl_sem_acento(cels[1]).lower(), re.sub(r"\s+", " ", cels[2].strip().lower()), cl_sem_acento(cels[3]).lower())
+            if chave in vistos:
+                st["repetidas"] += 1; saida["repetidas"] += 1
+                continue
+            vistos.add(chave)
+            st["aceitas"] += 1
+            for k in ("contatos", "completar", "nao_consta", "tentar_depois"):
+                saida[k].extend(r[k])
+            dado = chave[1].replace("-", "_").replace(" ", "_")
+            res = chave[3].replace(" ", "_").replace("-", "_")
+            saida["linhas"].append({"processo": chave[0], "dado": dado, "resultado": res, "fonte": cels[4][:80], "obs": cels[6][:120], "lote": b["lote"]})
+        saida["lotes"].append(st)
+    return saida
+

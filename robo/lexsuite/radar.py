@@ -180,6 +180,7 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     por_processo = {}
     for c in banco.contatos():
         por_processo.setdefault(c["processo"], []).append(c)
+    area = banco.area_por_processo() if hasattr(banco, "area_por_processo") else {}  # 0.7.46: memória da área logada
     for lead in banco.todos_leads(desde_diario=None if arquivo else desde):
         if lead.get("fonte", "DJEN") != "DJEN":
             continue
@@ -193,6 +194,7 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
         if not p_item.get("mostrar_socios", True):
             item["empresa"]["socios"] = []  # minimização: nomes de pessoas só se o escritório pedir
         # revisão da 0.7.33: esconder excluídas e jurídico próprio valem pela área de cada ação
+        item["area"] = area.get(lead.get("processo")) or {}  # 0.7.46: {estado: com_dados|tentar|nada|pedido, em}
         item["esconder_exc"] = bool(p_item.get("esconder_excluidas", True))
         item["esconder_gig"] = bool(p_item.get("esconder_gigantes"))
         itens.append(item)

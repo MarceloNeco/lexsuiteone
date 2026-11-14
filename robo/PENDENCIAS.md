@@ -162,6 +162,19 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
+## 0.7.46 (14/Nov, Área logada v2) — pronta para publicar
+
+- Feito: itens a a i do pedido da Arquitetura (`documentacao/PROMPT-PRODUTO-0.7.46-2026-11-14.md`). Testes: `test_v0746.py` (18:
+  48 processos → 2 lotes, resposta simulada da Arquitetura com os aceites e recusas previstos, 2 blocos em ordem trocada, .zip com
+  dois .md, pedido pendente que sobrevive a reiniciar, lotes em dias diferentes, cancelar, fonte mais forte com histórico, relatório
+  "o que mudou", interruptor nos 3 lugares) e bloco 6 de `testes/tela/fluxos.js` (a tela inteira).
+- Diferença consciente: o filtro "Área logada" tem também "Aguardando resposta" (processo pedido e ainda sem resposta), além dos
+  quatro do desenho.
+- Fica para a 0.7.47 (desenho 2d): conferência leve da licença a cada 30 min, no foco e no F5, e a linha "Recursos da licença" em
+  Configurações; a nuvem (`lex_contas.recursos`, `lex-conta` v19) e a ficha do RootifyONE são da Arquitetura e do RootifyONE.
+- Termos sem mudança (seção 5 da 1.0 descreve este fluxo); e-mail sem mudança.
+- Integração para RootifyONE, ArchONE e EaglePlanONE: nenhuma nova; item de roadmap "Área logada v2" concluído.
+
 ## 0.7.45 (13/Nov) — pronta para revisão
 
 - Pergunta 29 respondida pelo dono ("pode", 13/Nov): com a tela aberta, a leitura que o Windows não rodou na hora marcada é
