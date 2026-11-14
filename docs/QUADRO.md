@@ -371,10 +371,11 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   diretrizes. Nada implementado. Até lá, o processo de publicação não muda (Operação avisada no quadro).
 - **Central LexSuiteONE (nuvem, fase 1): aplicada inteira em 13/Nov (noite)**, inclusive a retenção de 30 dias. Conferir na próxima
   conversa: `cron.job` com os dois jobs e `lex_saude_diarios` crescendo 24 linhas a cada 15 min.
-- **CNJ fora e antivírus**: desenho pronto; depende do dono: perguntas 34 a 39 e "pode aplicar" para a `lex-conta` v19
-  (`estado_cnj`, campos do registro), SQL de `lex_registros` e o alerta na `lex-saude`.
-- **Interruptor por licença (área logada)**: SQL proposto em `nuvem/supabase/2026-11-14-lex-recursos-por-licenca.sql` e `lex-conta`
-  v19 desenhados (seção 2c do desenho da área logada); esperando o "pode aplicar" do dono. Padrão: desligado na KR Law.
+- **CNJ fora e antivírus**: desenho pronto e perguntas 34 a 39 respondidas; prompt da 0.7.47 entregue à Produto. Falta o "pode
+  aplicar" do dono para a parte da nuvem: `lex-conta` v20 (`estado_cnj`, campos `antivirus`/`antivirus_ligado`/`sinal` no
+  `registro`, `avisar_cnj` na `verificar`), SQL de `lex_registros` e `lex_instalacoes`, alerta e sonda da consulta na `lex-saude`.
+- **Interruptor por licença (área logada)**: APLICADO em 14/Nov (ver Feito 11). Próximo passo é do RootifyONE (ficha 0.18.31 já
+  pronta) e da Produto (0.7.46/0.7.47: `data-recurso` nos três lugares e a conferência de 30 min). KR Law começa desligada.
 - **Trava do aceite ligada nas duas licenças** (KR Law e teste do dono) desde 11/Nov, a pedido do dono.
   Próximos: SQL da 0.8, pareamento com credencial, trilha de auditoria, check de `lex_eventos` no desktop.
 
@@ -384,6 +385,15 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 14/Nov (11): **APLICADO · recursos por licença (área logada), nuvem** (dono: "pode aplicar"; pedido nº 4 do RootifyONE):
+  migração `lex_recursos_por_licenca`: coluna `lex_contas.recursos` (jsonb {id: true|false}, só exceções), `admin_lex_listar`
+  devolve `recursos`, `admin_lex_salvar` aceita `p.recursos` (ids `[a-z0-9.-]{1,40}`, valores booleanos; só codigo+recursos+motivo
+  mexe só nos recursos; um evento `licenca_alterada` por recurso: "recurso <id>: ligado | desligado | segue o global", com
+  motivo); padrão inicial KR Law `{"area-logada": false}`, licença de teste `true`, eventos gravados. `lex-conta` v19 (Supabase
+  v21): `verificar` devolve `recursos` = global+app do RootifyONE com a licença por cima (testado: a licença de teste recebe
+  `area-logada: true`). `docs/recursos-do-app.json` declara `area-logada` (nome, onde, padrao false). Testes no banco com
+  sessão de dono simulada: salvar só recursos, voltar ao global, id inválido e valor inválido recusados, ficha intacta, 4 eventos.
+  Registro: `nuvem/supabase/2026-11-14-lex-recursos-por-licenca.sql` (com o desfazer).
 - 14/Nov (10): prompt único da 0.7.47 para a Produto (`documentacao/PROMPT-PRODUTO-0.7.47-2026-11-14.md`), entregue ao dono para colar.
 - 14/Nov (9): **página `antivirus.html` no site** (decisão 36 do dono): `paginas/antivirus.html` → `docs/antivirus.html`
   (judicial.solverone.com.br/antivirus.html), PT e EN, sem pedido externo; por que acontece, o que liberar (pasta
