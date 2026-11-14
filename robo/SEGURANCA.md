@@ -1,4 +1,4 @@
-# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.32)
+# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.47)
 
 Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
 licença (código, versão e só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou
@@ -25,7 +25,11 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
   totais por situação, dia, tribunal, frente e faixa de valor, sem nome, processo, CNPJ ou contato; a tela mostra a tabela
   enviada); o cadastro de quem usa (nome, e-mail, função e documento do escritório: CNPJ, CPF ou passaporte) e o aceite
   dos termos de uso (versão e fuso horário); avisos
-  técnicos de erro (etapa, versão, Windows e mensagem sem caminhos pessoais); a procura de versão nova no site; DataJud
+  técnicos de erro (etapa, versão, Windows e mensagem sem caminhos pessoais; desde a 0.7.47 também o nome do antivírus
+  encontrado, se está ligado e o tipo de bloqueio, um de seis sinais, nada de pessoa); desde a 0.7.47, na conferência da licença,
+  a preferência `avisar_cnj` e, só quando o CNJ falha, a pergunta `estado_cnj` (no máximo 1 a cada 5 minutos); também só quando o
+  CNJ falha, duas sondas de controle sem dado nenhum (`judicial.solverone.com.br/atualizacao/versao.json` e a consulta pública
+  do CNJ); a procura de versão nova no site; DataJud
   (consulta pública do CNJ, quando ligada) e, só se o escritório configurar, e-mail (SMTP) e Telegram para avisos. Com intervalo mínimo entre pedidos,
   poucas tentativas e teto de 2 GB por download (lido em pedaços; caderno descompactado também limitado). Nada de burlar
   captcha, trocar IP ou abrir várias cópias. A tela não faz nenhum pedido externo (fontes do sistema); desde a 0.7.20 o programa manda ao navegador uma regra de segurança (Content-Security-Policy) que proíbe a página de carregar script, imagem ou fonte, abrir conexão ou enviar formulário para endereço de fora deste computador; os links que a pessoa clica (PJe, termos, manual) continuam abrindo no navegador. O AssistONE embutido é só ajuda, sem IA; os erros técnicos das estatísticas antigas vão à SolverONE como os das leituras (etapa, versão, Windows, mensagem sem caminhos pessoais).
@@ -43,7 +47,14 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
   `SEGURANCA-REVISAO-2026-11-07.md`.
 - **O que não é.** O "desligar pelo suporte" é cortesia, não trava: quem controla o computador controla o robô.
   A planilha compartilhada depende da conta Google do escritório e do compartilhamento que ele fizer.
-- **Agendamento.** `schtasks` chamado sem shell, com argumentos fixos; só cria ou remove as duas tarefas do robô.
+- **Agendamento.** `schtasks` chamado sem shell, com argumentos fixos; só cria ou remove as tarefas do robô. Desde a 0.7.47 o
+  XML da tarefa fica na pasta do programa (`tarefa.xml`, com autor e descrição da SolverONE), nunca na pasta temporária, e o
+  instalador cria a tarefa na própria janela, às claras.
+- **Instalador (0.7.47).** Antes de baixar, lê o antivírus e o firewall na Central de Segurança do Windows (só leitura, sem
+  administrador) e faz três pedidos leves (site do produto, `lex-conta` e consulta pública do CNJ) para saber se a rede barra os
+  endereços do programa; nunca desliga nem contorna o antivírus. Em erro, o aviso técnico leva também o antivírus e o sinal.
+- **Este computador (0.7.47).** O programa lê o antivírus e o firewall uma vez por dia pelo PowerShell (só leitura), guarda em
+  `saida/computador.json` e mostra em Configurações → Sobre este computador.
 - **Revisão.** Testes automáticos (mais de 110) cobrem assinatura (vetores da RFC), pacote adulterado, caminho suspeito,
   planilha corrompida e pedidos sem o cabeçalho da página. Revisão de segurança e LGPD trimestral com a skill
   `seguranca-lgpd-gdpr`; Bandit e Gitleaks entram no GitHub Actions quando houver repositório.

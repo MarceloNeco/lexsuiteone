@@ -172,85 +172,17 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 14/Nov: **Planejado para a 0.7.48 (pedido do dono, 14/Nov): filtro de cidade na Lista**, ao lado de Estado; escolher o estado limita as cidades. Desenho em `robo/PENDENCIAS.md` (0.7.48): só na tela, com a cidade que já vem em cada processo, índice estado → cidades montado uma vez por carga, busca por digitação; sem consulta, coluna ou pedido novo. Junto com a leitura pela consulta (1.3).
-- 14/Nov: **0.7.47 (CNJ fora e antivírus) pronta para publicar** (commit da `main`: `bd90e9b`; instaladores no commit `849904a` da
-  branch `claude/lexsuiteone-judicial-product-22f871`, ver pedido à Operação). Conferido: itens a a i do pedido (h já estava na
-  0.7.46; somou a conferência da licença de 30 em 30 min e "Recursos da licença"); `test_v0747.py` e `test_v0747_instalador.py`
-  (classificador com respostas gravadas: 5xx JSON do CNJ + sonda ok, HTML da CloudFront, tempo esgotado + sonda falha, reset só no
-  CNJ, 403 de país, caderno fora com consulta ok; sondas uma vez por leitura; linha da SolverONE e limite de 5 min; os seis sinais
-  dos instaladores; tarefa sem XML na pasta temporária; registro com os três campos; `avisar_cnj` gravado e enviado; sinais do
-  programa nomeando o antivírus) e o bloco 7 do `fluxos.js` (faixa, linha da SolverONE, aviso do antivírus, Sobre este computador,
-  opção de e-mail, histórico); `rodar_tudo.sh` TUDO OK; revisor: não aprovado na 1ª rodada, corrigido (ver PENDENCIAS 0.7.47).
-  Manual (Instalação e antivírus, leituras, problemas, privacidade), AssistONE (ajuda, tour, busca: antivírus, CNJ fora, é daqui ou
-  do CNJ, leitura automática, aviso por e-mail), Novidades (8 linhas), site (link "O antivírus bloqueou?", "Extrair tudo" no passo
-  1, seção 5 e texto para a TI com os endereços na página de antivírus), e-mail de boas-vindas (linha da página e "Extrair tudo"),
-  ROTEIRO-INSTALACAO e VISITA-KR-LAW com checklist e sem "desligar". Termos sem mudança. Roteiro do dono:
-  `documentacao/ROTEIRO-TESTE-0.7.47.md`. Publicar só com o "publica a versão 0.7.47" do dono.
-- 14/Nov: **0.7.46 (Área logada v2) pronta para publicar** (commit `74cf13a`). Conferido: itens a a i do
-  pedido; `test_v0746.py` (21) e o bloco 6 do `fluxos.js` (11 conferências da tela: (?) fixo, passos 1 a 4, faixa que sobrevive a
-  recarregar, "Não achei a tabela", totais, filtro, selo, interruptor desligado esconde barra, cartão, filtro e faixa); celular
-  sem estouro; `rodar_tudo.sh` TUDO OK; manual (seção reescrita), AssistONE (ajuda da Lista, tour na faixa, busca: área logada,
-  pedido, lote, pendente, trazer resposta, subir arquivo), Novidades (7 linhas), termos e e-mail sem mudança. Roteiro do dono:
-  `documentacao/ROTEIRO-TESTE-0.7.46.md`. Publicar só com o "publica a versão 0.7.46" do dono.
-- 13/Nov (noite): **0.7.45 na `main`, pronta para revisão da Operação** (com o "pode" do dono para a pergunta 29 e para o
-  pedido da Arquitetura do prompt v2 do PJe): leitura pela tela aberta quando o Windows não roda a hora marcada e os 5 ajustes
-  do "Trazer dados da área logada". `rodar_tudo.sh` TUDO OK. Roteiro do dono: `documentacao/ROTEIRO-TESTE-0.7.45.md`.
-  Publicar só com o "publica a versão 0.7.45" do dono.
-- 13/Nov (noite): **0.7.44 na `main`, pronta para revisão da Operação**: conferência automática do CNJ (pedido do dono pela
-  Operação; o desenho da Operação foi seguido), faixa vermelha com "Nada se perdeu: o TRTx já foi lido até…" e orientação
-  do antivírus quando a leitura automática não pode ser criada. `bash robo/testes/tela/rodar_tudo.sh` TUDO OK (o
-  `fluxos.js` ganhou o bloco do CNJ). Roteiro do dono: `documentacao/ROTEIRO-TESTE-0.7.44.md`. Publicar só com o
-  "publica a versão 0.7.44" do dono, depois da 0.7.43.
-- 13/Nov (noite): **0.7.43 na `main`, pronta para revisão da Operação** (era a "0.7.41" da Produto; a Operação publicou antes a 0.7.41 e a 0.7.42 urgentes do CNJ, então esta vira 0.7.43). Empresas excluídas (nome exato, CPF do MEI), Painel e
-  Lista rápidos com 36-40 mil, AssistONE ao carregar, e o teste do dono de hoje: Configurações reabertas logo depois de
-  salvar mostravam o de antes (corrigido; Salvar gira e não regrava pasta e agendamento sem mudança) e busca da Lista sem
-  travar a digitação. **Teste de regressão novo**: `bash robo/testes/tela/rodar_tudo.sh` roda TODOS os testes (unittest +
-  `fluxos.js` + `ver_na_lista.js` + `larguras.js` + `aviso_e_lupa.sh`) e termina com "TUDO OK"; vale para a revisão.
-  Roteiro do dono: `documentacao/ROTEIRO-TESTE-0.7.43.md`. **No ar com o "pode" do dono (13/Nov, noite)**: instaladores com
-  PowerShell e pasta do usuário de reserva (KR Law) e a frase do fim do site ("Arquivos do programa, para instalação manual").
-- 13/Nov (noite): **duas formas de baixar** no site e no e-mail de boas-vindas (pedido urgente do dono, já no ar): "Instalação
-  rápida (3 KB)" e "Pacote completo (11 MB), se o antivírus ou a rede do escritório bloquear", cada uma com uma linha.
-- **Para a 0.7.41 (feedback do dono, 13/Nov, não urgente):** clicar no AssistONE enquanto a tela de carregamento está aberta
-  mostra a ajuda da Lista ("Você está em Lista"); enquanto carrega, o AssistONE deve dizer "Aguarde o RADAR JUDICIAL
-  carregar" (e não a ajuda de uma tela que ainda não apareceu).
-- 13/Nov (noite): **0.7.40 na `main`, pronta para revisão da Operação** (pedido "0.7.40 pronta para revisão", 13/Nov). Todos os
-  pedidos 0.7.40 de 13/Nov e o interruptor "Último mês" (decisão do dono). Roteiro do dono: `documentacao/ROTEIRO-TESTE-0.7.40.md`.
-  Já no ar antes da versão, com o "urgente" do dono: o pacote completo de instalação (site e e-mail de boas-vindas).
-- 13/Nov: **0.7.39 na `main`, pronta para revisão da Operação** (pedido em "Pedidos entre sessões", 13/Nov). Todos os pedidos
-  do dono de 13/Nov, menos as imagens de fundo (faltam os 4 arquivos) e a lista de varas mais larga (o dono não decidiu).
-  Roteiro do dono: `documentacao/ROTEIRO-TESTE-0.7.39.md`.
-- 13/Nov: **0.7.38 na `main`, pronta para revisão da Operação** (pedido em "Pedidos entre sessões", 13/Nov): "não couberam"
-  em dourado (pergunta 19) e "✓ Acrescentada" que não some ao sair do campo. A 0.7.37 está publicada.
-- 13/Nov: **0.7.37 na `main`, pronta para revisão da Operação** (pedido em "Pedidos entre sessões", 13/Nov). Teste do dono na
-  0.7.36 (`documentacao/FEEDBACK-TESTE-0.7.36.md`, itens 1 a 5) e as ressalvas da publicação e da terceira revisão da
-  0.7.36. Roteiro do dono: `documentacao/ROTEIRO-TESTE-0.7.37.md`. Não publicar sem o "publica a versão 0.7.37" do dono.
-- (antigo) 12/Nov (noite): **0.7.36 na `main`, pronta para revisão da Operação** (pedido em "Pedidos entre sessões"). Não publicar antes
-  do teste do dono; a visita de 13/Nov segue com a 0.7.35.
-- 12/Nov: **lex-conta v18 publicada** (correção urgente, com o "pode aplicar" do dono; só a Produto mexeu, a Arquitetura
-  revisa depois): a página de aceite nunca conseguia registrar o aceite, porque a v17 não respondia à pré-verificação do
-  navegador (OPTIONS devolvia 405) e não mandava cabeçalhos CORS; nenhum aceite de radar-judicial em `sol_aceites` até hoje.
-  A v18 responde OPTIONS com 204 e libera só `https://judicial.solverone.com.br`; nada mais mudou (código em
-  `nuvem/supabase/functions/lex-conta/index.ts`). Conferido: pré-verificação 204 com os cabeçalhos, e um Chromium na
-  própria página de aceite chega à função (resposta normal, sem bloqueio). Falta o dono confirmar um aceite real.
-- 12/Nov: por engano, dois commits de junção ("sync" e "Merge remote-tracking branch… into claude/…", `50e9e5e` e
-  `4b0092d`) entraram na `main` junto com o quadro; o conteúdo é igual ao da `main`, só a história ficou com eles. Não
-  reescrevo a história; os próximos envios voltam a ser lineares.
-- **Lista da 0.7.34 (teste do dono na 0.7.33, 12/Nov; nada disso bloqueia a visita):** tela de abertura "RADAR JUDICIAL ·
-  carregando" e abertura mais rápida com muitos processos (medir antes); Novidades e demais janelas usando a largura do
-  computador (botão de fechar sempre visível); cabeçalho fixo com o ☰ sem cobrir os filtros fixos; em Configurações → Pasta
-  das planilhas, botão "Abrir a pasta no Windows", título uma vez só e largura inteira; pasta antiga "Cópias" movida para
-  "Cópias da planilha"; "Continuar à noite" também com a busca parada. Pedidos a outras sessões: Arquitetura (canal de
-  teste antes dos clientes; página de aceite com o aviso "role até o fim" visível e largura no notebook; regra das
-  integrações), RootifyONE (janelas largas no computador, faixa do e-mail do responsável), e-mail de boas-vindas (aceite em
-  uma frase, "não recebe respostas" em linha própria, largura).
-- **0.7.33 pronta de novo** (12/Nov; revisões A e B da Operação atendidas): CNPJ com letras,
-  critérios e empresas excluídas por pessoa e por área, chamados pelo AssistONE, Painel sem busca e sem filtros repetidos,
-  etiqueta grande nos gráficos, sazonalidade lendo a fila inteira (Pausar, Continuar à noite), menu Configurações e Ajuda,
-  um Salvar só. Lista e conferência dos 5 pontos em `robo/PENDENCIAS.md`, seção 0.7.33. **46 arquivos no download completo
-  e 45 na atualização** (novo `lexsuite/documento.py`). Conferido: 266 testes, `aviso_e_lupa` 387, `larguras` 84,
-  `marca.py` em dia, revisor (bloqueios de texto corrigidos).
+- 14/Nov (noite): **0.7.48 em preparação, nada começado no código.** Lista (decisões e desenhos já no quadro): leitura pela consulta
+  pública quando o caderno cai (desenho "CNJ fora e antivírus" 1.3, decisão 37); limpeza automática (decisões 40 a 42, desenho
+  `documentacao/DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md`); filtro de cidade na Lista e no Painel (não vale na planilha);
+  ressalvas 3 a 5 da Operação nos instaladores (vão com a publicação, porque o site serve o instalador na hora).
 
 ### Feito (mais recente primeiro)
+- 14/Nov (noite): **0.7.47 publicada pela Operação** (tag `v0.7.47`, com a 0.7.46 e tudo o que estava "pronta" antes dentro;
+  instaladores novos no ar). Nuvem da 0.7.47 aplicada pela Arquitetura (`lex-conta` v20): o formato de `estado_cnj` conferido
+  contra o leitor do programa (`estado.ok` + `fora` = `total`). Ressalvas da revisão da Operação: (1) `robo/SEGURANCA.md` com o
+  que passou a sair (antivírus e sinal, `avisar_cnj`, `estado_cnj`, sondas, pedidos do instalador) e (2) decisão registrada,
+  feitas; (3) a (5) na 0.7.48; (6) pedido à Arquitetura (CLAUDE.md). Lista do dono: `documentacao/TESTES-DO-DONO.md`.
 - 12/Nov: **0.7.35 pronta de novo** (pedido da Operação "Revisão da 0.7.35 … 4 bloqueios", atendido): (1) "Conferir
   agora" e "Já aceitei" sem internet dizem "Sem conexão com a SolverONE: não foi possível conferir agora" (`conferirConta`
   devolve true, false ou "sem"); (2) manual: "O RADAR foi encerrado" com a causa nova, nas 3 cópias; (3) a entrada 0.7.35
@@ -354,9 +286,8 @@ Arquitetura (pedido no quadro).
   Arquitetura desenha a 0.8 em cima disso, e mudanças novas nessa área passam por ela.
 
 ### Preciso do dono
-- Lista de feedbacks do site (o dono vai mandar).
-- Imagem de fundo do topo (o dono vai anexar).
-
+- Testes no Windows da 0.7.47 (instalador novo, Sobre este computador, ligar e desligar a área logada): `documentacao/TESTES-DO-DONO.md`.
+- Perguntas 23 a 25 ao Leandro (Astrea e Aurum), quando quiser.
 ---
 
 ## Arquitetura (Fable)
@@ -699,7 +630,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   Arquitetura); (3) `INSTALAR.bat:104`: sem PowerShell o `INST` sai vazio e a mensagem final diz "Não consegui baixar" (enganosa;
   já era assim antes); (4) cabeçalho do instalador completo ainda diz "nada é baixado da internet", mas agora há as sondas;
   (5) linhas 226-227: "programa aberto" aceita qualquer `python.exe`; (6) CLAUDE.md, "Como entregar": o pacote passou a 47 e 46
-  arquivos com `lexsuite/computador.py`.
+  arquivos com `lexsuite/computador.py`. **Produto (14/Nov, noite): (1) e (2) feitos; (3) a (5) na 0.7.48, com a publicação;
+  (6) é do `CLAUDE.md`, pedido à Arquitetura abaixo.**
+- **Produto → Arquitetura (14/Nov, noite):** `CLAUDE.md`, "Como entregar": o pacote passou a 47 arquivos no download completo e 46
+  no de atualização a partir da 0.7.47 (`lexsuite/computador.py`), conforme a revisão da Operação.
 - **Operação → Arquitetura (14/Nov, SQL `2026-11-14-lex-recursos-por-licenca.sql`):** o DESFAZER não apaga os eventos inseridos
   (procura `'recurso area-logada: % (padrão inicial, 14/Nov)'`, mas o INSERT grava `'recurso area-logada: ligado'`/`'desligado'`);
   e `admin_lex_listar`/`admin_lex_salvar` estão só descritas, não com o SQL aplicado.
@@ -924,6 +858,7 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 
 | Data | Decisão |
 |---|---|
+| 14/Nov | **Nome do antivírus, se está ligado e o tipo de bloqueio no registro técnico** (campos `antivirus`, `antivirus_ligado`, `sinal`; desenho "CNJ fora e antivírus" 2.3): pode. O dono deu o "pode aplicar" da nuvem da 0.7.47 (14/Nov, noite), que inclui esses campos; termos sem mudança (6.2 c, dado do computador, não da pessoa). |
 | 14/Nov (noite) | **Perguntas 21 a 28 (visita à KR Law)**, registradas pela Arquitetura a partir do que o dono já disse e fez (14/Nov: "procure as respostas no histórico… só me traga o que ninguém respondeu"): **21** o uso da extensão no PJe é escolha do escritório (termos, seção 5); o programa limita por pedido (25, máx. 50), não por dia. **22** processos de terceiros, sim: "o acesso é dos advogados… podem entrar em um milhão de processos" (13/Nov); o limite por pedido contém o risco. **26** ordem A (feito), depois C e B conforme o Leandro responder. **27** nada se apaga ("não descarte"); tudo fica só com o dono, fora do repositório. **28** petição inicial é fonte do endereço "a conferir"; cadastro da parte tem prioridade (ordem de força das fontes do prompt da 0.7.46). **23, 24 e 25 ficam abertas: são perguntas ao Leandro**, que o dono entrega quando quiser; sem resposta, o Astrea fica fora. |
 | 14/Nov (noite) | **Nuvem da 0.7.47 aplicada** ("pode aplicar"): `lex-conta` v20 (`estado_cnj`, antivírus no registro, `avisar_cnj`), `lex-saude` v3 (alerta à SolverONE, e-mail a quem marcou na queda longa, sonda da consulta), SQL datado. **Desvio do XML da tarefa aceito** pela Arquitetura (tarefa sempre por `C:\LexSuiteONE\tarefa.xml`). **Limpeza automática**: desenho curto em `documentacao/DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md` (termos não mudam; manual sim). **Filtro de cidade** não vale na planilha. |
 | 14/Nov | **Limpeza automática** (perguntas 40 a 42): a cada leitura, os processos com mais de 6 meses perdem o texto pesado do Diário (fica o resumo) e os com mais de 24 meses saem do programa, ficando só nas estatísticas e no gráfico de tendência; os trabalhados (situação diferente de Novo, contato ou anotação) nunca saem; os dois prazos são ajustáveis em Configurações → Armazenamento, que mostra a última limpeza (quando, quantos resumidos, quantos apagados), também registrada no histórico. As estatísticas nunca se apagam. |

@@ -178,9 +178,15 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
   uma vez a cada carga dos dados (não a cada clique). Como pode haver centenas de cidades, a caixa ganha uma busca por digitação
   e mostra primeiro as cidades com mais processos; o nome é comparado sem acento e sem maiúsculas ("Sao Paulo" = "São Paulo").
   Cidade escolhida que some quando o estado muda sai do filtro com aviso. Processo sem cidade fica em "Sem cidade". Conferir
-  com 60 mil processos no teste de tela (rede lenta) antes de dar como pronto. Também na planilha? (pergunta à Arquitetura).
+  com 60 mil processos no teste de tela (rede lenta) antes de dar como pronto. Vale na Lista e no Painel; **não** na planilha
+  (Arquitetura, 14/Nov).
+- Limpeza automática: desenho da Arquitetura em `documentacao/DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md` (termos não mudam;
+  manual muda).
+- Ressalvas 3 a 5 da revisão da Operação nos instaladores (vão com a publicação): sem PowerShell, `INST` vazio e mensagem final
+  "Não consegui baixar" enganosa; cabeçalho do completo diz "nada é baixado da internet", mas agora há as sondas; "programa
+  aberto" aceita qualquer `python.exe` (conferir o caminho da pasta do programa).
 
-## 0.7.47 (14/Nov, CNJ fora e antivírus) — pronta para publicar
+## 0.7.47 (14/Nov, CNJ fora e antivírus) — publicada em 14/Nov (tag v0.7.47, com a 0.7.46 dentro; nuvem v20 aplicada)
 
 - Feito: itens a a i do pedido (desenho `documentacao/DESENHO-LEITURA-E-ANTIVIRUS-2026-11-14.md`; decisões 34 a 39).
   (a) `rede.py` guarda cabeçalhos de origem, 300 caracteres do corpo, tempo, tentativas e IP; duas sondas de controle na primeira
@@ -204,7 +210,7 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
   RootifyONE pode mostrar "quais antivírus aparecem e quanto bloqueiam"; item de roadmap "CNJ fora e antivírus" concluído na
   parte do programa.
 
-## 0.7.46 (14/Nov, Área logada v2) — pronta para publicar
+## 0.7.46 (14/Nov, Área logada v2) — publicada dentro da 0.7.47
 
 - Feito: itens a a i do pedido da Arquitetura (`documentacao/PROMPT-PRODUTO-0.7.46-2026-11-14.md`). Testes: `test_v0746.py` (18:
   48 processos → 2 lotes, resposta simulada da Arquitetura com os aceites e recusas previstos, 2 blocos em ordem trocada, .zip com

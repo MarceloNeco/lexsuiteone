@@ -5,13 +5,10 @@ Quando terminar um item, marque `[x]` ou avise a Produto, que marca.
 
 ## 0. Onde as versões estão hoje
 
-| Versão | Situação (conferido em `docs/atualizacao/versao.json` e no quadro) |
+| Versão | Situação |
 |---|---|
-| 0.7.45 | **Publicada** (é a que o programa instalado recebe hoje) |
-| 0.7.46 (Área logada v2) | Pronta, esperando você dizer à Operação: "publica a versão 0.7.46" |
-| 0.7.47 (CNJ fora e antivírus) | Pronta, esperando "publica a versão 0.7.47". O instalador novo vai junto, na publicação |
-
-Os testes das seções 2 e 3 só fazem sentido depois que a versão correspondente for publicada.
+| 0.7.47 (CNJ fora e antivírus, com a 0.7.46 Área logada v2 dentro) | **Publicada** em 14/Nov (tag v0.7.47), com o instalador novo no site |
+| Nuvem da 0.7.47 (`lex-conta` v20, alerta e e-mail do CNJ) | **Aplicada** pela Arquitetura em 14/Nov |
 
 ## 1. Ligar e desligar a área logada por escritório
 
@@ -29,8 +26,7 @@ Os testes das seções 2 e 3 só fazem sentido depois que a versão corresponden
 **Como estava em 14/Nov** (quadro, registro da Arquitetura): KR Law = **desligado**; licença de teste = **ligado**.
 
 **Quando o programa percebe a mudança**:
-- Na 0.7.45 e na 0.7.46: ao abrir o programa e antes de cada leitura (é quando ele confere a licença).
-- A partir da 0.7.47: também de 30 em 30 minutos com a tela aberta e ao voltar para a janela.
+- Ao abrir o programa, antes de cada leitura, de 30 em 30 minutos com a tela aberta e ao voltar para a janela (0.7.47).
 
 **O que você deve ver no programa**:
 - [ ] **Desligado:** somem o botão "Trazer dados da área logada…" da barra que aparece ao marcar processos, o grupo "Área logada"
@@ -56,11 +52,10 @@ algum ficou para trás, diga qual e a Produto confere o que ainda vale.
 
 ## 3. Coisas que dependem de você (não são teste)
 
-- [ ] "publica a versão 0.7.46" e "publica a versão 0.7.47", na conversa da Operação.
-- [ ] "pode aplicar" para a Arquitetura na parte de nuvem da 0.7.47 (`lex-conta` v20: a linha "A SolverONE também vê o CNJ
-      fora", o aviso por e-mail e os campos do antivírus no registro técnico). Sem isso, o programa funciona, mas essas três
-      coisas não aparecem.
+- [ ] Entregar ao Leandro as perguntas 23 a 25 (Astrea e Aurum; texto completo no quadro) e o prompt v2 do PJe.
 - [ ] Criar o repositório `central-lexsuiteone` no GitHub (Central LexSuiteONE; nenhuma sessão pode criar repositório).
+- [ ] Os itens da Arquitetura que pedem você (painel do Supabase, RootifyONE, staging depois da KR Law): lista na seção
+      Arquitetura → "Preciso do dono" do quadro.
 
 ## 4. Licença de teste
 
@@ -69,8 +64,8 @@ O código da licença de teste não fica escrito em lugar nenhum (regra do proje
 
 ## 5. Planejado (ainda não feito)
 
-- 0.7.48: filtro de cidade na Lista, ao lado de Estado (escolher o estado limita as cidades); leitura pela consulta quando o
-  caderno do CNJ cai. Desenho em `robo/PENDENCIAS.md`.
+- 0.7.48: filtro de cidade na Lista e no Painel, ao lado de Estado (escolher o estado limita as cidades; não vale na
+  planilha); leitura pela consulta quando o caderno do CNJ cai.
 - Limpeza automática (suas decisões 40 a 42, de 14/Nov): com 6 meses sai o texto pesado; com 24 meses o processo sai do
   programa e fica só nas estatísticas; os trabalhados nunca saem; prazos ajustáveis em Configurações → Armazenamento, com a
-  última limpeza à vista. Esperando o desenho curto da Arquitetura (muda o que o banco guarda); depois a Produto implementa.
+  última limpeza à vista. Desenho da Arquitetura pronto (`documentacao/DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md`); entra na 0.7.48.
