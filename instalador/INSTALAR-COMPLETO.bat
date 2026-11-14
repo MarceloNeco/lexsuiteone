@@ -21,6 +21,21 @@ echo  Instalando o LexSuiteONE neste computador
 echo  -----------------------------------------
 echo.
 
+rem 0.7.47 (desenho "CNJ fora e antivirus", 2.1): aberto de dentro do .zip, sem "Extrair tudo", o Windows poe este arquivo
+rem sozinho numa pasta temporaria, e o antivirus costuma barrar o que roda dali. Pede para extrair antes.
+set "AQUI=%~dp0"
+set "NO_TEMP="
+call set "SEM_T=%%AQUI:%TEMP%=%%"
+if not "%SEM_T%"=="%AQUI%" set "NO_TEMP=1"
+if not "%AQUI:\AppData\Local\Temp\=%"=="%AQUI%" set "NO_TEMP=1"
+if defined NO_TEMP if not "%AQUI:.zip=%"=="%AQUI%" goto dentro_do_zip
+set "AV="
+set "AVON="
+set "AVON_J="
+set "SODEF="
+set "FW="
+set "SINAL="
+
 set "DADOS=%~dp0dados"
 if not exist "%DADOS%\pacote.zip" goto extrair_antes
 if not exist "%DADOS%\python.zip" goto extrair_antes
@@ -32,6 +47,60 @@ where certutil.exe >nul 2>nul || goto sem_ferramentas
 
 if exist "%T%" rd /s /q "%T%"
 mkdir "%T%" 2>nul
+
+rem 0.7.47 (2.2): passo 0, antes de baixar. Detectar, explicar e orientar; nunca contornar o antivirus.
+echo  Conferindo este computador antes de instalar...
+rem (b) antivirus e firewall pela Central de Seguranca do Windows (sem administrador); sem ela: "nao identificado"
+set "IDENT=0"
+powershell.exe -NoProfile -Command "$ErrorActionPreference='SilentlyContinue'; $a=$null; try { $a=@(Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct -ErrorAction Stop); 'IDENT=1' } catch { 'IDENT=0' }; function On($p) { (($p.productState -shr 8) -band 255) -in 16,17 }; $o=@($a | Where-Object { ($_.displayName -notmatch 'Defender|^Windows' -or $_.displayName -match 'Bitdefender') }); $p=@(@($o | Where-Object { On $_ }) + @($a | Where-Object { On $_ }) + $o + @($a) | Where-Object { $_ }) | Select-Object -First 1; if ($p) { 'AV=' + ($p.displayName -replace '[^A-Za-z0-9 .,+-]', ''); if (On $p) { 'AVON=sim' } else { 'AVON=nao' }; if ($p.displayName -match 'Defender|^Windows' -and $p.displayName -notmatch 'Bitdefender') { 'SODEF=1' } }; $f=$null; try { $f=@(Get-CimInstance -Namespace root/SecurityCenter2 -ClassName FirewallProduct -ErrorAction Stop) | Select-Object -First 1 } catch {}; if ($f) { 'FW=' + ($f.displayName -replace '[^A-Za-z0-9 .,+-]', '') }" > "%T%\av.txt" 2>nul
+if exist "%T%\av.txt" for /f "usebackq tokens=1,* delims==" %%a in ("%T%\av.txt") do (
+  if /i "%%a"=="IDENT" set "IDENT=%%b"
+  if /i "%%a"=="AV" set "AV=%%b"
+  if /i "%%a"=="AVON" set "AVON=%%b"
+  if /i "%%a"=="SODEF" set "SODEF=%%b"
+  if /i "%%a"=="FW" set "FW=%%b"
+)
+if "%AVON%"=="sim" set "AVON_J=sim"
+if "%AVON%"=="nao" set "AVON_J=n\u00e3o"
+rem aviso "fornecedor desconhecido" (SmartScreen): este arquivo veio da internet; nao e bloqueio
+set "MARCA_INTERNET="
+more < "%~f0:Zone.Identifier" >nul 2>&1 && set "MARCA_INTERNET=1"
+rem (d) saida para os nossos enderecos (pedido leve, sem baixar nada)
+set "NET_SITE=0"
+set "NET_NUVEM=0"
+set "NET_CNJ=0"
+curl.exe -s -o nul -m 15 "%SITE%/" && set "NET_SITE=1"
+curl.exe -s -o nul -m 15 "%REGISTRO%" && set "NET_NUVEM=1"
+curl.exe -s -o nul -m 15 "https://comunicaapi.pje.jus.br/api/v1/comunicacao?itensPorPagina=5" && set "NET_CNJ=1"
+if "%NET_SITE%%NET_NUVEM%%NET_CNJ%"=="000" goto sem_internet_antes
+if not "%NET_SITE%%NET_NUVEM%"=="11" goto rede_recusada
+if "%NET_CNJ%"=="0" echo  Aviso: o endereco do CNJ ^(comunicaapi.pje.jus.br^) nao respondeu agora. A instalacao continua;
+if "%NET_CNJ%"=="0" echo  se continuar assim, peca a TI para liberar esse endereco ^(judicial.solverone.com.br/antivirus.html^).
+rem (e) o aviso, antes de continuar
+if not "%IDENT%"=="1" goto av_nao_ident
+if not defined AV goto av_nenhum
+if defined SODEF goto av_defender
+echo.
+echo  Antivirus encontrado: %AV%.
+echo  Programas novos costumam ser barrados por ele. Antes de continuar, cadastre a excecao da pasta
+echo  C:\LexSuiteONE ^(veja judicial.solverone.com.br/antivirus.html^) ou peca a TI.
+call :passos_antivirus
+echo.
+set /p "PRONTO=  Depois aperte Enter para continuar... "
+goto av_fim
+:av_defender
+echo  Antivirus encontrado: %AV%. Se aparecer um aviso do Windows, clique em "Mais informacoes" e em "Executar".
+goto av_fim
+:av_nao_ident
+echo  Nao consegui identificar o antivirus deste computador ^(este Windows nao informa^).
+echo  Se algum programa de protecao bloquear a instalacao, veja judicial.solverone.com.br/antivirus.html
+goto av_fim
+:av_nenhum
+echo  O Windows nao informou nenhum antivirus. Se aparecer um aviso, clique em "Mais informacoes" e em "Executar".
+:av_fim
+if defined FW echo  Firewall: %FW%.
+if defined MARCA_INTERNET if not defined SODEF echo  Se o Windows avisar "fornecedor desconhecido", clique em "Mais informacoes" e em "Executar": o programa ainda nao tem assinatura digital.
+echo.
 
 rem Codigo de cliente, antes de tudo: sem codigo valido nada e instalado, e todo aviso de erro deste computador
 rem chega a SolverONE com o codigo do escritorio e a identificacao (aleatoria) desta instalacao.
@@ -89,7 +158,7 @@ if not exist "%DEST%\.teste-escrita" goto sem_pasta
 :destino_ok
 del "%DEST%\.teste-escrita" 2>nul
 
-echo  1 de 5  Lendo a versao que veio no pacote...
+echo  1 de 6  Lendo a versao que veio no pacote...
 copy /y "%DADOS%\instalar.txt" "%T%\instalar.txt" >nul || goto manifesto_ruim
 set "versao="
 set "arquivo="
@@ -106,7 +175,7 @@ if not defined sha256 goto manifesto_ruim
 if not defined nome set "nome=LexSuiteONE"
 echo(%arquivo%| findstr /r /x /c:"LexSuiteONE-RADAR-atualizacao-[0-9][0-9.]*\.zip" /c:"LEXSUITE-ONE-ROBO-[0-9][0-9.]*\.zip" >nul || goto manifesto_ruim
 
-echo  2 de 5  Conferindo o %nome% %versao% que veio no pacote...
+echo  2 de 6  Conferindo o %nome% %versao% que veio no pacote...
 copy /y "%DADOS%\pacote.zip" "%T%\pacote.zip" >nul || goto falha_extrair
 
 set "H="
@@ -116,7 +185,7 @@ set "H=%H: =%"
 if /i not "%H%"=="%sha256%" goto hash_ruim
 echo          Impressao digital conferida.
 
-echo  3 de 5  Instalando em %DEST%...
+echo  3 de 6  Instalando em %DEST%...
 rem 0.7.41 (KR Law, 13/Nov: o antivirus barrou o tar.exe em C:\LexSuiteONE): tenta com o PowerShell e, numa instalacao
 rem nova, na pasta do usuario, antes de desistir. Onde ja ha um programa instalado (lexsuite.db), nao muda de pasta.
 set "TENTOU=%DEST%"
@@ -138,7 +207,7 @@ if exist "%DEST%\chave_publica.txt" goto chave_ok
 rem O programa le este arquivo na primeira abertura: o codigo ja vem preenchido e a identificacao e a mesma.
 >"%DEST%\conta-inicial.json" echo {"codigo":"%CODIGO_OK%","instalacao":"%INST%"}
 
-echo  4 de 5  Preparando o que o programa precisa para funcionar (so na primeira vez)...
+echo  4 de 6  Preparando o que o programa precisa para funcionar (so na primeira vez)...
 if exist "%DEST%\python\python.exe" goto python_ok
 mkdir "%DEST%\python" 2>nul
 tar.exe -xf "%DADOS%\python.zip" -C "%DEST%\python" 2>nul
@@ -151,7 +220,9 @@ for %%f in ("%DEST%\python\python*._pth") do (
 :python_ok
 if not exist "%DEST%\python\python.exe" goto sem_python
 
-echo  5 de 5  Criando o atalho "%nome%" na area de trabalho e no menu Iniciar...
+echo  5 de 6  Agora vou criar a leitura automatica ^(tarefa "LexSuiteONE Radar" no Agendador do Windows^)...
+call :criar_tarefa
+echo  6 de 6  Criando o atalho "%nome%" na area de trabalho e no menu Iniciar...
 if exist "%DADOS%\radar.ico" copy /y "%DADOS%\radar.ico" "%DEST%\radar.ico" >nul
 set "ICONE=%DEST%\radar.ico"
 if not exist "%ICONE%" set "ICONE=%SystemRoot%\System32\shell32.dll,13"
@@ -164,8 +235,46 @@ echo  Pronto. Daqui em diante, abra pelo atalho "%nome%" na area de trabalho.
 echo  A tela vai abrir agora no navegador.
 echo.
 call "%DEST%\ABRIR.bat" >nul
+rem 0.7.47 (2.1): o programa precisa estar rodando 5 segundos depois de abrir; senao, o antivirus pode te-lo encerrado
+timeout /t 5 /nobreak >nul
+tasklist /fi "imagename eq pythonw.exe" 2>nul | find /i "pythonw.exe" >nul && goto programa_aberto
+tasklist /fi "imagename eq python.exe" 2>nul | find /i "python.exe" >nul && goto programa_aberto
+goto processo_morto
+:programa_aberto
 timeout /t 20
 exit /b 0
+
+:dentro_do_zip
+set "ETAPA=aberto de dentro do zip"
+set "SINAL=zip_temp"
+echo  Este instalador foi aberto de dentro do arquivo .zip, sem extrair. Assim o Windows o coloca
+echo  sozinho numa pasta temporaria, e o antivirus costuma barrar o que roda dali.
+echo.
+echo  Faca assim:
+echo    1. Feche esta janela.
+echo    2. Clique com o botao direito no arquivo .zip que voce baixou e escolha "Extrair tudo".
+echo    3. Na pasta que abrir, de dois cliques em INSTALAR.bat.
+goto erro
+:sem_internet_antes
+set "ETAPA=sem internet"
+echo  Este computador nao alcancou nenhum dos enderecos do programa.
+echo  Confira a internet ^(ou o proxy da empresa^) e rode o instalador de novo.
+goto erro
+:rede_recusada
+set "ETAPA=rede recusada"
+set "SINAL=rede_recusada"
+set "DETALHE=site=%NET_SITE% nuvem=%NET_NUVEM% cnj=%NET_CNJ%"
+echo  A internet funciona, mas a protecao de rede do antivirus ou o firewall esta barrando os enderecos do programa:
+if "%NET_SITE%"=="0" echo    - judicial.solverone.com.br nao respondeu
+if "%NET_NUVEM%"=="0" echo    - qvdvkqydhnadhewcidia.supabase.co nao respondeu
+call :orientar
+goto erro
+:processo_morto
+set "ETAPA=abrir o programa"
+set "SINAL=processo_morto"
+echo  O programa foi instalado, mas fechou logo ao abrir: o antivirus pode te-lo encerrado.
+call :orientar
+goto erro
 
 :extrair_antes
 echo  Este instalador precisa da pasta "dados" que vem junto dele no pacote completo.
@@ -212,19 +321,24 @@ echo  Baixe o pacote completo de novo; se repetir, avise o suporte.
 goto erro
 :falha_extrair
 set "ETAPA=descompactar"
+set "SINAL=bloqueio_gravacao"
 set "DETALHE=errorlevel=%errorlevel% tar e powershell"
 echo  Nao consegui descompactar o pacote ^(tentei em %TENTOU%^).
 echo  O mais provavel e o antivirus ter bloqueado a criacao dos arquivos do programa.
 echo  Peca para liberar a pasta C:\LexSuiteONE ^(e %LOCALAPPDATA%\LexSuiteONE^) no antivirus e rode o instalador de novo.
+call :orientar
 goto erro
 :sem_python
 set "ETAPA=preparar python"
+if exist "%DEST%\lexsuite_robo.py" set "SINAL=bloqueio_gravacao"
 echo  Nao consegui preparar o que o programa precisa para funcionar ^(descompactar o Python que veio no pacote^).
 echo  Se o antivirus bloqueou, peca para liberar a pasta %DEST% e rode o instalador de novo.
+echo  Se o antivirus apagou o python.exe, restaure o item da quarentena.
+call :orientar
 goto erro
 :erro
 if defined ETAPA (
-  curl.exe -s -m 15 -X POST "%REGISTRO%" -H "Content-Type: application/json" -d "{\"acao\":\"registro\",\"origem\":\"instalador\",\"etapa\":\"%ETAPA%\",\"versao\":\"%versao%\",\"windows\":\"%WINVER%\",\"mensagem\":\"%DETALHE%\",\"codigo\":\"%CODIGO_OK%\",\"instalacao\":\"%INST%\"}" >nul 2>&1
+  curl.exe -s -m 15 -X POST "%REGISTRO%" -H "Content-Type: application/json" -d "{\"acao\":\"registro\",\"origem\":\"instalador\",\"etapa\":\"%ETAPA%\",\"versao\":\"%versao%\",\"windows\":\"%WINVER%\",\"mensagem\":\"%DETALHE%\",\"codigo\":\"%CODIGO_OK%\",\"instalacao\":\"%INST%\",\"antivirus\":\"%AV%\",\"antivirus_ligado\":\"%AVON_J%\",\"sinal\":\"%SINAL%\"}" >nul 2>&1
   echo.
   echo  A SolverONE recebeu um aviso tecnico deste erro ^(sem dados pessoais^).
 )
@@ -249,4 +363,94 @@ goto :eof
 :extrair_ok
 del /q "%DEST%\lexsuite_robo.py.antes" 2>nul
 set "EXTRAIU=sim"
+goto :eof
+
+:criar_tarefa
+rem 0.7.47 (2.6.1): a leitura automatica criada aqui, as claras, nesta janela, pelo XML que o programa grava na pasta dele
+rem ^(tarefa.xml, com autor e descricao da SolverONE^), nunca na pasta temporaria.
+set "TAR_MODO="
+"%DEST%\python\python.exe" "%DEST%\lexsuite_robo.py" tarefa > "%T%\tarefa.txt" 2>nul
+if exist "%T%\tarefa.txt" for /f "usebackq tokens=1,* delims==" %%a in ("%T%\tarefa.txt") do (
+  if /i "%%a"=="MODO" set "TAR_MODO=%%b"
+)
+if /i "%TAR_MODO%"=="desligada" goto tarefa_desligada
+if /i "%TAR_MODO%"=="nenhum" goto tarefa_desligada
+if /i "%TAR_MODO%"=="xml" schtasks.exe /create /f /tn "LexSuiteONE Radar" /xml "%DEST%\tarefa.xml" >nul 2>&1
+if /i not "%TAR_MODO%"=="xml" goto tarefa_depois
+schtasks.exe /query /tn "LexSuiteONE Radar" >nul 2>&1 || goto tarefa_falhou
+echo          Leitura automatica criada ^(pode ser mudada em Configuracoes, Leitura do Diario^).
+goto :eof
+:tarefa_desligada
+echo          A leitura automatica esta desligada nas Configuracoes; nao criei.
+goto :eof
+:tarefa_depois
+echo          Nao consegui preparar a leitura automatica agora. Com a tela aberta, o programa le sozinho;
+echo          para criar depois: Configuracoes, Leitura do Diario, Salvar.
+goto :eof
+:tarefa_falhou
+set "SINAL=tarefa_falhou"
+set "ETAPA=leitura automatica"
+echo          Nao consegui criar a leitura automatica: o antivirus pode ter impedido.
+echo          Com a tela aberta, o programa le sozinho; depois de liberar, Configuracoes, Leitura do Diario, Salvar.
+call :orientar
+call :registrar_aviso
+set "SINAL="
+set "ETAPA="
+echo.
+set /p "PRONTO=  Aperte Enter para continuar a instalacao... "
+goto :eof
+
+:registrar_aviso
+curl.exe -s -m 15 -X POST "%REGISTRO%" -H "Content-Type: application/json" -d "{\"acao\":\"registro\",\"origem\":\"instalador\",\"etapa\":\"%ETAPA%\",\"versao\":\"%versao%\",\"windows\":\"%WINVER%\",\"mensagem\":\"%DETALHE%\",\"codigo\":\"%CODIGO_OK%\",\"instalacao\":\"%INST%\",\"antivirus\":\"%AV%\",\"antivirus_ligado\":\"%AVON_J%\",\"sinal\":\"%SINAL%\"}" >nul 2>&1
+goto :eof
+
+:orientar
+rem 0.7.47 (2.1): o que aconteceu ja foi dito; aqui, o antivirus encontrado, os passos e o texto para a TI. Nunca pede para tirar a protecao.
+echo.
+if not defined AV echo  Antivirus deste computador: nao identificado.
+if defined AV echo  Antivirus encontrado: %AV%.
+call :passos_antivirus
+call :texto_ti
+echo  Nao e preciso desligar o antivirus: basta a excecao. Depois, rode este instalador de novo.
+goto :eof
+
+:passos_antivirus
+rem Bitdefender e Microsoft Defender por extenso ^(os mesmos de judicial.solverone.com.br/antivirus.html^); os demais, a pagina
+echo(%AV%| findstr /i /c:"bitdefender" >nul && goto passos_bitdefender
+echo(%AV%| findstr /i /c:"defender" /c:"windows" >nul && goto passos_defender
+echo  Passo a passo do seu antivirus, com a fonte oficial do fabricante: judicial.solverone.com.br/antivirus.html
+goto :eof
+:passos_bitdefender
+echo  No Bitdefender:
+echo    1. Protecao, Defesa contra Ameacas, Configuracoes, Administrar excecoes, Adicionar uma excecao.
+echo    2. Digite C:\LexSuiteONE\ ^(sem asterisco no fim^).
+echo    3. Ligue Antivirus ^(Verificacao ao acessar, Analise a pedido, Scripts incorporados^) e Defesa contra Ameacas.
+echo    4. Clique em Salvar. Se ja houve bloqueio: Notificacoes, Reiniciar, antes de instalar de novo.
+echo  Passos com imagens e fonte oficial: judicial.solverone.com.br/antivirus.html
+goto :eof
+:passos_defender
+echo  No Microsoft Defender:
+echo    1. Seguranca do Windows, Protecao contra virus e ameacas, Gerenciar configuracoes, Exclusoes.
+echo    2. Adicionar uma exclusao, Pasta, e escolha C:\LexSuiteONE.
+echo    3. Se "Acesso controlado a pastas" estiver ligado: Permitir um aplicativo, e escolha
+echo       C:\LexSuiteONE\python\python.exe e C:\LexSuiteONE\python\pythonw.exe.
+echo  Passos com a fonte oficial: judicial.solverone.com.br/antivirus.html
+goto :eof
+
+:texto_ti
+echo.
+echo  Texto pronto para a TI ^(o mesmo da pagina judicial.solverone.com.br/antivirus.html, com o botao Copiar^):
+echo  -----
+echo  Pedido de excecao no antivirus para o LexSuiteONE ^(SolverONE^), leitor do Diario de Justica Eletronico Nacional.
+echo  Codigo publico; atualizacoes assinadas; sem acesso a area logada; nao envia dados do escritorio para fora.
+echo  Por favor, adicione as excecoes ^(protecao em tempo real e protecao por comportamento^):
+echo  - Pasta, com subpastas: C:\LexSuiteONE
+echo  - Processos: C:\LexSuiteONE\python\pythonw.exe e C:\LexSuiteONE\python\python.exe
+echo  - O programa cria uma tarefa no Agendador de Tarefas do Windows chamada "LexSuiteONE Radar" ^(schtasks^),
+echo    que roda o pythonw.exe nos horarios configurados pelo escritorio.
+echo  - Enderecos: judicial.solverone.com.br, comunicaapi.pje.jus.br, qvdvkqydhnadhewcidia.supabase.co,
+echo    brasilapi.com.br e minhareceita.org
+echo  Se algum item foi para a quarentena, favor restaurar. Nao e necessario desligar a protecao.
+echo  Duvidas: judicial@solverone.com.br
+echo  -----
 goto :eof
