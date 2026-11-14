@@ -88,6 +88,28 @@ Padrão inicial: **desligado na KR Law**, ligado na licença de teste, até o do
 `nuvem/supabase/2026-11-14-lex-recursos-por-licenca.sql` (não aplicado; entra com o "pode aplicar"). Serve para qualquer recurso
 futuro (chamados, exportação para o Astrea), não só para este.
 
+## 2d. Como o liga e desliga chega ao RADAR (pergunta do dono, 14/Nov)
+
+- **Onde se liga**: RootifyONE → Licenças do RADAR → ficha → bloco "Recursos desta licença" → interruptor "Área logada" (três
+  estados: segue o global, ligado nesta licença, desligado nesta licença). Grava em `lex_contas.recursos` por `admin_lex_salvar`, com
+  evento no histórico. O global (Controle dos apps) continua valendo para quem não tem exceção.
+- **Como o programa fica sabendo** (hoje): a licença é conferida na `lex-conta` ao abrir o programa, antes de cada leitura, ao clicar
+  em "conferir"/"Trocar licença" e, só enquanto há aceite pendente, ao voltar o foco. A resposta traz `recursos` e o programa guarda
+  em `config.json` (`conta.recursos`) e esconde na hora o que está desligado (`data-recurso`).
+- **O que muda na 0.7.47 (Produto)**: conferência leve também **a cada 30 minutos com a tela aberta**, ao **voltar o foco** se a
+  última foi há mais de 30 min, e no **F5/Atualizar**; a resposta atualiza `recursos` e a tela se ajusta sem reabrir. É a "atualização
+  de recursos" que o dono pediu: não é versão nova, é o estado da licença. Custo: 1 pedido a cada 30 min por computador (a
+  `lex-conta` já limita por instalação). **Sem internet**: vale o último estado conhecido; nunca "abre" um recurso que estava
+  desligado só porque a nuvem não respondeu. Primeira instalação sem resposta: o recurso fica como o padrão do pacote
+  (`recursos-do-app.json`, "area-logada": desligado até a licença dizer o contrário).
+- **Onde a pessoa vê**: Configuração → Este computador → "Recursos da licença: Área logada ligada pela SolverONE em 14/11 (conferido
+  há 12 min)". Quando desligado, os três lugares (barra de lote, menu, botão do cartão) simplesmente não aparecem; o manual diz
+  "este recurso é ligado pela SolverONE por escritório; fale com o seu contato".
+- **Quem faz o quê** (para não haver sobreposição com o que o dono perguntou à Produto): Produto = `data-recurso` nos 3 lugares, a
+  conferência de 30 min/foco/F5 e a linha em Configuração; Arquitetura = coluna `lex_contas.recursos`, `lex-conta` v19 (licença por
+  cima do global), `recursos-do-app.json` com `area-logada`, padrão desligado na KR Law; RootifyONE = a ficha (prompt
+  `documentacao/PROMPT-ROOTIFYONE-RECURSOS-POR-LICENCA-2026-11-14.md`).
+
 ## 3. O que o Astrea tem a ver com isso
 
 Nada para **completar** a lista: o Astrea não tem dado de processo que o PJe não tenha. Ele entra em outro fluxo, já desenhado
