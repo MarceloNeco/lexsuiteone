@@ -362,6 +362,8 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 14/Nov (5): fluxo que não trava a tela (faixa de pedido pendente, retomar no passo 3, menu com as duas funções) no protótipo e no
+  desenho (2b.7); prompt único da Produto para a 0.7.46 reescrito com todos os artefatos (`documentacao/PROMPT-PRODUTO-0.7.46-2026-11-14.md`).
 - 14/Nov (4): teste do dono na 0.7.45 (área logada) registrado: protótipo corrigido (limite por sessão, caixa do pedido com
   copiar, relatório "o que mudou", filtro na lista), seções 2b e 2c no desenho (regras novas e interruptor por licença), pedido à
   Produto, SQL do interruptor proposto. Texto simulado de resposta para o dono testar na 0.7.45 em `documentacao/prototipos/area-logada/`.

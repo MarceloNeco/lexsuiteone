@@ -68,6 +68,7 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
     <span class="conta">Na lista: <b id="n-lista">1.248</b> ações · marcadas: <b id="n-marc">12</b></span>
   </div>
 
+  <div class="lote" id="pend" style="display:none;background:#e8f0ff;border-color:#7d9bd6"><span>⏳ <b id="pend-t">Pedido de 14/11 (50 processos) aguardando a resposta da sua ferramenta.</b> Você pode usar o programa normalmente enquanto ela roda em outra aba.</span><button class="forte" id="pend-b">Trazer resposta</button><button class="txt" id="pend-x">Cancelar pedido</button></div>
   <div class="lote">
     <span>Com a lista filtrada:</span>
     <button class="latao" id="b-abrir">Trazer dados da área logada…</button>
@@ -97,7 +98,7 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
 
   <div class="leg">
     <h3>Onde isso fica na aplicação</h3>
-    <p>Na <b>Lista de ações</b>, a barra de lote (a mesma de "Mudar situação" e "Arquivar") ganha o botão <b>Trazer dados da área logada…</b>. O botão respeita o filtro ativo e as marcações. O mesmo botão existe no cartão de cada ação (um processo só) e no menu ☰ → Área logada, que abre direto no passo 3 para quem só quer colar uma resposta. Nada disso faz pedido à internet: o programa só monta texto e lê texto.</p>
+    <p><b>Nada trava a tela</b>: depois de copiar o pedido, a janela fecha e fica uma faixa "pedido aguardando resposta" no alto da lista (e no menu ☰ → Área logada → "Trazer resposta"). A pessoa usa o programa à vontade enquanto a ferramenta roda em outra aba; quando tiver a resposta, clica em "Trazer resposta" e cai direto no passo 3. O pedido pendente sobrevive a fechar e abrir o programa (fica gravado com os processos pedidos).</p><p>Na <b>Lista de ações</b>, a barra de lote (a mesma de "Mudar situação" e "Arquivar") ganha o botão <b>Trazer dados da área logada…</b>. O botão respeita o filtro ativo e as marcações. O mesmo botão existe no cartão de cada ação (um processo só) e no menu ☰ → Área logada, que abre direto no passo 3 para quem só quer colar uma resposta. Nada disso faz pedido à internet: o programa só monta texto e lê texto.</p>
   </div>
 </main>
 
@@ -159,7 +160,7 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
       var bs=el("button",null,"Salvar como arquivo (.md)"); l2.appendChild(bs); l2.appendChild(el("span","nota","O arquivo também fica em saida\\contatos\\pedido-pje-2026-11-14.md")); corpo.appendChild(l2);
       var cx=el("div"); cx.style.cssText="border:1px solid var(--fio);border-radius:12px;margin-top:10px;overflow:hidden"; var cxt=el("div","linha"); cxt.style.cssText="padding:6px 10px;background:var(--papel-2);border-bottom:1px solid var(--fio)"; cxt.appendChild(el("b",null,"O pedido (o que vai colado), "+num(q)+" processos")); var bc2=el("button","txt","Copiar de novo"); bc2.addEventListener("click",function(){bc2.textContent="Copiado ✓"; setTimeout(function(){bc2.textContent="Copiar de novo";},1500);}); cxt.appendChild(bc2); cx.appendChild(cxt); corpo.appendChild(cx); var det=cx; var pre=el("pre",null,"# Pedido de dados ao PJe (14/11/2026) · RADAR JUDICIAL · lote 1 de "+lotes(q)+"\n\nVocê está numa aba do PJe do TRT da 2ª Região, 1º grau, já logado como advogado…\nNUNCA: abrir tela de login; baixar processo completo; abrir expedientes; peticionar; anotar dado de pessoa ou CPF.\nROTEIRO POR PROCESSO: painel → número → processo → Valor da causa, Distribuído → Dados do processo (Polo Passivo: endereço, e-mail) → petição inicial → notificação…\nRESPOSTA PARA O RADAR v1 · lote 1 de "+lotes(q)+"\n| processo | dado | valor | resultado | fonte | data | observação |\n\n## Processos (25 de "+num(q)+")\n| 0000001-11.2026.5.02.0001 | TRT2 | Empresa Exemplo Um Ltda | 11.222.333/0001-81 | valor_causa, email, telefone |\n…"); pre.style.cssText="font-size:12px;white-space:pre-wrap;padding:10px;margin:0;max-height:160px;overflow:auto"; det.appendChild(pre);
       corpo.appendChild(el("p","nota","O que nunca entra, mesmo que a ferramenta devolva: CPF, dado do autor da ação, de testemunhas, de peritos ou de advogados. O programa recusa linha por linha."));
-      bot("Voltar",function(){setPasso(1);}); bot("Já tenho a resposta: passo 3",function(){setPasso(3);},"forte");
+      bot("Voltar",function(){setPasso(1);}); bot("Fechar e voltar quando tiver a resposta",function(){pendente(q); fechar();},"forte"); bot("Já tenho a resposta",function(){setPasso(3);});
     }
     if(S.passo===3){
       corpo.appendChild(el("p",null,"Traga a resposta da ferramenta. Pode ser o texto copiado ou o arquivo que ela gerou; pode vir em partes (lotes), em qualquer ordem."));
@@ -210,6 +211,9 @@ code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
       var k=tr.querySelector('[data-c="cont"]'); if(k){ k.className="tem"; k.innerHTML=["e-mail, endereço","endereço (a conferir)","telefone (Receita) · petição em PDF: tentar depois","e-mail, telefone, site"][idx]+(idx!==2?' <span class="selo novo">área logada · hoje</span>':''); } });
     document.getElementById("n-marc").textContent="0";
   }
+  function pendente(q){ document.getElementById("pend").style.display="flex"; document.getElementById("pend-t").textContent="Pedido de 14/11 ("+num(q)+" processos, "+lotes(q)+" lote(s)) aguardando a resposta da sua ferramenta."; }
+  document.getElementById("pend-b").addEventListener("click",function(){ setPasso(3); fundo.classList.add("aberta"); });
+  document.getElementById("pend-x").addEventListener("click",function(){ document.getElementById("pend").style.display="none"; });
   document.getElementById("b-abrir").addEventListener("click",function(){ S.passo=1; setPasso(1); fundo.classList.add("aberta"); });
 })();
 </script>

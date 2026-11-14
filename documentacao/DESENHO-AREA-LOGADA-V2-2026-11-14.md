@@ -72,6 +72,11 @@ Mudanças de regra, a partir do que o dono viu no PJe:
    trava.
 5. **Menu ☰ → Área logada** oferece as duas coisas: "Gerar pedido…" (abre o passo 1 com a lista atual) e "Trazer resposta…" (passo 3).
 6. **Arquivo**: além do texto colado, subir `.md`, `.txt` ou `.zip` (ferramentas que entregam artefato em vez de texto).
+7. **Nada trava a tela**: os passos são uma janela comum, não um túnel. Depois de copiar o pedido (passo 2), "Fechar e voltar quando
+   tiver a resposta" fecha a janela e deixa uma faixa "pedido de <data> (<n> processos) aguardando resposta" no alto da lista, com
+   "Trazer resposta" (passo 3) e "Cancelar pedido". A pessoa usa o programa normalmente enquanto a ferramenta roda em outra aba. O
+   pedido pendente fica gravado (arquivo do pedido + marca "pedido em" nos processos) e sobrevive a fechar e abrir o programa; o
+   menu ☰ → Área logada → "Trazer resposta" leva ao mesmo passo 3. Lotes podem chegar em dias diferentes.
 
 ## 2c. Interruptor por licença (feature flag) no RootifyONE
 
