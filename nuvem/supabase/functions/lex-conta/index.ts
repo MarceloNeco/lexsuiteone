@@ -1,4 +1,4 @@
-// LexSuiteONE · RADAR JUDICIAL · lex-conta v19 (publicada no Supabase como v21: v18 + interruptores por licença: `verificar` devolve `recursos` com as exceções de lex_contas.recursos por cima do global do RootifyONE. v18: v17 + CORS para a página de aceite. v17: v16 + ações 'chamado' e 'chamado_anexo': chamados do AssistONE na central de feedback do RootifyONE): confere a licença (código de cliente), registra quem usa cada computador,
+// LexSuiteONE · RADAR JUDICIAL · lex-conta v20 (publicada no Supabase como v22: v19 + 0.7.47: ação `estado_cnj` (estado do CNJ visto pelo observador, 1 por 5 min por instalação), campos `antivirus`, `antivirus_ligado` e `sinal` no `registro`, `avisar_cnj` na `verificar`. v19: v18 + interruptores por licença: `verificar` devolve `recursos` com as exceções de lex_contas.recursos por cima do global do RootifyONE. v18: v17 + CORS para a página de aceite. v17: v16 + ações 'chamado' e 'chamado_anexo': chamados do AssistONE na central de feedback do RootifyONE): confere a licença (código de cliente), registra quem usa cada computador,
 // avisa quando entra pessoa ou computador novo e recebe erros técnicos. Desenhos: documentacao/DESENHO-LICENCA-EM-USO.md
 // e documentacao/REVISAO-NUVEM-LICENCAS-2026-11-08.md (etapa 0 de segurança).
 //
@@ -37,6 +37,14 @@ const ANEXO_MIMES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const ANEXO_MAX_BYTES = 5 * 1024 * 1024, ANEXOS_POR_CHAMADO = 2, ANEXO_PRAZO_MS = 2 * 3600_000;
 // Retorno dos processos à SolverONE (decisão do dono, 09/Nov): só contagens por situação. Situações do programa:
 const SITUACOES = new Set(["novo", "visto", "em_analise", "em_contato", "virou_cliente", "descartado", "arquivado"]);
+// 0.7.47: sinais de bloqueio que o instalador e o programa reconhecem (desenho DESENHO-LEITURA-E-ANTIVIRUS, 2.1 e 2.3).
+const SINAIS = new Set(["zip_temp", "bloqueio_gravacao", "processo_morto", "tarefa_falhou", "rede_recusada", "smartscreen"]);
+// "sim"/"não" (o instalador manda com escape JSON, chega como "não"), true/false; qualquer outra coisa = não informado.
+function simNao(v: unknown): boolean | null {
+  if (v === true || v === false) return v;
+  const t = String(v ?? "").trim().toLowerCase();
+  return /^(sim|s|yes|true|1)$/.test(t) ? true : /^(n[aã]o|n|no|false|0)$/.test(t) ? false : null;
+}
 
 // v18 (12/Nov, correção urgente): a página de aceite (judicial.solverone.com.br) chama esta função pelo navegador, que
 // antes pergunta (OPTIONS) se o site pode chamar. Sem resposta a isso e sem estes cabeçalhos, o navegador bloqueava o
@@ -102,8 +110,10 @@ Deno.serve(async (req) => {
     const inst = INSTALACAO.test(instTxt) ? instTxt : null;
     if (!(await pode(inst ? `inst:${inst}:registro` : "sem:registro", inst ? 30 : 300, 3600))) return limite();
     const cod = texto(e.codigo, 13).toUpperCase();
+    const sinal = SINAIS.has(String(e.sinal ?? "")) ? String(e.sinal) : null;   // 0.7.47: antivírus e sinal do bloqueio (nome de produto; nada de pessoa)
     const { error } = await sb.from("lex_registros").insert({ origem, etapa: texto(e.etapa, 60), mensagem: semDadoPessoal(texto(e.mensagem, 2000)),
-      versao: texto(e.versao, 20), windows: texto(e.windows, 80), instalacao: inst, codigo: CODIGO.test(cod) ? cod : null });
+      versao: texto(e.versao, 20), windows: texto(e.windows, 80), instalacao: inst, codigo: CODIGO.test(cod) ? cod : null,
+      antivirus: texto(e.antivirus, 80) || null, antivirus_ligado: simNao(e.antivirus_ligado), sinal });
     return json({ ok: !error });
   }
 
@@ -132,6 +142,23 @@ Deno.serve(async (req) => {
       await enviarEmail(CONTATO, `${assunto} · ${a.escritorio}`, `Licença ${codigo} (${a.escritorio}): termos v${a.versao} aceitos por ${a.nome} <${email}> em ${quando}. Protocolo ${a.protocolo}. Detalhes no RootifyONE.`);
     } catch { /* o registro já está feito; o e-mail é cortesia */ }
     return json({ ok: true, protocolo: a.protocolo, aceito_em: a.aceito_em, escritorio: a.escritorio });
+  }
+
+  // ---- Estado do CNJ (0.7.47): o que o observador da SolverONE (lex-saude, São Paulo) viu na última rodada, para a tela dizer
+  //      "A SolverONE também vê o CNJ fora desde 13h30 (23 de 24 tribunais)". Leve, 1 por 5 min por instalação; só com licença
+  //      conhecida. Ação explícita: antes, uma ação desconhecida caía em "verificar" e gastava o limite de 6 por minuto. ----
+  if (e.acao === "estado_cnj") {
+    const codigo = texto(e.codigo, 13).toUpperCase();
+    const inst = texto(e.instalacao, 16).toLowerCase();
+    if (!CODIGO.test(codigo) || !INSTALACAO.test(inst)) return json({ ok: false, motivo: "dados_invalidos" });
+    if (!(await pode(`inst:${inst}:estado_cnj`, 1, 300))) return limite();
+    const { data: c } = await sb.from("lex_contas").select("codigo").eq("codigo", codigo).maybeSingle();
+    if (!c) return json({ ok: false, motivo: "codigo_desconhecido" });
+    const { data: est, error: erroEst } = await sb.rpc("lex_saude_estado");
+    if (erroEst || !est || typeof est !== "object") return json({ ok: false, motivo: "erro" });
+    const s = est as Record<string, unknown>;
+    const estado = { ok: s.ok ?? null, total: s.total ?? null, fora: s.fora ?? [], desde: s.desde ?? null, hora: s.hora ?? null, consulta: s.consulta ?? null };
+    return json({ ok: true, estado_cnj: estado, estado, avisos: Array.isArray(s.avisos) ? s.avisos : [] });
   }
 
   // ---- Ativação por e-mail e código (0.7.32): confere, SEM gravar, se o código vale para este e-mail. ----
@@ -330,6 +357,8 @@ Deno.serve(async (req) => {
   if (email) inst.email = email;
   const nomePc = texto(e.nome_pc, 60);
   if (nomePc) inst.nome_pc = nomePc;
+  const avisar = simNao(e.avisar_cnj);   // 0.7.47 (decisão 35): preferência da instalação de receber e-mail quando o CNJ ficar fora por mais de 4 h
+  if (avisar !== null) inst.avisar_cnj = avisar;
   await sb.from("lex_instalacoes").upsert(inst, { onConflict: "instalacao" });
   if (instNova) avisos.push({ tipo: "computador_novo", ref: { nome_pc: nomePc || "(sem nome)", versao } });
 

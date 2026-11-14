@@ -372,9 +372,8 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   diretrizes. Nada implementado. Até lá, o processo de publicação não muda (Operação avisada no quadro).
 - **Central LexSuiteONE (nuvem, fase 1): aplicada inteira em 13/Nov (noite)**, inclusive a retenção de 30 dias. Conferir na próxima
   conversa: `cron.job` com os dois jobs e `lex_saude_diarios` crescendo 24 linhas a cada 15 min.
-- **CNJ fora e antivírus**: desenho pronto e perguntas 34 a 39 respondidas; prompt da 0.7.47 entregue à Produto. Falta o "pode
-  aplicar" do dono para a parte da nuvem: `lex-conta` v20 (`estado_cnj`, campos `antivirus`/`antivirus_ligado`/`sinal` no
-  `registro`, `avisar_cnj` na `verificar`), SQL de `lex_registros` e `lex_instalacoes`, alerta e sonda da consulta na `lex-saude`.
+- **CNJ fora e antivírus**: nuvem APLICADA em 14/Nov (Feito 12). Conferir na próxima conversa: `lex_saude_consulta` crescendo 1 linha
+  por rodada e nenhum alerta falso em `lex_saude_alertas`. Próximo: 1.3 (leitura pela consulta, 0.7.48, Produto).
 - **Interruptor por licença (área logada)**: APLICADO em 14/Nov (ver Feito 11). Próximo passo é do RootifyONE (ficha 0.18.31 já
   pronta) e da Produto (0.7.46/0.7.47: `data-recurso` nos três lugares e a conferência de 30 min). KR Law começa desligada.
 - **Trava do aceite ligada nas duas licenças** (KR Law e teste do dono) desde 11/Nov, a pedido do dono.
@@ -386,6 +385,15 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 14/Nov (12): **APLICADO · nuvem da 0.7.47 (CNJ fora e antivírus)** ("pode aplicar" do dono): migração `lex_0747_cnj_antivirus`
+  (`lex_registros.antivirus/antivirus_ligado/sinal`, `lex_instalacoes.avisar_cnj`, `lex_avisos_gerais` preparada, `lex_saude_consulta`,
+  `lex_saude_quedas`, `lex_saude_alertas`, função `lex_saude_estado()`), `lex-conta` v20 (Supabase v22: `estado_cnj` explícito,
+  campos do registro, `avisar_cnj`) e `lex-saude` v3 (alerta à SolverONE, e-mail às instalações que marcaram na queda > 4 h em dia
+  útil, sonda da consulta por rodada, `?modo=estado`). Testes com a licença de teste: registro com antivírus gravado, `avisar_cnj`
+  gravado, `estado_cnj` ok e 429 na repetição; rodada 22:45 UTC rodou a sonda (TRT20 ok, 56 ms) e os alertas sem erro (a gravação da
+  sonda falhou por permissão da tabela nova; concedida em seguida). Registro: `nuvem/supabase/2026-11-14-nuvem-0747-cnj-antivirus.sql`.
+  Perguntas 21 a 28 tratadas (Decisões); desenho da limpeza automática; respostas aos pedidos da Produto; prompt de sincronização
+  `documentacao/PROMPT-SINCRONIZACAO-2026-11-14.md`.
 - 14/Nov (11): **APLICADO · recursos por licença (área logada), nuvem** (dono: "pode aplicar"; pedido nº 4 do RootifyONE):
   migração `lex_recursos_por_licenca`: coluna `lex_contas.recursos` (jsonb {id: true|false}, só exceções), `admin_lex_listar`
   devolve `recursos`, `admin_lex_salvar` aceita `p.recursos` (ids `[a-z0-9.-]{1,40}`, valores booleanos; só codigo+recursos+motivo
@@ -625,13 +633,15 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   Operação); `CLAUDE.md` já estava certo.
 - 08/Nov: plano da 0.8 apresentado ao dono com as decisões D1 a D8; confirmadas, mais D9 (SQL das licenças).
 
-### Preciso do dono
-- Testar a trava na licença de teste: fechar e abrir o programa (0.7.28 já mostra a mensagem com o link), aceitar pelo link
-  com o e-mail cadastrado no programa, fechar e abrir de novo.
-- Colar na conversa da Produto o `documentacao/PROMPT-REVISAO-EMAIL-E-MANUAL-2026-11-11.md`.
-- Colar na conversa do RootifyONE o `documentacao/PROMPT-ROOTIFYONE-2026-11-09.md` atual (itens 3, 3b, 3c e 3d), se ainda não colou.
-- Depois da visita de quinta: dizer "liga a trava da KR Law" (a Arquitetura liga `exigir_aceite` e registra).
-- Perguntas 10 a 14 da lista única (item 82 e trava da pessoa; a Produto consolida).
+### Preciso do dono (revisto em 14/Nov, noite)
+- Entregar ao Leandro, quando quiser, as perguntas 23, 24 e 25 (Astrea e Aurum) e o prompt v2 do PJe
+  (`documentacao/visita-kr-law/PROMPT-PJE-AREA-LOGADA-V2.md`). Sem isso, as integrações C e B com o Astrea não começam.
+- Supabase, Authentication (Central): conferir TOTP ligado, desligar "Allow new users to sign up", criar os usuários da equipe
+  (seção 1 de `documentacao/DESENHO-NUVEM-CENTRAL-2026-11-13.md`); dizer se a segunda pessoa de `equipe` vai usar a Central.
+- Criar o repositório `central-lexsuiteone` quando quiser publicar a Central.
+- RootifyONE: dizer "aplicado" (recursos por licença, pedido nº 4) e colar `PROMPT-ROOTIFYONE-CONTAS-DE-TESTE-2026-11-13.md` e os
+  itens 3 a 3g de `PROMPT-ROOTIFYONE-2026-11-09.md`, se ainda não colou.
+- Staging e CI/CD: "pode" para o desenho (`DESENHO-STAGING-RADAR-2026-11-12.md`), depois da KR Law.
 
 ---
 
@@ -653,6 +663,19 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
 
 ## Pedidos entre sessões
+
+- **Arquitetura → Produto (14/Nov, noite; resposta aos dois pedidos de 14/Nov):** (1) **Desvio do XML aceito**: a tarefa "LexSuiteONE
+  Radar" sempre por `C:\LexSuiteONE\tarefa.xml` (autor e descrição da SolverONE), também com um horário só; o desenho 2.6.1 foi
+  ajustado. (2) **lex-conta v20 publicada** no formato que o programa espera: `estado_cnj` devolve `{ok, total, fora: [..], desde:
+  "HH:MM", hora, consulta}` em `estado_cnj` e em `estado`, mais `avisos` (lista, hoje vazia); limite 1 por 5 min por instalação
+  (segunda chamada = 429); `registro` aceita `antivirus`, `antivirus_ligado` ("sim"/"não"/true/false) e `sinal` (um dos seis);
+  `verificar` grava `avisar_cnj` ("sim"/"não"/true/false). Testado com a licença de teste. (3) **Limpeza automática (decisões 40 a
+  42)**: desenho curto em `documentacao/DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md`: o que é "trabalhado", o que vai junto, a memória
+  `processos_apagados` (só número e datas), ordem, prazos em `config.radar` e tela Armazenamento; **termos não mudam** (banco local é do
+  escritório), **manual muda** (a linha dos 12 meses). (4) **Filtro de cidade**: não vale na planilha; ela continua completa, com a
+  coluna Cidade para filtrar no Excel. (5) Opção de e-mail do CNJ (decisão 35), texto sugerido para a Configuração: "Avisar por
+  e-mail quando o CNJ ficar fora por mais de 4 horas em dia útil (um e-mail na queda e um na volta, para o e-mail cadastrado nesta
+  instalação)". O e-mail sai da nuvem; o programa só manda a preferência.
 
 - **Produto → Arquitetura (14/Nov, limpeza automática, decisões 40 a 42; muda o que o banco guarda):** desenho curto antes da
   Produto implementar (0.7.48). Hoje (conferido no código): `banco.limpar_antigos(guardar_dias=365)` a cada leitura resume os
@@ -874,14 +897,14 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 18 | Arquitetura | Critérios por pessoa: a planilha compartilhada de cada frente fica **completa** (registro do escritório; os critérios da pessoa valem na tela e no `saida/` dela) ou **filtrada por quem leu por último** (como hoje, mas agora cada computador grava com critérios diferentes e apaga linha do colega)? | Completa | **decidida pela Arquitetura (12/Nov)**: planilha completa; os critérios de cada pessoa valem na tela dela. O dono só precisa falar se discordar; **confirmada pelo dono (12/Nov): (a) completa** |
 | 19 | Operação (terceira revisão da 0.7.36) | Avisos de perda parcial (por exemplo, "não couberam" ao copiar empresas excluídas para outra área) saem em cinza, como os avisos comuns. Devem sair em latão (dourado), para chamar mais atenção sem parecer erro? Recomendação da Produto: latão. Sem urgência. | respondida (13/Nov): dourado |
 | 20 | Operação | Painel: o que se risca nos 8 cartões de baixo deve valer **só para os cartões** (os números do alto e "Processos por dia" ficam como estão, com Limpar e Salvar próprios da seção) ou **para o Painel todo**, como hoje acontece com Situação, Vara, Setor, Porte e Estado? Hoje é misturado (Faixas de valor, Empresas e "Como foi reconhecido" só escondem a fatia). Decide como fica a faixa fixa da seção nova. | **Só para os cartões**: é o que o dono descreveu ("filtro exclusivo dessa parte estatística"), deixa o Limpar e o Salvar da seção claros e acaba com a mistura; os filtros do alto continuam valendo para tudo | **respondida (13/Nov)**: nenhum filtro novo; os filtros do alto continuam valendo para tudo, como hoje; só um título na seção dos cartões |
-| 21 | Arquitetura (visita KR Law, para o Leandro) | PJe: autoriza a extensão Claude in Chrome a rodar o prompt do PJe nos próprios autos, até 30 processos por dia, só leitura? | Sim, com o prompt v2 (nunca abrir login.seam, expediente nem "Baixar processo completo") | aberta (13/Nov) |
-| 22 | Arquitetura (para o Leandro) | PJe: precisa de processos de terceiros (onde a KR Law não atua), sabendo do risco de bloqueio por excesso de acessos? | Não no início; só os próprios autos | aberta (13/Nov) |
-| 23 | Arquitetura (para o Leandro) | Astrea: aceita receber as empresas escolhidas como contato PJ com etiqueta JUDICIAL, digitadas pela extensão na sessão dele, ou prefere a planilha para a equipe digitar? | Planilha primeiro; extensão só se a Aurum não vetar automação | aberta (13/Nov) |
-| 24 | Arquitetura (para o Leandro) | Astrea: exporta os contatos de tempos em tempos para o RADAR marcar os clientes (só CNPJ) como empresas excluídas? | Sim, mensal; o RADAR lê só a coluna CNPJ | aberta (13/Nov) |
-| 25 | Arquitetura (para o Leandro) | Pergunta à Aurum, como cliente, se existe API ou importação de contatos e o que os termos dizem sobre automação na tela? | Sim, antes de qualquer automação no Astrea | aberta (13/Nov) |
-| 26 | Arquitetura (para o dono) | Integrações da visita: ordem na 0.7.34 = A (PJe → RADAR, prompt v2 + formato v1) e C (clientes do Astrea como excluídas) primeiro; B (planilha no formato do Astrea) depois? | Sim | aberta (13/Nov) |
-| 27 | Arquitetura (para o dono) | Prints da visita: ficam só na pasta restrita do dono, fora do repositório; os do PJe (CPF e endereço de pessoas) são apagados depois do desenho? | Sim: apagar os do PJe; guardar os do Astrea com acesso restrito | aberta (13/Nov) |
-| 28 | Arquitetura (para o dono) | A petição inicial em HTML pode ser fonte do endereço da ré, mesmo com a frase variando por advogado (o v1 marca "a conferir")? | Sim, como "a conferir"; o cadastro da parte tem prioridade | aberta (13/Nov) |
+| 21 | Arquitetura (visita KR Law, para o Leandro) | PJe: autoriza a extensão Claude in Chrome a rodar o prompt do PJe nos próprios autos, até 30 processos por dia, só leitura? | Sim, com o prompt v2 (nunca abrir login.seam, expediente nem "Baixar processo completo") | respondida (14/Nov, pela construção aprovada pelo dono): o prompt v2 teve o "pode" (13/Nov) e a área logada v2 foi construída com limite POR PEDIDO (25, máx. 50), não por dia; a autorização é escolha do escritório, coberta pela seção 5 dos termos (ferramenta e credencial são dele). Nada a perguntar ao Leandro: o programa oferece, ele usa se quiser |
+| 22 | Arquitetura (para o Leandro) | PJe: precisa de processos de terceiros (onde a KR Law não atua), sabendo do risco de bloqueio por excesso de acessos? | Não no início; só os próprios autos | respondida (chat do dono, 13/Nov 18h10: "o acesso é dos advogados… podem entrar manualmente em um milhão de processos"): a lista do RADAR é de ações novas contra empresas, por definição de terceiros; a consulta pelo advogado logado é legítima e o risco de bloqueio fica contido pelo limite por pedido e pelos lotes de 25. A recomendação "só os próprios autos" cai |
+| 23 | Arquitetura (para o Leandro) | Astrea: aceita receber as empresas escolhidas como contato PJ com etiqueta JUDICIAL, digitadas pela extensão na sessão dele, ou prefere a planilha para a equipe digitar? | Planilha primeiro; extensão só se a Aurum não vetar automação | sem resposta de ninguém: é pergunta ao Leandro (não ao dono). O dono entrega quando quiser; até lá o Astrea fica fora (recomendação: planilha primeiro) |
+| 24 | Arquitetura (para o Leandro) | Astrea: exporta os contatos de tempos em tempos para o RADAR marcar os clientes (só CNPJ) como empresas excluídas? | Sim, mensal; o RADAR lê só a coluna CNPJ | sem resposta de ninguém: é pergunta ao Leandro. Até a resposta, nada de exportação do Astrea (recomendação: mensal, só a coluna CNPJ) |
+| 25 | Arquitetura (para o Leandro) | Pergunta à Aurum, como cliente, se existe API ou importação de contatos e o que os termos dizem sobre automação na tela? | Sim, antes de qualquer automação no Astrea | sem resposta de ninguém: é pergunta ao Leandro (ele pergunta à Aurum como cliente). Nenhuma automação no Astrea antes disso |
+| 26 | Arquitetura (para o dono) | Integrações da visita: ordem na 0.7.34 = A (PJe → RADAR, prompt v2 + formato v1) e C (clientes do Astrea como excluídas) primeiro; B (planilha no formato do Astrea) depois? | Sim | respondida (pela ação do dono, 14/Nov): A primeiro, feito (0.7.46 e 0.7.47 com o prompt que o dono colou); C depende da 24 e B da 23 e 25; nenhuma das duas começa antes das respostas do Leandro |
+| 27 | Arquitetura (para o dono) | Prints da visita: ficam só na pasta restrita do dono, fora do repositório; os do PJe (CPF e endereço de pessoas) são apagados depois do desenho? | Sim: apagar os do PJe; guardar os do Astrea com acesso restrito | respondida (chat do dono, 13/Nov: "não descarte eles"; 14/Nov: "é óbvio que os relatórios têm dados sigilosos"): nada se apaga; zips, prints e relatórios completos ficam só com o dono, fora do repositório; o que está no repositório (resultados/) não tem dado de pessoa (conferido). A recomendação de apagar os prints do PJe cai |
+| 28 | Arquitetura (para o dono) | A petição inicial em HTML pode ser fonte do endereço da ré, mesmo com a frase variando por advogado (o v1 marca "a conferir")? | Sim, como "a conferir"; o cadastro da parte tem prioridade | respondida (prompt da 0.7.46 que o dono colou, 14/Nov): sim; a ordem de força das fontes é PJe dados do processo > petição > citação > Receita > digitado; petição entra marcada "a conferir" e o cadastro da parte tem prioridade (no programa desde a 0.7.45) |
 | 29 | Produto (13/Nov) | Leitura automática barrada pelo antivírus (Bitdefender na KR Law): com a tela do programa aberta, quando a hora marcada passa e a tarefa do Windows não rodou, o programa faz a leitura sozinho? **Recomendação: sim** (só com a tela aberta; sem tela, continua dependendo do Windows). | respondida: "pode" (13/Nov); feito na 0.7.45 |
 | 30 | Produto (13/Nov, Central LexSuiteONE) | Nome do painel da equipe: "Central LexSuiteONE"? | Sim, "Central LexSuiteONE" (o protótipo usa) | respondida (13/Nov): Central LexSuiteONE |
 | 31 | Produto (13/Nov, Central LexSuiteONE) | Onde ele mora: repositório novo com subdomínio próprio (ex.: central.solverone.com.br), pasta no lexsuiteone ou dentro do RootifyONE? | Repositório novo + subdomínio (origem separada do site do cliente; criar repositório pede o "pode") | respondida (13/Nov): repositório novo + endereço próprio; até ele existir, o código fica em `lexsuiteone/central/` (não publicado) |
@@ -901,6 +924,8 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 
 | Data | Decisão |
 |---|---|
+| 14/Nov (noite) | **Perguntas 21 a 28 (visita à KR Law)**, registradas pela Arquitetura a partir do que o dono já disse e fez (14/Nov: "procure as respostas no histórico… só me traga o que ninguém respondeu"): **21** o uso da extensão no PJe é escolha do escritório (termos, seção 5); o programa limita por pedido (25, máx. 50), não por dia. **22** processos de terceiros, sim: "o acesso é dos advogados… podem entrar em um milhão de processos" (13/Nov); o limite por pedido contém o risco. **26** ordem A (feito), depois C e B conforme o Leandro responder. **27** nada se apaga ("não descarte"); tudo fica só com o dono, fora do repositório. **28** petição inicial é fonte do endereço "a conferir"; cadastro da parte tem prioridade (ordem de força das fontes do prompt da 0.7.46). **23, 24 e 25 ficam abertas: são perguntas ao Leandro**, que o dono entrega quando quiser; sem resposta, o Astrea fica fora. |
+| 14/Nov (noite) | **Nuvem da 0.7.47 aplicada** ("pode aplicar"): `lex-conta` v20 (`estado_cnj`, antivírus no registro, `avisar_cnj`), `lex-saude` v3 (alerta à SolverONE, e-mail a quem marcou na queda longa, sonda da consulta), SQL datado. **Desvio do XML da tarefa aceito** pela Arquitetura (tarefa sempre por `C:\LexSuiteONE\tarefa.xml`). **Limpeza automática**: desenho curto em `documentacao/DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md` (termos não mudam; manual sim). **Filtro de cidade** não vale na planilha. |
 | 14/Nov | **Limpeza automática** (perguntas 40 a 42): a cada leitura, os processos com mais de 6 meses perdem o texto pesado do Diário (fica o resumo) e os com mais de 24 meses saem do programa, ficando só nas estatísticas e no gráfico de tendência; os trabalhados (situação diferente de Novo, contato ou anotação) nunca saem; os dois prazos são ajustáveis em Configurações → Armazenamento, que mostra a última limpeza (quando, quantos resumidos, quantos apagados), também registrada no histórico. As estatísticas nunca se apagam. |
 | 14/Nov | **Filtro de cidade** na Lista, ao lado de Estado, limitado pelo estado escolhido, rápido (0.7.48). |
 | 14/Nov | **CNJ fora e antivírus** (perguntas 34 a 39): sem certificado de assinatura por enquanto; queda longa do CNJ = só a faixa na tela, mais uma opção em Configuração para receber e-mail no e-mail cadastrado da instalação; página de antivírus no site e linha no e-mail de boas-vindas: sim, cobrindo todos os principais antivírus do mercado; leitura pela consulta quando o caderno cai: sim, por padrão; aviso geral do CNJ no RootifyONE: deixar preparado, sem equipe para alimentar; envio de falso positivo aos fabricantes: aguardar. |

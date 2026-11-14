@@ -202,6 +202,24 @@ Ordem revista: 0.7.47 (Produto) = 1.1, 2.1, 2.2, 2.4, 2.6.1, opção de e-mail (
 (`estado_cnj`, campos do registro, `avisar_cnj`), SQL (`lex_registros`, `lex_instalacoes`), `lex-saude` com alerta à SolverONE e aos
 que marcaram; página `antivirus.html` (36) com a pesquisa oficial por fabricante; 0.7.48 = 1.3; preparado sem uso = 38.
 
+## Aplicado em 14/Nov (noite), com o "pode aplicar" do dono
+
+- **Banco** (`nuvem/supabase/2026-11-14-nuvem-0747-cnj-antivirus.sql`): `lex_registros.antivirus`, `antivirus_ligado`, `sinal`
+  (os seis sinais); `lex_instalacoes.avisar_cnj`; `lex_avisos_gerais` (preparada, sem tela: decisão 38); `lex_saude_consulta`
+  (sonda da consulta, um tribunal por rodada); `lex_saude_quedas` e `lex_saude_alertas` (estado da queda e registro dos e-mails);
+  função `lex_saude_estado()` (último estado num objeto só).
+- **lex-conta v20** (Supabase v22): ação `estado_cnj` explícita (1 por 5 min por instalação; antes a ação desconhecida caía em
+  `verificar`), devolve `{ok, total, fora: [..], desde: "HH:MM", hora, consulta}` em `estado_cnj` e em `estado`, mais `avisos`;
+  `registro` grava `antivirus`, `antivirus_ligado` ("sim"/"não"/true/false) e `sinal`; `verificar` grava `avisar_cnj`.
+- **lex-saude v3**: depois de cada rodada, sonda da consulta pública num tribunal (rodízio) e os alertas: queda = 6 ou mais
+  tribunais fora em duas rodadas seguidas → e-mail à SolverONE (1 por hora) e linha em `lex_saude_quedas`; um tribunal fora por 4
+  rodadas → e-mail à SolverONE (1 a cada 6 h por tribunal); queda acima de 4 h em dia útil → um e-mail por endereço das
+  instalações com `avisar_cnj` (licenças ativas), e outro na volta; `?modo=estado` para conferir.
+- **Desvio aceito (Produto, 2.6.1)**: a tarefa "LexSuiteONE Radar" é criada sempre pelo XML gravado em `C:\LexSuiteONE\tarefa.xml`
+  (autor e descrição da SolverONE), também com um horário só, porque a tarefa simples do `schtasks /sc daily` não roda na bateria
+  nem compensa horário perdido. O essencial do desenho fica: nada na pasta temporária, criação visível durante a instalação, nomes
+  claros. O desenho acima vale com esse ajuste.
+
 ## Perguntas ao dono (na lista única do quadro, 34 a 39; respondidas)
 
 34. Certificado de assinatura (OV, ~US$ 300/ano + token, mais um instalador .exe): comprar agora ou adiar até 3 escritórios? Recomendo adiar.
