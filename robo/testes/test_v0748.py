@@ -413,9 +413,16 @@ class Limpeza(unittest.TestCase):
         p = _lead(self.b, 8, (HOJE - dt.timedelta(days=400)).isoformat())
         self.b.completar(p, "valor_causa", 5000, "digitado")
         self.b.completar(p, "valor_causa", 7000, "digitado")
+        ler = lambda: json.loads(self.b.con.execute("SELECT dados FROM leads WHERE processo = ?", (p,)).fetchone()[0])
+        antes = ler()
+        self.b.con.execute("UPDATE leads SET dados = ? WHERE processo = ?",  # garante um histórico, venha ou não da troca acima
+                           (json.dumps(dict(antes, manual_historico=antes.get("manual_historico") or [{"campo": "valor_causa", "valor": 5000}])), p))
+        self.b.con.commit()
+        historico = ler()["manual_historico"]
         self.b.limpeza_automatica(6, 24, hoje=HOJE)
-        d = json.loads(self.b.con.execute("SELECT dados FROM leads WHERE processo = ?", (p,)).fetchone()[0])
-        self.assertEqual(bool(d.get("manual_historico")), "manual_historico" in json.dumps(d))
+        d = ler()
+        self.assertEqual(d.get("manual_historico"), historico)  # o resumo guarda o histórico do digitado
+        self.assertEqual(str(d["manual"]["valor_causa"]["valor"]), "7000")
 
     def test_lead_sem_data_nao_e_apagado(self):
         p = _lead(self.b, 9, (HOJE - dt.timedelta(days=30)).isoformat())

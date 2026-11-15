@@ -374,7 +374,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     confere(await p.evaluate(() => /Limpeza feita: .* resumidos, .* apagados/.test(document.getElementById('c-limpeza').innerText)), 'Limpeza: o segundo clique limpa sem travar a tela e diz o resultado');
     await p.evaluate(() => { document.getElementById('c-apa-meses').value = '3'; document.getElementById('c-apa-meses').dispatchEvent(new Event('input', { bubbles: true })); });
     confere(await p.evaluate(() => { const r_ = [...document.querySelectorAll('#c-limpeza .alerta')][0]; return r_ && !r_.hidden; }), 'Limpeza: prazo fora da regra mostra a regra');
-    const arm = await p.evaluate(() => ({ t: document.getElementById('c-arm').innerText, alertas: [...document.querySelectorAll('#c-arm .alerta')].map(x => x.textContent) }));
+    const arm = await p.evaluate(() => ({ t: document.getElementById('c-arm').innerText, alertas: [...document.querySelectorAll('#c-arm .alerta')].filter(x => !x.closest('#c-limpeza') && !x.hidden).map(x => x.textContent) }));  // a regra do prazo da limpeza não é aviso de armazenamento
     confere(arm.alertas.length ? !/Tudo certo/.test(arm.t) : /Tudo certo: planilha abaixo de 80 % do limite e espaço no disco/.test(arm.t), 'Armazenamento: "Tudo certo…" só quando não há aviso (' + (arm.alertas.join(' | ') || 'sem aviso') + ')');
     confere(await p.evaluate(() => /ana@example\.com/.test(document.getElementById('c-avisar-cnj-x').textContent)), 'Aviso do CNJ: a opção mostra o endereço que recebe o e-mail');
     confere(p._erros.length === 0, '0.7.48: nenhum erro na página ' + p._erros.join(' | '));

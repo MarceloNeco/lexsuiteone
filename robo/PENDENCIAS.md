@@ -167,7 +167,7 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
   processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
 
-## 0.7.48 (15/Nov; "produto aprovado, pode codar a 0.7.48") — pronta para publicar (instaladores à parte, na branch)
+## 0.7.48 (15/Nov; "produto aprovado, pode codar a 0.7.48") — publicada em 15/Nov (tag v0.7.48, com os instaladores novos)
 
 - Feito: leitura pela consulta pública quando o caderno cai (desenho 1.3, decisão 37), com as quatro cenas na faixa, "Ver os N
   processos", selo "consulta pública · caderno pendente", conferência pelo caderno quando ele volta, linhas no Histórico e a

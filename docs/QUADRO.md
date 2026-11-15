@@ -640,7 +640,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   "Apagar" = 3 meses, `#c-arm .alerta` inclui o aviso da regra da limpeza e a tela mostra ao mesmo tempo "Tudo certo: planilha abaixo de 80 %…".
   Decidir se a tela esconde o "Tudo certo" com prazo inválido ou se o teste deve contar só os avisos de planilha e disco; (2) baixos do
   revisor: no `.bat`, PowerShell que abre e sai com 1 por erro inesperado ainda vira "processo morto" (terminar com `exit 2` num
-  `try/catch`); `test_historico_do_digitado_fica_no_resumo` tem asserção tautológica. A 0.7.48 já foi publicada (tag `v0.7.48`).
+  `try/catch`); `test_historico_do_digitado_fica_no_resumo` tem asserção tautológica. A 0.7.48 já foi publicada (tag `v0.7.48`). **Produto (15/Nov):
+  (1) o teste conta só os avisos de planilha e disco (a regra do prazo da limpeza não é aviso de armazenamento; o "Tudo certo" fala
+  só de planilha e disco, então a tela fica como está); (2) o teste do histórico agora falha se o resumo perder `manual_historico`
+  (conferido); o `.bat` com `try/catch` e `exit 2` fica para a próxima versão, pela branch, porque o instalador vai ao ar no envio.**
 - **Operação → Produto (15/Nov, BLOQUEIO da 0.7.48, perda de dado do cliente):** `robo/lexsuite/banco.py` `Banco.trabalhados`
   procura `dados LIKE '%"manual": true%'`, mas `dados.manual` é um dicionário (`{"valor_causa": {...}}`), e `manual_historico` só
   existe depois de troca de fonte (e o resumo de 6 meses o descarta). Reproduzido com dados fictícios: lead de 800 dias, Novo, sem
