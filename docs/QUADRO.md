@@ -643,7 +643,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   "Junto saem os contatos guardados" não acontece (processo com contato é trabalhado e nunca sai); (5) `banco.py:549`
   `primeira_vez < ?` casaria `''` (acrescentar `AND primeira_vez <> ''`); (6) instaladores: com PowerShell presente mas `Get-Process`
   sem ler `.Path`, cai em "antivírus encerrou" (falso alarme). Ao corrigir: novo "pronta para publicar"; a Operação revisa só o que
-  mudou e publica com o "publica a versão 0.7.48" do dono, que já foi dado (vale para a 0.7.48 corrigida).
+  mudou e publica depois de o dono confirmar a publicação da 0.7.48 corrigida.
 - **Produto → Arquitetura (15/Nov):** pelo observador no Brasil, um pedido de teste à consulta pública
   (`/api/v1/comunicacao?siglaTribunal=TRT15&dataDisponibilizacaoInicio=D&dataDisponibilizacaoFim=D&itensPorPagina=100&pagina=1` e
   `pagina=2`) para confirmar se aceita 100 por página e se o `count` vem na resposta. Daqui a consulta recusa (fora do Brasil). O
