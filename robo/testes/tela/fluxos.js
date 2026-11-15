@@ -381,6 +381,59 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.close();
   }
 
+  // 11. 0.7.49: Modo no alto, filtros salvos de fábrica (lista própria com descrição), Tribunal na 1ª linha, Varas com "Nº",
+  //     lista aberta acompanha a rolagem, (?) na cor de link e Agrupar por empresa com o alcance
+  {
+    const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); localStorage.removeItem('lexsuite:filtro-atual'); localStorage.removeItem('lexsuite:filtros-fabrica'); localStorage.removeItem('lexsuite:filtros'); localStorage.removeItem('lexsuite:agrupar'); } catch (e) {} });
+    await espera(600);
+    const topo = await p.evaluate(() => ({ modo: document.getElementById('b-modo').textContent, plan: document.getElementById('b-planilha').hidden, tribPai: document.getElementById('f-trib').parentElement.id, tribVis: !document.getElementById('f-trib').hidden }));
+    confere(/Modo: Trabalhista/.test(topo.modo) && topo.plan, 'Modo: "Modo: Trabalhista" no alto, no lugar de "Abrir a planilha"');
+    confere(topo.tribPai === 'filtros-extra' && topo.tribVis, 'Filtros: Tribunal na primeira linha, à vista');
+    await p.click('#b-modo'); await espera(300);
+    const modo = await p.evaluate(() => [...document.querySelectorAll('.modo-item')].map(x => x.className + ':' + x.innerText.replace(/\n/g, ' ')));
+    confere(modo.length === 5 && /ativo:✓ Trabalhista/.test(modo[0]) && modo.slice(1).every(x => /apagado:.*Não incluído na sua licença/.test(x)), 'Modo: Trabalhista ativo e os outros 4 apagados, "Não incluído na sua licença"');
+    await p.evaluate(() => document.querySelector('.modo-item.apagado').click()); await espera(200);
+    confere(await p.evaluate(() => /não está incluído na licença deste escritório/.test(document.querySelector('.modo-nota').textContent)), 'Modo: clicar num apagado diz com quem falar, dentro da própria lista');
+    await p.keyboard.press('Escape'); await espera(200);
+    await p.click('#b-menu'); await espera(400);
+    confere(await p.evaluate(() => /Abrir a planilha oficial \(só leitura\)/.test(document.getElementById('gaveta').innerText)), 'Menu ☰ → Planilha: "Abrir a planilha oficial (só leitura)"');
+    await p.keyboard.press('Escape'); await espera(300);
+    const bs = await p.evaluate(() => document.getElementById('b-salvos').textContent);
+    confere(/Filtros salvos \(3\)/.test(bs), 'Filtros salvos: três de fábrica (' + bs.trim() + ')');
+    await p.click('#b-salvos'); await espera(300);
+    const sv = await p.evaluate(() => { const pn = document.querySelector('.salvos-painel'), r = pn.getBoundingClientRect(), bt = document.getElementById('b-salvos').getBoundingClientRect(); return { t: pn.innerText, cortado: [...pn.querySelectorAll('.salvo-item b')].some(x => x.scrollWidth > x.clientWidth + 1), dentro: r.left >= 0 && r.right <= innerWidth, esq: Math.abs(r.right - bt.right) <= 2 || r.left <= 9, nums: [Math.round(r.left), Math.round(r.right), Math.round(bt.left), Math.round(bt.right)] }; });
+    confere(/Para contatar \(7 dias\)[\s\S]*Com telefone ou e-mail/.test(sv.t) && /Buscar contato na área logada \(7 dias\)/.test(sv.t) && /Empresas da semana \(visão completa\)/.test(sv.t), 'Filtros salvos: nome em negrito e descrição embaixo');
+    confere(!sv.cortado && sv.dentro && sv.esq, 'Filtros salvos: a lista abre para a esquerda (ou encosta na borda quando não cabe), dentro da tela, sem cortar o nome (' + JSON.stringify(sv.nums) + ', cortado=' + sv.cortado + ')');
+    await p.evaluate(() => [...document.querySelectorAll('.salvo-item')].find(x => /Para contatar/.test(x.textContent)).click()); await espera(2500);
+    const ap = await p.evaluate(() => ({ per: document.getElementById('periodo').value, cont: document.getElementById('f-contato').value }));
+    confere(ap.per === '7' && ap.cont === 'com', 'Filtros salvos: "Para contatar" aplica 7 dias e "Só com contato" (' + JSON.stringify(ap) + ')');
+    await p.evaluate(() => document.getElementById('b-limpar-filtros').click());
+    await p.evaluate(() => { const s_ = document.getElementById('periodo'); s_.value = '90'; s_.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(2500);
+    await p.evaluate(() => { const fa = document.getElementById('filtros-avancados'); if (fa.hidden) document.getElementById('b-mais-filtros').click(); }); await espera(300);
+    await p.evaluate(() => document.querySelector('#f-vara > button').click()); await espera(300);
+    const va = await p.evaluate(() => { const pn = document.querySelector('#f-vara .multi-painel'); return { cab: (pn.querySelector('.multi-cab') || {}).innerText || '', l: pn.querySelector('.multi-lista label').innerText, uma: [...pn.querySelectorAll('.multi-lista label')].every(l => l.getBoundingClientRect().height < 40) }; });
+    confere(/Nº\s*VARA/i.test(va.cab) && /^\d+\s*\n?\s*\d+ª Vara/.test(va.l) && va.uma, 'Varas: cabeçalho "Nº | Vara", número antes do nome, uma linha por vara');
+    const d1 = await p.evaluate(() => Math.round(document.querySelector('#f-vara .multi-painel').getBoundingClientRect().top - document.querySelector('#f-vara > button').getBoundingClientRect().bottom));
+    await p.mouse.wheel(0, 250); await espera(300);
+    const d2 = await p.evaluate(() => Math.round(document.querySelector('#f-vara .multi-painel').getBoundingClientRect().top - document.querySelector('#f-vara > button').getBoundingClientRect().bottom));
+    confere(Math.abs(d1 - d2) <= 2, 'Filtros: a lista aberta acompanha o botão ao rolar a tela (' + d1 + ' → ' + d2 + ')');
+    await p.keyboard.press('Escape'); await espera(200);
+    const aj = await p.evaluate(() => { const a = document.querySelector('#lista .ajuda'); const c0 = getComputedStyle(a).color; a.click(); const c1 = getComputedStyle(a).color; const an = getComputedStyle(document.querySelector('.balao')).animationName; return { c0, c1, an }; });
+    confere(aj.c0 === 'rgb(43, 98, 173)' && aj.c1 !== aj.c0 && aj.an === 'balao-cresce', '(?): azul de link parado, volta ao cinza aberto, e o balão cresce (' + JSON.stringify(aj) + ')');
+    await p.evaluate(() => document.body.click());
+    await p.evaluate(() => { const a = document.getElementById('agrupar'); a.value = 'empresa'; a.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(2000);
+    const ag = await p.evaluate(() => ({ dis: document.getElementById('ordem').disabled && document.getElementById('ordem2').disabled, alc: document.getElementById('alcance').value, vis: !document.getElementById('alcance').hidden,
+      cab: (document.querySelector('.grupo-emp .ge-cab') || {}).innerText || '', blocos: document.querySelectorAll('.grupo-emp').length, mais: document.getElementById('mais-txt').textContent }));
+    confere(ag.dis && ag.vis && ag.alc === 'hibrido', 'Agrupar por empresa: "Ordenar por" apagado e o alcance "Até 50 dos últimos 6 meses"');
+    confere(ag.blocos > 0 && /no período · \d+ de \d+ da empresa/.test(ag.cab) && /empresas/.test(ag.mais), 'Agrupar por empresa: blocos com "N no período · X de Y da empresa" (' + ag.cab.replace(/\n/g, ' | ') + ')');
+    await p.evaluate(() => document.querySelector('#ordem-ajuda .ajuda').click()); await espera(300);
+    confere(await p.evaluate(() => /Agrupar por empresa[\s\S]*até 50 dos últimos 6 meses/i.test(document.querySelector('.balao').innerText)), '(?) de Ordenar explica ordenar × agrupar e o alcance');
+    await p.evaluate(() => { document.body.click(); const a = document.getElementById('agrupar'); a.value = ''; a.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(800);
+    confere(await p.evaluate(() => !document.getElementById('ordem').disabled && !document.querySelector('.grupo-emp')), 'Agrupar: desligar volta a lista e os "Ordenar por"');
+    confere(p._erros.length === 0, '0.7.49: nenhum erro na página ' + p._erros.join(' | '));
+    await p.close();
+  }
+
   await b.close();
   console.log(res.join('\n'));
   console.log(falhas ? `\n${falhas} FALHA(S)` : '\nTUDO OK');

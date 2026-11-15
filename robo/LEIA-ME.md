@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.48 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.49 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,14 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.49 (15/Nov, decisões 43 a 48):** "Modo: Trabalhista" no alto (as outras especialidades apagadas, "Não incluído na sua
+  licença"), no lugar de "Abrir a planilha", que fica no menu ☰ → Planilha ("planilha oficial, só leitura"); filtros salvos numa
+  lista própria (larga, abre para a esquerda, nome e descrição; guardam período e agrupamento) e 3 de fábrica, uma vez por
+  computador, com os tribunais do primeiro acesso (lendo mais de 4, TRT2 e TRT15); Tribunal na 1ª linha dos filtros, sempre à vista;
+  listas de filtro com a largura do nome mais comprido e que acompanham o botão ao rolar; Varas com "Nº" antes do nome; (?) na cor de
+  link, que volta ao cinza aberto, com balão que cresce; **Agrupar por empresa** (bloco por empresa, empresas pela data mais recente,
+  processos anteriores da empresa mesmo fora do período, alcance padrão "até 50 dos últimos 6 meses", `radar.processos_das_empresas`
+  e rota `/empresas/processos`, mesma empresa pela raiz do CNPJ; a chave é o CNPJ (dono): homônimo de outro CNPJ fora, processo sem CNPJ com o mesmo nome marcado "confira" e fora do total; sem CNPJ nenhum, pelo nome); Wizard explica filtros e limpeza.
 - **0.7.48 (15/Nov, protótipo aprovado pelo dono):** (1) **leitura pela consulta pública** quando o caderno do CNJ cai (desenho 1.3,
   decisão 37): só nos dias com 5xx, com a sonda da consulta respondendo e o observador da SolverONE sem a consulta fora;
   `djen.consulta_dia` (itensPorPagina 100, passa a 50 se recusado; 1 pedido/s; 15 s; 1 nova tentativa em tempo esgotado e 5xx;
