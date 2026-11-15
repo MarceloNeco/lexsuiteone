@@ -45,6 +45,7 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
 .leg h3{margin:0 0 6px;font-size:1rem;color:var(--tinta)}
 .hist li{margin:4px 0;font-size:.9rem}
 .sim{margin-left:auto;font-size:.8rem;color:var(--tinta-3)}
+.onde{background:#eaf1ff;border:1px solid #c7d7f5;border-radius:14px;padding:12px 16px;margin-bottom:12px;font-size:.92rem}.onde b{display:block;margin-bottom:4px}.onde ol{margin:4px 0 0 18px;padding:0}.onde li{margin:2px 0}.onde .cam{font-weight:600;color:var(--noite)}
 @media (max-width:700px){.lista-cid .caixa{width:min(300px,90vw)}}
 </style>
 </head>
@@ -60,8 +61,14 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
 
 <!-- ===== 1. ARMAZENAMENTO ===== -->
 <section class="tela on" id="t1">
+<div class="onde"><b>Onde fica no RADAR</b>
+<span class="cam">Engrenagem (Configurações) → bloco "Leitura do Diário" → seção "Armazenamento"</span> (já existe desde a 0.7.16: hoje mostra as planilhas, o tamanho, as cópias de segurança e o botão "Limpar planilha"). O que é novo entra <u>dentro dessa mesma seção</u>, logo abaixo das cópias de segurança: os dois prazos, "O que nunca sai" e "Última limpeza".
+<ol><li>Para chegar: engrenagem no alto → rolar até Armazenamento (ou pelo AssistONE: atalho "Armazenamento").</li>
+<li>Vizinhos: acima, "Rotina de leitura" (horários e a opção de e-mail do CNJ); abaixo, o bloco "Tela" (aparência, assistente).</li>
+<li>Conflito a evitar: já existe "Limpar planilha" (apaga linhas antigas da planilha). O botão novo chama-se <b>"Limpar o banco agora"</b>, com a explicação ao lado, para ninguém confundir.</li>
+<li>Salvar: o mesmo botão "Salvar" único da Configuração, que acende quando algo muda.</li></ol></div>
 <div class="cartao">
-  <h2>Armazenamento <span class="ajuda" title="O RADAR guarda tudo no seu computador. Aqui você decide por quanto tempo o detalhe fica e vê a última limpeza.">?</span></h2>
+  <h2>Armazenamento <span class="nota">(seção existente; o trecho novo começa em "Prazos")</span> <span class="ajuda" title="O RADAR guarda tudo no seu computador. Aqui você decide por quanto tempo o detalhe fica e vê a última limpeza.">?</span></h2>
   <p class="nota">Configurações → Armazenamento. O banco fica no seu computador; nada daqui vai para a SolverONE.</p>
   <div class="cards">
     <div class="card"><div class="n">41.280</div><div class="r">processos no programa</div></div>
@@ -82,7 +89,7 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
     <tr><td>Apagados (mais de 24 meses, não trabalhados)</td><td>0</td><td>o programa tem 7 meses de dados; nada chegou a 24 meses</td></tr>
     <tr><td>Mantidos por serem trabalhados</td><td>418</td><td>situação diferente de Novo, contato ou anotação</td></tr>
     <tr><td>Tamanho</td><td>348 → 312 MB</td><td>VACUUM feito</td></tr></table>
-  <div class="linha" style="margin-top:12px"><button class="forte" id="salvar">Salvar</button><button id="limpar">Limpar agora</button><button class="txt" data-tela="t4">Ver no Histórico de leituras</button><span class="nota" id="msg1"></span></div>
+  <div class="linha" style="margin-top:12px"><button class="forte" id="salvar">Salvar</button><button id="limpar">Limpar o banco agora</button><button class="txt" data-tela="t4">Ver no Histórico de leituras</button><span class="nota" id="msg1"></span></div>
   <div class="prog" id="prog1" style="display:none"><i></i></div>
 </div>
 <div class="leg"><h3>Regras desta tela (desenho `DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md`)</h3>
@@ -93,6 +100,12 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
 
 <!-- ===== 2. FILTRO DE CIDADE ===== -->
 <section class="tela" id="t2">
+<div class="onde"><b>Onde fica no RADAR</b>
+<span class="cam">Lista de processos → barra de filtros (acima da lista) → novo filtro "Cidade", logo à direita de "Estado"</span>. Mesma barra de hoje (Busca, Situação, Área logada, Valor, Filtros salvos, Contato, Frente, Tribunal, Data, Vara, Setor, Porte, Estado, Sinal); nada sai do lugar, só entra Cidade depois de Estado.
+<ol><li>Para usar: escolher o Estado (ou deixar Todos) → clicar em Cidade → digitar parte do nome ou escolher na lista (as com mais processos primeiro).</li>
+<li>O Painel usa os mesmos filtros: os números e gráficos passam a respeitar a cidade escolhida, sem tela nova.</li>
+<li>Filtros salvos guardam a cidade junto com o resto. A planilha não muda.</li>
+<li>Conflito a evitar: cidade escolhida que não existe no estado novo é limpa com aviso (não some em silêncio).</li></ol></div>
 <div class="filtros">
   <span class="chip">Tribunal: Todos</span>
   <span class="chip on">Estado: <select id="uf"><option>SP</option><option>MG</option><option>Todos</option></select></span>
@@ -112,6 +125,12 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
 
 <!-- ===== 3. CNJ FORA ===== -->
 <section class="tela" id="t3">
+<div class="onde"><b>Onde fica no RADAR</b>
+<span class="cam">Faixa do alto da tela (a mesma faixa vermelha que hoje avisa "a leitura falhou")</span>, em qualquer aba (Painel ou Lista). Não é janela nem tela nova: a faixa muda de cor e de texto conforme a cena, e some quando tudo volta ao normal.
+<ol><li>Cena 1 (vermelha) já existe na 0.7.47 (o diagnóstico "é do CNJ ou é daqui" e "a SolverONE também vê"). As cenas 2 a 4 são a novidade da 0.7.48.</li>
+<li>"Interromper" é o mesmo botão que a leitura normal já mostra; "Ver os 37" leva à Lista com o filtro "novos desta leitura".</li>
+<li>Nada trava a tela: dá para continuar na Lista enquanto a consulta roda; o andamento aparece na faixa.</li>
+<li>Tudo o que a faixa disse fica registrado no Histórico de leituras (aba 4).</li></ol></div>
 <div class="cartao">
   <h2>Painel · leitura das 20h <span class="sim">simulação: <button class="txt" id="simular">avançar a cena</button></span></h2>
   <div id="cena"></div>
@@ -125,6 +144,8 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
 
 <!-- ===== 4. HISTÓRICO ===== -->
 <section class="tela" id="t4">
+<div class="onde"><b>Onde fica no RADAR</b>
+<span class="cam">Engrenagem (Configurações) → Sobre este computador → botão "Ver histórico de leituras"</span> (tela que já existe; também abre pela faixa vermelha). Novidade: dois tipos de linha a mais, <b>Limpeza</b> e <b>Leitura pela consulta pública</b>, no meio das leituras, na ordem do tempo. "← Configurações" volta.</div>
 <div class="cartao hist">
   <h2>Histórico de leituras <span class="nota">(Configurações → Sobre este computador → Ver histórico de leituras)</span></h2>
   <ul>
@@ -158,7 +179,7 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
   document.getElementById("limpar").addEventListener("click", function(){
     var m=document.getElementById("msg1");
     if(!confirmar){ confirmar=true; this.textContent="Confirmar limpeza"; m.textContent="Vai resumir os processos com mais de "+r.value+" meses e apagar os não trabalhados com mais de "+(Number(a.value)||"∞")+" meses. As estatísticas não mudam. Clique de novo para confirmar."; return; }
-    confirmar=false; this.textContent="Limpar agora";
+    confirmar=false; this.textContent="Limpar o banco agora";
     var p=document.getElementById("prog1"); p.style.display="block"; p.firstElementChild.style.width="0"; m.textContent="Limpando o banco… a tela continua livre.";
     setTimeout(function(){p.firstElementChild.style.width="60%";},300); setTimeout(function(){p.firstElementChild.style.width="100%"; m.textContent="Limpeza feita: 12 resumidos, 0 apagados, 312 → 311 MB. Registrada no Histórico de leituras.";},1500);
   });
