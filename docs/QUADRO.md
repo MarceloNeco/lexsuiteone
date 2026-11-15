@@ -629,6 +629,13 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Arquitetura (15/Nov, decisão do dono "folha da Definition of done"):** pôr no `CLAUDE.md` (seção "Definition of done"
+  e "Como entregar") e no `.claude/agents/revisor.md`: "antes de 'pronta para publicar', preencher `documentacao/dod/<versão>.md`
+  (modelo `documentacao/dod/LEIA-ME.md`); o revisor lê a folha contra o diff e trata ponto falso ou em branco como bloqueio". O
+  teste `robo/testes/test_dod.py` já trava a versão sem a folha. Vale também como modelo para a diretriz geral do `rootify-one`.
+- **Produto → Operação (15/Nov, mesma decisão):** na revisão de cada versão, ler `documentacao/dod/<versão>.md` contra o que mudou
+  e não publicar com ponto falso ou em branco; a 0.7.48 já tem a folha (preenchida depois da publicação).
+
 - **Produto → Operação (15/Nov, instaladores, a pedido do dono: "não dá pra já colocar… senão vou lançar um negócio que já vai estar
   ruim"):** o `try/catch { exit 2 }` do PowerShell nos dois `.bat` (erro inesperado vai ao `tasklist`, nunca "antivírus encerrou" por
   engano) está na branch `claude/lexsuiteone-judicial-product-22f871`, commit `0f1414e`; a branch é a `main` mais só os 4 arquivos
@@ -963,6 +970,7 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 
 | Data | Decisão |
 |---|---|
+| 15/Nov | **Folha da Definition of done por versão** (dono: "pode"): toda versão nova tem `documentacao/dod/<versão>.md` com 13 pontos (manual, AssistONE ajuda/tour/busca, Wizard, Novidades, termos, e-mail e comunicações, RootifyONE/ArchONE/EaglePlanONE, retrocompatibilidade, segurança e LGPD, qualidade, registro), cada um "conferido: …" ou "não se aplica: …" com o porquê; `robo/testes/test_dod.py` falha sem ela; revisor e Operação tratam folha incompleta como bloqueio. Modelo em `documentacao/dod/LEIA-ME.md`. Também: e-mail de boas-vindas diz que o instalador mostra o antivírus encontrado e o passo a passo dele. |
 | 15/Nov | **Protótipo da 0.7.48 aprovado** e **"pode codar a 0.7.48"** (dono, 15/Nov, depois de ver o protótipo com a caixa "Onde fica no RADAR"). Ajustes pedidos por ele já no protótipo e no prompt: faixa do alto na largura toda com "Detalhes técnicos" embaixo em azul; "Tudo certo" explicado; opção do e-mail do CNJ mostrando o endereço. |
 | 15/Nov | **Janelas do RADAR**: todas arrastáveis pelo título e com tamanho ajustável; ao fechar e abrir de novo, voltam ao centro e ao tamanho padrão (para ninguém perder a janela). Os 14 ajustes do teste da área logada (`documentacao/FEEDBACK-TESTE-0.7.47.md`) entram na 0.7.48. O dono ainda está fechando uma parte com a Arquitetura: a 0.7.48 só começa com o "pode codar a 0.7.48". |
 | 15/Nov | **Astrea e Aurum: NÃO procurar a Aurum agora** (dono: "não estou maduro… não tenho ainda um plano de negócio, estou explorando"). Tudo o que se sabe está em `documentacao/DOSSIE-ASTREA-MCP-AI-2026-11-15.md` (navegação de 13/Nov, site mcp.ai, termos do Astrea, caminhos P1 a P5). Até o dono decidir: nenhuma sessão escreve à Aurum, ao mcp.ai ou ao Leandro sobre isso; os caminhos sem autorização (planilha pronta e exportação de contatos lida pelo RADAR) continuam possíveis quando o dono pedir. |

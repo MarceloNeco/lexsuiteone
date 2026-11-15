@@ -37,3 +37,4 @@ bloco do código; sem ele, o bloco é removido, e o cliente não consegue instal
 - Nada de senha ou chave no corpo do e-mail. O código de cliente não é segredo: identifica a conta, não dá acesso.
 
 - 12/Nov (dono): texto mais curto e formal, largura de 760 px no computador, aceite "agora ou depois de instalar", sem prometer campos preenchidos, sem o parágrafo do compartilhamento, rodapé "LexSuiteONE · RADAR JUDICIAL é um produto da SolverONE".
+- 15/Nov (dono, "pode"): a linha do antivírus diz que o instalador mostra o antivírus que encontrou e, se ele bloquear, o passo a passo daquele antivírus (desde a 0.7.47), em PT e EN, no HTML e no texto.
