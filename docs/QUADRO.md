@@ -974,6 +974,10 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 40 | Produto (limpeza automática, pedido do dono 14/Nov) | O que a limpeza automática faz: resumir com 6 meses e apagar com 24 meses; resumir com 12 e apagar com 24; ou só resumir? | Resumir 6, apagar 24 | respondida (14/Nov): resumir com 6 meses, apagar com 24, estatísticas sempre guardadas |
 | 41 | Produto (limpeza) | Processos trabalhados (situação diferente de Novo, contato achado ou anotação) também são apagados? | Nunca apagar | respondida (14/Nov): nunca apagar; só perdem o texto pesado |
 | 42 | Produto (limpeza) | O prazo pode ser mudado pelo escritório? | Sim, em Armazenamento | respondida (14/Nov): sim, em Configurações → Armazenamento, que mostra também a última limpeza |
+| 43 | Produto (filtros prontos, 15/Nov) | Quais filtros vêm salvos? Proposta em `documentacao/PROPOSTA-FILTROS-PADRAO-2026-11-15.md` | "Para contatar (7 dias)" e "Buscar contato na área logada (7 dias)"; o 3º ("Maiores causas da semana") opcional | aberta |
+| 44 | Produto (filtros prontos) | Os filtros usam TRT2 e TRT15 fixos ou os tribunais que o escritório escolheu no Wizard? | os do Wizard (padrão TRT2 e TRT15): já se adapta a cada escritório | aberta |
+| 45 | Produto (filtros prontos) | Tributário: o RADAR só lê os TRTs hoje; os filtros tributários (TRF3 e TJSP) ficam para quando a frente tributária existir? | sim; agora só o trabalhista | aberta |
+| 46 | Produto (Wizard) | A limpeza já vem ligada (6 meses resume, 24 apaga, estatísticas ficam). Manter 6 e 24 e só explicar no Wizard? | sim, manter e explicar | aberta |
 
 ## Decisões do dono registradas aqui
 
