@@ -102,6 +102,9 @@ rem chega a SolverONE com o codigo do escritorio e a identificacao (aleatoria) d
 set "INST="
 set "CODIGO_OK="
 for /f "usebackq delims=" %%g in (`powershell.exe -NoProfile -Command "[guid]::NewGuid().ToString('N').Substring(0,16)"`) do set "INST=%%g"
+rem 0.7.48 (revisao da Operacao): sem PowerShell, a identificacao sai dos numeros aleatorios do proprio Windows (16 digitos)
+if not defined INST set "INST=%RANDOM%%RANDOM%%RANDOM%%RANDOM%%RANDOM%0000000000000000"
+set "INST=%INST:~0,16%"
 echo  Digite o codigo de cliente que veio no e-mail de boas-vindas (exemplo: LEX-ABCD-2345).
 echo  Para colar, clique com o botao direito dentro desta janela.
 echo.
@@ -223,6 +226,13 @@ echo.
 call "%DEST%\ABRIR.bat" >nul
 rem 0.7.47 (2.1): o programa precisa estar rodando 5 segundos depois de abrir; senao, o antivirus pode te-lo encerrado
 timeout /t 5 /nobreak >nul
+rem 0.7.48 (revisao da Operacao): conta so o Python da pasta do programa, nao qualquer python.exe do computador.
+rem Resposta: 0 = rodando nesta pasta; 1 = nenhum Python rodando; 2 = ha Python, mas o caminho nao pode ser lido (vai ao tasklist)
+set "PS_RC=9"
+powershell.exe -NoProfile -Command "$p = @(Get-Process pythonw,python -ErrorAction SilentlyContinue); if (@($p | Where-Object { $_.Path -like ($env:DEST + '\*') }).Count -gt 0) { exit 0 } elseif (@($p | Where-Object { -not $_.Path }).Count -gt 0) { exit 2 } else { exit 1 }" >nul 2>&1
+set "PS_RC=%errorlevel%"
+if "%PS_RC%"=="0" goto programa_aberto
+if "%PS_RC%"=="1" goto processo_morto
 tasklist /fi "imagename eq pythonw.exe" 2>nul | find /i "pythonw.exe" >nul && goto programa_aberto
 tasklist /fi "imagename eq python.exe" 2>nul | find /i "python.exe" >nul && goto programa_aberto
 goto processo_morto
