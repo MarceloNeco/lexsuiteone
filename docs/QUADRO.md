@@ -302,6 +302,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 15/Nov (4): **Comparação DJEN × PJe** (`documentacao/COMPARACAO-DJEN-X-PJE-2026-11-15.md`): com duas consultas reais à API pública
+  (esquema dos itens) e a visita de 13/Nov. O PJe acrescenta CNPJ, valor da causa, data de distribuição, endereço e às vezes e-mail
+  da ré; telefone não vem de nenhum. **Dúvida aberta**: a visita foi num processo do próprio escritório; a consulta de terceiros pode
+  mostrar menos. Teste de 5 min com advogado logado em `visita-kr-law/PROMPT-TESTE-GAP-PJE-2026-11-15.md`. Nada muda na 0.7.47/48.
 - 15/Nov (3): **Dossiê Astrea × RADAR com o mcp.ai** (`documentacao/DOSSIE-ASTREA-MCP-AI-2026-11-15.md`): junta a navegação de
   13/Nov, a leitura do site mcp.ai e os termos do Astrea (a Aurum veda automação de terceiros sem autorização expressa; o mcp.ai usa
   API interna com usuário e senha; não cria contato). Caminhos P1 a P5; recomendação: escrever à Aurum pedindo autorização (substitui a
