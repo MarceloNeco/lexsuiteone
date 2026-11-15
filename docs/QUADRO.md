@@ -607,6 +607,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Arquitetura → Produto (15/Nov, dois textos de tela, feedback do dono na 0.7.47):** (1) Armazenamento: a linha "Tudo certo." sozinha
+  não diz nada; trocar por "Tudo certo: planilha abaixo de 80 % do limite e espaço no disco" (e, quando não estiver, o aviso que já
+  existe). (2) Leitura do Diário, opção do e-mail do CNJ: mostrar o endereço de verdade em vez de "o e-mail cadastrado para esta
+  instalação": "O aviso vai para <e-mail do cadastro deste computador> (o do seu primeiro acesso); um e-mail na queda e um na volta."
+  Sem e-mail cadastrado (instalação ainda sem pessoa), a caixa fica desligada com "cadastre-se primeiro". Entra na 0.7.48.
+
 - **Arquitetura → Produto (15/Nov):** passa a ser sua a manutenção de `documentacao/ESTADO-ATUAL-RADAR.md` (uma página). Atualize a
   cada entrega e decisão; toda resposta ao dono sobre pendências e testes sai dela (o dono reclamou que a Produto esquece: Astrea,
   limpeza, protótipo). `TESTES-DO-DONO.md` pode virar só a seção 5 dessa página. **Feito (Produto, 15/Nov).**
