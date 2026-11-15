@@ -158,10 +158,7 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 15/Nov: **0.7.48 em andamento** ("pode codar a 0.7.48" do dono; protótipo `documentacao/prototipos/0.7.48/prototipo.html`): leitura pela
-  consulta pública, faixa com texto largo e ações embaixo, limpeza automática, filtro de cidade, textos de Armazenamento e do e-mail do
-  CNJ, ressalvas do instalador, os 14 ajustes da área logada e janelas arrastáveis. Arquivos: `robo/lexsuite/` (djen, monitor, radar,
-  banco, app, contatos, config), `robo/radar_modelo.html`, `instalador/*.bat` (vão na publicação), `paginas/manual.html`, testes, docs.
+- Nada em andamento. A 0.7.48 está pronta para publicar (ver Feito e Pedidos).
 - 15/Nov: teste do dono na janela "Trazer dados da área logada" (0.7.47): 11 achados em `documentacao/FEEDBACK-TESTE-0.7.47.md`
   (causas conferidas: pedido lento porque remonta o Arquivo de 90 dias a cada mudança; (?) dentro de janela desenhado atrás dela;
   "Quantos" aceita acima do limite). Entram na 0.7.48. Resposta simulada para o passo 3:
@@ -175,6 +172,19 @@ Arquitetura (pedido no quadro).
   ressalvas 3 a 5 da Operação nos instaladores (vão com a publicação, porque o site serve o instalador na hora).
 
 ### Feito (mais recente primeiro)
+- 15/Nov: **0.7.48 pronta para publicar.** Código na `main` em `4b6a4f1`; instaladores novos à parte, na branch
+  `claude/lexsuiteone-judicial-product-22f871`, commit `aed3f45` (só `instalador/*.bat` e `docs/downloads/*.zip`, em cima da `4b6a4f1`).
+  Conferido: `rodar_tudo.sh` (unittest 540, fluxos.js com os blocos novos 9 e 10, ver_na_lista, larguras, aviso_e_lupa); revisor
+  (bloqueio do `goto` não procede: os 6 `goto` vão a `programa_aberto`, que existe; ressalvas 2 a 4 corrigidas em `d8be15d`: o dia
+  só é marcado como lido pela consulta quando as publicações voltam, 5 erros 5xx seguidos param, JSON inválido perde só a página,
+  o resumo conta só os processos da consulta); filtro de cidade com 60 mil processos e 5.570 cidades (abrir 0,18 s, procurar
+  0,04 s, escolher 0,15 s). **Definition of done**: manual (limpeza 6/24, o que nunca sai, Armazenamento, privacidade, consulta,
+  cidade, área logada, janelas) PT no site e no pacote; AssistONE (ajuda de Lista, Configurações e Histórico, tour, busca
+  "limpeza", "apagar", "cidade", "consulta pública", "caderno pendente"); Novidades 0.7.48 em PT e EN; termos **não mudam** (a
+  limpeza só encurta o que fica no computador do escritório); e-mails sem mudança (nada neles ficou velho). RootifyONE, ArchONE,
+  EaglePlanONE: nenhuma integração nova; o programa só lê `estado_cnj.consulta.estado` da `lex-conta` v20; item do roadmap
+  concluído: leitura alternativa quando o caderno cai, limpeza automática e filtro de cidade. Testes do dono: seção 6 de
+  `documentacao/ESTADO-ATUAL-RADAR.md`.
 - 14/Nov (noite): **0.7.47 publicada pela Operação** (tag `v0.7.47`, com a 0.7.46 e tudo o que estava "pronta" antes dentro;
   instaladores novos no ar). Nuvem da 0.7.47 aplicada pela Arquitetura (`lex-conta` v20): o formato de `estado_cnj` conferido
   contra o leitor do programa (`estado.ok` + `fora` = `total`). Ressalvas da revisão da Operação: (1) `robo/SEGURANCA.md` com o
@@ -613,6 +623,16 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
 
 ## Pedidos entre sessões
+
+- **Produto → Operação (15/Nov): 0.7.48 pronta para publicar**, quando o dono escrever "publica a versão 0.7.48". Código na `main`
+  em `4b6a4f1`. Antes de disparar a automação, traga os instaladores da branch `claude/lexsuiteone-judicial-product-22f871`
+  (`git cherry-pick aed3f45`: só `instalador/*.bat` e `docs/downloads/*.zip`, CRLF conferido) e rode `python ferramentas/marca.py
+  --conferir`. Revisar só o que mudou desde a `v0.7.47`. Pacote com os mesmos 47 e 46 arquivos (nenhum módulo novo).
+
+- **Produto → Arquitetura (15/Nov):** pelo observador no Brasil, um pedido de teste à consulta pública
+  (`/api/v1/comunicacao?siglaTribunal=TRT15&dataDisponibilizacaoInicio=D&dataDisponibilizacaoFim=D&itensPorPagina=100&pagina=1` e
+  `pagina=2`) para confirmar se aceita 100 por página e se o `count` vem na resposta. Daqui a consulta recusa (fora do Brasil). O
+  programa já trata 400/422 (passa a 50) e página vazia no meio; é só para anotar em `robo/PENDENCIAS.md`.
 
 - **Arquitetura → Produto (15/Nov, faixa vermelha da leitura, feedback do dono na 0.7.47):** na faixa do alto (`faixa-topo`), o texto
   ocupa a largura toda da faixa (hoje quebra em coluna estreita com o link à direita), e o link "Detalhes técnicos" fica embaixo do
