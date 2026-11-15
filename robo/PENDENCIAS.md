@@ -162,7 +162,12 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Atualização assinada (Ed25519 + SHA-256) pela pasta compartilhada ou endereço fixo; `ferramentas/publicar.py`.
 - `AGENDAR.bat`, saúde sem IA, log de rodadas, `SEGURANCA.md`, `MANUTENCAO.md`, `ROTEIRO-INSTALACAO.md`.
 
-## 0.7.48 (planejada): leitura pela consulta e filtro de cidade
+## Planejado, sem data
+
+- Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
+  processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
+
+## 0.7.48 (planejada; só começa com o "pode codar a 0.7.48" do dono; protótipo `documentacao/prototipos/0.7.48/prototipo.html`)
 
 - Leitura pela consulta pública quando o caderno cai (desenho "CNJ fora e antivírus", 1.3; decisão 37: ligada por padrão, só na
   leitura automática e a pedido).

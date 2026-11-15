@@ -1,6 +1,6 @@
 # Estado atual do RADAR JUDICIAL (uma página; toda sessão lê antes de responder ao dono)
 
-Atualizado em 15/Nov/2026 pela Arquitetura. **Quem mantém daqui em diante: a Produto**, a cada entrega ou decisão nova, e sempre
+Atualizado em 15/Nov/2026 pela Produto (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
 que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" sai DAQUI, não da memória da conversa.
 
 ## 1. No ar
@@ -40,4 +40,4 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 4. Configurações → Sobre este computador: antivírus, firewall, link da página, recursos da licença. (feito pelo dono em 15/Nov)
 5. Configurações → Leitura do Diário: opção de e-mail do CNJ, salva e persiste.
 6. Área logada: 4 passos, pedido pendente sobrevive ao fechar, resposta simulada (`prototipos/area-logada/resposta-simulada-TESTE-0.7.45.md`) gera o relatório "o que mudou".
-7. Liga e desliga por licença na ficha do RootifyONE: os três lugares somem e voltam.
+7. Liga e desliga por licença na ficha do RootifyONE: os três lugares somem e voltam (passo a passo em `TESTES-DO-DONO.md`).

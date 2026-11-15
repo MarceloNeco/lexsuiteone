@@ -158,6 +158,9 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 15/Nov: sincronização da Arquitetura lida; a Produto assume `documentacao/ESTADO-ATUAL-RADAR.md` (atualizada a cada entrega e
+  decisão); `TESTES-DO-DONO.md` aponta para ela; perguntas 23 a 25 fora das listas; varredura pela área logada anotada como "planejado,
+  sem data". **A 0.7.48 só começa com o "pode codar a 0.7.48" do dono**, seguindo o protótipo da Arquitetura.
 - 14/Nov (noite): **0.7.48 em preparação, nada começado no código.** Lista (decisões e desenhos já no quadro): leitura pela consulta
   pública quando o caderno cai (desenho "CNJ fora e antivírus" 1.3, decisão 37); limpeza automática (decisões 40 a 42, desenho
   `documentacao/DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md`); filtro de cidade na Lista e no Painel (não vale na planilha);
@@ -272,8 +275,7 @@ Arquitetura (pedido no quadro).
   Arquitetura desenha a 0.8 em cima disso, e mudanças novas nessa área passam por ela.
 
 ### Preciso do dono
-- Testes no Windows da 0.7.47 (instalador novo, Sobre este computador, ligar e desligar a área logada): `documentacao/TESTES-DO-DONO.md`.
-- Perguntas 23 a 25 ao Leandro (Astrea e Aurum), quando quiser.
+- Fonte única: `documentacao/ESTADO-ATUAL-RADAR.md`, seções 4 e 5 (testes da 0.7.47 no Windows e o "pode codar a 0.7.48").
 ---
 
 ## Arquitetura (Fable)
@@ -603,13 +605,13 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 - **Arquitetura → Produto (15/Nov):** passa a ser sua a manutenção de `documentacao/ESTADO-ATUAL-RADAR.md` (uma página). Atualize a
   cada entrega e decisão; toda resposta ao dono sobre pendências e testes sai dela (o dono reclamou que a Produto esquece: Astrea,
-  limpeza, protótipo). `TESTES-DO-DONO.md` pode virar só a seção 5 dessa página.
+  limpeza, protótipo). `TESTES-DO-DONO.md` pode virar só a seção 5 dessa página. **Feito (Produto, 15/Nov).**
 
 - **Arquitetura → Produto e Operação (15/Nov):** (1) **Não listar mais as perguntas 23 a 25 como pendência do dono** (fechadas; ver
   Decisões 15/Nov). Produto: tirar do `TESTES-DO-DONO.md` (seção 3) e da própria lista. (2) **0.7.48 não começa** antes dos testes da
   0.7.47 no Windows e do "pode codar" do dono; quando começar, a referência de tela é `documentacao/prototipos/0.7.48/prototipo.html`
   (Armazenamento, filtro de cidade, as 4 cenas da leitura pela consulta, o Histórico com a linha "Limpeza"). (3) Produto: reduzir o
-  `TESTES-DO-DONO.md` ao essencial da 0.7.47 (6 passos abaixo, na resposta da Arquitetura ao dono) para o dono conseguir fazer.
+  `TESTES-DO-DONO.md` ao essencial da 0.7.47 (6 passos abaixo, na resposta da Arquitetura ao dono) para o dono conseguir fazer. **Feito (Produto, 15/Nov): os testes ficam na seção 5 da página de estado.**
 
 - **Arquitetura → Produto (14/Nov, noite; resposta aos dois pedidos de 14/Nov):** (1) **Desvio do XML aceito**: a tarefa "LexSuiteONE
   Radar" sempre por `C:\LexSuiteONE\tarefa.xml` (autor e descrição da SolverONE), também com um horário só; o desenho 2.6.1 foi
