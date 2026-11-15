@@ -2,7 +2,8 @@
 setlocal EnableExtensions DisableDelayedExpansion
 title Instalacao do LexSuiteONE (pacote completo)
 rem Pacote completo (0.7.40, pedido do dono): o mesmo instalador, mas o programa, o Python e o icone vem na pasta "dados"
-rem ao lado deste arquivo; nada e baixado da internet (so a conferencia do codigo de cliente). Para computadores com
+rem ao lado deste arquivo; o programa nao e baixado da internet (so a conferencia do codigo de cliente e, antes de instalar,
+rem tres pedidos leves para saber se a rede barra os enderecos do programa, sem baixar nada). Para computadores com
 rem antivirus ou rede restrita. Fonte: instalador/INSTALAR-COMPLETO.bat (o pacote e montado por ferramentas/marca.py).
 rem Confere a impressao digital (SHA-256) do programa, instala numa pasta deste computador e cria o atalho.
 rem Nao pede senha de administrador. Pode ser rodado de novo para atualizar ou consertar: configuracao e banco ficam.
@@ -107,6 +108,9 @@ rem chega a SolverONE com o codigo do escritorio e a identificacao (aleatoria) d
 set "INST="
 set "CODIGO_OK="
 for /f "usebackq delims=" %%g in (`powershell.exe -NoProfile -Command "[guid]::NewGuid().ToString('N').Substring(0,16)"`) do set "INST=%%g"
+rem 0.7.48 (revisao da Operacao): sem PowerShell, a identificacao sai dos numeros aleatorios do proprio Windows (16 digitos)
+if not defined INST set "INST=%RANDOM%%RANDOM%%RANDOM%%RANDOM%%RANDOM%0000000000000000"
+set "INST=%INST:~0,16%"
 echo  Digite o codigo de cliente que veio no e-mail de boas-vindas (exemplo: LEX-ABCD-2345).
 echo  Para colar, clique com o botao direito dentro desta janela.
 echo.
@@ -237,6 +241,9 @@ echo.
 call "%DEST%\ABRIR.bat" >nul
 rem 0.7.47 (2.1): o programa precisa estar rodando 5 segundos depois de abrir; senao, o antivirus pode te-lo encerrado
 timeout /t 5 /nobreak >nul
+rem 0.7.48 (revisao da Operacao): conta so o Python da pasta do programa, nao qualquer python.exe do computador
+powershell.exe -NoProfile -Command "if (@(Get-Process pythonw,python -ErrorAction SilentlyContinue | Where-Object { $_.Path -like ($env:DEST + '\*') }).Count -gt 0) { exit 0 } else { exit 1 }" >nul 2>&1 && goto programa_aberto
+where powershell.exe >nul 2>nul && goto processo_morto
 tasklist /fi "imagename eq pythonw.exe" 2>nul | find /i "pythonw.exe" >nul && goto programa_aberto
 tasklist /fi "imagename eq python.exe" 2>nul | find /i "python.exe" >nul && goto programa_aberto
 goto processo_morto
