@@ -302,6 +302,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 15/Nov (2): **Astrea via mcp.ai (achado do dono)**: existe um servidor MCP de terceiro (mcp.ai, "Astrea (Aurum)") que usa a API
+  interna do Astrea com usuário e senha do escritório ("sem API pública oficial"). Parecer da Arquitetura: NÃO usar com a conta da
+  KR Law (senha do escritório e dados de processos passando por um terceiro sem contrato, API interna sem autorização da Aurum,
+  LGPD e sigilo profissional; a pergunta 25 continua sendo a porta de entrada). Serve como prova de que a integração é viável; o
+  caminho, quando houver, é direto e autorizado pela Aurum, ou pela extensão na sessão do próprio advogado, ou planilha. Nada muda
+  no desenho (Astrea adiado).
 - 15/Nov (1): perguntas 23 a 25 fechadas (Astrea adiado até o escritório pedir); protótipo da 0.7.48
   (`documentacao/prototipos/0.7.48/prototipo.html`: Armazenamento, filtro de cidade com busca, 4 cenas da leitura pela consulta,
   Histórico com "Limpeza"); lista curta do que o dono testa na 0.7.47 antes da 0.7.48 (resposta no chat; pedido à Produto para
