@@ -21,7 +21,7 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
-- **0.7.48** (só depois dos testes da 0.7.47 e do "pode codar" do dono): leitura pela consulta quando o caderno cai; limpeza
+- **0.7.48** (protótipo aprovado e "pode codar" dado pelo dono em 15/Nov; prompt `PROMPT-PRODUTO-0.7.48-2026-11-15.md`): leitura pela consulta quando o caderno cai; limpeza
   automática; filtro de cidade; links da página de antivírus; ajustes do instalador. Mais os 14 ajustes da janela "Trazer dados da área logada"
   do teste do dono de 15/Nov (`FEEDBACK-TESTE-0.7.47.md`: todas as janelas arrastáveis e com tamanho ajustável, voltando ao padrão ao reabrir; voltar aos passos, pedido rápido com indicador de
   carregamento, ícone de copiar, (?) do .md, botões mais claros, área de arrastar arquivo, sócio marcado, (?) na frente, limite na
@@ -32,8 +32,7 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Depois da KR Law: staging e CI/CD (`DESENHO-STAGING-RADAR-2026-11-12.md`). Central LexSuiteONE: espera o repositório próprio.
 
 ## 4. O que só o dono pode fazer (lista única)
-1. Testar a 0.7.47 no Windows (seção 5) e depois escrever na Produto "pode codar a 0.7.48".
-2. Ver o protótipo da 0.7.48 e dizer se cobre a jornada.
+1. Terminar os testes da 0.7.47 no Windows (seção 5); o que falhar vira feedback na Produto.
 3. Quando quiser: teste de 5 min no PJe com advogado logado (`visita-kr-law/PROMPT-TESTE-GAP-PJE-2026-11-15.md`).
 4. Supabase (Central): TOTP, desligar signups, usuários da equipe; repositório `central-lexsuiteone`.
 5. RootifyONE: "aplicado" (recursos por licença) e os prompts pendentes de lá.

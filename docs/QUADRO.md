@@ -308,6 +308,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 15/Nov (6): protótipo da 0.7.48 **aprovado pelo dono** ("produto aprovado, pode codar"); prompt de codificação entregue
+  (`documentacao/PROMPT-PRODUTO-0.7.48-2026-11-15.md`): consulta pública (1.3), faixa na largura toda, limpeza automática, filtro de
+  cidade, textos (Tudo certo; e-mail do aviso), links da página de antivírus, instalador, DoD e testes.
 - 15/Nov (5): `documentacao/ESTADO-ATUAL-RADAR.md` (uma página: no ar, decidido, planejado, o que só o dono faz, testes pendentes;
   **a Produto mantém** daqui em diante; `CLAUDE.md` manda ler antes de responder "o que falta"); plano sem data da varredura pela área
   logada (`PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md`); prompt de sincronização para a Produto (`PROMPT-PRODUTO-SINCRONIZACAO-2026-11-15.md`).
@@ -893,6 +896,7 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 
 | Data | Decisão |
 |---|---|
+| 15/Nov | **Protótipo da 0.7.48 aprovado** e **"pode codar a 0.7.48"** (dono, 15/Nov, depois de ver o protótipo com a caixa "Onde fica no RADAR"). Ajustes pedidos por ele já no protótipo e no prompt: faixa do alto na largura toda com "Detalhes técnicos" embaixo em azul; "Tudo certo" explicado; opção do e-mail do CNJ mostrando o endereço. |
 | 15/Nov | **Janelas do RADAR**: todas arrastáveis pelo título e com tamanho ajustável; ao fechar e abrir de novo, voltam ao centro e ao tamanho padrão (para ninguém perder a janela). Os 14 ajustes do teste da área logada (`documentacao/FEEDBACK-TESTE-0.7.47.md`) entram na 0.7.48. O dono ainda está fechando uma parte com a Arquitetura: a 0.7.48 só começa com o "pode codar a 0.7.48". |
 | 15/Nov | **Astrea e Aurum: NÃO procurar a Aurum agora** (dono: "não estou maduro… não tenho ainda um plano de negócio, estou explorando"). Tudo o que se sabe está em `documentacao/DOSSIE-ASTREA-MCP-AI-2026-11-15.md` (navegação de 13/Nov, site mcp.ai, termos do Astrea, caminhos P1 a P5). Até o dono decidir: nenhuma sessão escreve à Aurum, ao mcp.ai ou ao Leandro sobre isso; os caminhos sem autorização (planilha pronta e exportação de contatos lida pelo RADAR) continuam possíveis quando o dono pedir. |
 | 15/Nov | **Perguntas 23, 24 e 25 (Astrea e Aurum) FECHADAS**: o dono não quer mais vê-las como pendência ("já deveriam estar respondidas"). Integração com o Astrea adiada até o escritório pedir; quando vier, valem as recomendações (planilha primeiro; exportação mensal só da coluna CNPJ; o escritório pergunta à Aurum antes de qualquer automação na tela). Nenhuma sessão volta a listar isso como "depende do dono". **0.7.48 só começa depois dos testes da 0.7.47 no Windows e do "pode codar" do dono; protótipo de referência em `documentacao/prototipos/0.7.48/prototipo.html`.** |
