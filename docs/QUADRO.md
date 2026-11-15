@@ -174,7 +174,7 @@ Arquitetura (pedido no quadro).
 
 ### Feito (mais recente primeiro)
 - 15/Nov: **0.7.48 corrigida, pronta para publicar de novo** (bloqueio da Operação: a limpeza apagava processo com dado digitado
-  na ficha; corrigido com as 5 ressalvas em `254d205`; instaladores em `08abc76` na branch). Testes: 545 do programa OK; `rodar_tudo.sh` rodando (resultado anotado aqui ao terminar).
+  na ficha; corrigido com as 5 ressalvas em `254d205`; instaladores em `08abc76` na branch). Testes: `rodar_tudo.sh` TUDO OK (545 do programa, fluxos, ver_na_lista, larguras, aviso_e_lupa).
 - 15/Nov: 0.7.48 marcada pronta (a Operação não publicou: bloqueio acima). Código na `main` em `4b6a4f1`; instaladores novos à parte, na branch
   `claude/lexsuiteone-judicial-product-22f871`, commit `aed3f45` (só `instalador/*.bat` e `docs/downloads/*.zip`, em cima da `4b6a4f1`).
   Conferido: `rodar_tudo.sh` (unittest 540, fluxos.js com os blocos novos 9 e 10, ver_na_lista, larguras, aviso_e_lupa); revisor
