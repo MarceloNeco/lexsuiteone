@@ -45,6 +45,16 @@ a partir dela.
   detalhe. Aplicativo novo desenha manual, AssistONE e Novidades desde o começo. Os testes `Novo…` da Produto conferem o que
   dá para automatizar; o resto é revisão: Produto, Arquitetura e Operação conferem em todo envio, o revisor trata a falta como
   **bloqueio** e a Operação não publica versão em que falte. A mesma regra está na diretriz geral do `rootify-one`.
+- **Folha da Definition of done por versão (decisão do dono, 15/Nov): a conferência é feita numa FOLHA, nunca de memória.**
+  Antes de marcar "pronta para publicar", quem prepara a versão preenche `documentacao/dod/<versão>.md` (modelo em
+  `documentacao/dod/LEIA-ME.md`, 13 pontos), com "conferido: onde e o quê" ou "não se aplica: motivo" em cada ponto; o teste
+  `robo/testes/test_dod.py` trava a versão sem a folha. **Ponto em branco, vago ou falso é bloqueio** (revisor e Operação). O que a
+  folha cobre, nomeado para não escapar: **Wizard / primeiro acesso** (os 4 passos e os textos do instalador que levam a ele),
+  **mensagens do instalador**, **ajuda de CADA tela do AssistONE** (Painel, Lista, Arquivo, Histórico, Configurações, Perfil,
+  Carregando, Primeiro acesso), **tour**, **busca**, **manual** e orientações (?), **Novidades da versão**, **termos**, **e-mails e
+  comunicações** (boas-vindas, avisos por e-mail), **site** (páginas de `paginas/`), mais RootifyONE/ArchONE/EaglePlanONE,
+  retrocompatibilidade, segurança e LGPD, qualidade verificável e registro. Na 0.7.48 escaparam a ajuda do Painel e uma linha do
+  e-mail de boas-vindas por falta da folha; não se repete.
 - **Aviso do dono (13/Nov): a Definition of done da plataforma passa a ter 12 pontos** (manual e orientações, AssistONE, Novidades
   da versão, termos, comunicações e e-mails, RootifyONE, ArchONE, EaglePlanONE (roadmap), retrocompatibilidade, segurança e LGPD,
   qualidade verificável e registro) e vai nascer uma teia de integrações entre os apps, o RootifyONE, o ArchONE e o EaglePlanONE
@@ -130,9 +140,10 @@ nunca é delegada a subagente. Resultado de subagente é dado a conferir, não o
   `releases/LexSuiteONE-RADAR-<versão>.zip` e `docs/downloads/LexSuiteONE-RADAR.zip` (o pacote de atualização é
   `LexSuiteONE-RADAR-atualizacao-<versão>.zip`; o botão do site baixa o instalador `Instalar-LexSuiteONE.zip`). Atualize `robo/LEIA-ME.md`,
   `robo/ARQUITETURA.md` e `robo/PENDENCIAS.md` junto.
-- Toda mudança que o escritório vê cumpre a **Definition of done** (regra zero de qualidade, acima, 5 pontos): manual e
-  orientações (`paginas/manual.html` gera o site e o pacote), AssistONE, Novidades da versão, termos e comunicações, conferidos
-  e atualizados em PT e EN antes de ir à `main`.
+- Toda mudança que o escritório vê cumpre a **Definition of done** (acima): manual e orientações (`paginas/manual.html` gera o
+  site e o pacote), AssistONE (cada tela, tour, busca), Wizard, instalador, Novidades, termos, e-mails e site, conferidos e
+  atualizados em PT e EN antes de ir à `main`, **com a folha `documentacao/dod/<versão>.md` preenchida** (sem ela, `test_dod.py`
+  falha e a versão não é "pronta para publicar").
 - Testes: `cd robo && python -m unittest discover -s testes`. A automação do GitHub roda testes, Bandit e Gitleaks.
 - Arquivos `.bat` sempre com fim de linha CRLF.
 - Nome do produto é configuração, não texto fixo: fica só em `docs/marca.json` (nome exato, nome curto, trecho em latão).

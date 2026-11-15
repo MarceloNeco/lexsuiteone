@@ -328,6 +328,11 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 15/Nov (7): **Folha da Definition of done por versão (decisão do dono)** registrada nas regras: `CLAUDE.md` (seção DoD nomeia
+  Wizard/primeiro acesso, instalador, ajuda de cada tela do AssistONE, tour, busca, manual, Novidades, termos, e-mails, site; regra
+  "antes de 'pronta para publicar', preencher `documentacao/dod/<versão>.md`; em branco ou falso = bloqueio"; "Como entregar" cita a
+  folha), `.claude/agents/revisor.md` (lê a folha contra o diff, abre cada texto, ponto falso/vago/em branco = bloqueio) e diretriz
+  geral do `rootify-one` (mesma regra para todos os apps, folha + teste que trava a versão onde houver testes).
 - 15/Nov (6): protótipo da 0.7.48 **aprovado pelo dono** ("produto aprovado, pode codar"); prompt de codificação entregue
   (`documentacao/PROMPT-PRODUTO-0.7.48-2026-11-15.md`): consulta pública (1.3), faixa na largura toda, limpeza automática, filtro de
   cidade, textos (Tudo certo; e-mail do aviso), links da página de antivírus, instalador, DoD e testes.
@@ -974,6 +979,7 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 
 | Data | Decisão |
 |---|---|
+| 15/Nov | **Definition of done conferida por FOLHA por versão, não de memória**: `documentacao/dod/<versão>.md` (13 pontos, modelo `LEIA-ME.md`), `test_dod.py` trava a versão sem a folha; ponto em branco ou falso é bloqueio do revisor e da Operação. Nomeados à parte: Wizard/primeiro acesso, mensagens do instalador, ajuda de cada tela do AssistONE, tour, busca, manual, Novidades, termos, e-mails, site. Vale para todos os apps da SolverONE (diretriz geral). |
 | 15/Nov | **Folha da Definition of done por versão** (dono: "pode"): toda versão nova tem `documentacao/dod/<versão>.md` com 13 pontos (manual, AssistONE ajuda/tour/busca, Wizard, Novidades, termos, e-mail e comunicações, RootifyONE/ArchONE/EaglePlanONE, retrocompatibilidade, segurança e LGPD, qualidade, registro), cada um "conferido: …" ou "não se aplica: …" com o porquê; `robo/testes/test_dod.py` falha sem ela; revisor e Operação tratam folha incompleta como bloqueio. Modelo em `documentacao/dod/LEIA-ME.md`. Também: e-mail de boas-vindas diz que o instalador mostra o antivírus encontrado e o passo a passo dele. |
 | 15/Nov | **Protótipo da 0.7.48 aprovado** e **"pode codar a 0.7.48"** (dono, 15/Nov, depois de ver o protótipo com a caixa "Onde fica no RADAR"). Ajustes pedidos por ele já no protótipo e no prompt: faixa do alto na largura toda com "Detalhes técnicos" embaixo em azul; "Tudo certo" explicado; opção do e-mail do CNJ mostrando o endereço. |
 | 15/Nov | **Janelas do RADAR**: todas arrastáveis pelo título e com tamanho ajustável; ao fechar e abrir de novo, voltam ao centro e ao tamanho padrão (para ninguém perder a janela). Os 14 ajustes do teste da área logada (`documentacao/FEEDBACK-TESTE-0.7.47.md`) entram na 0.7.48. O dono ainda está fechando uma parte com a Arquitetura: a 0.7.48 só começa com o "pode codar a 0.7.48". |
