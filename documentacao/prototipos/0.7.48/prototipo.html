@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protótipo · 0.7.48 · limpeza automática, filtro de cidade e leitura pela consulta · RADAR JUDICIAL</title>
+<style>
+:root{--noite:#0f1d33;--latao:#c9a227;--latao-claro:#f4ecd2;--papel:#fff;--papel-2:#f3f5f9;--fio:#d9dee8;--tinta:#1a2238;--tinta-2:#4a5468;--tinta-3:#6b7489;--ok:#1d7a46;--ok-bg:#e7f5ec;--erro:#b3261e;--erro-bg:#fdecea;--f:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 var(--f);color:var(--tinta);background:#eef1f6}
+header{background:var(--noite);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header .nome{font-weight:800;letter-spacing:.04em}header .nome b{color:var(--latao)}header .mudo{color:#c9d2e0;font-size:.9rem}
+header .proto{margin-left:auto;background:var(--latao);color:var(--noite);font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:999px}
+main{max-width:1180px;margin:0 auto;padding:18px 20px 60px}
+.abas{display:flex;gap:6px;margin:0 0 14px;flex-wrap:wrap}.abas button{border-radius:999px}.abas button.on{background:var(--noite);color:#fff;border-color:var(--noite)}
+section.tela{display:none}section.tela.on{display:block}
+.cartao{background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+h2{margin:0 0 6px;font-size:1.15rem}h3{margin:14px 0 6px;font-size:1rem}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--fio);background:var(--papel);padding:8px 14px}
+button.forte{background:var(--noite);color:#fff;border-color:var(--noite);font-weight:700}
+button.latao{background:var(--latao);color:var(--noite);border-color:var(--latao);font-weight:700}
+button.txt{border:0;background:none;color:var(--noite);text-decoration:underline;padding:4px 6px}
+button[disabled]{opacity:.45;cursor:not-allowed}
+.ajuda{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--papel-2);border:1px solid var(--fio);align-items:center;justify-content:center;font-size:.8rem;color:var(--tinta-3);cursor:help;vertical-align:middle}
+.aviso{border-radius:12px;padding:10px 14px;margin:8px 0}.aviso.info{background:var(--latao-claro)}.aviso.ok{background:var(--ok-bg);color:var(--ok)}.aviso.erro{background:var(--erro-bg);color:var(--erro)}
+.linha{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=number]{font:inherit;width:80px;padding:7px 10px;border:1px solid var(--fio);border-radius:10px}
+input[type=search],select{font:inherit;padding:7px 10px;border:1px solid var(--fio);border-radius:10px;background:var(--papel)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+.card{border:1px solid var(--fio);border-radius:14px;padding:12px 14px;background:var(--papel-2)}.card .n{font-size:1.6rem;font-weight:800;line-height:1.1}.card .r{color:var(--tinta-3);font-size:.85rem}
+.nota{color:var(--tinta-3);font-size:.86rem}
+code{background:var(--papel-2);padding:1px 5px;border-radius:6px;font-size:.9em}
+table{width:100%;border-collapse:collapse;background:var(--papel);border:1px solid var(--fio);border-radius:14px;overflow:hidden}
+th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-size:.9rem;vertical-align:top}th{background:var(--papel-2);font-weight:600;color:var(--tinta-2)}
+.chip{border:1px solid var(--fio);background:var(--papel-2);border-radius:999px;padding:4px 12px;font-size:.88rem;display:inline-flex;gap:6px;align-items:center}
+.chip.on{background:var(--latao-claro);border-color:var(--latao);font-weight:600}
+.filtros{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.lista-cid{position:relative}.lista-cid .caixa{position:absolute;top:100%;left:0;z-index:5;width:300px;max-height:260px;overflow:auto;background:var(--papel);border:1px solid var(--fio);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.15);display:none}
+.lista-cid.aberta .caixa{display:block}.lista-cid .caixa label{display:flex;justify-content:space-between;gap:8px;padding:7px 12px;cursor:pointer;font-size:.9rem}.lista-cid .caixa label:hover{background:var(--papel-2)}
+.lista-cid .caixa .q{color:var(--tinta-3)}
+.faixa{border-radius:12px;padding:10px 14px;margin:8px 0;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.faixa.erro{background:var(--erro-bg);color:var(--erro)}.faixa.info{background:var(--latao-claro);color:var(--tinta)}.faixa.ok{background:var(--ok-bg);color:var(--ok)}
+.faixa .txt{flex:1;min-width:240px}.faixa b{display:block}
+.prog{height:10px;background:var(--papel-2);border-radius:999px;overflow:hidden;border:1px solid var(--fio);margin:6px 0}.prog i{display:block;height:100%;background:var(--latao);width:0;transition:width .4s}
+.leg{background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:12px 16px;margin-top:18px;font-size:.9rem;color:var(--tinta-2)}
+.leg h3{margin:0 0 6px;font-size:1rem;color:var(--tinta)}
+.hist li{margin:4px 0;font-size:.9rem}
+.sim{margin-left:auto;font-size:.8rem;color:var(--tinta-3)}
+@media (max-width:700px){.lista-cid .caixa{width:min(300px,90vw)}}
+</style>
+</head>
+<body>
+<header><span class="nome">RADAR <b>JUDICIAL</b></span><span class="mudo">· protótipo da 0.7.48 (dados fictícios)</span><span class="proto">PROTÓTIPO · não é o programa</span></header>
+<main>
+<div class="abas">
+  <button class="on" data-tela="t1">1 · Configurações → Armazenamento</button>
+  <button data-tela="t2">2 · Lista: filtro de cidade</button>
+  <button data-tela="t3">3 · Quando o CNJ cai: leitura pela consulta</button>
+  <button data-tela="t4">4 · Histórico de leituras</button>
+</div>
+
+<!-- ===== 1. ARMAZENAMENTO ===== -->
+<section class="tela on" id="t1">
+<div class="cartao">
+  <h2>Armazenamento <span class="ajuda" title="O RADAR guarda tudo no seu computador. Aqui você decide por quanto tempo o detalhe fica e vê a última limpeza.">?</span></h2>
+  <p class="nota">Configurações → Armazenamento. O banco fica no seu computador; nada daqui vai para a SolverONE.</p>
+  <div class="cards">
+    <div class="card"><div class="n">41.280</div><div class="r">processos no programa</div></div>
+    <div class="card"><div class="n">312 MB</div><div class="r">tamanho do banco</div></div>
+    <div class="card"><div class="n">14/Nov 20h04</div><div class="r">última limpeza</div></div>
+  </div>
+  <h3>Prazos</h3>
+  <div class="linha">Resumir depois de <input type="number" id="resumir" value="6" min="1" max="120"> meses
+    <span class="ajuda" title="Sai o texto pesado do Diário; fica o resumo (número, tribunal, vara, data, partes com CNPJ, valor, situação, fonte). A ficha continua abrindo.">?</span></div>
+  <div class="linha" style="margin-top:8px">Apagar depois de <input type="number" id="apagar" value="24" min="0" max="240"> meses
+    <span class="ajuda" title="O processo sai do programa e fica só nas estatísticas e no gráfico de tendência. 0 = nunca apagar.">?</span>
+    <span class="nota" id="regra"></span></div>
+  <div class="aviso info" style="margin-top:12px"><b>O que nunca sai:</b> processo com situação diferente de Novo, com contato, com anotação ou com pedido da área logada.
+    As estatísticas e o gráfico de tendência nunca se apagam.</div>
+  <h3>Última limpeza (14/Nov, 20h04, depois da leitura das 20h)</h3>
+  <table><tr><th>O que</th><th>Quantos</th><th>Detalhe</th></tr>
+    <tr><td>Resumidos (mais de 6 meses)</td><td>1.936</td><td>texto do Diário retirado; ficha completa continua</td></tr>
+    <tr><td>Apagados (mais de 24 meses, não trabalhados)</td><td>0</td><td>o programa tem 7 meses de dados; nada chegou a 24 meses</td></tr>
+    <tr><td>Mantidos por serem trabalhados</td><td>418</td><td>situação diferente de Novo, contato ou anotação</td></tr>
+    <tr><td>Tamanho</td><td>348 → 312 MB</td><td>VACUUM feito</td></tr></table>
+  <div class="linha" style="margin-top:12px"><button class="forte" id="salvar">Salvar</button><button id="limpar">Limpar agora</button><button class="txt" data-tela="t4">Ver no Histórico de leituras</button><span class="nota" id="msg1"></span></div>
+  <div class="prog" id="prog1" style="display:none"><i></i></div>
+</div>
+<div class="leg"><h3>Regras desta tela (desenho `DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md`)</h3>
+  A limpeza roda sozinha depois de cada leitura, sempre depois de atualizar as estatísticas. "Apagar" nunca pode ser menor que "Resumir".
+  O que foi apagado não volta como novo numa releitura do mesmo Diário (o programa guarda só o número do processo e a data, por 12 meses).
+  Termos não mudam (o banco é do escritório); o manual passa a dizer 6 e 24 meses em vez de 12.</div>
+</section>
+
+<!-- ===== 2. FILTRO DE CIDADE ===== -->
+<section class="tela" id="t2">
+<div class="filtros">
+  <span class="chip">Tribunal: Todos</span>
+  <span class="chip on">Estado: <select id="uf"><option>SP</option><option>MG</option><option>Todos</option></select></span>
+  <span class="lista-cid" id="lc"><span class="chip on" id="cidchip" style="cursor:pointer">Cidade: <b id="cidtxt">Todas</b> ▾</span>
+    <div class="caixa"><div style="padding:8px 10px;border-bottom:1px solid var(--fio)"><input type="search" id="busca" placeholder="Digite para procurar (sem acento serve)" style="width:100%"></div><div id="opcoes"></div></div></span>
+  <span class="chip">Situação: Novo</span>
+  <span class="sim">filtros valem na Lista e no Painel; a planilha continua completa</span>
+</div>
+<div class="cartao">
+  <h2>Processos distribuídos <span class="nota" id="conta"></span></h2>
+  <table id="tab"><tr><th>Tribunal</th><th>Vara</th><th>Empresa</th><th>Cidade</th><th>Valor</th></tr></table>
+  <p class="nota" style="margin-top:10px">Nomes fictícios. Cidade vem do cadastro público da empresa (Receita); processo sem cidade entra em "Sem cidade".
+    Escolher outro estado limpa a cidade que não existe nele (com aviso). As cidades com mais processos aparecem primeiro.</p>
+  <div class="aviso info" id="avisocid" style="display:none"></div>
+</div>
+</section>
+
+<!-- ===== 3. CNJ FORA ===== -->
+<section class="tela" id="t3">
+<div class="cartao">
+  <h2>Painel · leitura das 20h <span class="sim">simulação: <button class="txt" id="simular">avançar a cena</button></span></h2>
+  <div id="cena"></div>
+  <p class="nota">A leitura pela consulta pública é ligada por padrão (decisão 37) e só acontece na leitura automática e no "Ler o Diário agora".
+    Ela lê vara por vara, 1 pedido por segundo, só os tribunais marcados; quando o caderno volta, o programa confere pelo caderno e completa o que faltou.</p>
+</div>
+<div class="leg"><h3>As quatro cenas</h3>
+  (1) O caderno do CNJ falha e o programa diz de quem é o problema (diagnóstico da 0.7.47) e que a SolverONE também vê. (2) A leitura pela consulta começa sozinha, com andamento.
+  (3) Terminou: quantos processos novos vieram pela consulta e o aviso de que a conferência pelo caderno vem depois. (4) Caderno voltou: conferência feita, nada faltou (ou "N processos a mais").</div>
+</section>
+
+<!-- ===== 4. HISTÓRICO ===== -->
+<section class="tela" id="t4">
+<div class="cartao hist">
+  <h2>Histórico de leituras <span class="nota">(Configurações → Sobre este computador → Ver histórico de leituras)</span></h2>
+  <ul>
+    <li><b>14/Nov 20h31</b> · Conferência pelo caderno (TRT2, TRT15): nada faltou. Origem: tela (horário das 20:00).</li>
+    <li><b>14/Nov 20h09</b> · Leitura pela consulta pública (caderno do CNJ fora): <b>37 processos novos</b>, 24 tribunais, 1.112 pedidos em 19 min. Conferência pelo caderno pendente.</li>
+    <li><b>14/Nov 20h04</b> · <b>Limpeza</b>: 1.936 resumidos, 0 apagados, 418 mantidos por serem trabalhados, 348 → 312 MB.</li>
+    <li><b>14/Nov 20h02</b> · Leitura falhou no caderno: "O servidor do CNJ respondeu erro (aplicação). Sua internet está normal. Não é problema deste computador." A SolverONE via o CNJ fora desde 19h30 (23 de 24 tribunais). <button class="txt">Detalhes técnicos</button></li>
+    <li><b>14/Nov 08h00</b> · Leitura normal: 52 processos novos (Diário de 13/Nov).</li>
+  </ul>
+</div>
+</section>
+
+<div class="leg"><h3>Por que este protótipo</h3>
+  Referência de tela para a Produto construir a 0.7.48 depois dos testes da 0.7.47 e do "pode codar" do dono. O visual final segue o padrão do RADAR; o que importa aqui é o que aparece, onde e com que palavras.
+  Não cobre os três ajustes do instalador (não têm tela nova) nem a página de antivírus (já no ar).</div>
+</main>
+
+<script>
+(function(){
+  // abas
+  document.querySelectorAll("[data-tela]").forEach(function(b){ b.addEventListener("click", function(){
+    document.querySelectorAll(".abas button").forEach(function(x){ x.classList.toggle("on", x.getAttribute("data-tela")===b.getAttribute("data-tela")); });
+    document.querySelectorAll("section.tela").forEach(function(s){ s.classList.toggle("on", s.id===b.getAttribute("data-tela")); });
+  }); });
+  // 1. prazos
+  var r=document.getElementById("resumir"), a=document.getElementById("apagar"), regra=document.getElementById("regra"), salvar=document.getElementById("salvar");
+  function confere(){ var ok = Number(a.value)===0 || Number(a.value)>=Number(r.value); regra.textContent = Number(a.value)===0 ? "0 = nunca apagar" : ok ? "" : "Apagar precisa ser maior ou igual a Resumir."; regra.style.color = ok ? "" : "var(--erro)"; salvar.disabled=!ok; }
+  r.addEventListener("input",confere); a.addEventListener("input",confere); confere();
+  salvar.addEventListener("click", function(){ document.getElementById("msg1").textContent="Prazos salvos. Valem na próxima leitura."; });
+  document.getElementById("limpar").addEventListener("click", function(){
+    if(!confirm("Resumir os processos com mais de "+r.value+" meses e apagar os não trabalhados com mais de "+(Number(a.value)||"∞")+" meses agora? As estatísticas não mudam.")) return;
+    var p=document.getElementById("prog1"), m=document.getElementById("msg1"); p.style.display="block"; p.firstElementChild.style.width="0"; m.textContent="Limpando o banco… a tela continua livre.";
+    setTimeout(function(){p.firstElementChild.style.width="60%";},300); setTimeout(function(){p.firstElementChild.style.width="100%"; m.textContent="Limpeza feita: 12 resumidos, 0 apagados, 312 → 311 MB. Registrada no Histórico de leituras.";},1500);
+  });
+  // 2. cidades
+  var dados={SP:[["TRT2","5ª VT Guarulhos","Exemplo Transportes Ltda","Guarulhos","R$ 186.400"],["TRT2","3ª VT São Paulo","Padaria Modelo ME","São Paulo","R$ 42.000"],["TRT15","2ª VT Campinas","Alimentos Fictícios S.A.","Campinas","R$ 310.900"],["TRT2","1ª VT Osasco","Oficina Hipotética Ltda","Osasco","R$ 28.500"],["TRT15","1ª VT Ribeirão Preto","Rede Imaginária de Lojas","Ribeirão Preto","a conferir"],["TRT2","9ª VT São Paulo","Clínica Exemplar Ltda","São Paulo","R$ 77.300"],["TRT2","4ª VT Santos","Logística de Mentira Ltda","","R$ 51.000"]],
+             MG:[["TRT3","1ª VT Contagem","Metalúrgica Fictícia Ltda","Contagem","R$ 95.000"],["TRT3","12ª VT Belo Horizonte","Serviços Imaginários S.A.","Belo Horizonte","R$ 120.000"]]};
+  var lc=document.getElementById("lc"), uf=document.getElementById("uf"), opcoes=document.getElementById("opcoes"), busca=document.getElementById("busca"), cid=null;
+  var norm=function(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase(); };
+  function linhas(){ var u=uf.value; var L=u==="Todos"?dados.SP.concat(dados.MG):dados[u]; return L; }
+  function cidades(){ var c={}; linhas().forEach(function(l){ var k=l[3]||"Sem cidade"; c[k]=(c[k]||0)+1; }); return Object.keys(c).map(function(k){return [k,c[k]];}).sort(function(x,y){ return y[1]-x[1] || x[0].localeCompare(y[0]); }); }
+  function render(){
+    var L=linhas().filter(function(l){ return !cid || (l[3]||"Sem cidade")===cid; });
+    var t=document.getElementById("tab"); t.innerHTML="<tr><th>Tribunal</th><th>Vara</th><th>Empresa</th><th>Cidade</th><th>Valor</th></tr>"+L.map(function(l){ return "<tr><td>"+l[0]+"</td><td>"+l[1]+"</td><td><b>"+l[2]+"</b></td><td>"+(l[3]||"<span class='nota'>Sem cidade</span>")+"</td><td>"+l[4]+"</td></tr>"; }).join("");
+    document.getElementById("conta").textContent="· "+L.length+" de "+linhas().length+" processos"+(cid?" em "+cid:"");
+    document.getElementById("cidtxt").textContent=cid||"Todas";
+    var q=norm(busca.value||""); opcoes.innerHTML="<label><span>Todas</span><span class='q'>"+linhas().length+"</span></label>"+cidades().filter(function(c){ return !q||norm(c[0]).indexOf(q)>=0; }).map(function(c){ return "<label data-c='"+c[0]+"'><span>"+c[0]+"</span><span class='q'>"+c[1]+"</span></label>"; }).join("");
+    opcoes.querySelectorAll("label").forEach(function(l){ l.addEventListener("click", function(){ cid=l.getAttribute("data-c")||null; lc.classList.remove("aberta"); render(); }); });
+  }
+  document.getElementById("cidchip").addEventListener("click", function(){ lc.classList.toggle("aberta"); if(lc.classList.contains("aberta")) busca.focus(); });
+  busca.addEventListener("input", render);
+  uf.addEventListener("change", function(){ var av=document.getElementById("avisocid"); if(cid && !cidades().some(function(c){return c[0]===cid;})){ av.style.display="block"; av.textContent="A cidade "+cid+" não existe em "+uf.value+"; o filtro de cidade foi limpo."; cid=null; } else av.style.display="none"; render(); });
+  document.addEventListener("click", function(e){ if(!lc.contains(e.target)) lc.classList.remove("aberta"); });
+  render();
+  // 3. cenas
+  var cenas=[
+    '<div class="faixa erro"><div class="txt"><b>Leitura das 20h: o caderno do CNJ não respondeu.</b>O servidor do CNJ respondeu erro (aplicação). Sua internet está normal. Não é problema deste computador. A SolverONE também vê o CNJ fora desde 19h30 (23 de 24 tribunais).</div><button class="txt">Detalhes técnicos</button></div>',
+    '<div class="faixa info"><div class="txt"><b>Lendo pela consulta pública do CNJ (vara por vara)…</b>O caderno está fora; o RADAR está buscando as distribuições de hoje na consulta pública, 1 pedido por segundo. Tribunal 7 de 24 (TRT2: 180 varas). Você pode continuar usando o programa.<div class="prog"><i style="width:29%"></i></div></div><button>Interromper</button></div>',
+    '<div class="faixa ok"><div class="txt"><b>Diário de hoje lido pela consulta pública: 37 processos novos.</b>O caderno do CNJ continua fora. Quando voltar, o programa confere pelo caderno e completa o que tiver faltado (sozinho, na próxima leitura). Fonte marcada em cada processo: "consulta pública".</div><button class="txt">Ver os 37</button></div>',
+    '<div class="faixa ok"><div class="txt"><b>Caderno do CNJ voltou (20h31). Conferência feita: nada faltou.</b>Os 37 processos lidos pela consulta foram confirmados pelo caderno; a fonte passou a "caderno". Se tivesse faltado algum, apareceria aqui: "N processos a mais, já incluídos".</div></div>'
+  ], i=0, cena=document.getElementById("cena");
+  function mostra(){ cena.innerHTML=cenas[i]+'<p class="nota">Cena '+(i+1)+' de 4.</p>'; }
+  document.getElementById("simular").addEventListener("click", function(){ i=(i+1)%cenas.length; mostra(); }); mostra();
+})();
+</script>
+</body>
+</html>
