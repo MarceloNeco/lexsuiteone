@@ -518,42 +518,48 @@ def chave_empresa(cnpj="", nome=""):
 
 def processos_das_empresas(cfg, banco, empresas, alcance="hibrido", hoje=None):
     """0.7.49: para cada empresa pedida ({chave, cnpj, nome}), os processos dela que o programa tem (Lista e Arquivo), do mais
-    novo para o mais antigo, dentro do alcance (hibrido = até 50 dos últimos 6 meses). Devolve {chave: {total, itens}}."""
+    novo para o mais antigo, dentro do alcance (hibrido = até 50 dos últimos 6 meses). Devolve {chave: {total, itens}}.
+    Uma passada só pelo banco para todas as empresas pedidas (com 60 mil processos, menos de 1 s para 10 empresas)."""
     dias, teto = ALCANCES.get(alcance, ALCANCES["hibrido"])
     hoje = hoje or dt.date.today()
     corte = (hoje - dt.timedelta(days=dias)).isoformat() if dias else ""
-    saida = {}
+    chaves, pistas = [], []
     for e in empresas:
         chave = str(e.get("chave") or "") or chave_empresa(e.get("cnpj"), e.get("nome"))
-        if not chave:
+        if not chave or chave in chaves:
             continue
+        chaves.append(chave)
         if chave.startswith("c:"):
-            pista = chave[2:]
+            pistas.append(chave[2:])
         else:
             palavras = [w for w in chave[2:].split() if len(w) >= 3]
             pista = max(palavras, key=len) if palavras else chave[2:]
-            pista = re.sub(r"[aeiouc]", "_", pista)  # vogal (e ç) vale qualquer letra: "ficticia" acha "Fictícia"; quem decide é a conferência abaixo
-        achados = []
-        for proc, data, dados in banco.con.execute("SELECT processo, coalesce(data, primeira_vez, ''), dados FROM leads WHERE dados LIKE ?",
-                                                   ("%" + pista + "%",)):
-            try:
-                d = json.loads(dados or "{}")
-            except ValueError:
-                continue
-            emp = d.get("empresa_receita") or {}
-            nomes = [emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]
-            mesma = (chave == chave_empresa(emp.get("cnpj"), "")) or any(chave == chave_empresa("", n) for n in nomes if n) or (
-                chave.startswith("c:") and any(re.sub(r"\D", "", str(c))[:8] == chave[2:] for c in (d.get("cnpjs") or [])[:1]))
-            if mesma:
-                achados.append((str(data or "")[:10], proc))
-        achados.sort(reverse=True)
-        total = len(achados)
+            pistas.append(re.sub(r"[aeiouc]", "_", pista))  # vogal (e ç) vale qualquer letra: "ficticia" acha "Fictícia"; quem decide é a conferência abaixo
+    if not chaves:
+        return {}
+    pedidas, achados = set(chaves), {c: [] for c in chaves}
+    onde = " OR ".join(["dados LIKE ?"] * len(pistas))
+    for proc, data, dados in banco.con.execute(f"SELECT processo, coalesce(data, primeira_vez, ''), dados FROM leads WHERE {onde}",  # nosec B608 - só marcadores
+                                               ["%" + p + "%" for p in pistas]):
+        try:
+            d = json.loads(dados or "{}")
+        except ValueError:
+            continue
+        emp = d.get("empresa_receita") or {}
+        da_linha = {chave_empresa(emp.get("cnpj"), "")} | {chave_empresa("", n) for n in ([emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]) if n}
+        da_linha |= {chave_empresa(c, "") for c in (d.get("cnpjs") or [])[:1]}
+        for c in da_linha & pedidas:
+            achados[c].append((str(data or "")[:10], proc))
+    saida = {}
+    for chave in chaves:
+        lista = sorted(achados[chave], reverse=True)
+        total = len(lista)
         if corte:
-            achados = [x for x in achados if x[0] >= corte]
+            lista = [x for x in lista if x[0] >= corte]
         if teto:
-            achados = achados[:teto]
-        itens = itens_de(cfg, banco, [p for _, p in achados])
-        saida[chave] = {"total": total, "itens": [itens[p] for _, p in achados if p in itens]}
+            lista = lista[:teto]
+        itens = itens_de(cfg, banco, [p for _, p in lista])
+        saida[chave] = {"total": total, "itens": [itens[p] for _, p in lista if p in itens]}
     return saida
 
 
