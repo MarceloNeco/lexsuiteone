@@ -49,3 +49,32 @@ os TRTs pelo estado do CNPJ do escritório (SP → TRT2 e TRT15; RJ → TRT1; MG
 ## O que muda além da tela (Definition of done)
 Manual (Filtros salvos e Wizard), AssistONE (ajuda da Lista, busca "filtros prontos"), Novidades, Wizard; termos não mudam; e-mail
 de boas-vindas talvez uma frase ("a lista já vem com dois filtros prontos"). Sem nuvem e sem banco novo.
+
+## Terceiro filtro salvo: "Empresas da semana (visão completa)" (pedido do dono, 15/Nov)
+
+**Ideia:** em vez de uma linha por processo, um bloco por empresa. Entram as empresas que tiveram processo novo nos últimos 7 dias;
+dentro do bloco, os processos novos da semana e, logo abaixo, **todos os processos anteriores daquela empresa** que o programa já
+tem (Lista e Arquivo), para ver o que ela está enfrentando.
+
+**Ordem:** as empresas pela data do processo mais recente (a de ontem primeiro); empate, maior valor somado da semana. Dentro do
+bloco, do mais novo para o mais antigo. Exemplo: 16/OUT ABC (3 processos na semana + 5 anteriores, desde MAR/2026), depois
+15/OUT XYZ (1 + 0).
+
+**Cabeçalho do bloco:** nome da empresa, CNPJ, porte e cidade; "3 processos nesta semana · 5 anteriores · R$ … em causas";
+contato da empresa uma vez só (telefone, e-mail) e a situação mais avançada entre os processos (por exemplo, "Em contato").
+
+**Os anteriores:** aparecem com um tom mais claro e a etiqueta "anterior", com a data e a situação de cada um; até 10 no bloco e,
+se houver mais, "ver os 23 no Arquivo". Ficam fora dos números do alto ("Mostrando…"), que contam os processos da semana.
+
+**Quem é "a mesma empresa":** o CNPJ (a raiz de 8 dígitos junta matriz e filiais); sem CNPJ, o nome normalizado (sem acento,
+sem "LTDA"/"S.A."). Só a empresa principal do processo; as de "Também no processo" não abrem bloco próprio.
+
+**Filtros do salvo:** últimos 7 dias, os tribunais do Wizard, com e sem contato, situação Novo e Visto. A nova ordem
+"Agrupar por empresa" também fica disponível em "Ordenar por" para qualquer filtro.
+
+**Por que vale:** contato é da empresa, não do processo: uma ligação cobre todos os processos dela; e quem tem muitos processos
+recentes é a oportunidade maior. Com a área logada, marcar o bloco inteiro pede o que falta de todos de uma vez.
+
+**Peso técnico:** pequeno a médio. Os anteriores que já estão na Lista vêm da tela; os do Arquivo, de um pedido ao programa só
+para as empresas mostradas (sem carregar o Arquivo inteiro). Empresa gigante (centenas de processos) mostra os 10 e o link.
+Conferir com 60 mil processos antes de dar como pronto. A planilha não muda.

@@ -978,6 +978,7 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 44 | Produto (filtros prontos) | Os filtros usam TRT2 e TRT15 fixos ou os tribunais que o escritório escolheu no Wizard? | os do Wizard (padrão TRT2 e TRT15): já se adapta a cada escritório | aberta |
 | 45 | Produto (filtros prontos) | Tributário: o RADAR só lê os TRTs hoje; os filtros tributários (TRF3 e TJSP) ficam para quando a frente tributária existir? | sim; agora só o trabalhista | aberta |
 | 46 | Produto (Wizard) | A limpeza já vem ligada (6 meses resume, 24 apaga, estatísticas ficam). Manter 6 e 24 e só explicar no Wizard? | sim, manter e explicar | aberta |
+| 47 | Produto (filtros prontos) | Terceiro filtro salvo "Empresas da semana (visão completa)": um bloco por empresa com os processos da semana e todos os anteriores dela (até 10, o resto no Arquivo); empresas pela data mais recente; mesma empresa pelo CNPJ (raiz) ou nome. Proposta na mesma página | sim, no lugar do opcional "Maiores causas da semana"; e a ordem "Agrupar por empresa" disponível em "Ordenar por" | aberta |
 
 ## Decisões do dono registradas aqui
 
