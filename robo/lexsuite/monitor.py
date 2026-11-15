@@ -223,11 +223,64 @@ def dias_uteis(hoje, dias):
     return sorted(datas)
 
 
-def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=None, lidos=None, tentativas=None, parar=None, sondar=None):
+def ler_pela_consulta(sigla, dias_falhos, banco, consulta, aviso, parar, sonda_ok):
+    """0.7.48 (desenho 1.3, decisão 37): o caderno do CNJ caiu nestes dias; lê as mesmas comunicações pela consulta pública, uma
+    vez por dia pendente. Não tenta se a sonda mostrou a consulta sem resposta ou se a SolverONE vê a consulta fora. Os dias
+    continuam pendentes: quando o caderno voltar, a próxima leitura confere e completa (sem duplicar). Devolve as publicações."""
+    if not sonda_ok:
+        aviso(f"  {sigla}: a consulta pública do CNJ também não respondeu; não leio por ela agora.")
+        return []
+    try:
+        fora = bool(consulta.get("fora") and consulta["fora"]())
+    except Exception:  # noqa: BLE001 - o observador nunca impede a leitura
+        fora = False
+    if fora:
+        aviso(f"  {sigla}: a SolverONE também vê a consulta pública fora; não leio por ela agora.")
+        return []
+    pubs, feitos = [], []
+    for d in sorted(dias_falhos, reverse=True):
+        dia = d.isoformat()
+        feita = getattr(banco, "consulta_do_dia", lambda *_: None)(sigla, dia)
+        if feita and not feita.get("parcial"):
+            continue  # uma vez por dia pendente
+        varas = getattr(banco, "varas", lambda _s: [])(sigla)
+        aviso(f"  Lendo pela consulta pública: {sigla} {config.data_curta(d, False)} (o caderno do CNJ está fora; 1 pedido por segundo)")
+        t0 = time.perf_counter()
+        ultimo = [0]
+
+        def andamento(n, total, _s=sigla, _d=d):
+            if n - ultimo[0] >= 1000:
+                ultimo[0] = n
+                aviso(f"  Consulta pública {_s} {config.data_curta(_d, False)}: {n} de {total} comunicações")
+        try:
+            lote, info = djen.consulta_dia(sigla, dia, varas=varas, aviso=aviso, parar=parar, pedir=consulta.get("pedir"), progresso=andamento)
+        except djen.ConsultaParou as e:
+            aviso(f"  {sigla}: {e}; paro a consulta e o dia fica para o caderno.")
+            break
+        procs = {p.get("processo") for p in lote if p.get("processo")}
+        feitos.append((dia, len(lote), info["pedidos"], info["parcial"], procs))
+        aviso(f"  Consulta pública {sigla} {config.data_curta(d, False)}: {len(lote)} comunicações em {info['pedidos']} pedidos"
+              + (" (parcial)" if info["parcial"] else ""))
+        consulta.setdefault("lidos", []).append({"tribunal": sigla, "data": dia, "publicacoes": len(lote), "pedidos": info["pedidos"],
+                                                 "parcial": info["parcial"], "varas": info["varas"], "segundos": round(time.perf_counter() - t0, 1),
+                                                 "processos": procs})
+        pubs += lote
+    # revisão: o dia só fica "lido pela consulta" quando as publicações dele voltam a quem chamou (Interromper ou erro no meio
+    # não marcam nada; a próxima leitura tenta de novo)
+    if hasattr(banco, "registrar_consulta_dia"):
+        for dia, n_, ped_, parc_, procs_ in feitos:
+            banco.registrar_consulta_dia(sigla, dia, n_, ped_, parc_, procs_)
+    return pubs
+
+
+def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=None, lidos=None, tentativas=None, parar=None, sondar=None,
+                    consulta=None):
     """Cadernos dos últimos dias úteis. Só baixa de novo se o CNJ reprocessou (versão mudou).
     Os cadernos lidos vão para `lidos`; quem marca como conferido é `guardar`, no fim da rodada.
     0.7.13: cada tribunal é uma tentativa à parte (vai para `tentativas`, com a causa); um tribunal com problema não
-    derruba os outros. Só levanta erro se nenhum tribunal pôde ser lido (ou se o pedido saiu de fora do Brasil)."""
+    derruba os outros. Só levanta erro se nenhum tribunal pôde ser lido (ou se o pedido saiu de fora do Brasil).
+    0.7.48: `consulta` (dict) liga a leitura pela consulta pública nos dias em que o caderno deu 5xx: {fora: função do
+    observador, pedir: para testes}; o que leu vai para consulta["lidos"] e os dias conferidos pelo caderno para consulta["conferir"]."""
     from . import causas
     hoje = hoje or dt.date.today()
     pubs = []
@@ -236,6 +289,7 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
     # Dias com Diário (0.7.11): volta dia útil a dia útil, até 10, e só conta os dias em que o tribunal publicou o
     # caderno. Assim feriado (nacional, estadual) e recesso não fazem a leitura sair vazia.
     candidatas = dias_uteis(hoje, 10)[::-1]
+    lidos_consulta = []  # 0.7.48: tribunais com dias lidos pela consulta pública (a leitura não termina em erro)
     cnj_instavel = False  # 0.7.42: depois de um Diário com erro 5xx, os outros pedidos desta leitura tentam menos vezes
     # 0.7.47 ("é do CNJ ou é daqui"): na primeira falha de rede desta leitura, duas sondas de controle (uma vez só)
     sondas_ = {"feitas": False, "r": None}
@@ -256,6 +310,7 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
         # mais dias (até 10 dias úteis) e o dia fica pendente, lido sozinho nas próximas leituras
         pendentes = set(getattr(banco, "cadernos_pendentes", lambda _s: set())(sigla))
         falhou, seguidas, erro_cnj = [], 0, None
+        n_consulta = 0
         try:
             for d in candidatas:
                 if parar and parar():  # 0.7.15: "Interromper" pedido: para antes do próximo Diário (ponto seguro)
@@ -304,11 +359,27 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
                 if lote is None:
                     continue
                 pubs += lote
+                if hasattr(banco, "guardar_varas"):  # 0.7.48: lista de varas para dividir a consulta pública quando o caderno cair
+                    try:
+                        banco.guardar_varas(sigla, djen.mapa_orgaos(lote))
+                    except Exception:  # noqa: BLE001 - nunca derruba a leitura
+                        pass
+                if consulta is not None and d.isoformat() in getattr(banco, "consultas_sem_conferencia", lambda _s: set())(sigla):
+                    consulta.setdefault("conferir", []).append({"tribunal": sigla, "data": d.isoformat(),
+                                                                "processos": {p.get("processo") for p in lote if p.get("processo")}})
                 lidos_trib.append(d)
                 if d.isoformat() in pendentes and hasattr(banco, "tirar_caderno_pendente"):
                     banco.tirar_caderno_pendente(sigla, d.isoformat())
                 if lidos is not None:
                     lidos.append((sigla, d.isoformat(), versao or "?"))
+            if consulta is not None and falhou:  # 0.7.48: o caderno caiu nestes dias; lê pela consulta pública
+                diagnosticar(erro_cnj)
+                sonda_ok = bool(((sondas_["r"] or {}).get("consulta") or {}).get("ok")) if sondas_["r"] is not None else True
+                pubs_c = ler_pela_consulta(sigla, falhou, banco, consulta, aviso, parar, sonda_ok)
+                pubs += pubs_c
+                n_consulta = len(pubs_c)
+                if pubs_c:
+                    lidos_consulta.append(sigla)
             if not lidos_trib and erro_cnj is not None and (falhou or seguidas):
                 raise erro_cnj  # nada lido e o CNJ com erro: falha do tribunal, como antes
         except rede.BloqueadoForaDoBrasil:
@@ -347,14 +418,17 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
             (f"skipped today (only after 3 a.m.); read up to {ate_en}" if ate else "skipped today (only after 3 a.m.)") if causa == "ainda_nao_liberado_3h"
             else (f"read up to {ate_en}; the CNJ did not deliver " + ", ".join(config.data_curta(x, False, en=True) for x in sorted(falhou)) + " (read automatically next time)" if falhou
                   else (f"read up to {ate_en}" if ate else "no new gazette")))
+        if n_consulta:  # 0.7.48
+            fez += f"; leu pela consulta pública ({n_consulta} comunicações; o caderno confere depois)"
+            fez_en += f"; read through the public search ({n_consulta} notices; the gazette checks later)"
         org_, tec_ = (getattr(erro, "origem", ""), getattr(erro, "tecnico", "")) if erro is not None else (
             diagnosticar(erro_cnj) if (erro_cnj is not None and falhou) else ("", ""))
         tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": http, "causa": causa,
-                           "origem_falha": org_, "tecnico": tec_,
+                           "origem_falha": org_, "tecnico": tec_, "consulta": n_consulta,
                            "fez": fez, "fez_en": fez_en, "duracao": round(time.perf_counter() - inicio, 1), "ja_conferidos": ja_conferidos,
                            "leu_ate": str(max(lidos_trib))[:10] if lidos_trib else "",  # revisão da 0.7.28: ISO; a tela mostra no idioma dela
                            "detalhe": f"{erro.__class__.__name__}: {erro}"[:300] if erro else ""})
-    if primeiro_erro is not None and all(t["causa"] not in ("ok", "ainda_nao_liberado_3h") for t in tentativas[-len(tribunais):]):
+    if primeiro_erro is not None and not lidos_consulta and all(t["causa"] not in ("ok", "ainda_nao_liberado_3h") for t in tentativas[-len(tribunais):]):
         raise primeiro_erro
     return pubs
 

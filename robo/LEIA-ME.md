@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.47 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.48 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,24 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.48 (15/Nov, protótipo aprovado pelo dono):** (1) **leitura pela consulta pública** quando o caderno do CNJ cai (desenho 1.3,
+  decisão 37): só nos dias com 5xx, com a sonda da consulta respondendo e o observador da SolverONE sem a consulta fora;
+  `djen.consulta_dia` (itensPorPagina 100, passa a 50 se recusado; 1 pedido/s; 15 s; 1 nova tentativa em tempo esgotado e 5xx;
+  para em 3 tempos esgotados seguidos; `count` ≥ 10.000 vai vara por vara, com as varas guardadas dos cadernos já lidos, tabela
+  `varas`); uma vez por dia pendente (`consultas_dia`); o dia continua pendente e, quando o caderno volta, a leitura confere,
+  passa a fonte a "caderno" e conta os "a mais" (sem duplicar); quatro cenas na faixa, "Ver os N processos" (filtro "Novos desta
+  leitura"), selo "consulta pública · caderno pendente", linhas no Histórico; ligada por padrão, `radar.consulta_publica`
+  (Configurações → Leitura do Diário). (2) **Limpeza automática do banco** (decisões 40 a 42): depois de cada leitura, resume com
+  6 meses e apaga com 24 os não trabalhados (`radar.resumir_meses`, `radar.apagar_meses`; 0 = nunca); trabalhado = situação
+  diferente de Novo e Visto, contato, dado digitado ou área logada; memória `processos_apagados` (12 meses); VACUUM quando vale;
+  registro "limpeza" no Histórico; em Armazenamento, prazos, "O que nunca sai", última limpeza e "Limpar o banco agora" (dois
+  cliques, em segundo plano). (3) **Filtro de cidade** logo depois do Estado (Lista e Painel; sem acento, mais processos primeiro,
+  "Sem cidade", 200 opções e busca; trocar o estado tira a cidade de fora, com aviso; o Estado conta sem a cidade). (4) **Área
+  logada** (14 itens do teste do dono): círculos clicáveis com nome, pedido montado só com os escolhidos (`radar.itens_de`), ícone de
+  copiar, (?) do .md, regra do CPF só no (?) do passo 1, "Colar a resposta agora"/"Fechar (trago a resposta depois)", área de
+  arrastar, sócio marcado, (?) dentro da janela, "Quantos" com o limite, mensagem sem jargão. (5) **Janelas** arrastáveis pelo
+  título e com tamanho pelo canto; ao reabrir, centro e tamanho padrão. (6) Faixa vermelha com o texto na largura toda e as
+  ações embaixo, como link; "Tudo certo" do Armazenamento; e-mail do aviso do CNJ com o endereço (sem cadastro, desligado).
 - **0.7.47 (14/Nov, CNJ fora e antivírus, desenho da Arquitetura):** quando o CNJ falha, o programa diz se é do CNJ ou deste
   computador (duas sondas leves de controle; frase na faixa, no Histórico e em "Detalhes técnicos") e, quando a SolverONE também
   vê o CNJ fora, mostra isso; opção de aviso por e-mail quando o CNJ ficar fora por mais de 4 horas em dia útil (desligada).
@@ -72,11 +90,11 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 - **0.7.46 (14/Nov, Área logada v2, desenho da Arquitetura):** "Trazer dados da área logada…" em quatro passos numa janela
   que não trava o programa: (1) o que pedir (marcados, primeiros N da lista filtrada ou os próximos que ainda não foram ao PJe;
   quais dados), com contagem, lotes e tempo estimado; limite POR PEDIDO (padrão 25, máximo 50, `radar.area_logada_por_pedido`,
-  Configurações → Área logada), em lotes de 25; (2) o pedido numa caixa com "Copiar de novo" e "Salvar como arquivo", roteiro do
+  Configurações → Área logada), em lotes de 25; (2) o pedido numa caixa com "Copiar de novo" (0.7.48: ícone de copiar) e "Salvar como arquivo", roteiro do
   PJe dos TRTs (mapa pjekz) ou genérico para os outros tribunais, um bloco de resposta por lote; "Fechar e voltar" deixa a faixa
   "pedido aguardando resposta" (gravada no banco: `area_pedidos`); (3) colar ou subir .md/.txt/.zip (até 20 MB, `zipfile`, só
   leitura): `contatos.ler_resposta` acha todos os blocos v1 em qualquer ordem, lê as colunas pelo nome do cabeçalho, conta linha
-  repetida uma vez e recusa o resto com o motivo; sem bloco, "Não achei a tabela…" + 3 primeiras linhas; (4) o que mudou:
+  repetida uma vez e recusa o resto com o motivo; sem bloco, "Não achei a tabela…" (0.7.48: "Não encontrei a resposta da ferramenta neste texto…") + 3 primeiras linhas; (4) o que mudou:
   `banco.completar_fonte` nunca apaga e só troca por fonte mais forte (PJe dados do processo > petição > citação > Diário >
   Receita > digitado) ou igual e mais nova, com o anterior em `manual_historico`; contato novo entra junto. Memória por processo
   e dado (`area_logada`), filtro "Área logada" (depois da 1ª resposta), selo "área logada · data", menu ☰ → Área logada com

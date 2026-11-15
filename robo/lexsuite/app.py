@@ -104,6 +104,7 @@ class Estado:
         self.situacao = None
         self.erro = None
         self.erro_info = None  # 0.7.13: {causa, pt, en, detalhe}: a tela mostra o texto claro e esconde o técnico
+        self.consulta = None  # 0.7.48: andamento da leitura pela consulta pública (cena 2 da faixa)
 
     def arquivo_parar(self):
         return os.path.join(os.path.dirname(self.arquivo), "parar.json") if self.arquivo else ""
@@ -137,6 +138,7 @@ class Estado:
             with self.lock:
                 d = {"rodando": self.rodando, "progresso": self.progresso, "inicio": self.inicio, "fim": self.fim,
                      "mensagens": self.mensagens[-6:], "pid": os.getpid(), "origem": self.origem, "atrasada": self.atrasada,
+                     "consulta": getattr(self, "consulta", None),
                      "batida": dt.datetime.now().isoformat(timespec="seconds")}
             os.makedirs(os.path.dirname(self.arquivo), exist_ok=True)
             tmp = self.arquivo + ".tmp"
@@ -160,6 +162,21 @@ class Estado:
             self.tribs_vistos.add(m.group(1))
             self.progresso = max(self.progresso, 5 + int(55 * min(1, len(self.tribs_vistos) / self.total_trib)))
             return
+        m = re.search(r"Lendo pela consulta pública: (\S+) (\S+)", texto)  # 0.7.48, cena 2: andamento da consulta pública
+        if m:
+            self.consulta = {"tribunal": m.group(1), "dia": m.group(2), "vara": 0, "varas": 0, "lidas": 0, "total": 0, "fim": False}
+            return
+        m = re.search(r"Consulta pública (\S+) \S+: vara (\d+) de (\d+)", texto)
+        if m and getattr(self, "consulta", None):
+            self.consulta.update({"vara": int(m.group(2)), "varas": int(m.group(3))})
+            return
+        m = re.search(r"Consulta pública (\S+) \S+: (\d+) de (\d+) comunicações", texto)
+        if m and getattr(self, "consulta", None):
+            self.consulta.update({"lidas": int(m.group(2)), "total": int(m.group(3))})
+            return
+        if re.search(r"Consulta pública \S+ \S+: \d+ comunicações em", texto) and getattr(self, "consulta", None):
+            self.consulta["fim"] = True
+            return
         if texto.startswith("Consultando a Receita"):
             self.progresso = max(self.progresso, 60)
             return
@@ -182,7 +199,8 @@ class Estado:
             return {"rodando": self.rodando, "progresso": min(99, self.progresso) if self.rodando else (100 if self.fim else 0),
                     "mensagens": list(self.mensagens[-15:]), "inicio": self.inicio,
                     "fim": self.fim, "situacao": self.situacao, "erro": self.erro, "erro_info": self.erro_info,
-                    "origem": self.origem, "atrasada": self.atrasada, "parando": self.parar() if self.rodando else False}
+                    "origem": self.origem, "atrasada": self.atrasada, "parando": self.parar() if self.rodando else False,
+                    "consulta": dict(self.consulta) if self.rodando and getattr(self, "consulta", None) else None}
 
     def comecar(self):
         with self.lock:
@@ -190,6 +208,7 @@ class Estado:
                 return False
             self.rodando, self.mensagens, self.erro, self.erro_info = True, [], None, None
             self.progresso, self.total_trib, self.tribs_vistos = 1, 0, set()
+            self.consulta = None
             self.inicio, self.fim = dt.datetime.now().isoformat(timespec="seconds"), None
         try:  # um pedido de parada antigo não vale para esta leitura
             if self.arquivo_parar() and os.path.exists(self.arquivo_parar()):
@@ -380,7 +399,8 @@ class Servidor(ThreadingHTTPServer):
             if fora:
                 d.update({"rodando": True, "externa": True, "origem": fora.get("origem", ""), "inicio": fora.get("inicio"),
                           "atrasada": fora.get("atrasada", ""), "parando": os.path.exists(os.path.join(os.path.dirname(self.arquivo_andamento), "parar.json")),
-                          "progresso": min(99, int(fora.get("progresso") or 1)), "mensagens": fora.get("mensagens") or []})
+                          "progresso": min(99, int(fora.get("progresso") or 1)), "mensagens": fora.get("mensagens") or [],
+                          "consulta": fora.get("consulta") if isinstance(fora.get("consulta"), dict) else None})
         if self.cnj:
             d["cnj"] = dict(self.cnj)
         if self.cnj_solverone:
@@ -591,6 +611,8 @@ class Tratador(BaseHTTPRequestHandler):
             pagina["versao"] = VERSAO
             try:
                 sit = armazenamento.situacao(cfg, banco, s.pasta)
+                ult_ = banco.execucoes("limpeza", 1)  # 0.7.48: a última limpeza (automática ou "Limpar o banco agora")
+                sit["limpeza"] = {"ultima": ult_[0] if ult_ else {}, "rodando": bool(getattr(s, "limpando", False))}
                 pagina["armazenamento"] = sit
             except Exception:  # noqa: BLE001 - o retrato do armazenamento nunca derruba a tela
                 pagina["armazenamento"] = {}
@@ -638,10 +660,12 @@ class Tratador(BaseHTTPRequestHandler):
                            "proxima": proxima.isoformat(timespec="minutes") if (agendado and proxima) else "",
                            "avisar_ao_terminar": bool(r.get("avisar_ao_terminar", True)),
                            "avisar_cnj": bool(r.get("avisar_cnj")),  # 0.7.47 (decisão 35), desligada por padrão
+                           "consulta_publica": bool(r.get("consulta_publica", True)),  # 0.7.48 (decisão 37), ligada por padrão
                            "area_logada_por_dia": config.inteiro(r.get("area_logada_por_dia", 30), 30, 1, 365),
                            "area_logada_por_pedido": limite_por_pedido(r),  # 0.7.46: cada pedido é uma sessão do PJe
                            "abrir_em_aba": bool(r.get("abrir_em_aba")),
-                           "guardar_meses": config.inteiro(r.get("guardar_meses", 12), 12, 1, 120)},
+                           "guardar_meses": config.inteiro(r.get("guardar_meses", 12), 12, 1, 120),
+                           "resumir_meses": radar.prazos_limpeza(r)[0], "apagar_meses": radar.prazos_limpeza(r)[1]},  # 0.7.48
                 "atualizacao": {"chave": bool(chave), "impressao": assinatura.impressao(chave) if chave else "",
                                 "url": cfg["atualizacao"].get("url", ""), "pasta": compartilhar.pasta_atualizacao(cfg)},
                 "versao": VERSAO, "estado": s.estado_atual(), "pasta_robo": s.pasta,
@@ -669,7 +693,9 @@ class Tratador(BaseHTTPRequestHandler):
         if u.path == "/historico":  # 0.7.13: as últimas tentativas de leitura, uma por tribunal
             try:
                 banco = bd.Banco(self.server.caminho_db)
-                return self._responder({"tentativas": _com_origem(s, banco.execucoes("tentativa", 120))})
+                lista_ = _com_origem(s, banco.execucoes("tentativa", 120)) + banco.execucoes("limpeza", 30) + banco.execucoes("consulta", 30) + banco.execucoes("conferencia", 30)
+                lista_.sort(key=lambda x: str(x.get("quando_local") or x.get("quando") or ""), reverse=True)  # 0.7.48: limpeza e consulta na ordem do tempo
+                return self._responder({"tentativas": lista_})
             except Exception:  # noqa: BLE001 - banco ausente ou ilegível: lista vazia
                 return self._responder({"tentativas": []})
         if u.path == "/estatisticas":  # 0.7.18: andamento das estatísticas dos meses anteriores
@@ -808,6 +834,17 @@ class Tratador(BaseHTTPRequestHandler):
                         r[chave] = min(maximo, max(minimo, tipo(corpo[chave])))
                     except (TypeError, ValueError, OverflowError):
                         pass
+            if "resumir_meses" in corpo or "apagar_meses" in corpo:  # 0.7.48 (decisão 42): prazos da limpeza, com as regras
+                try:
+                    res_ = int(corpo.get("resumir_meses", r.get("resumir_meses", 6)))
+                    apa_ = int(corpo.get("apagar_meses", r.get("apagar_meses", 24)))
+                except (TypeError, ValueError, OverflowError):
+                    return self._responder({"ok": False, "motivo": "Os prazos da limpeza precisam ser números de meses.",
+                                            "motivo_en": "The clean-up periods must be numbers of months."})
+                if not (1 <= res_ <= 120) or not (apa_ == 0 or (6 <= apa_ <= 240 and apa_ >= res_)):
+                    return self._responder({"ok": False, "motivo": "Prazos da limpeza: resumir de 1 a 120 meses; apagar 0 (nunca) ou de 6 a 240 meses, e nunca menor que resumir.",
+                                            "motivo_en": "Clean-up periods: summarise from 1 to 120 months; delete 0 (never) or from 6 to 240 months, never less than summarise."})
+                r["resumir_meses"], r["apagar_meses"] = res_, apa_
             if "escritorio" in corpo:
                 cfg["escritorio"] = str(corpo["escritorio"] or "").strip()[:80]
             if "codigo" in corpo:
@@ -856,6 +893,8 @@ class Tratador(BaseHTTPRequestHandler):
                 r["avisar_ao_terminar"] = bool(corpo["avisar_ao_terminar"])
             if "avisar_cnj" in corpo:  # 0.7.47 (decisão 35): vai à SolverONE na próxima conferência da licença
                 r["avisar_cnj"] = bool(corpo["avisar_cnj"])
+            if "consulta_publica" in corpo:  # 0.7.48 (decisão 37): leitura pela consulta pública quando o caderno cai
+                r["consulta_publica"] = bool(corpo["consulta_publica"])
             if "abrir_em_aba" in corpo:
                 r["abrir_em_aba"] = bool(corpo["abrir_em_aba"])
             if "nome" in corpo:
@@ -901,6 +940,34 @@ class Tratador(BaseHTTPRequestHandler):
                     except Exception:  # noqa: BLE001
                         pass  # 0.7.36: a tela em EN traduz pelo estado
             return self._responder(resposta)
+        if caminho == "/limpeza/agora":  # 0.7.48: "Limpar o banco agora" (em segundo plano; a tela continua livre)
+            if s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento) or getattr(s, "limpando", False):
+                return self._responder({"ok": False, "motivo": "Há uma leitura ou limpeza em andamento; a limpeza roda sozinha no fim dela.",
+                                        "motivo_en": "A reading or clean-up is running; the clean-up runs by itself at its end."})
+            r_lp = dict(s.config().get("radar") or {})
+            for k_ in ("resumir_meses", "apagar_meses"):  # os prazos que estão na tela (ainda sem Salvar), com as mesmas regras
+                if k_ in corpo:
+                    try:
+                        r_lp[k_] = int(corpo[k_])
+                    except (TypeError, ValueError, OverflowError):
+                        pass
+            s.limpando, s.limpeza_resultado = True, None
+
+            def limpar_():
+                try:
+                    b_ = bd.Banco(s.caminho_db)
+                    try:
+                        s.limpeza_resultado = radar.limpar_banco(b_, r_lp, "Limpar o banco agora")
+                    finally:
+                        b_.con.close()
+                except Exception as e:  # noqa: BLE001
+                    s.limpeza_resultado = {"erro": e.__class__.__name__}
+                finally:
+                    s.limpando = False
+            threading.Thread(target=limpar_, daemon=True, name="limpeza").start()
+            return self._responder({"ok": True, "iniciado": True})
+        if caminho == "/limpeza/estado":
+            return self._responder({"ok": True, "rodando": bool(getattr(s, "limpando", False)), "resultado": getattr(s, "limpeza_resultado", None)})
         if caminho == "/interromper":  # 0.7.15: pede para a leitura (desta tela ou a agendada) parar no próximo ponto seguro
             if not (s.estado.rodando or leitura_em_outro_processo(s.arquivo_andamento)):
                 return self._responder({"ok": False, "motivo": "Nenhuma leitura em andamento."})
@@ -1106,9 +1173,9 @@ class Tratador(BaseHTTPRequestHandler):
             from . import contatos as ct
             cfg = s.config()
             banco = bd.Banco(s.caminho_db)
-            pagina = radar.montar_radar(cfg, banco, dias=90, visao="arquivo")
-            por_id = {i["processo"]: i for i in pagina["itens"]}
-            ordem = [str(x) for x in (corpo.get("processos") or []) if isinstance(x, (str, int)) and str(x) in por_id]
+            pedidos_ = [str(x) for x in (corpo.get("processos") or []) if isinstance(x, (str, int))][:5000]
+            por_id = radar.itens_de(cfg, banco, pedidos_)  # 0.7.48: só os escolhidos (antes remontava o Arquivo inteiro)
+            ordem = [x for x in pedidos_ if x in por_id]
             limite = limite_por_pedido(cfg["radar"])
             modo = corpo.get("modo") if corpo.get("modo") in ("marcados", "primeiros", "proximos") else "marcados"
             n = config.inteiro(corpo.get("n", limite), limite, 1, limite) if modo != "marcados" else limite
@@ -1143,7 +1210,16 @@ class Tratador(BaseHTTPRequestHandler):
             return self._responder({"ok": True, "pendente": banco.area_pedido()})
         if caminho == "/area-logada/estado":
             banco = bd.Banco(s.caminho_db)
-            return self._responder({"ok": True, "pendente": banco.area_pedido(), "tem_resposta": banco.area_tem_resposta(),
+            pend_, texto_ = banco.area_pedido(), ""
+            arq_ = (pend_ or {}).get("arquivo") or ""
+            pasta_ok = os.path.realpath(os.path.join(s.pasta, "saida", "contatos"))
+            if arq_ and os.path.realpath(arq_).startswith(pasta_ok + os.sep):  # 0.7.48: o círculo 2 mostra o pedido de novo (só da pasta do programa)
+                try:
+                    with open(arq_, encoding="utf-8") as f_:
+                        texto_ = f_.read(2_000_000)
+                except OSError:
+                    texto_ = ""
+            return self._responder({"ok": True, "pendente": pend_, "tem_resposta": banco.area_tem_resposta(), "texto": texto_,
                                     "historico": banco.area_pedidos(5), "limite": limite_por_pedido(s.config()["radar"])})
         if caminho == "/area-logada/resposta":  # 0.7.46: passo 3 → passo 4 (texto colado ou arquivo .md/.txt/.zip)
             from . import contatos as ct

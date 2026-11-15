@@ -307,8 +307,8 @@ DADOS_GRUPOS = {"valor": ("valor_causa",), "data": ("data_ajuizamento",), "conta
 
 
 def filtrar_falta(falta, dados=None):
-    """0.7.46: só os tipos de dado escolhidos no passo 1 (padrão: valor, data e contatos; sócio só se pedido)."""
-    dados = dados if dados is not None else {"valor": True, "data": True, "contato": True, "socio": False}
+    """0.7.46: só os tipos de dado escolhidos no passo 1 (0.7.48, dono: o padrão inclui o sócio)."""
+    dados = dados if dados is not None else {"valor": True, "data": True, "contato": True, "socio": True}
     quero = {d for g, on in dados.items() if on for d in DADOS_GRUPOS.get(g, ())}
     saida = [d for d in falta if d in quero]
     if dados.get("socio") and saida and "socio_contato" not in saida:

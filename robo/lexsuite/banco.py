@@ -58,6 +58,13 @@ def agora_utc_e_fuso():
     return agora.isoformat(timespec="seconds"), f"{'+' if m >= 0 else '-'}{abs(m) // 60:02d}:{abs(m) % 60:02d}"
 
 
+def _tam(caminho):
+    try:
+        return os.path.getsize(caminho)
+    except OSError:
+        return 0
+
+
 class Banco:
     def __init__(self, caminho="lexsuite.db"):
         # 0.7.34 (teste do dono): a busca de estatísticas e a tela gravam no mesmo banco; espera até 30 s pela vez em vez de
@@ -96,6 +103,11 @@ class Banco:
             CREATE TABLE IF NOT EXISTS area_pedidos (id TEXT PRIMARY KEY, criado_em TEXT, processos INTEGER, lotes INTEGER,
                 ferramenta TEXT DEFAULT '', estado TEXT DEFAULT 'pendente', arquivo TEXT DEFAULT '', recebidos TEXT DEFAULT '[]',
                 resumo TEXT DEFAULT '{}');
+            CREATE TABLE IF NOT EXISTS processos_apagados (processo TEXT PRIMARY KEY, apagado_em TEXT, diario_data TEXT);
+            CREATE TABLE IF NOT EXISTS varas (tribunal TEXT, id_orgao TEXT, nome TEXT, visto_em TEXT, PRIMARY KEY (tribunal, id_orgao));
+            CREATE TABLE IF NOT EXISTS consultas_dia (tribunal TEXT, data TEXT, quando TEXT, publicacoes INTEGER DEFAULT 0,
+                pedidos INTEGER DEFAULT 0, parcial INTEGER DEFAULT 0, processos TEXT DEFAULT '[]', conferida_em TEXT DEFAULT '',
+                a_mais INTEGER DEFAULT 0, PRIMARY KEY (tribunal, data));
         """)
         colunas = {r[1] for r in self.con.execute("PRAGMA table_info(leads)")}
         for nome, tipo in (("frente", "TEXT DEFAULT ''"), ("motivo", "TEXT DEFAULT ''"), ("status_em", "TEXT DEFAULT ''"),
@@ -191,7 +203,8 @@ class Banco:
                               faixa_valor(d.get("valor_causa")), proc))
 
     def processos_vistos(self):
-        return {r[0] for r in self.con.execute("SELECT processo FROM leads")}
+        """Os processos já conhecidos; 0.7.48: os apagados pela limpeza também, para não voltarem como novos."""
+        return {r[0] for r in self.con.execute("SELECT processo FROM leads UNION SELECT processo FROM processos_apagados")}
 
     def guardar_lead(self, lead, primeira_vez=None):
         from . import frentes
@@ -423,6 +436,14 @@ class Banco:
         self.con.commit()
         return cur.rowcount == 1
 
+    def contatos_de(self, processos):
+        """0.7.48: os contatos só destes processos."""
+        saida, lista = [], [str(p) for p in processos][:5000]
+        for i in range(0, len(lista), 500):
+            for proc in lista[i:i + 500]:
+                saida += self.contatos(proc)
+        return saida
+
     def contatos(self, processo=None):
         cols = ("id", "processo", "empresa", "canal", "valor", "de_pessoa", "fonte", "data", "confianca", "origem",
                 "observacao", "arquivo", "validacao", "validado_por", "validado_em", "criado_em")
@@ -499,11 +520,67 @@ class Banco:
         self.con.commit()
         return feitas
 
+    # ---------- 0.7.48: limpeza automática (decisões 40 a 42; desenho DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md) ----------
+    def trabalhados(self, processos=None):
+        """Os processos que alguém trabalhou e que a limpeza nunca apaga: situação diferente de Novo e de Visto (Visto o programa
+        marca sozinho ao abrir a ficha), contato guardado, motivo/anotação, dado digitado na ficha ou pedido/resposta da área logada."""
+        t = {r[0] for r in self.con.execute("SELECT processo FROM leads WHERE lower(coalesce(status, 'novo')) NOT IN ('novo', 'visto') "
+                                            "OR coalesce(motivo, '') <> '' OR dados LIKE '%\"manual_historico\"%' ESCAPE '\\'"
+                                            " OR dados LIKE '%\"manual\": true%'")}
+        t |= {r[0] for r in self.con.execute("SELECT DISTINCT processo FROM contatos")}
+        t |= {r[0] for r in self.con.execute("SELECT DISTINCT processo FROM area_logada")}
+        return t if processos is None else t & set(processos)
+
+    def limpeza_automatica(self, resumir_meses=6, apagar_meses=24, hoje=None, caminho=None):
+        """Resume (tira o texto do Diário) os processos com mais de `resumir_meses`; apaga a linha dos não trabalhados com mais de
+        `apagar_meses` (0 = nunca apaga), junto com o que só existe por causa deles (área logada, publicações do monitor); guarda o
+        número na memória `processos_apagados` (12 meses) para não voltar como novo. As estatísticas diárias nunca são tocadas
+        (são atualizadas antes). Devolve {resumidos, apagados, mantidos, bytes_antes, bytes_depois}."""
+        hoje = hoje or dt.date.today()
+        resumir_meses, apagar_meses = max(1, int(resumir_meses or 6)), max(0, int(apagar_meses or 0))
+        if apagar_meses and apagar_meses < resumir_meses:
+            apagar_meses = resumir_meses
+        antes = self.espaco()["bytes"] if caminho is None else _tam(caminho)
+        self.atualizar_estatisticas()
+        resumidos = self.limpar_detalhe(resumir_meses, perfil="limpeza automática")
+        apagados, mantidos = 0, 0
+        if apagar_meses:
+            limite = (hoje - dt.timedelta(days=round(apagar_meses * 30.44))).isoformat()
+            velhos = [(r[0], r[1]) for r in self.con.execute("SELECT processo, coalesce(data, '') FROM leads WHERE primeira_vez < ?", (limite,))]
+            trab = self.trabalhados([p for p, _ in velhos])
+            mantidos = len(trab)
+            for proc, data in velhos:
+                if proc in trab:
+                    continue
+                for sql in ("DELETE FROM leads WHERE processo = ?", "DELETE FROM area_logada WHERE processo = ?",
+                            "DELETE FROM publicacoes WHERE processo = ?"):
+                    self.con.execute(sql, (proc,))
+                self.con.execute("INSERT OR REPLACE INTO processos_apagados VALUES (?,?,?)", (proc, hoje.isoformat(), data[:10]))
+                apagados += 1
+            if apagados:
+                self.registrar_acao("limpeza automática", "limpeza", f"mais de {apagar_meses} meses, não trabalhados", "", "", apagados)
+        # a memória dos apagados vale 12 meses (Diários mais velhos que isso não são relidos)
+        self.con.execute("DELETE FROM processos_apagados WHERE apagado_em < ?", ((hoje - dt.timedelta(days=366)).isoformat(),))
+        self.con.execute("DELETE FROM consultas_dia WHERE data < ?", ((hoje - dt.timedelta(days=366)).isoformat(),))
+        self.con.commit()
+        if apagados or resumidos >= 500:  # VACUUM só quando vale a pena (leva alguns segundos num banco grande)
+            self.compactar()
+        depois = self.espaco()["bytes"] if caminho is None else _tam(caminho)
+        return {"resumidos": resumidos, "apagados": apagados, "mantidos": mantidos, "bytes_antes": antes, "bytes_depois": depois,
+                "resumir_meses": resumir_meses, "apagar_meses": apagar_meses}
+
     def compactar(self):
         self.con.commit()
         self.con.execute("VACUUM")
 
-    def todos_leads(self, vara=None, desde=None, desde_diario=None):
+    def todos_leads(self, vara=None, desde=None, desde_diario=None, processos=None):
+        """0.7.48: `processos` (lista de números) traz só esses, sem varrer o banco inteiro (pedido da área logada)."""
+        if processos is not None:
+            saida, lista = [], [str(p) for p in processos][:5000]
+            for i in range(0, len(lista), 500):
+                parte = lista[i:i + 500]
+                saida += self._leads_sql(" AND processo IN (" + ",".join("?" * len(parte)) + ")", tuple(parte))
+            return saida
         sql, args = "SELECT dados, status, primeira_vez, motivo, frente, bruto_limpo, status_em FROM leads WHERE coalesce(fora_criterio, 0) = 0", ()
         if vara:
             sql, args = sql + " AND vara = ?", args + (vara,)
@@ -513,8 +590,13 @@ class Banco:
             # revisão da 0.7.30: data fora do formato AAAA-MM-DD (não deveria haver) vale como "quando foi lido", não some
             sql, args = sql + (" AND (CASE WHEN data GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' THEN substr(data, 1, 10)"
                                " ELSE substr(primeira_vez, 1, 10) END) >= ?"), args + (desde_diario,)
+        return self._leads_sql(sql[len(self._SQL_LEADS):], args)
+
+    _SQL_LEADS = "SELECT dados, status, primeira_vez, motivo, frente, bruto_limpo, status_em FROM leads WHERE coalesce(fora_criterio, 0) = 0"
+
+    def _leads_sql(self, filtro, args):
         saida = []
-        for dados, status, quando, motivo, frente, limpo, status_em in self.con.execute(sql + " ORDER BY primeira_vez DESC", args):
+        for dados, status, quando, motivo, frente, limpo, status_em in self.con.execute(self._SQL_LEADS + filtro + " ORDER BY primeira_vez DESC", args):  # nosec B608 - filtro montado só com "?"
             lead = json.loads(dados)
             lead["status"], lead["primeira_vez"] = situacao_valida(status) or "novo", quando
             lead["motivo"], lead["frente"], lead["resumido"], lead["status_em"] = motivo or "", frente or "", bool(limpo), status_em or ""
@@ -600,6 +682,59 @@ class Banco:
     def tirar_caderno_pendente(self, tribunal, data):
         self.con.execute("DELETE FROM cadernos_pendentes WHERE tribunal = ? AND data = ?", (tribunal, data))
         self.con.commit()
+
+    # 0.7.48 (desenho 1.3): varas de cada tribunal, montadas dos cadernos lidos, para dividir a consulta pública por vara
+    def guardar_varas(self, tribunal, mapa):
+        """`mapa` = {nome da vara: id do órgão} (djen.mapa_orgaos). Vara nova entra; a que já existe só renova a data."""
+        hoje = dt.date.today().isoformat()
+        self.con.executemany("INSERT OR REPLACE INTO varas VALUES (?,?,?,?)",
+                             [(tribunal, str(i), str(n)[:200], hoje) for n, i in (mapa or {}).items() if str(i or "").strip() not in ("", "None")])
+        self.con.commit()
+
+    def varas(self, tribunal):
+        return [(r[0], r[1]) for r in self.con.execute("SELECT id_orgao, nome FROM varas WHERE tribunal = ? ORDER BY nome", (tribunal,))]
+
+    # 0.7.48: dias lidos pela consulta pública (uma vez por dia pendente) e a conferência quando o caderno volta
+    def consulta_do_dia(self, tribunal, data):
+        r = self.con.execute("SELECT quando, publicacoes, pedidos, parcial, processos, conferida_em, a_mais FROM consultas_dia "
+                             "WHERE tribunal = ? AND data = ?", (tribunal, data)).fetchone()
+        if not r:
+            return None
+        return {"quando": r[0], "publicacoes": r[1], "pedidos": r[2], "parcial": bool(r[3]), "processos": json.loads(r[4] or "[]"),
+                "conferida_em": r[5] or "", "a_mais": r[6] or 0}
+
+    def registrar_consulta_dia(self, tribunal, data, publicacoes, pedidos, parcial, processos):
+        self.con.execute("INSERT OR REPLACE INTO consultas_dia (tribunal, data, quando, publicacoes, pedidos, parcial, processos) VALUES (?,?,?,?,?,?,?)",
+                         (tribunal, data, dt.datetime.now().isoformat(timespec="seconds"), int(publicacoes), int(pedidos), 1 if parcial else 0,
+                          json.dumps(sorted(set(processos))[:50000], ensure_ascii=False)))
+        self.con.commit()
+
+    def conferir_consulta_dia(self, tribunal, data, a_mais):
+        """O caderno do dia voltou: anota a conferência e passa a fonte dos processos daquele dia de "consulta" para "caderno"."""
+        c = self.consulta_do_dia(tribunal, data)
+        if not c or c["conferida_em"]:
+            return None
+        self.con.execute("UPDATE consultas_dia SET conferida_em = ?, a_mais = ? WHERE tribunal = ? AND data = ?",
+                         (dt.datetime.now().isoformat(timespec="seconds"), int(a_mais), tribunal, data))
+        procs = c["processos"]
+        for i in range(0, len(procs), 500):
+            parte = procs[i:i + 500]
+            marcas = ",".join("?" * len(parte))
+            mudar = []
+            for proc, dados in self.con.execute(f"SELECT processo, dados FROM leads WHERE processo IN ({marcas})", parte):  # nosec B608
+                try:
+                    d = json.loads(dados or "{}")
+                except ValueError:
+                    continue
+                if d.get("fonte_leitura") == "consulta":
+                    d["fonte_leitura"], d["caderno_pendente"] = "caderno", False
+                    mudar.append((json.dumps(d, ensure_ascii=False), proc))
+            self.con.executemany("UPDATE leads SET dados = ? WHERE processo = ?", mudar)
+        self.con.commit()
+        return c
+
+    def consultas_sem_conferencia(self, tribunal):
+        return {r[0] for r in self.con.execute("SELECT data FROM consultas_dia WHERE tribunal = ? AND conferida_em = ''", (tribunal,))}
 
     def guardar_caderno(self, tribunal, data, versao):
         self.con.execute("INSERT OR REPLACE INTO cadernos VALUES (?,?,?,?)",

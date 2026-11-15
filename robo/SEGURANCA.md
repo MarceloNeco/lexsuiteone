@@ -1,4 +1,4 @@
-# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.47)
+# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.48)
 
 Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
 licença (código, versão e só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou
@@ -40,9 +40,12 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
 - **Dados pessoais.** Pessoas físicas das publicações são descartadas antes de gravar. Os contatos de empresa vêm do
   cadastro público da Receita; o uso é decisão do compliance do escritório, e os nomes de sócios podem ser desligados
   em Configurações → Destaques e exclusões (cada pessoa, por área). O relatório de diagnóstico mascara nomes e CPFs. O banco local guarda os processos com um trecho
-  curto do texto; depois de 12 meses (`radar.guardar_dias`) o trecho do Diário é apagado e fica um resumo (número do
+  curto do texto; depois de 6 meses (0.7.48, `radar.resumir_meses`; antes 12, `radar.guardar_dias`, que continua como teto) o trecho do Diário é apagado e fica um resumo (número do
   processo, tribunal, vara, classe, data, link, valor, empresas, CNPJ e, da Receita, porte, atividade, cidade, endereço,
-  telefone, e-mail e nomes de sócios, sem o autor da ação), e os totais diários (estatísticas) ficam para sempre. Contatos de sócios só com fonte e data
+  telefone, e-mail e nomes de sócios, sem o autor da ação), e os totais diários (estatísticas) ficam para sempre. Desde a 0.7.48,
+  depois de 24 meses (`radar.apagar_meses`, 0 = nunca) os processos que ninguém trabalhou são apagados do banco, com a área logada
+  deles; só o número fica 12 meses em `processos_apagados`, para não voltar como novo. A leitura pela consulta pública (quando
+  o caderno cai) pede ao CNJ só tribunal, dia e, se preciso, a vara; nada do escritório vai junto. Contatos de sócios só com fonte e data
   (decisão do dono); CPF e dado de reclamante são recusados na colagem. Revisão completa em
   `SEGURANCA-REVISAO-2026-11-07.md`.
 - **O que não é.** O "desligar pelo suporte" é cortesia, não trava: quem controla o computador controla o robô.

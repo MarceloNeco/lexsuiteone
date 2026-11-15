@@ -104,6 +104,8 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         "id": lead.get("processo"),
         "hora": (lead.get("visto_em") or "")[11:16],
         "visto_em": lead.get("visto_em") or "",
+        "rodada": lead.get("rodada") or "",  # 0.7.48: "Ver os N processos" (novos desta leitura)
+        "fonte_leitura": lead.get("fonte_leitura") or "caderno", "caderno_pendente": bool(lead.get("caderno_pendente")),
         "tribunal": lead.get("tribunal"),
         "vara": lead.get("vara"),
         "sinal": lead.get("sinal") or sinal_guardado(lead),  # 0.7.19: como a ação nova foi reconhecida (gráfico para calibrar a regra com o escritório)
@@ -153,6 +155,41 @@ def inicio_periodo(hoje, dias):
             d -= dt.timedelta(days=1)
         return d.isoformat()
     return (hoje - dt.timedelta(days=int(dias))).isoformat()
+
+
+PRAZOS_LIMPEZA = {"resumir_meses": (6, 1, 120), "apagar_meses": (24, 0, 240)}  # padrão, mínimo, máximo (0 = nunca apagar)
+
+
+def prazos_limpeza(r):
+    """(resumir, apagar) do config.radar, com as regras: resumir >= 1; apagar 0 (nunca) ou >= 6 e >= resumir."""
+    resumir = config.inteiro(r.get("resumir_meses", 6), 6, 1, 120)
+    apagar = config.inteiro(r.get("apagar_meses", 24), 24, 0, 240)
+    if apagar:
+        apagar = max(apagar, 6, resumir)
+    return resumir, apagar
+
+
+def limpar_banco(banco, r, origem):
+    """0.7.48: a limpeza com os prazos do config, registrada no Histórico de leituras (tipo "limpeza")."""
+    resumir, apagar = prazos_limpeza(r or {})
+    lp = banco.limpeza_automatica(resumir, apagar)
+    banco.registrar("limpeza", dict(lp, origem=origem, quando_local=dt.datetime.now().astimezone().isoformat(timespec="seconds")))
+    return lp
+
+
+def itens_de(cfg, banco, processos):
+    """0.7.48 (teste do dono, 15/Nov: "Gerar o pedido" demorava com 2 ou com 41 processos): só os itens destes processos,
+    sem remontar o Arquivo inteiro. Devolve {processo: item} com o que a área logada precisa (valor, datas, contatos)."""
+    r = cfg.get("radar") or {}
+    lista = [str(p) for p in processos]
+    por_processo = {}
+    for c in (banco.contatos() if len(lista) > 300 else banco.contatos_de(lista)):
+        por_processo.setdefault(c["processo"], []).append(c)
+    saida = {}
+    for lead in banco.todos_leads(processos=lista):
+        item = item_de_lead(lead, r, por_processo)
+        saida[item["processo"]] = item
+    return saida
 
 
 def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None, prefs=None, visao="lista"):
@@ -288,10 +325,13 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     aviso(f"Radar: lista de distribuição de {', '.join(escolhidos)} (últimos {dias} dia(s) úteis)")
     registro = {"versao": versao, "tribunais": escolhidos, "lidas": 0, "novas": 0, "com_cnpj": 0, "duracao": 0, "resultado": "", "erro": ""}
     tentativas = []
+    # 0.7.48 (decisão 37): leitura pela consulta pública quando o caderno cai; ligada por padrão (Configurações → Leitura do Diário)
+    consulta = {"fora": lambda: conta.consulta_fora(cfg, versao)} if r.get("consulta_publica", True) else None
     try:
         lidos = []
         try:
-            pubs = monitor.coletar_caderno(escolhidos, dias, banco, pasta_diag, aviso, lidos=lidos, tentativas=tentativas, parar=parar)
+            pubs = monitor.coletar_caderno(escolhidos, dias, banco, pasta_diag, aviso, lidos=lidos, tentativas=tentativas, parar=parar,
+                                           consulta=consulta)
         finally:
             try:
                 registrar_tentativas(banco, tentativas, origem, versao)
@@ -301,6 +341,11 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         if not banco.execucoes("criterio", 1):  # 0.7.17: data em que o critério de "ação nova" mudou (estatísticas antes e depois não se comparam)
             banco.registrar("criterio", {"desde": CRITERIO_DESDE, "versao": versao or _versao(), "regra": CRITERIO_REGRA})
         novos = acoes_do_dia(pubs, ano_min, banco.processos_vistos())
+        lidos_c = (consulta or {}).get("lidos") or []
+        procs_c = set().union(*[x["processos"] for x in lidos_c]) if lidos_c else set()
+        for n in novos:  # 0.7.48: o que veio pela consulta pública fica marcado até o caderno conferir
+            if n.get("processo") in procs_c:
+                n["fonte_leitura"], n["caderno_pendente"] = "consulta", True
         if novos:  # 0.7.16: quantas entraram por cada sinal, para conferir a regra de "ação nova" com o escritório
             por_sinal = {}
             for n in novos:
@@ -350,6 +395,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
                     aviso(f"  Receita: {feitas} de {com_cnpj}")
             banco.guardar_lead(n, agora.date().isoformat())
         novos = novos_feitos
+        info_consulta = registrar_consulta(banco, consulta, novos, agora, origem)
         if not interrompida:  # Diário interrompido não fica marcado como lido: a próxima leitura baixa de novo os Diários desta leitura
             monitor.guardar([], banco, lidos)
         detalhes = {}
@@ -377,6 +423,13 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         banco.atualizar_estatisticas()  # 0.7.14: totais diários que nunca se apagam
     except Exception as e:  # noqa: BLE001 - estatística nunca derruba a leitura
         aviso(f"  Não consegui atualizar as estatísticas ({e.__class__.__name__}).")
+    try:  # 0.7.48 (decisões 40 a 42): limpeza automática depois de cada leitura, sempre depois das estatísticas
+        aviso("  Limpando o banco…")
+        lp = limpar_banco(banco, r, "depois da leitura")
+        if lp["resumidos"] or lp["apagados"]:
+            aviso(f"  Limpeza: {lp['resumidos']} resumido(s), {lp['apagados']} apagado(s), {lp['mantidos']} mantido(s) por serem trabalhados.")
+    except Exception as e:  # noqa: BLE001 - a limpeza nunca derruba a leitura
+        aviso(f"  Não consegui limpar o banco ({e.__class__.__name__}).")
     apagados = banco.limpar_antigos(int(r.get("guardar_dias") or 365))
     try:  # 0.7.17 (decisão 14): banco acima de 1 GB resume com 6 meses só os processos nunca abertos
         if banco.espaco()["bytes"] > 1024 ** 3:
@@ -424,6 +477,15 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
             if t["origem_falha"] == "bloqueio_local":
                 from . import computador
                 o_.update({"link": computador.link(av_, "pt"), "link_en": computador.link(av_, "en")})
+    situacao.update(info_consulta)
+    if info_consulta:
+        situacao["rodada"] = rodada_id
+    if info_consulta.get("consulta"):  # 0.7.48, cena 3
+        c_ = info_consulta["consulta"]
+        n_c = int(c_.get("novos") or 0)
+        situacao["pt"] = ("Pela consulta pública (caderno do CNJ fora): " + ("1 processo novo" if n_c == 1 else f"{n_c} processos novos") + ". ") + situacao["pt"]
+        situacao["en"] = ("Through the public search (CNJ gazette down): " + ("1 new case" if n_c == 1 else f"{n_c} new cases") + ". ") + situacao["en"]
+        situacao.pop("nada_novo", None)
     aviso("  " + situacao["pt"])
     if pasta_base:
         pagina = gravar_saida(cfg, banco, os.path.join(pasta_base, "saida", "radar"), agora, situacao, aviso, versao)  # 0.7.33: critérios por área
@@ -435,6 +497,39 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         e.situacao = situacao
         raise e
     return situacao
+
+
+def registrar_consulta(banco, consulta, novos, agora, origem):
+    """0.7.48: grava no Histórico a leitura pela consulta pública e a conferência pelo caderno; devolve o que a faixa mostra
+    ({consulta: {novos, tribunais, pedidos, minutos, parcial}, conferencia: {hora, a_mais, tribunais}})."""
+    saida = {}
+    if not consulta:
+        return saida
+    quando = agora.astimezone().isoformat(timespec="seconds")
+    lidos_c = consulta.get("lidos") or []
+    if lidos_c:
+        procs = set().union(*[x["processos"] for x in lidos_c])
+        n_novos = sum(1 for n in novos if n.get("processo") in procs)
+        info = {"quando_local": quando, "origem": origem, "novos": n_novos,
+                "tribunais": sorted({x["tribunal"] for x in lidos_c}), "dias": sorted({x["data"] for x in lidos_c}),
+                "publicacoes": sum(x["publicacoes"] for x in lidos_c), "pedidos": sum(x["pedidos"] for x in lidos_c),
+                "minutos": max(1, round(sum(x["segundos"] for x in lidos_c) / 60)), "parcial": any(x["parcial"] for x in lidos_c)}
+        banco.registrar("consulta", info)
+        saida["consulta"] = {k: info[k] for k in ("novos", "tribunais", "dias", "pedidos", "minutos", "parcial")}
+    conferir = consulta.get("conferir") or []
+    if conferir:
+        a_mais_total, tribs = 0, set()
+        for c in conferir:
+            a_mais = sum(1 for n in novos if n.get("processo") in c["processos"])
+            if banco.conferir_consulta_dia(c["tribunal"], c["data"], a_mais) is not None:
+                a_mais_total += a_mais
+                tribs.add(c["tribunal"])
+        if tribs:
+            info = {"quando_local": quando, "origem": origem, "a_mais": a_mais_total, "tribunais": sorted(tribs),
+                    "dias": sorted({c["data"] for c in conferir if c["tribunal"] in tribs})}
+            banco.registrar("conferencia", info)
+            saida["conferencia"] = {"hora": agora.strftime("%Hh%M"), "a_mais": a_mais_total, "tribunais": sorted(tribs)}
+    return saida
 
 
 def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):

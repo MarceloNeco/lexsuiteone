@@ -218,3 +218,108 @@ def leads(publicacoes, vara=None, ano_minimo=None, ja_vistos=()):
             "texto_curto": primeira["texto"][:600],
         })
     return resultado
+
+
+# ---------- 0.7.48: leitura pela consulta pública quando o caderno cai (desenho "CNJ fora e antivírus", 1.3; decisão 37) ----------
+CONSULTA_POR_PAGINA = 100
+CONSULTA_TETO = 10000  # a consulta não passa disso por pedido: acima, divide por vara (orgaoId)
+CONSULTA_TEMPO = 15
+
+
+class ConsultaParou(RuntimeError):
+    """Três tempos esgotados seguidos: a consulta pública também está fora; para sem insistir."""
+
+
+def consulta_dia(sigla, data, varas=None, aviso=print, parar=None, pedir=None, progresso=None):
+    """As comunicações de um tribunal num dia pela consulta pública (o mesmo formato do caderno). 1 pedido por segundo, 15 s
+    de limite, 1 nova tentativa só em tempo esgotado e 5xx, parar depois de 3 tempos esgotados seguidos. Se `count` chegar a
+    10.000, divide por vara (`varas`: [(id_orgao, nome)], montada dos cadernos já lidos). Devolve (publicações, info) com info =
+    {count, pedidos, parcial, varas}. Levanta ConsultaParou (3 tempos esgotados) e a Interrompida de quem chama (parar)."""
+    pedir = pedir or (lambda url: rede.pedir_json(url, tentativas=2, intervalo_minimo=1.0, tempo_limite=CONSULTA_TEMPO))
+    info = {"count": 0, "pedidos": 0, "parcial": False, "varas": 0, "por_pagina": CONSULTA_POR_PAGINA}
+    seguidos, erros5 = [0], [0]
+    por = [CONSULTA_POR_PAGINA]  # se a consulta recusar 100 por página (400/422), passa a 50 (desenho 1.3: "50 ou 100")
+
+    def um(params):
+        if parar and parar():
+            from .radar import Interrompida
+            raise Interrompida("interrompida")
+        url = URL + "?" + urllib.parse.urlencode(params)
+        info["pedidos"] += 1
+        try:
+            r = pedir(url)
+        except rede.SemResposta:
+            seguidos[0] += 1
+            if seguidos[0] >= 3:
+                raise ConsultaParou(f"consulta pública sem resposta 3 vezes seguidas ({sigla} {data})") from None
+            info["parcial"] = True
+            return None
+        except rede.ErroHTTP as e:
+            info["parcial"] = True  # 5xx depois da nova tentativa: perde esta página, segue com as outras
+            if e.codigo < 500:
+                raise
+            erros5[0] += 1
+            if erros5[0] >= 5:  # revisão: a consulta respondendo só 5xx também para (não percorre 100 páginas)
+                raise ConsultaParou(f"consulta pública com erro do servidor 5 vezes seguidas ({sigla} {data})") from None
+            return None
+        except ValueError:  # resposta que não é JSON: perde a página, como um 5xx
+            info["parcial"] = True
+            return None
+        seguidos[0] = erros5[0] = 0
+        return r if isinstance(r, dict) else {}
+
+    def paginas(filtros, dividir=False):
+        """Todas as páginas de um filtro. Com `dividir`, para logo na 1ª página se `count` chegar ao teto (vai por vara)."""
+        saida, pagina, vazias, total = [], 1, 0, None
+        while pagina <= CONSULTA_TETO // por[0]:
+            try:
+                r = um(dict(filtros, dataDisponibilizacaoInicio=data, dataDisponibilizacaoFim=data, pagina=pagina, itensPorPagina=por[0]))
+            except rede.ErroHTTP as e:
+                if e.codigo in (400, 422) and por[0] > 50 and pagina == 1:
+                    por[0] = info["por_pagina"] = 50
+                    info["parcial"] = False
+                    continue
+                break  # 4xx: este filtro não tem mais o que dar; não insiste
+            if r is None:
+                pagina += 1
+                continue
+            itens = r.get("items") or r.get("itens") or r.get("content") or []
+            if total is None:
+                try:
+                    total = int(r.get("count") if r.get("count") is not None else r.get("total"))
+                except (TypeError, ValueError):
+                    total = 0  # sem `count` na resposta: segue até uma página curta
+                if dividir and total >= CONSULTA_TETO:
+                    return saida, total, True
+            saida += [normalizar(i) for i in itens]
+            if progresso:
+                progresso(len(saida), max(total, len(saida)))
+            if not itens:
+                vazias += 1  # página vazia no meio: tenta mais uma antes de parar
+                if vazias >= 2 or (total and len(saida) >= total):
+                    break
+            else:
+                vazias = 0
+                if len(itens) < por[0] or (total and len(saida) >= total):
+                    break
+            pagina += 1
+        return saida, max(total or 0, len(saida)), False
+
+    base = {"siglaTribunal": sigla.upper()}
+    pubs, total, cortou = paginas(base, dividir=bool(varas))
+    info["count"] = total
+    if cortou:  # 10.000 ou mais: vara por vara (a lista vem dos cadernos já lidos)
+        pubs, vistos = [], set()
+        info["varas"] = len(varas)
+        for k, (orgao, _nome) in enumerate(varas, 1):
+            aviso(f"  Consulta pública {sigla} {_dc(data, False)}: vara {k} de {len(varas)}")
+            parte, _, _ = paginas(dict(base, orgaoId=orgao))
+            for p in parte:
+                if p["id"] not in vistos:
+                    vistos.add(p["id"])
+                    pubs.append(p)
+    elif total >= CONSULTA_TETO:
+        info["parcial"] = True  # sem a lista de varas (nenhum caderno lido ainda), fica com os primeiros 10.000
+    for p in pubs:
+        p["fonte_leitura"] = "consulta"
+    return pubs, info

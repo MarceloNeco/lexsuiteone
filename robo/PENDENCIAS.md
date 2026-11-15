@@ -167,29 +167,23 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
   processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
 
-## 0.7.48 (planejada; só começa com o "pode codar a 0.7.48" do dono; protótipo `documentacao/prototipos/0.7.48/prototipo.html`)
+## 0.7.48 (15/Nov; "produto aprovado, pode codar a 0.7.48") — pronta para publicar (instaladores à parte, na branch)
 
-- Leitura pela consulta pública quando o caderno cai (desenho "CNJ fora e antivírus", 1.3; decisão 37: ligada por padrão, só na
-  leitura automática e a pedido).
-- **Limpeza automática** (pedido do dono, 14/Nov; decisões 40 a 42): a cada leitura, resumir com 6 meses (sai o texto pesado do
-  Diário, fica o resumo) e apagar com 24 meses (o processo sai do programa e fica só nas estatísticas e no gráfico de tendência),
-  menos os trabalhados, que nunca saem; os dois prazos ajustáveis em Configurações → Armazenamento, que mostra a última limpeza
-  (quando, quantos resumidos, quantos apagados), também registrada no Histórico. Estatísticas nunca se apagam. Antes de
-  implementar: desenho curto da Arquitetura (muda o que o banco guarda; pedido no quadro).
-- **Filtro de cidade na Lista** (pedido do dono, 14/Nov), ao lado de Estado: escolher o estado limita a lista de cidades.
-  Desenho rápido, sem peso na arquitetura: a cidade já vem em cada processo (`empresa.municipio`, da Receita), então o filtro é
-  só da tela, sem consulta nova, sem coluna nova e sem pedido ao programa. Ele entra no mesmo passo que já conta as outras
-  opções de filtro (uma passada pela lista, como Estado e Vara); as opções de cidade saem de um índice estado → cidades montado
-  uma vez a cada carga dos dados (não a cada clique). Como pode haver centenas de cidades, a caixa ganha uma busca por digitação
-  e mostra primeiro as cidades com mais processos; o nome é comparado sem acento e sem maiúsculas ("Sao Paulo" = "São Paulo").
-  Cidade escolhida que some quando o estado muda sai do filtro com aviso. Processo sem cidade fica em "Sem cidade". Conferir
-  com 60 mil processos no teste de tela (rede lenta) antes de dar como pronto. Vale na Lista e no Painel; **não** na planilha
-  (Arquitetura, 14/Nov).
-- Limpeza automática: desenho da Arquitetura em `documentacao/DESENHO-LIMPEZA-AUTOMATICA-2026-11-14.md` (termos não mudam;
-  manual muda).
-- Ressalvas 3 a 5 da revisão da Operação nos instaladores (vão com a publicação): sem PowerShell, `INST` vazio e mensagem final
-  "Não consegui baixar" enganosa; cabeçalho do completo diz "nada é baixado da internet", mas agora há as sondas; "programa
-  aberto" aceita qualquer `python.exe` (conferir o caminho da pasta do programa).
+- Feito: leitura pela consulta pública quando o caderno cai (desenho 1.3, decisão 37), com as quatro cenas na faixa, "Ver os N
+  processos", selo "consulta pública · caderno pendente", conferência pelo caderno quando ele volta, linhas no Histórico e a
+  opção em Configurações → Leitura do Diário (ligada por padrão); limpeza automática do banco (decisões 40 a 42) com a tela em
+  Armazenamento e o registro no Histórico; filtro de cidade logo depois do Estado (Lista e Painel; conferido com 60 mil
+  processos e 5.570 cidades: abrir 0,18 s, procurar 0,04 s, escolher 0,15 s); os 14 itens do teste do dono na área logada
+  (`documentacao/FEEDBACK-TESTE-0.7.47.md`); janelas arrastáveis e com tamanho ajustável; faixa com ações embaixo; textos de
+  Armazenamento e do aviso do CNJ; ressalvas 3 a 5 da Operação nos instaladores.
+- **A conferir no primeiro uso real (a consulta só responde a pedidos do Brasil; daqui não dá):** se a consulta aceita
+  `itensPorPagina=100` (o programa passa a 50 sozinho se receber 400 ou 422) e se aparecem páginas vazias no meio (o programa
+  tenta mais uma antes de parar). O Histórico mostra quantos pedidos e minutos a consulta levou. Pedido à Arquitetura no quadro:
+  testar uma vez pelo observador no Brasil.
+- Limite conhecido: sem a lista de varas (nenhum caderno daquele tribunal lido antes), um dia com 10.000 ou mais comunicações
+  fica parcial (os primeiros 10.000) e o caderno completa quando voltar.
+- Sem mudança: termos (a limpeza só encurta o que fica no computador do escritório), e-mail de boas-vindas, nuvem (a 0.7.48 só
+  lê o campo `consulta` do `estado_cnj` da v20).
 
 ## 0.7.47 (14/Nov, CNJ fora e antivírus) — publicada em 14/Nov (tag v0.7.47, com a 0.7.46 dentro; nuvem v20 aplicada)
 

@@ -413,7 +413,7 @@ def estado_cnj(cfg, versao, pedir=None, agora=None):
     _ESTADO_CNJ["em"] = agora
     c = (cfg or {}).get("conta") or {}
     if not valido(c.get("codigo")):  # sem licença confirmada, nada a perguntar
-        _ESTADO_CNJ["r"] = None
+        _ESTADO_CNJ["r"], _ESTADO_CNJ["consulta_fora"] = None, False
         return None
     corpo = {"acao": "estado_cnj", "codigo": normalizar(c.get("codigo")), "instalacao": c.get("instalacao", ""), "versao": str(versao)[:20]}
     try:
@@ -424,4 +424,20 @@ def estado_cnj(cfg, versao, pedir=None, agora=None):
     if e:
         e.update({"pt": frase_estado_cnj(e, "pt"), "en": frase_estado_cnj(e, "en")})
     _ESTADO_CNJ["r"] = e
+    _ESTADO_CNJ["consulta_fora"] = consulta_vista_fora(r)
     return e
+
+
+def consulta_vista_fora(r):
+    """0.7.48: o observador da SolverONE vê a consulta pública fora? (campo `consulta.estado` da resposta estado_cnj)."""
+    if not isinstance(r, dict):
+        return False
+    d = r.get("estado") if isinstance(r.get("estado"), dict) else (r.get("estado_cnj") if isinstance(r.get("estado_cnj"), dict) else r)
+    c = d.get("consulta") if isinstance(d, dict) else None
+    return isinstance(c, dict) and str(c.get("estado") or "").lower() == "fora"
+
+
+def consulta_fora(cfg, versao, pedir=None):
+    """True só quando a SolverONE responde que a consulta pública está fora. Sem resposta = False (o programa tenta)."""
+    estado_cnj(cfg, versao, pedir=pedir)
+    return bool(_ESTADO_CNJ.get("consulta_fora"))

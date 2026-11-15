@@ -157,7 +157,8 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     confere(await p.evaluate(() => !document.getElementById('faixa-area').hidden), 'Área logada: o pedido pendente continua depois de recarregar');
     await p.evaluate(() => document.querySelector('#faixa-area button').click()); await espera(300);
     await p.fill('#janela .al-resposta', 'Oi!\nNão deu para entrar.'); await p.evaluate(() => [...document.querySelectorAll('#janela .botoes button')].pop().click()); await espera(700);
-    confere(/Não achei a tabela|did not find/.test(await p.evaluate(() => document.querySelector('#janela .al-msg').innerText)), 'Área logada: texto sem bloco avisa "Não achei a tabela" e mostra o começo');
+    const msgSem = await p.evaluate(() => document.querySelector('#janela .al-msg').innerText);
+    confere(/Não encontrei a resposta da ferramenta neste texto/.test(msgSem) && /Oi!/.test(msgSem) && !/RESPOSTA PARA O RADAR|v1/.test(msgSem), 'Área logada: texto sem a tabela avisa sem jargão ("Não encontrei a resposta da ferramenta") e mostra o começo');
     const cab = '| processo | dado | valor | resultado | fonte | data | observação |\n|---|---|---|---|---|---|---|\n';
     const resp = 'Pronto!\nRESPOSTA PARA O RADAR v1 · lote 1 de 1\n' + cab + '| ' + ids[0] + ' | data_ajuizamento | 2026-11-01 | encontrado | PJe dados do processo | 2026-11-14 | |\n| ' + ids[1] + ' | email | | tentar_depois | | 2026-11-14 | petição em PDF |\n| ' + ids[1] + ' | telefone | 123.456.789-09 | encontrado | PJe petição inicial | 2026-11-14 | |\nFim.';
     await p.fill('#janela .al-resposta', resp); await p.evaluate(() => [...document.querySelectorAll('#janela .botoes button')].pop().click()); await espera(1300);
@@ -230,6 +231,153 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     confere(/Novidades da versão 0\.7\.47/.test(nv) && /Novidades da versão 0\.7\.46/.test(nv) && !/Novidades da versão 0\.7\.45/.test(nv),
       'Novidades: da 0.7.45 para a 0.7.47 mostra a 0.7.47 e a 0.7.46 (e não a 0.7.45, já vista)');
     confere(p._erros.length === 0, 'Novidades: nenhum erro na página ' + p._erros.join(' | '));
+    await p.close();
+  }
+
+  // 9. Leitura pela consulta pública quando o caderno cai (0.7.48): cenas 2, 3 e 4 na faixa, "Ver os N processos", opção
+  //    em Configurações e as linhas novas do Histórico (dados fictícios injetados nas respostas do programa)
+  {
+    const RODADA = '2026-11-14T20:00';
+    const SIT3 = { pt: 'Diário de hoje lido pela consulta pública: 2 processos novos.', en: 'x', quando: '2026-11-14T20:09', lidas: 9, novas: 2, com_cnpj: 2,
+      consulta: { novos: 2, tribunais: ['TRT2'], dias: ['2026-11-13'], pedidos: 118, minutos: 19, parcial: false }, rodada: RODADA };
+    let estado = { rodando: true, progresso: 30, mensagens: [], consulta: { tribunal: 'TRT2', dia: '13/NOV', vara: 7, varas: 180, lidas: 0, total: 0, fim: false } };
+    const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); } catch (e) {} });
+    await p.route('**/dados*', async r => { const resp = await r.fetch(); const j = await resp.json();
+      (j.itens || []).slice(0, 2).forEach(i => { i.rodada = RODADA; i.fonte_leitura = 'consulta'; });
+      if (j.app) j.app.estado = estado; r.fulfill({ response: resp, body: JSON.stringify(j) }); });
+    await p.route('**/estado', async r => { const resp = await r.fetch(); const j = await resp.json(); Object.assign(j, estado); r.fulfill({ response: resp, body: JSON.stringify(j) }); });
+    await p.route('**/historico', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ tentativas: [
+      { tipo: 'conferencia', quando_local: '2026-11-14T20:31:00-03:00', a_mais: 0, tribunais: ['TRT2', 'TRT15'] },
+      { tipo: 'consulta', quando_local: '2026-11-14T20:09:00-03:00', novos: 37, tribunais: ['TRT2'], pedidos: 1112, minutos: 19, parcial: false }] }) }));
+    await p.reload(); await p.waitForFunction(() => document.getElementById('carregando').hidden, null, { timeout: 30000 }); await espera(1500);
+    const c2 = await p.evaluate(() => { const c = document.querySelector('#estado .cena.info'); return c ? c.innerText : ''; });
+    confere(/Lendo pela consulta pública do CNJ \(vara por vara\)/.test(c2) && /TRT2 13\/NOV: vara 7 de 180/.test(c2) && /continuar usando o programa/.test(c2), 'Consulta pública, cena 2: "Lendo pela consulta pública (vara por vara)…" com o andamento');
+    confere(await p.evaluate(() => !!document.querySelector('#estado button.perigo')), 'Consulta pública, cena 2: o Interromper continua à vista');
+    confere(await p.evaluate(() => { const b_ = document.querySelector('#lista article.item'); return !!b_; }), 'Consulta pública, cena 2: a Lista continua livre durante a consulta');
+    estado = { rodando: false, situacao: SIT3 };
+    await espera(3500);
+    const c3 = await p.evaluate(() => { const c = document.querySelector('#estado .cena.ok'); return c ? c.innerText : ''; });
+    confere(/Diário de hoje lido pela consulta pública: 2 processos novos/.test(c3) && /confere pelo caderno/.test(c3), 'Consulta pública, cena 3: quantos processos novos e que o caderno confere depois');
+    const antes3 = await totalLista(p);
+    await p.evaluate(() => [...document.querySelectorAll('#estado .cena.ok button.lk')].find(x => /Ver os 2 processos/.test(x.textContent)).click()); await espera(1200);
+    const depois3 = await totalLista(p);
+    const chip = await p.evaluate(() => { const c = document.getElementById('chip-rodada'); return c && !c.hidden ? c.textContent : ''; });
+    confere(antes3 > 2 && depois3 === 2 && /Novos desta leitura/.test(chip), 'Consulta pública, cena 3: "Ver os 2 processos" mostra só os novos desta leitura (' + antes3 + ' → ' + depois3 + ')');
+    confere(await p.evaluate(() => [...document.querySelectorAll('#lista .selo-area')].filter(x => /consulta pública · caderno pendente/.test(x.textContent)).length) === 2, 'Consulta pública: os processos lidos pela consulta trazem o selo "consulta pública · caderno pendente"');
+    await p.evaluate(() => document.getElementById('chip-rodada').click()); await espera(900);
+    confere(await totalLista(p) === antes3, 'Consulta pública: tirar o filtro "Novos desta leitura" volta a lista inteira');
+    estado = { rodando: false, situacao: Object.assign({}, SIT3, { consulta: null, conferencia: { hora: '20h31', a_mais: 3, tribunais: ['TRT2'] } }) };
+    await p.reload(); await p.waitForFunction(() => document.getElementById('carregando').hidden, null, { timeout: 30000 }); await espera(1200);
+    const c4 = await p.evaluate(() => { const c = document.querySelector('#estado .cena.ok'); return c ? c.innerText : ''; });
+    confere(/Caderno do CNJ voltou \(20h31\)\. Conferência feita: 3 processos a mais, já incluídos/.test(c4), 'Consulta pública, cena 4: "Caderno do CNJ voltou (20h31). Conferência feita: 3 processos a mais"');
+    await abrirConfig(p); await espera(600);
+    const op = await p.evaluate(() => ({ m: document.getElementById('c-consulta').checked, r: document.getElementById('c-l-consulta').textContent, x: document.getElementById('c-consulta-x').textContent }));
+    confere(op.m && /consulta pública quando o caderno do CNJ cair/.test(op.r) && /Ligada por padrão/.test(op.x), 'Configurações: leitura pela consulta pública ligada por padrão, com a explicação');
+    await p.evaluate(() => { document.getElementById('c-consulta').click(); document.getElementById('c-salvar').click(); }); await espera(1500);
+    await abrirConfig(p); await espera(600);
+    confere(await p.evaluate(() => !document.getElementById('c-consulta').checked), 'Configurações: desligar a consulta pública fica gravado');
+    await p.evaluate(() => { document.getElementById('c-consulta').click(); document.getElementById('c-salvar').click(); }); await espera(1200);
+    await abrirConfig(p); await espera(500);
+    await p.evaluate(() => document.getElementById('c-historico').click()); await espera(900);
+    const hs = await p.evaluate(() => [...document.querySelectorAll('.historico tbody tr')].map(r => r.innerText).join('\n'));
+    confere(/Leitura pela consulta pública \(caderno do CNJ fora\): 37 processos novos \(TRT2\), 1\.112 pedidos em 19 min\. Conferência pelo caderno pendente/.test(hs), 'Histórico: linha "Leitura pela consulta pública"');
+    confere(/Conferência pelo caderno: TRT2, TRT15: nada faltou/.test(hs), 'Histórico: linha da conferência pelo caderno');
+    confere(p._erros.length === 0, 'Consulta pública: nenhum erro na página ' + p._erros.join(' | '));
+    await p.close();
+  }
+
+  // 10. 0.7.48: janelas que se movem e mudam de tamanho (voltam ao padrão ao reabrir), ajustes da área logada (teste do dono
+  //     na 0.7.47), limpeza do banco em Armazenamento e filtro de cidade (com uma cidade fictícia de outro estado)
+  {
+    const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); localStorage.removeItem('lexsuite:filtro-atual'); localStorage.removeItem('lexsuite:area-logada'); } catch (e) {} });
+    await p.route('**/dados*', async r => { const resp = await r.fetch(); const j = await resp.json();
+      (j.itens || []).slice(0, 3).forEach(i => { i.empresa = Object.assign({}, i.empresa || {}, { municipio: 'NITEROI', uf: 'RJ' }); });
+      (j.itens || []).slice(3, 4).forEach(i => { i.empresa = Object.assign({}, i.empresa || {}, { municipio: '', uf: '' }); });
+      (j.itens || []).slice(4, 12).forEach((i, k) => { i.empresa = Object.assign({}, i.empresa || {}, { municipio: 'CIDADE FICTICIA ' + (k + 1), uf: 'MG' }); });
+      r.fulfill({ response: resp, body: JSON.stringify(j) }); });
+    await p.reload(); await p.waitForFunction(() => document.getElementById('carregando').hidden, null, { timeout: 30000 }); await espera(900);
+    await p.evaluate(() => { const d = document.getElementById('janela'); if (d && d.open) d.close(); document.getElementById('v-lista').click(); }); await espera(400);
+    // janelas: arrastar pelo título e voltar ao centro ao reabrir
+    await p.evaluate(() => [...document.querySelectorAll('#lista article.item input[type=checkbox]')].slice(0, 2).forEach(c => c.click())); await espera(300);
+    await p.evaluate(() => [...document.querySelectorAll('#lote button')].find(x => /área logada|logged-in area/.test(x.textContent)).click()); await espera(900);
+    const caixa0 = await p.evaluate(() => { const r = document.getElementById('janela').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width }; });
+    const tit = await p.evaluate(() => { const h = document.querySelector('#janela h3'); const r = h.getBoundingClientRect(); return { x: r.left + 20, y: r.top + r.height / 2 }; });
+    await p.mouse.move(tit.x, tit.y); await p.mouse.down(); await p.mouse.move(tit.x - 150, tit.y + 60, { steps: 6 }); await p.mouse.up(); await espera(200);
+    const caixa1 = await p.evaluate(() => { const j = document.getElementById('janela'); const r = j.getBoundingClientRect(); return { x: r.left, y: r.top, movida: j.classList.contains('movida'), resize: getComputedStyle(j).resize }; });
+    confere(caixa1.movida && Math.abs((caixa0.x - caixa1.x) - 150) < 8 && Math.abs((caixa1.y - caixa0.y) - 60) < 8 && caixa1.resize === 'both', 'Janelas: a janela se move pelo título e muda de tamanho pelo canto');
+    // área logada, passo 1: sócio marcado, (?) dentro da janela, Quantos não passa do limite
+    const p1 = await p.evaluate(() => { const j = document.getElementById('janela'); const lb = [...j.querySelectorAll('label')].find(l => /Sócio ou administrador/.test(l.textContent)); return { socio: lb ? lb.querySelector('input').checked : null }; });
+    confere(p1.socio === true, 'Área logada: "Sócio ou administrador" vem marcado');
+    const bal = await p.evaluate(() => { const j = document.getElementById('janela'); const a = j.querySelector('.ajuda'); a.click(); const q = document.querySelector('.balao'); return q ? !!q.closest('dialog') : false; });
+    confere(bal, 'Área logada: o (?) dentro da janela abre por cima dela (dentro da janela, não atrás)');
+    await p.evaluate(() => document.querySelector('#janela h3').click());
+    const lim = await p.evaluate(() => { const j = document.getElementById('janela'); const i = [...j.querySelectorAll('input[type=number]')][0]; if (!i) return null; i.value = '41'; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); const av = j.querySelector('.al-limite-aviso'); return { v: i.value, max: i.max, av: av ? av.textContent : '' }; });
+    confere(lim && Number(lim.v) <= 25 && /Até 25 por pedido \(Configurações → Área logada\)/.test(lim.av), 'Área logada: "Quantos" não passa do limite e diz "até 25 por pedido" (' + (lim && lim.v) + ')');
+    await p.evaluate(() => [...document.querySelectorAll('#janela .botoes button')].pop().click());
+    await p.waitForFunction(() => !!document.querySelector('#janela .al-pedido'), null, { timeout: 15000 }); await espera(300);
+    const p2 = await p.evaluate(() => { const j = document.getElementById('janela'); return { ic: !!j.querySelector('.al-copiar-ic'), deNovo: /Copiar de novo/.test(j.innerText), cpf: /O que nunca entra/.test(j.innerText), botoes: [...j.querySelectorAll('.botoes button')].map(x => x.textContent), md: !!j.querySelector('.al-md .ajuda, .ajuda[data-md], .al-salvar .ajuda') || /\.md/.test(j.innerText) }; });
+    confere(p2.ic && !p2.deNovo, 'Área logada, passo 2: ícone de copiar no canto da caixa, sem "Copiar de novo"');
+    confere(!p2.cpf, 'Área logada, passo 2: a frase "O que nunca entra… CPF" não se repete no passo');
+    confere(p2.botoes.some(x => /Colar a resposta agora/.test(x)) && p2.botoes.some(x => /Fechar \(trago a resposta depois\)/.test(x)), 'Área logada, passo 2: "Colar a resposta agora" e "Fechar (trago a resposta depois)"');
+    const circ = await p.evaluate(() => [...document.querySelectorAll('#janela .al-passos .al-p')].map(x => x.tagName + ':' + x.textContent).join(' '));
+    confere(/BUTTON:1Escolher/.test(circ) && /BUTTON:3Resposta/.test(circ) && /DIV:2Pedido/.test(circ), 'Área logada: os círculos têm nome e são clicáveis para voltar (' + circ + ')');
+    await p.evaluate(() => [...document.querySelectorAll('#janela .al-passos button')].find(x => /3/.test(x.textContent)).click()); await espera(600);
+    await p.evaluate(() => [...document.querySelectorAll('#janela .al-abas button')].find(x => /Arrastar ou escolher arquivo/.test(x.textContent)).click()); await espera(200);
+    const p3 = await p.evaluate(() => { const j = document.getElementById('janela'); return { solta: /Arraste o arquivo aqui ou clique para escolher/.test(j.innerText), circ: [...j.querySelectorAll('.al-passos .al-p')].map(x => x.tagName + ':' + x.textContent).join(' ') }; });
+    confere(p3.solta, 'Área logada, passo 3: área "Arraste o arquivo aqui ou clique para escolher"');
+    confere(/BUTTON:2Pedido/.test(p3.circ), 'Área logada, passo 3: com o pedido pendente, o círculo 2 revê o pedido');
+    await p.evaluate(() => [...document.querySelectorAll('#janela .al-passos button')].find(x => /2/.test(x.textContent)).click());
+    await p.waitForFunction(() => !!document.querySelector('#janela .al-pedido'), null, { timeout: 15000 }).catch(() => {});
+    confere(await p.evaluate(() => /RESPOSTA PARA O RADAR v1/.test((document.querySelector('#janela .al-pedido') || {}).value || '')), 'Área logada: o círculo 2 mostra de novo o pedido pendente');
+    await p.evaluate(() => document.getElementById('janela').close()); await espera(300);
+    await p.evaluate(() => [...document.querySelectorAll('#lote button')].find(x => /área logada|logged-in area/.test(x.textContent)).click()); await espera(900);
+    const caixa2 = await p.evaluate(() => { const j = document.getElementById('janela'); const r = j.getBoundingClientRect(); return { x: r.left, y: r.top, movida: j.classList.contains('movida') }; });
+    confere(!caixa2.movida && Math.abs(caixa2.x - caixa0.x) < 3, 'Janelas: ao fechar e abrir de novo, a janela volta ao centro e ao tamanho padrão');
+    await p.evaluate(() => { const d = document.getElementById('janela'); if (d.open) d.close(); });
+    await p.evaluate(() => { const c_ = [...document.querySelectorAll('#faixa-area button')].find(x => /Cancelar|Cancel/.test(x.textContent)); if (c_) c_.click(); }); await espera(400);
+    await p.evaluate(() => { const d = document.getElementById('janela'); if (d.open) { const bs = [...d.querySelectorAll('.botoes button')]; bs[bs.length - 1].click(); } }); await espera(500);
+    // cidade: depois do Estado, contagens, busca sem acento, "Sem cidade", troca de estado tira a cidade de fora
+    await p.evaluate(() => { const fa = document.getElementById('filtros-avancados'); if (fa.hidden) document.getElementById('b-mais-filtros').click(); }); await espera(300);
+    const ordemF = await p.evaluate(() => { const ids = [...document.querySelectorAll('#filtros-avancados [id^="f-"]')].map(x => x.id); return ids.indexOf('f-cidade') - ids.indexOf('f-uf'); });
+    confere(ordemF === 1, 'Cidade: o filtro vem logo depois do Estado');
+    const total0 = await totalLista(p);
+    await p.evaluate(() => document.querySelector('#f-cidade > button').click()); await espera(300);
+    const opc = await p.evaluate(() => [...document.querySelectorAll('#f-cidade .multi-lista label')].map(l => l.textContent));
+    confere(opc.length >= 9 && /^(Sao Paulo|Barueri)\/SP\d+$/.test(opc[0]) && opc.some(x => /^Niteroi\/RJ3$/.test(x)) && opc.some(x => /^Sem cidade\d+$/.test(x)) && opc.some(x => /^Cidade Ficticia 1\/MG1$/.test(x)), 'Cidade: as opções com quantos processos, as de mais processos primeiro, e "Sem cidade" (' + opc.join(' | ') + ')');
+    const busca = await p.evaluate(() => { const i = document.querySelector('#f-cidade .multi-painel input[type=search], #f-cidade .multi-painel input[type=text]'); if (!i) return null; i.value = 'NITERÓI'; i.dispatchEvent(new Event('input', { bubbles: true })); return [...document.querySelectorAll('#f-cidade .multi-lista label')].map(l => l.textContent); });
+    confere(busca && busca.length === 1 && /Niteroi/.test(busca[0]), 'Cidade: a busca não liga para acento nem maiúscula ("NITERÓI" acha Niteroi/RJ)');
+    await p.evaluate(() => document.querySelector('#f-cidade .multi-lista input[type=checkbox]').click()); await espera(700);
+    confere(await totalLista(p) === 3, 'Cidade: escolher Niteroi/RJ mostra só os 3 processos de lá');
+    await p.evaluate(() => { const f = document.getElementById('f-uf'); if (!f.querySelector('.multi-painel') || f.querySelector('.multi-painel').hidden) f.querySelector('button').click(); }); await espera(300);
+    const ufs = await p.evaluate(() => [...document.querySelectorAll('#f-uf .multi-lista label')].map(l => l.textContent));
+    await p.evaluate(() => { const lb = [...document.querySelectorAll('#f-uf .multi-lista label')].find(l => /^SP/.test(l.textContent)); if (lb) lb.querySelector('input').click(); }); await espera(800);
+    const depoisUf = await p.evaluate(() => ({ cid: (document.querySelector('#f-cidade > button') || {}).textContent || '', aviso: (document.getElementById('aviso') || document.body).innerText }));
+    confere(/Todas as cidades/.test(depoisUf.cid) && /cidade/i.test(depoisUf.aviso), 'Cidade: trocar o estado para SP tira a cidade do RJ, com aviso (' + ufs.join(',') + ')');
+    await p.evaluate(() => document.getElementById('b-limpar-filtros').click()); await espera(600);
+    confere(await totalLista(p) === total0, 'Cidade: "Limpar filtros" volta a lista inteira');
+    // Painel obedece à cidade
+    await p.evaluate(() => document.getElementById('v-painel').click()); await espera(900);
+    await p.evaluate(() => { const fa = document.getElementById('filtros-avancados'); if (fa.hidden) document.getElementById('b-mais-filtros').click(); }); await espera(300);
+    await p.evaluate(() => document.querySelector('#f-cidade > button').click()); await espera(300);
+    await p.evaluate(() => { const lb = [...document.querySelectorAll('#f-cidade .multi-lista label')].find(l => /Niteroi/.test(l.textContent)); lb.querySelector('input').click(); }); await espera(900);
+    const kp = await p.evaluate(() => (document.querySelector('.kpis .kpi .val') || {}).textContent || '');
+    confere(kp.trim() === '3', 'Cidade: o Painel obedece ao filtro (' + kp + ' processos)');
+    await p.evaluate(() => document.getElementById('b-limpar-filtros').click()); await espera(500);
+    // limpeza do banco em Armazenamento: prazos, o que nunca sai e confirmação em dois cliques
+    await abrirConfig(p); await espera(700);
+    const lp = await p.evaluate(() => { const w = document.getElementById('c-limpeza'); return w ? { t: w.innerText, r: document.getElementById('c-res-meses').value, a: document.getElementById('c-apa-meses').value, dentro: !!w.closest('#c-arm-wrap') } : null; });
+    confere(lp && lp.dentro && lp.r === '6' && lp.a === '24' && /O que nunca sai/.test(lp.t), 'Limpeza: em Armazenamento, prazos 6 e 24 meses e "O que nunca sai"');
+    const ok1 = await p.evaluate(() => { const bt = [...document.querySelectorAll('#c-limpeza button')].find(x => /Limpar o banco agora/.test(x.textContent)); bt.click(); return { bt: bt.textContent, msg: document.getElementById('c-limpeza').innerText }; });
+    confere(/Confirmar a limpeza/.test(ok1.bt) && /Clique de novo para confirmar/.test(ok1.msg), 'Limpeza: o primeiro clique só pede confirmação');
+    await p.evaluate(() => [...document.querySelectorAll('#c-limpeza button')].find(x => /Confirmar a limpeza/.test(x.textContent)).click());
+    await p.waitForFunction(() => /Limpeza feita/.test(document.getElementById('c-limpeza').innerText), null, { timeout: 15000 }).catch(() => {});
+    confere(await p.evaluate(() => /Limpeza feita: .* resumidos, .* apagados/.test(document.getElementById('c-limpeza').innerText)), 'Limpeza: o segundo clique limpa sem travar a tela e diz o resultado');
+    await p.evaluate(() => { document.getElementById('c-apa-meses').value = '3'; document.getElementById('c-apa-meses').dispatchEvent(new Event('input', { bubbles: true })); });
+    confere(await p.evaluate(() => { const r_ = [...document.querySelectorAll('#c-limpeza .alerta')][0]; return r_ && !r_.hidden; }), 'Limpeza: prazo fora da regra mostra a regra');
+    const arm = await p.evaluate(() => ({ t: document.getElementById('c-arm').innerText, alertas: [...document.querySelectorAll('#c-arm .alerta')].map(x => x.textContent) }));
+    confere(arm.alertas.length ? !/Tudo certo/.test(arm.t) : /Tudo certo: planilha abaixo de 80 % do limite e espaço no disco/.test(arm.t), 'Armazenamento: "Tudo certo…" só quando não há aviso (' + (arm.alertas.join(' | ') || 'sem aviso') + ')');
+    confere(await p.evaluate(() => /ana@example\.com/.test(document.getElementById('c-avisar-cnj-x').textContent)), 'Aviso do CNJ: a opção mostra o endereço que recebe o e-mail');
+    confere(p._erros.length === 0, '0.7.48: nenhum erro na página ' + p._erros.join(' | '));
     await p.close();
   }
 
