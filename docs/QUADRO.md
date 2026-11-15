@@ -162,10 +162,7 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 15/Nov: **0.7.49 em andamento** (decisões 43 a 48): Modo no alto, filtros salvos (lista larga, descrição, período, 3 de fábrica),
-  Tribunal na 1ª linha, Varas largas, Agrupar por empresa (híbrido 50 / 6 meses), lista aberta acompanha a rolagem, (?) animado,
-  Wizard, manual, AssistONE, Novidades, folha DoD. Arquivos: `robo/radar_modelo.html`, `robo/lexsuite/app.py`, `radar.py`,
-  `banco.py`, `paginas/manual.html`, testes, docs.
+- Nada em andamento. A 0.7.49 está pronta para publicar (ver Feito e Pedidos).
 - 15/Nov: teste do dono na janela "Trazer dados da área logada" (0.7.47): 11 achados em `documentacao/FEEDBACK-TESTE-0.7.47.md`
   (causas conferidas: pedido lento porque remonta o Arquivo de 90 dias a cada mudança; (?) dentro de janela desenhado atrás dela;
   "Quantos" aceita acima do limite). Entram na 0.7.48. Resposta simulada para o passo 3:
@@ -179,6 +176,11 @@ Arquitetura (pedido no quadro).
   ressalvas 3 a 5 da Operação nos instaladores (vão com a publicação, porque o site serve o instalador na hora).
 
 ### Feito (mais recente primeiro)
+- 15/Nov: **0.7.49 pronta para publicar** (decisões 43 a 48), código na `main` em `e987a68`. Folha `documentacao/dod/0.7.49.md`
+  completa (13 pontos); `rodar_tudo.sh` TUDO OK (unittest, fluxos com o bloco 11, ver_na_lista, larguras, aviso_e_lupa); revisor:
+  1 bloqueio (folha citava registro ainda não feito) e 5 ressalvas, todos corrigidos; dono: "a chave é o CNPJ" (homônimo de outro
+  CNPJ fora; sem CNPJ com o mesmo nome marcado "confira"). RootifyONE, ArchONE, EaglePlanONE: nenhuma integração nova; roadmap:
+  filtros prontos e agrupamento por empresa concluídos; modo tributário segue sem data.
 - 15/Nov: **0.7.48 corrigida, pronta para publicar de novo** (bloqueio da Operação: a limpeza apagava processo com dado digitado
   na ficha; corrigido com as 5 ressalvas em `254d205`; instaladores em `08abc76` na branch). Testes: `rodar_tudo.sh` TUDO OK (545 do programa, fluxos, ver_na_lista, larguras, aviso_e_lupa).
 - 15/Nov: 0.7.48 marcada pronta (a Operação não publicou: bloqueio acima). Código na `main` em `4b6a4f1`; instaladores novos à parte, na branch
@@ -637,6 +639,11 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
 
 ## Pedidos entre sessões
+
+- **Produto → Operação (15/Nov): 0.7.49 pronta para publicar**, quando o dono escrever "publica a versão 0.7.49". Código na
+  `main` em `e987a68`; revisar só `git diff 4b8fcfe e987a68 -- robo paginas docs/manual.html` e ler a folha `documentacao/dod/0.7.49.md`
+  contra o diff. Sem instalador novo nesta versão (os instaladores corrigidos da 0.7.48 seguem à parte, na branch da Produto,
+  esperando o "pode" do dono). Pacote com os mesmos arquivos (nenhum módulo novo).
 
 - **Produto → Arquitetura (15/Nov, decisão do dono "folha da Definition of done"):** pôr no `CLAUDE.md` (seção "Definition of done"
   e "Como entregar") e no `.claude/agents/revisor.md`: "antes de 'pronta para publicar', preencher `documentacao/dod/<versão>.md`
