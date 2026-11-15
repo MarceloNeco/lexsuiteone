@@ -979,6 +979,7 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 45 | Produto (filtros prontos) | Tributário: o RADAR só lê os TRTs hoje; os filtros tributários (TRF3 e TJSP) ficam para quando a frente tributária existir? | sim; agora só o trabalhista | aberta |
 | 46 | Produto (Wizard) | A limpeza já vem ligada (6 meses resume, 24 apaga, estatísticas ficam). Manter 6 e 24 e só explicar no Wizard? | sim, manter e explicar | aberta |
 | 47 | Produto (filtros prontos) | Terceiro filtro salvo "Empresas da semana (visão completa)": um bloco por empresa com os processos da semana e todos os anteriores dela (até 10, o resto no Arquivo); empresas pela data mais recente; mesma empresa pelo CNPJ (raiz) ou nome. Proposta na mesma página | sim, no lugar do opcional "Maiores causas da semana"; e a ordem "Agrupar por empresa" disponível em "Ordenar por" | aberta |
+| 48 | Produto (feedback 15/Nov, `documentacao/FEEDBACK-DONO-2026-11-15-FILTROS-E-ORDENACAO.md`) | Os 11 itens (filtros salvos largos e com descrição, Tribunal na 1ª linha, Varas largas com "Nº de processos", agrupamento por empresa com alcance, bug da lista que não acompanha a rolagem, animação e cor do (?)) entram na próxima versão com as perguntas 43 a 47, depois de um protótipo? Modo tributário fica só anotado | sim: protótipo primeiro, depois "pode codar" | aberta |
 
 ## Decisões do dono registradas aqui
 
