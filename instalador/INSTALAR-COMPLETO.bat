@@ -241,9 +241,13 @@ echo.
 call "%DEST%\ABRIR.bat" >nul
 rem 0.7.47 (2.1): o programa precisa estar rodando 5 segundos depois de abrir; senao, o antivirus pode te-lo encerrado
 timeout /t 5 /nobreak >nul
-rem 0.7.48 (revisao da Operacao): conta so o Python da pasta do programa, nao qualquer python.exe do computador
-powershell.exe -NoProfile -Command "if (@(Get-Process pythonw,python -ErrorAction SilentlyContinue | Where-Object { $_.Path -like ($env:DEST + '\*') }).Count -gt 0) { exit 0 } else { exit 1 }" >nul 2>&1 && goto programa_aberto
-where powershell.exe >nul 2>nul && goto processo_morto
+rem 0.7.48 (revisao da Operacao): conta so o Python da pasta do programa, nao qualquer python.exe do computador.
+rem Resposta: 0 = rodando nesta pasta; 1 = nenhum Python rodando; 2 = ha Python, mas o caminho nao pode ser lido (vai ao tasklist)
+set "PS_RC=9"
+powershell.exe -NoProfile -Command "$p = @(Get-Process pythonw,python -ErrorAction SilentlyContinue); if (@($p | Where-Object { $_.Path -like ($env:DEST + '\*') }).Count -gt 0) { exit 0 } elseif (@($p | Where-Object { -not $_.Path }).Count -gt 0) { exit 2 } else { exit 1 }" >nul 2>&1
+set "PS_RC=%errorlevel%"
+if "%PS_RC%"=="0" goto programa_aberto
+if "%PS_RC%"=="1" goto processo_morto
 tasklist /fi "imagename eq pythonw.exe" 2>nul | find /i "pythonw.exe" >nul && goto programa_aberto
 tasklist /fi "imagename eq python.exe" 2>nul | find /i "python.exe" >nul && goto programa_aberto
 goto processo_morto
