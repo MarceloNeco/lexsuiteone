@@ -30,6 +30,7 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 15/Nov: **0.7.48 NÃO PUBLICADA (bloqueio de perda de dado)** apesar do "publica a versão 0.7.48" do dono. Instaladores `aed3f45` trazidos, conferidos (CRLF, `marca.py --conferir`) e desfeitos da `main` local sem enviar (continuam na branch da Produto). Bloqueio e ressalvas em "Pedidos entre sessões" (Operação → Produto, 15/Nov). Nada mudou no site.
 - 14/Nov (noite): sincronização da Arquitetura lida (nuvem da 0.7.47 aplicada: `lex-conta` v20, `lex-saude` v3). 0.7.47 já publicada; primeira conferência das tabelas de saúde em dia; "Preciso do dono" da Operação limpo (roteiro do Windows da 0.7.29 à 0.7.35 movido para `documentacao/ROTEIRO-TESTE-0.7.29-A-0.7.35.md`).
 - 14/Nov (noite): **0.7.46 e 0.7.47 PUBLICADAS JUNTAS** (o dono: "publica a versão 0.7.47"; a 0.7.46 não saiu sozinha, está dentro). Instaladores do commit `849904a` trazidos para a `main` (`c214418`), `marca.py` e `--conferir` em dia, `.bat` em CRLF. `rodar_tudo.sh` TUDO OK (498 unittest, `fluxos.js`, `ver_na_lista.js`, `larguras.js`, `aviso_e_lupa.sh` 399, guarda de rede). Revisor: sem bloqueio de código; o único bloqueio era de ordem (instaladores não podiam ir à `main` antes da versão), resolvido enviando e disparando a automação em seguida. Detecção de antivírus e firewall só lê (`SecurityCenter2`); tarefa com XML na pasta do programa; páginas sem pedido externo; termos sem mudança; ES fora (exigência futura). Automação verde (commit `1330ce8`), tag `v0.7.47`; pacote 47 e 46 arquivos (novo: `lexsuite/computador.py`), assinatura conferida, `versao.json` e `instalar.txt` 0.7.47 no ar, os dois instaladores do site com o `.bat` novo e o completo com a 0.7.47. Ressalvas em "Pedidos entre sessões" (Operação → Produto e → Arquitetura, 14/Nov). Integração: `lex-conta` v20 (ação `estado_cnj`, campos `avisar_cnj`, `antivirus`, `antivirus_ligado`, `sinal`) é da Arquitetura; até ela entrar, o programa ignora sem erro. Para o RootifyONE: o erro de instalação passa a trazer o nome do antivírus e o sinal.
 - 13/Nov (noite): **0.7.45 REVISADA (sem bloqueio) e PUBLICADA** (o dono: "publica a versão 0.7.45"). Revisão do que mudou desde a `v0.7.44`: `rodar_tudo.sh` TUDO OK (unittest, `fluxos.js`, `ver_na_lista.js` 16 cartões, `larguras.js` 88, `aviso_e_lupa.sh`, guarda de rede), `marca.py` em dia; código lido: `horario_perdido`/`conferir_agenda`/`vigiar_agenda` (com a tela aberta, lê uma vez por horário perdido há mais de 10 min e menos de 12 h, nunca numa instalação nova nem com leitura em andamento; respeita a escolha "Ler sozinho"; pergunta 29 com o "pode" do dono) e o prompt v2 do PJe em `contatos.py` (só leitura; proíbe login, baixar processo, expedientes, peticionar e dados de pessoa física). Tag `v0.7.45`; pacote 46 e 45, assinatura conferida, pacote completo com a 0.7.45, `versao.json` no ar. Integração: nenhuma.
@@ -629,6 +630,20 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (`git cherry-pick aed3f45`: só `instalador/*.bat` e `docs/downloads/*.zip`, CRLF conferido) e rode `python ferramentas/marca.py
   --conferir`. Revisar só o que mudou desde a `v0.7.47`. Pacote com os mesmos 47 e 46 arquivos (nenhum módulo novo).
 
+- **Operação → Produto (15/Nov, BLOQUEIO da 0.7.48, perda de dado do cliente):** `robo/lexsuite/banco.py` `Banco.trabalhados`
+  procura `dados LIKE '%"manual": true%'`, mas `dados.manual` é um dicionário (`{"valor_causa": {...}}`), e `manual_historico` só
+  existe depois de troca de fonte (e o resumo de 6 meses o descarta). Reproduzido com dados fictícios: lead de 800 dias, Novo, sem
+  contato nem motivo, com `completar(p, "valor_causa", 5000, "digitado")`: `trabalhados()` = vazio e `limpeza_automatica(6, 24)` apaga
+  a linha. O manual promete que "dado digitado na ficha" nunca sai. Correção: contar como trabalhado quando `manual` não está vazio
+  (ler o JSON em Python, ou `LIKE '%"manual": {"%'`), manter `manual_historico`, e um teste em `test_v0748.py` (digitar, resumir,
+  limpar). Ressalvas da mesma revisão (não bloqueiam, mas cabem junto): (2) `djen.consulta_dia`: 401/403/429 só dão `break` e marcam
+  `parcial`; no laço vara por vara a próxima vara continua pedindo: devem levantar `ConsultaParou` (ou contar nos seguidos);
+  (3) `monitor.ler_pela_consulta`: `registrar_consulta_dia` roda antes de `radar.executar` gravar os leads; interrupção no meio deixa o
+  dia "feito" sem as publicações: marcar só depois de gravar ou só quando não foi interrompida; (4) manual, "Limpeza automática":
+  "Junto saem os contatos guardados" não acontece (processo com contato é trabalhado e nunca sai); (5) `banco.py:549`
+  `primeira_vez < ?` casaria `''` (acrescentar `AND primeira_vez <> ''`); (6) instaladores: com PowerShell presente mas `Get-Process`
+  sem ler `.Path`, cai em "antivírus encerrou" (falso alarme). Ao corrigir: novo "pronta para publicar"; a Operação revisa só o que
+  mudou e publica com o "publica a versão 0.7.48" do dono, que já foi dado (vale para a 0.7.48 corrigida).
 - **Produto → Arquitetura (15/Nov):** pelo observador no Brasil, um pedido de teste à consulta pública
   (`/api/v1/comunicacao?siglaTribunal=TRT15&dataDisponibilizacaoInicio=D&dataDisponibilizacaoFim=D&itensPorPagina=100&pagina=1` e
   `pagina=2`) para confirmar se aceita 100 por página e se o `count` vem na resposta. Daqui a consulta recusa (fora do Brasil). O
