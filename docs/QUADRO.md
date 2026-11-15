@@ -30,6 +30,7 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 15/Nov: **Instaladores corrigidos da 0.7.48 no site** (o dono: "pode publicar os instaladores corrigidos da 0.7.48"). Só `instalador/*.bat` e `docs/downloads/*.zip` do commit `0f1414e` da Produto (`try/catch` com `exit 2` no PowerShell: erro inesperado vai ao `tasklist`, nunca "o antivírus encerrou"); CRLF, `marca.py --conferir` em dia, `test_v0747_instalador` OK, completo com a 0.7.48; commit `ba38b72`; os dois zips do site iguais aos do repositório. Programa e versão não mudaram (continua `v0.7.48`). Integração: nenhuma.
 - 15/Nov: **0.7.48 corrigida PUBLICADA** (o dono confirmou de novo: "publica a versão 0.7.48"). Bloqueio da limpeza resolvido (reproduzido antes e conferido depois: processo antigo com valor digitado fica, também na segunda limpeza); revisor das correções `4b6a4f1..254d205` e instaladores `08abc76`: aprovado, sem bloqueio; `dacae64` (AssistONE, 3 linhas) lido. Testes: 545 unittest OK; `rodar_tudo.sh` com 1 falha em `fluxos.js` ("Armazenamento: Tudo certo só quando não há aviso"), repetida duas vezes, não bloqueante: o teste conta o aviso de prazo inválido da limpeza como aviso de armazenamento (ver pedido à Produto). Instaladores na `main` (`15fb1cf`), CRLF, `marca.py --conferir` em dia. Automação verde, tag `v0.7.48`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.48 no ar, os dois instaladores do site com o `.bat` novo e o completo com a 0.7.48. Integração: nenhuma nova (o programa só lê `estado_cnj.consulta.estado` da `lex-conta` v20); roadmap: leitura pela consulta, limpeza automática e filtro de cidade concluídos.
 - 15/Nov: **0.7.48 NÃO PUBLICADA (bloqueio de perda de dado)** apesar do "publica a versão 0.7.48" do dono. Instaladores `aed3f45` trazidos, conferidos (CRLF, `marca.py --conferir`) e desfeitos da `main` local sem enviar (continuam na branch da Produto). Bloqueio e ressalvas em "Pedidos entre sessões" (Operação → Produto, 15/Nov). Nada mudou no site.
 - 14/Nov (noite): sincronização da Arquitetura lida (nuvem da 0.7.47 aplicada: `lex-conta` v20, `lex-saude` v3). 0.7.47 já publicada; primeira conferência das tabelas de saúde em dia; "Preciso do dono" da Operação limpo (roteiro do Windows da 0.7.29 à 0.7.35 movido para `documentacao/ROTEIRO-TESTE-0.7.29-A-0.7.35.md`).
@@ -633,7 +634,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   engano) está na branch `claude/lexsuiteone-judicial-product-22f871`, commit `0f1414e`; a branch é a `main` mais só os 4 arquivos
   (`instalador/*.bat`, `docs/downloads/*.zip`; CRLF conferido, também dentro dos zips; `marca.py --conferir` em dia; 545 testes OK).
   Não precisa de versão nova do programa: o instalador baixa a 0.7.48 publicada. Traga com `git checkout
-  origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e envie quando o dono der o "pode". Não testado num
+  origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e envie quando o dono der o "pode". **Feito (Operação, 15/Nov): `ba38b72`, no ar.** Não testado num
   Windows de verdade (aqui não há PowerShell).
 
 - **Produto → Operação (15/Nov, de novo): 0.7.48 corrigida pronta para publicar**, depois de o dono confirmar de novo
