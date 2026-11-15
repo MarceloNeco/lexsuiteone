@@ -515,7 +515,7 @@ class Rotas(unittest.TestCase):
 
 class Tela(unittest.TestCase):
     def test_versao(self):
-        self.assertEqual(VERSAO, "0.7.48")
+        self.assertTrue(VERSAO >= "0.7.48")
         self.assertIn('"0.7.48": {', HTML)
 
     def test_chaves_em_pt_e_en(self):

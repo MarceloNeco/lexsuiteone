@@ -167,6 +167,14 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
   processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
 
+## 0.7.49 (15/Nov; decisões 43 a 48, "já começa a desenvolver") — pronta para publicar
+
+- Feito: Modo no alto (planilha oficial no menu), filtros salvos (lista própria, descrição, período, 3 de fábrica), Tribunal na 1ª
+  linha, listas largas que acompanham a rolagem, Varas com "Nº", (?) azul e animado, Agrupar por empresa (até 50 dos últimos 6
+  meses, total da empresa, (?) de Ordenar), Wizard explicando filtros e limpeza. Folha `documentacao/dod/0.7.49.md`.
+- Planejado, sem data: modo tributário de verdade (fontes TRF3 e TJSP, rotina e filtros próprios), com desenho da Arquitetura.
+- Instaladores corrigidos (PowerShell sem falso alarme) esperam o "pode" do dono na Operação (branch da Produto).
+
 ## 0.7.48 (15/Nov; "produto aprovado, pode codar a 0.7.48") — publicada em 15/Nov (tag v0.7.48, com os instaladores novos)
 
 - Feito: leitura pela consulta pública quando o caderno cai (desenho 1.3, decisão 37), com as quatro cenas na faixa, "Ver os N
