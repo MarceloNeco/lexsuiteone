@@ -1,4 +1,4 @@
-versao=0.7.48
-arquivo=LexSuiteONE-RADAR-atualizacao-0.7.48.zip
-sha256=17d524b4bc74efa1507436c09d30bcd6c991e7e7693ba5ef0369426f9c71c5c1
+versao=0.7.49
+arquivo=LexSuiteONE-RADAR-atualizacao-0.7.49.zip
+sha256=9dbdf75ebd75caeda8cb20eb881b6b66abd6aa8d16a948f5ed7576fc2b6f2dd4
 nome=RADAR JUDICIAL
