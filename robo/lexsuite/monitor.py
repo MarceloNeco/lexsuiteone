@@ -237,7 +237,7 @@ def ler_pela_consulta(sigla, dias_falhos, banco, consulta, aviso, parar, sonda_o
     if fora:
         aviso(f"  {sigla}: a SolverONE também vê a consulta pública fora; não leio por ela agora.")
         return []
-    pubs, feitos = [], []
+    pubs = []
     for d in sorted(dias_falhos, reverse=True):
         dia = d.isoformat()
         feita = getattr(banco, "consulta_do_dia", lambda *_: None)(sigla, dia)
@@ -258,18 +258,14 @@ def ler_pela_consulta(sigla, dias_falhos, banco, consulta, aviso, parar, sonda_o
             aviso(f"  {sigla}: {e}; paro a consulta e o dia fica para o caderno.")
             break
         procs = {p.get("processo") for p in lote if p.get("processo")}
-        feitos.append((dia, len(lote), info["pedidos"], info["parcial"], procs))
         aviso(f"  Consulta pública {sigla} {config.data_curta(d, False)}: {len(lote)} comunicações em {info['pedidos']} pedidos"
               + (" (parcial)" if info["parcial"] else ""))
         consulta.setdefault("lidos", []).append({"tribunal": sigla, "data": dia, "publicacoes": len(lote), "pedidos": info["pedidos"],
                                                  "parcial": info["parcial"], "varas": info["varas"], "segundos": round(time.perf_counter() - t0, 1),
                                                  "processos": procs})
         pubs += lote
-    # revisão: o dia só fica "lido pela consulta" quando as publicações dele voltam a quem chamou (Interromper ou erro no meio
-    # não marcam nada; a próxima leitura tenta de novo)
-    if hasattr(banco, "registrar_consulta_dia"):
-        for dia, n_, ped_, parc_, procs_ in feitos:
-            banco.registrar_consulta_dia(sigla, dia, n_, ped_, parc_, procs_)
+    # revisão da Operação: quem marca o dia como "lido pela consulta" é radar.registrar_consulta, depois de gravar os processos
+    # e só se a leitura não foi interrompida (consulta["lidos"]); aqui nada é marcado
     return pubs
 
 
