@@ -158,6 +158,10 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 15/Nov: **0.7.48 em andamento** ("pode codar a 0.7.48" do dono; protótipo `documentacao/prototipos/0.7.48/prototipo.html`): leitura pela
+  consulta pública, faixa com texto largo e ações embaixo, limpeza automática, filtro de cidade, textos de Armazenamento e do e-mail do
+  CNJ, ressalvas do instalador, os 14 ajustes da área logada e janelas arrastáveis. Arquivos: `robo/lexsuite/` (djen, monitor, radar,
+  banco, app, contatos, config), `robo/radar_modelo.html`, `instalador/*.bat` (vão na publicação), `paginas/manual.html`, testes, docs.
 - 15/Nov: teste do dono na janela "Trazer dados da área logada" (0.7.47): 11 achados em `documentacao/FEEDBACK-TESTE-0.7.47.md`
   (causas conferidas: pedido lento porque remonta o Arquivo de 90 dias a cada mudança; (?) dentro de janela desenhado atrás dela;
   "Quantos" aceita acima do limite). Entram na 0.7.48. Resposta simulada para o passo 3:
