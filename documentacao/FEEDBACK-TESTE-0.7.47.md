@@ -1,10 +1,10 @@
 # Teste do dono na 0.7.47: "Trazer dados da área logada" (15/Nov/2026, 4 prints)
 
-Causa conferida no código pela Produto quando dá para conferir; o resto é proposta. Nada foi mudado no programa ainda.
+Causa conferida no código pela Produto quando dá para conferir; o resto é proposta. Nada foi mudado no programa ainda. **Dono (15/Nov): os 14 itens entram na 0.7.48**, que só começa com o "pode codar a 0.7.48".
 
 | # | O que o dono viu | Causa / resposta | Proposta |
 |---|---|---|---|
-| 1 | A janela não se move; dá para reduzir? | As janelas são fixas no centro. | Todas as janelas do programa arrastáveis pelo título (como no Windows), voltando ao centro ao reabrir. Redimensionar: a decidir. |
+| 1 | A janela não se move; dá para reduzir? | As janelas são fixas no centro. | **Decidido pelo dono (15/Nov):** todas as janelas do programa arrastáveis pelo título e com tamanho ajustável pelo canto (com tamanho mínimo); ao fechar e abrir de novo, voltam sempre ao centro e ao tamanho padrão. |
 | 2 | Fechei e voltou "no mesmo canto"; os círculos 1-2-3-4 são só indicativos; quero voltar ao 1 | Com o pedido pendente (faixa amarela), reabrir leva direto ao passo 3 (trazer a resposta). Os círculos não são clicáveis. | Círculos clicáveis para voltar: 1 = novo pedido (avisa que substitui o pendente), 2 = rever o pedido, 3 = trazer a resposta; nome curto embaixo de cada um (Escolher, Pedido, Resposta, Resultado). |
 | 3 | "Gerar o pedido" demorou demais com 41 processos, sem nada girando | **Causa**: a cada mudança no passo 1 e no "Gerar o pedido", o programa remonta o Arquivo inteiro dos últimos 90 dias (no print, 5.227 processos) só para achar os escolhidos. | Montar só os processos escolhidos (deve ficar quase instantâneo) e mostrar o indicador de carregamento do programa (o mesmo ↻ discreto da leitura) no botão enquanto trabalha. |
 | 4 | "Copiado" e "Copiar de novo" | Funciona, mas o botão fica longe da caixa. | Ícone de copiar (dois quadrados) no canto da caixa do pedido; o botão "Copiar de novo" sai. |

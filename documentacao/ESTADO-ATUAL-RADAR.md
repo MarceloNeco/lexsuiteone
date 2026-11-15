@@ -16,12 +16,14 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - CNJ e antivírus: sem certificado por enquanto; aviso geral só preparado; falso positivo aos fabricantes aguarda; leitura pela
   consulta por padrão (0.7.48).
 - Limpeza automática (40 a 42): resumir 6 meses, apagar 24, trabalhados nunca saem, prazos em Armazenamento; termos não mudam.
+- Janelas do programa: arrastar pelo título e mudar o tamanho; ao reabrir, sempre centro e tamanho padrão (15/Nov). Os 14
+  ajustes do teste da área logada entram na 0.7.48.
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
 - **0.7.48** (só depois dos testes da 0.7.47 e do "pode codar" do dono): leitura pela consulta quando o caderno cai; limpeza
-  automática; filtro de cidade; links da página de antivírus; ajustes do instalador. Mais os 11 ajustes da janela "Trazer dados da área logada"
-  do teste do dono de 15/Nov (`FEEDBACK-TESTE-0.7.47.md`: janela arrastável, voltar aos passos, pedido rápido com indicador de
+  automática; filtro de cidade; links da página de antivírus; ajustes do instalador. Mais os 14 ajustes da janela "Trazer dados da área logada"
+  do teste do dono de 15/Nov (`FEEDBACK-TESTE-0.7.47.md`: todas as janelas arrastáveis e com tamanho ajustável, voltando ao padrão ao reabrir; voltar aos passos, pedido rápido com indicador de
   carregamento, ícone de copiar, (?) do .md, botões mais claros, área de arrastar arquivo, sócio marcado, (?) na frente, limite na
   caixa "Quantos"). **Protótipo (Arquitetura):**
   `documentacao/prototipos/0.7.48/prototipo.html`; o dono quer ver antes de mandar codar.
