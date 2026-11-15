@@ -30,6 +30,8 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 15/Nov: **Regra nova registrada (decisão do dono):** na revisão de toda versão, e de tudo o que o cliente vê fora de versão (instaladores, e-mail), a Operação lê `documentacao/dod/<versão>.md` (13 pontos) contra o que mudou, abre os textos citados e não publica com ponto falso, vago ou em branco. `test_dod.py` OK. Os instaladores corrigidos (`0f1414e`) já tinham ido ao ar em `ba38b72` com o "pode publicar os instaladores corrigidos da 0.7.48"; a folha `0.7.48.md` não os cita (pedido à Produto).
+- 15/Nov: **Instaladores corrigidos da 0.7.48 no site** (o dono: "pode publicar os instaladores corrigidos da 0.7.48"). Só `instalador/*.bat` e `docs/downloads/*.zip` do commit `0f1414e` da Produto (`try/catch` com `exit 2` no PowerShell: erro inesperado vai ao `tasklist`, nunca "o antivírus encerrou"); CRLF, `marca.py --conferir` em dia, `test_v0747_instalador` OK, completo com a 0.7.48; commit `ba38b72`; os dois zips do site iguais aos do repositório. Programa e versão não mudaram (continua `v0.7.48`). Integração: nenhuma.
 - 15/Nov: **0.7.48 corrigida PUBLICADA** (o dono confirmou de novo: "publica a versão 0.7.48"). Bloqueio da limpeza resolvido (reproduzido antes e conferido depois: processo antigo com valor digitado fica, também na segunda limpeza); revisor das correções `4b6a4f1..254d205` e instaladores `08abc76`: aprovado, sem bloqueio; `dacae64` (AssistONE, 3 linhas) lido. Testes: 545 unittest OK; `rodar_tudo.sh` com 1 falha em `fluxos.js` ("Armazenamento: Tudo certo só quando não há aviso"), repetida duas vezes, não bloqueante: o teste conta o aviso de prazo inválido da limpeza como aviso de armazenamento (ver pedido à Produto). Instaladores na `main` (`15fb1cf`), CRLF, `marca.py --conferir` em dia. Automação verde, tag `v0.7.48`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.48 no ar, os dois instaladores do site com o `.bat` novo e o completo com a 0.7.48. Integração: nenhuma nova (o programa só lê `estado_cnj.consulta.estado` da `lex-conta` v20); roadmap: leitura pela consulta, limpeza automática e filtro de cidade concluídos.
 - 15/Nov: **0.7.48 NÃO PUBLICADA (bloqueio de perda de dado)** apesar do "publica a versão 0.7.48" do dono. Instaladores `aed3f45` trazidos, conferidos (CRLF, `marca.py --conferir`) e desfeitos da `main` local sem enviar (continuam na branch da Produto). Bloqueio e ressalvas em "Pedidos entre sessões" (Operação → Produto, 15/Nov). Nada mudou no site.
 - 14/Nov (noite): sincronização da Arquitetura lida (nuvem da 0.7.47 aplicada: `lex-conta` v20, `lex-saude` v3). 0.7.47 já publicada; primeira conferência das tabelas de saúde em dia; "Preciso do dono" da Operação limpo (roteiro do Windows da 0.7.29 à 0.7.35 movido para `documentacao/ROTEIRO-TESTE-0.7.29-A-0.7.35.md`).
@@ -160,7 +162,10 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- Nada em andamento. A 0.7.48 está pronta para publicar (ver Feito e Pedidos).
+- 15/Nov: **0.7.49 em andamento** (decisões 43 a 48): Modo no alto, filtros salvos (lista larga, descrição, período, 3 de fábrica),
+  Tribunal na 1ª linha, Varas largas, Agrupar por empresa (híbrido 50 / 6 meses), lista aberta acompanha a rolagem, (?) animado,
+  Wizard, manual, AssistONE, Novidades, folha DoD. Arquivos: `robo/radar_modelo.html`, `robo/lexsuite/app.py`, `radar.py`,
+  `banco.py`, `paginas/manual.html`, testes, docs.
 - 15/Nov: teste do dono na janela "Trazer dados da área logada" (0.7.47): 11 achados em `documentacao/FEEDBACK-TESTE-0.7.47.md`
   (causas conferidas: pedido lento porque remonta o Arquivo de 90 dias a cada mudança; (?) dentro de janela desenhado atrás dela;
   "Quantos" aceita acima do limite). Entram na 0.7.48. Resposta simulada para o passo 3:
@@ -326,6 +331,11 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 15/Nov (7): **Folha da Definition of done por versão (decisão do dono)** registrada nas regras: `CLAUDE.md` (seção DoD nomeia
+  Wizard/primeiro acesso, instalador, ajuda de cada tela do AssistONE, tour, busca, manual, Novidades, termos, e-mails, site; regra
+  "antes de 'pronta para publicar', preencher `documentacao/dod/<versão>.md`; em branco ou falso = bloqueio"; "Como entregar" cita a
+  folha), `.claude/agents/revisor.md` (lê a folha contra o diff, abre cada texto, ponto falso/vago/em branco = bloqueio) e diretriz
+  geral do `rootify-one` (mesma regra para todos os apps, folha + teste que trava a versão onde houver testes).
 - 15/Nov (6): protótipo da 0.7.48 **aprovado pelo dono** ("produto aprovado, pode codar"); prompt de codificação entregue
   (`documentacao/PROMPT-PRODUTO-0.7.48-2026-11-15.md`): consulta pública (1.3), faixa na largura toda, limpeza automática, filtro de
   cidade, textos (Tudo certo; e-mail do aviso), links da página de antivírus, instalador, DoD e testes.
@@ -628,6 +638,21 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Arquitetura (15/Nov, decisão do dono "folha da Definition of done"):** pôr no `CLAUDE.md` (seção "Definition of done"
+  e "Como entregar") e no `.claude/agents/revisor.md`: "antes de 'pronta para publicar', preencher `documentacao/dod/<versão>.md`
+  (modelo `documentacao/dod/LEIA-ME.md`); o revisor lê a folha contra o diff e trata ponto falso ou em branco como bloqueio". O
+  teste `robo/testes/test_dod.py` já trava a versão sem a folha. Vale também como modelo para a diretriz geral do `rootify-one`.
+- **Produto → Operação (15/Nov, mesma decisão):** na revisão de cada versão, ler `documentacao/dod/<versão>.md` contra o que mudou
+  e não publicar com ponto falso ou em branco; a 0.7.48 já tem a folha (preenchida depois da publicação).
+
+- **Produto → Operação (15/Nov, instaladores, a pedido do dono: "não dá pra já colocar… senão vou lançar um negócio que já vai estar
+  ruim"):** o `try/catch { exit 2 }` do PowerShell nos dois `.bat` (erro inesperado vai ao `tasklist`, nunca "antivírus encerrou" por
+  engano) está na branch `claude/lexsuiteone-judicial-product-22f871`, commit `0f1414e`; a branch é a `main` mais só os 4 arquivos
+  (`instalador/*.bat`, `docs/downloads/*.zip`; CRLF conferido, também dentro dos zips; `marca.py --conferir` em dia; 545 testes OK).
+  Não precisa de versão nova do programa: o instalador baixa a 0.7.48 publicada. Traga com `git checkout
+  origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e envie quando o dono der o "pode". **Feito (Operação, 15/Nov): `ba38b72`, no ar.** Não testado num
+  Windows de verdade (aqui não há PowerShell).
+
 - **Produto → Operação (15/Nov, de novo): 0.7.48 corrigida pronta para publicar**, depois de o dono confirmar de novo
   "publica a versão 0.7.48". Código na `main` em `dacae64` (revisar só `git diff 4b6a4f1 dacae64`; o último commit acrescenta
   a Cidade à ajuda do Painel e um passo do tour para a faixa da consulta; Wizard conferido, sem mudança). Instaladores: a branch
@@ -636,6 +661,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   `git checkout origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e rode `python ferramentas/marca.py
   --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
 
+- **Operação → Produto (15/Nov, folha da 0.7.48):** `documentacao/dod/0.7.48.md` não registra os instaladores corrigidos que foram ao ar
+  em `ba38b72` (`0f1414e`: `try/catch { exit 2 }` no PowerShell). Acrescentar a linha nos pontos que tocam o instalador (texto que o
+  cliente vê: não muda; só deixa de aparecer o aviso errado "o antivírus encerrou"). Próximas entregas fora de versão: folha antes do "pode".
 - **Operação → Produto (15/Nov, depois da publicação da 0.7.48):** (1) `fluxos.js:378` falha de forma estável aqui (2 de 2): depois de pôr
   "Apagar" = 3 meses, `#c-arm .alerta` inclui o aviso da regra da limpeza e a tela mostra ao mesmo tempo "Tudo certo: planilha abaixo de 80 %…".
   Decidir se a tela esconde o "Tudo certo" com prazo inválido ou se o teste deve contar só os avisos de planilha e disco; (2) baixos do
@@ -949,11 +977,20 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 40 | Produto (limpeza automática, pedido do dono 14/Nov) | O que a limpeza automática faz: resumir com 6 meses e apagar com 24 meses; resumir com 12 e apagar com 24; ou só resumir? | Resumir 6, apagar 24 | respondida (14/Nov): resumir com 6 meses, apagar com 24, estatísticas sempre guardadas |
 | 41 | Produto (limpeza) | Processos trabalhados (situação diferente de Novo, contato achado ou anotação) também são apagados? | Nunca apagar | respondida (14/Nov): nunca apagar; só perdem o texto pesado |
 | 42 | Produto (limpeza) | O prazo pode ser mudado pelo escritório? | Sim, em Armazenamento | respondida (14/Nov): sim, em Configurações → Armazenamento, que mostra também a última limpeza |
+| 43 | Produto (filtros prontos, 15/Nov) | Quais filtros vêm salvos? Proposta em `documentacao/PROPOSTA-FILTROS-PADRAO-2026-11-15.md` | "Para contatar (7 dias)" e "Buscar contato na área logada (7 dias)"; o 3º ("Maiores causas da semana") opcional | respondida (15/Nov): ver Decisões |
+| 44 | Produto (filtros prontos) | Os filtros usam TRT2 e TRT15 fixos ou os tribunais que o escritório escolheu no Wizard? | os do Wizard (padrão TRT2 e TRT15): já se adapta a cada escritório | respondida (15/Nov): ver Decisões |
+| 45 | Produto (filtros prontos) | Tributário: o RADAR só lê os TRTs hoje; os filtros tributários (TRF3 e TJSP) ficam para quando a frente tributária existir? | sim; agora só o trabalhista | respondida (15/Nov): ver Decisões |
+| 46 | Produto (Wizard) | A limpeza já vem ligada (6 meses resume, 24 apaga, estatísticas ficam). Manter 6 e 24 e só explicar no Wizard? | sim, manter e explicar | respondida (15/Nov): ver Decisões |
+| 47 | Produto (filtros prontos) | Terceiro filtro salvo "Empresas da semana (visão completa)": um bloco por empresa com os processos da semana e todos os anteriores dela (até 10, o resto no Arquivo); empresas pela data mais recente; mesma empresa pelo CNPJ (raiz) ou nome. Proposta na mesma página | sim, no lugar do opcional "Maiores causas da semana"; e a ordem "Agrupar por empresa" disponível em "Ordenar por" | respondida (15/Nov): ver Decisões |
+| 48 | Produto (feedback 15/Nov, `documentacao/FEEDBACK-DONO-2026-11-15-FILTROS-E-ORDENACAO.md`) | Os 11 itens (filtros salvos largos e com descrição, Tribunal na 1ª linha, Varas largas com "Nº de processos", agrupamento por empresa com alcance, bug da lista que não acompanha a rolagem, animação e cor do (?)) entram na próxima versão com as perguntas 43 a 47, depois de um protótipo? Modo tributário fica só anotado | sim: protótipo primeiro, depois "pode codar" | respondida (15/Nov): ver Decisões |
 
 ## Decisões do dono registradas aqui
 
 | Data | Decisão |
 |---|---|
+| 15/Nov | **0.7.49 (perguntas 43 a 48)**: (1) 3 filtros salvos de fábrica, com os tribunais escolhidos no Wizard (padrão TRT2 e TRT15): "Para contatar (7 dias)", "Buscar contato na área logada (7 dias)" e "Empresas da semana (visão completa)"; limpeza fica 6/24 e o Wizard explica filtros e limpeza; (2) **Agrupar por empresa** com alcance **híbrido "até 50 processos dos últimos 6 meses"** aberto por padrão (também 30 dias, 6 meses, 12 meses, 10 ou 50 processos, todos) e o total da empresa em termos curtos ("50 de 2.376"); (?) ao lado de "Ordenar" explicando ordenar × agrupar; manual e Wizard explicam; (3) no alto, **"Modo: Trabalhista"** no lugar de "Abrir a planilha", com Tributário, Empresarial, Cível e Penal em cinza e "Não incluído na sua licença" (ao clicar, "Fale com a SolverONE para incluir"); "Abrir a planilha oficial (só leitura)" fica só no menu ☰ → Planilha; (4) os 11 itens de `documentacao/FEEDBACK-DONO-2026-11-15-FILTROS-E-ORDENACAO.md`. Dono: "já começa a desenvolver". |
+| 15/Nov | **Definition of done conferida por FOLHA por versão, não de memória**: `documentacao/dod/<versão>.md` (13 pontos, modelo `LEIA-ME.md`), `test_dod.py` trava a versão sem a folha; ponto em branco ou falso é bloqueio do revisor e da Operação. Nomeados à parte: Wizard/primeiro acesso, mensagens do instalador, ajuda de cada tela do AssistONE, tour, busca, manual, Novidades, termos, e-mails, site. Vale para todos os apps da SolverONE (diretriz geral). |
+| 15/Nov | **Folha da Definition of done por versão** (dono: "pode"): toda versão nova tem `documentacao/dod/<versão>.md` com 13 pontos (manual, AssistONE ajuda/tour/busca, Wizard, Novidades, termos, e-mail e comunicações, RootifyONE/ArchONE/EaglePlanONE, retrocompatibilidade, segurança e LGPD, qualidade, registro), cada um "conferido: …" ou "não se aplica: …" com o porquê; `robo/testes/test_dod.py` falha sem ela; revisor e Operação tratam folha incompleta como bloqueio. Modelo em `documentacao/dod/LEIA-ME.md`. Também: e-mail de boas-vindas diz que o instalador mostra o antivírus encontrado e o passo a passo dele. |
 | 15/Nov | **Protótipo da 0.7.48 aprovado** e **"pode codar a 0.7.48"** (dono, 15/Nov, depois de ver o protótipo com a caixa "Onde fica no RADAR"). Ajustes pedidos por ele já no protótipo e no prompt: faixa do alto na largura toda com "Detalhes técnicos" embaixo em azul; "Tudo certo" explicado; opção do e-mail do CNJ mostrando o endereço. |
 | 15/Nov | **Janelas do RADAR**: todas arrastáveis pelo título e com tamanho ajustável; ao fechar e abrir de novo, voltam ao centro e ao tamanho padrão (para ninguém perder a janela). Os 14 ajustes do teste da área logada (`documentacao/FEEDBACK-TESTE-0.7.47.md`) entram na 0.7.48. O dono ainda está fechando uma parte com a Arquitetura: a 0.7.48 só começa com o "pode codar a 0.7.48". |
 | 15/Nov | **Astrea e Aurum: NÃO procurar a Aurum agora** (dono: "não estou maduro… não tenho ainda um plano de negócio, estou explorando"). Tudo o que se sabe está em `documentacao/DOSSIE-ASTREA-MCP-AI-2026-11-15.md` (navegação de 13/Nov, site mcp.ai, termos do Astrea, caminhos P1 a P5). Até o dono decidir: nenhuma sessão escreve à Aurum, ao mcp.ai ou ao Leandro sobre isso; os caminhos sem autorização (planilha pronta e exportação de contatos lida pelo RADAR) continuam possíveis quando o dono pedir. |

@@ -1204,6 +1204,13 @@ class Tratador(BaseHTTPRequestHandler):
             banco.registrar_acao(cfg["usuario"].get("email", ""), "area_logada:pedido", ident, "", f"{q} processos", q)
             banco.con.commit()
             return self._responder(dict(resumo, id=ident, caminho=caminho_md, texto=texto, quantos=q, pendente=banco.area_pedido(ident)))
+        if caminho == "/empresas/processos":  # 0.7.49 (dono): agrupar por empresa traz também os processos anteriores de cada empresa
+            banco = bd.Banco(s.caminho_db)
+            try:
+                chaves = [c for c in (corpo.get("empresas") or [])[:40] if isinstance(c, dict)]
+                return self._responder({"ok": True, "empresas": radar.processos_das_empresas(s.config(), banco, chaves, str(corpo.get("alcance") or "hibrido"))})
+            finally:
+                banco.con.close()
         if caminho == "/area-logada/cancelar":
             banco = bd.Banco(s.caminho_db)
             banco.area_cancelar(str(corpo.get("id") or "")[:40])
