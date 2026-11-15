@@ -20,7 +20,10 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 
 ## 3. Planejado
 - **0.7.48** (só depois dos testes da 0.7.47 e do "pode codar" do dono): leitura pela consulta quando o caderno cai; limpeza
-  automática; filtro de cidade; links da página de antivírus; ajustes do instalador. **Protótipo (Arquitetura):**
+  automática; filtro de cidade; links da página de antivírus; ajustes do instalador. Mais os 11 ajustes da janela "Trazer dados da área logada"
+  do teste do dono de 15/Nov (`FEEDBACK-TESTE-0.7.47.md`: janela arrastável, voltar aos passos, pedido rápido com indicador de
+  carregamento, ícone de copiar, (?) do .md, botões mais claros, área de arrastar arquivo, sócio marcado, (?) na frente, limite na
+  caixa "Quantos"). **Protótipo (Arquitetura):**
   `documentacao/prototipos/0.7.48/prototipo.html`; o dono quer ver antes de mandar codar.
 - **Sem data**: varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor:
   `PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md`. Depende do teste de 5 min no PJe (consulta de terceiros).
@@ -39,5 +42,5 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 3. Agendador de Tarefas: tarefa LexSuiteONE Radar, autor SolverONE; `C:\LexSuiteONE\tarefa.xml` existe.
 4. Configurações → Sobre este computador: antivírus, firewall, link da página, recursos da licença. (feito pelo dono em 15/Nov)
 5. Configurações → Leitura do Diário: opção de e-mail do CNJ, salva e persiste.
-6. Área logada: 4 passos, pedido pendente sobrevive ao fechar, resposta simulada (`prototipos/area-logada/resposta-simulada-TESTE-0.7.45.md`) gera o relatório "o que mudou".
+6. Área logada: 4 passos, pedido pendente sobrevive ao fechar, resposta simulada (`prototipos/area-logada/resposta-simulada-TESTE-0.7.47.md`, com o passo a passo) gera o relatório "o que mudou". (passos 1 e 2 feitos pelo dono em 15/Nov; achados em `FEEDBACK-TESTE-0.7.47.md`)
 7. Liga e desliga por licença na ficha do RootifyONE: os três lugares somem e voltam (passo a passo em `TESTES-DO-DONO.md`).

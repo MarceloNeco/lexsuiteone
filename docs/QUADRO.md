@@ -158,6 +158,10 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 15/Nov: teste do dono na janela "Trazer dados da área logada" (0.7.47): 11 achados em `documentacao/FEEDBACK-TESTE-0.7.47.md`
+  (causas conferidas: pedido lento porque remonta o Arquivo de 90 dias a cada mudança; (?) dentro de janela desenhado atrás dela;
+  "Quantos" aceita acima do limite). Entram na 0.7.48. Resposta simulada para o passo 3:
+  `documentacao/prototipos/area-logada/resposta-simulada-TESTE-0.7.47.md`.
 - 15/Nov: sincronização da Arquitetura lida; a Produto assume `documentacao/ESTADO-ATUAL-RADAR.md` (atualizada a cada entrega e
   decisão); `TESTES-DO-DONO.md` aponta para ela; perguntas 23 a 25 fora das listas; varredura pela área logada anotada como "planejado,
   sem data". **A 0.7.48 só começa com o "pode codar a 0.7.48" do dono**, seguindo o protótipo da Arquitetura.

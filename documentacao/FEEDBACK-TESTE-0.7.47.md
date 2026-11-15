@@ -1,0 +1,18 @@
+# Teste do dono na 0.7.47: "Trazer dados da área logada" (15/Nov/2026, 4 prints)
+
+Causa conferida no código pela Produto quando dá para conferir; o resto é proposta. Nada foi mudado no programa ainda.
+
+| # | O que o dono viu | Causa / resposta | Proposta |
+|---|---|---|---|
+| 1 | A janela não se move; dá para reduzir? | As janelas são fixas no centro. | Todas as janelas do programa arrastáveis pelo título (como no Windows), voltando ao centro ao reabrir. Redimensionar: a decidir. |
+| 2 | Fechei e voltou "no mesmo canto"; os círculos 1-2-3-4 são só indicativos; quero voltar ao 1 | Com o pedido pendente (faixa amarela), reabrir leva direto ao passo 3 (trazer a resposta). Os círculos não são clicáveis. | Círculos clicáveis para voltar: 1 = novo pedido (avisa que substitui o pendente), 2 = rever o pedido, 3 = trazer a resposta; nome curto embaixo de cada um (Escolher, Pedido, Resposta, Resultado). |
+| 3 | "Gerar o pedido" demorou demais com 41 processos, sem nada girando | **Causa**: a cada mudança no passo 1 e no "Gerar o pedido", o programa remonta o Arquivo inteiro dos últimos 90 dias (no print, 5.227 processos) só para achar os escolhidos. | Montar só os processos escolhidos (deve ficar quase instantâneo) e mostrar o indicador de carregamento do programa (o mesmo ↻ discreto da leitura) no botão enquanto trabalha. |
+| 4 | "Copiado" e "Copiar de novo" | Funciona, mas o botão fica longe da caixa. | Ícone de copiar (dois quadrados) no canto da caixa do pedido; o botão "Copiar de novo" sai. |
+| 5 | "Salvar como arquivo (.md)" sem explicação | Falta o (?). | (?) curto: "O arquivo .md (Markdown) é texto simples, com títulos e tabelas, que as ferramentas de IA leem bem. Salve se preferir anexar o arquivo na ferramenta em vez de colar o texto." |
+| 6 | A frase "O que nunca entra… CPF…" aparece em todo lugar | Está no passo 2 da janela e no manual (e o pedido mandado à ferramenta repete as regras, o que é necessário lá). | Sai dos passos; fica só no (?) do passo 1 e no manual. |
+| 7 | "Já tenho a resposta" × "Fechar e voltar quando tiver a resposta": confuso | Os dois levam à resposta, um agora e outro depois. | "Colar a resposta agora" e "Fechar (trago a resposta depois)". |
+| 8 | Passo 3: quero arrastar o arquivo | O passo 3 já aceita soltar o arquivo, mas não há área visível para isso. | Área "Arraste o arquivo aqui ou clique para escolher" (.md, .txt ou .zip), ao lado de "Colar texto". |
+| 9 | "Sócio ou administrador" deve vir marcado | O padrão é desmarcado (programa e tela). | Marcado por padrão. |
+| 10 | O (?) de "Limite por pedido" abre atrás da janela | Defeito: o balão do (?) é desenhado fora da janela, e a janela fica por cima de tudo. | Balão do (?) dentro da janela aberta (vale para todos os (?) dentro de janelas). Teste de tela novo. |
+| 11 | "Quantos" aceitou 41, mas o limite é 25 | O programa corta em 25 e manda os outros 16 para o próximo pedido, mas a caixa deixa digitar 41 sem explicar. | A caixa não passa do limite e diz "até 25 por pedido (Configuração → Área logada)". |
+| 12 | Quer simular a resposta sem PJe em casa | — | Feito: `documentacao/prototipos/area-logada/resposta-simulada-TESTE-0.7.47.md` (dados fictícios marcados, passo a passo e o que deve aparecer). |
