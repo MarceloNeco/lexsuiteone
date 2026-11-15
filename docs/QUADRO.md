@@ -302,6 +302,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 15/Nov (3): **Dossiê Astrea × RADAR com o mcp.ai** (`documentacao/DOSSIE-ASTREA-MCP-AI-2026-11-15.md`): junta a navegação de
+  13/Nov, a leitura do site mcp.ai e os termos do Astrea (a Aurum veda automação de terceiros sem autorização expressa; o mcp.ai usa
+  API interna com usuário e senha; não cria contato). Caminhos P1 a P5; recomendação: escrever à Aurum pedindo autorização (substitui a
+  pergunta 25). Prompt de leitura para o Claude in Chrome em `PROMPT-EXPLORAR-MCP-AI-ASTREA-2026-11-15.md`.
 - 15/Nov (2): **Astrea via mcp.ai (achado do dono)**: existe um servidor MCP de terceiro (mcp.ai, "Astrea (Aurum)") que usa a API
   interna do Astrea com usuário e senha do escritório ("sem API pública oficial"). Parecer da Arquitetura: NÃO usar com a conta da
   KR Law (senha do escritório e dados de processos passando por um terceiro sem contrato, API interna sem autorização da Aurum,
