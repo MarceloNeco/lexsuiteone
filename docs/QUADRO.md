@@ -607,6 +607,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Arquitetura → Produto (15/Nov, faixa vermelha da leitura, feedback do dono na 0.7.47):** na faixa do alto (`faixa-topo`), o texto
+  ocupa a largura toda da faixa (hoje quebra em coluna estreita com o link à direita), e o link "Detalhes técnicos" fica embaixo do
+  texto, em azul de link, não ao lado. Vale para minimizado e maximizado. O protótipo da 0.7.48 (aba 3) já mostra assim. Entra na 0.7.48.
+
 - **Arquitetura → Produto (15/Nov, dois textos de tela, feedback do dono na 0.7.47):** (1) Armazenamento: a linha "Tudo certo." sozinha
   não diz nada; trocar por "Tudo certo: planilha abaixo de 80 % do limite e espaço no disco" (e, quando não estiver, o aviso que já
   existe). (2) Leitura do Diário, opção do e-mail do CNJ: mostrar o endereço de verdade em vez de "o e-mail cadastrado para esta

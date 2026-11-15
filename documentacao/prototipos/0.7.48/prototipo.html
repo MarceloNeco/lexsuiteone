@@ -37,9 +37,10 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
 .lista-cid{position:relative}.lista-cid .caixa{position:absolute;top:100%;left:0;z-index:5;width:300px;max-height:260px;overflow:auto;background:var(--papel);border:1px solid var(--fio);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.15);display:none}
 .lista-cid.aberta .caixa{display:block}.lista-cid .caixa label{display:flex;justify-content:space-between;gap:8px;padding:7px 12px;cursor:pointer;font-size:.9rem}.lista-cid .caixa label:hover{background:var(--papel-2)}
 .lista-cid .caixa .q{color:var(--tinta-3)}
-.faixa{border-radius:12px;padding:10px 14px;margin:8px 0;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.faixa{border-radius:12px;padding:12px 16px;margin:8px 0;display:block;width:100%}
+.faixa .acoes{margin-top:8px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}.faixa a.lk,.faixa button.lk{color:#1a56db;text-decoration:underline;background:none;border:0;padding:0;font:inherit;cursor:pointer}
 .faixa.erro{background:var(--erro-bg);color:var(--erro)}.faixa.info{background:var(--latao-claro);color:var(--tinta)}.faixa.ok{background:var(--ok-bg);color:var(--ok)}
-.faixa .txt{flex:1;min-width:240px}.faixa b{display:block}
+.faixa .txt{width:100%}.faixa b{display:block;margin-bottom:2px}
 .prog{height:10px;background:var(--papel-2);border-radius:999px;overflow:hidden;border:1px solid var(--fio);margin:6px 0}.prog i{display:block;height:100%;background:var(--latao);width:0;transition:width .4s}
 .leg{background:var(--papel);border:1px solid var(--fio);border-radius:14px;padding:12px 16px;margin-top:18px;font-size:.9rem;color:var(--tinta-2)}
 .leg h3{margin:0 0 6px;font-size:1rem;color:var(--tinta)}
@@ -134,6 +135,7 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
 <div class="cartao">
   <h2>Painel · leitura das 20h <span class="sim">simulação: <button class="txt" id="simular">avançar a cena</button></span></h2>
   <div id="cena"></div>
+  <p class="nota">A mensagem da cena 1 tem sempre a mesma estrutura: título (o que falhou e em que leitura), a causa em uma frase (uma de seis possíveis: erro da aplicação do CNJ, rede do CNJ, caderno fora com consulta ok, este computador sem internet, antivírus ou firewall barrando só os nossos endereços, bloqueio de país) e a linha "A SolverONE também vê…" quando houver. O que muda é a frase da causa e os números; por isso o link fica sempre embaixo. O texto ocupa a largura toda da faixa.</p>
   <p class="nota">A leitura pela consulta pública é ligada por padrão (decisão 37) e só acontece na leitura automática e no "Ler o Diário agora".
     Ela lê vara por vara, 1 pedido por segundo, só os tribunais marcados; quando o caderno volta, o programa confere pelo caderno e completa o que faltou.</p>
 </div>
@@ -205,9 +207,9 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
   render();
   // 3. cenas
   var cenas=[
-    '<div class="faixa erro"><div class="txt"><b>Leitura das 20h: o caderno do CNJ não respondeu.</b>O servidor do CNJ respondeu erro (aplicação). Sua internet está normal. Não é problema deste computador. A SolverONE também vê o CNJ fora desde 19h30 (23 de 24 tribunais).</div><button class="txt">Detalhes técnicos</button></div>',
-    '<div class="faixa info"><div class="txt"><b>Lendo pela consulta pública do CNJ (vara por vara)…</b>O caderno está fora; o RADAR está buscando as distribuições de hoje na consulta pública, 1 pedido por segundo. Tribunal 7 de 24 (TRT2: 180 varas). Você pode continuar usando o programa.<div class="prog"><i style="width:29%"></i></div></div><button>Interromper</button></div>',
-    '<div class="faixa ok"><div class="txt"><b>Diário de hoje lido pela consulta pública: 37 processos novos.</b>O caderno do CNJ continua fora. Quando voltar, o programa confere pelo caderno e completa o que tiver faltado (sozinho, na próxima leitura). Fonte marcada em cada processo: "consulta pública".</div><button class="txt">Ver os 37</button></div>',
+    '<div class="faixa erro"><div class="txt"><b>Leitura das 20h: o caderno do CNJ não respondeu.</b>O servidor do CNJ respondeu erro (aplicação). Sua internet está normal. Não é problema deste computador. A SolverONE também vê o CNJ fora desde 19h30 (23 de 24 tribunais).</div><div class="acoes"><button class="lk">Detalhes técnicos</button></div></div>',
+    '<div class="faixa info"><div class="txt"><b>Lendo pela consulta pública do CNJ (vara por vara)…</b>O caderno está fora; o RADAR está buscando as distribuições de hoje na consulta pública, 1 pedido por segundo. Tribunal 7 de 24 (TRT2: 180 varas). Você pode continuar usando o programa.<div class="prog"><i style="width:29%"></i></div></div><div class="acoes"><button>Interromper</button><button class="lk">Detalhes técnicos</button></div></div>',
+    '<div class="faixa ok"><div class="txt"><b>Diário de hoje lido pela consulta pública: 37 processos novos.</b>O caderno do CNJ continua fora. Quando voltar, o programa confere pelo caderno e completa o que tiver faltado (sozinho, na próxima leitura). Fonte marcada em cada processo: "consulta pública".</div><div class="acoes"><button class="lk">Ver os 37 processos</button><button class="lk">Detalhes técnicos</button></div></div>',
     '<div class="faixa ok"><div class="txt"><b>Caderno do CNJ voltou (20h31). Conferência feita: nada faltou.</b>Os 37 processos lidos pela consulta foram confirmados pelo caderno; a fonte passou a "caderno". Se tivesse faltado algum, apareceria aqui: "N processos a mais, já incluídos".</div></div>'
   ], i=0, cena=document.getElementById("cena");
   function mostra(){ cena.innerHTML=cenas[i]+'<p class="nota">Cena '+(i+1)+' de 4.</p>'; }
