@@ -9,7 +9,9 @@ do PJe: a página tem o botão "Abrir no PJe" e o campo para a pessoa digitar.
 
 import collections
 import datetime as dt
+import json
 import os
+import re
 import threading
 import time
 
@@ -497,6 +499,62 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         e.situacao = situacao
         raise e
     return situacao
+
+
+ALCANCES = {"hibrido": (183, 50), "30d": (30, None), "6m": (183, None), "12m": (366, None), "10": (None, 10), "50": (None, 50), "todos": (None, None)}
+
+
+def chave_empresa(cnpj="", nome=""):
+    """A mesma empresa: a raiz do CNPJ (8 dígitos, junta matriz e filiais) ou, sem CNPJ, o nome sem acento, pontuação e
+    "LTDA"/"S.A."/"EIRELI"/"ME"/"EPP"."""
+    raiz = re.sub(r"\D", "", str(cnpj or ""))[:8]
+    if len(raiz) == 8:
+        return "c:" + raiz
+    n = re.sub(r"[^a-z0-9 ]", " ", cl.sem_acento(str(nome or "")).lower())
+    n = re.sub(r"\b(ltda|s ?a|eireli|me|epp|limitada|sociedade anonima)\b", " ", n)
+    n = " ".join(n.split())
+    return "n:" + n if n else ""
+
+
+def processos_das_empresas(cfg, banco, empresas, alcance="hibrido", hoje=None):
+    """0.7.49: para cada empresa pedida ({chave, cnpj, nome}), os processos dela que o programa tem (Lista e Arquivo), do mais
+    novo para o mais antigo, dentro do alcance (hibrido = até 50 dos últimos 6 meses). Devolve {chave: {total, itens}}."""
+    dias, teto = ALCANCES.get(alcance, ALCANCES["hibrido"])
+    hoje = hoje or dt.date.today()
+    corte = (hoje - dt.timedelta(days=dias)).isoformat() if dias else ""
+    saida = {}
+    for e in empresas:
+        chave = str(e.get("chave") or "") or chave_empresa(e.get("cnpj"), e.get("nome"))
+        if not chave:
+            continue
+        if chave.startswith("c:"):
+            pista = chave[2:]
+        else:
+            palavras = [w for w in chave[2:].split() if len(w) >= 3]
+            pista = max(palavras, key=len) if palavras else chave[2:]
+            pista = re.sub(r"[aeiouc]", "_", pista)  # vogal (e ç) vale qualquer letra: "ficticia" acha "Fictícia"; quem decide é a conferência abaixo
+        achados = []
+        for proc, data, dados in banco.con.execute("SELECT processo, coalesce(data, primeira_vez, ''), dados FROM leads WHERE dados LIKE ?",
+                                                   ("%" + pista + "%",)):
+            try:
+                d = json.loads(dados or "{}")
+            except ValueError:
+                continue
+            emp = d.get("empresa_receita") or {}
+            nomes = [emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]
+            mesma = (chave == chave_empresa(emp.get("cnpj"), "")) or any(chave == chave_empresa("", n) for n in nomes if n) or (
+                chave.startswith("c:") and any(re.sub(r"\D", "", str(c))[:8] == chave[2:] for c in (d.get("cnpjs") or [])[:1]))
+            if mesma:
+                achados.append((str(data or "")[:10], proc))
+        achados.sort(reverse=True)
+        total = len(achados)
+        if corte:
+            achados = [x for x in achados if x[0] >= corte]
+        if teto:
+            achados = achados[:teto]
+        itens = itens_de(cfg, banco, [p for _, p in achados])
+        saida[chave] = {"total": total, "itens": [itens[p] for _, p in achados if p in itens]}
+    return saida
 
 
 def registrar_consulta(banco, consulta, novos, agora, origem):
