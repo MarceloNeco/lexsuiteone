@@ -22,8 +22,9 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
-- Próxima versão (sem data): um ajuste pequeno no instalador (PowerShell que falha por erro inesperado ainda é lido como
-  "programa encerrado"); conferir na prática o limite de 100 por página da consulta pública.
+- Instaladores com o ajuste do PowerShell (erro inesperado não vira mais "antivírus encerrou"): prontos na branch; vão ao site
+  pela Operação com o "pode" do dono (não precisam de versão nova do programa). Conferir na prática o limite de 100 por página
+  da consulta pública.
 - **Sem data**: varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor:
   `PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md`. Depende do teste de 5 min no PJe (consulta de terceiros).
 - Depois da KR Law: staging e CI/CD (`DESENHO-STAGING-RADAR-2026-11-12.md`). Central LexSuiteONE: espera o repositório próprio.

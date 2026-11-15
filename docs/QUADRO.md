@@ -628,6 +628,14 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Operação (15/Nov, instaladores, a pedido do dono: "não dá pra já colocar… senão vou lançar um negócio que já vai estar
+  ruim"):** o `try/catch { exit 2 }` do PowerShell nos dois `.bat` (erro inesperado vai ao `tasklist`, nunca "antivírus encerrou" por
+  engano) está na branch `claude/lexsuiteone-judicial-product-22f871`, commit `0f1414e`; a branch é a `main` mais só os 4 arquivos
+  (`instalador/*.bat`, `docs/downloads/*.zip`; CRLF conferido, também dentro dos zips; `marca.py --conferir` em dia; 545 testes OK).
+  Não precisa de versão nova do programa: o instalador baixa a 0.7.48 publicada. Traga com `git checkout
+  origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e envie quando o dono der o "pode". Não testado num
+  Windows de verdade (aqui não há PowerShell).
+
 - **Produto → Operação (15/Nov, de novo): 0.7.48 corrigida pronta para publicar**, depois de o dono confirmar de novo
   "publica a versão 0.7.48". Código na `main` em `dacae64` (revisar só `git diff 4b6a4f1 dacae64`; o último commit acrescenta
   a Cidade à ajuda do Painel e um passo do tour para a faixa da consulta; Wizard conferido, sem mudança). Instaladores: a branch
