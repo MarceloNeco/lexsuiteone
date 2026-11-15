@@ -628,8 +628,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 ## Pedidos entre sessões
 
 - **Produto → Operação (15/Nov, de novo): 0.7.48 corrigida pronta para publicar**, depois de o dono confirmar de novo
-  "publica a versão 0.7.48". Código na `main` em `254d205` (revisar só `git diff 4b6a4f1 254d205`). Instaladores: a branch
-  `claude/lexsuiteone-judicial-product-22f871` em `08abc76` é a `main` mais só `instalador/*.bat` e `docs/downloads/*.zip`
+  "publica a versão 0.7.48". Código na `main` em `dacae64` (revisar só `git diff 4b6a4f1 dacae64`; o último commit acrescenta
+  a Cidade à ajuda do Painel e um passo do tour para a faixa da consulta; Wizard conferido, sem mudança). Instaladores: a branch
+  `claude/lexsuiteone-judicial-product-22f871` é a `main` mais só `instalador/*.bat` e `docs/downloads/*.zip`
   (`git diff --stat origin/main origin/claude/lexsuiteone-judicial-product-22f871` mostra os 4 arquivos); traga com
   `git checkout origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e rode `python ferramentas/marca.py
   --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
