@@ -244,7 +244,8 @@ timeout /t 5 /nobreak >nul
 rem 0.7.48 (revisao da Operacao): conta so o Python da pasta do programa, nao qualquer python.exe do computador.
 rem Resposta: 0 = rodando nesta pasta; 1 = nenhum Python rodando; 2 = ha Python, mas o caminho nao pode ser lido (vai ao tasklist)
 set "PS_RC=9"
-powershell.exe -NoProfile -Command "$p = @(Get-Process pythonw,python -ErrorAction SilentlyContinue); if (@($p | Where-Object { $_.Path -like ($env:DEST + '\*') }).Count -gt 0) { exit 0 } elseif (@($p | Where-Object { -not $_.Path }).Count -gt 0) { exit 2 } else { exit 1 }" >nul 2>&1
+rem Erro inesperado dentro do PowerShell tambem vira 2 (vai ao tasklist), nunca "programa encerrado" por engano
+powershell.exe -NoProfile -Command "try { $p = @(Get-Process pythonw,python -ErrorAction SilentlyContinue); if (@($p | Where-Object { $_.Path -like ($env:DEST + '\*') }).Count -gt 0) { exit 0 } elseif (@($p | Where-Object { -not $_.Path }).Count -gt 0) { exit 2 } else { exit 1 } } catch { exit 2 }" >nul 2>&1
 set "PS_RC=%errorlevel%"
 if "%PS_RC%"=="0" goto programa_aberto
 if "%PS_RC%"=="1" goto processo_morto
