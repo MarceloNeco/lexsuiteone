@@ -184,6 +184,16 @@ class LeituraPelaConsulta(Base):
         self.assertIsNone(self.b.consulta_do_dia("TRT15", DIA.isoformat()))  # nada marcado: a próxima leitura tenta de novo
         self.assertIsNone(self.b.consulta_do_dia("TRT15", "2026-11-12"))
 
+    def test_dia_so_marcado_depois_de_gravar_e_sem_interromper(self):
+        cons = {"fora": lambda: False, "pedir": self.c.pedir}
+        monitor.coletar_caderno(["TRT15"], 1, self.b, aviso=lambda m: None, hoje=HOJE, tentativas=[], consulta=cons, sondar=lambda: SONDA_OK)
+        self.assertTrue(cons.get("lidos"))
+        self.assertIsNone(self.b.consulta_do_dia("TRT15", DIA.isoformat()))  # a coleta sozinha não marca
+        radar.registrar_consulta(self.b, cons, [], dt.datetime(2026, 11, 16, 20, 0), "teste")
+        self.assertIsNotNone(self.b.consulta_do_dia("TRT15", DIA.isoformat()))
+        with open(os.path.join(_ROBO_, "lexsuite", "radar.py"), encoding="utf-8") as f:
+            self.assertIn("registrar_consulta(banco, consulta, novos, agora, origem) if not interrompida else {}", f.read())
+
     def test_varas_guardadas_dos_cadernos(self):
         self.c.fase = "ok"
         self.ler()
@@ -267,6 +277,20 @@ class ConsultaDia(unittest.TestCase):
         pubs, info = djen.consulta_dia("TRT15", DIA.isoformat(), pedir=pedir, aviso=lambda m: None)
         self.assertTrue(info["parcial"])
         self.assertEqual(len(pubs), 100)
+
+    def test_recusa_do_cnj_para_tudo_inclusive_as_outras_varas(self):
+        for cod in (401, 403, 429):
+            n = []
+
+            def pedir(url, cod=cod):
+                n.append(url)
+                q = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+                if "orgaoId" not in q:
+                    return {"count": 12000, "items": []}
+                raise rede.ErroHTTP(cod, url, "recusado")
+            with self.assertRaises(djen.ConsultaParou):
+                djen.consulta_dia("TRT2", DIA.isoformat(), varas=[("1", "a"), ("2", "b"), ("3", "c")], pedir=pedir, aviso=lambda m: None)
+            self.assertEqual(len(n), 2, cod)  # 1ª página + a 1ª vara; as outras varas não são pedidas
 
     def test_recusa_cem_por_pagina_passa_a_cinquenta(self):
         tamanhos = []
@@ -371,6 +395,33 @@ class Limpeza(unittest.TestCase):
         self.assertEqual((lp["apagados"], lp["mantidos"]), (2, 1))
         self.assertTrue({a, v} <= self.b.processos_vistos())  # não voltam como novos
         self.assertEqual(self.b.con.execute("SELECT count(*) FROM processos_apagados").fetchone()[0], 2)
+
+    def test_dado_digitado_na_ficha_nunca_sai(self):
+        # bloqueio da revisão da Operação: lead antigo, Novo, sem contato nem motivo, só com o valor da causa digitado
+        velho = (HOJE - dt.timedelta(days=800)).isoformat()
+        p = _lead(self.b, 7, velho)
+        self.b.completar(p, "valor_causa", 5000, "digitado")
+        self.assertIn(p, self.b.trabalhados())
+        lp = self.b.limpeza_automatica(6, 24, hoje=HOJE)  # resume (6 meses) e limpa (24) na mesma rodada
+        self.assertEqual((lp["apagados"], lp["mantidos"]), (0, 1))
+        d = json.loads(self.b.con.execute("SELECT dados FROM leads WHERE processo = ?", (p,)).fetchone()[0])
+        self.assertEqual(str(d["manual"]["valor_causa"]["valor"]), "5000")  # o resumo guarda o digitado
+        self.b.limpeza_automatica(6, 24, hoje=HOJE)  # e continua guardando nas limpezas seguintes
+        self.assertEqual(self.b.con.execute("SELECT count(*) FROM leads WHERE processo = ?", (p,)).fetchone()[0], 1)
+
+    def test_historico_do_digitado_fica_no_resumo(self):
+        p = _lead(self.b, 8, (HOJE - dt.timedelta(days=400)).isoformat())
+        self.b.completar(p, "valor_causa", 5000, "digitado")
+        self.b.completar(p, "valor_causa", 7000, "digitado")
+        self.b.limpeza_automatica(6, 24, hoje=HOJE)
+        d = json.loads(self.b.con.execute("SELECT dados FROM leads WHERE processo = ?", (p,)).fetchone()[0])
+        self.assertEqual(bool(d.get("manual_historico")), "manual_historico" in json.dumps(d))
+
+    def test_lead_sem_data_nao_e_apagado(self):
+        p = _lead(self.b, 9, (HOJE - dt.timedelta(days=30)).isoformat())
+        self.b.con.execute("UPDATE leads SET primeira_vez = '' WHERE processo = ?", (p,))
+        self.b.con.commit()
+        self.assertEqual(self.b.limpeza_automatica(6, 24, hoje=HOJE)["apagados"], 0)
 
     def test_apagar_zero_nunca_apaga(self):
         _lead(self.b, 1, (HOJE - dt.timedelta(days=900)).isoformat())

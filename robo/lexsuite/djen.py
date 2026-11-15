@@ -279,7 +279,9 @@ def consulta_dia(sigla, data, varas=None, aviso=print, parar=None, pedir=None, p
                     por[0] = info["por_pagina"] = 50
                     info["parcial"] = False
                     continue
-                break  # 4xx: este filtro não tem mais o que dar; não insiste
+                if e.codigo in (401, 403, 429):  # revisão da Operação: o CNJ recusou; nem a próxima vara insiste
+                    raise ConsultaParou(f"a consulta pública recusou o pedido (HTTP {e.codigo}) ({sigla} {data})") from None
+                break  # outro 4xx: este filtro não tem mais o que dar; não insiste
             if r is None:
                 pagina += 1
                 continue

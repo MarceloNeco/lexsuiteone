@@ -27,7 +27,8 @@ FAIXAS = ((10000, "ate10k"), (50000, "10k-50k"), (100000, "50k-100k"), (300000, 
 _INTIMACAO_COMUM = re.compile(r"fica\s+.{0,40}notificad|designad[ao]\s+audiencia|citacao|intimad|intimacao", re.I)
 
 _RESUMO = ("processo", "tribunal", "vara", "classe", "rito", "data_publicacao", "ajuizada_em", "empresas", "cnpjs",
-           "valor_causa", "fonte", "link", "visto_em", "rodada", "cnpj_a_conferir", "manual", "sinal")
+           "valor_causa", "fonte", "link", "visto_em", "rodada", "cnpj_a_conferir", "manual", "sinal",
+           "manual_historico", "fonte_leitura", "caderno_pendente")  # 0.7.48 (revisão): o histórico do que foi digitado não sai no resumo
 _RESUMO_RECEITA = ("cnpj", "razao_social", "nome_fantasia", "porte", "capital_social", "cnae", "atividade", "municipio",
                    "uf", "telefone", "telefone2", "email", "logradouro", "numero", "complemento", "bairro", "cep",
                    "situacao", "inicio_atividade", "simples", "socios", "consultado_em")
@@ -525,15 +526,23 @@ class Banco:
         """Os processos que alguém trabalhou e que a limpeza nunca apaga: situação diferente de Novo e de Visto (Visto o programa
         marca sozinho ao abrir a ficha), contato guardado, motivo/anotação, dado digitado na ficha ou pedido/resposta da área logada."""
         t = {r[0] for r in self.con.execute("SELECT processo FROM leads WHERE lower(coalesce(status, 'novo')) NOT IN ('novo', 'visto') "
-                                            "OR coalesce(motivo, '') <> '' OR dados LIKE '%\"manual_historico\"%' ESCAPE '\\'"
-                                            " OR dados LIKE '%\"manual\": true%'")}
+                                            "OR coalesce(motivo, '') <> ''")}
+        # revisão da Operação (bloqueio): dado digitado fica em dados["manual"] = {campo: {valor, fonte, data}}; o JSON é lido de verdade
+        for proc, dados in self.con.execute("SELECT processo, dados FROM leads WHERE dados LIKE '%\"manual%'"):
+            try:
+                d = json.loads(dados or "{}")
+            except ValueError:
+                t.add(proc)  # ilegível: na dúvida, não apaga
+                continue
+            if d.get("manual") or d.get("manual_historico"):
+                t.add(proc)
         t |= {r[0] for r in self.con.execute("SELECT DISTINCT processo FROM contatos")}
         t |= {r[0] for r in self.con.execute("SELECT DISTINCT processo FROM area_logada")}
         return t if processos is None else t & set(processos)
 
     def limpeza_automatica(self, resumir_meses=6, apagar_meses=24, hoje=None, caminho=None):
         """Resume (tira o texto do Diário) os processos com mais de `resumir_meses`; apaga a linha dos não trabalhados com mais de
-        `apagar_meses` (0 = nunca apaga), junto com o que só existe por causa deles (área logada, publicações do monitor); guarda o
+        `apagar_meses` (0 = nunca apaga), junto com as publicações do monitor daquele processo (área logada e contato fazem dele trabalhado); guarda o
         número na memória `processos_apagados` (12 meses) para não voltar como novo. As estatísticas diárias nunca são tocadas
         (são atualizadas antes). Devolve {resumidos, apagados, mantidos, bytes_antes, bytes_depois}."""
         hoje = hoje or dt.date.today()
@@ -546,7 +555,7 @@ class Banco:
         apagados, mantidos = 0, 0
         if apagar_meses:
             limite = (hoje - dt.timedelta(days=round(apagar_meses * 30.44))).isoformat()
-            velhos = [(r[0], r[1]) for r in self.con.execute("SELECT processo, coalesce(data, '') FROM leads WHERE primeira_vez < ?", (limite,))]
+            velhos = [(r[0], r[1]) for r in self.con.execute("SELECT processo, coalesce(data, '') FROM leads WHERE primeira_vez < ? AND coalesce(primeira_vez, '') <> ''", (limite,))]
             trab = self.trabalhados([p for p, _ in velhos])
             mantidos = len(trab)
             for proc, data in velhos:

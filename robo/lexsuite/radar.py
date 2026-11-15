@@ -395,7 +395,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
                     aviso(f"  Receita: {feitas} de {com_cnpj}")
             banco.guardar_lead(n, agora.date().isoformat())
         novos = novos_feitos
-        info_consulta = registrar_consulta(banco, consulta, novos, agora, origem)
+        info_consulta = registrar_consulta(banco, consulta, novos, agora, origem) if not interrompida else {}
         if not interrompida:  # Diário interrompido não fica marcado como lido: a próxima leitura baixa de novo os Diários desta leitura
             monitor.guardar([], banco, lidos)
         detalhes = {}
@@ -507,6 +507,8 @@ def registrar_consulta(banco, consulta, novos, agora, origem):
         return saida
     quando = agora.astimezone().isoformat(timespec="seconds")
     lidos_c = consulta.get("lidos") or []
+    for x in lidos_c:  # os processos já estão gravados: só agora o dia conta como lido pela consulta (uma vez por dia pendente)
+        banco.registrar_consulta_dia(x["tribunal"], x["data"], x["publicacoes"], x["pedidos"], x["parcial"], x["processos"])
     if lidos_c:
         procs = set().union(*[x["processos"] for x in lidos_c])
         n_novos = sum(1 for n in novos if n.get("processo") in procs)

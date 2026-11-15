@@ -43,8 +43,8 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
   curto do texto; depois de 6 meses (0.7.48, `radar.resumir_meses`; antes 12, `radar.guardar_dias`, que continua como teto) o trecho do Diário é apagado e fica um resumo (número do
   processo, tribunal, vara, classe, data, link, valor, empresas, CNPJ e, da Receita, porte, atividade, cidade, endereço,
   telefone, e-mail e nomes de sócios, sem o autor da ação), e os totais diários (estatísticas) ficam para sempre. Desde a 0.7.48,
-  depois de 24 meses (`radar.apagar_meses`, 0 = nunca) os processos que ninguém trabalhou são apagados do banco, com a área logada
-  deles; só o número fica 12 meses em `processos_apagados`, para não voltar como novo. A leitura pela consulta pública (quando
+  depois de 24 meses (`radar.apagar_meses`, 0 = nunca) os processos que ninguém trabalhou são apagados do banco (processo com contato, dado digitado ou área logada nunca sai);
+  só o número fica 12 meses em `processos_apagados`, para não voltar como novo. A leitura pela consulta pública (quando
   o caderno cai) pede ao CNJ só tribunal, dia e, se preciso, a vara; nada do escritório vai junto. Contatos de sócios só com fonte e data
   (decisão do dono); CPF e dado de reclamante são recusados na colagem. Revisão completa em
   `SEGURANCA-REVISAO-2026-11-07.md`.
