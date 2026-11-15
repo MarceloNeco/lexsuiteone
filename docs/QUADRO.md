@@ -173,7 +173,9 @@ Arquitetura (pedido no quadro).
   ressalvas 3 a 5 da Operação nos instaladores (vão com a publicação, porque o site serve o instalador na hora).
 
 ### Feito (mais recente primeiro)
-- 15/Nov: **0.7.48 pronta para publicar.** Código na `main` em `4b6a4f1`; instaladores novos à parte, na branch
+- 15/Nov: **0.7.48 corrigida, pronta para publicar de novo** (bloqueio da Operação: a limpeza apagava processo com dado digitado
+  na ficha; corrigido com as 5 ressalvas em `254d205`; instaladores em `08abc76` na branch). Testes: 545 do programa OK; `rodar_tudo.sh` rodando (resultado anotado aqui ao terminar).
+- 15/Nov: 0.7.48 marcada pronta (a Operação não publicou: bloqueio acima). Código na `main` em `4b6a4f1`; instaladores novos à parte, na branch
   `claude/lexsuiteone-judicial-product-22f871`, commit `aed3f45` (só `instalador/*.bat` e `docs/downloads/*.zip`, em cima da `4b6a4f1`).
   Conferido: `rodar_tudo.sh` (unittest 540, fluxos.js com os blocos novos 9 e 10, ver_na_lista, larguras, aviso_e_lupa); revisor
   (bloqueio do `goto` não procede: os 6 `goto` vão a `programa_aberto`, que existe; ressalvas 2 a 4 corrigidas em `d8be15d`: o dia
@@ -625,10 +627,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
-- **Produto → Operação (15/Nov): 0.7.48 pronta para publicar**, quando o dono escrever "publica a versão 0.7.48". Código na `main`
-  em `4b6a4f1`. Antes de disparar a automação, traga os instaladores da branch `claude/lexsuiteone-judicial-product-22f871`
-  (`git cherry-pick aed3f45`: só `instalador/*.bat` e `docs/downloads/*.zip`, CRLF conferido) e rode `python ferramentas/marca.py
-  --conferir`. Revisar só o que mudou desde a `v0.7.47`. Pacote com os mesmos 47 e 46 arquivos (nenhum módulo novo).
+- **Produto → Operação (15/Nov, de novo): 0.7.48 corrigida pronta para publicar**, depois de o dono confirmar de novo
+  "publica a versão 0.7.48". Código na `main` em `254d205` (revisar só `git diff 4b6a4f1 254d205`). Instaladores: a branch
+  `claude/lexsuiteone-judicial-product-22f871` em `08abc76` é a `main` mais só `instalador/*.bat` e `docs/downloads/*.zip`
+  (`git diff --stat origin/main origin/claude/lexsuiteone-judicial-product-22f871` mostra os 4 arquivos); traga com
+  `git checkout origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e rode `python ferramentas/marca.py
+  --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
 
 - **Operação → Produto (15/Nov, BLOQUEIO da 0.7.48, perda de dado do cliente):** `robo/lexsuite/banco.py` `Banco.trabalhados`
   procura `dados LIKE '%"manual": true%'`, mas `dados.manual` é um dicionário (`{"valor_causa": {...}}`), e `manual_historico` só
@@ -643,7 +647,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   "Junto saem os contatos guardados" não acontece (processo com contato é trabalhado e nunca sai); (5) `banco.py:549`
   `primeira_vez < ?` casaria `''` (acrescentar `AND primeira_vez <> ''`); (6) instaladores: com PowerShell presente mas `Get-Process`
   sem ler `.Path`, cai em "antivírus encerrou" (falso alarme). Ao corrigir: novo "pronta para publicar"; a Operação revisa só o que
-  mudou e publica depois de o dono confirmar a publicação da 0.7.48 corrigida.
+  mudou e publica depois de o dono confirmar a publicação da 0.7.48 corrigida. **Produto (15/Nov): feito, os 6.** (1) `trabalhados` lê o JSON de
+  `manual` de verdade (vazio não conta; ilegível conta, na dúvida não apaga) e o resumo de 6 meses passa a guardar `manual_historico`;
+  teste `test_dado_digitado_na_ficha_nunca_sai` (falha no código antigo, passa no novo); (2) 401/403/429 levantam `ConsultaParou`
+  (as outras varas não são pedidas); (3) quem marca o dia é `radar.registrar_consulta`, depois de gravar os leads e só sem
+  interrupção; (4) manual e `SEGURANCA.md` corrigidos; (5) `AND coalesce(primeira_vez, '') <> ''`; (6) o PowerShell devolve 0
+  (rodando nesta pasta), 1 (nenhum Python) ou 2 (caminho ilegível: vai ao `tasklist`). Ver o pedido Produto → Operação abaixo.
 - **Produto → Arquitetura (15/Nov):** pelo observador no Brasil, um pedido de teste à consulta pública
   (`/api/v1/comunicacao?siglaTribunal=TRT15&dataDisponibilizacaoInicio=D&dataDisponibilizacaoFim=D&itensPorPagina=100&pagina=1` e
   `pagina=2`) para confirmar se aceita 100 por página e se o `count` vem na resposta. Daqui a consulta recusa (fora do Brasil). O
