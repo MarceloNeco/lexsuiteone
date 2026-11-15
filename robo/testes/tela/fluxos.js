@@ -401,9 +401,9 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     const bs = await p.evaluate(() => document.getElementById('b-salvos').textContent);
     confere(/Filtros salvos \(3\)/.test(bs), 'Filtros salvos: três de fábrica (' + bs.trim() + ')');
     await p.click('#b-salvos'); await espera(300);
-    const sv = await p.evaluate(() => { const pn = document.querySelector('.salvos-painel'), r = pn.getBoundingClientRect(), bt = document.getElementById('b-salvos').getBoundingClientRect(); return { t: pn.innerText, cortado: [...pn.querySelectorAll('.salvo-item b')].some(x => x.scrollWidth > x.clientWidth + 1), dentro: r.left >= 0 && r.right <= innerWidth, esq: r.right <= bt.right + 2 }; });
+    const sv = await p.evaluate(() => { const pn = document.querySelector('.salvos-painel'), r = pn.getBoundingClientRect(), bt = document.getElementById('b-salvos').getBoundingClientRect(); return { t: pn.innerText, cortado: [...pn.querySelectorAll('.salvo-item b')].some(x => x.scrollWidth > x.clientWidth + 1), dentro: r.left >= 0 && r.right <= innerWidth, esq: Math.abs(r.right - bt.right) <= 2 || r.left <= 9, nums: [Math.round(r.left), Math.round(r.right), Math.round(bt.left), Math.round(bt.right)] }; });
     confere(/Para contatar \(7 dias\)[\s\S]*Com telefone ou e-mail/.test(sv.t) && /Buscar contato na área logada \(7 dias\)/.test(sv.t) && /Empresas da semana \(visão completa\)/.test(sv.t), 'Filtros salvos: nome em negrito e descrição embaixo');
-    confere(!sv.cortado && sv.dentro && sv.esq, 'Filtros salvos: a lista abre para a esquerda, dentro da tela, sem cortar o nome');
+    confere(!sv.cortado && sv.dentro && sv.esq, 'Filtros salvos: a lista abre para a esquerda (ou encosta na borda quando não cabe), dentro da tela, sem cortar o nome (' + JSON.stringify(sv.nums) + ', cortado=' + sv.cortado + ')');
     await p.evaluate(() => [...document.querySelectorAll('.salvo-item')].find(x => /Para contatar/.test(x.textContent)).click()); await espera(2500);
     const ap = await p.evaluate(() => ({ per: document.getElementById('periodo').value, cont: document.getElementById('f-contato').value }));
     confere(ap.per === '7' && ap.cont === 'com', 'Filtros salvos: "Para contatar" aplica 7 dias e "Só com contato" (' + JSON.stringify(ap) + ')');

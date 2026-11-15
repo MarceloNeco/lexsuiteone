@@ -28,7 +28,7 @@ const externos = [];
       };
       const abrir = async (p) => {
         await p.click('#b-menu'); await p.waitForTimeout(500);
-        await p.locator('.gv-item', { hasText: idioma === 'pt' ? 'Abrir a planilha' : 'Open the spreadsheet' }).first().click(); await p.waitForTimeout(700);
+        await p.locator('.gv-item', { hasText: idioma === 'pt' ? 'Abrir a planilha oficial' : 'Open the official spreadsheet' }).first().click(); await p.waitForTimeout(700);
         if (await p.locator('#janela[open]').count()) { await p.locator('#janela[open] button', { hasText: idioma === 'pt' ? 'Entendi, abrir' : 'Got it, open' }).click(); await p.waitForTimeout(900); }
       };
       const lerMsg = (p) => p.evaluate(() => { const es = [...document.querySelectorAll('#estado span.erro, #estado span.ok')]; const e = es[0]; if (!e) return null; const r = e.getBoundingClientRect();
