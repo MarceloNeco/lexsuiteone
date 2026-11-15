@@ -1207,7 +1207,8 @@ class Tratador(BaseHTTPRequestHandler):
         if caminho == "/empresas/processos":  # 0.7.49 (dono): agrupar por empresa traz também os processos anteriores de cada empresa
             banco = bd.Banco(s.caminho_db)
             try:
-                chaves = [c for c in (corpo.get("empresas") or [])[:40] if isinstance(c, dict)]
+                emp_ = corpo.get("empresas") if isinstance(corpo.get("empresas"), list) else []
+                chaves = [c for c in emp_[:40] if isinstance(c, dict)]
                 return self._responder({"ok": True, "empresas": radar.processos_das_empresas(s.config(), banco, chaves, str(corpo.get("alcance") or "hibrido"))})
             finally:
                 banco.con.close()

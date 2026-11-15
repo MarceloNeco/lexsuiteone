@@ -22,15 +22,18 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
-- Instaladores com o ajuste do PowerShell (erro inesperado não vira mais "antivírus encerrou"): prontos na branch; vão ao site
-  pela Operação com o "pode" do dono (não precisam de versão nova do programa). Conferir na prática o limite de 100 por página
-  da consulta pública.
+- **0.7.49 pronta para publicar** (15/Nov, decisões 43 a 48; a Operação publica quando o dono escrever "publica a versão 0.7.49"):
+  Modo no alto (planilha oficial no menu ☰), 3 filtros salvos de fábrica com descrição e período, Tribunal na 1ª linha, listas
+  largas que acompanham a rolagem, (?) azul e animado, Agrupar por empresa (até 50 dos últimos 6 meses). Testes do dono: seção 7.
+- Instaladores com o ajuste do PowerShell: prontos na branch; esperam o "pode" do dono na Operação.
+- Modo tributário de verdade (TRF3 e TJSP): planejado, sem data.
 - **Sem data**: varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor:
   `PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md`. Depende do teste de 5 min no PJe (consulta de terceiros).
 - Depois da KR Law: staging e CI/CD (`DESENHO-STAGING-RADAR-2026-11-12.md`). Central LexSuiteONE: espera o repositório próprio.
 
 ## 4. O que só o dono pode fazer (lista única)
 1. Testar a 0.7.48 no Windows (seção 6, ~15 min) e o que faltou da 0.7.47 (seção 5); o que falhar vira feedback na Produto.
+2. Quando quiser, na Operação: "publica a versão 0.7.49" e "pode publicar os instaladores corrigidos da 0.7.48".
 3. Quando quiser: teste de 5 min no PJe com advogado logado (`visita-kr-law/PROMPT-TESTE-GAP-PJE-2026-11-15.md`).
 4. Supabase (Central): TOTP, desligar signups, usuários da equipe; repositório `central-lexsuiteone`.
 5. RootifyONE: "aplicado" (recursos por licença) e os prompts pendentes de lá.
@@ -56,3 +59,11 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 5. Configurações → Leitura do Diário: "Ler pela consulta pública quando o caderno do CNJ cair" vem ligada; o aviso por e-mail do
    CNJ mostra o seu e-mail. (A leitura pela consulta só aparece de verdade num dia em que o caderno do CNJ cair.)
 6. Ajuda → Novidades da versão: a lista da 0.7.48.
+
+## 7. Testes da 0.7.49 (depois de publicada, num Windows, ~10 min)
+1. No alto, "Modo: Trabalhista": abre a lista com as outras especialidades apagadas; clique numa delas e leia o aviso.
+2. Menu ☰ → Planilha → "Abrir a planilha oficial (só leitura)" abre a planilha.
+3. Lista → "Filtros salvos (3)": os três prontos, com descrição; escolha "Para contatar (7 dias)" e veja o período mudar para 7 dias.
+4. O Tribunal aparece na primeira linha; abra "Mais filtros" → Varas: nomes inteiros, com o número antes; role a tela com a lista aberta.
+5. Ao lado de "Ordenar por": "Agrupar por empresa"; confira os blocos ("N no período · X de Y da empresa") e o (?) de Ordenar.
+6. Clique num (?) qualquer: azul parado, o balão cresce ao abrir.

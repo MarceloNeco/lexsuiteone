@@ -70,7 +70,7 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
   listas de filtro com a largura do nome mais comprido e que acompanham o botão ao rolar; Varas com "Nº" antes do nome; (?) na cor de
   link, que volta ao cinza aberto, com balão que cresce; **Agrupar por empresa** (bloco por empresa, empresas pela data mais recente,
   processos anteriores da empresa mesmo fora do período, alcance padrão "até 50 dos últimos 6 meses", `radar.processos_das_empresas`
-  e rota `/empresas/processos`, mesma empresa pela raiz do CNPJ ou pelo nome); Wizard explica filtros e limpeza.
+  e rota `/empresas/processos`, mesma empresa pela raiz do CNPJ; a chave é o CNPJ (dono): homônimo de outro CNPJ fora, processo sem CNPJ com o mesmo nome marcado "confira" e fora do total; sem CNPJ nenhum, pelo nome); Wizard explica filtros e limpeza.
 - **0.7.48 (15/Nov, protótipo aprovado pelo dono):** (1) **leitura pela consulta pública** quando o caderno do CNJ cai (desenho 1.3,
   decisão 37): só nos dias com 5xx, com a sonda da consulta respondendo e o observador da SolverONE sem a consulta fora;
   `djen.consulta_dia` (itensPorPagina 100, passa a 50 se recusado; 1 pedido/s; 15 s; 1 nova tentativa em tempo esgotado e 5xx;

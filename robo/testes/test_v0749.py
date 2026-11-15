@@ -41,6 +41,7 @@ class ChaveEmpresa(unittest.TestCase):
 
     def test_a_tela_usa_a_mesma_regra(self):
         self.assertIn('function chaveEmpresaTela(i)', HTML)
+        self.assertIn("nomeParaCnpj_[k]", HTML)  # na tela, o processo sem CNPJ entra no bloco da mesma empresa com CNPJ
         self.assertIn('(ltda|s ?a|eireli|me|epp|limitada|sociedade anonima)', HTML)
 
 
@@ -72,6 +73,16 @@ class ProcessosDasEmpresas(unittest.TestCase):
         self.assertEqual(len(self.pedir("6m", quem)["c:11222333"]["itens"]), 60)
         self.assertEqual(len(self.pedir("12m", quem)["c:11222333"]["itens"]), 65)
         self.assertEqual(len(self.pedir("30d", quem)["c:11222333"]["itens"]), 15)
+
+    def test_mesma_empresa_com_e_sem_cnpj_num_bloco_so(self):
+        lead(self.b, "0005000-11.2026.5.02.0001", (HOJE - dt.timedelta(days=5)).isoformat(), "Açúcar Fictício S/A", "55444333000122")
+        lead(self.b, "0005001-11.2026.5.02.0001", (HOJE - dt.timedelta(days=9)).isoformat(), "AÇÚCAR FICTÍCIO SA")
+        lead(self.b, "0005002-11.2026.5.02.0001", (HOJE - dt.timedelta(days=9)).isoformat(), "Açúcar Fictício S.A.", "77666555000199")  # homônimo, outro CNPJ
+        r = self.pedir("todos", [{"chave": "c:55444333", "cnpj": "55444333000122", "nome": "Açúcar Fictício S/A"}])["c:55444333"]
+        self.assertEqual(sorted(i["processo"] for i in r["itens"]), ["0005000-11.2026.5.02.0001", "0005001-11.2026.5.02.0001"])
+        self.assertEqual((r["total"], r["sem_cnpj"]), (1, 1))  # a chave é o CNPJ: o sem CNPJ vem marcado e fora do total
+        self.assertTrue(next(i for i in r["itens"] if i["processo"] == "0005001-11.2026.5.02.0001").get("so_nome"))
+        self.assertFalse(next(i for i in r["itens"] if i["processo"] == "0005000-11.2026.5.02.0001").get("so_nome"))
 
     def test_sem_cnpj_pelo_nome_com_e_sem_acento(self):
         r = self.pedir("todos", [{"nome": "Outra Ficticia S/A"}])["n:outra ficticia"]
@@ -109,7 +120,7 @@ class Tela(unittest.TestCase):
         self.assertIn('"0.7.49": {', HTML)
 
     def test_chaves_em_pt_e_en(self):
-        for k in ("modo_rot", "modo_sem_licenca", "modo_fale", "modo_tributario", "modo_penal", "salvos_n", "salvos_organizar", "salvar_desc_q",
+        for k in ("agr_so_nome", "agr_n_so_nome", "modo_rot", "modo_sem_licenca", "modo_fale", "modo_tributario", "modo_penal", "salvos_n", "salvos_organizar", "salvar_desc_q",
                   "fab1_n", "fab1_d", "fab2_n", "fab2_d", "fab3_n", "fab3_d", "agr_nada", "agr_empresa", "agr_desliga", "alc_hibrido", "alc_todos",
                   "agr_mostrando", "agr_anterior", "agr_fora", "agr_mostrando_emp", "ord_ajuda", "m_cab_n", "m_cab_vara", "w4_pronto"):
             self.assertEqual(len(re.findall(r"\b" + k + r': "', HTML)), 2, k)
