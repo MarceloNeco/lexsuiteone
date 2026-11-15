@@ -518,26 +518,34 @@ def chave_empresa(cnpj="", nome=""):
 
 def processos_das_empresas(cfg, banco, empresas, alcance="hibrido", hoje=None):
     """0.7.49: para cada empresa pedida ({chave, cnpj, nome}), os processos dela que o programa tem (Lista e Arquivo), do mais
-    novo para o mais antigo, dentro do alcance (hibrido = até 50 dos últimos 6 meses). Devolve {chave: {total, itens}}.
+    novo para o mais antigo, dentro do alcance (hibrido = até 50 dos últimos 6 meses). Devolve {chave: {total, sem_cnpj, itens}}.
+    A chave é o CNPJ (dono, 15/Nov): homônimo com outro CNPJ nunca entra; processo sem CNPJ com o mesmo nome entra marcado
+    `so_nome` ("confira") e fica fora do total da empresa.
     Uma passada só pelo banco para todas as empresas pedidas (com 60 mil processos, menos de 1 s para 10 empresas)."""
     dias, teto = ALCANCES.get(alcance, ALCANCES["hibrido"])
     hoje = hoje or dt.date.today()
     corte = (hoje - dt.timedelta(days=dias)).isoformat() if dias else ""
-    chaves, pistas = [], []
+    chaves, pistas, aceitos = [], [], {}
+
+    def pista_nome(chave_n):
+        palavras = [w for w in chave_n[2:].split() if len(w) >= 3]
+        p_ = max(palavras, key=len) if palavras else chave_n[2:]
+        return re.sub(r"[aeiouc]", "_", p_)  # vogal (e ç) vale qualquer letra: "ficticia" acha "Fictícia"; quem decide é a conferência abaixo
     for e in empresas:
         chave = str(e.get("chave") or "") or chave_empresa(e.get("cnpj"), e.get("nome"))
         if not chave or chave in chaves:
             continue
         chaves.append(chave)
-        if chave.startswith("c:"):
-            pistas.append(chave[2:])
-        else:
-            palavras = [w for w in chave[2:].split() if len(w) >= 3]
-            pista = max(palavras, key=len) if palavras else chave[2:]
-            pistas.append(re.sub(r"[aeiouc]", "_", pista))  # vogal (e ç) vale qualquer letra: "ficticia" acha "Fictícia"; quem decide é a conferência abaixo
+        ok = {chave}
+        pistas.append(chave[2:] if chave.startswith("c:") else pista_nome(chave))
+        n_ = chave_empresa("", e.get("nome")) if e.get("nome") else ""
+        if chave.startswith("c:") and n_:  # revisão: a mesma empresa com e sem CNPJ vira um bloco só (o nome junta os sem CNPJ)
+            ok.add(n_)
+            pistas.append(pista_nome(n_))
+        aceitos[chave] = ok
     if not chaves:
         return {}
-    pedidas, achados = set(chaves), {c: [] for c in chaves}
+    achados = {c: [] for c in chaves}
     onde = " OR ".join(["dados LIKE ?"] * len(pistas))
     for proc, data, dados in banco.con.execute(f"SELECT processo, coalesce(data, primeira_vez, ''), dados FROM leads WHERE {onde}",  # nosec B608 - só marcadores
                                                ["%" + p + "%" for p in pistas]):
@@ -546,20 +554,29 @@ def processos_das_empresas(cfg, banco, empresas, alcance="hibrido", hoje=None):
         except ValueError:
             continue
         emp = d.get("empresa_receita") or {}
-        da_linha = {chave_empresa(emp.get("cnpj"), "")} | {chave_empresa("", n) for n in ([emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]) if n}
-        da_linha |= {chave_empresa(c, "") for c in (d.get("cnpjs") or [])[:1]}
-        for c in da_linha & pedidas:
-            achados[c].append((str(data or "")[:10], proc))
+        cnpj_ = chave_empresa(emp.get("cnpj"), "") or next((chave_empresa(c, "") for c in (d.get("cnpjs") or [])[:1]), "")
+        nomes_ = {chave_empresa("", n) for n in ([emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]) if n}
+        da_linha = ({cnpj_} if cnpj_ else set()) | nomes_
+        for c in chaves:
+            if not (da_linha & aceitos[c]):
+                continue
+            if cnpj_ and c.startswith("c:") and cnpj_ != c:
+                continue  # homônimo com outro CNPJ: é outra empresa (dono, 15/Nov: "a chave é o CNPJ")
+            achados[c].append((str(data or "")[:10], proc, bool(c.startswith("c:") and not cnpj_)))
     saida = {}
     for chave in chaves:
         lista = sorted(achados[chave], reverse=True)
-        total = len(lista)
+        total = sum(1 for x in lista if not x[2])  # o total da empresa conta só o que tem o CNPJ dela
+        so_nome = {x[1] for x in lista if x[2]}
         if corte:
             lista = [x for x in lista if x[0] >= corte]
         if teto:
             lista = lista[:teto]
-        itens = itens_de(cfg, banco, [p for _, p in lista])
-        saida[chave] = {"total": total, "itens": [itens[p] for _, p in lista if p in itens]}
+        itens = itens_de(cfg, banco, [x[1] for x in lista])
+        for p in so_nome:
+            if p in itens:
+                itens[p]["so_nome"] = True  # sem CNPJ no Diário, mesmo nome: a tela mostra "confira"
+        saida[chave] = {"total": total, "sem_cnpj": len(so_nome), "itens": [itens[x[1]] for x in lista if x[1] in itens]}
     return saida
 
 
