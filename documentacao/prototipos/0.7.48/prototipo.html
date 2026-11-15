@@ -154,9 +154,12 @@ th,td{padding:8px 10px;border-bottom:1px solid var(--fio);text-align:left;font-s
   function confere(){ var ok = Number(a.value)===0 || Number(a.value)>=Number(r.value); regra.textContent = Number(a.value)===0 ? "0 = nunca apagar" : ok ? "" : "Apagar precisa ser maior ou igual a Resumir."; regra.style.color = ok ? "" : "var(--erro)"; salvar.disabled=!ok; }
   r.addEventListener("input",confere); a.addEventListener("input",confere); confere();
   salvar.addEventListener("click", function(){ document.getElementById("msg1").textContent="Prazos salvos. Valem na próxima leitura."; });
+  var confirmar=false;
   document.getElementById("limpar").addEventListener("click", function(){
-    if(!confirm("Resumir os processos com mais de "+r.value+" meses e apagar os não trabalhados com mais de "+(Number(a.value)||"∞")+" meses agora? As estatísticas não mudam.")) return;
-    var p=document.getElementById("prog1"), m=document.getElementById("msg1"); p.style.display="block"; p.firstElementChild.style.width="0"; m.textContent="Limpando o banco… a tela continua livre.";
+    var m=document.getElementById("msg1");
+    if(!confirmar){ confirmar=true; this.textContent="Confirmar limpeza"; m.textContent="Vai resumir os processos com mais de "+r.value+" meses e apagar os não trabalhados com mais de "+(Number(a.value)||"∞")+" meses. As estatísticas não mudam. Clique de novo para confirmar."; return; }
+    confirmar=false; this.textContent="Limpar agora";
+    var p=document.getElementById("prog1"); p.style.display="block"; p.firstElementChild.style.width="0"; m.textContent="Limpando o banco… a tela continua livre.";
     setTimeout(function(){p.firstElementChild.style.width="60%";},300); setTimeout(function(){p.firstElementChild.style.width="100%"; m.textContent="Limpeza feita: 12 resumidos, 0 apagados, 312 → 311 MB. Registrada no Histórico de leituras.";},1500);
   });
   // 2. cidades

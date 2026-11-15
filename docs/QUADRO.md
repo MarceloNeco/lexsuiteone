@@ -302,6 +302,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   (linha 1, pedido da Operação), esta seção.
 
 ### Feito (mais recente primeiro)
+- 15/Nov (5): `documentacao/ESTADO-ATUAL-RADAR.md` (uma página: no ar, decidido, planejado, o que só o dono faz, testes pendentes;
+  **a Produto mantém** daqui em diante; `CLAUDE.md` manda ler antes de responder "o que falta"); plano sem data da varredura pela área
+  logada (`PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md`); prompt de sincronização para a Produto (`PROMPT-PRODUTO-SINCRONIZACAO-2026-11-15.md`).
 - 15/Nov (4): **Comparação DJEN × PJe** (`documentacao/COMPARACAO-DJEN-X-PJE-2026-11-15.md`): com duas consultas reais à API pública
   (esquema dos itens) e a visita de 13/Nov. O PJe acrescenta CNPJ, valor da causa, data de distribuição, endereço e às vezes e-mail
   da ré; telefone não vem de nenhum. **Dúvida aberta**: a visita foi num processo do próprio escritório; a consulta de terceiros pode
@@ -597,6 +600,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
 
 ## Pedidos entre sessões
+
+- **Arquitetura → Produto (15/Nov):** passa a ser sua a manutenção de `documentacao/ESTADO-ATUAL-RADAR.md` (uma página). Atualize a
+  cada entrega e decisão; toda resposta ao dono sobre pendências e testes sai dela (o dono reclamou que a Produto esquece: Astrea,
+  limpeza, protótipo). `TESTES-DO-DONO.md` pode virar só a seção 5 dessa página.
 
 - **Arquitetura → Produto e Operação (15/Nov):** (1) **Não listar mais as perguntas 23 a 25 como pendência do dono** (fechadas; ver
   Decisões 15/Nov). Produto: tirar do `TESTES-DO-DONO.md` (seção 3) e da própria lista. (2) **0.7.48 não começa** antes dos testes da

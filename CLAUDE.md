@@ -3,7 +3,9 @@
 Leia antes de qualquer alteração: `robo/ARQUITETURA.md` (como o robô é feito), `robo/PENDENCIAS.md` (decisões do dono e o
 que falta), `docs/DNS-SOLVERONE.md` (domínio, e-mail, site), `docs/PUBLICAR.md` (como sai uma versão), `docs/email/LEIA-ME.md`
 e `docs/VISITA-KR-LAW.md` (visita de quinta e prompts do Claude in Chrome). Para retomar o projeto numa sessão
-nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUADRO.md`.
+nova, leia `docs/NOVA-SESSAO.md` primeiro. Antes de cada tarefa, leia `docs/QUADRO.md`. Antes de responder ao dono "o que
+falta" ou "o que eu tenho que testar", leia `documentacao/ESTADO-ATUAL-RADAR.md` (uma página, mantida pela Produto) e responda
+a partir dela.
 
 ## Quem é quem
 
