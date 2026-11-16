@@ -1,4 +1,4 @@
-# Feedback do dono na 0.7.49 publicada (16/Nov/2026, 2 prints): notebook, filtros e agrupamento por empresa
+# Feedback do dono na 0.7.49 publicada (16/Nov/2026, em andamento: o dono ainda está testando; só coletar, nada de código): notebook, filtros e agrupamento por empresa
 
 Contexto: o Leandro (KR Law) trabalha quase sempre no **notebook**; o layout tem de funcionar bem ali (tela de 1280 a 1440 px de
 largura, muitas vezes com zoom de 125% no Windows, ou seja, ~1100 a 1200 px úteis). Nada implementado. Causa conferida no código
@@ -21,6 +21,8 @@ CNPJ pelo nome) está com o subagente pesquisador e entra aqui quando voltar.
 | 12 | **Replicar o contato** de um processo para os outros da mesma empresa (mesmo CNPJ), com critério: abertos nos últimos X dias/semanas/meses | Contato é por processo (cadastro da Receita é por CNPJ; o da área logada é por processo) | Ação no cabeçalho da empresa e na barra de seleção: "Copiar contato para os outros processos desta empresa" → escolher a origem (o contato mais recente), o critério (últimos 30, 90, 180 dias ou 12 meses) e confirmar; o copiado fica marcado "copiado de 0001234-…, em 16/NOV" (fonte "copiado", mais fraca que PJe e petição; nunca troca um contato que já existe; desfazer). Regras finais depois da pesquisa (item 3 dela) |
 | 13 | (Operação, 15/Nov) o Modo diz "Não incluído na sua licença" sem consultar a licença; para a KR Law (trabalhista e tributário) é falso | Texto fixo da tela | Ler da licença (frentes contratadas) quando a `lex-conta` disser; até lá, texto verdadeiro: "Ainda não disponível no programa" — pergunta ao dono |
 | 14 | (Operação, 15/Nov) folha da 0.7.48 não cita os instaladores corrigidos (`ba38b72`) | Folha preenchida antes | Acrescentar a linha na folha da 0.7.48 |
+| 15 | **Tour guiado: dá para rolar a tela durante o tour**, e o destaque sai de cima do que está sendo explicado (prints: passo 10 de 13, "Pedido à área logada", com a faixa fixa embaixo; ao rolar, o fundo escurecido e o recorte ficam no lugar e a faixa se move) | O destaque e o balão são posicionados uma vez, em relação à tela; a página continua rolando por baixo | Durante o tour, travar a rolagem da página (cada passo rola sozinho até o alvo e trava); se a janela mudar de tamanho, reposicionar. Ao sair do tour, a rolagem volta. Vale para o AssistONE de todos os apps (módulo comum): pedido também à Arquitetura/RootifyONE |
+| 16 | (observação nos prints, sem pedido) No Painel, "Estado da empresa: Sem estado (sem CNPJ) 5.185 · 99%" (TRT9) | O estado vem do cadastro da Receita, que só existe com CNPJ; no TRT9 quase nenhum processo trouxe CNPJ no Diário | Reforça os itens 10 e 12 (CNPJ provável pelo nome dentro do programa); conferir se o TRT9 publica o CNPJ em outro campo da comunicação |
 
 ## Perguntas ao dono (vão ao quadro)
 - Item 11: esconder empresas públicas e órgãos por padrão, ou só oferecer "Excluir esta empresa"?
