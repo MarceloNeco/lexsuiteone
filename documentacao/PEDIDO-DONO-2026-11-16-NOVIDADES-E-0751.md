@@ -9,7 +9,8 @@ As 5 ressalvas da revisão da 0.7.50 (quadro, "Operação → Produto, 16/Nov"):
 3. Novidades: tirar "caixinha" (coloquial) e "now" (EN).
 4. Manual: "limpeza automática" → "rotina de limpeza" (`paginas/manual.html`, linha ~237).
 5. Pré-filtro do CNPJ provável que pode falhar com acento.
-Mais o que o dono achar no teste da 0.7.50 (seção 8 de `ESTADO-ATUAL-RADAR.md`), se chegar até lá.
+Mais o feedback do teste da 0.7.50: `documentacao/FEEDBACK-DONO-2026-11-16-TESTE-0750.md` (itens 1 a 9, o dono ainda testando;
+prioridade dele: velocidade da Lista e do expandir).
 
 ## 2. Janela "Novidades da versão" (decidido pelo dono; entra na 0.7.51)
 - A janela aparece **toda vez** que o programa abre, até a pessoa marcar a caixa **"Não mostrar novamente"** (por versão: versão
