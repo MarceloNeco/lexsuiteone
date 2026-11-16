@@ -352,7 +352,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     const ufs = await p.evaluate(() => [...document.querySelectorAll('#f-uf .multi-lista label')].map(l => l.textContent));
     await p.evaluate(() => { const lb = [...document.querySelectorAll('#f-uf .multi-lista label')].find(l => /^SP/.test(l.textContent)); if (lb) lb.querySelector('input').click(); }); await espera(800);
     const depoisUf = await p.evaluate(() => ({ cid: (document.querySelector('#f-cidade > button') || {}).textContent || '', aviso: (document.getElementById('aviso') || document.body).innerText }));
-    confere(/Todas as cidades/.test(depoisUf.cid) && /cidade/i.test(depoisUf.aviso), 'Cidade: trocar o estado para SP tira a cidade do RJ, com aviso (' + ufs.join(',') + ')');
+    confere(/Cidades/.test(depoisUf.cid) && /cidade/i.test(depoisUf.aviso), 'Cidade: trocar o estado para SP tira a cidade do RJ, com aviso (' + ufs.join(',') + ')');
     await p.evaluate(() => document.getElementById('b-limpar-filtros').click()); await espera(600);
     confere(await totalLista(p) === total0, 'Cidade: "Limpar filtros" volta a lista inteira');
     // Painel obedece à cidade

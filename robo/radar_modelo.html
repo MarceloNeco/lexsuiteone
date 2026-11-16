@@ -663,6 +663,16 @@ button.chip.ocupado::after { border-color: var(--tinta) transparent var(--tinta)
 .baixar-csv::before { content: "⤓ "; }
 .baixar-csv:hover, .baixar-csv:focus-visible { filter: brightness(1.08); outline: 2px solid var(--latao-texto); outline-offset: 2px; }
 @media (min-width: 601px) { .barra-lista { position: sticky; top: var(--topo-h, 0px); z-index: 30; box-shadow: 0 6px 18px -12px rgba(15, 29, 51, .35); } }
+
+/* 0.7.50 (dono, notebook): a 1ª linha dos filtros numa linha só; "Filtros salvos" vira ícone com contador quando falta espaço */
+.b-salvos { display: inline-flex; align-items: center; gap: 6px; } .b-salvos .ic-salvos { flex: none; } .b-salvos .salvos-num { display: none; }
+@media (max-width: 1500px) { .b-salvos .salvos-txt { display: none; } .b-salvos .salvos-num { display: inline; } .b-salvos .ic-salvos { margin-left: -2px; } }
+.filtros-extra .busca { flex: 1 1 240px; min-width: 120px; max-width: 340px; }
+.filtros-extra[data-nivel="1"] .busca, .filtros-extra[data-nivel="2"] .busca { flex-basis: 130px; }
+.filtros-extra .multi > button { max-width: 14rem; }
+/* 0.7.50 (dono): ao rolar, a barra fixa fica numa linha (sem o título e sem a ordenação) e volta inteira ao subir */
+.barra-lista.compacta { padding-top: 6px; padding-bottom: 6px; }
+.barra-lista.compacta > .bl-cab, .barra-lista.compacta > .ordenacao { display: none; }
 .dica-graf { position: fixed; z-index: 95; pointer-events: none; background: var(--tinta, #14213d); color: var(--papel, #fff); border-radius: 8px; padding: 8px 12px; font-size: .95rem; font-weight: 600; max-width: min(560px, 92vw); white-space: pre-line; box-shadow: 0 8px 24px rgba(0,0,0,.25); line-height: 1.35; }
 .busca::placeholder { font-style: italic; }  /* 0.7.33 (dono): dica em itálico; o que se digita fica normal */
 /* 0.7.37 (dono): no Painel, os filtros que os gráficos mudam (Situação no alto; Vara, Setor, Porte e Estado em "Mais filtros") aparecem mesmo sem estar ligados; Tribunal e Data já estão em "Estes números" */
@@ -1118,6 +1128,7 @@ window.lexSortearFundo();</script>
   <span class="interr-mes" id="interr-mes" role="none" hidden><button type="button" role="switch" id="b-ultimo-mes" aria-checked="true"><i class="interr-trilho" aria-hidden="true"><i></i></i><span id="ultimo-mes-txt"></span></button><span id="ultimo-mes-ajuda"></span></span>
 </div>
 
+<div id="barra-sentinela" aria-hidden="true"></div>
 <div class="barra-lista" id="barra-lista">
   <div class="bl-cab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg><span id="bl-filtros-t"></span></div>
   <div class="filtros-extra" id="filtros-extra">
@@ -2206,7 +2217,7 @@ window.LEXSUITE_RADAR = null;
       gig: "Jurídico próprio provável", e: "e", mais_n: "e mais {n}",
       v_arquivo: "Arquivo", v_historico: "Histórico de leituras", nao_informado: "Não informado", f_todas_sit: "Todas as situações", f_todas_frentes: "Todas as frentes",
       f_contato_todos: "Com e sem contato", f_contato_com: "Só com contato", f_contato_sem: "Só sem contato", f_valor_todos: "Qualquer valor", f_valor_acima: "Acima de {v}", f_valor_sem: "Sem valor informado", f_valor_outro: "Outro valor...",
-      busca_ph: "Procure por empresa, nº ou CNPJ", busca_tit: "Buscar por empresa, número do processo, vara, CNPJ ou cidade", salvos_ph: "Filtros salvos", salvos_n: "Filtros salvos ({n})", salvos_organizar: "Renomear, arquivar ou apagar", salvar_desc_q: "Descrição curta (opcional; aparece embaixo do nome):", fab1_n: "Para contatar (7 dias)", fab1_d: "Com telefone ou e-mail: para ligar ou escrever já. Maior valor da causa primeiro.", fab2_n: "Buscar contato na área logada (7 dias)", fab2_d: "Sem contato: marque todos e use \u201cTrazer dados da área logada\u201d. Maior valor da causa primeiro.", fab3_n: "Empresas da semana (visão completa)", fab3_d: "Um bloco por empresa que teve processo novo na semana, com os processos dela dos últimos 6 meses (até 50).", salvar_filtro: "Salvar estes filtros", salvar_filtro_q: "Nome para estes filtros (ex.: TRT15 acima de 300 mil):", limpar_filtros: "Limpar filtros ({n})",
+      fr_trib: "Tribunais", fr_sit: "Situação", fr_area: "Área logada", fr_cidade: "Cidades", fr_sinal: "Tipos de publicação", fr_frente: "Frentes", fr_data: "Datas", fr_vara: "Varas", fr_setor: "Setores", fr_porte: "Portes", fr_uf: "Estados", fs_trib: "Tribunais selecionados", fs_sit: "Situações selecionadas", fs_area: "Área logada, selecionados", fs_cidade: "Cidades selecionadas", fs_sinal: "Tipos de publicação selecionados", fs_frente: "Frentes selecionadas", fs_data: "Datas selecionadas", fs_vara: "Varas selecionadas", fs_setor: "Setores selecionados", fs_porte: "Portes selecionados", fs_uf: "Estados selecionados", busca_curta: "Procurar\u2026", limpar_curto: "Limpar ({n})", limpar_curto_0: "Limpar", mais_curto: "Mais", mais_curto_n: "Mais ({n})", busca_ph: "Procurar empresa, nº ou CNPJ", busca_tit: "Buscar por empresa, número do processo, vara, CNPJ ou cidade", salvos_ph: "Filtros salvos", salvos_n: "Filtros salvos ({n})", salvos_organizar: "Renomear, arquivar ou apagar", salvar_desc_q: "Descrição curta (opcional; aparece embaixo do nome):", fab1_n: "Para contatar (7 dias)", fab1_d: "Com telefone ou e-mail: para ligar ou escrever já. Maior valor da causa primeiro.", fab2_n: "Buscar contato na área logada (7 dias)", fab2_d: "Sem contato: marque todos e use \u201cTrazer dados da área logada\u201d. Maior valor da causa primeiro.", fab3_n: "Empresas da semana (visão completa)", fab3_d: "Um bloco por empresa que teve processo novo na semana, com os processos dela dos últimos 6 meses (até 50).", salvar_filtro: "Salvar estes filtros", salvar_filtro_q: "Nome para estes filtros (ex.: TRT15 acima de 300 mil):", limpar_filtros: "Limpar filtros ({n})",
       valor_outro_q: "Mostrar processos com valor da causa acima de (R$):",
       ord_vara: "Vara (A a Z)", ord_situacao: "Situação", ord2_nada: "Depois por: nada", ord2_valor: "Depois por: maior valor", ord2_recentes: "Depois por: mais recentes", ord2_porte: "Depois por: maior porte", ord2_empresa: "Depois por: empresa", ord2_vara: "Depois por: vara", ord2_situacao: "Depois por: situação",
       situacao: "Situação", st_novo: "Novo", st_visto: "Visto", st_em_analise: "Em análise", st_em_contato: "Em contato", st_virou_cliente: "Virou cliente", st_descartado: "Descartado", st_arquivado: "Arquivado",
@@ -2303,7 +2314,7 @@ window.LEXSUITE_RADAR = null;
       gig: "Likely in-house counsel", e: "and", mais_n: "and {n} more",
       v_arquivo: "Archive", v_historico: "Reading history", nao_informado: "Not informed", f_todas_sit: "All statuses", f_todas_frentes: "All practice areas",
       f_contato_todos: "With and without contact", f_contato_com: "With contact only", f_contato_sem: "Without contact only", f_valor_todos: "Any value", f_valor_acima: "Above {v}", f_valor_sem: "No value informed", f_valor_outro: "Other value...",
-      busca_ph: "Search by company, number or tax ID", busca_tit: "Search by company, case number, court unit, tax ID or city", salvos_ph: "Saved filters", salvos_n: "Saved filters ({n})", salvos_organizar: "Rename, archive or delete", salvar_desc_q: "Short description (optional; shown under the name):", fab1_n: "To contact (7 days)", fab1_d: "With phone or e-mail: to call or write right away. Highest claim value first.", fab2_n: "Find contact in the logged-in area (7 days)", fab2_d: "No contact: select all and use \u201cBring data from the logged-in area\u201d. Highest claim value first.", fab3_n: "Companies of the week (full view)", fab3_d: "One block per company with a new case this week, with its cases from the last 6 months (up to 50).", salvar_filtro: "Save these filters", salvar_filtro_q: "Name for these filters (e.g. TRT15 above 300k):", limpar_filtros: "Clear filters ({n})",
+      fr_trib: "Courts", fr_sit: "Status", fr_area: "Logged-in area", fr_cidade: "Cities", fr_sinal: "Notice types", fr_frente: "Practice areas", fr_data: "Dates", fr_vara: "Court units", fr_setor: "Sectors", fr_porte: "Sizes", fr_uf: "States", fs_trib: "Selected courts", fs_sit: "Selected statuses", fs_area: "Logged-in area, selected", fs_cidade: "Selected cities", fs_sinal: "Selected notice types", fs_frente: "Selected practice areas", fs_data: "Selected dates", fs_vara: "Selected court units", fs_setor: "Selected sectors", fs_porte: "Selected sizes", fs_uf: "Selected states", busca_curta: "Search\u2026", limpar_curto: "Clear ({n})", limpar_curto_0: "Clear", mais_curto: "More", mais_curto_n: "More ({n})", busca_ph: "Search company, no. or tax ID", busca_tit: "Search by company, case number, court unit, tax ID or city", salvos_ph: "Saved filters", salvos_n: "Saved filters ({n})", salvos_organizar: "Rename, archive or delete", salvar_desc_q: "Short description (optional; shown under the name):", fab1_n: "To contact (7 days)", fab1_d: "With phone or e-mail: to call or write right away. Highest claim value first.", fab2_n: "Find contact in the logged-in area (7 days)", fab2_d: "No contact: select all and use \u201cBring data from the logged-in area\u201d. Highest claim value first.", fab3_n: "Companies of the week (full view)", fab3_d: "One block per company with a new case this week, with its cases from the last 6 months (up to 50).", salvar_filtro: "Save these filters", salvar_filtro_q: "Name for these filters (e.g. TRT15 above 300k):", limpar_filtros: "Clear filters ({n})",
       valor_outro_q: "Show cases with claim value above (R$):",
       ord_vara: "Court unit (A to Z)", ord_situacao: "Status", ord2_nada: "Then by: nothing", ord2_valor: "Then by: highest value", ord2_recentes: "Then by: most recent", ord2_porte: "Then by: largest", ord2_empresa: "Then by: company", ord2_vara: "Then by: court unit", ord2_situacao: "Then by: status",
       situacao: "Status", st_novo: "New", st_visto: "Seen", st_em_analise: "Under review", st_em_contato: "In contact", st_virou_cliente: "Became a client", st_descartado: "Discarded", st_arquivado: "Archived",
@@ -3986,9 +3997,32 @@ window.LEXSUITE_RADAR = null;
     desenharChipEmpresa();  // 0.7.28 (dono): sempre ao lado dos filtros; apagado quando não há filtro
     var nf = filtrosLigados() + riscosPizza(), b = $("b-limpar-filtros"); b.hidden = false; b.disabled = !nf; marcarMaisFiltros();
     if (MODO === "app") try { if (F === FP) localStorage.setItem("lexsuite:filtro-painel", JSON.stringify({ F: Object.assign({}, F, { busca: "" }) })); else localStorage.setItem("lexsuite:filtro-atual", JSON.stringify({ F: Object.assign({}, F, { busca: "" }), ordem: ordem, ordem2: ordem2 })); } catch (e) {}  // revisão da 0.7.28: o texto da busca não fica guardado
-    b.textContent = nf ? t("limpar_filtros", { n: nf }) : t("limpar_filtros_0");
+    b.textContent = nf ? t("limpar_filtros", { n: nf }) : t("limpar_filtros_0"); ultimoNf_ = nf;
     $("r-filtrar").textContent = t("r_filtrar"); $("r-ordenar").textContent = t("r_ordenar");
+    caberLinha1(); if (!caberAgendado_) { caberAgendado_ = true; requestAnimationFrame(function () { caberAgendado_ = false; caberLinha1(); }); }
   }
+  // 0.7.50 (dono, notebook a 1280-1440 px, muitas vezes com 125 %): a 1ª linha dos filtros cabe numa linha só. Os seletores ficam do
+  // tamanho do texto escolhido e, se ainda faltar espaço, os rótulos encurtam em dois degraus (a dica completa continua no balão).
+  var ultimoNf_ = 0, caberAgendado_ = false, regua_ = null;
+  function larguraTexto(txt, ref) { if (!regua_) regua_ = document.createElement("canvas").getContext("2d"); var cs = getComputedStyle(ref); regua_.font = cs.fontStyle + " " + cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily; return regua_.measureText(txt).width; }
+  function ajustarSelect(sel) { if (!sel || !sel.options.length || sel.offsetParent === null) return; var o = sel.options[sel.selectedIndex] || sel.options[0]; sel.style.width = Math.ceil(larguraTexto(o.textContent, sel) + 46) + "px"; }
+  function linhasDe(box) {
+    var tops = []; Array.prototype.forEach.call(box.children, function (c) { if (c.hidden || c.offsetParent === null || c.classList.contains("espaco")) return; var r = c.getBoundingClientRect(); if (r.width) tops.push(r); });
+    if (!tops.length) return 0; var base = tops[0].top + tops[0].height - 4; return tops.some(function (r) { return r.top > base; }) ? 2 : 1;
+  }
+  function nivelLinha1(n) {
+    var fx = $("filtros-extra"); fx.setAttribute("data-nivel", String(n));
+    $("f-busca").placeholder = t(n ? "busca_curta" : "busca_ph");
+    var bl = $("b-limpar-filtros"); bl.textContent = ultimoNf_ ? t(n ? "limpar_curto" : "limpar_filtros", { n: ultimoNf_ }) : t(n ? "limpar_curto_0" : "limpar_filtros_0"); bl.title = t("limpar_filtros_0");
+    var bs = $("b-salvar-filtro"); bs.textContent = n >= 2 ? "\u2605" : t("salvar_curto"); bs.setAttribute("aria-label", t("salvar_filtro"));
+    var bm = $("b-mais-filtros"); if (bm && bm.firstChild && bm.firstChild.nodeType === 3) { var nm_ = (bm.firstChild.nodeValue.match(/\((\d+)\)/) || [])[1]; bm.firstChild.nodeValue = (n >= 2 ? (nm_ ? t("mais_curto_n", { n: nm_ }) : t("mais_curto")) : (nm_ ? t("mais_filtros_n", { n: nm_ }) : t("mais_filtros"))) + " "; bm.title = t("mais_filtros"); }
+  }
+  function caberLinha1() {
+    var fx = $("filtros-extra"), bar = $("barra-lista"); if (!fx || !bar || bar.hidden) return;
+    ajustarSelect($("periodo")); ajustarSelect($("f-valor-sel"));
+    for (var n = 0; n <= 2; n++) { nivelLinha1(n); if (window.innerWidth <= 600 || linhasDe(fx) <= 1) return; }
+  }
+  window.addEventListener("resize", function () { if (!caberAgendado_) { caberAgendado_ = true; requestAnimationFrame(function () { caberAgendado_ = false; caberLinha1(); }); } });
   var multiAberto = "", multiBusca = {};
   var ROTULO_TODOS = { cidade: "f_todas_cidades", area: "al_f_todos", sinal: "f_todos_sinais", sit: "f_todas_sit", frente: "f_todas_frentes", trib: "trib_todos", data: "f_todas_datas", vara: "f_todas_varas", setor: "f_todos_setores", porte: "f_todos_portes", uf: "f_todas_ufs" };
   var ROTULO_N = { cidade: "m_cidade", area: "al_f_n", sinal: "m_sinal", sit: "m_sit", frente: "m_frente", trib: "m_trib", data: "m_data", vara: "m_vara", setor: "m_setor", porte: "m_porte", uf: "m_uf" };
@@ -4002,8 +4036,9 @@ window.LEXSUITE_RADAR = null;
       (k === "area" && !(D && D.area_logada && D.area_logada.tem_resposta) && !sel.length);  // 0.7.46: só depois do 1º resultado
     box.classList.toggle("multi-vazio", !sel.length);
     var b = el("button", sel.length ? "ligado" : null); b.type = "button"; b.setAttribute("aria-expanded", String(multiAberto === k)); b.setAttribute("aria-haspopup", "true");
-    b.textContent = !sel.length ? t(ROTULO_TODOS[k]) : sel.length === 1 ? rotuloFacet(k, sel[0]) + " (" + num(cont[sel[0]] || 0) + ")" : t(ROTULO_N[k], { n: sel.length });
-    b.title = box.getAttribute("data-rotulo") || "";
+    // 0.7.50 (dono): rótulo curto ("Tribunais"; "TRT9 (12)" com um; "Tribunais (3)" com vários) e, ao passar o mouse, quais estão marcados
+    b.textContent = !sel.length ? t("fr_" + k) : sel.length === 1 ? rotuloFacet(k, sel[0]) + " (" + num(cont[sel[0]] || 0) + ")" : t("fr_" + k) + " (" + num(sel.length) + ")";
+    b.title = sel.length ? t("fs_" + k) + ": " + sel.map(function (v) { return rotuloFacet(k, v); }).join(", ") : t(ROTULO_TODOS[k]);
     box.appendChild(b); box.classList.toggle("tem-x", !!sel.length);
     if (sel.length) {  // 0.7.30 (dono): ✕ tira o filtro sem abrir a lista
       var bx_ = el("button", "multi-x", "✕"); bx_.type = "button"; bx_.title = t("f_tirar"); bx_.setAttribute("aria-label", t("f_tirar") + ": " + (box.getAttribute("data-rotulo") || k));
@@ -5809,7 +5844,9 @@ window.LEXSUITE_RADAR = null;
     var vis_ = Object.keys(salvos).filter(function (k) { return !(salvos[k] && salvos[k].arquivado); }).sort(function (a, b) { return a.localeCompare(b, loc(), { sensitivity: "base" }); });
     vis_.forEach(function (k) { var op = el("option", null, k); op.value = k; fs.appendChild(op); });  // 0.7.28: ordem alfabética, arquivados escondidos
     if (!vis_.length) { s0.textContent = t("salvos_vazio"); } fs.hidden = true;  // 0.7.49: a caixa padrão do navegador saiu (não deixava ver o nome inteiro)
-    var bs_ = $("b-salvos"); bs_.textContent = (vis_.length ? t("salvos_n", { n: vis_.length }) : t("salvos_vazio")) + " "; bs_.appendChild(el("i", "seta-gira", "▾")); bs_.title = t("salvos_x");
+    var bs_ = $("b-salvos"); bs_.textContent = ""; bs_.innerHTML = '<svg class="ic-salvos" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 3.5h12v17l-6-4.2-6 4.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';  // 0.7.50 (dono): no notebook vira ícone com contador
+    bs_.appendChild(el("span", "salvos-txt", vis_.length ? t("salvos_n", { n: vis_.length }) : t("salvos_vazio"))); bs_.appendChild(el("span", "salvos-num", vis_.length ? "(" + num(vis_.length) + ")" : "")); bs_.appendChild(document.createTextNode(" ")); bs_.appendChild(el("i", "seta-gira", "▾"));
+    bs_.title = (vis_.length ? t("salvos_n", { n: vis_.length }) + " · " : "") + t("salvos_x"); bs_.setAttribute("aria-label", vis_.length ? t("salvos_n", { n: vis_.length }) : t("salvos_vazio"));
     $("b-salvar-filtro").textContent = t("salvar_curto"); $("b-salvar-filtro").title = t("salvar_filtro");
     marcarLimpar();
     var so2 = $("ordem2"); so2.textContent = ""; [["", t("ord2_nada")], ["valor", t("ord2_valor")], ["recentes", t("ord2_recentes")], ["porte", t("ord2_porte")], ["empresa", t("ord2_empresa")], ["vara", t("ord2_vara")], ["situacao", t("ord2_situacao")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; so2.appendChild(op); }); so2.value = ordem2;
@@ -5966,6 +6003,17 @@ window.LEXSUITE_RADAR = null;
     var sv = filtrosSalvos(); sv[nome] = { F: JSON.parse(JSON.stringify(F)), ordem: ordem, ordem2: ordem2, periodo: periodo, agrupar: agrupar, alcance: alcance, desc: desc_.slice(0, 120) }; gravarFiltrosSalvos(sv);
     cabecalho();
   });
+  (function () {  // 0.7.50 (dono, notebook): barra fixa compacta ao rolar; folga para a página não "pular" (a barra encolhe e a lista sobe)
+    var sent_ = $("barra-sentinela"), agendado_ = false;
+    var ver_ = function () {
+      agendado_ = false; var b = $("barra-lista"); if (!b || !sent_) return;
+      if (b.hidden || window.innerWidth <= 600) { b.classList.remove("compacta"); return; }
+      var top_ = sent_.getBoundingClientRect().top, th_ = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topo-h")) || 0;
+      if (!b.classList.contains("compacta")) { var cab_ = b.querySelector(".bl-cab"), h_ = (cab_ ? cab_.offsetHeight : 0) + $("ordenacao").offsetHeight + 24; if (top_ < th_ - h_ - 40) b.classList.add("compacta"); }
+      else if (top_ > th_ - 8) b.classList.remove("compacta");
+    };
+    window.addEventListener("scroll", function () { if (!agendado_) { agendado_ = true; requestAnimationFrame(ver_); } }, { passive: true });
+  })();
   $("b-salvos").addEventListener("click", function (ev) { ev.stopPropagation(); if (salvosPainel_) fecharSalvos(); else abrirSalvos(); });
   document.addEventListener("click", function (ev) { if (salvosPainel_ && !salvosPainel_.contains(ev.target) && ev.target !== $("b-salvos")) fecharSalvos(); });
   document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && salvosPainel_) { fecharSalvos(); $("b-salvos").focus(); } });
