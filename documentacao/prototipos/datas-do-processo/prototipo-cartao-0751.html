@@ -66,8 +66,7 @@
 <header><b>RADAR JUDICIAL</b><span>v0.7.51 · protótipo do cartão (clique no cartão para abrir a ficha)</span></header>
 <main>
   <p class="aviso-proto"><b>Protótipo para validar com o Leandro.</b> O 1º cartão usa os dados <b>públicos</b> do processo que ele mandou
-  (sem a reclamante, que é pessoa física e nunca aparece no RADAR). O que ainda não sabemos fica "a confirmar": o número do processo e a
-  data da 1ª publicação, que a 0.7.51 busca sozinha no histórico do Diário pelo número. Os outros dois cartões são fictícios.</p>
+  (sem a reclamante, que é pessoa física e nunca aparece no RADAR). O número e as datas foram achados na base pública do CNJ (DataJud) em 16/11, como a 0.7.51 vai fazer sozinha. Os outros dois cartões são fictícios.</p>
 
   <div class="barra">
     <div class="linha1">
@@ -93,9 +92,9 @@
       <div>
         <div class="nome"><span class="chev">›</span> Garantia Real Serviços Ltda.</div>
         <div class="meta">
-          <span class="d1" title="1ª publicação deste processo no Diário">1ª PUBLICAÇÃO: MAI 2026 (a confirmar)</span>
+          <span class="d1" title="1ª publicação deste processo no Diário">1ª PUBLICAÇÃO: QUA, 20 MAI 2026</span>
           <span>TRT2</span>
-          <span class="num">Processo: nº a confirmar</span>
+          <span class="num">Processo 1000910-15.2026.5.02.0714</span>
           <span>14ª Vara do Trabalho de São Paulo - Zona Sul</span>
         </div>
       </div>
@@ -103,7 +102,7 @@
       <div class="etqs">
         <span class="etq aj velho">Ajuizado em 15/05/2026</span>
         <span class="antigo-txt">PROCESSO ANTIGO (6 MESES)</span>
-        <span class="selo aud">Audiência inicial</span><span class="q" title="Como o RADAR achou: uma publicação de 13/11 (provável audiência inicial). O histórico do processo mostra que ele foi ajuizado em maio.">?</span>
+        <span class="selo aud">Audiência inicial</span><span class="q" title="Como o RADAR achou: uma publicação de 13/11 sobre audiência. O CNJ mostra que o processo foi ajuizado em 15/05 e já tinha 13 publicações no Diário antes disso.">?</span>
       </div>
     </div>
     <div class="ficha">
@@ -111,11 +110,11 @@
         <h4>DATAS DO PROCESSO</h4>
         <div class="tl">
           <div class="ok"><b>15/05/2026</b>Ajuizado (distribuído e autuado às 13h15)</div>
-          <div><b>MAI 2026 · a confirmar</b>1ª publicação no Diário</div>
+          <div class="ok"><b>20/05/2026</b>1ª publicação no Diário</div>
           <div><b>13/11/2026</b>Última publicação no Diário</div>
           <div class="radar"><b>16/11/2026</b>Encontrado pelo RADAR (leitura deste computador)</div>
         </div>
-        <p class="nota">Ajuizado há 6 meses: por isso fica fora de "Só ações novas". Para trabalhar, desligue o filtro ou use "Mostrar processos antigos".</p>
+        <p class="nota">Ajuizado há 6 meses e com 14 publicações no Diário (13 até 08/09, pelo CNJ, e a de 13/11, achada pelo RADAR): fica fora de "Só ações novas". Para trabalhar, desligue o filtro ou use "Mostrar processos antigos".</p>
       </div>
       <div class="colunas">
         <div>
@@ -133,12 +132,14 @@
         <div>
           <h4>PROCESSO</h4>
           <table>
-            <tr><td>Número</td><td class="v"><span class="vazio">a confirmar (pedir ao Leandro)</span></td></tr>
+            <tr><td>Número</td><td class="v">1000910-15.2026.5.02.0714<button class="copiar" title="Copiar o número do processo" onclick="copia(this,'1000910-15.2026.5.02.0714')">⧉</button></td></tr>
+            <tr><td>Classe</td><td>Ação Trabalhista - Rito Ordinário · Juízo 100% Digital</td></tr>
+            <tr><td>Publicações no Diário</td><td>14 (1ª em 20/05/2026) <span class="nota">· CNJ atualizado até 08/10</span></td></tr>
             <tr><td>Tribunal · Vara</td><td>TRT2 · 14ª Vara do Trabalho de São Paulo - Zona Sul</td></tr>
             <tr><td>Assunto</td><td>Dispensa discriminatória</td></tr>
             <tr><td>Valor da causa</td><td>R$ 141.237,64</td></tr>
             <tr><td>Justiça gratuita</td><td>Deferida</td></tr>
-            <tr><td>Como o RADAR achou</td><td>Publicação de 13/11/2026 (provável audiência inicial)</td></tr>
+            <tr><td>Como o RADAR achou</td><td>Publicação de 13/11/2026 sobre audiência</td></tr>
           </table>
         </div>
       </div>

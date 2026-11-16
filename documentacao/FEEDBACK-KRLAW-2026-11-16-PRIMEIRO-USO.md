@@ -83,6 +83,15 @@ ajuizamento: a API respondeu "ocupado" várias vezes; nova tentativa em segundo 
   carregadas (CNJ sem resposta)"), com o botão **"Tentar de novo"** ali mesmo.
 - Prioridade máxima da 0.7.51, junto com a data certa (1ª publicação real e ajuizamento).
 
+**Processo achado (Produto, 16/Nov, DataJud do CNJ; acesso público, sem pessoa física):** **1000910-15.2026.5.02.0714** — 14ª VT de
+São Paulo - Zona Sul; ajuizado em **15/05/2026 13:15:22**; "Dispensa Discriminatória"; Ação Trabalhista - Rito Ordinário; Juízo 100%
+Digital. **1ª publicação no Diário: 20/05/2026**; 13 publicações até 08/09/2026 (o DataJud está atualizado até 08/10/2026, ~1 mês de
+atraso); audiências de conciliação e de instrução designadas em 28/07. Logo, a publicação de 13/11 que o RADAR achou é mais uma
+sobre audiência (o sinal "audiência … de conciliação" de `_INICIO` casou). **Confirmado: falso positivo por sinal fraco, não atraso do
+tribunal.** Como achamos: busca por vara e dia de ajuizamento; o número faltante na sequência da vara (0909, 0911…) + dígito
+verificador CNJ. Lições para o desenho: o DataJud responde daqui (o DJEN não), mas recusa por excesso de pedidos (várias tentativas e
+uma resposta parcial: "total 1" sem o documento) — precisa de fila e de "tentar de novo".
+
 ## 2. "O filtro talvez não esteja funcionando corretamente, ou eu não estou sabendo filtrar"
 - Não disse qual filtro. Perguntar ao Leandro (pelo dono): qual filtro, o que escolheu, o que esperava e o que apareceu (print).
 - Possível ligação com o item 1 (filtro "No Diário: últimos N dias" usa a data da publicação, não a da distribuição).
