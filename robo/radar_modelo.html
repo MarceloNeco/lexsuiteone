@@ -671,6 +671,7 @@ button.chip.ocupado::after { border-color: var(--tinta) transparent var(--tinta)
 @media (max-width: 1500px) { .b-salvos .salvos-txt { display: none; } .b-salvos .salvos-num { display: inline; } .b-salvos .ic-salvos { margin-left: -2px; } }
 .filtros-extra .busca { flex: 1 1 240px; min-width: 120px; max-width: 340px; }
 .filtros-extra[data-nivel="1"] .busca, .filtros-extra[data-nivel="2"] .busca { flex-basis: 130px; }
+.filtros-extra[data-nivel="3"] .busca { flex: 0 1 96px; min-width: 96px; padding-left: 12px; padding-right: 8px; } .filtros-extra[data-nivel="3"] .multi > button { padding-right: 24px; } .filtros-extra[data-nivel="3"] .multi > button::after { right: 8px; } .filtros-extra[data-nivel="3"] { gap: 4px; } .filtros-extra[data-nivel="3"] select { padding-left: 8px; padding-right: 4px; }
 .filtros-extra .multi > button { max-width: 14rem; }
 /* 0.7.50 (dono): ao rolar, a barra fixa fica numa linha (sem o título e sem a ordenação) e volta inteira ao subir */
 .barra-lista.compacta { padding-top: 6px; padding-bottom: 6px; }
@@ -4073,7 +4074,7 @@ window.LEXSUITE_RADAR = null;
   // tamanho do texto escolhido e, se ainda faltar espaço, os rótulos encurtam em dois degraus (a dica completa continua no balão).
   var ultimoNf_ = 0, caberAgendado_ = false, regua_ = null;
   function larguraTexto(txt, ref) { if (!regua_) regua_ = document.createElement("canvas").getContext("2d"); var cs = getComputedStyle(ref); regua_.font = cs.fontStyle + " " + cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily; return regua_.measureText(txt).width; }
-  function ajustarSelect(sel) { if (!sel || !sel.options.length || sel.offsetParent === null) return; var o = sel.options[sel.selectedIndex] || sel.options[0]; sel.style.width = Math.ceil(larguraTexto(o.textContent, sel) + 46) + "px"; }
+  function ajustarSelect(sel, folga) { if (!sel || !sel.options.length || sel.offsetParent === null) return; var o = sel.options[sel.selectedIndex] || sel.options[0]; sel.style.width = Math.ceil(larguraTexto(o.textContent, sel) + (folga || 46)) + "px"; }
   function linhasDe(box) {
     var tops = []; Array.prototype.forEach.call(box.children, function (c) { if (c.hidden || c.offsetParent === null || c.classList.contains("espaco")) return; var r = c.getBoundingClientRect(); if (r.width) tops.push(r); });
     if (!tops.length) return 0; var base = tops[0].top + tops[0].height - 4; return tops.some(function (r) { return r.top > base; }) ? 2 : 1;
@@ -4088,7 +4089,10 @@ window.LEXSUITE_RADAR = null;
   function caberLinha1() {
     var fx = $("filtros-extra"), bar = $("barra-lista"); if (!fx || !bar || bar.hidden) return;
     ajustarSelect($("periodo")); ajustarSelect($("f-valor-sel"));
-    for (var n = 0; n <= 2; n++) { nivelLinha1(n); if (window.innerWidth <= 600 || linhasDe(fx) <= 1) return; }
+    for (var n = 0; n <= 3; n++) {  // 3: com "Área logada" à vista, a busca e os seletores encolhem mais
+      if (n === 3) { ajustarSelect($("periodo"), 34); ajustarSelect($("f-valor-sel"), 34); }
+      nivelLinha1(n); if (window.innerWidth <= 600 || linhasDe(fx) <= 1) return;
+    }
   }
   window.addEventListener("resize", function () { if (!caberAgendado_) { caberAgendado_ = true; requestAnimationFrame(function () { caberAgendado_ = false; caberLinha1(); }); } });
   var multiAberto = "", multiBusca = {};

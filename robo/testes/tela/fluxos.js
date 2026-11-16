@@ -272,7 +272,8 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     confere(/Caderno do CNJ voltou \(20h31\)\. Conferência feita: 3 processos a mais, já incluídos/.test(c4), 'Consulta pública, cena 4: "Caderno do CNJ voltou (20h31). Conferência feita: 3 processos a mais"');
     await abrirConfig(p); await espera(600);
     const op = await p.evaluate(() => ({ m: document.getElementById('c-consulta').checked, r: document.getElementById('c-l-consulta').textContent, x: document.getElementById('c-consulta-x').textContent }));
-    confere(op.m && /consulta pública quando o caderno do CNJ cair/.test(op.r) && /Ligada por padrão/.test(op.x), 'Configurações: leitura pela consulta pública ligada por padrão, com a explicação');
+    const opAj = await p.evaluate(() => !!document.querySelector('#c-l-consulta .ajuda'));
+    confere(op.m && /Usar a consulta pública do CNJ quando o caderno falhar/.test(op.r) && opAj && !op.x, 'Configurações: consulta pública ligada por padrão, com a explicação no (?) (0.7.50)');
     await p.evaluate(() => { document.getElementById('c-consulta').click(); document.getElementById('c-salvar').click(); }); await espera(1500);
     await abrirConfig(p); await espera(600);
     confere(await p.evaluate(() => !document.getElementById('c-consulta').checked), 'Configurações: desligar a consulta pública fica gravado');
