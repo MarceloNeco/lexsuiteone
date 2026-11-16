@@ -437,12 +437,13 @@ class Banco:
         self.con.commit()
         return cur.rowcount == 1
 
-    def copiar_contatos(self, origem, destinos, extras=(), perfil=""):
+    def copiar_contatos(self, origem, destinos, extras=(), perfil="", aceitar=None):
         """0.7.50 (dono, decisão 51): copia o contato DA EMPRESA de um processo para outros da mesma empresa (mesma raiz de CNPJ).
         Nunca copia contato de pessoa física, de advogado ou de escritório (pesquisa de 16/Nov: é de terceiro ou dado pessoal).
         `extras`: canais do cadastro da Receita da origem [(canal, valor)]. Devolve os ids criados (para Desfazer)."""
         fontes = [c for c in self.contatos(origem) if not c.get("de_pessoa") and c.get("validacao") != "descartado"
-                  and not re.search(r"advog|escrit[oó]rio|oab", " ".join(str(c.get(k) or "") for k in ("fonte", "origem", "observacao")), re.I)]
+                  and not re.search(r"advog|escrit[oó]rio|oab", " ".join(str(c.get(k) or "") for k in ("fonte", "origem", "observacao")), re.I)
+                  and (aceitar is None or aceitar(c))]
         canais = [(c["canal"], c["valor"], c.get("fonte") or "", c.get("empresa") or "") for c in fontes]
         canais += [(cn, v, "Receita Federal", "") for cn, v in extras if v]
         hoje, ids = dt.date.today().isoformat(), []

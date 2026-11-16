@@ -995,7 +995,7 @@ class Tratador(BaseHTTPRequestHandler):
                 try:
                     b_ = bd.Banco(s.caminho_db)
                     try:
-                        s.limpeza_resultado = radar.limpar_banco(b_, r_lp, "Limpar o banco agora")
+                        s.limpeza_resultado = radar.limpar_banco(b_, r_lp, "Limpar agora")
                     finally:
                         b_.con.close()
                 except Exception as e:  # noqa: BLE001

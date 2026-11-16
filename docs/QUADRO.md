@@ -163,8 +163,13 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 16/Nov: **0.7.50 em andamento** (feedback da 0.7.49, itens 1 a 33, decisões de 16/Nov). Arquivos: `robo/radar_modelo.html`,
-  `robo/lexsuite/app.py`, `radar.py`, `banco.py`, `paginas/manual.html`, testes, docs.
+- 16/Nov: **0.7.50 pronta para publicar** (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
+  sem data). Feito: agrupamento (alcance no bloco, setinha, caixinha, sem CNPJ com triângulo e "CNPJ provável", copiar contato 90 dias
+  com desfazer, "Excluir esta empresa"), filtros numa linha no notebook com rótulos curtos e barra compacta, "Aplicar" na barra de
+  seleção, Configurações (rodapé, frase do Salvar, consulta com (?), Rotina de limpeza com "Não confirmar" e prazos gravados, volta do
+  Histórico no mesmo ponto), registro com "Enviar ao suporte", 10053 sem rastro, tour sem rolar; manual, AssistONE, Wizard,
+  Novidades; folha `documentacao/dod/0.7.50.md`; `test_v0750.py` (20) e `fluxos.js` bloco 12 (21); revisor com o bloqueio
+  (este quadro) e as ressalvas corrigidos. Linha do instalador na folha da 0.7.48 (item 14).
 - 15/Nov: teste do dono na janela "Trazer dados da área logada" (0.7.47): 11 achados em `documentacao/FEEDBACK-TESTE-0.7.47.md`
   (causas conferidas: pedido lento porque remonta o Arquivo de 90 dias a cada mudança; (?) dentro de janela desenhado atrás dela;
   "Quantos" aceita acima do limite). Entram na 0.7.48. Resposta simulada para o passo 3:
@@ -641,6 +646,20 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
 
 ## Pedidos entre sessões
+
+- **Produto → Operação (16/Nov): 0.7.50 pronta para publicar**, quando o dono escrever "publica a versão 0.7.50". Código na `main`
+  (commit "0.7.50: …" logo depois de `a4906d3`); revisar `git diff a4906d3 HEAD -- robo paginas docs/manual.html` e ler a folha
+  `documentacao/dod/0.7.50.md` contra o diff. Sem instalador novo; pacote com os mesmos arquivos (nenhum módulo novo). Testes do dono
+  depois de publicada: `documentacao/ESTADO-ATUAL-RADAR.md`, seção 8.
+
+- **Produto → Arquitetura (16/Nov, itens 15 e 31 do feedback do dono):** (1) **tour do AssistONE sem rolar a página**: durante o tour,
+  roda, toque e teclas de rolar ficam presos, cada passo rola sozinho até o alvo e, ao mudar o tamanho da janela, reposiciona; ao
+  sair, a rolagem volta. Feito no RADAR na cópia embutida do AssistONE 1.1.1 (`travarRolagem`, em `robo/radar_modelo.html`); pedido:
+  levar ao `rootify-one/assistone.js` (módulo comum) e às outras cópias. (2) **Subtela dentro de janela desliza** (entra pela direita;
+  ao voltar, a janela volta pela esquerda no mesmo ponto, 0,2 s, sem animação com "reduzir movimento"): feito no RADAR entre
+  Configurações e Histórico (`animarSubtela`, `voltarDoHistorico`); pedido: virar regra da diretriz geral para Empresas excluídas,
+  Filtros salvos, Termos e Ver registro em todos os apps. (3) Alternativa (c) do item 29, sem data: chamado do AssistONE com o
+  registro técnico anexado, direto ao RootifyONE.
 
 - **Produto → Operação (15/Nov): 0.7.49 pronta para publicar**, quando o dono escrever "publica a versão 0.7.49". Código na
   `main` em `e987a68`; revisar só `git diff 4b8fcfe e987a68 -- robo paginas docs/manual.html` e ler a folha `documentacao/dod/0.7.49.md`

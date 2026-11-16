@@ -96,6 +96,12 @@ class CopiarContato(unittest.TestCase):
         self.assertFalse([c for c in self.b.contatos() if c.get("origem") == "copiado"])
         self.assertEqual(len(self.b.contatos("0004001-11.2026.5.02.0001")), 3)
 
+    def test_contato_de_outra_parte_do_processo_nao_vai(self):  # revisão da 0.7.50
+        self.b.guardar_contato({"processo": "0004001-11.2026.5.02.0001", "empresa": "Outra Fictícia S.A.", "canal": "telefone",
+                                "valor": "(11) 0000-0009", "fonte": "PJe", "origem": "area_logada"})
+        self.copiar(90)
+        self.assertFalse([c for c in self.b.contatos() if c.get("origem") == "copiado" and c["valor"] == "(11) 0000-0009"])
+
     def test_sem_contato_nenhum_nao_copia(self):
         self.b.con.execute("DELETE FROM contatos")
         self.b.con.commit()

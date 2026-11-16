@@ -427,12 +427,12 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     except Exception as e:  # noqa: BLE001 - estatística nunca derruba a leitura
         aviso(f"  Não consegui atualizar as estatísticas ({e.__class__.__name__}).")
     try:  # 0.7.48 (decisões 40 a 42): limpeza automática depois de cada leitura, sempre depois das estatísticas
-        aviso("  Limpando o banco…")
+        aviso("  Limpando os dados do programa…")
         lp = limpar_banco(banco, r, "depois da leitura")
         if lp["resumidos"] or lp["apagados"]:
             aviso(f"  Limpeza: {lp['resumidos']} resumido(s), {lp['apagados']} apagado(s), {lp['mantidos']} mantido(s) por serem trabalhados.")
     except Exception as e:  # noqa: BLE001 - a limpeza nunca derruba a leitura
-        aviso(f"  Não consegui limpar o banco ({e.__class__.__name__}).")
+        aviso(f"  Não consegui limpar os dados do programa ({e.__class__.__name__}).")
     apagados = banco.limpar_antigos(int(r.get("guardar_dias") or 365))
     try:  # 0.7.17 (decisão 14): banco acima de 1 GB resume com 6 meses só os processos nunca abertos
         if banco.espaco()["bytes"] > 1024 ** 3:
@@ -440,9 +440,9 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
             if resumidos:
                 banco.compactar()
                 aviso(f"  Os dados do programa passaram de 1 GB: {resumidos} processo(s) nunca aberto(s) com mais de 6 meses ficaram só com o resumo.")
-                banco.registrar("saude", {"fonte": "Banco do programa", "situacao": "atenção", "detalhe": f"acima de 1 GB: {resumidos} resumidos (6 meses, nunca abertos)"})
+                banco.registrar("saude", {"fonte": "Dados do programa", "situacao": "atenção", "detalhe": f"acima de 1 GB: {resumidos} resumidos (6 meses, nunca abertos)"})
     except Exception as e:  # noqa: BLE001 - a retenção nunca derruba a leitura
-        aviso(f"  Não consegui resumir o banco ({e.__class__.__name__}).")
+        aviso(f"  Não consegui resumir os dados do programa ({e.__class__.__name__}).")
     if apagados:
         aviso(f"  Retenção: {apagados} registro(s) com mais de {int(r.get('guardar_dias') or 365)} dias resumidos ou apagados (o detalhe sai; o resumo e as estatísticas ficam).")
     if interrompida:  # 0.7.16: depois de uma parada na Receita, conta só o que foi feito (antes misturava parcial e total)
@@ -651,7 +651,11 @@ def copiar_contato_empresa(cfg, banco, chave, dias=90, cnpj="", nome="", perfil=
     e = origem.get("empresa") or {}
     extras = [("telefone", e.get("telefone")), ("telefone", e.get("telefone2")), ("email", e.get("email"))]
     destinos = [i["processo"] for i in itens if (i.get("diario_em") or "") >= corte and not (i.get("contato") or {}).get("tem")]
-    ids = banco.copiar_contatos(origem["processo"], destinos, extras=extras, perfil=perfil)
+    nomes_ok = {chave_empresa("", n) for n in [e.get("razao_social") or ""] + list(origem.get("empresas") or []) if n}
+
+    def da_empresa(c):  # revisão da 0.7.50: contato marcado com outra parte do mesmo processo não vai para esta empresa
+        return not c.get("empresa") or chave_empresa("", c.get("empresa")) in nomes_ok
+    ids = banco.copiar_contatos(origem["processo"], destinos, extras=extras, perfil=perfil, aceitar=da_empresa)
     return {"copiados": len(ids), "processos": len(destinos), "origem": origem["processo"], "ids": ids}
 
 
