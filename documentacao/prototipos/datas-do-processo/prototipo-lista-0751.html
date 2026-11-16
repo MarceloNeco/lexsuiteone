@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RADAR JUDICIAL · Lista (protótipo 0.7.51 com processos reais)</title>
+<style>
+  :root { --marinho:#0f1d33; --latao:#a8792a; --latao-texto:#8a6420; --latao-wash:#f6efe2; --tinta:#14213d; --tinta-2:#4a5468; --tinta-3:#6b7486; --linha:#e3e6ec; --linha-2:#cfd5df; --ok:#1e7a46; --ok-bg:#e7f4ec; --er:#b3261e; --er-bg:#fbeaea; --azul:#2b62ad; --fundo:#f4f6f9; --folha:#fff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--tinta); background:var(--fundo); line-height:1.45; }
+  header { background:var(--marinho); color:#fff; padding:12px 26px; display:flex; align-items:center; gap:12px; }
+  header b { font-size:1.15rem; letter-spacing:.02em; } header b i { color:#d9a54a; font-style:normal; } header span { color:#c9d1de; font-size:.85rem; }
+  main { max-width:1240px; margin:0 auto; padding:16px 20px 60px; }
+  .barra > * { min-width:0; }
+  .barra { background:var(--folha); border:1px solid var(--linha); border-radius:12px; padding:10px 14px; display:grid; gap:8px; position:sticky; top:0; z-index:5; box-shadow:0 6px 18px -12px rgba(15,29,51,.35); }
+  .bl-cab { font-size:.76rem; font-weight:700; letter-spacing:.1em; color:var(--tinta-2); display:flex; gap:6px; align-items:center; }
+  .linha1 { display:flex; flex-wrap:nowrap; gap:6px; align-items:center; }
+  .busca { flex:1 1 200px; min-width:130px; max-width:340px; border:1px solid var(--linha-2); border-radius:999px; padding:7px 14px; font:inherit; font-size:.86rem; }
+  .busca::placeholder { font-style:italic; }
+  select, .pilula { white-space:nowrap; flex:none; border:1px solid var(--linha-2); border-radius:999px; padding:6px 12px; font:inherit; font-size:.84rem; background:#fff; color:var(--tinta); min-height:36px; cursor:pointer; }
+  .pilula.on { background:var(--marinho); border-color:var(--marinho); color:#fff; font-weight:600; }
+  .espaco { flex:1 1 0; }
+  .estrela { background:none; border:0; color:var(--latao-texto); font-weight:700; font-size:.84rem; cursor:pointer; white-space:nowrap; }
+  .limpar { border:1px solid #e6b6b2; color:var(--er); background:#fff; border-radius:999px; padding:6px 12px; font:inherit; font-size:.84rem; cursor:pointer; white-space:nowrap; }
+  .limpar:disabled { color:var(--tinta-3); border-color:var(--linha); cursor:default; }
+  .multi { position:relative; }
+  .painel { position:absolute; top:42px; left:0; background:#fff; border:1px solid var(--linha); border-radius:10px; box-shadow:0 10px 30px rgba(15,29,51,.18); padding:8px; min-width:260px; z-index:9; display:none; }
+  .multi.aberto .painel { display:block; }
+  .painel label { display:flex; gap:8px; align-items:center; padding:5px 6px; font-size:.86rem; cursor:pointer; border-radius:6px; }
+  .painel label:hover { background:#f3f5f8; } .painel small { margin-left:auto; color:var(--tinta-3); }
+  .mais { border-top:1px dashed var(--linha); padding-top:8px; display:none; flex-wrap:wrap; gap:6px; align-items:center; }
+  .mais.aberto { display:flex; }
+  .novo-f { border-color:var(--azul); box-shadow:0 0 0 2px #dbe6f7; }
+  .ordenacao { background:var(--latao-wash); border-radius:10px; padding:6px 10px; display:flex; flex-wrap:nowrap; gap:8px; align-items:center; }
+  .ordenacao .rot { font-size:.76rem; font-weight:700; letter-spacing:.1em; color:var(--latao-texto); white-space:nowrap; }
+  .ordenacao select { border-color:#d9c39b; flex:0 1 auto; min-width:120px; }
+  .linha1 select { flex:0 1 auto; min-width:110px; }
+  .ordenacao select:disabled { opacity:.5; }
+  .csv { background:#8a6420; color:#fff; border:0; border-radius:999px; padding:8px 16px; font:inherit; font-size:.84rem; font-weight:700; white-space:nowrap; margin-left:auto; }
+  .q { display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; border:1.5px solid var(--azul); color:var(--azul); font-size:.72rem; font-weight:700; cursor:help; flex:none; }
+  .resumo { margin:12px 2px 4px; font-size:.9rem; color:var(--tinta-2); }
+  .item { background:#fff; border:1px solid var(--linha); border-left:4px solid var(--latao); border-radius:12px; margin:10px 0; }
+  .item.velho { border-left-color:var(--er); }
+  .cab { display:grid; grid-template-columns:26px 1fr auto; gap:4px 14px; padding:14px 18px; cursor:pointer; }
+  .cab input { margin-top:4px; width:18px; height:18px; }
+  .nome { font-weight:700; font-size:1.02rem; } .nome .cinza { font-weight:400; }
+  .meta { font-size:.86rem; color:var(--tinta-2); display:flex; flex-wrap:wrap; gap:4px 20px; align-items:center; margin-top:4px; }
+  .d1 { color:var(--latao); font-weight:700; letter-spacing:.02em; }
+  .num { font-variant-numeric:tabular-nums; color:var(--tinta); display:inline-flex; align-items:center; gap:4px; }
+  .valor { text-align:right; font-weight:700; } .valor small { display:block; font-weight:400; color:var(--tinta-3); font-size:.78rem; }
+  .marcos { grid-column:2 / -1; display:flex; flex-wrap:wrap; gap:6px 10px; margin-top:6px; font-size:.8rem; align-items:center; }
+  .mk { background:#f3f5f8; border-radius:7px; padding:2px 8px; } .mk.chave { background:var(--ok-bg); color:var(--ok); } .mk.fim { background:var(--er-bg); color:var(--er); } .mk.aud { background:#fbf3e3; color:#7a5300; }
+  .idade { font-weight:700; font-size:.78rem; letter-spacing:.04em; } .idade.velho { color:var(--er); } .idade.novo { color:var(--ok); }
+  .ficha { display:none; border-top:1px solid var(--linha); padding:12px 18px 18px; } .item.aberto .ficha { display:block; }
+  h4 { margin:10px 0 8px; font-size:.78rem; letter-spacing:.08em; color:var(--tinta-3); }
+  .jornada { list-style:none; margin:0; padding:0 0 0 18px; border-left:3px solid var(--linha); columns:2; column-gap:40px; }
+  @media (max-width:900px) { .jornada { columns:1; } }
+  .jornada li { break-inside:avoid; position:relative; padding:4px 0 8px 14px; font-size:.88rem; }
+  .jornada li::before { content:""; position:absolute; left:-27px; top:8px; width:12px; height:12px; border-radius:50%; background:#fff; border:3px solid var(--tinta-3); }
+  .jornada li.chave::before { border-color:var(--ok); } .jornada li.aud::before { border-color:var(--latao); } .jornada li.fim::before { border-color:var(--er); } .jornada li.radar::before { border-color:var(--azul); }
+  .jornada b { display:inline-block; min-width:88px; font-variant-numeric:tabular-nums; }
+  .colunas { display:grid; grid-template-columns:1fr 1fr; gap:6px 34px; } @media (max-width:900px) { .colunas { grid-template-columns:1fr; } }
+  table { border-collapse:collapse; width:100%; font-size:.88rem; } td { border-bottom:1px solid var(--linha); padding:6px; vertical-align:top; } td:first-child { color:var(--tinta-3); width:40%; }
+  td.v { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+  .vazio { color:var(--tinta-3); font-style:italic; }
+  .copiar { border:0; background:transparent; color:var(--tinta-3); width:28px; height:28px; border-radius:7px; display:inline-grid; place-items:center; cursor:pointer; padding:0; flex:none; }
+  .copiar:hover { background:#eef1f6; color:var(--tinta); } .copiar.feito { color:var(--ok); }
+  .copiar svg .frente { fill:#fff; } .copiar:hover svg .frente { fill:#eef1f6; }
+  .fonte { font-size:.66rem; font-weight:700; letter-spacing:.05em; border-radius:5px; padding:1px 6px; margin-left:6px; vertical-align:middle; white-space:nowrap; }
+  .f-cnj { background:#e8eefb; color:#24508f; } .f-rf { background:#e7f4ec; color:#1e7a46; } .f-pje { background:#fff4dc; color:#8a5a00; } .f-djen { background:#f3e9fb; color:#6b2c91; }
+  .vazio-lista { background:#fff; border:1px dashed var(--linha-2); border-radius:12px; padding:22px; text-align:center; color:var(--tinta-2); }
+</style>
+</head>
+<body>
+<header><b>RADAR JUDIC<i>IAL</i></b><span>v0.7.51 (protótipo)</span></header>
+<main>
+  <div class="barra">
+    <div class="bl-cab">☰ FILTROS DA LISTA</div>
+    <div class="linha1">
+      <input class="busca" id="busca" placeholder="Procurar empresa, nº ou CNPJ">
+      <select id="periodo" title="Conta pela 1ª publicação no Diário">
+        <option value="7">No Diário: últimos 7 dias</option><option value="30">No Diário: últimos 30 dias</option><option value="90">No Diário: últimos 90 dias</option>
+        <option value="365">No Diário: últimos 12 meses</option><option value="0" selected>No Diário: todos (amostra)</option>
+      </select>
+      <div class="multi" id="m-trib"><button class="pilula" id="b-trib" type="button">Tribunais ▾</button><div class="painel" id="p-trib"></div></div>
+      <select><option>Situação</option><option>Novo</option><option>Em contato</option></select>
+      <select><option>Qualquer valor</option><option>Acima de R$ 100 mil</option><option>Sem valor informado</option></select>
+      <button class="pilula" id="b-mais" type="button">Mais filtros ▾</button>
+      <span class="espaco"></span>
+      <button class="pilula" type="button" title="Filtros salvos (4)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3.5h12v17l-6-4.2-6 4.2z"/></svg> (4) ▾</button>
+      <button class="estrela" type="button">★ Salvar</button>
+      <button class="limpar" id="limpar" type="button" disabled>Limpar</button>
+    </div>
+    <div class="mais" id="mais">
+      <select><option>Com e sem contato</option><option>Só com contato</option><option>Só sem contato</option></select>
+      <button class="pilula" type="button">Sem jurídico próprio provável</button>
+      <button class="pilula" type="button">Só com CNPJ confirmado</button>
+      <select id="idade" class="novo-f" title="NOVO na 0.7.51">
+        <option value="0">Idade do processo: qualquer</option><option value="15">Processos novos (até 15 dias)</option>
+        <option value="30">Processos novos (até 30 dias)</option><option value="90">Até 90 dias</option><option value="365">Até 12 meses</option>
+      </select>
+      <span class="q" title="Idade do processo conta pela data de ajuizamento (do CNJ). Sem essa data, vale a 1ª publicação no Diário.">?</span>
+      <select id="andamento" class="novo-f" title="NOVO na 0.7.51">
+        <option value="">Andamento: todos</option><option value="andamento">Sem acordo nem sentença</option><option value="acordo">Com acordo</option>
+        <option value="sentenca">Com sentença</option><option value="fim">Encerrado (trânsito ou arquivado)</option>
+      </select>
+      <div class="multi" id="m-uf"><button class="pilula" id="b-uf" type="button">Estados ▾</button><div class="painel" id="p-uf"></div></div>
+      <button class="pilula" type="button">Varas ▾</button><button class="pilula" type="button">Setores ▾</button><button class="pilula" type="button">Portes ▾</button>
+      <button class="pilula" type="button">Cidades ▾</button><button class="pilula" type="button">Tipos de publicação ▾</button>
+    </div>
+    <div class="ordenacao">
+      <span class="rot">≡ ORDENAR POR</span><span class="q" title="A ordem da lista. 'Depois por' desempata. Agrupar por empresa é uma visão à parte.">?</span>
+      <select id="ordem">
+        <option value="ajuizado" selected>Mais novos primeiro (ajuizamento)</option>
+        <option value="pub1">1ª publicação mais recente primeiro</option>
+        <option value="valor">Maior valor primeiro</option>
+        <option value="porte">Maior porte primeiro</option>
+        <option value="empresa">Empresa (A a Z)</option>
+        <option value="vara">Vara (A a Z)</option>
+        <option value="situacao">Situação</option>
+        <option value="hora">Ordem de chegada (encontrado pelo RADAR)</option>
+      </select>
+      <select id="ordem2">
+        <option value="">Depois por: nada</option><option value="pub1">Depois por: 1ª publicação</option><option value="valor">Depois por: maior valor</option>
+        <option value="vara">Depois por: vara</option><option value="empresa">Depois por: empresa</option>
+      </select>
+      <select id="agrupar"><option value="">Agrupar: não</option><option value="empresa">Agrupar por empresa</option></select>
+      <select id="alcance" style="display:none"><option>Até 50 dos últimos 6 meses</option><option>Últimos 10 processos</option><option>Todos os processos</option></select>
+      <button class="csv" type="button">⤓ Baixar a lista (.csv)</button>
+    </div>
+  </div>
+  <p class="resumo" id="resumo"></p>
+  <div id="lista"></div>
+</main>
+<script>
+var CASOS = [{"numero": "1000910-15.2026.5.02.0714", "tribunal": "TRT2", "uf": "SP", "vara": "14ª Vara do Trabalho de São Paulo - Zona Sul", "classe": "Ação Trabalhista - Rito Ordinário", "assuntos": ["Dispensa Discriminatória"], "ajuizado": "2026-05-15", "pub1": "2026-05-20", "pubN": "2026-11-13", "npubs": 7, "andamento": "andamento", "acordo": false, "marcos": [["2026-05-15", "Ajuizado e distribuído", "chave"], ["2026-05-15", "Audiência de instrução marcada", "aud"], ["2026-05-20", "1ª publicação no Diário", "chave"], ["2026-07-28", "Audiência de conciliação marcada", "aud"], ["2026-07-28", "Audiência de instrução realizada", "aud"], ["2026-09-08", "Última publicação no Diário", "info"], ["2026-11-13", "Publicação sobre a audiência (lida pelo RADAR)", "aud"], ["2026-11-16", "Encontrado pelo RADAR", "radar"]], "cnj_ate": "2026-10-08", "empresa": "Garantia Real Serviços Ltda.", "cnpj": "00.215.548/0001-59", "valor": 141237.64, "advogados": 7, "encontrado": "2026-11-16", "achado_por": "Audiência (publicação de 13/11)", "receita": {"Atividade (CNAE)": "8211-3/00 · serviços combinados de escritório e apoio administrativo", "Porte · capital": "Média ou grande · R$ 1.677.834,60", "Telefone": "(11) 3866-1700", "Endereço": "Rua Cincinato Braga, 144 · Bela Vista · São Paulo/SP · 01333-010", "Sócios e administradores": "4 (2 sócios, 2 administradores)"}}, {"numero": "1000378-80.2024.5.02.0271", "tribunal": "TRT2", "uf": "SP", "vara": "Vara do Trabalho de Embu das Artes", "classe": "Ação Trabalhista - Rito Ordinário", "assuntos": ["Adicional de Insalubridade", "Adicional de Periculosidade", "Horas Extras "], "ajuizado": "2024-02-27", "pub1": "2024-04-30", "pubN": "2026-09-18", "npubs": 16, "andamento": "transito", "acordo": false, "marcos": [["2024-02-27", "Ajuizado e distribuído", "chave"], ["2024-02-27", "Audiência inicial marcada", "aud"], ["2024-04-30", "1ª publicação no Diário", "chave"], ["2024-09-25", "Audiência inicial cancelada", "aud"], ["2024-09-30", "Enviado ao tribunal (recurso)", "info"], ["2024-10-02", "Audiência de instrução marcada", "aud"], ["2024-12-19", "Audiência de instrução realizada", "aud"], ["2024-12-19", "Audiência de instrução marcada", "aud"], ["2025-03-11", "Audiência de instrução realizada", "aud"], ["2025-03-11", "Audiência de instrução marcada", "aud"], ["2025-04-30", "Audiência de instrução realizada", "aud"], ["2025-04-30", "Audiência de julgamento marcada", "aud"], ["2025-05-24", "Sentença: procedente em parte", "fim"], ["2025-07-07", "Enviado ao tribunal (recurso)", "info"], ["2025-07-22", "Audiência de julgamento cancelada", "aud"], ["2025-07-22", "Enviado ao tribunal (recurso)", "info"], ["2026-02-06", "Recebido do tribunal", "info"], ["2026-02-09", "Trânsito em julgado", "fim"], ["2026-02-09", "Execução iniciada", "info"], ["2026-08-07", "Execução extinta", "fim"], ["2026-09-18", "Última publicação no Diário", "info"]], "cnj_ate": "2026-10-08"}, {"numero": "0000387-08.2024.5.09.0128", "tribunal": "TRT9", "uf": "PR", "vara": "04ª VARA DO TRABALHO DE CASCAVEL", "classe": "Ação Trabalhista - Rito Ordinário", "assuntos": ["Justa Causa/Falta Grave", "Adicional de Insalubridade"], "ajuizado": "2024-03-18", "pub1": "2024-03-21", "pubN": "2025-05-20", "npubs": 15, "andamento": "arquivado", "acordo": false, "marcos": [["2024-03-18", "Ajuizado e distribuído", "chave"], ["2024-03-20", "Audiência inicial marcada", "aud"], ["2024-03-21", "1ª publicação no Diário", "chave"], ["2024-05-07", "Audiência inicial realizada", "aud"], ["2024-05-08", "Audiência de instrução marcada", "aud"], ["2024-07-01", "Audiência de instrução realizada", "aud"], ["2024-07-01", "Audiência de instrução marcada", "aud"], ["2024-08-15", "Audiência de instrução cancelada", "aud"], ["2024-08-15", "Audiência de instrução marcada", "aud"], ["2024-10-22", "Audiência de instrução marcada", "aud"], ["2024-10-22", "Audiência de instrução cancelada", "aud"], ["2024-11-22", "Audiência de instrução marcada", "aud"], ["2024-11-22", "Audiência de instrução cancelada", "aud"], ["2024-12-03", "Audiência de instrução realizada", "aud"], ["2024-12-03", "Audiência de julgamento marcada", "aud"], ["2024-12-17", "Sentença: improcedente", "fim"], ["2024-12-17", "Audiência de julgamento cancelada", "aud"], ["2025-02-13", "Enviado ao tribunal (recurso)", "info"], ["2025-05-16", "Recebido do tribunal", "info"], ["2025-05-19", "Trânsito em julgado", "fim"], ["2025-05-20", "Última publicação no Diário", "info"], ["2025-09-04", "Liquidação iniciada", "info"], ["2025-09-04", "Execução extinta", "fim"], ["2025-09-05", "Arquivado definitivamente", "fim"]], "cnj_ate": "2026-11-09"}, {"numero": "0000173-08.2026.5.17.0101", "tribunal": "TRT17", "uf": "ES", "vara": "Vara do Trabalho de Venda Nova do Imigrante", "classe": "Ação Trabalhista - Rito Sumaríssimo", "assuntos": ["Indenização do Prejuízo"], "ajuizado": "2026-03-03", "pub1": "2026-03-04", "pubN": "2026-10-26", "npubs": 10, "andamento": "arquivado", "acordo": false, "marcos": [["2026-03-03", "Ajuizado e distribuído", "chave"], ["2026-03-03", "Audiência de instrução marcada", "aud"], ["2026-03-04", "1ª publicação no Diário", "chave"], ["2026-05-04", "Audiência de instrução realizada", "aud"], ["2026-05-12", "Sentença: procedente em parte", "fim"], ["2026-05-27", "Trânsito em julgado", "fim"], ["2026-05-27", "Execução iniciada", "info"], ["2026-07-10", "Enviado ao tribunal (recurso)", "info"], ["2026-10-21", "Recebido do tribunal", "info"], ["2026-10-23", "Execução extinta", "fim"], ["2026-10-26", "Arquivado definitivamente", "fim"], ["2026-10-26", "Última publicação no Diário", "info"]], "cnj_ate": "2026-11-05"}, {"numero": "0000167-98.2026.5.17.0101", "tribunal": "TRT17", "uf": "ES", "vara": "Vara do Trabalho de Venda Nova do Imigrante", "classe": "Ação Trabalhista - Rito Sumaríssimo", "assuntos": ["Adicional de Insalubridade"], "ajuizado": "2026-03-02", "pub1": "2026-03-03", "pubN": "2026-09-14", "npubs": 8, "andamento": "andamento", "acordo": false, "marcos": [["2026-03-02", "Ajuizado e distribuído", "chave"], ["2026-03-02", "Audiência de instrução marcada", "aud"], ["2026-03-03", "1ª publicação no Diário", "chave"], ["2026-05-04", "Audiência de instrução realizada", "aud"], ["2026-08-18", "Audiência de instrução marcada", "aud"], ["2026-09-14", "Última publicação no Diário", "info"], ["2026-10-21", "Audiência de instrução realizada", "aud"]], "cnj_ate": "2026-11-05"}, {"numero": "0020762-72.2026.5.04.0201", "tribunal": "TRT4", "uf": "RS", "vara": "1ª VARA DO TRABALHO DE CANOAS", "classe": "Ação Trabalhista - Rito Ordinário", "assuntos": ["Indenização por Dano Material", "Indenização por Dano Moral"], "ajuizado": "2026-06-10", "pub1": "2026-06-23", "pubN": "2026-06-23", "npubs": 1, "andamento": "andamento", "acordo": false, "marcos": [["2026-06-10", "Ajuizado e distribuído", "chave"], ["2026-06-22", "Audiência de instrução marcada", "aud"], ["2026-06-23", "1ª publicação no Diário", "chave"], ["2026-10-26", "Audiência de instrução realizada", "aud"]], "cnj_ate": "2026-11-08"}, {"numero": "0010234-04.2026.5.03.0137", "tribunal": "TRT3", "uf": "MG", "vara": "37ª VARA DO TRABALHO DE BELO HORIZONTE", "classe": "Ação Trabalhista - Rito Ordinário", "assuntos": ["Horas Extras ", "Adicional de Insalubridade", "Acidente de Trabalho"], "ajuizado": "2026-03-11", "pub1": "2026-03-16", "pubN": "2026-10-22", "npubs": 9, "andamento": "andamento", "acordo": false, "marcos": [["2026-03-11", "Ajuizado e distribuído", "chave"], ["2026-03-11", "Audiência inicial marcada", "aud"], ["2026-03-13", "Audiência inicial cancelada", "aud"], ["2026-03-13", "Audiência inicial marcada", "aud"], ["2026-03-16", "1ª publicação no Diário", "chave"], ["2026-04-09", "Audiência inicial realizada", "aud"], ["2026-04-09", "Audiência de instrução marcada", "aud"], ["2026-08-18", "Audiência de instrução cancelada", "aud"], ["2026-08-18", "Audiência de instrução marcada", "aud"], ["2026-10-22", "Última publicação no Diário", "info"]], "cnj_ate": "2026-11-06"}, {"numero": "0011025-68.2026.5.15.0062", "tribunal": "TRT15", "uf": "SP", "vara": "CCP ARAÇATUBA - Centro de Conciliação Pré Processual", "classe": "Ação Trabalhista - Rito Ordinário", "assuntos": ["Horas Extras ", "Vício Formal - Pagamento do Adicional de Horas Extras", "Horas Extras"], "ajuizado": "2026-04-10", "pub1": "2026-04-22", "pubN": "2026-10-23", "npubs": 6, "andamento": "sentenca", "acordo": false, "marcos": [["2026-04-10", "Ajuizado e distribuído", "chave"], ["2026-04-11", "Enviado ao tribunal (recurso)", "info"], ["2026-04-15", "Audiência inicial marcada", "aud"], ["2026-04-22", "1ª publicação no Diário", "chave"], ["2026-04-28", "Audiência inicial cancelada", "aud"], ["2026-04-28", "Audiência inicial marcada", "aud"], ["2026-05-14", "Audiência inicial realizada", "aud"], ["2026-05-14", "Audiência de instrução marcada", "aud"], ["2026-09-10", "Audiência de instrução realizada", "aud"], ["2026-09-10", "Enviado ao tribunal (recurso)", "info"], ["2026-09-15", "Sentença: procedente em parte", "fim"], ["2026-10-23", "Última publicação no Diário", "info"]], "cnj_ate": "2026-11-05"}, {"numero": "0101433-93.2026.5.01.0483", "tribunal": "TRT1", "uf": "RJ", "vara": "3ª Vara do Trabalho de Macaé", "classe": "Ação Trabalhista - Rito Sumaríssimo", "assuntos": ["Rescisão do Contrato de Trabalho"], "ajuizado": "2026-06-26", "pub1": "2026-06-30", "pubN": "2026-09-30", "npubs": 5, "andamento": "andamento", "acordo": false, "marcos": [["2026-06-26", "Ajuizado e distribuído", "chave"], ["2026-06-30", "1ª publicação no Diário", "chave"], ["2026-09-29", "Audiência de conciliação marcada", "aud"], ["2026-09-30", "Última publicação no Diário", "info"]], "cnj_ate": "2026-10-15"}, {"numero": "0000386-51.2026.5.09.0096", "tribunal": "TRT9", "uf": "PR", "vara": "01ª VARA DO TRABALHO DE GUARAPUAVA", "classe": "Ação Trabalhista - Rito Sumaríssimo", "assuntos": ["Ônus da Prova ", "Assistência Judiciária Gratuita", "Responsabilidade Solidária/Subsidiária"], "ajuizado": "2026-04-30", "pub1": "2026-07-02", "pubN": "2026-10-27", "npubs": 7, "andamento": "andamento", "acordo": false, "marcos": [["2026-04-30", "Ajuizado e distribuído", "chave"], ["2026-07-01", "Audiência de instrução marcada", "aud"], ["2026-07-02", "1ª publicação no Diário", "chave"], ["2026-08-27", "Audiência de instrução cancelada", "aud"], ["2026-08-27", "Audiência de instrução marcada", "aud"], ["2026-09-03", "Audiência de instrução realizada", "aud"], ["2026-09-08", "Audiência de instrução marcada", "aud"], ["2026-10-27", "Última publicação no Diário", "info"]], "cnj_ate": "2026-11-09"}];
+var HOJE = new Date('2026-11-16T12:00:00');
+var ICONE = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2.75" width="11.5" height="15" rx="2.6" fill="none"/><rect class="frente" x="3.5" y="6.25" width="11.5" height="15" rx="2.6"/></svg>';
+var F = { q:'', periodo:0, tribs:{}, ufs:{}, idade:0, andamento:'', ordem:'ajuizado', ordem2:'', agrupar:'' };
+function $(id) { return document.getElementById(id); }
+function br(d) { return d ? d.slice(8,10) + '/' + d.slice(5,7) + '/' + d.slice(0,4) : '—'; }
+var MES = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'], SEM = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+function longa(d) { var x = new Date(d + 'T12:00:00'); return SEM[x.getDay()] + ', ' + d.slice(8,10) + ' ' + MES[x.getMonth()] + ' ' + d.slice(0,4); }
+function dias(d) { return d ? Math.round((HOJE - new Date(d + 'T12:00:00')) / 86400000) : 99999; }
+function idadeTxt(d) { var n = dias(d); if (n < 31) return 'há ' + n + ' dias'; if (n < 365) return 'há ' + Math.round(n / 30.4) + ' meses'; var a = Math.floor(n / 365); return 'há ' + a + (a > 1 ? ' anos' : ' ano'); }
+function moeda(v) { return v ? 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : ''; }
+function andaTxt(c) { return { andamento:'', acordo:'Com acordo', sentenca:'Com sentença', transito:'Trânsito em julgado', arquivado:'Arquivado' }[c.andamento]; }
+function passa(c, sem) {
+  if (F.q) { var q = F.q.toLowerCase().replace(/[.\-\/]/g, ''); var alvo = (c.numero + ' ' + c.vara + ' ' + (c.empresa || '') + ' ' + (c.cnpj || '') + ' ' + c.assuntos.join(' ')).toLowerCase().replace(/[.\-\/]/g, ''); if (alvo.indexOf(q) < 0) return false; }
+  if (F.periodo && dias(c.pub1) > F.periodo) return false;
+  if (sem !== 'trib' && Object.keys(F.tribs).length && !F.tribs[c.tribunal]) return false;
+  if (sem !== 'uf' && Object.keys(F.ufs).length && !F.ufs[c.uf]) return false;
+  if (F.idade && dias(c.ajuizado || c.pub1) > F.idade) return false;
+  if (F.andamento) { var a = c.andamento; if (F.andamento === 'fim' ? !(a === 'transito' || a === 'arquivado') : F.andamento === 'acordo' ? !c.acordo : F.andamento === 'sentenca' ? !(a === 'sentenca' || a === 'transito' || a === 'arquivado') : a !== 'andamento') return false; }
+  return true;
+}
+function chave(c, k) { if (k === 'ajuizado') return c.ajuizado; if (k === 'pub1') return c.pub1; if (k === 'valor') return String(c.valor || 0).padStart(14, '0'); if (k === 'vara') return c.vara; if (k === 'empresa') return c.empresa || 'zzz'; if (k === 'hora') return c.encontrado || ''; return ''; }
+function compara(a, b) {
+  var desc = { ajuizado:1, pub1:1, valor:1, hora:1 };
+  function um(k) { if (!k) return 0; var x = chave(a, k), y = chave(b, k); return desc[k] ? (y > x ? 1 : y < x ? -1 : 0) : x.localeCompare(y, 'pt-BR'); }
+  return um(F.ordem) || um(F.ordem2);
+}
+function multi(id, campo, lista, rotulo, plural) {
+  var p = $('p-' + id), b = $('b-' + id), cont = {};
+  CASOS.forEach(function (c) { if (passa(c, id)) cont[c[campo]] = (cont[c[campo]] || 0) + 1; });
+  p.innerHTML = '';
+  lista.forEach(function (v) {
+    var l = document.createElement('label'); l.innerHTML = '<input type="checkbox"' + (F[campo === 'tribunal' ? 'tribs' : 'ufs'][v] ? ' checked' : '') + '> ' + v + ' <small>' + (cont[v] || 0) + '</small>';
+    l.querySelector('input').onchange = function (e) { var o = F[campo === 'tribunal' ? 'tribs' : 'ufs']; if (e.target.checked) o[v] = 1; else delete o[v]; desenha(); $('m-' + id).classList.add('aberto'); };
+    p.appendChild(l);
+  });
+  var sel = Object.keys(F[campo === 'tribunal' ? 'tribs' : 'ufs']);
+  b.textContent = (!sel.length ? rotulo : sel.length === 1 ? sel[0] + ' (' + (cont[sel[0]] || 0) + ')' : rotulo + ' (' + sel.length + ')') + ' ▾';
+  b.classList.toggle('on', sel.length > 0);
+  b.title = sel.length ? plural + ':\n' + sel.map(function (v) { return v + ' (' + (cont[v] || 0) + ')'; }).join('\n') : '';
+}
+function cartao(c, i) {
+  var velho = dias(c.ajuizado) > (F.idade || 30), fins = c.marcos.filter(function (m) { return m[2] === 'fim'; });
+  var mini = c.marcos.filter(function (m) { return m[2] === 'chave'; }).slice(0, 2).concat(fins.slice(-1));
+  var aud = c.marcos.filter(function (m) { return m[2] === 'aud'; }).slice(-1); if (mini.length < 4 && aud.length) mini.push(aud[0]);
+  mini.sort(function (a, b) { return a[0].localeCompare(b[0]); });
+  var titulo = c.empresa ? c.empresa : '<span class="cinza">' + c.classe + '</span>';
+  var h = '<article class="item' + (velho ? ' velho' : '') + (i === 0 ? ' aberto' : '') + '"><div class="cab">' +
+    '<input type="checkbox" onclick="event.stopPropagation()" aria-label="Selecionar">' +
+    '<div><div class="nome">' + titulo + '</div><div class="meta"><span class="d1">AJUIZADO ' + longa(c.ajuizado) + '</span>' +
+    '<span>' + c.tribunal + '</span><span class="num">Processo ' + c.numero + ' <button class="copiar" title="Copiar o número do processo" data-c="' + c.numero + '">' + ICONE + '</button></span><span>' + c.vara + '</span></div></div>' +
+    '<div class="valor">' + (c.valor ? moeda(c.valor) + '<small>valor da causa</small>' : 'valor a conferir<small>no PJe (área logada)</small>') + '</div>' +
+    '<div class="marcos"><span class="idade ' + (velho ? 'velho' : 'novo') + '">' + (velho ? 'PROCESSO ANTIGO · ' : 'NOVO · ') + idadeTxt(c.ajuizado).toUpperCase() + '</span>' +
+    mini.map(function (m) { return '<span class="mk ' + m[2] + '">' + br(m[0]) + ' · ' + m[1] + '</span>'; }).join('') +
+    (c.marcos.length > mini.length ? '<span class="cinza" style="color:var(--tinta-3)">+' + (c.marcos.length - mini.length) + ' marcos na ficha</span>' : '') + '</div></div>';
+  h += '<div class="ficha"><h4>JORNADA DO PROCESSO <span style="font-weight:400">(' + c.marcos.length + ' marcos; o de rotina fica fora)</span> <span class="fonte f-cnj">CNJ</span><span class="fonte f-djen">DIÁRIO</span></h4><ul class="jornada">' +
+    c.marcos.map(function (m) { return '<li class="' + m[2] + '"><b>' + br(m[0]) + '</b> ' + m[1] + '</li>'; }).join('') + '</ul>';
+  var proc = '<table><tr><td>Número</td><td class="v">' + c.numero + '<button class="copiar" title="Copiar" data-c="' + c.numero + '">' + ICONE + '</button></td></tr>' +
+    '<tr><td>Classe</td><td>' + c.classe + ' <span class="fonte f-cnj">CNJ</span></td></tr><tr><td>Assunto</td><td>' + (c.assuntos.join(', ') || '—') + ' <span class="fonte f-cnj">CNJ</span></td></tr>' +
+    '<tr><td>Ajuizado em</td><td>' + br(c.ajuizado) + ' (' + idadeTxt(c.ajuizado) + ') <span class="fonte f-cnj">CNJ</span></td></tr>' +
+    '<tr><td>1ª publicação no Diário</td><td>' + br(c.pub1) + '</td></tr><tr><td>Última publicação no Diário</td><td>' + br(c.pubN) + ' · ' + c.npubs + ' dias de publicação</td></tr>' +
+    (c.encontrado ? '<tr><td>Encontrado pelo RADAR</td><td>' + br(c.encontrado) + ' · ' + c.achado_por + '</td></tr>' : '') +
+    '<tr><td>Andamento</td><td>' + (andaTxt(c) || 'Sem acordo nem sentença até ' + br(c.cnj_ate)) + '</td></tr>' +
+    '<tr><td>Advogado da empresa</td><td>' + (c.advogados ? '<b>Já tem</b> (' + c.advogados + ' constituídos) <span class="fonte f-djen">DIÁRIO</span>' : '<span class="vazio">o Diário traz os advogados intimados</span>') + '</td></tr></table>';
+  var emp = '<table>';
+  if (c.empresa) {
+    emp += '<tr><td>Razão social</td><td class="v">' + c.empresa + ' <button class="copiar" title="Copiar" data-c="' + c.empresa + '">' + ICONE + '</button></td></tr>';
+    emp += '<tr><td>CNPJ</td><td class="v">' + c.cnpj + ' <button class="copiar" title="Copiar" data-c="' + c.cnpj + '">' + ICONE + '</button></td></tr>';
+    Object.keys(c.receita).forEach(function (k) { var v = c.receita[k], cp = (k === 'Telefone' || k.indexOf('CNAE') >= 0) ? ' <button class="copiar" title="Copiar" data-c="' + v.split(' · ')[0] + '">' + ICONE + '</button>' : ''; emp += '<tr><td>' + k + '</td><td class="v"><span>' + v + ' <span class="fonte f-rf">RECEITA</span></span>' + cp + '</td></tr>'; });
+  } else emp += '<tr><td colspan="2" class="vazio">No RADAR, a empresa vem do Diário (com CNPJ, Receita, telefone e sócios). Neste protótipo ela não aparece porque o CNJ não traz as partes.</td></tr>';
+  emp += '</table>';
+  h += '<div class="colunas"><div><h4>EMPRESA</h4>' + emp + '</div><div><h4>PROCESSO</h4>' + proc + '</div></div></div></article>';
+  return h;
+}
+function desenha() {
+  F.q = $('busca').value.trim(); F.periodo = +$('periodo').value; F.idade = +$('idade').value; F.andamento = $('andamento').value;
+  F.ordem = $('ordem').value; F.ordem2 = $('ordem2').value; F.agrupar = $('agrupar').value;
+  $('alcance').style.display = F.agrupar ? '' : 'none'; $('ordem').disabled = $('ordem2').disabled = !!F.agrupar;
+  multi('trib', 'tribunal', ['TRT1','TRT2','TRT3','TRT4','TRT9','TRT15','TRT17'], 'Tribunais', 'Tribunais selecionados');
+  multi('uf', 'uf', ['ES','MG','PR','RJ','RS','SP'], 'Estados', 'Estados selecionados');
+  var vis = CASOS.filter(function (c) { return passa(c); }).sort(F.agrupar ? function (a, b) { return (a.empresa || a.numero).localeCompare(b.empresa || b.numero) || b.ajuizado.localeCompare(a.ajuizado); } : compara);
+  var nf = (F.q ? 1 : 0) + (F.periodo ? 1 : 0) + Object.keys(F.tribs).length + Object.keys(F.ufs).length + (F.idade ? 1 : 0) + (F.andamento ? 1 : 0);
+  $('limpar').disabled = !nf; $('limpar').textContent = nf ? 'Limpar (' + nf + ')' : 'Limpar';
+  $('resumo').innerHTML = '<b>' + vis.length + '</b> de ' + CASOS.length + ' processos reais (públicos, CNJ, 16/11/2026) · ordem: ' + $('ordem').selectedOptions[0].text.toLowerCase();
+  $('lista').innerHTML = vis.length ? vis.map(cartao).join('') : '<div class="vazio-lista">Nenhum processo com estes filtros. Tente "Idade do processo: qualquer" ou "No Diário: todos".</div>';
+}
+document.addEventListener('click', function (e) {
+  var cp = e.target.closest('.copiar'); if (cp) { e.stopPropagation(); try { navigator.clipboard.writeText(cp.dataset.c); } catch (x) {} cp.classList.add('feito'); setTimeout(function () { cp.classList.remove('feito'); }, 1400); return; }
+  var cab = e.target.closest('.cab'); if (cab && !e.target.closest('input')) { cab.parentNode.classList.toggle('aberto'); return; }
+  ['trib', 'uf'].forEach(function (id) { var m = $('m-' + id); if (e.target.closest('#b-' + id)) m.classList.toggle('aberto'); else if (!e.target.closest('#m-' + id)) m.classList.remove('aberto'); });
+  if (e.target.id === 'b-mais') { $('mais').classList.toggle('aberto'); e.target.classList.toggle('on'); }
+  if (e.target.id === 'limpar') { $('busca').value = ''; $('periodo').value = '0'; $('idade').value = '0'; $('andamento').value = ''; F.tribs = {}; F.ufs = {}; desenha(); }
+});
+['busca', 'periodo', 'idade', 'andamento', 'ordem', 'ordem2', 'agrupar'].forEach(function (id) { $(id).addEventListener(id === 'busca' ? 'input' : 'change', desenha); });
+function cabe() {  /* como o programa: no notebook, os rótulos encurtam para caber numa linha */
+  var l = document.querySelector('.linha1'), n = l.scrollWidth > l.clientWidth + 1;
+  $('busca').placeholder = n ? 'Procurar…' : 'Procurar empresa, nº ou CNPJ'; $('b-mais').textContent = n ? 'Mais ▾' : 'Mais filtros ▾';
+}
+window.addEventListener('resize', cabe);
+desenha(); cabe();
+</script>
+</body>
+</html>
