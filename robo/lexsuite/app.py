@@ -349,6 +349,12 @@ _TRAVA_REGRAS = radar.TRAVA_REGRAVAR  # revisão da 0.7.29: a mesma trava de tod
 
 
 class Servidor(ThreadingHTTPServer):
+    def handle_error(self, request, client_address):  # 0.7.50: conexão fechada pela tela não vira rastro assustador no registro
+        import sys as _sys
+        if isinstance(_sys.exc_info()[1], (ConnectionAbortedError, ConnectionResetError, BrokenPipeError)):
+            return
+        super().handle_error(request, client_address)
+
     daemon_threads = True
     allow_reuse_address = True
 
@@ -563,8 +569,13 @@ class Tratador(BaseHTTPRequestHandler):
             self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; "
                              "img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; "
                              "form-action 'self'; frame-ancestors 'none'")
-        self.end_headers()
-        self.wfile.write(corpo)
+        try:
+            self.end_headers()
+            self.wfile.write(corpo)
+        except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
+            # 0.7.50 (dono): a tela fechou a conexão antes da resposta (recarregou, trocou de aba, saiu; WinError 10053/10054).
+            # Não é falha do programa: nada de rastro técnico no registro.
+            self.close_connection = True
 
     def _host_local(self):
         """Só 127.0.0.1 ou localhost nesta porta: um site malicioso com DNS rebinding não passa."""
@@ -765,7 +776,20 @@ class Tratador(BaseHTTPRequestHandler):
                     texto = f.read().decode("utf-8", "replace")
             except OSError:
                 texto = ""
-            return self._responder({"ok": True, "texto": "\n".join(texto.splitlines()[-400:]), "caminho": arq})
+            linhas_ = texto.splitlines()[-400:]
+            # 0.7.50 (dono): "Enviar ao suporte" monta o e-mail com o que a SolverONE precisa para achar o escritório, sem a licença
+            # inteira (só os 4 últimos) e sem a pasta do usuário do Windows (que traz o nome da pessoa)
+            import platform
+            cfg_ = s.config()
+            cod_ = conta.normalizar((cfg_.get("conta") or {}).get("codigo"))
+            suporte_ = {"versao": VERSAO, "windows": f"{platform.system()} {platform.release()}"[:60],
+                        "email": str((cfg_.get("usuario") or {}).get("email") or "")[:120],
+                        "instalacao": str((cfg_.get("conta") or {}).get("instalacao") or "")[:40],
+                        "licenca": ("LEX-\u2022\u2022\u2022\u2022-" + cod_[-4:]) if conta.valido(cod_) else "",
+                        "escritorio": str(cfg_.get("escritorio") or (cfg_.get("conta") or {}).get("escritorio_licenca") or "")[:80],
+                        "endereco": "judicial@solverone.com.br"}
+            return self._responder({"ok": True, "texto": "\n".join(linhas_), "caminho": arq, "suporte": suporte_,
+                                    "texto_suporte": conta._sem_caminho_pessoal("\n".join(linhas_))})
         if u.path == "/pastas":
             cfg = s.config()
             cand = compartilhar.candidatas()
@@ -951,6 +975,20 @@ class Tratador(BaseHTTPRequestHandler):
                         r_lp[k_] = int(corpo[k_])
                     except (TypeError, ValueError, OverflowError):
                         pass
+            prazos_salvos_ = None
+            if corpo.get("salvar_prazos"):  # 0.7.50 (dono): limpar com prazos novos já os grava; a janela não fica com nada pendente
+                res_, apa_ = r_lp.get("resumir_meses"), r_lp.get("apagar_meses")
+                if not (isinstance(res_, int) and isinstance(apa_, int) and 1 <= res_ <= 120 and (apa_ == 0 or (6 <= apa_ <= 240 and apa_ >= res_))):
+                    return self._responder({"ok": False, "motivo": "Prazos da limpeza: resumir de 1 a 120 meses; apagar 0 (nunca) ou de 6 a 240 meses, e nunca menor que resumir.",
+                                            "motivo_en": "Clean-up periods: summarise from 1 to 120 months; delete 0 (never) or from 6 to 240 months, never less than summarise."})
+                cfg_lp = s.config()
+                cfg_lp.setdefault("radar", {})["resumir_meses"], cfg_lp["radar"]["apagar_meses"] = res_, apa_
+                try:
+                    config.salvar(s.caminho_config, cfg_lp)
+                    prazos_salvos_ = [res_, apa_]
+                except OSError:
+                    return self._responder({"ok": False, "motivo": "Não consegui gravar os prazos novos; nada foi limpo.",
+                                            "motivo_en": "Could not save the new periods; nothing was cleaned."})
             s.limpando, s.limpeza_resultado = True, None
 
             def limpar_():
@@ -965,7 +1003,7 @@ class Tratador(BaseHTTPRequestHandler):
                 finally:
                     s.limpando = False
             threading.Thread(target=limpar_, daemon=True, name="limpeza").start()
-            return self._responder({"ok": True, "iniciado": True})
+            return self._responder({"ok": True, "iniciado": True, "prazos_salvos": prazos_salvos_})
         if caminho == "/limpeza/estado":
             return self._responder({"ok": True, "rodando": bool(getattr(s, "limpando", False)), "resultado": getattr(s, "limpeza_resultado", None)})
         if caminho == "/interromper":  # 0.7.15: pede para a leitura (desta tela ou a agendada) parar no próximo ponto seguro

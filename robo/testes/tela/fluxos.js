@@ -365,9 +365,9 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.evaluate(() => document.getElementById('b-limpar-filtros').click()); await espera(500);
     // limpeza do banco em Armazenamento: prazos, o que nunca sai e confirmação em dois cliques
     await abrirConfig(p); await espera(700);
-    const lp = await p.evaluate(() => { const w = document.getElementById('c-limpeza'); return w ? { t: w.innerText, r: document.getElementById('c-res-meses').value, a: document.getElementById('c-apa-meses').value, dentro: !!w.closest('#c-arm-wrap') } : null; });
-    confere(lp && lp.dentro && lp.r === '6' && lp.a === '24' && /O que nunca sai/.test(lp.t), 'Limpeza: em Armazenamento, prazos 6 e 24 meses e "O que nunca sai"');
-    const ok1 = await p.evaluate(() => { const bt = [...document.querySelectorAll('#c-limpeza button')].find(x => /Limpar o banco agora/.test(x.textContent)); bt.click(); return { bt: bt.textContent, msg: document.getElementById('c-limpeza').innerText }; });
+    const lp = await p.evaluate(() => { const w = document.getElementById('c-limpeza'); return w ? { t: w.innerText, r: document.getElementById('c-res-meses').value, a: document.getElementById('c-apa-meses').value, dentro: !!w.closest('#c-limpeza-wrap') } : null; });
+    confere(lp && lp.dentro && lp.r === '6' && lp.a === '24' && /O que nunca sai/.test(lp.t), 'Limpeza: na Rotina de limpeza (0.7.50), prazos 6 e 24 meses e "O que nunca sai"');
+    const ok1 = await p.evaluate(() => { const bt = [...document.querySelectorAll('#c-limpeza button')].find(x => /^Limpar agora$/.test(x.textContent)); bt.click(); return { bt: bt.textContent, msg: document.getElementById('c-limpeza').innerText }; });
     confere(/Confirmar a limpeza/.test(ok1.bt) && /Clique de novo para confirmar/.test(ok1.msg), 'Limpeza: o primeiro clique só pede confirmação');
     await p.evaluate(() => [...document.querySelectorAll('#c-limpeza button')].find(x => /Confirmar a limpeza/.test(x.textContent)).click());
     await p.waitForFunction(() => /Limpeza feita/.test(document.getElementById('c-limpeza').innerText), null, { timeout: 15000 }).catch(() => {});
