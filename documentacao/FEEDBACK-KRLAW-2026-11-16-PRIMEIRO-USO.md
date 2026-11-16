@@ -85,12 +85,26 @@ ajuizamento: a API respondeu "ocupado" várias vezes; nova tentativa em segundo 
 
 **Processo achado (Produto, 16/Nov, DataJud do CNJ; acesso público, sem pessoa física):** **1000910-15.2026.5.02.0714** — 14ª VT de
 São Paulo - Zona Sul; ajuizado em **15/05/2026 13:15:22**; "Dispensa Discriminatória"; Ação Trabalhista - Rito Ordinário; Juízo 100%
-Digital. **1ª publicação no Diário: 20/05/2026**; 13 publicações até 08/09/2026 (o DataJud está atualizado até 08/10/2026, ~1 mês de
+Digital. **1ª publicação no Diário: 20/05/2026**; 6 dias de publicação até 08/09/2026 (13 movimentos, em dobro; o DataJud está atualizado até 08/10/2026, ~1 mês de
 atraso); audiências de conciliação e de instrução designadas em 28/07. Logo, a publicação de 13/11 que o RADAR achou é mais uma
 sobre audiência (o sinal "audiência … de conciliação" de `_INICIO` casou). **Confirmado: falso positivo por sinal fraco, não atraso do
 tribunal.** Como achamos: busca por vara e dia de ajuizamento; o número faltante na sequência da vara (0909, 0911…) + dígito
 verificador CNJ. Lições para o desenho: o DataJud responde daqui (o DJEN não), mas recusa por excesso de pedidos (várias tentativas e
 uma resposta parcial: "total 1" sem o documento) — precisa de fila e de "tentar de novo".
+
+### Amostra de outros tribunais (DataJud, 16/Nov; TRT9 com 4 processos de mar–abr/2026; TRT17 e outros chegando)
+- **1ª publicação nem sempre fica perto do ajuizamento**: Guarapuava, ajuizado 30/04, 1ª publicação **02/07** (2 meses); Londrina 24/03 →
+  27/03; Ponta Grossa 25/03 → 26/03; Maringá 05/03 → 09/03. Conclusão: o critério de "novo" deve ser o **ajuizamento** (quando o CNJ
+  tiver); a 1ª publicação é a aproximação quando o CNJ ainda não tem o processo (o CNJ atualiza com atraso: TRT9 até 09/11, TRT2 até 08/10).
+- **A jornada varia muito** e os andamentos vêm com código padronizado (tabela do CNJ), então dá para montar sozinha: audiência inicial
+  (12747), de instrução (12749), de julgamento (12751), com situação "designada/realizada/cancelada/redesignada"; antecipação de tutela
+  (785); gratuidade (787); acordo homologado (466); sentença procedente em parte (221) ou improcedente (220); trânsito em julgado (848);
+  liquidação (11384); remessa ao tribunal (123); mandados (985, 106). Andamentos de rotina (petição, expedição, publicação, conclusão,
+  prazo) ficam fora da jornada.
+- **Valor para o escritório**: processo com acordo, sentença ou trânsito em julgado já não é oportunidade; com "advogado constituído"
+  da empresa (Diário traz os advogados intimados), provavelmente já defendida. Propor etiquetas: "Já tem acordo", "Já sentenciado",
+  "Empresa já tem advogado".
+- Protótipo com tudo o que as fontes públicas trazem do caso real: `documentacao/prototipos/datas-do-processo/prototipo-fontes-publicas.html`.
 
 ## 2. "O filtro talvez não esteja funcionando corretamente, ou eu não estou sabendo filtrar"
 - Não disse qual filtro. Perguntar ao Leandro (pelo dono): qual filtro, o que escolheu, o que esperava e o que apareceu (print).
