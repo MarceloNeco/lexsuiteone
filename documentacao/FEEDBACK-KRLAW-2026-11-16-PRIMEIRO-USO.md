@@ -104,6 +104,11 @@ uma resposta parcial: "total 1" sem o documento) — precisa de fila e de "tenta
 - **Valor para o escritório**: processo com acordo, sentença ou trânsito em julgado já não é oportunidade; com "advogado constituído"
   da empresa (Diário traz os advogados intimados), provavelmente já defendida. Propor etiquetas: "Já tem acordo", "Já sentenciado",
   "Empresa já tem advogado".
+- Amostra completa (TRT9, TRT17, TRT4, TRT3, TRT15, TRT1; processos de mar–jun/2026): a 1ª publicação vem de 1 a 13 dias depois
+  do ajuizamento na maioria, mas chega a 2 meses (Guarapuava). **Rito sumaríssimo anda rápido**: em Venda Nova do Imigrante (TRT17),
+  ajuizado 03/03, sentença 12/05, trânsito em julgado 27/05 — a janela de oportunidade pode ser de semanas. **Classe importa**:
+  "Cumprimento Provisório de Sentença" (TRT17, distribuído por dependência) não é ação nova; distribuição "por dependência" ou com
+  "reconhecimento de prevenção" pede cuidado. O CNJ estava atualizado de 05/11 a 09/11 nesses tribunais (TRT2: 08/10).
 - Protótipo com tudo o que as fontes públicas trazem do caso real: `documentacao/prototipos/datas-do-processo/prototipo-fontes-publicas.html`.
 
 ## 2. "O filtro talvez não esteja funcionando corretamente, ou eu não estou sabendo filtrar"
