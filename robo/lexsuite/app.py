@@ -1212,6 +1212,41 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": True, "empresas": radar.processos_das_empresas(s.config(), banco, chaves, str(corpo.get("alcance") or "hibrido"))})
             finally:
                 banco.con.close()
+        if caminho in ("/empresas/cnpj-provavel", "/empresas/usar-cnpj", "/empresas/copiar-contato", "/contatos/desfazer-copia"):  # 0.7.50
+            banco = bd.Banco(s.caminho_db)
+            try:
+                quem = s.config()["usuario"].get("email", "")
+                nome_, cnpj_ = str(corpo.get("nome") or "")[:200], str(corpo.get("cnpj") or "")[:20]
+                if caminho == "/empresas/cnpj-provavel":
+                    return self._responder({"ok": True, "sugestao": radar.cnpj_provavel(banco, nome_)})
+                if caminho == "/empresas/usar-cnpj":
+                    from . import documento
+                    if not documento.valido(cnpj_):
+                        return self._responder({"ok": False, "motivo": "CNPJ inválido.", "motivo_en": "Invalid tax ID."})
+                    return self._responder({"ok": True, "processos": radar.usar_cnpj(banco, nome_, cnpj_, quem)})
+                if caminho == "/empresas/copiar-contato":
+                    try:
+                        dias_ = max(1, min(3660, int(corpo.get("dias") or 90)))
+                    except (TypeError, ValueError):
+                        dias_ = 90
+                    return self._responder(dict(radar.copiar_contato_empresa(s.config(), banco, str(corpo.get("chave") or "")[:120], dias_, cnpj_, nome_, quem), ok=True))
+                ids_ = corpo.get("ids") if isinstance(corpo.get("ids"), list) else []
+                return self._responder({"ok": True, "desfeitos": banco.desfazer_copia(ids_)})
+            finally:
+                banco.con.close()
+        if caminho == "/regras/excluir-uma":  # 0.7.50 (decisão 49): "Excluir esta empresa" no cabeçalho do bloco
+            area_ = corpo.get("area") if corpo.get("area") in preferencias.AREAS else "trabalhista"
+            nome_, cnpj_ = str(corpo.get("nome") or "").strip()[:200], str(corpo.get("cnpj") or "").strip()[:20]
+            if not nome_ and not cnpj_:
+                return self._responder({"ok": False, "motivo": "Empresa sem nome.", "motivo_en": "Company without a name."})
+            with _TRAVA_REGRAS:
+                try:
+                    vals_, exc_ = preferencias.criterios_da_area(s.pasta, area_)
+                    exc_ = list(exc_) + [{"nome": nome_ or cnpj_, "cnpj": cnpj_ or None, "motivo": "Excluída pelo agrupamento por empresa"}]
+                    preferencias.salvar_area(s.pasta, area_, vals_, exc_)
+                except (ValueError, OSError):
+                    return self._responder({"ok": False, "motivo": "Não consegui gravar a exclusão neste computador.", "motivo_en": "Could not save the exclusion on this computer."})
+            return self._responder({"ok": True})
         if caminho == "/area-logada/cancelar":
             banco = bd.Banco(s.caminho_db)
             banco.area_cancelar(str(corpo.get("id") or "")[:40])
