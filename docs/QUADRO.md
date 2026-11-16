@@ -30,6 +30,7 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 16/Nov: **0.7.50 REVISADA e PUBLICADA** (o dono: "publica a versão 0.7.50"). Diff `a4906d3..a68c2af` (entre a `v0.7.49` e `a4906d3` nenhum código mudou); folha `documentacao/dod/0.7.50.md` lida contra o diff com os textos abertos: 13 pontos preenchidos e verdadeiros (ressalvas de texto abaixo); `test_dod.py` OK; `rodar_tudo.sh` TUDO OK; Bandit sem achados. Sem bloqueio. Automação verde, tag `v0.7.50`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.50 no ar, completo com a 0.7.50. Integração: nenhuma nova; roadmap: agrupamento por empresa completo.
 - 15/Nov: **0.7.49 REVISADA e PUBLICADA** (o dono: "publica a versão 0.7.49"). Folha `documentacao/dod/0.7.49.md` lida contra o diff, com os textos abertos (manual, AssistONE ajuda/tour/busca, Wizard, Novidades 9 linhas PT e EN, e-mail): 13 pontos preenchidos e verdadeiros; `test_dod.py` OK; `rodar_tudo.sh` TUDO OK; Bandit sem achados. Ressalva levada ao dono antes de publicar: o Modo diz "Não incluído na sua licença" para Tributário, Cível, Empresarial e Penal sem consultar a licença (a KR Law contratou tributário); **o dono decidiu publicar assim** (troca do texto fica para a próxima versão; pedido à Produto). Automação verde, tag `v0.7.49`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.49 no ar, completo com a 0.7.49 e o `.bat` corrigido. Integração: nenhuma nova; roadmap: filtros prontos e agrupamento por empresa concluídos.
 - 15/Nov: **Regra nova registrada (decisão do dono):** na revisão de toda versão, e de tudo o que o cliente vê fora de versão (instaladores, e-mail), a Operação lê `documentacao/dod/<versão>.md` (13 pontos) contra o que mudou, abre os textos citados e não publica com ponto falso, vago ou em branco. `test_dod.py` OK. Os instaladores corrigidos (`0f1414e`) já tinham ido ao ar em `ba38b72` com o "pode publicar os instaladores corrigidos da 0.7.48"; a folha `0.7.48.md` não os cita (pedido à Produto).
 - 15/Nov: **Instaladores corrigidos da 0.7.48 no site** (o dono: "pode publicar os instaladores corrigidos da 0.7.48"). Só `instalador/*.bat` e `docs/downloads/*.zip` do commit `0f1414e` da Produto (`try/catch` com `exit 2` no PowerShell: erro inesperado vai ao `tasklist`, nunca "o antivírus encerrou"); CRLF, `marca.py --conferir` em dia, `test_v0747_instalador` OK, completo com a 0.7.48; commit `ba38b72`; os dois zips do site iguais aos do repositório. Programa e versão não mudaram (continua `v0.7.48`). Integração: nenhuma.
@@ -689,6 +690,13 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   `git checkout origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e rode `python ferramentas/marca.py
   --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
 
+- **Operação → Produto (16/Nov, ressalvas da revisão da 0.7.50, publicada; nenhuma é bloqueio):** (1) "Excluir esta empresa"
+  (`app.py` `/regras/excluir-uma` + `preferencias.py:518-519`): com CNPJ, a exclusão ainda casa pelo nome exato e tira também homônimo
+  de outro CNPJ (comportamento da 0.7.36); gravar só pelo CNPJ quando houver, ou dizer na confirmação; (2) "CNPJ provável"
+  (`radar.py` `cnpj_provavel`/`usar_cnpj`): `chave_empresa` ignora LTDA/S.A., então "X Ltda" e "X S.A." podem receber o mesmo CNPJ
+  depois da confirmação; usar `chave_exata` ou mostrar na janela os nomes exatos; (3) Novidades: "Inclusão da caixinha…" (coloquial)
+  e EN "Grouping range now applies…" ("now"); (4) `paginas/manual.html:237` ainda diz "limpeza automática" (o resto diz "rotina de
+  limpeza"); (5) baixo: pré-filtro `LIKE` sem acento em `radar.py` pode omitir sugestão de CNPJ.
 - **Operação → Produto (15/Nov, próxima versão, depois da 0.7.49):** o seletor de Modo afirma "Não incluído na sua licença" /
   "O modo Tributário não está incluído na licença deste escritório" sem consultar a licença; para a KR Law (trabalhista e tributário)
   a frase é falsa. O dono publicou a 0.7.49 assim; na próxima: ler da licença ou trocar por um texto verdadeiro hoje (tela
