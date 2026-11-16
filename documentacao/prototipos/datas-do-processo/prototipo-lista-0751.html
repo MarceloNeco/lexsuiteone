@@ -77,15 +77,16 @@
   .jr-resumo .ponto { color:var(--tinta-3); letter-spacing:.3em; }
   .jr-resumo .chv { margin-left:auto; color:var(--tinta-3); display:inline-block; transition:transform .2s; font-size:1.1rem; }
   .jr.aberta .jr-resumo .chv { transform:rotate(90deg); }
-  .jr-todos { display:none; grid-template-columns:1fr 40px 1fr; margin-top:10px; }
+  .jr-todos { display:none; grid-template-columns:1fr 56px 1fr; align-items:start; margin-top:10px; position:relative; }
+  .jr-todos svg.liga { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
   .jr.aberta .jr-todos { display:grid; }
   .jr-todos ul { list-style:none; margin:0; padding:0 0 0 18px; border-left:3px solid var(--linha); }
   .jr-todos li { position:relative; padding:4px 0 8px 14px; font-size:.88rem; }
   .jr-todos li::before { content:""; position:absolute; left:-27px; top:8px; width:12px; height:12px; border-radius:50%; background:#fff; border:3px solid var(--tinta-3); }
   .jr-todos li.chave::before { border-color:var(--ok); } .jr-todos li.aud::before { border-color:var(--latao); } .jr-todos li.fim::before { border-color:var(--er); } .jr-todos li.radar::before { border-color:var(--azul); }
   .jr-todos b { display:inline-block; min-width:88px; font-variant-numeric:tabular-nums; }
-  .seta-col { display:flex; justify-content:center; }
-  @media (max-width:760px) { .jr-todos { grid-template-columns:1fr; } .seta-col { display:none; } }
+  .seta-col { width:56px; }
+  @media (max-width:760px) { .jr-todos { grid-template-columns:1fr; } .seta-col, .jr-todos svg.liga { display:none; } }
   .mk.pub { background:#f3f5f8; color:var(--tinta-2); }
   .grupo { background:#fff; border:1px solid var(--linha); border-radius:12px; margin:12px 0; padding:0 0 4px; }
   .g-cab { display:flex; gap:12px; align-items:center; padding:12px 18px; border-bottom:1px solid var(--linha); flex-wrap:wrap; }
@@ -201,7 +202,7 @@ function multi(id, campo, lista, rotulo, plural) {
 }
 function cartao(c, i) {
   var velho = dias(c.ajuizado) > (F.idade || 30), fins = c.marcos.filter(function (m) { return m[2] === 'fim'; });
-  var mini = c.marcos.filter(function (m) { return m[2] === 'chave'; }).slice(0, 2).concat(fins.slice(-1));
+  var mini = c.marcos.filter(function (m) { return m[2] === 'chave' && m[1].indexOf('1ª publicação') !== 0; }).slice(0, 1).concat(fins.slice(-1));  /* dono: no cartão, o ajuizamento basta; a 1ª publicação fica na ficha */
   var aud = c.marcos.filter(function (m) { return m[2] === 'aud'; }).slice(-1); if (mini.length < 4 && aud.length) mini.push(aud[0]);
   mini.sort(function (a, b) { return a[0].localeCompare(b[0]); });
   var titulo = c.empresa ? c.empresa : '<span class="cinza">' + c.classe + '</span>';
@@ -215,7 +216,7 @@ function cartao(c, i) {
     (c.marcos.length > mini.length ? '<span class="cinza" style="color:var(--tinta-3)">+' + (c.marcos.length - mini.length) + ' marcos na ficha</span>' : '') + '</div></div>';
   var fontesTxt = c.empresa ? 'Datas e andamentos: CNJ (DataJud, base pública dos processos). Publicações e partes: Diário de Justiça (DJEN). Empresa: Receita Federal. Valor da causa: área logada (PJe). Todas responderam.' : 'Datas e andamentos: CNJ (DataJud). Publicações: Diário de Justiça (DJEN). As duas fontes responderam. A empresa vem do Diário.';
   var meio = Math.ceil(c.marcos.length / 2), col = function (l) { return '<ul>' + l.map(function (m) { return '<li class="' + m[2] + '"><b>' + br(m[0]) + '</b> ' + m[1] + '</li>'; }).join('') + '</ul>'; };
-  var seta = '<div class="seta-col"><svg width="34" height="100%" viewBox="0 0 34 200" preserveAspectRatio="none" aria-hidden="true"><path d="M4 196 C 20 150, 14 60, 28 10" fill="none" stroke="#b8bfcc" stroke-width="1.6" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/><path d="M22 14 L28 6 L31 16" fill="none" stroke="#b8bfcc" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg></div>';
+  var seta = '<div class="seta-col"></div>';
   var pri = c.marcos[0], ult = c.marcos[c.marcos.length - 1];
   h += '<div class="ficha"><div class="jr"><div class="jr-cab"><h4>JORNADA DO PROCESSO</h4><span class="fonte f-cnj">CNJ</span><span class="fonte f-djen">DIÁRIO</span><span class="q" title="' + fontesTxt + '">?</span></div>' +
     '<div class="jr-resumo" title="Ver a jornada inteira"><span class="mk chave">' + br(pri[0]) + ' · ' + pri[1] + '</span><span class="ponto">···</span><span class="cinza" style="color:var(--tinta-3)">' + (c.marcos.length - 2) + ' marcos</span><span class="ponto">···</span><span class="mk ' + ult[2] + '">' + br(ult[0]) + ' · ' + ult[1] + '</span><span class="chv">›</span></div>' +
@@ -265,13 +266,26 @@ function desenha() {
 }
 document.addEventListener('click', function (e) {
   var cp = e.target.closest('.copiar'); if (cp) { e.stopPropagation(); try { navigator.clipboard.writeText(cp.dataset.c); } catch (x) {} cp.classList.add('feito'); setTimeout(function () { cp.classList.remove('feito'); }, 1400); return; }
-  var jr = e.target.closest('.jr-resumo'); if (jr) { jr.parentNode.classList.toggle('aberta'); return; }
+  var jr = e.target.closest('.jr-resumo'); if (jr) { jr.parentNode.classList.toggle('aberta'); liga(jr.parentNode); return; }
   var cab = e.target.closest('.cab'); if (cab && !e.target.closest('input')) { cab.parentNode.classList.toggle('aberto'); return; }
   ['trib', 'uf'].forEach(function (id) { var m = $('m-' + id); if (e.target.closest('#b-' + id)) m.classList.toggle('aberto'); else if (!e.target.closest('#m-' + id)) m.classList.remove('aberto'); });
   if (e.target.id === 'b-mais') { $('mais').classList.toggle('aberto'); e.target.classList.toggle('on'); }
   if (e.target.id === 'limpar') { $('busca').value = ''; $('periodo').value = '0'; $('idade').value = '0'; $('andamento').value = ''; F.tribs = {}; F.ufs = {}; desenha(); }
 });
 ['busca', 'periodo', 'idade', 'andamento', 'ordem', 'ordem2', 'agrupar'].forEach(function (id) { $(id).addEventListener(id === 'busca' ? 'input' : 'change', desenha); });
+/* linha fina em degrau: do último marco da esquerda (embaixo) ao primeiro da direita (em cima), pelo vão entre as colunas */
+function liga(jr) {
+  var t = jr.querySelector('.jr-todos'); if (!t) return; var v = t.querySelector('svg.liga'); if (v) v.remove();
+  var cols = t.querySelectorAll('ul'); if (cols.length < 2 || !jr.classList.contains('aberta') || innerWidth <= 760) return;
+  var base = t.getBoundingClientRect(), ult = cols[0].lastElementChild, pri = cols[1].firstElementChild; if (!ult || !pri) return;
+  var a = ult.getBoundingClientRect(), b = pri.getBoundingClientRect(), vao = t.querySelector('.seta-col').getBoundingClientRect();
+  var fimTexto = 0; ult.querySelectorAll('*').forEach(function () {}); var rg = document.createRange(); rg.selectNodeContents(ult); fimTexto = rg.getBoundingClientRect().right;
+  var y1 = a.top - base.top + 14, y2 = b.top - base.top + 14, x1 = fimTexto - base.left + 10, xm = vao.left - base.left + vao.width / 2, x2 = cols[1].getBoundingClientRect().left - base.left - 14;
+  v = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); v.setAttribute('class', 'liga');
+  v.innerHTML = '<circle cx="' + x1 + '" cy="' + y1 + '" r="2.2" fill="#9aa3b2"/><path d="M' + x1 + ' ' + y1 + ' H' + xm + ' V' + y2 + ' H' + (x2 - 5) + '" fill="none" stroke="#9aa3b2" stroke-width="1.2"/><path d="M' + (x2 - 6) + ' ' + (y2 - 3.5) + ' L' + x2 + ' ' + y2 + ' L' + (x2 - 6) + ' ' + (y2 + 3.5) + ' Z" fill="#9aa3b2"/>';
+  t.appendChild(v);
+}
+window.addEventListener('resize', function () { document.querySelectorAll('.jr.aberta').forEach(liga); });
 var regua = document.createElement('canvas').getContext('2d');
 function ajusta(sel) { var cs = getComputedStyle(sel); regua.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; var o = sel.options[sel.selectedIndex]; sel.style.width = Math.ceil(regua.measureText(o ? o.textContent : '').width + 46) + 'px'; }
 function cabe() {
