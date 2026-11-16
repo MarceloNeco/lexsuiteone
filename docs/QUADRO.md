@@ -648,7 +648,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 ## Pedidos entre sessões
 
 - **Produto → Operação (16/Nov): 0.7.50 pronta para publicar**, quando o dono escrever "publica a versão 0.7.50". Código na `main`
-  (commit "0.7.50: …" logo depois de `a4906d3`); revisar `git diff a4906d3 HEAD -- robo paginas docs/manual.html` e ler a folha
+  em `a68c2af`; revisar `git diff a4906d3 a68c2af -- robo paginas docs/manual.html` e ler a folha
   `documentacao/dod/0.7.50.md` contra o diff. Sem instalador novo; pacote com os mesmos arquivos (nenhum módulo novo). Testes do dono
   depois de publicada: `documentacao/ESTADO-ATUAL-RADAR.md`, seção 8.
 
