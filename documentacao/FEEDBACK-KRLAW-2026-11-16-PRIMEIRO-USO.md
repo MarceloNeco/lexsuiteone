@@ -122,3 +122,10 @@ uma resposta parcial: "total 1" sem o documento) — precisa de fila e de "tenta
 ## Ordem na retomada (sexta, 20/Nov)
 1. Este arquivo primeiro (itens 1 e 2), antes da 0.7.51; levar ao dono as perguntas (número do processo, qual filtro).
 2. Depois, `FEEDBACK-DONO-2026-11-16-TESTE-0750.md` e `PEDIDO-DONO-2026-11-16-NOVIDADES-E-0751.md`.
+
+## Achado de 16/Nov (noite): o CNJ chega atrasado para processo novo
+
+- Consulta ao DataJud em 16/11: o ajuizamento mais recente nos TRT3, 4, 15 e 17 é de **31/10** (TRT15: 29/10); nada de novembro. O TRT2 respondeu zero. Os processos de sexta, 13/11, ainda não estão no CNJ.
+- Consequência para a 0.7.51: nos primeiros ~15 dias, **o Diário é a única fonte** de um processo novo. A data de ajuizamento sai da lista de distribuição ou da notificação inicial do Diário; o CNJ confirma depois. O cartão mostra "ajuizado (pelo Diário)" até o CNJ confirmar, e a falta do CNJ nesse período não é falha (não mostrar "Tentar de novo").
+- Valor da causa: o DataJud não tem. Vem só do texto da publicação do Diário, quando ela traz ("Valor da causa: R$ …"), ou da área logada.
+- Empresa com mais de 10 processos: o DataJud não traz as partes; o exemplo depende do Diário, que não abre desta nuvem (bloqueio fora do Brasil). Caminho: o dono exporta do RADAR dele (Agrupar por empresa → Baixar a lista) e a Produto completa pelo CNJ.
