@@ -76,6 +76,13 @@ e às vezes recusa por excesso de pedidos), **Receita/CNPJ** (cadastro da empres
 (com fila, ritmo e "tenta de novo"). Tentativa da Produto (16/Nov) de achar o processo do Leandro no DataJud por vara e dia de
 ajuizamento: a API respondeu "ocupado" várias vezes; nova tentativa em segundo plano.
 
+**Decisões do dono (16/Nov, para a 0.7.51):**
+- O RADAR **complementa** cada processo com todas as fontes públicas (Diário/DJEN, DataJud/CNJ, Receita/CNPJ), cobrindo os buracos.
+- **Toda leitura** ("Ler o Diário agora" e a rotina) tenta de novo o que faltou nas leituras anteriores.
+- Quando uma fonte falhar para um processo, o cartão/ficha diz **qual fonte e por quê**, em texto curto (ex.: "Datas do CNJ: não
+  carregadas (CNJ sem resposta)"), com o botão **"Tentar de novo"** ali mesmo.
+- Prioridade máxima da 0.7.51, junto com a data certa (1ª publicação real e ajuizamento).
+
 ## 2. "O filtro talvez não esteja funcionando corretamente, ou eu não estou sabendo filtrar"
 - Não disse qual filtro. Perguntar ao Leandro (pelo dono): qual filtro, o que escolheu, o que esperava e o que apareceu (print).
 - Possível ligação com o item 1 (filtro "No Diário: últimos N dias" usa a data da publicação, não a da distribuição).
