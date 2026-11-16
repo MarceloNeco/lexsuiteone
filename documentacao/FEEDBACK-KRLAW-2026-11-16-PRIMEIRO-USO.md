@@ -51,6 +51,12 @@ inicial costuma ser marcada meses depois da distribuição.**
 Protótipo para o dono: `documentacao/prototipos/datas-do-processo/prototipo.html` (glossário, linha do tempo, cartão com as duas
 datas, selo da origem, ordenar e filtros novos). Pedido à Arquitetura no quadro (16/Nov).
 
+Esclarecimento ao dono (16/Nov): a data dourada do cartão (`data_publicacao`) é a **primeira publicação do processo que o RADAR
+encontrou** (a mais antiga das publicações daquela leitura, `djen.leads`, `min(pubs)`), não a última; depois que o processo entra,
+ela não muda. Rótulo proposto: **"Encontrado no Diário em 13/NOV"** com (?) "a publicação que trouxe este processo ao RADAR; não é a
+data em que a ação começou", e ao lado **"Ajuizado em 15/MAI/2026"** quando conhecido. Ajustar o protótipo e os textos (cartão,
+ficha, filtro "No Diário", manual, AssistONE).
+
 ## 2. "O filtro talvez não esteja funcionando corretamente, ou eu não estou sabendo filtrar"
 - Não disse qual filtro. Perguntar ao Leandro (pelo dono): qual filtro, o que escolheu, o que esperava e o que apareceu (print).
 - Possível ligação com o item 1 (filtro "No Diário: últimos N dias" usa a data da publicação, não a da distribuição).
