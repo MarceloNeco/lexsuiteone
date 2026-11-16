@@ -76,13 +76,24 @@
   <div><b>Número CNJ</b>0001234-56.<b>2026</b>.5.02.0014: o ano está no número, mas não o mês.</div>
 </div>
 
-<h2>3. Como ficaria a Lista (proposta)</h2>
+<h2>3. As quatro datas, cada uma com o seu nome</h2>
+<div class="caixa">
+  <table>
+    <tr><th>Rótulo na tela</th><th>O que é</th><th>Onde aparece</th></tr>
+    <tr><td><b>Ajuizado em</b></td><td>Dia em que a ação entrou na Justiça (fonte: DataJud, do CNJ).</td><td>Cartão (etiqueta verde ou vermelha)</td></tr>
+    <tr><td><b style="color:var(--latao)">1ª publicação no Diário</b></td><td>A publicação mais antiga do processo no Diário (o RADAR busca o histórico pelo número). É a data dourada do cartão e a que manda em "No Diário: últimos N dias".</td><td>Cartão (data dourada)</td></tr>
+    <tr><td><b>Última publicação no Diário</b></td><td>A publicação mais recente do processo (ex.: a audiência inicial).</td><td>Ficha aberta</td></tr>
+    <tr><td><b>Encontrado pelo RADAR em</b></td><td>Dia em que a nossa ferramenta leu e trouxe o processo. Não é data do processo.</td><td>Ficha aberta</td></tr>
+  </table>
+</div>
+
+<h2>4. Como ficaria a Lista (proposta)</h2>
 <div class="barra">
   <b>ORDENAR POR</b>
-  <select><option>Mais recentes no Diário</option><option selected>Ajuizados mais recentes primeiro</option><option>Maior valor primeiro</option><option>Empresa (A a Z)</option></select>
+  <select><option selected>Mais novos primeiro (1ª publicação)</option><option>Ajuizados mais recentes primeiro</option><option>Maior valor primeiro</option><option>Empresa (A a Z)</option></select>
   <span style="width:16px"></span>
   <b>MAIS FILTROS</b>
-  <span class="chip on">Só ações novas (até 30 dias do ajuizamento)</span>
+  <span class="chip on">Só ações novas (até 30 dias)</span>
   <span class="chip">Origem: lista de distribuição ▾</span>
   <span class="chip">Mostrar processos antigos (12)</span>
 </div>
@@ -90,51 +101,47 @@
 <div class="cartao">
   <div>
     <div class="nome">Empresa Fictícia Alfa Serviços Ltda</div>
-    <div class="meta"><span class="data-diario">SEX, 13 NOV 2026</span><span>TRT2</span><span class="num">Processo 0001234-56.2026.5.02.0014</span><span>14ª Vara do Trabalho de São Paulo</span></div>
+    <div class="meta"><span class="data-diario" title="1ª publicação no Diário">1ª PUBLICAÇÃO: QUA, 11 NOV 2026</span><span>TRT2</span><span class="num">Processo 0001234-56.2026.5.02.0014</span><span>14ª Vara do Trabalho de São Paulo</span></div>
   </div>
   <div class="valor">R$ 98.500</div>
   <div class="datas">
-    <span class="data">Publicado no Diário: 13/11/2026</span>
-    <span class="data aj">Ajuizado: 10/11/2026 · <span class="novo">novo</span> (3 dias)</span>
-    <span class="selo dist">Lista de distribuição</span><span class="q" title="Origem: a lista de distribuição do tribunal. É o sinal mais seguro de ação nova.">?</span>
+    <span class="data aj">Ajuizado em 10/11/2026 · <span class="novo">novo</span></span>
+    <span class="selo dist">Lista de distribuição</span><span class="q" title="Como o RADAR achou: a lista de distribuição do tribunal, o sinal mais seguro de ação nova.">?</span>
   </div>
 </div>
 
 <div class="cartao antigo">
   <div>
     <div class="nome">Empresa Fictícia Beta Comércio Ltda</div>
-    <div class="meta"><span class="data-diario">SEX, 13 NOV 2026</span><span>TRT2</span><span class="num">Processo 0004567-89.2026.5.02.0014</span><span>14ª Vara do Trabalho de São Paulo</span></div>
+    <div class="meta"><span class="data-diario" title="1ª publicação no Diário">1ª PUBLICAÇÃO: SEX, 22 MAI 2026</span><span>TRT2</span><span class="num">Processo 0004567-89.2026.5.02.0014</span><span>14ª Vara do Trabalho de São Paulo</span></div>
   </div>
   <div class="valor">R$ 141.000</div>
   <div class="datas">
-    <span class="data">Publicado no Diário: 13/11/2026</span>
-    <span class="data aj velho">Ajuizado: 15/05/2026 · processo antigo (6 meses)</span>
-    <span class="selo aud">Audiência inicial</span><span class="q" title="Origem: a publicação da audiência inicial. Em tribunais com pauta longa, a audiência acontece meses depois do ajuizamento.">?</span>
+    <span class="data aj velho">Ajuizado em 15/05/2026 · processo antigo</span>
+    <span class="selo aud">Audiência inicial</span><span class="q" title="Como o RADAR achou: a publicação da audiência inicial, de 13/11. O histórico mostrou que a 1ª publicação foi em maio.">?</span>
   </div>
-  <div class="nota" style="grid-column:1/-1">Este é o caso do Leandro. Com a proposta, ele <b>não</b> aparece entre os novos; fica escondido por
-  "Só ações novas" e volta com "Mostrar processos antigos", sempre marcado em vermelho.</div>
+  <div class="nota" style="grid-column:1/-1">O caso do Leandro: a data dourada passa a ser a <b>1ª publicação real (22/MAI)</b>, não 13/NOV. Fica fora dos novos
+  ("Só ações novas") e volta com "Mostrar processos antigos", em vermelho.</div>
 </div>
 
-<div class="cartao">
-  <div>
-    <div class="nome">Empresa Fictícia Gama Indústria Ltda</div>
-    <div class="meta"><span class="data-diario">SEX, 13 NOV 2026</span><span>TRT9</span><span class="num">Processo 0007890-12.2026.5.09.0002</span><span>2ª Vara do Trabalho de Curitiba</span></div>
-  </div>
-  <div class="valor">valor a conferir</div>
-  <div class="datas">
-    <span class="data">Publicado no Diário: 13/11/2026</span>
-    <span class="data">Ajuizado: a conferir (o DataJud ainda não tem)</span>
-    <span class="selo aud">Notificação inicial</span>
-  </div>
-  <div class="nota" style="grid-column:1/-1">Processo muito recente pode ainda não estar no DataJud: entra como novo, com "a conferir", e o RADAR tenta de novo na próxima leitura.</div>
+<h2>5. A ficha aberta (o cartão clicado)</h2>
+<div class="caixa">
+  <table>
+    <tr><th colspan="2">DATAS DO PROCESSO</th></tr>
+    <tr><td>Ajuizado em</td><td>15/05/2026 <span class="nota">(DataJud, CNJ)</span></td></tr>
+    <tr><td>1ª publicação no Diário</td><td>22/05/2026 · lista de distribuição</td></tr>
+    <tr><td>Última publicação no Diário</td><td>13/11/2026 · audiência inicial</td></tr>
+    <tr><td>Publicações no Diário</td><td>4 <span class="nota">(ver todas: data e tipo de cada uma)</span></td></tr>
+    <tr><td>Encontrado pelo RADAR em</td><td>16/11/2026, 09h16 <span class="nota">(leitura deste computador)</span></td></tr>
+  </table>
 </div>
 
-<h2>4. O que muda (resumo para decidir)</h2>
+<h2>6. O que muda (resumo para decidir)</h2>
 <div class="caixa">
   <table>
     <tr><th>Parte</th><th>Proposta</th><th>Por quê</th></tr>
-    <tr><td>Cartão</td><td>Duas datas sempre: "Publicado no Diário" e "Ajuizado"; selo da origem com (?)</td><td>Ninguém confunde mais a data da publicação com a do processo</td></tr>
-    <tr><td>Data de ajuizamento</td><td>O RADAR busca no DataJud (CNJ, público e gratuito) para quem não veio da lista de distribuição</td><td>É a fonte oficial da data; o programa já tem o acesso, só não usa no RADAR</td></tr>
+    <tr><td>Cartão</td><td>Data dourada = 1ª publicação real no Diário (histórico pelo número); "Ajuizado em" ao lado; selo de como o RADAR achou, com (?)</td><td>O escritório quer o processo mais novo: a data do cartão passa a ser a do começo do processo</td></tr><tr><td>Ficha</td><td>As quatro datas com nome: ajuizado, 1ª e última publicação, encontrado pelo RADAR</td><td>Cada data diz o que é; ninguém confunde a leitura do RADAR com a data do processo</td></tr>
+    <tr><td>Histórico e ajuizamento</td><td>Para quem não veio da lista de distribuição, o RADAR busca as publicações do processo no Diário (pelo número) e a data de ajuizamento no DataJud (CNJ); ~1 consulta por segundo, em segundo plano</td><td>É a fonte oficial da data; o programa já tem o acesso, só não usa no RADAR</td></tr>
     <tr><td>Regra de "novo"</td><td>Ajuizado há mais de 30 dias (ajustável) não é "novo": vai para "processos antigos", marcado em vermelho</td><td>O escritório quer ação recém-ajuizada (a empresa ainda não tem advogado)</td></tr>
     <tr><td>Ordenar</td><td>Novo critério "Ajuizados mais recentes primeiro"</td><td>Pedido do dono</td></tr>
     <tr><td>Filtros</td><td>"Só ações novas (até 30 dias)" ligado por padrão; "Origem" (lista de distribuição, audiência, notificação); "Mostrar processos antigos (N)"</td><td>O escritório escolhe o quanto quer arriscar; o seguro vem por padrão</td></tr>
