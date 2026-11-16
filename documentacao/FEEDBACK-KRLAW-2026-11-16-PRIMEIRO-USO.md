@@ -57,6 +57,17 @@ ela não muda. Rótulo proposto: **"Encontrado no Diário em 13/NOV"** com (?) "
 data em que a ação começou", e ao lado **"Ajuizado em 15/MAI/2026"** quando conhecido. Ajustar o protótipo e os textos (cartão,
 ficha, filtro "No Diário", manual, AssistONE).
 
+Correção do esclarecimento (dono, 16/Nov: "você está me induzindo ao erro"): a data dourada é a primeira publicação **que o RADAR
+viu**; no caso do Leandro ela é a **mais recente** de verdade (13/NOV), porque as publicações de maio aconteceram antes de o RADAR
+começar a ler. Nunca dizer "primeira publicação" sem "que o RADAR viu".
+
+**Solução reforçada (proposta ao dono, 16/Nov):** para os processos que entraram por audiência ou notificação (não pela lista de
+distribuição), antes de chamar de "novo": (1) **histórico no DJEN pelo número** — `djen.buscar_filtrado` já aceita `numeroProcesso`
+e devolve todas as publicações do processo (data e tipo); havendo publicação anterior ao período (ou lista de distribuição antiga),
+não é novo; (2) **DataJud** pela data de ajuizamento. Mais de 30 dias → "processo antigo" com as datas reais, fora dos novos.
+Cartão: "Ajuizado em …", "1ª publicação no Diário em …" e "Encontrado pelo RADAR em …". Custo: ~1 pedido/s (90 processos ≈ 2 min,
+em segundo plano). Vai junto no pedido à Arquitetura. Atualizar o protótipo com esses rótulos.
+
 ## 2. "O filtro talvez não esteja funcionando corretamente, ou eu não estou sabendo filtrar"
 - Não disse qual filtro. Perguntar ao Leandro (pelo dono): qual filtro, o que escolheu, o que esperava e o que apareceu (print).
 - Possível ligação com o item 1 (filtro "No Diário: últimos N dias" usa a data da publicação, não a da distribuição).

@@ -653,7 +653,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   `documentacao/FEEDBACK-KRLAW-2026-11-16-PRIMEIRO-USO.md`; protótipo em `documentacao/prototipos/datas-do-processo/prototipo.html`.
   Pedido: desenho curto para (1) buscar no DataJud (`lexsuite/datajud.py`, já existe) a data de ajuizamento dos "novos" que não
   vieram da lista de distribuição, em lote, com ritmo e comportamento com o CNJ fora; (2) regra "novo = ajuizado há até 30 dias"
-  (ajustável), processo antigo marcado e fora do padrão; (3) ordenar e filtrar por data de ajuizamento e por origem do sinal.
+  (ajustável), processo antigo marcado e fora do padrão; (3) ordenar e filtrar por data de ajuizamento e por origem do sinal. Acréscimo (dono, 16/Nov): (4) histórico de publicações do processo no DJEN pelo número (`djen.buscar_filtrado` com `numeroProcesso`) para achar a 1ª publicação real.
   A Produto implementa na 0.7.51 depois do "pode" do dono.
 
 - **Produto → Operação (16/Nov): 0.7.50 pronta para publicar**, quando o dono escrever "publica a versão 0.7.50". Código na `main`
