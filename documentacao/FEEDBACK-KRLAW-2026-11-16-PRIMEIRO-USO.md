@@ -129,3 +129,10 @@ uma resposta parcial: "total 1" sem o documento) — precisa de fila e de "tenta
 - Consequência para a 0.7.51: nos primeiros ~15 dias, **o Diário é a única fonte** de um processo novo. A data de ajuizamento sai da lista de distribuição ou da notificação inicial do Diário; o CNJ confirma depois. O cartão mostra "ajuizado (pelo Diário)" até o CNJ confirmar, e a falta do CNJ nesse período não é falha (não mostrar "Tentar de novo").
 - Valor da causa: o DataJud não tem. Vem só do texto da publicação do Diário, quando ela traz ("Valor da causa: R$ …"), ou da área logada.
 - Empresa com mais de 10 processos: o DataJud não traz as partes; o exemplo depende do Diário, que não abre desta nuvem (bloqueio fora do Brasil). Caminho: o dono exporta do RADAR dele (Agrupar por empresa → Baixar a lista) e a Produto completa pelo CNJ.
+
+## Decisões do dono sobre o protótipo (16/Nov, noite)
+
+- Etiquetas de fonte (CNJ, DIÁRIO, RECEITA, ÁREA LOGADA): saem do lado de cada campo. Ficam só no alto da ficha, numa linha, com um (?) ao lado. O (?) abre um quadro estruturado: o nome de cada fonte em dourado e, embaixo, os campos que vieram dela nesta leitura (ex.: CNJ → ajuizamento, classe, assuntos, andamentos; Diário → empresa, publicações, advogados, valor; Receita → CNPJ, CNAE, porte, telefone, endereço, sócios). Fonte que falhou aparece em vermelho com "Tentar de novo".
+- Toda leitura do Diário consulta também a Receita e o CNJ (com nova tentativa), como já decidido.
+- O que já está publicado (Selecionar todos, Expandir todos, caixinha da empresa, Excluir esta empresa, cópia de contato) continua igual; a 0.7.51 mexe em datas, jornada, etiquetas e filtros novos.
+- Seta do agrupamento no protótipo é só imitação; no programa fica a da 0.7.50.
