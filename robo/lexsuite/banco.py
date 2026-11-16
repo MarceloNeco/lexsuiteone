@@ -437,6 +437,41 @@ class Banco:
         self.con.commit()
         return cur.rowcount == 1
 
+    def copiar_contatos(self, origem, destinos, extras=(), perfil="", aceitar=None):
+        """0.7.50 (dono, decisão 51): copia o contato DA EMPRESA de um processo para outros da mesma empresa (mesma raiz de CNPJ).
+        Nunca copia contato de pessoa física, de advogado ou de escritório (pesquisa de 16/Nov: é de terceiro ou dado pessoal).
+        `extras`: canais do cadastro da Receita da origem [(canal, valor)]. Devolve os ids criados (para Desfazer)."""
+        fontes = [c for c in self.contatos(origem) if not c.get("de_pessoa") and c.get("validacao") != "descartado"
+                  and not re.search(r"advog|escrit[oó]rio|oab", " ".join(str(c.get(k) or "") for k in ("fonte", "origem", "observacao")), re.I)
+                  and (aceitar is None or aceitar(c))]
+        canais = [(c["canal"], c["valor"], c.get("fonte") or "", c.get("empresa") or "") for c in fontes]
+        canais += [(cn, v, "Receita Federal", "") for cn, v in extras if v]
+        hoje, ids = dt.date.today().isoformat(), []
+        for destino in destinos:
+            if destino == origem:
+                continue
+            for canal, valor, fonte, empresa in canais:
+                cur = self.con.execute(
+                    "INSERT OR IGNORE INTO contatos (processo, empresa, canal, valor, de_pessoa, fonte, data, confianca, origem, observacao, criado_em) "
+                    "VALUES (?,?,?,?,0,?,?,?,?,?,?)",
+                    (destino, empresa[:200], canal, str(valor)[:300], ("copiado · " + fonte)[:80], hoje, "baixa", "copiado",
+                     f"copiado de {origem} em {hoje}"[:300], agora_utc_e_fuso()[0]))
+                if cur.rowcount == 1:
+                    ids.append(cur.lastrowid)
+        if ids:
+            self.registrar_acao(perfil, "contato:copiar", origem, "", f"{len(ids)} contatos", len(ids))
+        self.con.commit()
+        return ids
+
+    def desfazer_copia(self, ids):
+        """Apaga só contatos copiados (origem "copiado") com estes ids."""
+        ids = [int(i) for i in (ids or []) if str(i).isdigit()][:5000]
+        for i in range(0, len(ids), 500):
+            parte = ids[i:i + 500]
+            self.con.execute(f"DELETE FROM contatos WHERE origem = 'copiado' AND id IN ({','.join('?' * len(parte))})", parte)  # nosec B608
+        self.con.commit()
+        return len(ids)
+
     def contatos_de(self, processos):
         """0.7.48: os contatos só destes processos."""
         saida, lista = [], [str(p) for p in processos][:5000]

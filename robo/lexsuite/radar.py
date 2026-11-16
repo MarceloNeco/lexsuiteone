@@ -103,6 +103,7 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         "contato": _contato_resumo(emp, extras, bool(emp.get("cnpj")), a_conferir),
         "contatos": [{k: c[k] for k in ("canal", "valor", "fonte", "data", "confianca", "origem", "de_pessoa", "validacao")} for c in extras],
         "cnpj_a_conferir": a_conferir,
+        "cnpj_inferido": lead.get("cnpj_inferido") or "",  # 0.7.50: CNPJ confirmado pelo escritório a partir de outros processos com o mesmo nome
         "id": lead.get("processo"),
         "hora": (lead.get("visto_em") or "")[11:16],
         "visto_em": lead.get("visto_em") or "",
@@ -255,7 +256,7 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     itens.sort(key=lambda i: (-(i["valor_causa"] or 0), i["visto_em"]))
     dia = max([i["distribuida_em"][:10] for i in itens if i["distribuida_em"]] or [agora.date().isoformat()])
     return {
-        "dia": dia, "gerado_em": agora.strftime("%Y-%m-%d %H:%M"), "exemplo": bool(exemplo), "dias": dias,
+        "dia": dia, "gerado_em": agora.strftime("%Y-%m-%d %H:%M"), "exemplo": bool(exemplo), "dias": dias, "desde": str(desde)[:10],  # 0.7.50: início do período (anterior × fora dos filtros)
         "escritorio": cfg.get("escritorio", ""), "tribunais": escolhidos, "visao": visao,
         "valor_minimo": float(p_trab.get("valor_minimo") or 0),  # 0.7.33: 0 = sem mínimo
         "valor_minimo_area": {a: float(prefs_de(a).get("valor_minimo") or 0) for a in sorted(set(grupos) | {"trabalhista"})},
@@ -426,22 +427,22 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     except Exception as e:  # noqa: BLE001 - estatística nunca derruba a leitura
         aviso(f"  Não consegui atualizar as estatísticas ({e.__class__.__name__}).")
     try:  # 0.7.48 (decisões 40 a 42): limpeza automática depois de cada leitura, sempre depois das estatísticas
-        aviso("  Limpando o banco…")
+        aviso("  Limpando os dados do programa…")
         lp = limpar_banco(banco, r, "depois da leitura")
         if lp["resumidos"] or lp["apagados"]:
             aviso(f"  Limpeza: {lp['resumidos']} resumido(s), {lp['apagados']} apagado(s), {lp['mantidos']} mantido(s) por serem trabalhados.")
     except Exception as e:  # noqa: BLE001 - a limpeza nunca derruba a leitura
-        aviso(f"  Não consegui limpar o banco ({e.__class__.__name__}).")
+        aviso(f"  Não consegui limpar os dados do programa ({e.__class__.__name__}).")
     apagados = banco.limpar_antigos(int(r.get("guardar_dias") or 365))
     try:  # 0.7.17 (decisão 14): banco acima de 1 GB resume com 6 meses só os processos nunca abertos
         if banco.espaco()["bytes"] > 1024 ** 3:
             resumidos = banco.limpar_detalhe(6, perfil="automático", so_nunca_abertos=True)
             if resumidos:
                 banco.compactar()
-                aviso(f"  O banco do programa passou de 1 GB: {resumidos} processo(s) nunca aberto(s) com mais de 6 meses ficaram só com o resumo.")
-                banco.registrar("saude", {"fonte": "Banco do programa", "situacao": "atenção", "detalhe": f"acima de 1 GB: {resumidos} resumidos (6 meses, nunca abertos)"})
+                aviso(f"  Os dados do programa passaram de 1 GB: {resumidos} processo(s) nunca aberto(s) com mais de 6 meses ficaram só com o resumo.")
+                banco.registrar("saude", {"fonte": "Dados do programa", "situacao": "atenção", "detalhe": f"acima de 1 GB: {resumidos} resumidos (6 meses, nunca abertos)"})
     except Exception as e:  # noqa: BLE001 - a retenção nunca derruba a leitura
-        aviso(f"  Não consegui resumir o banco ({e.__class__.__name__}).")
+        aviso(f"  Não consegui resumir os dados do programa ({e.__class__.__name__}).")
     if apagados:
         aviso(f"  Retenção: {apagados} registro(s) com mais de {int(r.get('guardar_dias') or 365)} dias resumidos ou apagados (o detalhe sai; o resumo e as estatísticas ficam).")
     if interrompida:  # 0.7.16: depois de uma parada na Receita, conta só o que foi feito (antes misturava parcial e total)
@@ -554,7 +555,7 @@ def processos_das_empresas(cfg, banco, empresas, alcance="hibrido", hoje=None):
         except ValueError:
             continue
         emp = d.get("empresa_receita") or {}
-        cnpj_ = chave_empresa(emp.get("cnpj"), "") or next((chave_empresa(c, "") for c in (d.get("cnpjs") or [])[:1]), "")
+        cnpj_ = chave_empresa(emp.get("cnpj"), "") or next((chave_empresa(c, "") for c in (d.get("cnpjs") or [])[:1]), "") or chave_empresa(d.get("cnpj_inferido"), "")
         nomes_ = {chave_empresa("", n) for n in ([emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]) if n}
         da_linha = ({cnpj_} if cnpj_ else set()) | nomes_
         for c in chaves:
@@ -578,6 +579,84 @@ def processos_das_empresas(cfg, banco, empresas, alcance="hibrido", hoje=None):
                 itens[p]["so_nome"] = True  # sem CNPJ no Diário, mesmo nome: a tela mostra "confira"
         saida[chave] = {"total": total, "sem_cnpj": len(so_nome), "itens": [itens[x[1]] for x in lista if x[1] in itens]}
     return saida
+
+
+def cnpj_provavel(banco, nome):
+    """0.7.50 (dono): para processos sem CNPJ, o CNPJ que outros processos com o MESMO nome já trazem. Só sugere se houver uma
+    raiz só (a chave é o CNPJ); com duas ou mais, não sugere. Devolve {cnpj, com_cnpj, sem_cnpj} ou {}."""
+    chave = chave_empresa("", nome)
+    if not chave:
+        return {}
+    palavras = [w for w in chave[2:].split() if len(w) >= 3]
+    pista = re.sub(r"[aeiouc]", "_", max(palavras, key=len) if palavras else chave[2:])
+    raizes, cnpjs, sem = {}, {}, 0
+    for (dados,) in banco.con.execute("SELECT dados FROM leads WHERE dados LIKE ?", ("%" + pista + "%",)):
+        try:
+            d = json.loads(dados or "{}")
+        except ValueError:
+            continue
+        emp = d.get("empresa_receita") or {}
+        nomes = [emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]
+        if not any(chave_empresa("", n) == chave for n in nomes if n):
+            continue
+        c = re.sub(r"\D", "", str(emp.get("cnpj") or (d.get("cnpjs") or [""])[0] or ""))
+        if len(c) == 14:
+            raizes[c[:8]] = raizes.get(c[:8], 0) + 1
+            cnpjs[c] = cnpjs.get(c, 0) + 1
+        elif not d.get("cnpj_inferido"):
+            sem += 1
+    if len(raizes) != 1 or not sem:
+        return {}
+    melhor = max(cnpjs, key=lambda c: (c[8:12] == "0001", cnpjs[c]))  # a matriz, se houver; senão o mais comum
+    return {"cnpj": melhor, "com_cnpj": sum(raizes.values()), "sem_cnpj": sem}
+
+
+def usar_cnpj(banco, nome, cnpj, perfil=""):
+    """Grava o CNPJ confirmado pelo escritório nos processos com o mesmo nome e sem CNPJ (marcado `cnpj_inferido`)."""
+    chave, cnpj = chave_empresa("", nome), re.sub(r"\D", "", str(cnpj or ""))
+    if not chave or len(cnpj) != 14:
+        return 0
+    palavras = [w for w in chave[2:].split() if len(w) >= 3]
+    pista = re.sub(r"[aeiouc]", "_", max(palavras, key=len) if palavras else chave[2:])
+    mudar = []
+    for proc, dados in banco.con.execute("SELECT processo, dados FROM leads WHERE dados LIKE ?", ("%" + pista + "%",)):
+        try:
+            d = json.loads(dados or "{}")
+        except ValueError:
+            continue
+        emp = d.get("empresa_receita") or {}
+        if emp.get("cnpj") or (d.get("cnpjs") or []) or d.get("cnpj_inferido"):
+            continue
+        if any(chave_empresa("", n) == chave for n in ([emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]) if n):
+            d["cnpj_inferido"] = cnpj
+            mudar.append((json.dumps(d, ensure_ascii=False), proc))
+    banco.con.executemany("UPDATE leads SET dados = ? WHERE processo = ?", mudar)
+    if mudar:
+        banco.registrar_acao(perfil, "empresa:cnpj", cnpj, "", f"{len(mudar)} processos", len(mudar))
+    banco.con.commit()
+    return len(mudar)
+
+
+def copiar_contato_empresa(cfg, banco, chave, dias=90, cnpj="", nome="", perfil="", hoje=None):
+    """0.7.50 (decisão 51): o contato da empresa (do processo mais recente que tem contato) vai para os processos da mesma
+    empresa, dos últimos `dias`, que estão sem contato. Devolve {copiados, processos, origem, ids}."""
+    hoje = hoje or dt.date.today()
+    r = processos_das_empresas(cfg, banco, [{"chave": chave, "cnpj": cnpj, "nome": nome}], "todos", hoje=hoje).get(chave) or {"itens": []}
+    corte = (hoje - dt.timedelta(days=int(dias or 90))).isoformat()
+    itens = [i for i in r["itens"] if not i.get("so_nome")]
+    com = [i for i in itens if (i.get("contato") or {}).get("tem")]
+    if not com:
+        return {"copiados": 0, "processos": 0, "origem": "", "ids": []}
+    origem = max(com, key=lambda i: i.get("diario_em") or "")
+    e = origem.get("empresa") or {}
+    extras = [("telefone", e.get("telefone")), ("telefone", e.get("telefone2")), ("email", e.get("email"))]
+    destinos = [i["processo"] for i in itens if (i.get("diario_em") or "") >= corte and not (i.get("contato") or {}).get("tem")]
+    nomes_ok = {chave_empresa("", n) for n in [e.get("razao_social") or ""] + list(origem.get("empresas") or []) if n}
+
+    def da_empresa(c):  # revisão da 0.7.50: contato marcado com outra parte do mesmo processo não vai para esta empresa
+        return not c.get("empresa") or chave_empresa("", c.get("empresa")) in nomes_ok
+    ids = banco.copiar_contatos(origem["processo"], destinos, extras=extras, perfil=perfil, aceitar=da_empresa)
+    return {"copiados": len(ids), "processos": len(destinos), "origem": origem["processo"], "ids": ids}
 
 
 def registrar_consulta(banco, consulta, novos, agora, origem):

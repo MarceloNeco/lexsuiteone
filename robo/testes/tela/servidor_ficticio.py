@@ -56,6 +56,14 @@ if modo == "pronto":
         if k % 5:
             lead["empresa_receita"].update({"telefone": "11 0000-0000" if k % 2 else "", "email": "", "logradouro": "Rua Fictícia", "numero": str(k), "bairro": "Centro", "cep": "01000000"})
         b.guardar_lead(lead, hoje.date().isoformat())
+    # 0.7.50: uma empresa que o Diário publica sem CNPJ (como os Correios no TRT9) e um processo antigo dela com CNPJ:
+    # o agrupamento mostra o triângulo de aviso e o "CNPJ provável"
+    for k, (dia, cnpj) in enumerate((("2026-11-05", ""), ("2026-11-04", ""), ("2026-08-03", "44555666000177"))):
+        b.guardar_lead({"processo": f"0009{k:03d}-11.2026.5.09.0001", "tribunal": "TRT9", "vara": "1ª Vara do Trabalho de Curitiba",
+                        "empresas": ["Empresa Fictícia de Correios"], "data_publicacao": dia, "visto_em": hoje.isoformat(timespec="seconds"),
+                        "valor_causa": None, "classe": "ATOrd", "rito": "Ordinário", "cnpjs": [cnpj] if cnpj else [],
+                        "empresa_receita": {"cnpj": cnpj, "razao_social": "EMPRESA FICTICIA DE CORREIOS", "porte": "DEMAIS", "municipio": "CURITIBA", "uf": "PR"} if cnpj else {}},
+                       hoje.date().isoformat())
 if modo == "pronto":
     b.mudar_situacao([f"0000{k:03d}-11.2026.5.02.0001" for k in (1, 2)], "em_analise")
     b.mudar_situacao(["0000003-11.2026.5.02.0001"], "virou_cliente")

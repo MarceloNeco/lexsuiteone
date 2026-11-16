@@ -167,13 +167,21 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
   processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
 
-## 0.7.49 (15/Nov; decisões 43 a 48, "já começa a desenvolver") — pronta para publicar
+## 0.7.50 (16/Nov; "já dá para colocar para próxima") — pronta para publicar
+
+- Feito: os itens 1 a 31 e 33 de `documentacao/FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md` (13: Modo fica como está, decisão
+  do dono; 14: linha do instalador na folha da 0.7.48). Folha `documentacao/dod/0.7.50.md`.
+- Sem data: copiar nome e CNPJ com um toque no celular (item 32); chamado do AssistONE com o registro anexado, direto ao RootifyONE
+  (alternativa (c) do item 29, com a Arquitetura); esconder empresas públicas por natureza jurídica (só se o dono pedir).
+- Pedido à Arquitetura: tour sem rolagem e deslize das subtelas como padrão do módulo comum (AssistONE e diretriz geral).
+
+## 0.7.49 (15/Nov; decisões 43 a 48, "já começa a desenvolver") — publicada em 15/Nov (tag v0.7.49)
 
 - Feito: Modo no alto (planilha oficial no menu), filtros salvos (lista própria, descrição, período, 3 de fábrica), Tribunal na 1ª
   linha, listas largas que acompanham a rolagem, Varas com "Nº", (?) azul e animado, Agrupar por empresa (até 50 dos últimos 6
   meses, total da empresa, (?) de Ordenar), Wizard explicando filtros e limpeza. Folha `documentacao/dod/0.7.49.md`.
 - Planejado, sem data: modo tributário de verdade (fontes TRF3 e TJSP, rotina e filtros próprios), com desenho da Arquitetura.
-- Instaladores corrigidos (PowerShell sem falso alarme) esperam o "pode" do dono na Operação (branch da Produto).
+- Instaladores corrigidos (PowerShell sem falso alarme): publicados no site (`ba38b72`).
 
 ## 0.7.48 (15/Nov; "produto aprovado, pode codar a 0.7.48") — publicada em 15/Nov (tag v0.7.48, com os instaladores novos)
 

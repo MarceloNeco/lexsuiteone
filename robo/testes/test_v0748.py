@@ -548,7 +548,7 @@ class Tela(unittest.TestCase):
     def test_manual_fala_das_novidades(self):
         with open(os.path.join(_RAIZ_, "paginas", "manual.html"), encoding="utf-8") as f:
             m = f.read()
-        for trecho in ("Resumir depois de 6 meses", "Apagar depois de 24 meses", "O que nunca sai", "Limpar o banco agora",
+        for trecho in ("Resumir depois de 6 meses", "Apagar depois de 24 meses", "O que nunca sai", "Limpar agora",
                        "Lendo pela consulta pública do CNJ (vara por vara)", "caderno pendente", "Sem cidade", "volta ao centro e ao tamanho padrão",
                        "Colar a resposta agora", "Não encontrei a resposta da ferramenta"):
             self.assertIn(trecho, m, trecho)
