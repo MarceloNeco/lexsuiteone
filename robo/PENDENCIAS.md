@@ -167,13 +167,15 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
   processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
 
-## 0.7.50 (16/Nov; "já dá para colocar para próxima") — pronta para publicar
+## 0.7.50 (16/Nov; "já dá para colocar para próxima") — publicada em 16/Nov (tag v0.7.50)
 
 - Feito: os itens 1 a 31 e 33 de `documentacao/FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md` (13: Modo fica como está, decisão
   do dono; 14: linha do instalador na folha da 0.7.48). Folha `documentacao/dod/0.7.50.md`.
 - Sem data: copiar nome e CNPJ com um toque no celular (item 32); chamado do AssistONE com o registro anexado, direto ao RootifyONE
   (alternativa (c) do item 29, com a Arquitetura); esconder empresas públicas por natureza jurídica (só se o dono pedir).
 - Pedido à Arquitetura: tour sem rolagem e deslize das subtelas como padrão do módulo comum (AssistONE e diretriz geral).
+- Para a 0.7.51: as 5 ressalvas da revisão da Operação (exclusão só pelo CNPJ quando houver; CNPJ provável sem juntar Ltda e S.A.;
+  "caixinha" e "now" nas Novidades; "limpeza automática" no manual; pré-filtro sem acento do CNPJ provável).
 
 ## 0.7.49 (15/Nov; decisões 43 a 48, "já começa a desenvolver") — publicada em 15/Nov (tag v0.7.49)
 

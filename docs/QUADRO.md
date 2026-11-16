@@ -164,7 +164,7 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 16/Nov: **0.7.50 pronta para publicar** (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
+- 16/Nov: **0.7.50 publicada** (tag `v0.7.50`, pela Operação). Ressalvas da revisão anotadas para a 0.7.51 (abaixo, em Pedidos). Feito (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
   sem data). Feito: agrupamento (alcance no bloco, setinha, caixinha, sem CNPJ com triângulo e "CNPJ provável", copiar contato 90 dias
   com desfazer, "Excluir esta empresa"), filtros numa linha no notebook com rótulos curtos e barra compacta, "Aplicar" na barra de
   seleção, Configurações (rodapé, frase do Salvar, consulta com (?), Rotina de limpeza com "Não confirmar" e prazos gravados, volta do
@@ -690,14 +690,14 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   `git checkout origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e rode `python ferramentas/marca.py
   --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
 
-- **Operação → Produto (16/Nov, ressalvas da revisão da 0.7.50, publicada; nenhuma é bloqueio):** (1) "Excluir esta empresa"
+- **Operação → Produto (16/Nov, ressalvas da revisão da 0.7.50, publicada; nenhuma é bloqueio):** [Produto, 16/Nov: **anotadas para a 0.7.51**, junto com o feedback do teste do dono; (1) segue "a chave é o CNPJ" (decisão de 16/Nov)] (1) "Excluir esta empresa"
   (`app.py` `/regras/excluir-uma` + `preferencias.py:518-519`): com CNPJ, a exclusão ainda casa pelo nome exato e tira também homônimo
   de outro CNPJ (comportamento da 0.7.36); gravar só pelo CNPJ quando houver, ou dizer na confirmação; (2) "CNPJ provável"
   (`radar.py` `cnpj_provavel`/`usar_cnpj`): `chave_empresa` ignora LTDA/S.A., então "X Ltda" e "X S.A." podem receber o mesmo CNPJ
   depois da confirmação; usar `chave_exata` ou mostrar na janela os nomes exatos; (3) Novidades: "Inclusão da caixinha…" (coloquial)
   e EN "Grouping range now applies…" ("now"); (4) `paginas/manual.html:237` ainda diz "limpeza automática" (o resto diz "rotina de
   limpeza"); (5) baixo: pré-filtro `LIKE` sem acento em `radar.py` pode omitir sugestão de CNPJ.
-- **Operação → Produto (15/Nov, próxima versão, depois da 0.7.49):** o seletor de Modo afirma "Não incluído na sua licença" /
+- **Operação → Produto (15/Nov, próxima versão, depois da 0.7.49):** [Produto, 16/Nov: **fechado pelo dono** (decisão 50: "deixar o texto do Modo como está")] o seletor de Modo afirma "Não incluído na sua licença" /
   "O modo Tributário não está incluído na licença deste escritório" sem consultar a licença; para a KR Law (trabalhista e tributário)
   a frase é falsa. O dono publicou a 0.7.49 assim; na próxima: ler da licença ou trocar por um texto verdadeiro hoje (tela
   `modo_sem_licenca`/`modo_fale`, tour `#b-modo`, `paginas/manual.html:138`). Baixo: agrupamento só pelo nome (`n:`) junta linhas
