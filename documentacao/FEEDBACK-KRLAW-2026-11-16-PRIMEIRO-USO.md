@@ -18,6 +18,36 @@ O dono vai entregar a resposta na semana que vem (Leandro volta ao trabalho; qua
 - Saída esperada: (a) o cartão diz claramente as duas datas (publicação × distribuição, quando conhecida); (b) processo antigo não
   entra como "novo" (ou entra marcado e fora do padrão "novos"); (c) teste com o caso real; (d) explicação simples no (?) e no manual.
 
+### Anamnese (Produto, 16/Nov, só leitura do código; sem mexer em nada)
+**Causa mais provável (alta confiança): a regra de "ação nova" aceita a audiência inicial como sinal, e no TRT2 a audiência
+inicial costuma ser marcada meses depois da distribuição.**
+- Como o RADAR decide (`djen.leads`, `classificar._INICIO`): é "novo" quem (a) aparece na **lista de distribuição** (sinal forte:
+  publicada logo depois da distribuição) ou (b) tem no texto "audiência inicial/una/de conciliação", "notificação inicial",
+  "notifique-se a reclamada" ou "citação inicial". O único freio de idade é o **ano** do número CNJ (`ano_minimo`): processo de
+  2026 passa sempre. O caso do Leandro (distribuído em 15/05/2026) passa no ano e, se a publicação de novembro for a notificação
+  da audiência inicial (ou uma redesignação), passa no sinal (b).
+- Ordem de grandeza: no registro do dono de 16/Nov (TRT9 e TRT17), dos 317 "novos", 227 vieram da lista de distribuição e **90
+  (28 %) da audiência ou notificação inicial**, que podem ser de processos de meses atrás. No TRT2 (São Paulo, pauta longa) a
+  fatia antiga tende a ser maior.
+- A data mostrada no cartão é a **data da publicação no Diário** (`data_publicacao`); "Ajuizada em" só existe quando vem da área
+  logada ou é digitada. O cartão não diz "publicado em", por isso se lê como data de distribuição.
+- O que já existe e ajuda: `lexsuite/datajud.py` (API pública do CNJ, chave lida da página oficial, nada no código) já consulta
+  `dataAjuizamento`; hoje só é usado nos comandos de estatística por vara, não no RADAR.
+
+**Soluções (para decidir com o dono; ordem recomendada)**
+1. **Data de ajuizamento pelo DataJud** para os "novos" que NÃO vieram da lista de distribuição: uma consulta em lote por número
+   (dezenas por pedido) depois da leitura; grava `ajuizada_em` com fonte "DataJud". Regra: ajuizado há mais de 30 dias (ajustável)
+   → **não entra como novo** (fica no Arquivo, marcado "processo antigo: ajuizado em 15/05/2026; publicação de 13/11"). Limite:
+   o DataJud atrasa alguns dias para processo muito recente; sem resposta, o processo entra e fica "data de ajuizamento a conferir".
+   Passa pela Arquitetura (rede, ritmo de pedidos, regra de negócio).
+2. **Cartão e ficha com as duas datas**: "Publicado no Diário em 13/NOV" e "Ajuizado em 15/MAI/2026" (quando conhecida); filtro
+   e ordenação "por data de ajuizamento" quando houver. Barato e independente do item 1.
+3. **Selo do sinal** no cartão ("lista de distribuição" × "audiência inicial"), com (?) explicando que a audiência pode ser de
+   processo distribuído antes; filtro "só lista de distribuição" (o mais seguro) num filtro salvo de fábrica.
+4. Plano B sem rede: estimar pela numeração sequencial da vara (o número CNJ cresce ao longo do ano) — pouco confiável, só se o
+   DataJud não servir.
+- Teste: o caso real (pedir o número ao Leandro) e casos fictícios com publicação de audiência inicial de processo de maio.
+
 ## 2. "O filtro talvez não esteja funcionando corretamente, ou eu não estou sabendo filtrar"
 - Não disse qual filtro. Perguntar ao Leandro (pelo dono): qual filtro, o que escolheu, o que esperava e o que apareceu (print).
 - Possível ligação com o item 1 (filtro "No Diário: últimos N dias" usa a data da publicação, não a da distribuição).
