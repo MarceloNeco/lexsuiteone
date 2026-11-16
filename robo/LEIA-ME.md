@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.49 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.50 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,17 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.50 (16/Nov, feedback do dono no notebook e no agrupamento):** no agrupamento por empresa, o alcance vale para o bloco
+  inteiro; setinha para recolher e abrir (recolhido com mais de 10 empresas ou 10 processos), "Expandir todas" e "Recolher todas";
+  caixinha da empresa marca todos os processos dela; empresa sem CNPJ com triângulo de aviso e "CNPJ provável" (uma raiz só para o
+  mesmo nome; com confirmação, grava `cnpj_inferido`); "Copiar o contato para os sem contato" (30 a 365 dias, padrão 90; só o
+  contato da empresa, marcado "copiado", com desfazer) e "Excluir esta empresa". Filtros numa linha no notebook (seletores do tamanho
+  do texto, rótulos curtos com a dica dos marcados, dois degraus de encurtar) e barra compacta ao rolar. Barra de seleção com
+  "Aplicar" e "Arquivar" sem número; aviso de Desfazer claro, acima da barra. Configurações: rodapé largo com linha azul, frase
+  "As alterações desta janela passam a valer depois de Salvar.", consulta pública com (?), Rotina de limpeza própria (vermelho para
+  confirmar, "Não confirmar", prazos gravados ao limpar), volta do Histórico no mesmo ponto com deslize, registro técnico com copiar e
+  "Enviar ao suporte" (licença só com os 4 últimos, sem a pasta do usuário). "Banco" virou "dados do programa" nos textos. Conexão
+  fechada pela tela (WinError 10053) não deixa rastro no registro. Tour do AssistONE trava a rolagem.
 - **0.7.49 (15/Nov, decisões 43 a 48):** "Modo: Trabalhista" no alto (as outras especialidades apagadas, "Não incluído na sua
   licença"), no lugar de "Abrir a planilha", que fica no menu ☰ → Planilha ("planilha oficial, só leitura"); filtros salvos numa
   lista própria (larga, abre para a esquerda, nome e descrição; guardam período e agrupamento) e 3 de fábrica, uma vez por

@@ -434,6 +434,79 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.close();
   }
 
+  // 12. 0.7.50 (dono, 16/Nov): agrupamento (alcance no bloco, setinha, caixinha da empresa, triângulo, etiqueta na linha, excluir pelo
+  // nome), notebook (filtros numa linha, rótulos curtos com dica, barra compacta), barra de seleção com Aplicar, Configurações (Rotina de
+  // limpeza, Não confirmar, frase do Salvar, rodapé largo, volta do Histórico no mesmo ponto), registro com "Enviar ao suporte"
+  {
+    const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); localStorage.removeItem('lexsuite:filtro-atual'); localStorage.setItem('lexsuite:agrupar', JSON.stringify({ a: 'empresa', l: '10' })); } catch (e) {} });
+    await p.waitForFunction(() => document.querySelectorAll('.grupo-emp').length > 0, null, { timeout: 20000 }).catch(() => {}); await espera(2500);
+    await p.evaluate(() => [...document.querySelectorAll('.ge-barra button')][0].click()); await espera(700);
+    const g1 = await p.evaluate(() => [...document.querySelectorAll('.grupo-emp')].map(g => g.querySelectorAll('article.item').length));
+    confere(g1.length > 0 && Math.max(...g1) <= 10, 'Agrupar: "Últimos 10 processos" vale para o bloco inteiro (no máximo 10 por empresa: ' + g1.slice(0, 6).join(',') + ')');
+    const g2 = await p.evaluate(() => { const g = document.querySelector('.grupo-emp'); const et = document.querySelector('.grupo-emp .etq-anterior'); return { ch: !!g.querySelector('.ge-chevron'), cb: !!g.querySelector('.ge-cb'), tri: document.querySelectorAll('.tri-aviso').length, etq: et ? et.parentElement.className : 'sem etiqueta', prim: et ? et.closest('article').firstElementChild.className : '' }; });
+    confere(g2.ch && g2.cb, 'Agrupar: setinha e caixinha no cabeçalho de cada empresa');
+    confere(g2.etq === 'sem etiqueta' || (g2.etq === 'meta' && g2.prim === 'sel'), 'Agrupar: a etiqueta "anterior"/"fora dos filtros" fica na linha da data, sem mudar a grade do cartão (' + g2.etq + ')');
+    confere(g2.tri > 0, 'Agrupar: empresa sem CNPJ traz o triângulo de aviso (' + g2.tri + ')');
+    await p.evaluate(() => document.querySelector('.grupo-emp .ge-cb').click()); await espera(500);
+    const lt = await p.evaluate(() => { const g = document.querySelector('.grupo-emp'); const l = document.getElementById('lote'); return { n: g.querySelectorAll('article.item').length, sel: (l.querySelector('b') || {}).textContent, bts: [...l.querySelectorAll('button')].map(x => x.textContent + (x.disabled ? '(apagado)' : '')) }; });
+    confere(String(lt.n) === lt.sel, 'Agrupar: a caixinha da empresa marca todos os processos dela (' + lt.sel + ' de ' + lt.n + ')');
+    confere(lt.bts.includes('Aplicar(apagado)') && lt.bts.includes('Arquivar'), 'Barra de seleção: "Aplicar" apagado até escolher e "Arquivar" sem número (' + lt.bts.join(' | ') + ')');
+    await p.evaluate(() => { const s = document.querySelector('#lote select'); s.value = 'visto'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(200);
+    confere(await p.evaluate(() => document.querySelector('#lote select').value === 'visto' && !document.querySelector('#lote .forte').disabled), 'Barra de seleção: a escolha fica à vista e acende o "Aplicar"');
+    await p.evaluate(() => document.getElementById('lote').querySelectorAll('button')[[...document.getElementById('lote').querySelectorAll('button')].findIndex(x => /Limpar seleção/.test(x.textContent))].click()); await espera(300);
+    // excluir pelo nome (item 33): a empresa sem CNPJ some do agrupamento
+    const nomeSem = await p.evaluate(() => { const t_ = document.querySelector('.tri-aviso'); return t_ ? t_.closest('.grupo-emp').querySelector('.ge-nome').textContent : ''; });
+    if (nomeSem) {
+      await p.evaluate(n => { const g = [...document.querySelectorAll('.grupo-emp')].find(x => x.querySelector('.ge-nome').textContent === n); [...g.querySelectorAll('.ge-acoes button')].find(x => /Excluir esta empresa/.test(x.textContent)).click(); }, nomeSem); await espera(300);
+      await p.evaluate(() => [...document.querySelectorAll('#janela .botoes button')].find(x => x.textContent === 'Excluir').click());
+      await p.waitForFunction(n => ![...document.querySelectorAll('.ge-nome')].some(x => x.textContent === n), nomeSem, { timeout: 15000 }).catch(() => {});
+      confere(await p.evaluate(n => ![...document.querySelectorAll('.ge-nome')].some(x => x.textContent === n), nomeSem), 'Excluir esta empresa: a empresa sem CNPJ, excluída pelo nome, some do agrupamento (' + nomeSem + ')');
+    } else confere(false, 'Excluir esta empresa: não achei empresa sem CNPJ nos dados fictícios');
+    // rótulos curtos e dica com os marcados
+    await p.evaluate(() => { const b_ = document.querySelector('#f-sit > button'); b_.click(); }); await espera(300);
+    for (let k = 0; k < 2; k++) { await p.evaluate(() => { const x = [...document.querySelectorAll('#f-sit .multi-lista input')].find(y => !y.checked); if (x) x.click(); }); await espera(500); }  // a lista se redesenha a cada clique
+    const rot = await p.evaluate(() => ({ trib: document.querySelector('#f-trib > button').textContent, sit: document.querySelector('#f-sit > button').textContent, dica: document.querySelector('#f-sit > button').title }));
+    confere(rot.trib === 'Tribunais' && /^Situação \(2\)$/.test(rot.sit) && /^Situações selecionadas: .+, .+/.test(rot.dica), 'Filtros: rótulo curto ("Tribunais", "Situação (2)") e a dica com os marcados (' + rot.dica + ')');
+    await p.evaluate(() => document.getElementById('b-limpar-filtros').click()); await espera(500);
+    await p.close();
+  }
+  {  // notebook com 125 % (~1093 px): a 1ª linha dos filtros numa linha só e a barra compacta ao rolar
+    const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); localStorage.removeItem('lexsuite:filtro-atual'); localStorage.removeItem('lexsuite:agrupar'); } catch (e) {} });
+    await p.setViewportSize({ width: 1093, height: 760 }); await espera(800);
+    const linha = await p.evaluate(() => { const fx = document.getElementById('filtros-extra'); const rs = [...fx.children].filter(c => !c.hidden && c.offsetParent && c.getBoundingClientRect().width && !c.classList.contains('espaco')).map(c => c.getBoundingClientRect()); return rs.every(r => r.top < rs[0].bottom - 4); });
+    confere(linha, 'Notebook (1093 px): a primeira linha dos filtros cabe numa linha só');
+    await p.evaluate(() => window.scrollTo(0, 1500)); await espera(500);
+    const cp = await p.evaluate(() => { const b_ = document.getElementById('barra-lista'); return { c: b_.classList.contains('compacta'), ord: getComputedStyle(document.getElementById('ordenacao')).display }; });
+    await p.evaluate(() => window.scrollTo(0, 0)); await espera(500);
+    const volta = await p.evaluate(() => !document.getElementById('barra-lista').classList.contains('compacta'));
+    confere(cp.c && cp.ord === 'none' && volta, 'Ao rolar, a barra dos filtros fica numa linha (sem "Ordenar por") e volta inteira ao subir');
+    await p.setViewportSize({ width: 1366, height: 900 }); await espera(400);
+    // Configurações
+    await abrirConfig(p); await espera(900);
+    const cf = await p.evaluate(() => { const c = document.getElementById('config'), r = c.getBoundingClientRect(), f = c.querySelector('.painel-rodape').getBoundingClientRect(); const ids = [...c.querySelectorAll('fieldset')].map(x => x.id); const i = ids.indexOf('c-agendar-wrap'); return { larg: Math.abs(f.left - r.left) <= 2 && Math.abs(r.right - f.right) <= 2, ordem: ids.slice(i, i + 3).join(','), aj: !!document.querySelector('#c-l-consulta .ajuda'), x: document.getElementById('c-consulta-x').hidden }; });
+    confere(cf.ordem === 'c-agendar-wrap,c-limpeza-wrap,c-arm-wrap', 'Configurações: Rotina de limpeza entre Rotina de leitura e Armazenamento (' + cf.ordem + ')');
+    confere(cf.larg, 'Configurações: o rodapé ocupa a largura toda da janela');
+    confere(cf.aj && cf.x, 'Configurações: a consulta pública com (?) e sem a frase embaixo');
+    await p.evaluate(() => { const i = document.getElementById('c-res-meses'); i.value = '8'; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(300);
+    confere(await p.evaluate(() => document.getElementById('c-msg').textContent === 'As alterações desta janela passam a valer depois de Salvar.'), 'Configurações: qualquer alteração mostra "As alterações desta janela passam a valer depois de Salvar."');
+    await p.evaluate(() => [...document.querySelectorAll('#c-limpeza button')].find(x => /^Limpar agora$/.test(x.textContent)).click()); await espera(300);
+    const cc = await p.evaluate(() => { const bt = [...document.querySelectorAll('#c-limpeza button')].filter(x => !x.hidden); const c_ = bt.find(x => /Confirmar a limpeza/.test(x.textContent)); return { tem: !!c_ && bt.some(x => x.textContent === 'Não confirmar'), cor: c_ && getComputedStyle(c_).backgroundColor, msg: document.getElementById('c-limpeza').innerText }; });
+    confere(cc.tem && cc.cor === 'rgb(179, 38, 30)' && /Os prazos de 8 e 24 meses passam a valer também nas próximas limpezas/.test(cc.msg), 'Limpeza: "Confirmar a limpeza" em vermelho, "Não confirmar" ao lado e o aviso dos prazos novos');
+    await p.evaluate(() => [...document.querySelectorAll('#c-limpeza button')].find(x => x.textContent === 'Não confirmar').click()); await espera(200);
+    confere(await p.evaluate(() => [...document.querySelectorAll('#c-limpeza button')].some(x => x.textContent === 'Limpar agora') && ![...document.querySelectorAll('#c-limpeza button')].some(x => !x.hidden && x.textContent === 'Não confirmar')), 'Limpeza: "Não confirmar" desiste sem sair da tela');
+    await p.evaluate(() => { const i = document.getElementById('c-res-meses'); i.value = '6'; i.dispatchEvent(new Event('input', { bubbles: true })); i.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(200);
+    const y0 = await p.evaluate(() => { document.getElementById('c-limpeza').scrollIntoView({ block: 'center' }); return document.getElementById('config').scrollTop; });
+    await p.evaluate(() => [...document.querySelectorAll('#c-limpeza button')].find(x => /Ver no Histórico/.test(x.textContent)).click()); await espera(700);
+    const fim = await p.evaluate(() => !!document.querySelector('#c-hist .c-voltar-fim'));
+    await p.evaluate(() => document.getElementById('c-hist-voltar').click()); await espera(500);
+    const y1 = await p.evaluate(() => document.getElementById('config').scrollTop);
+    confere(fim && Math.abs(y1 - y0) <= 2, 'Histórico: "← Configurações" também no fim, e a volta é para o mesmo ponto (' + y0 + ' → ' + y1 + ')');
+    await p.evaluate(() => document.getElementById('c-registro').click()); await espera(800);
+    confere(await p.evaluate(() => !!document.querySelector('#janela .al-copiar-ic') && [...document.querySelectorAll('#janela .botoes button')].some(x => x.textContent === 'Enviar ao suporte')), 'Registro técnico: ícone de copiar e "Enviar ao suporte"');
+    confere(p._erros.length === 0, '0.7.50: nenhum erro na página ' + p._erros.join(' | '));
+    await p.close();
+  }
+
   await b.close();
   console.log(res.join('\n'));
   console.log(falhas ? `\n${falhas} FALHA(S)` : '\nTUDO OK');

@@ -1,11 +1,12 @@
 # Estado atual do RADAR JUDICIAL (uma página; toda sessão lê antes de responder ao dono)
 
-Atualizado em 15/Nov/2026 pela Produto, com a 0.7.48 publicada (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
+Atualizado em 16/Nov/2026 pela Produto, com a 0.7.49 publicada e a 0.7.50 pronta para publicar (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
 que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" sai DAQUI, não da memória da conversa.
 
 ## 1. No ar
-- Programa **0.7.48**, publicada em 15/Nov (tag `v0.7.48`; instaladores novos no site): leitura pela consulta pública quando o
-  caderno cai, limpeza automática do banco, filtro de cidade, os 14 ajustes da área logada e janelas arrastáveis.
+- Programa **0.7.49**, publicada em 15/Nov (tag `v0.7.49`): Modo no alto, 3 filtros salvos de fábrica, Tribunal na 1ª linha,
+  Agrupar por empresa. A 0.7.48 (consulta pública, limpeza automática, cidade, área logada) também está no ar; os instaladores
+  corrigidos da 0.7.48 estão no site (`ba38b72`).
 - Nuvem: lex-conta v20 (recursos por licença, estado do CNJ, antivírus no registro, opção de e-mail), lex-saude v3 (observador em São
   Paulo com alerta e sonda da consulta), página `judicial.solverone.com.br/antivirus.html`. Área logada: KR Law **desligada**, teste
   ligada (liga-se na ficha do RootifyONE).
@@ -22,18 +23,20 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
-- **0.7.49 pronta para publicar** (15/Nov, decisões 43 a 48; a Operação publica quando o dono escrever "publica a versão 0.7.49"):
-  Modo no alto (planilha oficial no menu ☰), 3 filtros salvos de fábrica com descrição e período, Tribunal na 1ª linha, listas
-  largas que acompanham a rolagem, (?) azul e animado, Agrupar por empresa (até 50 dos últimos 6 meses). Testes do dono: seção 7.
-- Instaladores com o ajuste do PowerShell: prontos na branch; esperam o "pode" do dono na Operação.
+- **0.7.50 pronta para publicar** (16/Nov, os 33 itens de `FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md` e as decisões de
+  16/Nov; a Operação publica quando o dono escrever "publica a versão 0.7.50"): agrupamento recolhível, caixinha da empresa, alcance
+  no bloco inteiro, aviso de empresa sem CNPJ com "CNPJ provável", copiar o contato (90 dias, com desfazer), "Excluir esta empresa";
+  filtros numa linha no notebook com rótulos curtos e barra compacta; "Aplicar" na barra de seleção; Rotina de limpeza própria com
+  "Não confirmar"; registro técnico com "Enviar ao suporte"; volta do Histórico no mesmo ponto; tour sem rolar. Testes do dono: seção 8.
+- Copiar nome e CNPJ com um toque (celular): entra com a versão de celular, sem data.
 - Modo tributário de verdade (TRF3 e TJSP): planejado, sem data.
 - **Sem data**: varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor:
   `PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md`. Depende do teste de 5 min no PJe (consulta de terceiros).
 - Depois da KR Law: staging e CI/CD (`DESENHO-STAGING-RADAR-2026-11-12.md`). Central LexSuiteONE: espera o repositório próprio.
 
 ## 4. O que só o dono pode fazer (lista única)
-1. Testar a 0.7.48 no Windows (seção 6, ~15 min) e o que faltou da 0.7.47 (seção 5); o que falhar vira feedback na Produto.
-2. Quando quiser, na Operação: "publica a versão 0.7.49" e "pode publicar os instaladores corrigidos da 0.7.48".
+1. Terminar o teste da 0.7.49 (seção 7) e, se quiser, o que faltou da 0.7.48 e da 0.7.47 (seções 6 e 5); o que falhar vira feedback na Produto.
+2. Quando quiser, na Operação: "publica a versão 0.7.50"; depois, os testes da seção 8 (~15 min).
 3. Quando quiser: teste de 5 min no PJe com advogado logado (`visita-kr-law/PROMPT-TESTE-GAP-PJE-2026-11-15.md`).
 4. Supabase (Central): TOTP, desligar signups, usuários da equipe; repositório `central-lexsuiteone`.
 5. RootifyONE: "aplicado" (recursos por licença) e os prompts pendentes de lá.
@@ -67,3 +70,19 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 4. O Tribunal aparece na primeira linha; abra "Mais filtros" → Varas: nomes inteiros, com o número antes; role a tela com a lista aberta.
 5. Ao lado de "Ordenar por": "Agrupar por empresa"; confira os blocos ("N no período · X de Y da empresa") e o (?) de Ordenar.
 6. Clique num (?) qualquer: azul parado, o balão cresce ao abrir.
+
+## 8. Testes da 0.7.50 (depois de publicada, num Windows, no notebook, ~15 min; antes, "Atualizar agora" na faixa do alto)
+1. Lista: a primeira linha dos filtros cabe numa linha só ("Tribunais", "Situação", o ícone dos filtros salvos com o número).
+   Marque dois tribunais e passe o mouse: "Tribunais selecionados: …". Role a lista: a barra fica numa linha; suba: volta inteira.
+2. "Agrupar por empresa" com "Últimos 10 processos": nenhum bloco passa de 10. Use a setinha, "Expandir todas" e "Recolher todas".
+3. Na caixinha do cabeçalho de uma empresa: todos os processos dela ficam marcados; na barra, escolha "Em contato", clique em
+   "Aplicar" e veja o aviso claro, acima da barra, com Desfazer ("1 processo agora em…" no singular).
+4. Uma empresa sem CNPJ (por exemplo, os Correios no TRT9): triângulo com (?); se aparecer "CNPJ provável", confira e use.
+   "Excluir esta empresa" num bloco: ela some e aparece em Configurações → Destaques e exclusões.
+5. "Copiar o contato para os sem contato" numa empresa com contato em um processo só: 90 dias, Copiar, depois Desfazer.
+6. Configurações: rodapé largo com a linha azul; mude um prazo e leia "As alterações desta janela passam a valer depois de Salvar.";
+   Rotina de limpeza entre Rotina de leitura e Armazenamento; "Limpar agora" → "Confirmar a limpeza" vermelho e "Não confirmar";
+   limpe com um prazo novo e feche a janela: não pergunta se quer salvar. "Ver no Histórico" e "← Configurações": volta ao mesmo ponto.
+7. Leitura do Diário: "Usar a consulta pública do CNJ quando o caderno falhar" com (?), sem a frase embaixo.
+8. Sobre este computador → Ver registro técnico: ícone de copiar e "Enviar ao suporte" (abre o e-mail com a licença LEX-••••-XXXX).
+9. AssistONE → tour: a página não rola durante o tour. Ajuda → Novidades da versão: a lista da 0.7.50.

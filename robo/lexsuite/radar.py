@@ -439,7 +439,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
             resumidos = banco.limpar_detalhe(6, perfil="automático", so_nunca_abertos=True)
             if resumidos:
                 banco.compactar()
-                aviso(f"  O banco do programa passou de 1 GB: {resumidos} processo(s) nunca aberto(s) com mais de 6 meses ficaram só com o resumo.")
+                aviso(f"  Os dados do programa passaram de 1 GB: {resumidos} processo(s) nunca aberto(s) com mais de 6 meses ficaram só com o resumo.")
                 banco.registrar("saude", {"fonte": "Banco do programa", "situacao": "atenção", "detalhe": f"acima de 1 GB: {resumidos} resumidos (6 meses, nunca abertos)"})
     except Exception as e:  # noqa: BLE001 - a retenção nunca derruba a leitura
         aviso(f"  Não consegui resumir o banco ({e.__class__.__name__}).")

@@ -2048,10 +2048,10 @@ TEXTOS_SINAL = {
         "The file python\\pythonw.exe disappeared from the program folder. {quem_en} may have quarantined it. Restore the item, "
         "add the exception for the folder {pasta} and run the installer again."),
     "db_sumiu": ("bloqueio_gravacao",
-        "O banco do programa (lexsuite.db) sumiu da pasta. {quem} pode tê-lo posto em quarentena. Restaure o item e cadastre a "
-        "exceção da pasta {pasta}; até lá, o programa começa um banco novo.",
-        "The program database (lexsuite.db) disappeared from the folder. {quem_en} may have quarantined it. Restore the item and "
-        "add the exception for the folder {pasta}; until then, the program starts a new database."),
+        "Os dados do programa (lexsuite.db) sumiram da pasta. {quem} pode tê-los posto em quarentena. Restaure o item e cadastre a "
+        "exceção da pasta {pasta}; até lá, o programa começa do zero, sem os dados antigos.",
+        "The program data (lexsuite.db) disappeared from the folder. {quem_en} may have quarantined it. Restore the item and "
+        "add the exception for the folder {pasta}; until then, the program starts from scratch, without the old data."),
 }
 
 
