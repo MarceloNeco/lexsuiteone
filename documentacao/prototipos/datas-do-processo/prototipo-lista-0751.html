@@ -33,10 +33,11 @@
   .novo-f { border-color:var(--azul); box-shadow:0 0 0 2px #dbe6f7; }
   .ordenacao { background:var(--latao-wash); border-radius:10px; padding:6px 10px; display:flex; flex-wrap:nowrap; gap:8px; align-items:center; }
   .ordenacao .rot { font-size:.76rem; font-weight:700; letter-spacing:.1em; color:var(--latao-texto); white-space:nowrap; }
-  .ordenacao select { border-color:#d9c39b; flex:0 1 auto; min-width:120px; }
-  .linha1 select { flex:0 1 auto; min-width:110px; }
+  .ordenacao select { border-color:#d9c39b; flex:0 0 auto; }
+  .linha1 select { flex:none; }
+  .linha1.curta .busca { flex-basis:110px; min-width:100px; }
   .ordenacao select:disabled { opacity:.5; }
-  .csv { background:#8a6420; color:#fff; border:0; border-radius:999px; padding:8px 16px; font:inherit; font-size:.84rem; font-weight:700; white-space:nowrap; margin-left:auto; }
+  .csv { flex:none; background:#8a6420; color:#fff; border:0; border-radius:999px; padding:8px 16px; font:inherit; font-size:.84rem; font-weight:700; white-space:nowrap; margin-left:auto; }
   .q { display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; border:1.5px solid var(--azul); color:var(--azul); font-size:.72rem; font-weight:700; cursor:help; flex:none; }
   .resumo { margin:12px 2px 4px; font-size:.9rem; color:var(--tinta-2); }
   .item { background:#fff; border:1px solid var(--linha); border-left:4px solid var(--latao); border-radius:12px; margin:10px 0; }
@@ -86,6 +87,11 @@
   .seta-col { display:flex; justify-content:center; }
   @media (max-width:760px) { .jr-todos { grid-template-columns:1fr; } .seta-col { display:none; } }
   .mk.pub { background:#f3f5f8; color:var(--tinta-2); }
+  .grupo { background:#fff; border:1px solid var(--linha); border-radius:12px; margin:12px 0; padding:0 0 4px; }
+  .g-cab { display:flex; gap:12px; align-items:center; padding:12px 18px; border-bottom:1px solid var(--linha); flex-wrap:wrap; }
+  .g-cab .cinza { color:var(--tinta-3); font-size:.86rem; } .g-conta { margin-left:auto; color:var(--tinta-3); font-size:.86rem; }
+  .chev2 { color:var(--tinta-3); }
+  .grupo .item { margin:8px 12px; }
   .vazio-lista { background:#fff; border:1px dashed var(--linha-2); border-radius:12px; padding:22px; text-align:center; color:var(--tinta-2); }
 </style>
 </head>
@@ -101,8 +107,8 @@
         <option value="365">No Diário: últimos 12 meses</option><option value="0" selected>No Diário: todos (amostra)</option>
       </select>
       <div class="multi" id="m-trib"><button class="pilula" id="b-trib" type="button">Tribunais ▾</button><div class="painel" id="p-trib"></div></div>
-      <select><option>Situação</option><option>Novo</option><option>Em contato</option></select>
-      <select><option>Qualquer valor</option><option>Acima de R$ 100 mil</option><option>Sem valor informado</option></select>
+      <select id="sit"><option>Situação</option><option>Novo</option><option>Em contato</option></select>
+      <select id="valor"><option>Qualquer valor</option><option>Acima de R$ 100 mil</option><option>Sem valor informado</option></select>
       <button class="pilula" id="b-mais" type="button">Mais filtros ▾</button>
       <span class="espaco"></span>
       <button class="pilula" type="button" title="Filtros salvos (4)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3.5h12v17l-6-4.2-6 4.2z"/></svg> (4) ▾</button>
@@ -129,7 +135,8 @@
     <div class="ordenacao">
       <span class="rot">≡ ORDENAR POR</span><span class="q" title="A ordem da lista. 'Depois por' desempata. Agrupar por empresa é uma visão à parte.">?</span>
       <select id="ordem">
-        <option value="ajuizado" selected>Mais novos primeiro (ajuizamento)</option>
+        <option value="ajuizado" selected>Mais novos primeiro (ajuizados)</option>
+        <option value="agr" hidden>Mais recentes primeiro</option>
         <option value="pub1">1ª publicação mais recente primeiro</option>
         <option value="valor">Maior valor primeiro</option>
         <option value="porte">Maior porte primeiro</option>
@@ -139,12 +146,12 @@
         <option value="hora">Ordem de chegada (encontrado pelo RADAR)</option>
       </select>
       <select id="ordem2">
-        <option value="">Depois por: nada</option><option value="pub1">Depois por: 1ª publicação</option><option value="valor">Depois por: maior valor</option>
+        <option value="">Depois por: nada</option><option value="agr2" hidden>Depois por: —</option><option value="pub1">Depois por: 1ª publicação</option><option value="valor">Depois por: maior valor</option>
         <option value="vara">Depois por: vara</option><option value="empresa">Depois por: empresa</option>
       </select>
       <select id="agrupar"><option value="">Agrupar: não</option><option value="empresa">Agrupar por empresa</option></select>
       <select id="alcance" style="display:none"><option>Até 50 dos últimos 6 meses</option><option>Últimos 10 processos</option><option>Todos os processos</option></select>
-      <button class="csv" type="button">⤓ Baixar a lista (.csv)</button>
+      <button class="csv" type="button" title="Baixar a lista (.csv)">⤓ Baixar a lista (.csv)</button>
     </div>
   </div>
   <p class="resumo" id="resumo"></p>
@@ -233,14 +240,27 @@ function cartao(c, i) {
 }
 function desenha() {
   F.q = $('busca').value.trim(); F.periodo = +$('periodo').value; F.idade = +$('idade').value; F.andamento = $('andamento').value;
-  F.ordem = $('ordem').value; F.ordem2 = $('ordem2').value; F.agrupar = $('agrupar').value;
+  F.agrupar = $('agrupar').value;
+  if (F.agrupar) { if ($('ordem').value !== 'agr') { $('ordem').dataset.antes = $('ordem').value; $('ordem2').dataset.antes = $('ordem2').value; } $('ordem').value = 'agr'; $('ordem2').value = 'agr2'; F.ordem = 'ajuizado'; F.ordem2 = ''; }
+  else { if ($('ordem').value === 'agr') { $('ordem').value = $('ordem').dataset.antes || 'ajuizado'; $('ordem2').value = $('ordem2').dataset.antes || ''; } F.ordem = $('ordem').value; F.ordem2 = $('ordem2').value; }
   $('alcance').style.display = F.agrupar ? '' : 'none'; $('ordem').disabled = $('ordem2').disabled = !!F.agrupar;
   multi('trib', 'tribunal', ['TRT1','TRT2','TRT3','TRT4','TRT9','TRT15','TRT17'], 'Tribunais', 'Tribunais selecionados');
   multi('uf', 'uf', ['ES','MG','PR','RJ','RS','SP'], 'Estados', 'Estados selecionados');
-  var vis = CASOS.filter(function (c) { return passa(c); }).sort(F.agrupar ? function (a, b) { return (a.empresa || a.numero).localeCompare(b.empresa || b.numero) || b.ajuizado.localeCompare(a.ajuizado); } : compara);
+  var vis = CASOS.filter(function (c) { return passa(c); }).sort(compara);
+  if (F.agrupar) {  /* como o programa: as empresas pela data mais recente; dentro de cada uma, do mais novo ao mais antigo */
+    var g = {}, ordemG = [];
+    vis.forEach(function (c) { var k = c.empresa || ('n:' + c.numero); if (!g[k]) { g[k] = []; ordemG.push(k); } g[k].push(c); });
+    ordemG.forEach(function (k) { g[k].sort(function (a, b) { return b.ajuizado.localeCompare(a.ajuizado); }); });
+    ordemG.sort(function (a, b) { return g[b][0].ajuizado.localeCompare(g[a][0].ajuizado); });
+  }
   var nf = (F.q ? 1 : 0) + (F.periodo ? 1 : 0) + Object.keys(F.tribs).length + Object.keys(F.ufs).length + (F.idade ? 1 : 0) + (F.andamento ? 1 : 0);
   $('limpar').disabled = !nf; $('limpar').textContent = nf ? 'Limpar (' + nf + ')' : 'Limpar';
   $('resumo').innerHTML = '<b>' + vis.length + '</b> de ' + CASOS.length + ' processos reais (públicos, CNJ, 16/11/2026) · ordem: ' + $('ordem').selectedOptions[0].text.toLowerCase();
+  if (F.agrupar && vis.length) { var html = '', n = 0; ordemG.forEach(function (k) { var lst = g[k], c0 = lst[0];
+      html += '<section class="grupo"><div class="g-cab"><input type="checkbox" aria-label="Marcar todos"><span class="chev2">⌄</span><b>' + (c0.empresa || 'Empresa do processo ' + c0.numero) + '</b>' +
+        (c0.cnpj ? '<span class="cinza">' + c0.cnpj + '</span>' : '<span class="cinza" style="font-style:italic">no RADAR, o nome e o CNPJ vêm do Diário</span>') +
+        '<span class="g-conta">' + lst.length + (lst.length > 1 ? ' processos' : ' processo') + '</span></div>' + lst.map(function (c) { return cartao(c, n++); }).join('') + '</section>'; });
+    $('lista').innerHTML = html; return; }
   $('lista').innerHTML = vis.length ? vis.map(cartao).join('') : '<div class="vazio-lista">Nenhum processo com estes filtros. Tente "Idade do processo: qualquer" ou "No Diário: todos".</div>';
 }
 document.addEventListener('click', function (e) {
@@ -252,12 +272,17 @@ document.addEventListener('click', function (e) {
   if (e.target.id === 'limpar') { $('busca').value = ''; $('periodo').value = '0'; $('idade').value = '0'; $('andamento').value = ''; F.tribs = {}; F.ufs = {}; desenha(); }
 });
 ['busca', 'periodo', 'idade', 'andamento', 'ordem', 'ordem2', 'agrupar'].forEach(function (id) { $(id).addEventListener(id === 'busca' ? 'input' : 'change', desenha); });
-function cabe() {  /* como o programa: no notebook, os rótulos encurtam para caber numa linha */
-  var l = document.querySelector('.linha1'), n = l.scrollWidth > l.clientWidth + 1;
-  $('busca').placeholder = n ? 'Procurar…' : 'Procurar empresa, nº ou CNPJ'; $('b-mais').textContent = n ? 'Mais ▾' : 'Mais filtros ▾';
+var regua = document.createElement('canvas').getContext('2d');
+function ajusta(sel) { var cs = getComputedStyle(sel); regua.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily; var o = sel.options[sel.selectedIndex]; sel.style.width = Math.ceil(regua.measureText(o ? o.textContent : '').width + 46) + 'px'; }
+function cabe() {
+  ['periodo', 'sit', 'valor', 'ordem', 'ordem2', 'agrupar', 'alcance'].forEach(function (id) { ajusta($(id)); });  /* como o programa: cada seletor do tamanho do texto escolhido */  /* como o programa: no notebook, os rótulos encurtam para caber numa linha */
+  var l = document.querySelector('.linha1'); l.classList.remove('curta'); $('b-mais').textContent = 'Mais filtros ▾'; var n = l.scrollWidth > l.clientWidth + 1; l.classList.toggle('curta', n);
+  $('busca').placeholder = n ? 'Procurar…' : 'Procurar empresa, nº ou CNPJ';
+  var o = document.querySelector('.ordenacao'), csv = o.querySelector('.csv'); csv.textContent = '⤓ Baixar a lista (.csv)'; if (o.scrollWidth > o.clientWidth + 1) csv.textContent = '⤓ .csv'; $('b-mais').textContent = n ? 'Mais ▾' : 'Mais filtros ▾';
 }
 window.addEventListener('resize', cabe);
 desenha(); cabe();
+['periodo','ordem','ordem2','agrupar','alcance'].forEach(function (id) { $(id).addEventListener('change', cabe); });
 </script>
 </body>
 </html>
