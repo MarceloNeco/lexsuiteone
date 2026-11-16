@@ -68,6 +68,14 @@ não é novo; (2) **DataJud** pela data de ajuizamento. Mais de 30 dias → "pro
 Cartão: "Ajuizado em …", "1ª publicação no Diário em …" e "Encontrado pelo RADAR em …". Custo: ~1 pedido/s (90 processos ≈ 2 min,
 em segundo plano). Vai junto no pedido à Arquitetura. Atualizar o protótipo com esses rótulos.
 
+**Diretriz do dono (16/Nov): "deveria consultar o máximo de fontes públicas possível".** O DataJud (CNJ) já estava no código
+(`datajud.py`, comandos de estatística por vara) e não era usado para completar o RADAR: falha nossa de não ter proposto antes.
+Fontes públicas e o que cada uma dá: **DJEN/Diário** (descobre o processo e a empresa; histórico por número; bloqueia acesso de fora
+do Brasil), **DataJud** (data e hora do ajuizamento, classe, assuntos, órgão, movimentos; **não traz as partes**, atrasa alguns dias
+e às vezes recusa por excesso de pedidos), **Receita/CNPJ** (cadastro da empresa, já usado). A Arquitetura desenha o uso conjunto
+(com fila, ritmo e "tenta de novo"). Tentativa da Produto (16/Nov) de achar o processo do Leandro no DataJud por vara e dia de
+ajuizamento: a API respondeu "ocupado" várias vezes; nova tentativa em segundo plano.
+
 ## 2. "O filtro talvez não esteja funcionando corretamente, ou eu não estou sabendo filtrar"
 - Não disse qual filtro. Perguntar ao Leandro (pelo dono): qual filtro, o que escolheu, o que esperava e o que apareceu (print).
 - Possível ligação com o item 1 (filtro "No Diário: últimos N dias" usa a data da publicação, não a da distribuição).
