@@ -648,6 +648,14 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Arquitetura (16/Nov, URGENTE para depois de quinta, 19/Nov; primeiro uso real da KR Law):** processo distribuído em
+  maio aparecendo como "novo" (publicação da audiência inicial em novembro, TRT2). Anamnese e soluções em
+  `documentacao/FEEDBACK-KRLAW-2026-11-16-PRIMEIRO-USO.md`; protótipo em `documentacao/prototipos/datas-do-processo/prototipo.html`.
+  Pedido: desenho curto para (1) buscar no DataJud (`lexsuite/datajud.py`, já existe) a data de ajuizamento dos "novos" que não
+  vieram da lista de distribuição, em lote, com ritmo e comportamento com o CNJ fora; (2) regra "novo = ajuizado há até 30 dias"
+  (ajustável), processo antigo marcado e fora do padrão; (3) ordenar e filtrar por data de ajuizamento e por origem do sinal.
+  A Produto implementa na 0.7.51 depois do "pode" do dono.
+
 - **Produto → Operação (16/Nov): 0.7.50 pronta para publicar**, quando o dono escrever "publica a versão 0.7.50". Código na `main`
   em `a68c2af`; revisar `git diff a4906d3 a68c2af -- robo paginas docs/manual.html` e ler a folha
   `documentacao/dod/0.7.50.md` contra o diff. Sem instalador novo; pacote com os mesmos arquivos (nenhum módulo novo). Testes do dono

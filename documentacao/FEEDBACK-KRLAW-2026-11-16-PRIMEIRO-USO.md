@@ -48,6 +48,9 @@ inicial costuma ser marcada meses depois da distribuição.**
    DataJud não servir.
 - Teste: o caso real (pedir o número ao Leandro) e casos fictícios com publicação de audiência inicial de processo de maio.
 
+Protótipo para o dono: `documentacao/prototipos/datas-do-processo/prototipo.html` (glossário, linha do tempo, cartão com as duas
+datas, selo da origem, ordenar e filtros novos). Pedido à Arquitetura no quadro (16/Nov).
+
 ## 2. "O filtro talvez não esteja funcionando corretamente, ou eu não estou sabendo filtrar"
 - Não disse qual filtro. Perguntar ao Leandro (pelo dono): qual filtro, o que escolheu, o que esperava e o que apareceu (print).
 - Possível ligação com o item 1 (filtro "No Diário: últimos N dias" usa a data da publicação, não a da distribuição).

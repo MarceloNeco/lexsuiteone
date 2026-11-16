@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protótipo · Datas do processo e "processo antigo" · RADAR JUDICIAL</title>
+<style>
+  :root { --marinho:#0f1d33; --latao:#a8792a; --latao-wash:#f6efe2; --tinta:#14213d; --tinta-2:#4a5468; --tinta-3:#6b7486; --linha:#e3e6ec; --ok:#1e7a46; --ok-bg:#e7f4ec; --er:#b3261e; --er-bg:#fbeaea; --azul:#2b62ad; --folha:#fff; --fundo:#f4f6f9; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--tinta); background:var(--fundo); line-height:1.45; }
+  header { background:var(--marinho); color:#fff; padding:18px 28px; }
+  header h1 { margin:0; font-size:1.25rem; } header p { margin:4px 0 0; color:#c9d1de; font-size:.92rem; }
+  main { max-width:1100px; margin:0 auto; padding:22px 20px 60px; }
+  h2 { font-size:1.05rem; margin:30px 0 10px; letter-spacing:.02em; }
+  .caixa { background:var(--folha); border:1px solid var(--linha); border-radius:12px; padding:16px 18px; }
+  .glossario { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:12px; }
+  .glossario div { background:var(--folha); border:1px solid var(--linha); border-radius:10px; padding:12px 14px; }
+  .glossario b { display:block; margin-bottom:4px; }
+  .linha-tempo { display:flex; gap:0; align-items:stretch; margin-top:6px; overflow-x:auto; }
+  .marco { flex:1 1 0; min-width:150px; border-top:4px solid var(--linha); padding:10px 10px 0; position:relative; }
+  .marco::before { content:""; position:absolute; top:-9px; left:10px; width:14px; height:14px; border-radius:50%; background:var(--folha); border:3px solid var(--tinta-3); }
+  .marco.forte { border-top-color: var(--ok); } .marco.forte::before { border-color: var(--ok); }
+  .marco.risco { border-top-color: var(--er); } .marco.risco::before { border-color: var(--er); }
+  .marco small { color:var(--tinta-3); display:block; }
+  .barra { display:flex; flex-wrap:wrap; gap:8px; align-items:center; background:var(--latao-wash); border-radius:10px; padding:8px 12px; }
+  .barra b { font-size:.8rem; letter-spacing:.08em; color:var(--latao); margin-right:6px; }
+  select, .chip { border:1px solid #c9cfda; border-radius:999px; padding:6px 12px; font:inherit; font-size:.86rem; background:#fff; color:var(--tinta); }
+  .chip.on { background:var(--marinho); color:#fff; border-color:var(--marinho); font-weight:600; }
+  .novo { color:var(--ok); font-weight:700; }
+  .cartao { background:var(--folha); border:1px solid var(--linha); border-left:4px solid var(--latao); border-radius:12px; padding:14px 18px; margin:12px 0; display:grid; grid-template-columns: 1fr auto; gap:6px 16px; }
+  .cartao.antigo { border-left-color: var(--er); opacity:.92; }
+  .nome { font-weight:700; font-size:1.02rem; }
+  .meta { font-size:.88rem; color:var(--tinta-2); display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; }
+  .data-diario { color:var(--latao); font-weight:700; letter-spacing:.02em; }
+  .num { font-variant-numeric: tabular-nums; color:var(--tinta); }
+  .datas { grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px; }
+  .data { border-radius:8px; padding:4px 10px; font-size:.84rem; background:#eef1f6; }
+  .data.aj { background:var(--ok-bg); color:var(--ok); font-weight:600; }
+  .data.aj.velho { background:var(--er-bg); color:var(--er); }
+  .selo { font-size:.74rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; border-radius:6px; padding:3px 8px; }
+  .selo.dist { background:var(--ok-bg); color:var(--ok); } .selo.aud { background:#fff4dc; color:#8a5a00; } .selo.velho { background:var(--er-bg); color:var(--er); }
+  .valor { text-align:right; font-weight:700; }
+  .nota { font-size:.86rem; color:var(--tinta-2); }
+  .q { display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; border:1.5px solid var(--azul); color:var(--azul); font-size:.75rem; font-weight:700; margin-left:4px; cursor:help; }
+  table { border-collapse:collapse; width:100%; font-size:.9rem; } td, th { border-bottom:1px solid var(--linha); padding:7px 8px; text-align:left; vertical-align:top; }
+  th { color:var(--tinta-3); font-weight:600; }
+  .aviso { background:#fff8e6; border:1px solid #f0d9a8; border-radius:10px; padding:10px 14px; font-size:.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Protótipo: as datas do processo e o "processo antigo" que aparecia como novo</h1>
+  <p>Dados fictícios. Só para o dono entender e decidir; nada disto está no programa ainda.</p>
+</header>
+<main>
+
+<h2>1. Em 1 minuto: as datas de um processo trabalhista</h2>
+<div class="caixa">
+  <div class="linha-tempo">
+    <div class="marco forte"><b>Ajuizamento / distribuição</b><small>15/05/2026</small>O advogado do trabalhador entra com a ação; o sistema sorteia a vara. Autuação é o registro, quase sempre no mesmo minuto.</div>
+    <div class="marco forte"><b>Lista de distribuição no Diário</b><small>16 a 20/05/2026</small>O tribunal publica a lista dos processos distribuídos. <b>É o sinal mais seguro de "ação nova".</b></div>
+    <div class="marco"><b>Notificação da empresa</b><small>semanas depois</small>A empresa é chamada para a audiência. Às vezes o Diário publica "notificação inicial".</div>
+    <div class="marco risco"><b>Audiência inicial</b><small>13/11/2026 (6 meses depois!)</small>Em São Paulo a pauta é longa. O Diário publica "audiência inicial" perto da data: <b>o processo já tem meses.</b></div>
+  </div>
+  <p class="nota" style="margin-top:14px">O que aconteceu com o Leandro: o RADAR viu, em novembro, a publicação da audiência inicial de um processo distribuído em maio
+  e mostrou no cartão a data da publicação (13/NOV), sem dizer que era a data do Diário. Pareceu "distribuído nos últimos dias".</p>
+</div>
+
+<h2>2. Glossário rápido</h2>
+<div class="glossario">
+  <div><b>Ajuizado / distribuído em</b>Dia em que a ação entrou na Justiça. É a data que diz se o processo é novo.</div>
+  <div><b>Publicado no Diário em</b>Dia em que a publicação saiu no DJEN. Pode ser meses depois do ajuizamento.</div>
+  <div><b>Lista de distribuição</b>Publicação com os processos que acabaram de entrar. Sinal forte de ação nova.</div>
+  <div><b>Audiência / notificação inicial</b>Primeira audiência e o chamado da empresa. Sinal mais fraco: pode ser de processo antigo.</div>
+  <div><b>DataJud (CNJ)</b>Base pública do CNJ com a data de ajuizamento de cada processo. Gratuita; atrasa alguns dias para processo muito novo.</div>
+  <div><b>Número CNJ</b>0001234-56.<b>2026</b>.5.02.0014: o ano está no número, mas não o mês.</div>
+</div>
+
+<h2>3. Como ficaria a Lista (proposta)</h2>
+<div class="barra">
+  <b>ORDENAR POR</b>
+  <select><option>Mais recentes no Diário</option><option selected>Ajuizados mais recentes primeiro</option><option>Maior valor primeiro</option><option>Empresa (A a Z)</option></select>
+  <span style="width:16px"></span>
+  <b>MAIS FILTROS</b>
+  <span class="chip on">Só ações novas (até 30 dias do ajuizamento)</span>
+  <span class="chip">Origem: lista de distribuição ▾</span>
+  <span class="chip">Mostrar processos antigos (12)</span>
+</div>
+
+<div class="cartao">
+  <div>
+    <div class="nome">Empresa Fictícia Alfa Serviços Ltda</div>
+    <div class="meta"><span class="data-diario">SEX, 13 NOV 2026</span><span>TRT2</span><span class="num">Processo 0001234-56.2026.5.02.0014</span><span>14ª Vara do Trabalho de São Paulo</span></div>
+  </div>
+  <div class="valor">R$ 98.500</div>
+  <div class="datas">
+    <span class="data">Publicado no Diário: 13/11/2026</span>
+    <span class="data aj">Ajuizado: 10/11/2026 · <span class="novo">novo</span> (3 dias)</span>
+    <span class="selo dist">Lista de distribuição</span><span class="q" title="Origem: a lista de distribuição do tribunal. É o sinal mais seguro de ação nova.">?</span>
+  </div>
+</div>
+
+<div class="cartao antigo">
+  <div>
+    <div class="nome">Empresa Fictícia Beta Comércio Ltda</div>
+    <div class="meta"><span class="data-diario">SEX, 13 NOV 2026</span><span>TRT2</span><span class="num">Processo 0004567-89.2026.5.02.0014</span><span>14ª Vara do Trabalho de São Paulo</span></div>
+  </div>
+  <div class="valor">R$ 141.000</div>
+  <div class="datas">
+    <span class="data">Publicado no Diário: 13/11/2026</span>
+    <span class="data aj velho">Ajuizado: 15/05/2026 · processo antigo (6 meses)</span>
+    <span class="selo aud">Audiência inicial</span><span class="q" title="Origem: a publicação da audiência inicial. Em tribunais com pauta longa, a audiência acontece meses depois do ajuizamento.">?</span>
+  </div>
+  <div class="nota" style="grid-column:1/-1">Este é o caso do Leandro. Com a proposta, ele <b>não</b> aparece entre os novos; fica escondido por
+  "Só ações novas" e volta com "Mostrar processos antigos", sempre marcado em vermelho.</div>
+</div>
+
+<div class="cartao">
+  <div>
+    <div class="nome">Empresa Fictícia Gama Indústria Ltda</div>
+    <div class="meta"><span class="data-diario">SEX, 13 NOV 2026</span><span>TRT9</span><span class="num">Processo 0007890-12.2026.5.09.0002</span><span>2ª Vara do Trabalho de Curitiba</span></div>
+  </div>
+  <div class="valor">valor a conferir</div>
+  <div class="datas">
+    <span class="data">Publicado no Diário: 13/11/2026</span>
+    <span class="data">Ajuizado: a conferir (o DataJud ainda não tem)</span>
+    <span class="selo aud">Notificação inicial</span>
+  </div>
+  <div class="nota" style="grid-column:1/-1">Processo muito recente pode ainda não estar no DataJud: entra como novo, com "a conferir", e o RADAR tenta de novo na próxima leitura.</div>
+</div>
+
+<h2>4. O que muda (resumo para decidir)</h2>
+<div class="caixa">
+  <table>
+    <tr><th>Parte</th><th>Proposta</th><th>Por quê</th></tr>
+    <tr><td>Cartão</td><td>Duas datas sempre: "Publicado no Diário" e "Ajuizado"; selo da origem com (?)</td><td>Ninguém confunde mais a data da publicação com a do processo</td></tr>
+    <tr><td>Data de ajuizamento</td><td>O RADAR busca no DataJud (CNJ, público e gratuito) para quem não veio da lista de distribuição</td><td>É a fonte oficial da data; o programa já tem o acesso, só não usa no RADAR</td></tr>
+    <tr><td>Regra de "novo"</td><td>Ajuizado há mais de 30 dias (ajustável) não é "novo": vai para "processos antigos", marcado em vermelho</td><td>O escritório quer ação recém-ajuizada (a empresa ainda não tem advogado)</td></tr>
+    <tr><td>Ordenar</td><td>Novo critério "Ajuizados mais recentes primeiro"</td><td>Pedido do dono</td></tr>
+    <tr><td>Filtros</td><td>"Só ações novas (até 30 dias)" ligado por padrão; "Origem" (lista de distribuição, audiência, notificação); "Mostrar processos antigos (N)"</td><td>O escritório escolhe o quanto quer arriscar; o seguro vem por padrão</td></tr>
+    <tr><td>Filtros prontos</td><td>"Para contatar" passa a usar "Só ações novas"</td><td>Evita ligar para empresa que já tem o processo há meses</td></tr>
+  </table>
+  <p class="aviso" style="margin-top:12px"><b>Para decidir com o dono:</b> (1) o prazo de "novo": 30 dias do ajuizamento (sugestão) ou outro;
+  (2) processo antigo some por padrão (sugestão) ou só fica marcado; (3) o DataJud entra no RADAR (desenho da Arquitetura: ritmo de
+  pedidos e o que fazer quando o CNJ estiver fora).</p>
+</div>
+</main>
+</body>
+</html>
