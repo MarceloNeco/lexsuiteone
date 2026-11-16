@@ -29,3 +29,22 @@ CNPJ pelo nome) está com o subagente pesquisador e entra aqui quando voltar.
 
 ## Antes de codar
 Protótipo de notebook (1280×720 e 1366×768 com zoom 125%) para os itens 1 a 4, 6, 8 e 9, conferido com o dono; depois "pode codar".
+
+## Pesquisa (pesquisador, 16/Nov; fontes secundárias marcadas; conferir as oficiais antes de usar em texto ao cliente)
+- **Correios (ECT)**: CNPJ da matriz 34.028.316/0001-03 (fonte de terceiro e relatórios dos Correios; conferir na Receita); as
+  filiais usam a mesma raiz 34028316. Empresa pública federal. Ou seja: com a regra "a chave é o CNPJ" (raiz), os processos dos
+  Correios com CNPJ já se juntam; os 560 sem CNPJ caem no nome, e o item 10 (CNPJ provável) resolve dentro do programa.
+- **Notificação na Justiça do Trabalho** (CLT art. 841; Súmula 16 do TST; fontes secundárias): vai por correio ao endereço da
+  empresa indicado em cada ação (sede ou local de trabalho), não a sócio nem a advogado. Pode mudar de processo para processo
+  (endereço, filial e advogado de cada caso).
+- **Reaproveitar contato**: o cadastro da Receita é por estabelecimento (matriz ou filial); contato de petição é daquele processo;
+  advogado ou escritório da empresa é contato de terceiro; contato de pessoa física (sócio) é dado pessoal (LGPD art. 7º, §§3º e 4º:
+  finalidade e necessidade). **Consequência para o item 12**: copiar só o contato da empresa (telefone, e-mail e endereço do
+  cadastro, mesma raiz de CNPJ, preferindo o mesmo estabelecimento); nunca copiar contato de advogado/escritório nem de pessoa
+  física; marcar "copiado de…" e permitir desfazer.
+- **OAB, Provimento 205/2021**: publicidade só informativa; mala direta vedada; contato ativo e não solicitado com empresa
+  recém-processada tem risco ético (leitura de fonte secundária). O programa já diz que o uso dos contatos é decisão do compliance do
+  escritório; não muda o produto, mas vale lembrar ao dono e ao escritório.
+- **Busca de CNPJ pelo nome**: não há consulta oficial gratuita por nome; só os dados abertos da Receita em lote (arquivos grandes,
+  atualização mensal ou trimestral) ou o catálogo Conecta gov.br (pode exigir adesão). Por isso a proposta do item 10 começa
+  **dentro do programa** (CNPJ que já aparece em outros processos com o mesmo nome); a busca externa fica para a Arquitetura.
