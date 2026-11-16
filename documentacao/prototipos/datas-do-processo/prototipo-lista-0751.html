@@ -68,6 +68,24 @@
   .copiar svg .frente { fill:#fff; } .copiar:hover svg .frente { fill:#eef1f6; }
   .fonte { font-size:.66rem; font-weight:700; letter-spacing:.05em; border-radius:5px; padding:1px 6px; margin-left:6px; vertical-align:middle; white-space:nowrap; }
   .f-cnj { background:#e8eefb; color:#24508f; } .f-rf { background:#e7f4ec; color:#1e7a46; } .f-pje { background:#fff4dc; color:#8a5a00; } .f-djen { background:#f3e9fb; color:#6b2c91; }
+
+  .jr { border:1px solid var(--linha); border-radius:10px; padding:10px 14px; margin-bottom:12px; background:#fafbfc; }
+  .jr-cab { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .jr-cab h4 { margin:0; }
+  .jr-resumo { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px; font-size:.88rem; cursor:pointer; }
+  .jr-resumo .ponto { color:var(--tinta-3); letter-spacing:.3em; }
+  .jr-resumo .chv { margin-left:auto; color:var(--tinta-3); display:inline-block; transition:transform .2s; font-size:1.1rem; }
+  .jr.aberta .jr-resumo .chv { transform:rotate(90deg); }
+  .jr-todos { display:none; grid-template-columns:1fr 40px 1fr; margin-top:10px; }
+  .jr.aberta .jr-todos { display:grid; }
+  .jr-todos ul { list-style:none; margin:0; padding:0 0 0 18px; border-left:3px solid var(--linha); }
+  .jr-todos li { position:relative; padding:4px 0 8px 14px; font-size:.88rem; }
+  .jr-todos li::before { content:""; position:absolute; left:-27px; top:8px; width:12px; height:12px; border-radius:50%; background:#fff; border:3px solid var(--tinta-3); }
+  .jr-todos li.chave::before { border-color:var(--ok); } .jr-todos li.aud::before { border-color:var(--latao); } .jr-todos li.fim::before { border-color:var(--er); } .jr-todos li.radar::before { border-color:var(--azul); }
+  .jr-todos b { display:inline-block; min-width:88px; font-variant-numeric:tabular-nums; }
+  .seta-col { display:flex; justify-content:center; }
+  @media (max-width:760px) { .jr-todos { grid-template-columns:1fr; } .seta-col { display:none; } }
+  .mk.pub { background:#f3f5f8; color:var(--tinta-2); }
   .vazio-lista { background:#fff; border:1px dashed var(--linha-2); border-radius:12px; padding:22px; text-align:center; color:var(--tinta-2); }
 </style>
 </head>
@@ -186,10 +204,16 @@ function cartao(c, i) {
     '<span>' + c.tribunal + '</span><span class="num">Processo ' + c.numero + ' <button class="copiar" title="Copiar o número do processo" data-c="' + c.numero + '">' + ICONE + '</button></span><span>' + c.vara + '</span></div></div>' +
     '<div class="valor">' + (c.valor ? moeda(c.valor) + '<small>valor da causa</small>' : 'valor a conferir<small>no PJe (área logada)</small>') + '</div>' +
     '<div class="marcos"><span class="idade ' + (velho ? 'velho' : 'novo') + '">' + (velho ? 'PROCESSO ANTIGO · ' : 'NOVO · ') + idadeTxt(c.ajuizado).toUpperCase() + '</span>' +
-    mini.map(function (m) { return '<span class="mk ' + m[2] + '">' + br(m[0]) + ' · ' + m[1] + '</span>'; }).join('') +
+    mini.map(function (m) { var cl = (m[1].indexOf('1ª publicação') === 0) ? 'pub' : m[2]; return '<span class="mk ' + cl + '">' + br(m[0]) + ' · ' + m[1] + '</span>'; }).join('') +
     (c.marcos.length > mini.length ? '<span class="cinza" style="color:var(--tinta-3)">+' + (c.marcos.length - mini.length) + ' marcos na ficha</span>' : '') + '</div></div>';
-  h += '<div class="ficha"><h4>JORNADA DO PROCESSO <span style="font-weight:400">(' + c.marcos.length + ' marcos; o de rotina fica fora)</span> <span class="fonte f-cnj">CNJ</span><span class="fonte f-djen">DIÁRIO</span></h4><ul class="jornada">' +
-    c.marcos.map(function (m) { return '<li class="' + m[2] + '"><b>' + br(m[0]) + '</b> ' + m[1] + '</li>'; }).join('') + '</ul>';
+  var fontesTxt = c.empresa ? 'Datas e andamentos: CNJ (DataJud, base pública dos processos). Publicações e partes: Diário de Justiça (DJEN). Empresa: Receita Federal. Valor da causa: área logada (PJe). Todas responderam.' : 'Datas e andamentos: CNJ (DataJud). Publicações: Diário de Justiça (DJEN). As duas fontes responderam. A empresa vem do Diário.';
+  var meio = Math.ceil(c.marcos.length / 2), col = function (l) { return '<ul>' + l.map(function (m) { return '<li class="' + m[2] + '"><b>' + br(m[0]) + '</b> ' + m[1] + '</li>'; }).join('') + '</ul>'; };
+  var seta = '<div class="seta-col"><svg width="34" height="100%" viewBox="0 0 34 200" preserveAspectRatio="none" aria-hidden="true"><path d="M4 196 C 20 150, 14 60, 28 10" fill="none" stroke="#b8bfcc" stroke-width="1.6" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/><path d="M22 14 L28 6 L31 16" fill="none" stroke="#b8bfcc" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg></div>';
+  var pri = c.marcos[0], ult = c.marcos[c.marcos.length - 1];
+  h += '<div class="ficha"><div class="jr"><div class="jr-cab"><h4>JORNADA DO PROCESSO</h4><span class="fonte f-cnj">CNJ</span><span class="fonte f-djen">DIÁRIO</span><span class="q" title="' + fontesTxt + '">?</span></div>' +
+    '<div class="jr-resumo" title="Ver a jornada inteira"><span class="mk chave">' + br(pri[0]) + ' · ' + pri[1] + '</span><span class="ponto">···</span><span class="cinza" style="color:var(--tinta-3)">' + (c.marcos.length - 2) + ' marcos</span><span class="ponto">···</span><span class="mk ' + ult[2] + '">' + br(ult[0]) + ' · ' + ult[1] + '</span><span class="chv">›</span></div>' +
+    '<div class="jr-todos">' + col(c.marcos.slice(0, meio)) + seta + col(c.marcos.slice(meio)) + '</div>' +
+    '<p class="cinza" style="color:var(--tinta-3);font-size:.8rem;margin:6px 0 0">“Audiência … marcada” é o dia em que o juiz marcou; a data da audiência vem na publicação do Diário.</p></div>';
   var proc = '<table><tr><td>Número</td><td class="v">' + c.numero + '<button class="copiar" title="Copiar" data-c="' + c.numero + '">' + ICONE + '</button></td></tr>' +
     '<tr><td>Classe</td><td>' + c.classe + ' <span class="fonte f-cnj">CNJ</span></td></tr><tr><td>Assunto</td><td>' + (c.assuntos.join(', ') || '—') + ' <span class="fonte f-cnj">CNJ</span></td></tr>' +
     '<tr><td>Ajuizado em</td><td>' + br(c.ajuizado) + ' (' + idadeTxt(c.ajuizado) + ') <span class="fonte f-cnj">CNJ</span></td></tr>' +
@@ -221,6 +245,7 @@ function desenha() {
 }
 document.addEventListener('click', function (e) {
   var cp = e.target.closest('.copiar'); if (cp) { e.stopPropagation(); try { navigator.clipboard.writeText(cp.dataset.c); } catch (x) {} cp.classList.add('feito'); setTimeout(function () { cp.classList.remove('feito'); }, 1400); return; }
+  var jr = e.target.closest('.jr-resumo'); if (jr) { jr.parentNode.classList.toggle('aberta'); return; }
   var cab = e.target.closest('.cab'); if (cab && !e.target.closest('input')) { cab.parentNode.classList.toggle('aberto'); return; }
   ['trib', 'uf'].forEach(function (id) { var m = $('m-' + id); if (e.target.closest('#b-' + id)) m.classList.toggle('aberto'); else if (!e.target.closest('#m-' + id)) m.classList.remove('aberto'); });
   if (e.target.id === 'b-mais') { $('mais').classList.toggle('aberto'); e.target.classList.toggle('on'); }
