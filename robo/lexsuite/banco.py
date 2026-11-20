@@ -28,7 +28,7 @@ _INTIMACAO_COMUM = re.compile(r"fica\s+.{0,40}notificad|designad[ao]\s+audiencia
 
 _RESUMO = ("processo", "tribunal", "vara", "classe", "rito", "data_publicacao", "ajuizada_em", "empresas", "cnpjs",
            "valor_causa", "fonte", "link", "visto_em", "rodada", "cnpj_a_conferir", "manual", "sinal",
-           "manual_historico", "fonte_leitura", "caderno_pendente")  # 0.7.48 (revisão): o histórico do que foi digitado não sai no resumo
+           "manual_historico", "fonte_leitura", "caderno_pendente", "cnj", "diario_hist")  # 0.7.51: datas do CNJ e do histórico do Diário ficam no resumo  # 0.7.48 (revisão): o histórico do que foi digitado não sai no resumo
 _RESUMO_RECEITA = ("cnpj", "razao_social", "nome_fantasia", "porte", "capital_social", "cnae", "atividade", "municipio",
                    "uf", "telefone", "telefone2", "email", "logradouro", "numero", "complemento", "bairro", "cep",
                    "situacao", "inicio_atividade", "simples", "socios", "consultado_em")
@@ -109,6 +109,9 @@ class Banco:
             CREATE TABLE IF NOT EXISTS consultas_dia (tribunal TEXT, data TEXT, quando TEXT, publicacoes INTEGER DEFAULT 0,
                 pedidos INTEGER DEFAULT 0, parcial INTEGER DEFAULT 0, processos TEXT DEFAULT '[]', conferida_em TEXT DEFAULT '',
                 a_mais INTEGER DEFAULT 0, PRIMARY KEY (tribunal, data));
+            -- 0.7.51 (desenho das datas e fontes): estado de cada fonte pública por processo (fila em disco para o "Tentar de novo")
+            CREATE TABLE IF NOT EXISTS fontes (processo TEXT, fonte TEXT, estado TEXT, tentativas INTEGER DEFAULT 0, ultima_em TEXT DEFAULT '',
+                proxima_em TEXT DEFAULT '', ok_em TEXT DEFAULT '', causa TEXT DEFAULT '', PRIMARY KEY (processo, fonte));
         """)
         colunas = {r[1] for r in self.con.execute("PRAGMA table_info(leads)")}
         for nome, tipo in (("frente", "TEXT DEFAULT ''"), ("motivo", "TEXT DEFAULT ''"), ("status_em", "TEXT DEFAULT ''"),
@@ -206,6 +209,78 @@ class Banco:
     def processos_vistos(self):
         """Os processos já conhecidos; 0.7.48: os apagados pela limpeza também, para não voltarem como novos."""
         return {r[0] for r in self.con.execute("SELECT processo FROM leads UNION SELECT processo FROM processos_apagados")}
+
+    # --- 0.7.51: fontes públicas por processo (CNJ/DataJud e histórico do Diário) ---
+
+    def fontes_de(self, processos):
+        """{processo: {fonte: {estado, tentativas, ultima_em, proxima_em, ok_em, causa}}} para os processos pedidos."""
+        saida = {}
+        processos = [str(p) for p in (processos or []) if p]
+        for i in range(0, len(processos), 500):
+            parte = processos[i:i + 500]
+            marcas = ",".join("?" * len(parte))
+            for row in self.con.execute("SELECT processo, fonte, estado, tentativas, ultima_em, proxima_em, ok_em, causa FROM fontes "
+                                        f"WHERE processo IN ({marcas})", parte):  # nosec B608 - só marcas "?"
+                saida.setdefault(row[0], {})[row[1]] = dict(zip(("estado", "tentativas", "ultima_em", "proxima_em", "ok_em", "causa"), row[2:]))
+        return saida
+
+    def marcar_fonte(self, processo, fonte, estado, agora, proxima_em="", causa="", commit=True):
+        """Grava o estado de uma fonte para um processo: ok | aguardando | nao_encontrado | falhou. "ok" zera as tentativas."""
+        quando = agora.isoformat(timespec="seconds") if hasattr(agora, "isoformat") else str(agora)
+        ant = self.con.execute("SELECT tentativas, ok_em FROM fontes WHERE processo = ? AND fonte = ?", (processo, fonte)).fetchone()
+        tent = 0 if estado == "ok" else ((ant[0] if ant else 0) or 0) + 1
+        ok_em = quando if estado == "ok" else ((ant[1] if ant else "") or "")
+        if callable(proxima_em):  # a espera pode depender de quantas vezes já falhou
+            proxima_em = proxima_em(tent)
+        self.con.execute("INSERT OR REPLACE INTO fontes (processo, fonte, estado, tentativas, ultima_em, proxima_em, ok_em, causa) VALUES (?,?,?,?,?,?,?,?)",
+                         (processo, fonte, estado, tent, quando, proxima_em or "", ok_em, (causa or "")[:200]))
+        if commit:
+            self.con.commit()
+        return tent
+
+    def pedir_de_novo(self, processos, fontes=("cnj", "diario_hist"), agora=None):
+        """"Tentar de novo" da tela: a próxima consulta vale já (proxima_em vazio)."""
+        n = 0
+        for p in [str(x) for x in (processos or []) if x][:2000]:
+            for f in fontes:
+                n += self.con.execute("UPDATE fontes SET proxima_em = '' WHERE processo = ? AND fonte = ? AND estado <> 'ok'", (p, f)).rowcount
+        self.con.commit()
+        return n
+
+    def candidatos_fonte(self, fonte, agora, novos=(), limite=600, dias=365):
+        """Processos que pedem consulta desta fonte: nunca consultados ou com a próxima tentativa vencida (Lista, últimos 12 meses).
+        Os achados nesta leitura vêm primeiro. Devolve [(processo, primeira_vez, dados_dict)]."""
+        quando = agora.isoformat(timespec="seconds")
+        corte = (agora.date() - dt.timedelta(days=int(dias))).isoformat()
+        sql = ("SELECT l.processo, l.primeira_vez, l.dados FROM leads l LEFT JOIN fontes f ON f.processo = l.processo AND f.fonte = ? "
+               "WHERE coalesce(l.fora_criterio, 0) = 0 AND l.primeira_vez >= ? AND (f.processo IS NULL OR (f.estado <> 'ok' AND coalesce(f.proxima_em, '') <= ?)) "
+               "ORDER BY l.primeira_vez DESC LIMIT ?")
+        rows = self.con.execute(sql, (fonte, corte, quando, int(limite) * 3)).fetchall()
+        novos = {str(n) for n in (novos or [])}
+        rows.sort(key=lambda r: 0 if r[0] in novos else 1)
+        saida = []
+        for proc, prim, dados in rows[:int(limite)]:
+            try:
+                d = json.loads(dados or "{}")
+            except ValueError:
+                d = {}
+            saida.append((proc, prim or "", d))
+        return saida
+
+    def gravar_no_lead(self, processo, chave, valor, commit=True):
+        """Grava um bloco (ex.: "cnj", "diario_hist") dentro do JSON do processo, sem mexer no resto."""
+        row = self.con.execute("SELECT dados FROM leads WHERE processo = ?", (processo,)).fetchone()
+        if not row:
+            return False
+        try:
+            d = json.loads(row[0] or "{}")
+        except ValueError:
+            d = {}
+        d[chave] = valor
+        self.con.execute("UPDATE leads SET dados = ? WHERE processo = ?", (json.dumps(d, ensure_ascii=False), processo))
+        if commit:
+            self.con.commit()
+        return True
 
     def guardar_lead(self, lead, primeira_vez=None):
         from . import frentes
@@ -597,7 +672,7 @@ class Banco:
                 if proc in trab:
                     continue
                 for sql in ("DELETE FROM leads WHERE processo = ?", "DELETE FROM area_logada WHERE processo = ?",
-                            "DELETE FROM publicacoes WHERE processo = ?"):
+                            "DELETE FROM publicacoes WHERE processo = ?", "DELETE FROM fontes WHERE processo = ?"):  # 0.7.51
                     self.con.execute(sql, (proc,))
                 self.con.execute("INSERT OR REPLACE INTO processos_apagados VALUES (?,?,?)", (proc, hoje.isoformat(), data[:10]))
                 apagados += 1

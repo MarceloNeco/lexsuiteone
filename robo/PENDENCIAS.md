@@ -167,6 +167,18 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
   processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
 
+## 0.7.51 (20/Nov; decisões 52 a 58) — pronta para publicar
+
+- Feito: datas e fontes (`documentacao/DESENHO-DATAS-E-FONTES-0751.md`), ressalvas da Operação, Novidades até "Não mostrar novamente",
+  histórico de versões no site e os itens do feedback do teste da 0.7.50 (`documentacao/FEEDBACK-DONO-2026-11-16-TESTE-0750.md`) que
+  não pediam desenho. Folha `documentacao/dod/0.7.51.md`.
+- Ficam para a próxima (decisão 57: "se couber"): filtro de quantidade de processos da empresa (item 13) e "Ler um período" maior que
+  10 dias úteis (item 20), os dois com desenho da Arquitetura; etiquetas "Já tem acordo/Já sentenciado/Empresa já tem advogado";
+  atualização semanal dos andamentos; Painel contando pelo ajuizamento; sonda do histórico do Diário no DIAGNÓSTICO (o Diário só
+  responde de dentro do Brasil, então essa parte foi testada só com respostas simuladas).
+- Para o advogado: acrescentar o DataJud (CNJ) à lista de fontes públicas dos termos na próxima versão do texto (não muda finalidade
+  nem dados; não pede novo aceite).
+
 ## 0.7.50 (16/Nov; "já dá para colocar para próxima") — publicada em 16/Nov (tag v0.7.50)
 
 - Feito: os itens 1 a 31 e 33 de `documentacao/FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md` (13: Modo fica como está, decisão

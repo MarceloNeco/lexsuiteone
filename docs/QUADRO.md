@@ -1036,15 +1036,21 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 49 | Produto (feedback 16/Nov, `documentacao/FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md`, item 11) | Empresas públicas e órgãos (ex.: Correios): esconder por padrão, ou só oferecer "Excluir esta empresa" no cabeçalho do bloco? | só "Excluir esta empresa" (o escritório decide; esconder por padrão pode tirar cliente) | respondida (16/Nov): ver Decisões |
 | 50 | Produto (mesmo feedback, item 13) | O Modo diz "Não incluído na sua licença" sem ler a licença (falso para a KR Law). Até a licença informar as frentes, trocar por "Ainda não disponível no programa"? | sim | respondida (16/Nov): ver Decisões |
 | 51 | Produto (mesmo feedback, item 12) | Copiar o contato para os outros processos da mesma empresa (mesmo CNPJ): critério padrão? | últimos 90 dias, só para quem está sem contato, marcado "copiado de…", com desfazer | respondida (16/Nov): ver Decisões |
-| 52 | Produto (0.7.51, KR Law; desenho `documentacao/DESENHO-DATAS-E-FONTES-0751.md`) | Pode implementar o desenho das datas e fontes (CNJ a cada leitura, histórico do Diário pelo número, ajuizamento como critério, tabela `fontes`, "Tentar de novo")? | Sim | aberta (20/Nov) |
-| 53 | Produto (mesmo desenho) | Processo antigo: fica na Lista marcado "PROCESSO ANTIGO" (Idade: qualquer) ou some por padrão com o filtro "até 30 dias"? | Fica marcado | aberta (20/Nov) |
-| 54 | Produto (mesmo desenho) | "Novo" = ajuizado há até 30 dias, ajustável por área na tela Regras? | Sim, 30 | aberta (20/Nov; esperar também a resposta do Leandro) |
-| 55 | Produto (feedback 0.7.50, item 26) | Período da Rotina de leitura: "Desde a última leitura" ou "Do último dia útil até hoje"? | Desde a última leitura (computador desligado não perde dias) | aberta (20/Nov) |
-| 56 | Produto (item 29) | Registro técnico: botões "Abrir no Gmail" e "Abrir no e-mail do Windows" agora, ou envio direto pelo programa (com a Arquitetura, depois)? | Os dois botões agora | aberta (20/Nov) |
-| 57 | Produto (itens 13 e 20) | Filtro "quantidade de processos da empresa" e "Ler um período" maior que 7 dias: ficam para a 0.7.52 (pedem desenho)? | Sim, 0.7.52 | aberta (20/Nov) |
-| 58 | Produto (pesquisa `documentacao/PESQUISA-NOVIDADES-E-HISTORICO-2026-11-20.md`) | Novidades: manter no menu, nome "Novidades da versão" e histórico numa página do site? | Sim aos três | aberta (20/Nov) |
+| 52 | Produto (0.7.51, KR Law; desenho `documentacao/DESENHO-DATAS-E-FONTES-0751.md`) | Pode implementar o desenho das datas e fontes (CNJ a cada leitura, histórico do Diário pelo número, ajuizamento como critério, tabela `fontes`, "Tentar de novo")? | Sim | respondida (20/Nov): pode implementar; a Produto esclarece depois o que precisar de ajuste |
+| 53 | Produto (mesmo desenho) | Processo antigo: fica na Lista marcado "PROCESSO ANTIGO" (Idade: qualquer) ou some por padrão com o filtro "até 30 dias"? | Fica marcado | respondida (20/Nov): fica na Lista marcado "PROCESSO ANTIGO" |
+| 54 | Produto (mesmo desenho) | "Novo" = ajuizado há até 30 dias, ajustável por área na tela Regras? | Sim, 30 | respondida (20/Nov): 30 dias, o escritório pode mudar |
+| 55 | Produto (feedback 0.7.50, item 26) | Período da Rotina de leitura: "Desde a última leitura" ou "Do último dia útil até hoje"? | Desde a última leitura (computador desligado não perde dias) | respondida (20/Nov): as duas opções ficam disponíveis (e também "Últimos 7 dias"); padrão continua "Do último dia útil até hoje" |
+| 56 | Produto (item 29) | Registro técnico: botões "Abrir no Gmail" e "Abrir no e-mail do Windows" agora, ou envio direto pelo programa (com a Arquitetura, depois)? | Os dois botões agora | respondida (20/Nov): os dois botões já nesta versão |
+| 57 | Produto (itens 13 e 20) | Filtro "quantidade de processos da empresa" e "Ler um período" maior que 7 dias: ficam para a 0.7.52 (pedem desenho)? | Sim, 0.7.52 | respondida (20/Nov): ficam para depois, mas entram nesta versão se for possível |
+| 58 | Produto (pesquisa `documentacao/PESQUISA-NOVIDADES-E-HISTORICO-2026-11-20.md`) | Novidades: manter no menu, nome "Novidades da versão" e histórico numa página do site? | Sim aos três | respondida (20/Nov): sim aos três (menu, nome "Novidades da versão" e página de histórico no site) |
 
 ## Decisões do dono registradas aqui
+
+- **20/Nov (perguntas 52 a 58, 0.7.51):** (52) pode implementar o desenho das datas e fontes (`documentacao/DESENHO-DATAS-E-FONTES-0751.md`);
+  (53) processo antigo fica na Lista, marcado "PROCESSO ANTIGO"; (54) "novo" = ajuizado há até 30 dias, ajustável pelo escritório;
+  (55) Rotina de leitura com as opções de período (desde a última leitura, últimos 7 dias, último dia útil); (56) "Abrir no Gmail" e
+  "Abrir no e-mail do Windows" já; (57) filtro de quantidade de processos da empresa e "Ler um período" maior que 7 dias: nesta versão se
+  couber, senão na próxima; (58) Novidades no menu, nome "Novidades da versão" e página de histórico de versões no site.
 
 | Data | Decisão |
 |---|---|

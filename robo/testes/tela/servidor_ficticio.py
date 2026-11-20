@@ -64,6 +64,21 @@ if modo == "pronto":
                         "valor_causa": None, "classe": "ATOrd", "rito": "Ordinário", "cnpjs": [cnpj] if cnpj else [],
                         "empresa_receita": {"cnpj": cnpj, "razao_social": "EMPRESA FICTICIA DE CORREIOS", "porte": "DEMAIS", "municipio": "CURITIBA", "uf": "PR"} if cnpj else {}},
                        hoje.date().isoformat())
+    # 0.7.51: datas do CNJ (FICTÍCIAS, no formato real): um processo novo com jornada, um antigo (ajuizado em maio, achado agora por uma
+    # publicação de audiência, como o caso real da KR Law) e um com o CNJ sem resposta ("Tentar de novo")
+    import datetime as _dt
+    _h = _dt.date.today()
+    def _d(n):
+        return (_h - _dt.timedelta(days=n)).isoformat()
+    b.gravar_no_lead("0000005-11.2026.5.02.0001", "cnj", {"ajuizado": _d(4), "classe": "Ação Trabalhista - Rito Ordinário", "assuntos": ["Horas Extras", "Verbas Rescisórias"],
+                     "orgao": "1ª Vara do Trabalho (fictícia)", "marcos": [[_d(4), 26, ""], [_d(4), 12747, "marcada"]], "pub1": _d(2), "pubN": _d(2), "dias_publicacao": 1,
+                     "andamento": "", "atualizado_em": _d(1)})
+    b.gravar_no_lead("0000006-11.2026.5.02.0001", "cnj", {"ajuizado": _d(190), "classe": "Ação Trabalhista - Rito Ordinário", "assuntos": ["Dispensa Discriminatória"],
+                     "orgao": "2ª Vara do Trabalho (fictícia)", "marcos": [[_d(190), 26, ""], [_d(190), 12749, "marcada"], [_d(110), 12740, "marcada"], [_d(110), 12749, "realizada"],
+                     [_d(60), 221, ""], [_d(40), 123, ""]], "pub1": _d(185), "pubN": _d(70), "dias_publicacao": 6, "andamento": "sentenca", "atualizado_em": _d(30)})
+    for _p, _f, _e, _c in (("0000005-11.2026.5.02.0001", "cnj", "ok", ""), ("0000006-11.2026.5.02.0001", "cnj", "ok", ""),
+                           ("0000007-11.2026.5.02.0001", "cnj", "falhou", "sem resposta (rede ou servidor fora)"), ("0000008-11.2026.5.02.0001", "cnj", "aguardando", "")):
+        b.marcar_fonte(_p, _f, _e, _dt.datetime.now(), proxima_em="2999-01-01T00:00:00", causa=_c)
 if modo == "pronto":
     b.mudar_situacao([f"0000{k:03d}-11.2026.5.02.0001" for k in (1, 2)], "em_analise")
     b.mudar_situacao(["0000003-11.2026.5.02.0001"], "virou_cliente")
