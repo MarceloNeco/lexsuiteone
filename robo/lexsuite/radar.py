@@ -286,6 +286,39 @@ def registrar_tentativas(banco, tentativas, origem, versao, quando=None):
         banco.registrar("tentativa", dict(t, quando_local=quando, origem=origem, versao=versao))
 
 
+PERIODOS = ("desde_ultima", "7dias", "ultimo_util")  # 0.7.51: período de cada leitura (faixa da mira e Rotina de leitura)
+
+
+def ultima_leitura_ok(banco):
+    """Data (AAAA-MM-DD) da última leitura do Diário que terminou bem (ou leu publicações); "" se nunca leu."""
+    try:
+        for x in banco.execucoes("radar", 30):
+            if x.get("resultado") == "ok" or x.get("lidas"):
+                return str(x.get("quando") or "")[:10]
+    except Exception:  # noqa: BLE001 - sem histórico, vale o último dia útil
+        pass
+    return ""
+
+
+def dias_do_periodo(periodo, banco, hoje):
+    """0.7.51: quantos dias úteis para trás a leitura volta (1 a 10; o programa só baixa o Diário que ainda não leu).
+    - "ultimo_util": do último dia útil até hoje (1);
+    - "7dias": os dias úteis dos últimos 7 dias (normalmente 5);
+    - "desde_ultima": desde o dia da última leitura que deu certo (inclusive, porque o Diário daquele dia pode ter sido
+      lido antes de terminar); sem leitura anterior, 1. Computador desligado 3 dias não perde os dias do meio."""
+    if periodo == "7dias":
+        return max(1, min(10, sum(1 for k in range(1, 8) if (hoje - dt.timedelta(days=k)).weekday() < 5)))
+    if periodo == "desde_ultima":
+        ult = ultima_leitura_ok(banco)
+        try:
+            d0 = dt.date.fromisoformat(ult)
+        except ValueError:
+            return 1
+        n = sum(1 for k in range(1, (hoje - d0).days + 1) if (hoje - dt.timedelta(days=k)).weekday() < 5)
+        return max(1, min(10, n))
+    return 1
+
+
 def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False, pasta_diag=None, agora=None, versao="",
              caminho_config=None, origem="botão", parar=None):
     """Uma rodada do radar: confere o controle do escritório, baixa o caderno de cada tribunal escolhido, separa as
@@ -294,8 +327,13 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     versao = versao or _versao()
     r = cfg.get("radar") or {}
     escolhidos = tribunais.validar(r.get("tribunais") or ["TRT2", "TRT15"])
-    dias = config.inteiro(dias if dias is not None else r.get("dias_para_tras", 1), 1, 0, 10)
     agora = agora or dt.datetime.now()
+    if dias is None:  # 0.7.51 (dono, itens 22 e 26): o período escolhido na faixa (botão) ou na Rotina de leitura (automática)
+        automatica = origem != "botão" and not str(origem).startswith("à mão")
+        per_ = r.get("periodo_rotina" if automatica else "periodo_botao")
+        if per_ in PERIODOS:
+            dias = dias_do_periodo(per_, banco, agora.date())
+    dias = config.inteiro(dias if dias is not None else r.get("dias_para_tras", 1), 1, 0, 10)
     inicio = time.perf_counter()
     base_compartilhada = compartilhar.pasta_base(cfg)
     if base_compartilhada:

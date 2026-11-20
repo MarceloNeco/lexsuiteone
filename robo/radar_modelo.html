@@ -216,6 +216,8 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .abas button { border: 0; background: transparent; padding: 6px 12px; font-size: .82rem; font-weight: 600; color: var(--tinta-3); }
 .abas button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
 .painel-acoes { display: flex; gap: 14px; }
+.per-leitura { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-right: auto; } .per-leitura label { font-weight: 700; font-size: .9rem; }
+.per-leitura select { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--linha); background: var(--folha); color: var(--tinta); } .per-txt { color: var(--tinta-3); font-size: .86rem; }
 .gtrib { border-top: 1px solid var(--linha); padding: 10px 0 4px; }
 .gtrib:first-child { border-top: 0; padding-top: 0; }
 .gcab { display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; padding: 4px 0; }
@@ -593,6 +595,12 @@ button.chip.ocupado::after { border-color: var(--tinta) transparent var(--tinta)
 #painel:not([hidden]), #filtros-avancados:not([hidden]) { animation: painel-abre .22s ease-out; } #painel.fechando, #filtros-avancados.fechando { animation: painel-fecha .18s ease-in forwards; }
 @keyframes painel-abre { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes painel-fecha { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-8px); } }
+/* 0.7.51 (dono, item 21): a mira do escritório é seção importante: contorno azul mais grosso, fundo destacado e abre "desenrolando" */
+#painel { border: 2px solid var(--barra); background: color-mix(in srgb, var(--barra) 5%, var(--folha)); box-shadow: 0 6px 18px rgba(20, 40, 90, .10); }
+#painel:not([hidden]) { animation: mira-abre .3s ease-out; transform-origin: top; } #painel.fechando { animation: mira-fecha .22s ease-in forwards; }
+@keyframes mira-abre { from { opacity: .2; clip-path: inset(0 0 100% 0 round 10px); transform: translateY(-6px); } to { opacity: 1; clip-path: inset(0 0 0 0 round 10px); transform: none; } }
+@keyframes mira-fecha { from { opacity: 1; clip-path: inset(0 0 0 0 round 10px); } to { opacity: 0; clip-path: inset(0 0 100% 0 round 10px); transform: translateY(-6px); } }
+#w-trib-painel #painel { border: 1px solid var(--linha); background: var(--folha); box-shadow: none; } #w-trib-painel .per-leitura { display: none; }
 @media (prefers-reduced-motion: reduce) { #b-trib i, .seta-gira { transition: none; } #painel:not([hidden]), #painel.fechando, #filtros-avancados:not([hidden]), #filtros-avancados.fechando { animation: none; } }
 @media (max-width: 760px) { .bloco-leitura { grid-template-columns: minmax(0, 1fr); grid-template-areas: "cab" "txt" "est" "bot"; } .bl-dir { flex-wrap: wrap; margin-top: 6px; } .bl-dir > * { flex: 1 1 auto; justify-content: center; } }
 .so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -1128,6 +1136,7 @@ window.lexSortearFundo();</script>
   <div class="painel" id="painel" hidden>
     <div class="painel-cab"><div class="painel-arte" aria-hidden="true"></div><div class="mira-texto"><p><b id="p-mira-t"></b><span id="p-mira"></span></p><ol class="fases" id="p-fases"></ol></div></div>
     <div class="painel-topo">
+      <div class="per-leitura"><label for="p-per"><span id="p-per-r"></span></label><select id="p-per"><option value="desde_ultima"></option><option value="7dias"></option><option value="ultimo_util"></option></select><span id="p-per-txt" class="per-txt"></span></div>
       <div class="abas" role="group"><button type="button" data-aba="regiao" aria-pressed="true"></button><button type="button" data-aba="uf" aria-pressed="false"></button></div>
       <div class="painel-acoes"><button type="button" class="btn-txt" id="b-todos"></button><button type="button" class="btn-txt" id="b-limpar"></button></div>
     </div>
@@ -2207,7 +2216,7 @@ window.LEXSUITE_RADAR = null;
   "use strict";
   var MODO = window.LEXSUITE_RADAR ? "arquivo" : "app";
   var D = window.LEXSUITE_RADAR || { itens: [], tribunais: [] };
-  var APP = null, sel = {}, aba = "regiao", ramo = "Trabalhista", vigia = null, limite = 10, periodo = 1, configVista = false, wPasso = 1, wPastas = [];
+  var APP = null, sel = {}, perLeitura = "ultimo_util", aba = "regiao", ramo = "Trabalhista", vigia = null, limite = 10, periodo = 1, configVista = false, wPasso = 1, wPastas = [];
   var T = {
     pt: { marca: "RADAR JUDICIAL",
       mira_t: "A mira do escritório", mira_trib: "Escolha os tribunais. Valor mínimo e empresas excluídas: [[regras]]; leitura automática: [[agenda]] (em [[config]]).", mira_l_regras: "Destaques e exclusões", mira_l_agenda: "Rotina de leitura", mira_l_config: "Configurações",
@@ -2407,7 +2416,7 @@ window.LEXSUITE_RADAR = null;
   // 0.7.16: textos novos (PT e EN)
   Object.assign(T.pt, {
     lic_validade: "Validade", lic_ate: "válida até {d}", lic_sem_venc: "sem data de vencimento", pf_lic_rot: "Licença:", tema_t: "Aparência", tema_claro: "Claro", tema_escuro: "Escuro", tema_sistema: "Igual ao sistema", tema_x: "Vale só para este computador. “Igual ao sistema” segue o modo claro ou escuro do Windows.", lic_aceite_t: "Falta aceitar os termos", lic_bloq_t: "A licença não está ativa", agora_nao: "Agora não", lic_ver_perfil: "Ver a licença", lic_ativa: "ativa", lic_sem_resposta: "sem confirmação agora", lic_aceite: "aguardando o aceite dos termos", lic_bloqueada: "inativa", lic_sem_codigo: "sem código",
-    rodar_crit_1: "Lê {n} de {k} tribunais ({l}), do último dia útil até hoje", rodar_crit_n: "Lê {n} de {k} tribunais ({l}), dos últimos {d} dias úteis até hoje", rodar_crit_alterar: "alterar", rodar_crit_mudou: "(marcado, ainda não salvo)",
+    rodar_crit_per: "Lê {n} de {k} tribunais ({l}), {p}", per_r: "Período", per_desde: "Desde a última leitura", per_7: "Últimos 7 dias", per_util: "Do último dia útil até hoje", per_txt: "lê de {d} até hoje", per_crit_desde: "desde a última leitura ({d} até hoje)", per_crit_7: "dos últimos 7 dias ({d} até hoje)", per_crit_util: "do último dia útil até hoje ({d})", per_x: "O período vale para \u201cLer o Diário agora\u201d. O programa só baixa o Diário que ainda não leu.", nao_salvo_t: "Você não salvou as mudanças", nao_salvo: "Os tribunais ou o período marcados na faixa ainda não foram salvos.", longa_t: "Leitura longa", longa: "Vai ler {d} dias úteis de {n} tribunais: pode levar uns {m} minutos. A Lista vai se completando e você pode continuar usando o programa.", longa_ok: "Ler agora", rodar_crit_1: "Lê {n} de {k} tribunais ({l}), do último dia útil até hoje", rodar_crit_n: "Lê {n} de {k} tribunais ({l}), dos últimos {d} dias úteis até hoje", rodar_crit_alterar: "alterar", rodar_crit_mudou: "(marcado, ainda não salvo)",
     ja_aberto: "O {m} já estava aberto aqui (você clicou no atalho de novo). Use esta janela.", ja_aberto_curto: "{m} já aberto",
     c_trib_lidos: "Tribunais que a leitura lê: {l}.", ver_registro: "Ver registro", registro_x: "O que o programa anotou (o mais novo no fim). Fica só neste computador. Para pedir ajuda, use \u201cEnviar ao suporte\u201d: abre o seu e-mail para a SolverONE com as últimas linhas, a versão e a licença só com os 4 últimos caracteres, sem a pasta do seu usuário do Windows.", registro_vazio: "Nada anotado ainda.", registro_abrir: "Abrir o arquivo", reg_copiar_ic: "Copiar o registro", reg_enviar: "Enviar ao suporte", reg_m_versao: "Versão", reg_m_email: "E-mail de quem usa", reg_m_inst: "Instalação", reg_m_lic: "Licença", reg_m_registro: "Registro técnico", reg_m_assunto: "Registro técnico", reg_m_ultimas: "Últimas {n} linhas do registro técnico", reg_m_colar: "(O registro inteiro foi copiado ao clicar em Enviar ao suporte; se faltar algo, cole aqui com Ctrl+V.)", reg_enviado: "Abri o seu e-mail com o registro para {e}. Se não abriu, escreva para {e} e cole (Ctrl+V): o registro já está copiado.",
     ch_t: "Abrir um chamado", ch_x: "Sua mensagem vai para o suporte da SolverONE pelo próprio programa. Não escreva senhas. Se for sobre um processo, descreva sem o número, se puder.", ch_assunto: "Assunto", ch_escolha: "Escolha o assunto", ch_c_erro: "Erro", ch_c_duvida: "Dúvida", ch_c_sugestao: "Sugestão", ch_c_licenca_e_acesso: "Licença e acesso", ch_c_planilha_e_pasta: "Planilha e pasta", ch_c_leitura_do_diario: "Leitura do Diário", ch_c_outros: "Outros", ch_texto: "Mensagem", ch_texto_ph: "O que aconteceu ou o que você precisa", ch_responder: "Podem me responder por e-mail ({e})", ch_sem_email: "Sem e-mail no cadastro: a resposta vem pelo escritório", ch_previa: "Vai junto (desmarque o que não quiser enviar)", ch_p_tela: "Tela: {t}; último clique: {u}", ch_p_sistema: "Versão {v}, Windows e Python deste computador", ch_p_licenca: "Também vão o código de cliente e o escritório, para a SolverONE saber de quem é o chamado. Nenhum nome de empresa, número de processo ou contato da lista vai junto.", ch_enviar: "Enviar", ch_falta_assunto: "Escolha o assunto.", ch_falta_texto: "Escreva a mensagem.", ch_ok: "Chamado nº {n} aberto. Guarde o número.", ch_meus: "Meus chamados", ch_meu: "Nº {n}, {d}, {a}", rg_titulo: "Destaques e exclusões", rg_titulo_x: "Estes critérios são seus, neste computador. Cada pessoa do escritório tem os dela, separados por área; a planilha compartilhada não guarda critérios.", rg_intro: "O que o {c} destaca ou deixa de fora da sua lista, nesta área.", rg_area: "Área:", rg_a_trabalhista: "Trabalhista", rg_a_tributario: "Tributário", rg_a_civel: "Cível", rg_a_empresarial: "Empresarial", rg_copiar: "Copiar para outras áreas", rg_copiar_ok: "Copiar", rg_invalido: "Número inválido: use só algarismos, com ponto ou vírgula.", rg_area_mudou: "Os critérios de {a} têm mudanças que ainda não foram salvas.", rg_exc_n: "Empresas excluídas ({n})", rg_doc_ruim: "CPF ou CNPJ inválido. Confira os números (o CNPJ novo pode ter letras).", rg_erro_arquivo: "Não consegui ler o arquivo de critérios deste computador; aparecem os padrões. Ao salvar, ele é criado de novo.",
@@ -2508,7 +2517,7 @@ window.LEXSUITE_RADAR = null;
   });
   Object.assign(T.en, {
     lic_validade: "Validity", lic_ate: "valid until {d}", lic_sem_venc: "no expiration date", pf_lic_rot: "Licence:", tema_t: "Appearance", tema_claro: "Light", tema_escuro: "Dark", tema_sistema: "Same as system", tema_x: "Applies to this computer only. “Same as system” follows the Windows light or dark mode.", lic_aceite_t: "The terms still need to be accepted", lic_bloq_t: "The licence is not active", agora_nao: "Not now", lic_ver_perfil: "See the licence", lic_ativa: "active", lic_sem_resposta: "not confirmed right now", lic_aceite: "waiting for the terms to be accepted", lic_bloqueada: "inactive", lic_sem_codigo: "no code",
-    rodar_crit_1: "Reads {n} of {k} courts ({l}), from the last working day to today", rodar_crit_n: "Reads {n} of {k} courts ({l}), the last {d} working days to today", rodar_crit_alterar: "change", rodar_crit_mudou: "(ticked, not saved yet)",
+    rodar_crit_per: "Reads {n} of {k} courts ({l}), {p}", per_r: "Period", per_desde: "Since the last reading", per_7: "Last 7 days", per_util: "From the last working day to today", per_txt: "reads from {d} to today", per_crit_desde: "since the last reading ({d} to today)", per_crit_7: "over the last 7 days ({d} to today)", per_crit_util: "from the last working day to today ({d})", per_x: "The period applies to \u201cRead the gazette now\u201d. The program only downloads gazettes it has not read yet.", nao_salvo_t: "You have not saved the changes", nao_salvo: "The courts or the period marked in the panel have not been saved yet.", longa_t: "Long reading", longa: "It will read {d} working days of {n} courts: it may take about {m} minutes. The List fills in as it goes and you can keep using the program.", longa_ok: "Read now", rodar_crit_1: "Reads {n} of {k} courts ({l}), from the last working day to today", rodar_crit_n: "Reads {n} of {k} courts ({l}), the last {d} working days to today", rodar_crit_alterar: "change", rodar_crit_mudou: "(ticked, not saved yet)",
     ja_aberto: "{m} was already open here (you clicked the shortcut again). Use this window.", ja_aberto_curto: "{m} already open",
     c_trib_lidos: "Courts the reading covers: {l}.", ver_registro: "View log", registro_x: "What the program wrote down (newest at the end). It stays only on this computer. To ask for help, use \u201cSend to support\u201d: it opens your e-mail to SolverONE with the last lines, the version and the licence with only its last 4 characters, without your Windows user folder.", registro_vazio: "Nothing written yet.", registro_abrir: "Open the file", reg_copiar_ic: "Copy the log", reg_enviar: "Send to support", reg_m_versao: "Version", reg_m_email: "User e-mail", reg_m_inst: "Installation", reg_m_lic: "Licence", reg_m_registro: "Technical log", reg_m_assunto: "Technical log", reg_m_ultimas: "Last {n} lines of the technical log", reg_m_colar: "(The whole log was copied when you clicked Send to support; if anything is missing, paste it here with Ctrl+V.)", reg_enviado: "I opened your e-mail with the log for {e}. If it did not open, write to {e} and paste (Ctrl+V): the log is already copied.",
     ch_t: "Open a support ticket", ch_x: "Your message goes to SolverONE support through the program itself. Do not write passwords. If it is about a case, describe it without the number if you can.", ch_assunto: "Subject", ch_escolha: "Choose the subject", ch_c_erro: "Error", ch_c_duvida: "Question", ch_c_sugestao: "Suggestion", ch_c_licenca_e_acesso: "Licence and access", ch_c_planilha_e_pasta: "Spreadsheet and folder", ch_c_leitura_do_diario: "Gazette reading", ch_c_outros: "Other", ch_texto: "Message", ch_texto_ph: "What happened or what you need", ch_responder: "You may reply by e-mail ({e})", ch_sem_email: "No e-mail on file: the answer comes through the firm", ch_previa: "Sent along (untick what you do not want to send)", ch_p_tela: "Screen: {t}; last click: {u}", ch_p_sistema: "Version {v}, Windows and Python of this computer", ch_p_licenca: "The client code and the firm also go, so SolverONE knows whose ticket it is. No company name, case number or contact from the list goes along.", ch_enviar: "Send", ch_falta_assunto: "Choose the subject.", ch_falta_texto: "Write the message.", ch_ok: "Ticket no. {n} opened. Keep the number.", ch_meus: "My tickets", ch_meu: "No. {n}, {d}, {a}", rg_titulo: "Highlights and exclusions", rg_titulo_x: "These criteria are yours, on this computer. Each person in the firm has their own, by practice area; the shared spreadsheet does not keep criteria.", rg_intro: "What {c} highlights or leaves out of your list, in this area.", rg_area: "Area:", rg_a_trabalhista: "Labour", rg_a_tributario: "Tax", rg_a_civel: "Civil", rg_a_empresarial: "Corporate", rg_copiar: "Copy to other areas", rg_copiar_ok: "Copy", rg_invalido: "Invalid number: use digits only, with a point or comma.", rg_area_mudou: "The {a} criteria have changes that were not saved yet.", rg_exc_n: "Excluded companies ({n})", rg_doc_ruim: "Invalid CPF or CNPJ. Check the numbers (the new CNPJ may have letters).", rg_erro_arquivo: "Could not read the criteria file on this computer; defaults are shown. Saving creates it again.",
@@ -2761,7 +2770,7 @@ window.LEXSUITE_RADAR = null;
   function aplicarDados(d) {
     {
       D = d; APP = d.app || null; if (typeof avisarRecursos === "function") setTimeout(avisarRecursos, 0); var noAssistente = !$("wizard").hidden;  // no assistente, a escolha ainda não salva fica
-      if (!noAssistente) sel = {};
+      if (!noAssistente) { sel = {}; perLeitura = (APP && APP.config && APP.config.periodo_botao) || "ultimo_util"; }
       if (APP) { if (!noAssistente) (APP.config.tribunais || []).forEach(function (s) { sel[s] = true; }); periodo = Number(APP.config.dias_na_pagina || periodo) || 1; if (ultimoMes && periodo > ULTIMO_MES) { try { localStorage.setItem("lexsuite:periodo-antes", String(periodo)); } catch (e) {} periodo = ULTIMO_MES; } }
       F.gig = !!(D.prefs && D.prefs.esconder_gigantes);
       limite = 10; tudo();
@@ -3043,9 +3052,33 @@ window.LEXSUITE_RADAR = null;
     }
     vigia = setTimeout(passo, 1500);
   }
+  /* 0.7.51 (dono, itens 22, 24 e 25): período da leitura na faixa da mira; mesma conta do programa (radar.dias_do_periodo) */
+  function diasDoPeriodo(per) {
+    var hoje_ = new Date(); hoje_.setHours(12, 0, 0, 0);
+    var util_ = function (k) { var d = new Date(hoje_); d.setDate(d.getDate() - k); return d.getDay() > 0 && d.getDay() < 6; };
+    if (per === "7dias") { var n7 = 0; for (var k = 1; k <= 7; k++) if (util_(k)) n7++; return Math.max(1, Math.min(10, n7)); }
+    if (per === "desde_ultima") {
+      var u_ = (APP && APP.config && APP.config.ultima_leitura_ok) || ""; if (!/^\d{4}-\d{2}-\d{2}/.test(u_)) return 1;
+      var d0 = new Date(u_.slice(0, 10) + "T12:00:00"), dd = Math.round((hoje_ - d0) / 86400000), n = 0;
+      for (var j = 1; j <= dd; j++) if (util_(j)) n++; return Math.max(1, Math.min(10, n));
+    }
+    return 1;
+  }
+  function inicioDoPeriodo(per) {  // o dia mais antigo que a leitura vai olhar (DD/MM)
+    var falta = diasDoPeriodo(per), d = new Date(); d.setHours(12, 0, 0, 0);
+    while (falta > 0) { d.setDate(d.getDate() - 1); if (d.getDay() > 0 && d.getDay() < 6) falta--; }
+    return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2);
+  }
+  function textoPeriodo(per) { return t(per === "desde_ultima" ? "per_crit_desde" : per === "7dias" ? "per_crit_7" : "per_crit_util", { d: inicioDoPeriodo(per) }); }
+  function desenharPeriodo() {
+    var s_ = $("p-per"); if (!s_) return;
+    $("p-per-r").textContent = t("per_r"); s_.title = t("per_x");
+    [["desde_ultima", "per_desde"], ["7dias", "per_7"], ["ultimo_util", "per_util"]].forEach(function (o, i) { s_.options[i].value = o[0]; s_.options[i].textContent = t(o[1]); });
+    s_.value = perLeitura; $("p-per-txt").textContent = "(" + t("per_txt", { d: inicioDoPeriodo(perLeitura) }) + ")";
+  }
   function selMudou() {  // 0.7.30 (dono): tribunais marcados na mira e ainda não salvos
     var a = Object.keys(sel).sort().join(","), b = ((APP && APP.config && APP.config.tribunais) || []).slice().sort().join(",");
-    return MODO === "app" && !!APP && a !== b;
+    return MODO === "app" && !!APP && (a !== b || perLeitura !== (APP.config.periodo_botao || "ultimo_util"));
   }
   function desenharCriterio() {
     var rc_ = $("rodar-criterio"); if (!rc_) return;
@@ -3053,7 +3086,7 @@ window.LEXSUITE_RADAR = null;
     var mudou_ = selMudou(), trs_ = mudou_ ? Object.keys(sel) : ((APP.config && APP.config.tribunais) || []);  // 0.7.21 (dono): o que "Ler o Diário agora" vai ler
     trs_ = trs_.slice().sort(function (x, y) { return Number(x.replace(/\D/g, "")) - Number(y.replace(/\D/g, "")); });
     var dpt_ = APP.config.dias_para_tras, lst_ = trs_.length > 4 ? trs_.slice(0, 4).join(", ") + " +" + (trs_.length - 4) : trs_.join(", ");
-    var tx_ = el("span", "rc-txt", trs_.length ? t(dpt_ === 0 ? "rodar_crit_0" : (dpt_ || 1) > 1 ? "rodar_crit_n" : "rodar_crit_1", { d: dpt_ || 1, l: lst_, n: trs_.length, k: (APP.tribunais || []).length || 24 }) : t("rodar_crit_nada"));
+    var tx_ = el("span", "rc-txt", trs_.length ? t("rodar_crit_per", { p: textoPeriodo(mudou_ ? perLeitura : (APP.config.periodo_botao || "ultimo_util")), l: lst_, n: trs_.length, k: (APP.tribunais || []).length || 24 }) : t("rodar_crit_nada"));  // 0.7.51: o período escolhido na faixa
     tx_.title = t("rodar_crit_x"); rc_.appendChild(tx_);  // 0.7.30: o "Alterar configuração" fica logo ao lado (um botão só)
     if (mudou_) rc_.appendChild(el("span", "rc-nao-salvo", t("rodar_crit_mudou")));
     // 0.7.40 (dono): a próxima leitura automática na mesma linha dos tribunais, depois de " — " (desligada: sem traço e sem texto);
@@ -3116,7 +3149,11 @@ window.LEXSUITE_RADAR = null;
     abrirJanela(c, bts);
   }
   function rodar() {
-    if (selMudou() && Object.keys(sel).length && !(APP && APP.conta && !APP.conta.ok)) { salvarTribunais(true); return; }  // revisão: licença conferida antes  // 0.7.30 (dono): marcou na mira e clicou em "Ler o Diário agora": salva e lê o que está marcado
+    if (selMudou() && Object.keys(sel).length && !(APP && APP.conta && !APP.conta.ok)) {  // 0.7.51 (dono, item 25): pergunta antes
+      var cn_ = el("div"); cn_.appendChild(el("h3", null, t("nao_salvo_t"))); cn_.appendChild(el("p", null, t("nao_salvo")));
+      abrirJanela(cn_, [[t("cancelar"), null], [t("salvar_rodar"), function () { setTimeout(function () { avisoLonga(function () { salvarTribunais(true); }); }, 0); }, true]]);
+      return;
+    }  // revisão: licença conferida antes  // 0.7.30 (dono): marcou na mira e clicou em "Ler o Diário agora": salva e lê o que está marcado
     if (!Object.keys(sel).length) { $("painel").hidden = false; $("b-trib").setAttribute("aria-expanded", "true"); painel(); mostrarEstado({ erro: t("sem_trib") }); return; }
     if (APP && APP.conta && !APP.conta.ok) {  // 0.7.34 (dono): confere na nuvem antes (o aceite pode ter acabado de ser feito)
       var bR_ = $("b-rodar"); if (bR_) bR_.disabled = true; avisoRapidoApp(t("conferindo_lic"), "nota-g");  // 0.7.36 (revisão da Operação): retorno enquanto confere
@@ -3127,12 +3164,19 @@ window.LEXSUITE_RADAR = null;
       return;
     }
     if (vigiaHist || (D && D.historico && D.historico.rodando && D.historico.rodando.rodando)) { avisoBuscaEstatisticas(); return; }  // 0.7.33 (dono)
+    if (!rodar._longaOk) { avisoLonga(function () { rodar._longaOk = true; try { rodar(); } finally { rodar._longaOk = false; } }); return; }
     $("estado").textContent = t("carregando");
     post("/rodar", { dias: null }).then(function (r) {
       if (r.ok) { vigiar(); return; }
       if (/rodando|running/i.test(r.motivo || "")) { carregar(); avisoRapidoApp(t("ja_lendo"), "nota-g"); vigiar(); return; }  // revisão (0.7.36): leitura de outro processo não é "a leitura parou"
       mostrarEstado({ erro: r.motivo || t("falha") });
     }).catch(function () { $("estado").textContent = t("falha"); });
+  }
+  function avisoLonga(seguir) {  // 0.7.51 (dono, item 24): antes de uma leitura longa, quanto pode demorar
+    var d_ = diasDoPeriodo(perLeitura), n_ = Object.keys(sel).length;
+    if (d_ < 4) { seguir(); return; }
+    var m_ = Math.max(2, Math.ceil(d_ * n_ * 4 / 60)), c_ = el("div"); c_.appendChild(el("h3", null, t("longa_t"))); c_.appendChild(el("p", null, t("longa", { d: d_, n: n_, m: m_ })));
+    abrirJanela(c_, [[t("cancelar"), null], [t("longa_ok"), function () { setTimeout(seguir, 0); }, true]]);
   }
   function avisoBuscaEstatisticas() {  // 0.7.33 (dono): a busca de estatísticas usa o mesmo caminho; a pessoa escolhe
     var c_ = el("div"); c_.appendChild(el("h3", null, t("saz_ocupado_t"))); c_.appendChild(el("p", null, t("saz_ocupado", { p: histPct != null ? histPct + "%" : "…" })));
@@ -3149,14 +3193,14 @@ window.LEXSUITE_RADAR = null;
       }, true]]);
   }
   function salvarTribunais(depoisRodar) {
-    post("/config", { tribunais: Object.keys(sel), dias_na_pagina: periodo }).then(function () {
+    post("/config", { tribunais: Object.keys(sel), dias_na_pagina: periodo, periodo_botao: perLeitura }).then(function () {
       $("painel").hidden = true; $("b-trib").setAttribute("aria-expanded", "false");
-      if (depoisRodar) { post("/rodar", {}).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo || t("falha") }); }); }  // revisão: o motivo da recusa aparece
+      if (depoisRodar) { if (APP && APP.config) APP.config.periodo_botao = perLeitura; post("/rodar", {}).then(function (r) { if (r.ok) vigiar(); else mostrarEstado({ erro: r.motivo || t("falha") }); }); }  // revisão: o motivo da recusa aparece
       carregar();
     }).catch(function () { $("estado").textContent = t("falha"); });
   }
   function painel() {
-    desenharCriterio();  // 0.7.30 (dono): o texto ao lado de "Ler o Diário agora" acompanha o que está marcado
+    desenharPeriodo(); desenharCriterio();  // 0.7.30 (dono): o texto ao lado de "Ler o Diário agora" acompanha o que está marcado
     if (!APP) return;
     var alvo = $("painel-lista"); alvo.textContent = "";
     var todos = APP.tribunais || [], total = todos.length;
@@ -6139,7 +6183,7 @@ window.LEXSUITE_RADAR = null;
     var p = $("painel"), bt_ = this;
     if (!p.hidden) {  // teste do dono (0.7.30): fecha com movimento (a seta gira junto), sem sumir de repente
       bt_.setAttribute("aria-expanded", "false"); p.classList.add("fechando");
-      setTimeout(function () { p.classList.remove("fechando"); if (bt_.getAttribute("aria-expanded") === "false") p.hidden = true; }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180);
+      setTimeout(function () { p.classList.remove("fechando"); if (bt_.getAttribute("aria-expanded") === "false") p.hidden = true; }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 220);
       return;
     }
     p.hidden = false; this.setAttribute("aria-expanded", "true"); if (!p.hidden) { $("config").hidden = true; $("b-config").setAttribute("aria-expanded", "false"); fecharPerfil(); painel(); } });
@@ -6241,8 +6285,9 @@ window.LEXSUITE_RADAR = null;
   $("c-atualizar").addEventListener("click", verificarAtualizacao);
   $("b-limpar").addEventListener("click", function () { sel = {}; painel(); });
   $("b-salvar").addEventListener("click", function () { salvarTribunais(false); });
-  $("b-salvar-rodar").addEventListener("click", function () { salvarTribunais(true); });
-  $("b-rodar").addEventListener("click", rodar);
+  $("b-salvar-rodar").addEventListener("click", function () { avisoLonga(function () { salvarTribunais(true); }); });  // 0.7.51: leitura longa avisa antes
+  $("b-rodar").addEventListener("click", function () { rodar(); });
+  $("p-per").addEventListener("change", function (e) { perLeitura = e.target.value; desenharPeriodo(); desenharCriterio(); var bs_ = $("b-salvar"); if (bs_) bs_.disabled = !Object.keys(sel).length; });
   $("periodo").addEventListener("change", function (e) { trocarPeriodo(e.target.value); });
 
   // 0.7.19: AssistONE no RADAR (sem IA, sem pedido externo): ajuda da tela atual, tour, dicas e busca
