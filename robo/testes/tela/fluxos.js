@@ -503,7 +503,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     const y1 = await p.evaluate(() => document.getElementById('config').scrollTop);
     confere(fim && Math.abs(y1 - y0) <= 2, 'Histórico: "← Configurações" também no fim, e a volta é para o mesmo ponto (' + y0 + ' → ' + y1 + ')');
     await p.evaluate(() => document.getElementById('c-registro').click()); await espera(800);
-    confere(await p.evaluate(() => !!document.querySelector('#janela .al-copiar-ic') && [...document.querySelectorAll('#janela .botoes button')].some(x => x.textContent === 'Enviar ao suporte')), 'Registro técnico: ícone de copiar e "Enviar ao suporte"');
+    confere(await p.evaluate(() => !!document.querySelector('#janela .reg-copiar') && [...document.querySelectorAll('#janela .botoes button')].some(x => x.textContent === 'Abrir no Gmail') && [...document.querySelectorAll('#janela .botoes button')].some(x => x.textContent === 'Abrir no e-mail do Windows')), 'Registro técnico: "Copiar o registro" embaixo da caixa, "Abrir no Gmail" e "Abrir no e-mail do Windows" (0.7.51)');
     confere(p._erros.length === 0, '0.7.50: nenhum erro na página ' + p._erros.join(' | '));
     await p.close();
   }
