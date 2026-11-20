@@ -89,7 +89,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.route('**/dados*', async r => { const m = /dias=(\d+)/.exec(r.request().url()); await espera(m && m[1] === a ? 3000 : 400); r.continue(); });
     const troca = v => p.evaluate(v => { const s = document.getElementById('periodo'); s.value = v; s.dispatchEvent(new Event('change')); }, v);
     await troca(a); await espera(100); await troca(z); await espera(4500);
-    const fim = await p.evaluate(() => ({ sel: document.getElementById('periodo').value, ocup: document.body.classList.contains('ocupado') }));
+    const fim = await p.evaluate(() => ({ sel: document.getElementById('periodo').value, ocup: document.body.classList.contains('ocupado') || document.body.classList.contains('lista-ocupada') }));
     confere(fim.sel === z && !fim.ocup, 'Período: trocar duas vezes seguidas fica no último escolhido (' + z + ' dias)');
     confere(p._erros.length === 0, 'Período: nenhum erro na página ' + p._erros.join(' | '));
     await p.close();
