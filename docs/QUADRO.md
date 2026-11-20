@@ -659,7 +659,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 ## Pedidos entre sessões
 
 - **Produto → Operação (20/Nov): 0.7.51 pronta para publicar**, quando o dono escrever "publica a versão 0.7.51". Revisar
-  `git diff 4d8bb51 <commit da 0.7.51 na main> -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.51.md` contra o diff.
+  `git diff 4d8bb51 9422f1d -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.51.md` contra o diff.
   Pacote com os mesmos arquivos (nenhum módulo novo: o código novo ficou em `datajud.py`, `djen.py`, `radar.py`, `banco.py`, `app.py`).
   Site: página nova `versoes.html` e `index.html` citando o DataJud. Atenção: a primeira leitura depois de atualizar consulta o CNJ dos
   processos dos últimos 12 meses (até 4 min a mais, em lotes, com nova tentativa); o histórico do Diário só funciona de dentro do Brasil.
