@@ -297,3 +297,17 @@ class DatasEFontes(unittest.TestCase):
                   'id="f-idade"', 'id="f-andamento"', "function blocoJornada(i)", "function ligaJornada(jr)", 'post("/completar", { processos: [i.id] })',
                   'fq_cnj: "Ajuizamento, classe, assuntos', 'rg_novo: "Dias para o processo ser novo"', 'mc_12747: "Audiência inicial"', 'mc_12747: "Initial hearing"'):
             self.assertIn(k, HTML, k)
+
+
+class HistoricoDeVersoes(unittest.TestCase):
+    """Decisão 58 (dono, 20/Nov): Novidades no menu, nome "Novidades da versão" e página de histórico no site."""
+
+    def test_pagina_tem_todas_as_versoes_das_novidades(self):
+        with open(os.path.join(_RAIZ_, "paginas", "versoes.html"), encoding="utf-8") as f:
+            pag = f.read()
+        i = HTML.index("var NOVIDADES = {"); j = HTML.index("\n  };\n", i)
+        for v in re.findall(r'\n    "(\d+\.\d+\.\d+)": \{', HTML[i:j]):
+            self.assertIn(f'id="pt-{v}"', pag, v); self.assertIn(f'id="en-{v}"', pag, v)
+        self.assertNotIn("http://", pag.replace("http://www.w3.org", ""))
+        self.assertIn('nov_hist: "Ver o histórico de todas as versões (site)"', HTML)
+        self.assertIn("judicial.solverone.com.br/versoes.html", HTML)
