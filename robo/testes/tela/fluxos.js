@@ -441,7 +441,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
   {
     const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); localStorage.removeItem('lexsuite:filtro-atual'); localStorage.setItem('lexsuite:agrupar', JSON.stringify({ a: 'empresa', l: '10' })); } catch (e) {} });
     await p.waitForFunction(() => document.querySelectorAll('.grupo-emp').length > 0, null, { timeout: 20000 }).catch(() => {}); await espera(2500);
-    await p.evaluate(() => [...document.querySelectorAll('.ge-barra button')][0].click()); await espera(700);
+    await p.evaluate(() => [...document.querySelectorAll('#selecionar-todos .sel-dir button')][0].click()); await espera(700);
     const g1 = await p.evaluate(() => [...document.querySelectorAll('.grupo-emp')].map(g => g.querySelectorAll('article.item').length));
     confere(g1.length > 0 && Math.max(...g1) <= 10, 'Agrupar: "Últimos 10 processos" vale para o bloco inteiro (no máximo 10 por empresa: ' + g1.slice(0, 6).join(',') + ')');
     const g2 = await p.evaluate(() => { const g = document.querySelector('.grupo-emp'); const et = document.querySelector('.grupo-emp .etq-anterior'); return { ch: !!g.querySelector('.ge-chevron'), cb: !!g.querySelector('.ge-cb'), tri: document.querySelectorAll('.tri-aviso').length, etq: et ? et.parentElement.className : 'sem etiqueta', prim: et ? et.closest('article').firstElementChild.className : '' }; });
