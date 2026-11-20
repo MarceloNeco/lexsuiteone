@@ -516,6 +516,9 @@ def aplicar(itens, prefs, acoes_por_empresa=None):
             cpfs[d] = e
     por_nome = {cl.chave_exata(e["nome"]): e for e in exclusoes
                 if cl.chave_exata(e["nome"]) and not documento.valido(e["nome"]) and re.sub(r"\D", "", str(e.get("nome") or "")) not in cpfs}
+    # 0.7.51 (ressalva da Operação; dono, 15/Nov: "a chave é o CNPJ"): exclusão gravada com CNPJ não alcança homônimo de OUTRO CNPJ;
+    # pelo nome, só alcança processo sem CNPJ (não dá para saber se é outra empresa)
+    nome_com_cnpj = {k for k, e in por_nome.items() if documento.valido(e.get("cnpj") or "")}
     cnpjs = {documento.limpar(e.get("cnpj") or e["nome"]) for e in exclusoes if documento.valido(e.get("cnpj") or e["nome"])}  # 0.7.33: CNPJ com letras também
     minimo = int(prefs.get("minimo_acoes") or 1)
     for it in itens:
@@ -525,6 +528,8 @@ def aplicar(itens, prefs, acoes_por_empresa=None):
         razao = (it.get("empresa") or {}).get("razao_social") or ""
         for n in list(nomes) + ([razao] if razao else []):
             e = por_nome.get(cl.chave_exata(n))
+            if e and cnpj and cl.chave_exata(n) in nome_com_cnpj and documento.limpar(e.get("cnpj")) != cnpj:
+                e = None  # homônimo com outro CNPJ: é outra empresa
             if not e and cpfs:
                 e = next((cpfs[c] for c in cl.cpfs_no_nome(n) if c in cpfs), None)
             if e:
