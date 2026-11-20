@@ -6558,6 +6558,36 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_.indexOf("lexsuite:novidades-") !== 0; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
+    "0.7.51": {
+      pt: ["Inclusão do período de cada leitura (desde a última leitura, últimos 7 dias ou último dia útil) na Configuração da leitura e na Rotina de leitura.",
+        "Inclusão de aviso antes de leitura longa e de pergunta ao ler com mudanças não salvas.",
+        "Inclusão do número do processo no formato do CNJ no cartão e da opção de copiar nos campos da ficha.",
+        "Inclusão do aviso \u201cCNPJ não capturado\u201d no agrupamento por empresa.",
+        "Inclusão do início dos processos lidos neste computador no fim da Lista.",
+        "Opção de abrir o registro técnico no Gmail ou no e-mail do Windows.",
+        "Exibição das Novidades da versão a cada abertura, até a opção \u201cNão mostrar novamente\u201d.",
+        "Alteração da exclusão de empresa com CNPJ, que deixa de alcançar outra empresa com o mesmo nome.",
+        "Alteração do CNPJ provável, que passa a exigir o nome escrito igual.",
+        "Correção da troca de período durante o carregamento da Lista.",
+        "Simplificação da ajuda do assistente, em tópicos.",
+        "Melhorias no design e na navegação, com a ficha mais rápida ao abrir e o nome das varas padronizado.",
+        "Melhorias de acessibilidade e correções.",
+        "Atualização do manual."],
+      en: ["Period of each reading (since the last reading, last 7 days or last working day) in Reading setup and in the Reading routine.",
+        "Notice before a long reading and a prompt when reading with unsaved changes.",
+        "Case number in the CNJ format on the card and the copy option on the profile fields.",
+        "\u201cTax ID not captured\u201d notice in the grouping by company.",
+        "Start date of the cases read on this computer at the end of the List.",
+        "Option to open the technical log in Gmail or in Windows e-mail.",
+        "What\u2019s new shown at every start, until \u201cDon\u2019t show again\u201d.",
+        "Exclusion of a company with tax ID no longer reaches another company with the same name.",
+        "Likely tax ID requires the name written the same way.",
+        "Fix for changing the period while the List is loading.",
+        "Simpler assistant help, in topics.",
+        "Design and navigation improvements, with a faster profile and standardised court unit names.",
+        "Accessibility improvements and fixes.",
+        "Manual updated."]
+    },
     "0.7.50": {
       pt: ["Inclusão de recolher e expandir cada empresa no agrupamento, com \u201cExpandir todas\u201d e \u201cRecolher todas\u201d.",
         "Inclusão da caixa de seleção no cabeçalho da empresa, que marca todos os processos dela.",
