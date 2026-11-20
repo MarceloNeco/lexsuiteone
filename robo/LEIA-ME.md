@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.50 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.51 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,18 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.51 (20/Nov, primeiro uso real da KR Law e feedback do teste da 0.7.50):** o processo é novo pela **data de ajuizamento**
+  (CNJ/DataJud, lista de distribuição do Diário ou digitada), não pela publicação que o RADAR achou; "novo" = até 30 dias (ajustável em
+  Destaques e exclusões, "Dias para o processo ser novo"); o antigo fica na Lista marcado "PROCESSO ANTIGO". Cada leitura completa os
+  processos com o CNJ (em lotes de 40, com fila em disco na tabela `fontes`, nova tentativa em 30 min/2 h/6 h/24 h e "Tentar de novo"
+  na ficha) e com o histórico do Diário pelo número (só datas e tipos; texto e destinatários descartados). Ficha com a jornada do
+  processo (recolhida; duas colunas com a linha em degrau), etiquetas de fonte com (?), 1ª e última publicação, andamento; filtros
+  Idade do processo e Andamento; ordem padrão pelos ajuizados mais novos; cumprimento de sentença fora. Planilha: "Ajuizado em" (só a
+  data real) e colunas novas no fim. Também: período de cada leitura (desde a última leitura, últimos 7 dias, último dia útil) na faixa
+  e na Rotina de leitura, aviso de leitura longa e "Salvar e ler agora"; Novidades toda vez até "Não mostrar novamente" e página
+  "Histórico de versões" no site; número do processo no formato CNJ no cartão e ícones de copiar; "CNPJ não capturado"; carregando
+  numa faixa sobre a Lista; ficha montada só ao abrir; registro com "Abrir no Gmail" e "Abrir no e-mail do Windows"; AssistONE em
+  tópicos; ressalvas da Operação (exclusão pelo CNPJ, CNPJ provável pelo nome exato, pré-filtro com acento).
 - **0.7.50 (16/Nov, feedback do dono no notebook e no agrupamento):** no agrupamento por empresa, o alcance vale para o bloco
   inteiro; setinha para recolher e abrir (recolhido com mais de 10 empresas ou 10 processos), "Expandir todas" e "Recolher todas";
   caixinha da empresa marca todos os processos dela; empresa sem CNPJ com triângulo de aviso e "CNPJ provável" (uma raiz só para o

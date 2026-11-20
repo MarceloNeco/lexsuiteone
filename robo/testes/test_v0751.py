@@ -311,3 +311,17 @@ class HistoricoDeVersoes(unittest.TestCase):
         self.assertNotIn("http://", pag.replace("http://www.w3.org", ""))
         self.assertIn('nov_hist: "Ver o histórico de todas as versões (site)"', HTML)
         self.assertIn("judicial.solverone.com.br/versoes.html", HTML)
+
+
+class Versao0751(unittest.TestCase):
+    def test_versao_e_novidades(self):
+        from lexsuite import VERSAO
+        self.assertTrue(VERSAO >= "0.7.51")
+        i = HTML.index('"0.7.51": {'); bloco = HTML[i:HTML.index('"0.7.50": {')]
+        pt = re.findall(r'"([^"]+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
+        en = re.findall(r'"([^"]+)"', bloco[bloco.index("en: ["):])
+        self.assertEqual(len(pt), len(en)); self.assertGreaterEqual(len(pt), 15)
+        for linha in pt:  # diretriz do dono: formal, curta, sem frase de efeito
+            self.assertNotRegex(linha, r"\b(agora|já lê|com um botão só|caixinha)\b")
+        for linha in en:
+            self.assertNotRegex(linha, r"\bnow\b")
