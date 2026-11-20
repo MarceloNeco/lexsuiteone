@@ -6496,7 +6496,7 @@ window.LEXSUITE_RADAR = null;
           { seletor: "#b-busca", titulo: { pt: "Procurar", en: "Search" }, texto: { pt: "Empresa, processo, CNPJ, cidade, uma opção do programa ou um assunto do manual.", en: "Company, case number, CNPJ, city, a program option or a manual topic." } },
           { seletor: "#b-config", titulo: { pt: "Configurações", en: "Settings" }, texto: { pt: "Seus destaques e empresas excluídas (por área), filtros salvos, pasta das planilhas, rotina de leitura (dias e horários), aviso por e-mail quando o CNJ ficar fora e consulta pública quando o caderno falhar, rotina de limpeza, armazenamento, aparência, licença e termos e, em Sobre este computador, o antivírus encontrado e como liberar o programa.", en: "Your highlights and excluded companies (by area), saved filters, spreadsheet folder, reading routine (days and times), e-mail notice when the CNJ is down and public search when the gazette fails, clean-up routine, storage, appearance, licence and terms and, under About this computer, the antivirus found and how to allow the program." } },
           { seletor: "#b-perfil", titulo: { pt: "Perfil", en: "Profile" }, texto: { pt: "Quem usa o programa e a licença do escritório.", en: "Who uses the program and the firm's licence." } },
-          { seletor: "#b-trib", titulo: { pt: "Tribunais", en: "Courts" }, texto: { pt: "Os tribunais que o RADAR lê. Marque só os que interessam ao escritório.", en: "The courts RADAR reads. Tick only those the firm cares about." } },
+          { seletor: "#b-trib", titulo: { pt: "Tribunais e período", en: "Courts and period" }, texto: { pt: "Os tribunais que o RADAR lê e o período de cada leitura (desde a última leitura, últimos 7 dias ou último dia útil). Marque só o que interessa ao escritório e salve.", en: "The courts RADAR reads and the period of each reading (since the last reading, last 7 days or last working day). Tick only what the firm cares about and save." } },
           { seletor: "#b-rodar", titulo: LER, texto: { pt: "Lê o Diário na hora, sem esperar o horário marcado.", en: "Reads the gazette now, without waiting for the scheduled time." } },
           { seletor: "#faixa-area", titulo: { pt: "Pedido à área logada", en: "Logged-in area request" }, texto: { pt: "Enquanto a ferramenta de navegação percorre o PJe, o pedido fica aqui. \u201cTrazer resposta\u201d lê o texto ou o arquivo que ela devolveu; nada se apaga.", en: "While the browsing tool goes through PJe, the request stays here. \u201cBring in the answer\u201d reads the text or file it returned; nothing is deleted." } },
           { seletor: "#estado .cena", titulo: { pt: "Leitura pela consulta pública", en: "Reading through the public search" }, texto: { pt: "Quando o caderno do CNJ cai, o programa lê pela consulta pública e mostra aqui o andamento; depois confere pelo caderno, sozinho.", en: "When the CNJ gazette is down, the program reads through the public search and shows the progress here; it checks against the gazette later, on its own." } },
@@ -6546,7 +6546,9 @@ window.LEXSUITE_RADAR = null;
           { termo: { pt: "Histórico de leituras", en: "Reading history" }, sinonimos: ["historico", "leituras", "falha", "tentativas", "reading history", "history"], destino: function () { abrirHistorico(false); }, icone: "›", descricao: { pt: "Configurações → Sobre este computador → Ver histórico de leituras", en: "Settings → About this computer → View reading history" } },
           { termo: { pt: "Sair do programa", en: "Exit the program" }, sinonimos: ["sair", "encerrar", "fechar", "exit", "quit", "close"], destino: sairDoRadar, icone: "›", descricao: { pt: "Menu ☰ → Sair", en: "☰ menu → Exit" } },
           { termo: { pt: "Sobre este computador", en: "About this computer" }, sinonimos: ["sobre", "registro", "ver registro", "about this computer", "log"], destino: function () { abrirConfig(true, "c-s-sobre"); }, icone: "›", descricao: { pt: "Configurações → Sobre este computador", en: "Settings → About this computer" } },
-          { termo: { pt: "Novidades da versão", en: "What\u2019s new" }, sinonimos: ["novidades", "versao", "mudou", "atualizacao", "new", "release notes"], destino: function () { mostrarNovidades(true); }, icone: "›", descricao: { pt: "O que mudou nesta versão", en: "What changed in this version" } }
+          { termo: { pt: "Novidades da versão", en: "What\u2019s new" }, sinonimos: ["novidades", "versao", "mudou", "atualizacao", "new", "release notes"], destino: function () { mostrarNovidades(true); }, icone: "›", descricao: { pt: "O que mudou nesta versão", en: "What changed in this version" } },
+          { termo: { pt: "Período da leitura", en: "Reading period" }, sinonimos: ["periodo", "desde a ultima leitura", "ultimos 7 dias", "ultimo dia util", "dias para tras", "period", "since last reading"], destino: function () { var b_ = $("b-trib"); if (b_ && $("painel").hidden) b_.click(); setTimeout(function () { var s_ = $("p-per"); if (s_) { s_.scrollIntoView({ block: "center" }); try { s_.focus(); } catch (e) {} } }, 300); }, icone: "›", descricao: { pt: "Configuração da leitura → Alterar configuração → Período", en: "Reading setup → Change setup → Period" } },
+          { termo: { pt: "Copiar o número do processo", en: "Copy the case number" }, sinonimos: ["copiar", "copiar numero", "numero do processo", "copy", "case number"], destino: function () { trocarVisao("lista"); }, icone: "›", descricao: { pt: "Abra o cartão: o ícone de copiar fica ao lado do número", en: "Open the card: the copy icon sits next to the number" } }
         ]
       }
     });
@@ -6558,6 +6560,36 @@ window.LEXSUITE_RADAR = null;
     try { var ks_ = window.LEX_CHAVES_ANTES || []; return ks_.some(function (k_) { return k_.indexOf("lexsuite:") === 0 && k_.indexOf("lexsuite:novidades-") !== 0; }); } catch (e) { return false; }
   })();
   var NOVIDADES = {  // diretriz do dono (12/Nov): linguagem formal e curta, uma linha por mudança, sem detalhe de tela nem frase de efeito
+    "0.7.51": {
+      pt: ["Inclusão do período de cada leitura (desde a última leitura, últimos 7 dias ou último dia útil) na Configuração da leitura e na Rotina de leitura.",
+        "Inclusão de aviso antes de leitura longa e de pergunta ao ler com mudanças não salvas.",
+        "Inclusão do número do processo no formato do CNJ no cartão e da opção de copiar nos campos da ficha.",
+        "Inclusão do aviso \u201cCNPJ não capturado\u201d no agrupamento por empresa.",
+        "Inclusão do início dos processos lidos neste computador no fim da Lista.",
+        "Opção de abrir o registro técnico no Gmail ou no e-mail do Windows.",
+        "Exibição das Novidades da versão a cada abertura, até a opção \u201cNão mostrar novamente\u201d.",
+        "Alteração da exclusão de empresa com CNPJ, que deixa de alcançar outra empresa com o mesmo nome.",
+        "Alteração do CNPJ provável, que passa a exigir o nome escrito igual.",
+        "Correção da troca de período durante o carregamento da Lista.",
+        "Simplificação da ajuda do assistente, em tópicos.",
+        "Melhorias no design e na navegação, com a ficha mais rápida ao abrir e o nome das varas padronizado.",
+        "Melhorias de acessibilidade e correções.",
+        "Atualização do manual."],
+      en: ["Period of each reading (since the last reading, last 7 days or last working day) in Reading setup and in the Reading routine.",
+        "Notice before a long reading and a prompt when reading with unsaved changes.",
+        "Case number in the CNJ format on the card and the copy option on the profile fields.",
+        "\u201cTax ID not captured\u201d notice in the grouping by company.",
+        "Start date of the cases read on this computer at the end of the List.",
+        "Option to open the technical log in Gmail or in Windows e-mail.",
+        "What\u2019s new shown at every start, until \u201cDon\u2019t show again\u201d.",
+        "Exclusion of a company with tax ID no longer reaches another company with the same name.",
+        "Likely tax ID requires the name written the same way.",
+        "Fix for changing the period while the List is loading.",
+        "Simpler assistant help, in topics.",
+        "Design and navigation improvements, with a faster profile and standardised court unit names.",
+        "Accessibility improvements and fixes.",
+        "Manual updated."]
+    },
     "0.7.50": {
       pt: ["Inclusão de recolher e expandir cada empresa no agrupamento, com \u201cExpandir todas\u201d e \u201cRecolher todas\u201d.",
         "Inclusão da caixa de seleção no cabeçalho da empresa, que marca todos os processos dela.",
