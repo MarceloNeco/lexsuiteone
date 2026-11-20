@@ -300,6 +300,15 @@ def ultima_leitura_ok(banco):
     return ""
 
 
+def primeira_leitura(banco):
+    """0.7.51 (dono, item 18): dia (AAAA-MM-DD) da primeira leitura do Diário neste computador; a Lista só tem processos daí em diante."""
+    try:
+        row = banco.con.execute("SELECT MIN(quando) FROM execucoes WHERE tipo = 'radar'").fetchone()
+        return str((row or [""])[0] or "")[:10]
+    except Exception:  # noqa: BLE001 - só texto da tela
+        return ""
+
+
 def dias_do_periodo(periodo, banco, hoje):
     """0.7.51: quantos dias úteis para trás a leitura volta (1 a 10; o programa só baixa o Diário que ainda não leu).
     - "ultimo_util": do último dia útil até hoje (1);

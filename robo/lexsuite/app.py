@@ -663,7 +663,7 @@ class Tratador(BaseHTTPRequestHandler):
                            "dias_para_tras": _dias_para_tras(r),
                            "periodo_botao": r.get("periodo_botao") if r.get("periodo_botao") in radar.PERIODOS else "ultimo_util",
                            "periodo_rotina": r.get("periodo_rotina") if r.get("periodo_rotina") in radar.PERIODOS else "ultimo_util",
-                           "ultima_leitura_ok": _ultima_ok(s),
+                           "ultima_leitura_ok": _ultima_ok(s), "primeira_leitura": radar.primeira_leitura(banco),
                            "teto_capital_gigante": _finito(r.get("teto_capital_gigante")),  # 0.7.27: Infinity/NaN não quebram o JSON
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
