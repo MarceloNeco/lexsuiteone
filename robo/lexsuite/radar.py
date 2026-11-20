@@ -286,6 +286,48 @@ def registrar_tentativas(banco, tentativas, origem, versao, quando=None):
         banco.registrar("tentativa", dict(t, quando_local=quando, origem=origem, versao=versao))
 
 
+PERIODOS = ("desde_ultima", "7dias", "ultimo_util")  # 0.7.51: período de cada leitura (faixa da mira e Rotina de leitura)
+
+
+def ultima_leitura_ok(banco):
+    """Data (AAAA-MM-DD) da última leitura do Diário que terminou bem (ou leu publicações); "" se nunca leu."""
+    try:
+        for x in banco.execucoes("radar", 30):
+            if x.get("resultado") == "ok" or x.get("lidas"):
+                return str(x.get("quando") or "")[:10]
+    except Exception:  # noqa: BLE001 - sem histórico, vale o último dia útil
+        pass
+    return ""
+
+
+def primeira_leitura(banco):
+    """0.7.51 (dono, item 18): dia (AAAA-MM-DD) da primeira leitura do Diário neste computador; a Lista só tem processos daí em diante."""
+    try:
+        row = banco.con.execute("SELECT MIN(quando) FROM execucoes WHERE tipo = 'radar'").fetchone()
+        return str((row or [""])[0] or "")[:10]
+    except Exception:  # noqa: BLE001 - só texto da tela
+        return ""
+
+
+def dias_do_periodo(periodo, banco, hoje):
+    """0.7.51: quantos dias úteis para trás a leitura volta (1 a 10; o programa só baixa o Diário que ainda não leu).
+    - "ultimo_util": do último dia útil até hoje (1);
+    - "7dias": os dias úteis dos últimos 7 dias (normalmente 5);
+    - "desde_ultima": desde o dia da última leitura que deu certo (inclusive, porque o Diário daquele dia pode ter sido
+      lido antes de terminar); sem leitura anterior, 1. Computador desligado 3 dias não perde os dias do meio."""
+    if periodo == "7dias":
+        return max(1, min(10, sum(1 for k in range(1, 8) if (hoje - dt.timedelta(days=k)).weekday() < 5)))
+    if periodo == "desde_ultima":
+        ult = ultima_leitura_ok(banco)
+        try:
+            d0 = dt.date.fromisoformat(ult)
+        except ValueError:
+            return 1
+        n = sum(1 for k in range(1, (hoje - d0).days + 1) if (hoje - dt.timedelta(days=k)).weekday() < 5)
+        return max(1, min(10, n))
+    return 1
+
+
 def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False, pasta_diag=None, agora=None, versao="",
              caminho_config=None, origem="botão", parar=None):
     """Uma rodada do radar: confere o controle do escritório, baixa o caderno de cada tribunal escolhido, separa as
@@ -294,8 +336,13 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     versao = versao or _versao()
     r = cfg.get("radar") or {}
     escolhidos = tribunais.validar(r.get("tribunais") or ["TRT2", "TRT15"])
-    dias = config.inteiro(dias if dias is not None else r.get("dias_para_tras", 1), 1, 0, 10)
     agora = agora or dt.datetime.now()
+    if dias is None:  # 0.7.51 (dono, itens 22 e 26): o período escolhido na faixa (botão) ou na Rotina de leitura (automática)
+        automatica = origem != "botão" and not str(origem).startswith("à mão")
+        per_ = r.get("periodo_rotina" if automatica else "periodo_botao")
+        if per_ in PERIODOS:
+            dias = dias_do_periodo(per_, banco, agora.date())
+    dias = config.inteiro(dias if dias is not None else r.get("dias_para_tras", 1), 1, 0, 10)
     inicio = time.perf_counter()
     base_compartilhada = compartilhar.pasta_base(cfg)
     if base_compartilhada:
@@ -584,11 +631,11 @@ def processos_das_empresas(cfg, banco, empresas, alcance="hibrido", hoje=None):
 def cnpj_provavel(banco, nome):
     """0.7.50 (dono): para processos sem CNPJ, o CNPJ que outros processos com o MESMO nome já trazem. Só sugere se houver uma
     raiz só (a chave é o CNPJ); com duas ou mais, não sugere. Devolve {cnpj, com_cnpj, sem_cnpj} ou {}."""
-    chave = chave_empresa("", nome)
-    if not chave:
+    chave, exata = chave_empresa("", nome), cl.chave_exata(nome)
+    if not chave or not exata:
         return {}
     palavras = [w for w in chave[2:].split() if len(w) >= 3]
-    pista = re.sub(r"[aeiouc]", "_", max(palavras, key=len) if palavras else chave[2:])
+    pista = re.sub(r"%+", "%", re.sub(r"[aeiouc]", "%", max(palavras, key=len) if palavras else chave[2:]))  # 0.7.51: acento gravado de qualquer jeito
     raizes, cnpjs, sem = {}, {}, 0
     for (dados,) in banco.con.execute("SELECT dados FROM leads WHERE dados LIKE ?", ("%" + pista + "%",)):
         try:
@@ -597,8 +644,8 @@ def cnpj_provavel(banco, nome):
             continue
         emp = d.get("empresa_receita") or {}
         nomes = [emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]
-        if not any(chave_empresa("", n) == chave for n in nomes if n):
-            continue
+        if not any(cl.chave_exata(n) == exata for n in nomes if n):
+            continue  # 0.7.51 (revisão da 0.7.50): nome escrito igual; "X Ltda" e "X S.A." são outras empresas
         c = re.sub(r"\D", "", str(emp.get("cnpj") or (d.get("cnpjs") or [""])[0] or ""))
         if len(c) == 14:
             raizes[c[:8]] = raizes.get(c[:8], 0) + 1
@@ -613,11 +660,11 @@ def cnpj_provavel(banco, nome):
 
 def usar_cnpj(banco, nome, cnpj, perfil=""):
     """Grava o CNPJ confirmado pelo escritório nos processos com o mesmo nome e sem CNPJ (marcado `cnpj_inferido`)."""
-    chave, cnpj = chave_empresa("", nome), re.sub(r"\D", "", str(cnpj or ""))
-    if not chave or len(cnpj) != 14:
+    chave, cnpj, exata = chave_empresa("", nome), re.sub(r"\D", "", str(cnpj or "")), cl.chave_exata(nome)
+    if not chave or not exata or len(cnpj) != 14:
         return 0
     palavras = [w for w in chave[2:].split() if len(w) >= 3]
-    pista = re.sub(r"[aeiouc]", "_", max(palavras, key=len) if palavras else chave[2:])
+    pista = re.sub(r"%+", "%", re.sub(r"[aeiouc]", "%", max(palavras, key=len) if palavras else chave[2:]))  # 0.7.51: acento gravado de qualquer jeito
     mudar = []
     for proc, dados in banco.con.execute("SELECT processo, dados FROM leads WHERE dados LIKE ?", ("%" + pista + "%",)):
         try:
@@ -627,7 +674,7 @@ def usar_cnpj(banco, nome, cnpj, perfil=""):
         emp = d.get("empresa_receita") or {}
         if emp.get("cnpj") or (d.get("cnpjs") or []) or d.get("cnpj_inferido"):
             continue
-        if any(chave_empresa("", n) == chave for n in ([emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]) if n):
+        if any(cl.chave_exata(n) == exata for n in ([emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]) if n):
             d["cnpj_inferido"] = cnpj
             mudar.append((json.dumps(d, ensure_ascii=False), proc))
     banco.con.executemany("UPDATE leads SET dados = ? WHERE processo = ?", mudar)

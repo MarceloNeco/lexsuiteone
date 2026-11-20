@@ -1,11 +1,12 @@
 # Estado atual do RADAR JUDICIAL (uma página; toda sessão lê antes de responder ao dono)
 
-Atualizado em 16/Nov/2026 pela Produto, com a 0.7.49 publicada e a 0.7.50 pronta para publicar (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
+Atualizado em 16/Nov/2026 pela Produto, com a 0.7.50 publicada (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
 que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" sai DAQUI, não da memória da conversa.
 
 ## 1. No ar
-- Programa **0.7.49**, publicada em 15/Nov (tag `v0.7.49`): Modo no alto, 3 filtros salvos de fábrica, Tribunal na 1ª linha,
-  Agrupar por empresa. A 0.7.48 (consulta pública, limpeza automática, cidade, área logada) também está no ar; os instaladores
+- Programa **0.7.50**, publicada em 16/Nov (tag `v0.7.50`): agrupamento recolhível com caixinha da empresa, CNPJ provável,
+  copiar contato e "Excluir esta empresa"; filtros numa linha no notebook; Rotina de limpeza; "Enviar ao suporte"; tour sem rolar.
+  A 0.7.49 (15/Nov): Modo no alto, 3 filtros salvos de fábrica, Tribunal na 1ª linha, Agrupar por empresa. A 0.7.48 (consulta pública, limpeza automática, cidade, área logada) também está no ar; os instaladores
   corrigidos da 0.7.48 estão no site (`ba38b72`).
 - Nuvem: lex-conta v20 (recursos por licença, estado do CNJ, antivírus no registro, opção de e-mail), lex-saude v3 (observador em São
   Paulo com alerta e sonda da consulta), página `judicial.solverone.com.br/antivirus.html`. Área logada: KR Law **desligada**, teste
@@ -23,8 +24,11 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
-- **0.7.50 pronta para publicar** (16/Nov, os 33 itens de `FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md` e as decisões de
-  16/Nov; a Operação publica quando o dono escrever "publica a versão 0.7.50"): agrupamento recolhível, caixinha da empresa, alcance
+- **0.7.51 (sem pedido do dono ainda):** as 5 ressalvas da revisão da 0.7.50 (quadro, "Operação → Produto, 16/Nov"): exclusão
+  pelo CNPJ quando houver (homônimo de outro CNPJ fica, como manda "a chave é o CNPJ"), CNPJ provável sem juntar Ltda e S.A.,
+  duas palavras das Novidades, um termo do manual e o pré-filtro sem acento. Entram junto com o que o dono achar no teste da 0.7.50.
+- **0.7.50 publicada** (16/Nov, os 33 itens de `FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md` e as decisões de
+  16/Nov): agrupamento recolhível, caixinha da empresa, alcance
   no bloco inteiro, aviso de empresa sem CNPJ com "CNPJ provável", copiar o contato (90 dias, com desfazer), "Excluir esta empresa";
   filtros numa linha no notebook com rótulos curtos e barra compacta; "Aplicar" na barra de seleção; Rotina de limpeza própria com
   "Não confirmar"; registro técnico com "Enviar ao suporte"; volta do Histórico no mesmo ponto; tour sem rolar. Testes do dono: seção 8.
@@ -36,7 +40,7 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 
 ## 4. O que só o dono pode fazer (lista única)
 1. Terminar o teste da 0.7.49 (seção 7) e, se quiser, o que faltou da 0.7.48 e da 0.7.47 (seções 6 e 5); o que falhar vira feedback na Produto.
-2. Quando quiser, na Operação: "publica a versão 0.7.50"; depois, os testes da seção 8 (~15 min).
+2. Testar a 0.7.50 no notebook, depois de "Atualizar agora" (seção 8, ~15 min); o que falhar vira feedback na Produto.
 3. Quando quiser: teste de 5 min no PJe com advogado logado (`visita-kr-law/PROMPT-TESTE-GAP-PJE-2026-11-15.md`).
 4. Supabase (Central): TOTP, desligar signups, usuários da equipe; repositório `central-lexsuiteone`.
 5. RootifyONE: "aplicado" (recursos por licença) e os prompts pendentes de lá.
@@ -71,7 +75,7 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 5. Ao lado de "Ordenar por": "Agrupar por empresa"; confira os blocos ("N no período · X de Y da empresa") e o (?) de Ordenar.
 6. Clique num (?) qualquer: azul parado, o balão cresce ao abrir.
 
-## 8. Testes da 0.7.50 (depois de publicada, num Windows, no notebook, ~15 min; antes, "Atualizar agora" na faixa do alto)
+## 8. Testes da 0.7.50 (publicada em 16/Nov; num Windows, no notebook, ~15 min; antes, "Atualizar agora" na faixa do alto)
 1. Lista: a primeira linha dos filtros cabe numa linha só ("Tribunais", "Situação", o ícone dos filtros salvos com o número).
    Marque dois tribunais e passe o mouse: "Tribunais selecionados: …". Role a lista: a barra fica numa linha; suba: volta inteira.
 2. "Agrupar por empresa" com "Últimos 10 processos": nenhum bloco passa de 10. Use a setinha, "Expandir todas" e "Recolher todas".

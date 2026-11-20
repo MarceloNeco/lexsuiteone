@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protótipo · O que as fontes públicas trazem de um processo · RADAR JUDICIAL</title>
+<style>
+  :root { --marinho:#0f1d33; --latao:#a8792a; --latao-wash:#f6efe2; --tinta:#14213d; --tinta-2:#4a5468; --tinta-3:#6b7486; --linha:#e3e6ec; --ok:#1e7a46; --ok-bg:#e7f4ec; --er:#b3261e; --er-bg:#fbeaea; --azul:#2b62ad; --folha:#fff; --fundo:#f4f6f9; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--tinta); background:var(--fundo); line-height:1.45; }
+  header { background:var(--marinho); color:#fff; padding:14px 26px; } header b { font-size:1.15rem; } header p { margin:4px 0 0; color:#c9d1de; font-size:.88rem; }
+  main { max-width:1180px; margin:0 auto; padding:18px 20px 60px; }
+  .aviso-proto { background:#fff8e6; border:1px solid #f0d9a8; border-radius:10px; padding:10px 14px; font-size:.9rem; }
+  .item { background:var(--folha); border:1px solid var(--linha); border-left:4px solid var(--er); border-radius:12px; margin:14px 0; }
+  .cab { display:grid; grid-template-columns:1fr auto; gap:4px 14px; padding:14px 18px; }
+  .nome { font-weight:700; font-size:1.05rem; }
+  .meta { font-size:.86rem; color:var(--tinta-2); display:flex; flex-wrap:wrap; gap:4px 18px; margin-top:4px; }
+  .d1 { color:var(--latao); font-weight:700; } .num { font-variant-numeric:tabular-nums; color:var(--tinta); }
+  .valor { text-align:right; font-weight:700; } .valor small { display:block; font-weight:400; color:var(--tinta-3); font-size:.78rem; }
+  .etqs { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px; }
+  .etq { border-radius:8px; padding:3px 10px; font-size:.82rem; } .etq.velho { background:var(--er-bg); color:var(--er); font-weight:600; }
+  .selo { font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; border-radius:6px; padding:3px 8px; background:#fff4dc; color:#8a5a00; }
+  .ficha { border-top:1px solid var(--linha); padding:14px 18px 18px; }
+  h4 { margin:14px 0 6px; font-size:.78rem; letter-spacing:.08em; color:var(--tinta-3); }
+  .fonte { font-size:.7rem; font-weight:700; letter-spacing:.05em; border-radius:5px; padding:1px 6px; margin-left:6px; vertical-align:middle; }
+  .f-cnj { background:#e8eefb; color:#24508f; } .f-djen { background:#f3e9fb; color:#6b2c91; } .f-rf { background:#e7f4ec; color:#1e7a46; } .f-pje { background:#fff4dc; color:#8a5a00; } .f-radar { background:#eef1f6; color:#4a5468; }
+  .colunas { display:grid; grid-template-columns:1fr 1fr; gap:10px 34px; } @media (max-width:860px) { .colunas { grid-template-columns:1fr; } }
+  table { border-collapse:collapse; width:100%; font-size:.9rem; } td { border-bottom:1px solid var(--linha); padding:7px 6px; vertical-align:top; } td:first-child { color:var(--tinta-3); width:42%; }
+  .vazio { color:var(--tinta-3); font-style:italic; }
+  .jornada { list-style:none; margin:0; padding:0 0 0 18px; border-left:3px solid var(--linha); }
+  .jornada li { position:relative; padding:6px 0 10px 14px; font-size:.9rem; }
+  .jornada li::before { content:""; position:absolute; left:-27px; top:9px; width:13px; height:13px; border-radius:50%; background:#fff; border:3px solid var(--tinta-3); }
+  .jornada li.chave::before { border-color:var(--ok); } .jornada li.aud::before { border-color:var(--latao); } .jornada li.radar::before { border-color:var(--azul); }
+  .jornada b { display:inline-block; min-width:92px; font-variant-numeric:tabular-nums; }
+  .falta { background:var(--er-bg); color:var(--er); border-radius:8px; padding:8px 12px; font-size:.86rem; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+  .falta button { border:1px solid var(--er); background:#fff; color:var(--er); border-radius:999px; padding:4px 12px; font:inherit; font-size:.82rem; cursor:pointer; }
+  .tabela-fontes td:first-child { width:24%; }
+</style>
+</head>
+<body>
+<header><b>RADAR JUDICIAL · o que cada fonte pública traz (caso real da KR Law)</b>
+<p>Processo 1000910-15.2026.5.02.0714 · dados conferidos em 16/11/2026 no CNJ (DataJud) e na Receita · a reclamante, pessoa física, nunca aparece</p></header>
+<main>
+<p class="aviso-proto"><b>Como ler:</b> cada dado traz a etiqueta da fonte
+<span class="fonte f-djen">DIÁRIO</span><span class="fonte f-cnj">CNJ</span><span class="fonte f-rf">RECEITA</span><span class="fonte f-pje">ÁREA LOGADA</span><span class="fonte f-radar">RADAR</span>.
+Na 0.7.51 tudo isto chega sozinho, depois de cada leitura. O que alguma fonte não trouxer aparece em vermelho, com "Tentar de novo".</p>
+
+<article class="item">
+  <div class="cab">
+    <div>
+      <div class="nome">Garantia Real Serviços Ltda.</div>
+      <div class="meta"><span class="d1">1ª PUBLICAÇÃO: QUA, 20 MAI 2026</span><span>TRT2</span><span class="num">Processo 1000910-15.2026.5.02.0714</span><span>14ª Vara do Trabalho de São Paulo - Zona Sul</span></div>
+    </div>
+    <div class="valor">R$ 141.237,64<small>valor da causa · área logada</small></div>
+    <div class="etqs"><span class="etq velho">Ajuizado em 15/05/2026 · processo antigo (6 meses)</span><span class="selo">Achado por: audiência</span></div>
+  </div>
+
+  <div class="ficha">
+    <h4>JORNADA DO PROCESSO (montada sozinha a partir dos andamentos)</h4>
+    <ul class="jornada">
+      <li class="chave"><b>15/05/2026</b> Ajuizado e distribuído por sorteio à 14ª VT Zona Sul, às 13h15 <span class="fonte f-cnj">CNJ</span></li>
+      <li class="aud"><b>15/05/2026</b> Audiência de instrução marcada, no mesmo dia (comum no TRT2) <span class="fonte f-cnj">CNJ</span></li>
+      <li class="chave"><b>20/05/2026</b> 1ª publicação no Diário <span class="fonte f-cnj">CNJ</span><span class="fonte f-djen">DIÁRIO</span></li>
+      <li class="aud"><b>28/07/2026</b> Audiência de instrução realizada; audiência de conciliação marcada <span class="fonte f-cnj">CNJ</span></li>
+      <li><b>08/09/2026</b> 6º dia de publicação no Diário; último andamento conhecido no CNJ em 17/09 (prazo encerrado) <span class="fonte f-cnj">CNJ</span></li>
+      <li class="aud"><b>13/11/2026</b> Publicação sobre a audiência: foi esta que o RADAR leu <span class="fonte f-djen">DIÁRIO</span></li>
+      <li class="radar"><b>16/11/2026</b> Encontrado pelo RADAR (leitura neste computador) <span class="fonte f-radar">RADAR</span></li>
+    </ul>
+    <p class="vazio" style="font-size:.84rem">A jornada muda de processo para processo: só entram os marcos que existirem (ajuizamento, publicações, audiências marcadas, realizadas
+    ou remarcadas, acordo, sentença, recurso, arquivamento). Os andamentos de rotina (petição, expedição de documento) ficam fora.</p>
+
+    <div class="colunas">
+      <div>
+        <h4>EMPRESA</h4>
+        <table>
+          <tr><td>Razão social</td><td>Garantia Real Serviços Ltda. <span class="fonte f-rf">RECEITA</span></td></tr>
+          <tr><td>CNPJ</td><td>00.215.548/0001-59 · matriz · ativa <span class="fonte f-rf">RECEITA</span></td></tr>
+          <tr><td>Nome fantasia</td><td class="vazio">não tem no cadastro</td></tr>
+          <tr><td>Atividade (CNAE)</td><td>8211-3/00 · serviços combinados de escritório e apoio administrativo (+4 secundárias) <span class="fonte f-rf">RECEITA</span></td></tr>
+          <tr><td>Porte · capital</td><td>Média ou grande · R$ 1.677.834,60 <span class="fonte f-rf">RECEITA</span></td></tr>
+          <tr><td>Desde</td><td>19/09/1994 (32 anos) <span class="fonte f-rf">RECEITA</span></td></tr>
+          <tr><td>Telefone</td><td>(11) 3866-1700 <span class="fonte f-rf">RECEITA</span></td></tr>
+          <tr><td>E-mail</td><td class="vazio">não tem no cadastro</td></tr>
+          <tr><td>Endereço</td><td>Rua Cincinato Braga, 144 · Bela Vista · São Paulo/SP · 01333-010 <span class="fonte f-rf">RECEITA</span></td></tr>
+          <tr><td>Sócios e administradores</td><td>4 (2 sócios, 2 administradores), com nome e cargo na ficha <span class="fonte f-rf">RECEITA</span></td></tr>
+        </table>
+      </div>
+      <div>
+        <h4>PROCESSO</h4>
+        <table>
+          <tr><td>Classe</td><td>Ação Trabalhista · Rito Ordinário · Juízo 100% Digital <span class="fonte f-cnj">CNJ</span></td></tr>
+          <tr><td>Assunto</td><td>Dispensa discriminatória <span class="fonte f-cnj">CNJ</span></td></tr>
+          <tr><td>Valor da causa</td><td>R$ 141.237,64 <span class="fonte f-pje">ÁREA LOGADA</span> <span class="vazio">(o CNJ não traz; o Diário às vezes traz)</span></td></tr>
+          <tr><td>Justiça gratuita</td><td>Deferida <span class="fonte f-pje">ÁREA LOGADA</span></td></tr>
+          <tr><td>Advogado da empresa</td><td><b>Já tem</b> (7 constituídos) <span class="fonte f-djen">DIÁRIO</span><span class="fonte f-pje">ÁREA LOGADA</span><br><span class="vazio">os nomes não aparecem no RADAR; o Diário traz os advogados intimados em cada publicação</span></td></tr>
+          <tr><td>Publicações no Diário</td><td>7 dias de publicação · 1ª em 20/05/2026 · última em 13/11/2026 <span class="fonte f-cnj">CNJ</span><span class="fonte f-djen">DIÁRIO</span></td></tr>
+          <tr><td>Próxima audiência</td><td>de conciliação (marcada em 28/07; data na publicação de 13/11) <span class="fonte f-cnj">CNJ</span><span class="fonte f-djen">DIÁRIO</span></td></tr>
+        </table>
+        <h4>SE UMA FONTE FALHAR</h4>
+        <div class="falta"><span>Andamentos do CNJ: não carregados (o CNJ estava ocupado às 09h16)</span><button type="button">Tentar de novo</button></div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<h4>RESUMO: O QUE CADA FONTE PÚBLICA DÁ</h4>
+<table class="tabela-fontes" style="background:#fff;border:1px solid var(--linha);border-radius:10px">
+  <tr><td><span class="fonte f-djen">DIÁRIO</span> DJEN (CNJ)</td><td>Descobre o processo e a empresa (única fonte aberta com as partes); texto de cada publicação; advogados intimados; histórico de publicações pelo número. Bloqueia acesso de fora do Brasil.</td></tr>
+  <tr><td><span class="fonte f-cnj">CNJ</span> DataJud</td><td>Data e hora do ajuizamento; classe, assunto, vara; todos os andamentos com código (audiências marcadas, realizadas, sentença, arquivamento). Não traz as partes nem o valor. Atrasa cerca de um mês e às vezes fica ocupado.</td></tr>
+  <tr><td><span class="fonte f-rf">RECEITA</span> CNPJ</td><td>Cadastro da empresa: atividade, porte, capital, endereço, telefone, e-mail, sócios e administradores.</td></tr>
+  <tr><td><span class="fonte f-pje">ÁREA LOGADA</span> PJe</td><td>Valor da causa, justiça gratuita, contatos e advogados completos. Só com o advogado logado (a ferramenta de navegação faz o pedido).</td></tr>
+</table>
+</main>
+</body>
+</html>

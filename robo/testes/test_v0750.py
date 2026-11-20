@@ -211,11 +211,11 @@ class Tela(unittest.TestCase):
         self.assertIn("travarRolagem: function (ligar)", HTML)
         self.assertIn("Assistente.travarRolagem(false);", HTML)
 
-    def test_manual_e_novidades(self):
+    def test_manual_e_novidades(self):  # 0.7.51 (item 29): "Enviar ao suporte" virou "Abrir no Gmail" / "Abrir no e-mail do Windows"
         with open(os.path.join(_RAIZ_, "paginas", "manual.html"), encoding="utf-8") as f:
             m = f.read()
         for trecho in ("Rotina de limpeza", "Não confirmar", "Copiar o contato para os sem contato", "Excluir esta empresa", "CNPJ provável",
-                       "Enviar ao suporte", "Tribunais selecionados", "\"Aplicar\"", "Usar a consulta pública do CNJ quando o caderno falhar"):
+                       "Abrir no Gmail", "Tribunais selecionados", "\"Aplicar\"", "Usar a consulta pública do CNJ quando o caderno falhar"):
             self.assertIn(trecho, m, trecho)
         self.assertNotIn("Limpar o banco agora", m)
         self.assertNotIn("Ler pela consulta pública quando o caderno do CNJ cair", m)

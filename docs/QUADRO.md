@@ -30,6 +30,7 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 16/Nov: **0.7.50 REVISADA e PUBLICADA** (o dono: "publica a versão 0.7.50"). Diff `a4906d3..a68c2af` (entre a `v0.7.49` e `a4906d3` nenhum código mudou); folha `documentacao/dod/0.7.50.md` lida contra o diff com os textos abertos: 13 pontos preenchidos e verdadeiros (ressalvas de texto abaixo); `test_dod.py` OK; `rodar_tudo.sh` TUDO OK; Bandit sem achados. Sem bloqueio. Automação verde, tag `v0.7.50`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.50 no ar, completo com a 0.7.50. Integração: nenhuma nova; roadmap: agrupamento por empresa completo.
 - 15/Nov: **0.7.49 REVISADA e PUBLICADA** (o dono: "publica a versão 0.7.49"). Folha `documentacao/dod/0.7.49.md` lida contra o diff, com os textos abertos (manual, AssistONE ajuda/tour/busca, Wizard, Novidades 9 linhas PT e EN, e-mail): 13 pontos preenchidos e verdadeiros; `test_dod.py` OK; `rodar_tudo.sh` TUDO OK; Bandit sem achados. Ressalva levada ao dono antes de publicar: o Modo diz "Não incluído na sua licença" para Tributário, Cível, Empresarial e Penal sem consultar a licença (a KR Law contratou tributário); **o dono decidiu publicar assim** (troca do texto fica para a próxima versão; pedido à Produto). Automação verde, tag `v0.7.49`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.49 no ar, completo com a 0.7.49 e o `.bat` corrigido. Integração: nenhuma nova; roadmap: filtros prontos e agrupamento por empresa concluídos.
 - 15/Nov: **Regra nova registrada (decisão do dono):** na revisão de toda versão, e de tudo o que o cliente vê fora de versão (instaladores, e-mail), a Operação lê `documentacao/dod/<versão>.md` (13 pontos) contra o que mudou, abre os textos citados e não publica com ponto falso, vago ou em branco. `test_dod.py` OK. Os instaladores corrigidos (`0f1414e`) já tinham ido ao ar em `ba38b72` com o "pode publicar os instaladores corrigidos da 0.7.48"; a folha `0.7.48.md` não os cita (pedido à Produto).
 - 15/Nov: **Instaladores corrigidos da 0.7.48 no site** (o dono: "pode publicar os instaladores corrigidos da 0.7.48"). Só `instalador/*.bat` e `docs/downloads/*.zip` do commit `0f1414e` da Produto (`try/catch` com `exit 2` no PowerShell: erro inesperado vai ao `tasklist`, nunca "o antivírus encerrou"); CRLF, `marca.py --conferir` em dia, `test_v0747_instalador` OK, completo com a 0.7.48; commit `ba38b72`; os dois zips do site iguais aos do repositório. Programa e versão não mudaram (continua `v0.7.48`). Integração: nenhuma.
@@ -163,7 +164,8 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 16/Nov: **0.7.50 pronta para publicar** (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
+- 20/Nov: **0.7.51 em preparação** (branch local `wip-0751`): ressalvas da Operação e Novidades até "Não mostrar novamente" feitas; período da leitura na faixa (item 22) em andamento. Desenho das datas e fontes em `documentacao/DESENHO-DATAS-E-FONTES-0751.md` esperando o "pode" (pergunta 52). Arquivos: `robo/lexsuite/{radar,preferencias,app,monitor}.py`, `robo/radar_modelo.html`, `paginas/manual.html`, testes.
+- 16/Nov: **0.7.50 publicada** (tag `v0.7.50`, pela Operação). Ressalvas da revisão anotadas para a 0.7.51 (abaixo, em Pedidos). Feito (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
   sem data). Feito: agrupamento (alcance no bloco, setinha, caixinha, sem CNPJ com triângulo e "CNPJ provável", copiar contato 90 dias
   com desfazer, "Excluir esta empresa"), filtros numa linha no notebook com rótulos curtos e barra compacta, "Aplicar" na barra de
   seleção, Configurações (rodapé, frase do Salvar, consulta com (?), Rotina de limpeza com "Não confirmar" e prazos gravados, volta do
@@ -647,8 +649,16 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Arquitetura (16/Nov, URGENTE para depois de quinta, 19/Nov; primeiro uso real da KR Law):** processo distribuído em
+  maio aparecendo como "novo" (publicação da audiência inicial em novembro, TRT2). Anamnese e soluções em
+  `documentacao/FEEDBACK-KRLAW-2026-11-16-PRIMEIRO-USO.md`; protótipo em `documentacao/prototipos/datas-do-processo/prototipo.html`.
+  Pedido: desenho curto para (1) buscar no DataJud (`lexsuite/datajud.py`, já existe) a data de ajuizamento dos "novos" que não
+  vieram da lista de distribuição, em lote, com ritmo e comportamento com o CNJ fora; (2) regra "novo = ajuizado há até 30 dias"
+  (ajustável), processo antigo marcado e fora do padrão; (3) ordenar e filtrar por data de ajuizamento e por origem do sinal. Acréscimo (dono, 16/Nov): (4) histórico de publicações do processo no DJEN pelo número (`djen.buscar_filtrado` com `numeroProcesso`) para achar a 1ª publicação real.
+  A Produto implementa na 0.7.51 depois do "pode" do dono.
+
 - **Produto → Operação (16/Nov): 0.7.50 pronta para publicar**, quando o dono escrever "publica a versão 0.7.50". Código na `main`
-  (commit "0.7.50: …" logo depois de `a4906d3`); revisar `git diff a4906d3 HEAD -- robo paginas docs/manual.html` e ler a folha
+  em `a68c2af`; revisar `git diff a4906d3 a68c2af -- robo paginas docs/manual.html` e ler a folha
   `documentacao/dod/0.7.50.md` contra o diff. Sem instalador novo; pacote com os mesmos arquivos (nenhum módulo novo). Testes do dono
   depois de publicada: `documentacao/ESTADO-ATUAL-RADAR.md`, seção 8.
 
@@ -689,7 +699,14 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   `git checkout origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e rode `python ferramentas/marca.py
   --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
 
-- **Operação → Produto (15/Nov, próxima versão, depois da 0.7.49):** o seletor de Modo afirma "Não incluído na sua licença" /
+- **Operação → Produto (16/Nov, ressalvas da revisão da 0.7.50, publicada; nenhuma é bloqueio):** [Produto, 16/Nov: **anotadas para a 0.7.51**, junto com o feedback do teste do dono; (1) segue "a chave é o CNPJ" (decisão de 16/Nov)] (1) "Excluir esta empresa"
+  (`app.py` `/regras/excluir-uma` + `preferencias.py:518-519`): com CNPJ, a exclusão ainda casa pelo nome exato e tira também homônimo
+  de outro CNPJ (comportamento da 0.7.36); gravar só pelo CNPJ quando houver, ou dizer na confirmação; (2) "CNPJ provável"
+  (`radar.py` `cnpj_provavel`/`usar_cnpj`): `chave_empresa` ignora LTDA/S.A., então "X Ltda" e "X S.A." podem receber o mesmo CNPJ
+  depois da confirmação; usar `chave_exata` ou mostrar na janela os nomes exatos; (3) Novidades: "Inclusão da caixinha…" (coloquial)
+  e EN "Grouping range now applies…" ("now"); (4) `paginas/manual.html:237` ainda diz "limpeza automática" (o resto diz "rotina de
+  limpeza"); (5) baixo: pré-filtro `LIKE` sem acento em `radar.py` pode omitir sugestão de CNPJ.
+- **Operação → Produto (15/Nov, próxima versão, depois da 0.7.49):** [Produto, 16/Nov: **fechado pelo dono** (decisão 50: "deixar o texto do Modo como está")] o seletor de Modo afirma "Não incluído na sua licença" /
   "O modo Tributário não está incluído na licença deste escritório" sem consultar a licença; para a KR Law (trabalhista e tributário)
   a frase é falsa. O dono publicou a 0.7.49 assim; na próxima: ler da licença ou trocar por um texto verdadeiro hoje (tela
   `modo_sem_licenca`/`modo_fale`, tour `#b-modo`, `paginas/manual.html:138`). Baixo: agrupamento só pelo nome (`n:`) junta linhas
@@ -1019,11 +1036,19 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 49 | Produto (feedback 16/Nov, `documentacao/FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md`, item 11) | Empresas públicas e órgãos (ex.: Correios): esconder por padrão, ou só oferecer "Excluir esta empresa" no cabeçalho do bloco? | só "Excluir esta empresa" (o escritório decide; esconder por padrão pode tirar cliente) | respondida (16/Nov): ver Decisões |
 | 50 | Produto (mesmo feedback, item 13) | O Modo diz "Não incluído na sua licença" sem ler a licença (falso para a KR Law). Até a licença informar as frentes, trocar por "Ainda não disponível no programa"? | sim | respondida (16/Nov): ver Decisões |
 | 51 | Produto (mesmo feedback, item 12) | Copiar o contato para os outros processos da mesma empresa (mesmo CNPJ): critério padrão? | últimos 90 dias, só para quem está sem contato, marcado "copiado de…", com desfazer | respondida (16/Nov): ver Decisões |
+| 52 | Produto (0.7.51, KR Law; desenho `documentacao/DESENHO-DATAS-E-FONTES-0751.md`) | Pode implementar o desenho das datas e fontes (CNJ a cada leitura, histórico do Diário pelo número, ajuizamento como critério, tabela `fontes`, "Tentar de novo")? | Sim | aberta (20/Nov) |
+| 53 | Produto (mesmo desenho) | Processo antigo: fica na Lista marcado "PROCESSO ANTIGO" (Idade: qualquer) ou some por padrão com o filtro "até 30 dias"? | Fica marcado | aberta (20/Nov) |
+| 54 | Produto (mesmo desenho) | "Novo" = ajuizado há até 30 dias, ajustável por área na tela Regras? | Sim, 30 | aberta (20/Nov; esperar também a resposta do Leandro) |
+| 55 | Produto (feedback 0.7.50, item 26) | Período da Rotina de leitura: "Desde a última leitura" ou "Do último dia útil até hoje"? | Desde a última leitura (computador desligado não perde dias) | aberta (20/Nov) |
+| 56 | Produto (item 29) | Registro técnico: botões "Abrir no Gmail" e "Abrir no e-mail do Windows" agora, ou envio direto pelo programa (com a Arquitetura, depois)? | Os dois botões agora | aberta (20/Nov) |
+| 57 | Produto (itens 13 e 20) | Filtro "quantidade de processos da empresa" e "Ler um período" maior que 7 dias: ficam para a 0.7.52 (pedem desenho)? | Sim, 0.7.52 | aberta (20/Nov) |
+| 58 | Produto (pesquisa `documentacao/PESQUISA-NOVIDADES-E-HISTORICO-2026-11-20.md`) | Novidades: manter no menu, nome "Novidades da versão" e histórico numa página do site? | Sim aos três | aberta (20/Nov) |
 
 ## Decisões do dono registradas aqui
 
 | Data | Decisão |
 |---|---|
+| 16/Nov (noite) | **Depois de quinta, 19/Nov (créditos)**: (1) 0.7.51 com as ressalvas da Operação da 0.7.50, "já gerar uma nova versão"; (2) Novidades da versão aparece **toda vez** que o programa abre, até marcar **"Não mostrar novamente"**; (3) pesquisa de mercado: manter ou tirar "Novidades" do menu e se precisa histórico de versões (lei ou boa prática; se não for, tirar). Detalhe: `documentacao/PEDIDO-DONO-2026-11-16-NOVIDADES-E-0751.md`. |
 | 16/Nov | **0.7.50 (feedback da 0.7.49, `documentacao/FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md`, itens 1 a 33)**: "já dá para colocar para a próxima"; empresas públicas: só "Excluir esta empresa" no cabeçalho (49); **Modo: deixar o texto como está** (50); copiar contato: últimos 90 dias, só para quem está sem contato, marcado "copiado de…", com Desfazer (51); registro técnico: copiar + "Enviar ao suporte" por e-mail agora, chamado depois. Rótulos curtos com dica dos selecionados aprovados. Pilares: menus, conteúdo, Wizard, AssistONE (ajuda, tour, busca), manual, e-mail, tudo o que a mudança tocar. |
 | 15/Nov | **0.7.49 (perguntas 43 a 48)**: (1) 3 filtros salvos de fábrica, com os tribunais escolhidos no Wizard (padrão TRT2 e TRT15): "Para contatar (7 dias)", "Buscar contato na área logada (7 dias)" e "Empresas da semana (visão completa)"; limpeza fica 6/24 e o Wizard explica filtros e limpeza; (2) **Agrupar por empresa** com alcance **híbrido "até 50 processos dos últimos 6 meses"** aberto por padrão (também 30 dias, 6 meses, 12 meses, 10 ou 50 processos, todos) e o total da empresa em termos curtos ("50 de 2.376"); (?) ao lado de "Ordenar" explicando ordenar × agrupar; manual e Wizard explicam; (3) no alto, **"Modo: Trabalhista"** no lugar de "Abrir a planilha", com Tributário, Empresarial, Cível e Penal em cinza e "Não incluído na sua licença" (ao clicar, "Fale com a SolverONE para incluir"); "Abrir a planilha oficial (só leitura)" fica só no menu ☰ → Planilha; (4) os 11 itens de `documentacao/FEEDBACK-DONO-2026-11-15-FILTROS-E-ORDENACAO.md`. Dono: "já começa a desenvolver". |
 | 15/Nov | **Definition of done conferida por FOLHA por versão, não de memória**: `documentacao/dod/<versão>.md` (13 pontos, modelo `LEIA-ME.md`), `test_dod.py` trava a versão sem a folha; ponto em branco ou falso é bloqueio do revisor e da Operação. Nomeados à parte: Wizard/primeiro acesso, mensagens do instalador, ajuda de cada tela do AssistONE, tour, busca, manual, Novidades, termos, e-mails, site. Vale para todos os apps da SolverONE (diretriz geral). |
