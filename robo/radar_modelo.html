@@ -2688,8 +2688,8 @@ window.LEXSUITE_RADAR = null;
   function varaBonita(v) {
     var s_ = String(v || ""); if (!s_) return s_; var tudo_ = s_ === s_.toUpperCase();
     return s_.split(" ").map(function (w, k) {
-      if (/^[IVXL]+$/.test(w) || (!tudo_ && /^[A-ZÇ]{2,6}$/.test(w)) || /^(TRT|CEJUSC|CCP|CEJUSCS|SP|RJ|MG|RS|PR|SC|ES|BA|PE|CE|DF|GO|MT|MS|PA|AM)$/.test(w)) return w;
-      var l = w.toLowerCase(); if (k > 0 && /^(de|da|do|das|dos|e)$/.test(l)) return l;
+      if (/^[IVXL]+$/.test(w) || (!tudo_ && /^[A-ZÇ]{2,6}$/.test(w)) || /^(TRT|CEJUSC|CCP|CEJUSCS|JT|VT|SP|RJ|MG|RS|PR|SC|ES|BA|PE|CE|DF|GO|MT|MS|PA|AM)$/.test(w)) return w;
+      var l = w.toLowerCase(); if (k > 0 && /^(de|da|do|das|dos|e|del)$/.test(l)) return l;
       return l.replace(/^(\d*[ªº]?)?(\S)/, function (m, a, b) { return (a || "") + b.toUpperCase(); });
     }).join(" ");
   }
