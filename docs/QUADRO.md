@@ -164,6 +164,7 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 20/Nov: **0.7.51 em preparação** (branch local `wip-0751`): ressalvas da Operação e Novidades até "Não mostrar novamente" feitas; período da leitura na faixa (item 22) em andamento. Desenho das datas e fontes em `documentacao/DESENHO-DATAS-E-FONTES-0751.md` esperando o "pode" (pergunta 52). Arquivos: `robo/lexsuite/{radar,preferencias,app,monitor}.py`, `robo/radar_modelo.html`, `paginas/manual.html`, testes.
 - 16/Nov: **0.7.50 publicada** (tag `v0.7.50`, pela Operação). Ressalvas da revisão anotadas para a 0.7.51 (abaixo, em Pedidos). Feito (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
   sem data). Feito: agrupamento (alcance no bloco, setinha, caixinha, sem CNPJ com triângulo e "CNPJ provável", copiar contato 90 dias
   com desfazer, "Excluir esta empresa"), filtros numa linha no notebook com rótulos curtos e barra compacta, "Aplicar" na barra de
@@ -1035,6 +1036,13 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 49 | Produto (feedback 16/Nov, `documentacao/FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md`, item 11) | Empresas públicas e órgãos (ex.: Correios): esconder por padrão, ou só oferecer "Excluir esta empresa" no cabeçalho do bloco? | só "Excluir esta empresa" (o escritório decide; esconder por padrão pode tirar cliente) | respondida (16/Nov): ver Decisões |
 | 50 | Produto (mesmo feedback, item 13) | O Modo diz "Não incluído na sua licença" sem ler a licença (falso para a KR Law). Até a licença informar as frentes, trocar por "Ainda não disponível no programa"? | sim | respondida (16/Nov): ver Decisões |
 | 51 | Produto (mesmo feedback, item 12) | Copiar o contato para os outros processos da mesma empresa (mesmo CNPJ): critério padrão? | últimos 90 dias, só para quem está sem contato, marcado "copiado de…", com desfazer | respondida (16/Nov): ver Decisões |
+| 52 | Produto (0.7.51, KR Law; desenho `documentacao/DESENHO-DATAS-E-FONTES-0751.md`) | Pode implementar o desenho das datas e fontes (CNJ a cada leitura, histórico do Diário pelo número, ajuizamento como critério, tabela `fontes`, "Tentar de novo")? | Sim | aberta (20/Nov) |
+| 53 | Produto (mesmo desenho) | Processo antigo: fica na Lista marcado "PROCESSO ANTIGO" (Idade: qualquer) ou some por padrão com o filtro "até 30 dias"? | Fica marcado | aberta (20/Nov) |
+| 54 | Produto (mesmo desenho) | "Novo" = ajuizado há até 30 dias, ajustável por área na tela Regras? | Sim, 30 | aberta (20/Nov; esperar também a resposta do Leandro) |
+| 55 | Produto (feedback 0.7.50, item 26) | Período da Rotina de leitura: "Desde a última leitura" ou "Do último dia útil até hoje"? | Desde a última leitura (computador desligado não perde dias) | aberta (20/Nov) |
+| 56 | Produto (item 29) | Registro técnico: botões "Abrir no Gmail" e "Abrir no e-mail do Windows" agora, ou envio direto pelo programa (com a Arquitetura, depois)? | Os dois botões agora | aberta (20/Nov) |
+| 57 | Produto (itens 13 e 20) | Filtro "quantidade de processos da empresa" e "Ler um período" maior que 7 dias: ficam para a 0.7.52 (pedem desenho)? | Sim, 0.7.52 | aberta (20/Nov) |
+| 58 | Produto (pesquisa `documentacao/PESQUISA-NOVIDADES-E-HISTORICO-2026-11-20.md`) | Novidades: manter no menu, nome "Novidades da versão" e histórico numa página do site? | Sim aos três | aberta (20/Nov) |
 
 ## Decisões do dono registradas aqui
 
