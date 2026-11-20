@@ -881,11 +881,18 @@ def acoes_do_dia(pubs, ano_minimo, ja_vistos):
 
 COLUNAS_RADAR = [
     ("Situação", "situacao_legivel"), ("Frente", "frente_legivel"), ("Hora", "hora"), ("Tribunal", "tribunal"), ("Vara", "vara"), ("Processo", "processo"), ("Rito", "rito"),
-    ("Distribuída em", "distribuida_em"), ("Empresa(s)", "empresas"), ("CNPJ", "cnpj"), ("Porte", "porte_legivel"),
+    ("Ajuizado em", "ajuizado_planilha"), ("Empresa(s)", "empresas"),  # 0.7.51: só a data real do ajuizamento (antes saía a da publicação) ("CNPJ", "cnpj"), ("Porte", "porte_legivel"),
     ("Capital social", "capital_social"), ("CNAE", "atividade"), ("Setor", "setor"), ("Cidade/UF", "cidade_uf"),
     ("Telefone", "telefone"), ("E-mail", "email"), ("Endereço", "endereco"), ("CEP", "cep"), ("Outros contatos", "outros_contatos"), ("Sócios/administradores", "socios"), ("Provável jurídico próprio", "gigante"),
     ("Valor da causa", "valor_causa"), ("Origem do valor", "valor_fonte"), ("Link DJEN", "link_djen"), ("Consulta PJe", "link_pje"),
+    # 0.7.51 (desenho das datas e fontes): datas e andamento, no fim, para não mudar o lugar das colunas de sempre
+    ("Fonte do ajuizamento", "ajuizado_fonte_legivel"), ("Processo novo ou antigo", "novo_legivel"), ("1ª publicação no Diário", "pub1"),
+    ("Última publicação no Diário", "pubN"), ("Encontrado pelo RADAR em", "primeira_vez"), ("Andamento", "andamento_legivel"),
+    ("Classe (CNJ)", "classe_cnj"), ("Assuntos (CNJ)", "assuntos_cnj"),
 ]
+FONTE_AJ_LEGIVEL = {"cnj": "CNJ", "diario": "Diário (lista de distribuição)", "digitado": "Digitado ou área logada", "aproximada": ""}
+ANDAMENTO_LEGIVEL = {"": "Sem acordo nem sentença", "acordo": "Com acordo", "sentenca": "Com sentença", "transito": "Trânsito em julgado",
+                     "arquivado": "Arquivado"}
 
 
 def linha_csv(item):
@@ -899,6 +906,13 @@ def linha_csv(item):
         "frente_legivel": FRENTE_LEGIVEL.get(item.get("frente"), ""),
         "endereco": endereco(e), "cep": e.get("cep", ""),
         "outros_contatos": [f"{c['canal']}: {c['valor']} ({c['fonte']}, {c['data']})" for c in item.get("contatos") or []],
+        "ajuizado_planilha": item.get("ajuizado") if item.get("ajuizado_fonte") in ("cnj", "diario", "digitado") else "",
+        "ajuizado_fonte_legivel": FONTE_AJ_LEGIVEL.get(item.get("ajuizado_fonte") or "", ""),
+        "novo_legivel": {True: "Novo", False: "Antigo"}.get(item.get("novo"), ""),
+        "pub1": min([x for x in ((item.get("cnj") or {}).get("pub1"), (item.get("diario_hist") or {}).get("pub1")) if x] or [""]),
+        "pubN": max([x for x in ((item.get("cnj") or {}).get("pubN"), (item.get("diario_hist") or {}).get("pubN")) if x] or [""]),
+        "andamento_legivel": ANDAMENTO_LEGIVEL.get((item.get("cnj") or {}).get("andamento") or "", "") if (item.get("cnj") or {}).get("ajuizado") else "",
+        "classe_cnj": (item.get("cnj") or {}).get("classe") or "", "assuntos_cnj": list((item.get("cnj") or {}).get("assuntos") or []),
     }
 
 

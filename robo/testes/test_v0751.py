@@ -3,6 +3,7 @@ Novidades até "Não mostrar novamente", período de cada leitura (faixa da mira
 itens do feedback do teste da 0.7.50 que viraram tela. Dados FICTÍCIOS, sem internet."""
 
 import datetime as dt
+import re
 import json
 import os
 import sys
@@ -208,3 +209,91 @@ class DataJudJornada(unittest.TestCase):
                      {"timed_out": True, "hits": {"hits": []}}, {"_shards": {"failed": 0}, "hits": {"total": {"value": 1}, "hits": []}}):
             with self.assertRaises(datajud.RespostaParcial):
                 datajud.consultar_lote("trt2", ["9990001-11.2026.5.02.0001"], pedir=lambda u, c, r_=resp: r_)
+
+
+class DatasEFontes(unittest.TestCase):
+    """0.7.51 (decisão do dono, 20/Nov): cada leitura completa os processos com o CNJ e o histórico do Diário; o processo é novo pelo
+    ajuizamento (30 dias, ajustável). Respostas FICTÍCIAS no formato real; nenhum pedido sai do computador."""
+
+    def setUp(self):
+        self.b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db"))
+        self.addCleanup(self.b.con.close)
+        self.agora = dt.datetime(2026, 11, 20, 9, 0)
+
+    def lead(self, proc, prim, texto="audiência de conciliação designada", tipo="Intimação"):
+        self.b.guardar_lead({"processo": proc, "tribunal": "TRT2", "vara": "1ª Vara (fictícia)", "empresas": ["Empresa Ficticia Ltda"],
+                             "data_publicacao": prim, "cnpjs": [], "texto_curto": texto, "tipo": tipo}, prim)
+
+    def doc(self, numero, aj="20260515131522", marcos=((26, "2026-05-15"), (221, "2026-09-21"))):
+        return {"numeroProcesso": re.sub(r"\D", "", numero), "grau": "G1", "dataAjuizamento": aj, "classe": {"nome": "Ação Trabalhista - Rito Ordinário"},
+                "assuntos": [{"nome": "Horas Extras"}], "orgaoJulgador": {"nome": "Vara (fictícia)"},
+                "movimentos": [{"codigo": c, "dataHora": d + "T10:00:00Z"} for c, d in marcos], "dataHoraUltimaAtualizacao": "2026-11-08T00:00:00Z"}
+
+    def test_caso_de_maio_vira_processo_antigo(self):  # o falso positivo real da KR Law, com dados fictícios
+        self.lead("9990001-11.2026.5.02.0001", "2026-11-16")
+        est = radar.completar_fontes(self.b, self.agora, consultar=lambda ind, nums: {re.sub(r"\D", "", n): self.doc(n) for n in nums},
+                                     historico=lambda *a: {"pub1": "2026-05-20", "pubN": "2026-11-13", "dias": 7, "tipos": [], "distribuicao": ""})
+        self.assertEqual(est["cnj_ok"], 1)
+        d = self.b.todos_leads(processos=["9990001-11.2026.5.02.0001"])[0]
+        self.assertEqual(radar.data_de_referencia(d), ("2026-05-15", "cnj"))
+        self.assertFalse(radar.processo_novo(d, self.agora.date(), 30))
+        self.assertTrue(radar.processo_novo(d, self.agora.date(), 365))  # o escritório muda o limite
+        self.assertEqual(self.b.fontes_de(["9990001-11.2026.5.02.0001"])["9990001-11.2026.5.02.0001"]["cnj"]["estado"], "ok")
+
+    def test_cnj_ainda_sem_o_processo_e_atraso_normal(self):
+        self.lead("9990002-22.2026.5.02.0001", "2026-11-18", texto="Processo distribuído por sorteio", tipo="Lista de distribuição")
+        radar.completar_fontes(self.b, self.agora, consultar=lambda ind, nums: {n: None for n in nums}, historico=lambda *a: {})
+        f = self.b.fontes_de(["9990002-22.2026.5.02.0001"])["9990002-22.2026.5.02.0001"]
+        self.assertEqual(f["cnj"]["estado"], "aguardando")
+        self.assertEqual(f["diario_hist"]["causa"], "não precisa")  # lista de distribuição: a data já é conhecida
+        d = self.b.todos_leads(processos=["9990002-22.2026.5.02.0001"])[0]
+        self.assertEqual(radar.data_de_referencia(d), ("2026-11-18", "diario"))
+        self.assertTrue(radar.processo_novo(d, self.agora.date(), 30))
+
+    def test_cnj_fora_tres_vezes_para_e_tenta_depois(self):
+        for k in range(130):  # 4 lotes de 40
+            self.lead(f"99{k:05d}-11.2026.5.02.0001", "2026-11-19")
+        chamadas = []
+
+        def fora(ind, nums):
+            chamadas.append(len(nums)); raise RuntimeError("sem resposta")
+        est = radar.completar_fontes(self.b, self.agora, consultar=fora, historico=lambda *a: {})
+        self.assertEqual(len(chamadas), 3)  # três falhas seguidas param o CNJ nesta leitura
+        self.assertTrue(est["cnj_parou"])
+        f = self.b.fontes_de(["9900000-11.2026.5.02.0001"])["9900000-11.2026.5.02.0001"]["cnj"]
+        self.assertEqual(f["estado"], "falhou"); self.assertGreater(f["proxima_em"], self.agora.isoformat())
+        self.assertEqual(self.b.pedir_de_novo(["9900000-11.2026.5.02.0001"]), 1)  # "Tentar de novo"
+        self.assertEqual(self.b.fontes_de(["9900000-11.2026.5.02.0001"])["9900000-11.2026.5.02.0001"]["cnj"]["proxima_em"], "")
+
+    def test_cumprimento_de_sentenca_sai_da_lista(self):
+        self.lead("9990003-33.2026.5.02.0001", "2026-11-19")
+        doc = self.doc("9990003-33.2026.5.02.0001"); doc["classe"] = {"nome": "Cumprimento Provisório de Sentença"}
+        est = radar.completar_fontes(self.b, self.agora, consultar=lambda ind, nums: {re.sub(r"\D", "", n): doc for n in nums}, historico=lambda *a: {})
+        self.assertEqual(est["fora_classe"], 1)
+        self.assertEqual(self.b.con.execute("SELECT fora_criterio FROM leads WHERE processo = ?", ("9990003-33.2026.5.02.0001",)).fetchone()[0], 1)
+
+    def test_historico_guarda_so_datas_e_tipos(self):
+        from lexsuite import djen
+        pubs = [{"data": "2026-05-20", "tipo_documento": "Lista de distribuição", "texto": "Processo distribuído. RECLAMANTE: PESSOA FICTÍCIA",
+                 "destinatarios": [{"nome": "PESSOA FICTÍCIA"}]}, {"data": "2026-11-13", "tipo_documento": "Intimação", "texto": "audiência"}]
+        h = djen.historico_por_numero("9990001-11.2026.5.02.0001", "2026-01-01", "2026-11-20", buscar=lambda *a, **k: pubs)
+        self.assertEqual((h["pub1"], h["pubN"], h["dias"], h["distribuicao"]), ("2026-05-20", "2026-11-13", 2, "2026-05-20"))
+        self.assertNotIn("PESSOA", json.dumps(h))
+
+    def test_sem_rede_nos_testes(self):  # sem fontes simuladas, a fase não sai do computador durante os testes
+        self.lead("9990004-44.2026.5.02.0001", "2026-11-19")
+        self.assertEqual(radar.completar_fontes(self.b, self.agora), {})
+
+    def test_planilha_ajuizado_em_e_colunas_novas(self):
+        titulos = [t for t, _ in radar.COLUNAS_RADAR]
+        self.assertIn("Ajuizado em", titulos); self.assertNotIn("Distribuída em", titulos)
+        for t in ("Fonte do ajuizamento", "Processo novo ou antigo", "1ª publicação no Diário", "Última publicação no Diário", "Encontrado pelo RADAR em", "Andamento"):
+            self.assertIn(t, titulos)
+        self.assertEqual(preferencias.PADRAO["dias_processo_novo"], 30)
+        self.assertEqual(preferencias.LIMITES["dias_processo_novo"], (1, 365))
+
+    def test_tela_datas_e_fontes(self):
+        for k in ('ord_ajuizado: "Mais novos primeiro (ajuizados)"', 'ordem = "ajuizado"', 'aj_card: "AJUIZADO {d}"', 'idade_antigo: "PROCESSO ANTIGO · {i}"',
+                  'id="f-idade"', 'id="f-andamento"', "function blocoJornada(i)", "function ligaJornada(jr)", 'post("/completar", { processos: [i.id] })',
+                  'fq_cnj: "Ajuizamento, classe, assuntos', 'rg_novo: "Dias para o processo ser novo"', 'mc_12747: "Audiência inicial"', 'mc_12747: "Initial hearing"'):
+            self.assertIn(k, HTML, k)

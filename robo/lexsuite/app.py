@@ -1278,6 +1278,33 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": True, "desfeitos": banco.desfazer_copia(ids_)})
             finally:
                 banco.con.close()
+        if caminho == "/completar":  # 0.7.51 (decisão do dono): "Tentar de novo" de uma fonte pública (CNJ, histórico do Diário)
+            procs_ = [str(x)[:40] for x in (corpo.get("processos") or []) if x][:200]
+            if not procs_:
+                return self._responder({"ok": False, "motivo": "Nenhum processo.", "motivo_en": "No case."})
+            banco = bd.Banco(s.caminho_db)
+            try:
+                banco.pedir_de_novo(procs_)
+            finally:
+                banco.con.close()
+            if s.estado.como_dict()["rodando"] or leitura_em_outro_processo(s.arquivo_andamento):
+                return self._responder({"ok": True, "na_leitura": True})  # a leitura em andamento pega o pedido
+            if not _TRAVA_FONTES.acquire(blocking=False):
+                return self._responder({"ok": True, "na_fila": True})
+
+            def _completar():
+                try:
+                    b_ = bd.Banco(s.caminho_db)
+                    try:
+                        radar.completar_fontes(b_, dt.datetime.now(), procs_, aviso=lambda *_: None, tempo_max=60)
+                    finally:
+                        b_.con.close()
+                except Exception:  # noqa: BLE001 - fica para a próxima leitura
+                    pass
+                finally:
+                    _TRAVA_FONTES.release()
+            threading.Thread(target=_completar, daemon=True).start()
+            return self._responder({"ok": True, "comecou": True})
         if caminho == "/regras/excluir-uma":  # 0.7.50 (decisão 49): "Excluir esta empresa" no cabeçalho do bloco
             area_ = corpo.get("area") if corpo.get("area") in preferencias.AREAS else "trabalhista"
             nome_, cnpj_ = str(corpo.get("nome") or "").strip()[:200], str(corpo.get("cnpj") or "").strip()[:20]
@@ -1439,6 +1466,9 @@ class Tratador(BaseHTTPRequestHandler):
             comecou = s.rodar(dias)
             return self._responder({"ok": comecou, "motivo": "" if comecou else "já está rodando", "motivo_en": "" if comecou else "already running"})
         return self._responder({"erro": "não existe"}, status=404)
+
+
+_TRAVA_FONTES = threading.Lock()  # 0.7.51: um "Tentar de novo" por vez
 
 
 # Ramos oferecidos na tela: só a frente trabalhista por enquanto (os TJs e TRFs são de outras frentes).

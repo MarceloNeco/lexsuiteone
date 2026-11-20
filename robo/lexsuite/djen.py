@@ -167,6 +167,8 @@ def leads(publicacoes, vara=None, ano_minimo=None, ja_vistos=()):
             continue
         if cl.segundo_grau(p.get("vara")):  # 0.7.17: recurso distribuído a turma não é ação nova
             continue
+        if cl.sem_acento(str(p.get("classe") or "")).strip().lower().startswith("cumprimento"):
+            continue  # 0.7.51 (desenho das datas e fontes): cumprimento de sentença nasce de outro processo; não é ação nova
         ano = cl.ano_do_processo(p["processo"])
         if ano_minimo and (ano is None or ano < ano_minimo):
             continue  # processo antigo: não é ação nova
