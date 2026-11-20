@@ -89,7 +89,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.route('**/dados*', async r => { const m = /dias=(\d+)/.exec(r.request().url()); await espera(m && m[1] === a ? 3000 : 400); r.continue(); });
     const troca = v => p.evaluate(v => { const s = document.getElementById('periodo'); s.value = v; s.dispatchEvent(new Event('change')); }, v);
     await troca(a); await espera(100); await troca(z); await espera(4500);
-    const fim = await p.evaluate(() => ({ sel: document.getElementById('periodo').value, ocup: document.body.classList.contains('ocupado') }));
+    const fim = await p.evaluate(() => ({ sel: document.getElementById('periodo').value, ocup: document.body.classList.contains('ocupado') || document.body.classList.contains('lista-ocupada') }));
     confere(fim.sel === z && !fim.ocup, 'Período: trocar duas vezes seguidas fica no último escolhido (' + z + ' dias)');
     confere(p._erros.length === 0, 'Período: nenhum erro na página ' + p._erros.join(' | '));
     await p.close();
@@ -441,7 +441,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
   {
     const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); localStorage.removeItem('lexsuite:filtro-atual'); localStorage.setItem('lexsuite:agrupar', JSON.stringify({ a: 'empresa', l: '10' })); } catch (e) {} });
     await p.waitForFunction(() => document.querySelectorAll('.grupo-emp').length > 0, null, { timeout: 20000 }).catch(() => {}); await espera(2500);
-    await p.evaluate(() => [...document.querySelectorAll('.ge-barra button')][0].click()); await espera(700);
+    await p.evaluate(() => [...document.querySelectorAll('#selecionar-todos .sel-dir button')][0].click()); await espera(700);
     const g1 = await p.evaluate(() => [...document.querySelectorAll('.grupo-emp')].map(g => g.querySelectorAll('article.item').length));
     confere(g1.length > 0 && Math.max(...g1) <= 10, 'Agrupar: "Últimos 10 processos" vale para o bloco inteiro (no máximo 10 por empresa: ' + g1.slice(0, 6).join(',') + ')');
     const g2 = await p.evaluate(() => { const g = document.querySelector('.grupo-emp'); const et = document.querySelector('.grupo-emp .etq-anterior'); return { ch: !!g.querySelector('.ge-chevron'), cb: !!g.querySelector('.ge-cb'), tri: document.querySelectorAll('.tri-aviso').length, etq: et ? et.parentElement.className : 'sem etiqueta', prim: et ? et.closest('article').firstElementChild.className : '' }; });
@@ -467,7 +467,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.evaluate(() => { const b_ = document.querySelector('#f-sit > button'); b_.click(); }); await espera(300);
     for (let k = 0; k < 2; k++) { await p.evaluate(() => { const x = [...document.querySelectorAll('#f-sit .multi-lista input')].find(y => !y.checked); if (x) x.click(); }); await espera(500); }  // a lista se redesenha a cada clique
     const rot = await p.evaluate(() => ({ trib: document.querySelector('#f-trib > button').textContent, sit: document.querySelector('#f-sit > button').textContent, dica: document.querySelector('#f-sit > button').title }));
-    confere(rot.trib === 'Tribunais' && /^Situação \(2\)$/.test(rot.sit) && /^Situações selecionadas: .+, .+/.test(rot.dica), 'Filtros: rótulo curto ("Tribunais", "Situação (2)") e a dica com os marcados (' + rot.dica + ')');
+    confere(rot.trib === 'Tribunais' && /^Situação \(2\)$/.test(rot.sit) && /^Situações selecionadas:\n.+ \(\d+\)\n.+ \(\d+\)/.test(rot.dica), 'Filtros: rótulo curto ("Tribunais", "Situação (2)") e a dica com os marcados, um por linha com a quantidade (0.7.51) (' + rot.dica + ')');
     await p.evaluate(() => document.getElementById('b-limpar-filtros').click()); await espera(500);
     await p.close();
   }
@@ -503,7 +503,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     const y1 = await p.evaluate(() => document.getElementById('config').scrollTop);
     confere(fim && Math.abs(y1 - y0) <= 2, 'Histórico: "← Configurações" também no fim, e a volta é para o mesmo ponto (' + y0 + ' → ' + y1 + ')');
     await p.evaluate(() => document.getElementById('c-registro').click()); await espera(800);
-    confere(await p.evaluate(() => !!document.querySelector('#janela .al-copiar-ic') && [...document.querySelectorAll('#janela .botoes button')].some(x => x.textContent === 'Enviar ao suporte')), 'Registro técnico: ícone de copiar e "Enviar ao suporte"');
+    confere(await p.evaluate(() => !!document.querySelector('#janela .reg-copiar') && [...document.querySelectorAll('#janela .botoes button')].some(x => x.textContent === 'Abrir no Gmail') && [...document.querySelectorAll('#janela .botoes button')].some(x => x.textContent === 'Abrir no e-mail do Windows')), 'Registro técnico: "Copiar o registro" embaixo da caixa, "Abrir no Gmail" e "Abrir no e-mail do Windows" (0.7.51)');
     confere(p._erros.length === 0, '0.7.50: nenhum erro na página ' + p._erros.join(' | '));
     await p.close();
   }

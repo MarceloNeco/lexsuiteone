@@ -116,6 +116,11 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         "classe": (lead.get("classe") or "").upper(),  # 0.7.16: o Diário às vezes traz "AçãO ... ORDINáRIO"
         "rito": lead.get("rito"),
         "distribuida_em": lead.get("ajuizada_em") or lead.get("data_publicacao") or "",
+        # 0.7.51 (desenho das datas e fontes): ajuizamento (CNJ, Diário ou digitado), jornada e publicações; nada de partes
+        "ajuizado": data_de_referencia(lead)[0], "ajuizado_fonte": data_de_referencia(lead)[1],
+        "cnj": {k: v for k, v in (lead.get("cnj") or {}).items() if k in ("ajuizado", "classe", "assuntos", "orgao", "marcos", "pub1", "pubN",
+                                                                           "dias_publicacao", "andamento", "atualizado_em")},
+        "diario_hist": {k: v for k, v in (lead.get("diario_hist") or {}).items() if k in ("pub1", "pubN", "dias", "distribuicao", "consultado_em")},
         "diario_em": lead.get("data_publicacao") or "",
         "ajuizada_em": ((lead.get("manual") or {}).get("data_ajuizamento") or {}).get("valor") or lead.get("ajuizada_em") or "",
         "empresas": nomes,
@@ -235,6 +240,8 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
             item["empresa"]["socios"] = []  # minimização: nomes de pessoas só se o escritório pedir
         # revisão da 0.7.33: esconder excluídas e jurídico próprio valem pela área de cada ação
         item["area"] = area.get(lead.get("processo")) or {}  # 0.7.46: {estado: com_dados|tentar|nada|pedido, em}
+        item["novo"] = processo_novo(lead, agora.date(), p_item.get("dias_processo_novo") or 30)  # 0.7.51: True, False (antigo) ou None
+        item["dias_novo"] = int(p_item.get("dias_processo_novo") or 30)
         item["esconder_exc"] = bool(p_item.get("esconder_excluidas", True))
         item["esconder_gig"] = bool(p_item.get("esconder_gigantes"))
         itens.append(item)
@@ -253,6 +260,9 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
                     vistos[cl.chave_nome(nome)].add(lead.get("processo"))
             contagem = {k: len(v) for k, v in vistos.items()}
         preferencias.aplicar(itens_a, p_a, contagem)
+    fts = banco.fontes_de([i["processo"] for i in itens]) if hasattr(banco, "fontes_de") else {}  # 0.7.51: estado do CNJ e do histórico
+    for it in itens:
+        it["fontes"] = {f: {k: e.get(k) for k in ("estado", "causa", "ultima_em", "ok_em")} for f, e in (fts.get(it["processo"]) or {}).items()}
     itens.sort(key=lambda i: (-(i["valor_causa"] or 0), i["visto_em"]))
     dia = max([i["distribuida_em"][:10] for i in itens if i["distribuida_em"]] or [agora.date().isoformat()])
     return {
@@ -286,6 +296,48 @@ def registrar_tentativas(banco, tentativas, origem, versao, quando=None):
         banco.registrar("tentativa", dict(t, quando_local=quando, origem=origem, versao=versao))
 
 
+PERIODOS = ("desde_ultima", "7dias", "ultimo_util")  # 0.7.51: período de cada leitura (faixa da mira e Rotina de leitura)
+
+
+def ultima_leitura_ok(banco):
+    """Data (AAAA-MM-DD) da última leitura do Diário que terminou bem (ou leu publicações); "" se nunca leu."""
+    try:
+        for x in banco.execucoes("radar", 30):
+            if x.get("resultado") == "ok" or x.get("lidas"):
+                return str(x.get("quando") or "")[:10]
+    except Exception:  # noqa: BLE001 - sem histórico, vale o último dia útil
+        pass
+    return ""
+
+
+def primeira_leitura(banco):
+    """0.7.51 (dono, item 18): dia (AAAA-MM-DD) da primeira leitura do Diário neste computador; a Lista só tem processos daí em diante."""
+    try:
+        row = banco.con.execute("SELECT MIN(quando) FROM execucoes WHERE tipo = 'radar'").fetchone()
+        return str((row or [""])[0] or "")[:10]
+    except Exception:  # noqa: BLE001 - só texto da tela
+        return ""
+
+
+def dias_do_periodo(periodo, banco, hoje):
+    """0.7.51: quantos dias úteis para trás a leitura volta (1 a 10; o programa só baixa o Diário que ainda não leu).
+    - "ultimo_util": do último dia útil até hoje (1);
+    - "7dias": os dias úteis dos últimos 7 dias (normalmente 5);
+    - "desde_ultima": desde o dia da última leitura que deu certo (inclusive, porque o Diário daquele dia pode ter sido
+      lido antes de terminar); sem leitura anterior, 1. Computador desligado 3 dias não perde os dias do meio."""
+    if periodo == "7dias":
+        return max(1, min(10, sum(1 for k in range(1, 8) if (hoje - dt.timedelta(days=k)).weekday() < 5)))
+    if periodo == "desde_ultima":
+        ult = ultima_leitura_ok(banco)
+        try:
+            d0 = dt.date.fromisoformat(ult)
+        except ValueError:
+            return 1
+        n = sum(1 for k in range(1, (hoje - d0).days + 1) if (hoje - dt.timedelta(days=k)).weekday() < 5)
+        return max(1, min(10, n))
+    return 1
+
+
 def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False, pasta_diag=None, agora=None, versao="",
              caminho_config=None, origem="botão", parar=None):
     """Uma rodada do radar: confere o controle do escritório, baixa o caderno de cada tribunal escolhido, separa as
@@ -294,8 +346,13 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     versao = versao or _versao()
     r = cfg.get("radar") or {}
     escolhidos = tribunais.validar(r.get("tribunais") or ["TRT2", "TRT15"])
-    dias = config.inteiro(dias if dias is not None else r.get("dias_para_tras", 1), 1, 0, 10)
     agora = agora or dt.datetime.now()
+    if dias is None:  # 0.7.51 (dono, itens 22 e 26): o período escolhido na faixa (botão) ou na Rotina de leitura (automática)
+        automatica = origem != "botão" and not str(origem).startswith("à mão")
+        per_ = r.get("periodo_rotina" if automatica else "periodo_botao")
+        if per_ in PERIODOS:
+            dias = dias_do_periodo(per_, banco, agora.date())
+    dias = config.inteiro(dias if dias is not None else r.get("dias_para_tras", 1), 1, 0, 10)
     inicio = time.perf_counter()
     base_compartilhada = compartilhar.pasta_base(cfg)
     if base_compartilhada:
@@ -398,6 +455,11 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
                     aviso(f"  Receita: {feitas} de {com_cnpj}")
             banco.guardar_lead(n, agora.date().isoformat())
         novos = novos_feitos
+        if not interrompida and r.get("fontes_publicas", True):  # 0.7.51 (decisão do dono): cada leitura completa com o CNJ e o histórico do Diário
+            try:
+                registro["fontes"] = completar_fontes(banco, agora, [n.get("processo") for n in novos], aviso, parar=parar)
+            except Exception as e:  # noqa: BLE001 - as fontes extras nunca derrubam a leitura do Diário
+                aviso(f"  Fontes públicas: não completei agora ({e.__class__.__name__}); a próxima leitura tenta de novo.")
         info_consulta = registrar_consulta(banco, consulta, novos, agora, origem) if not interrompida else {}
         if not interrompida:  # Diário interrompido não fica marcado como lido: a próxima leitura baixa de novo os Diários desta leitura
             monitor.guardar([], banco, lidos)
@@ -584,11 +646,11 @@ def processos_das_empresas(cfg, banco, empresas, alcance="hibrido", hoje=None):
 def cnpj_provavel(banco, nome):
     """0.7.50 (dono): para processos sem CNPJ, o CNPJ que outros processos com o MESMO nome já trazem. Só sugere se houver uma
     raiz só (a chave é o CNPJ); com duas ou mais, não sugere. Devolve {cnpj, com_cnpj, sem_cnpj} ou {}."""
-    chave = chave_empresa("", nome)
-    if not chave:
+    chave, exata = chave_empresa("", nome), cl.chave_exata(nome)
+    if not chave or not exata:
         return {}
     palavras = [w for w in chave[2:].split() if len(w) >= 3]
-    pista = re.sub(r"[aeiouc]", "_", max(palavras, key=len) if palavras else chave[2:])
+    pista = re.sub(r"%+", "%", re.sub(r"[aeiouc]", "%", max(palavras, key=len) if palavras else chave[2:]))  # 0.7.51: acento gravado de qualquer jeito
     raizes, cnpjs, sem = {}, {}, 0
     for (dados,) in banco.con.execute("SELECT dados FROM leads WHERE dados LIKE ?", ("%" + pista + "%",)):
         try:
@@ -597,8 +659,8 @@ def cnpj_provavel(banco, nome):
             continue
         emp = d.get("empresa_receita") or {}
         nomes = [emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]
-        if not any(chave_empresa("", n) == chave for n in nomes if n):
-            continue
+        if not any(cl.chave_exata(n) == exata for n in nomes if n):
+            continue  # 0.7.51 (revisão da 0.7.50): nome escrito igual; "X Ltda" e "X S.A." são outras empresas
         c = re.sub(r"\D", "", str(emp.get("cnpj") or (d.get("cnpjs") or [""])[0] or ""))
         if len(c) == 14:
             raizes[c[:8]] = raizes.get(c[:8], 0) + 1
@@ -613,11 +675,11 @@ def cnpj_provavel(banco, nome):
 
 def usar_cnpj(banco, nome, cnpj, perfil=""):
     """Grava o CNPJ confirmado pelo escritório nos processos com o mesmo nome e sem CNPJ (marcado `cnpj_inferido`)."""
-    chave, cnpj = chave_empresa("", nome), re.sub(r"\D", "", str(cnpj or ""))
-    if not chave or len(cnpj) != 14:
+    chave, cnpj, exata = chave_empresa("", nome), re.sub(r"\D", "", str(cnpj or "")), cl.chave_exata(nome)
+    if not chave or not exata or len(cnpj) != 14:
         return 0
     palavras = [w for w in chave[2:].split() if len(w) >= 3]
-    pista = re.sub(r"[aeiouc]", "_", max(palavras, key=len) if palavras else chave[2:])
+    pista = re.sub(r"%+", "%", re.sub(r"[aeiouc]", "%", max(palavras, key=len) if palavras else chave[2:]))  # 0.7.51: acento gravado de qualquer jeito
     mudar = []
     for proc, dados in banco.con.execute("SELECT processo, dados FROM leads WHERE dados LIKE ?", ("%" + pista + "%",)):
         try:
@@ -627,7 +689,7 @@ def usar_cnpj(banco, nome, cnpj, perfil=""):
         emp = d.get("empresa_receita") or {}
         if emp.get("cnpj") or (d.get("cnpjs") or []) or d.get("cnpj_inferido"):
             continue
-        if any(chave_empresa("", n) == chave for n in ([emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]) if n):
+        if any(cl.chave_exata(n) == exata for n in ([emp.get("razao_social") or ""] + list(d.get("empresas") or [])[:1]) if n):
             d["cnpj_inferido"] = cnpj
             mudar.append((json.dumps(d, ensure_ascii=False), proc))
     banco.con.executemany("UPDATE leads SET dados = ? WHERE processo = ?", mudar)
@@ -819,11 +881,19 @@ def acoes_do_dia(pubs, ano_minimo, ja_vistos):
 
 COLUNAS_RADAR = [
     ("Situação", "situacao_legivel"), ("Frente", "frente_legivel"), ("Hora", "hora"), ("Tribunal", "tribunal"), ("Vara", "vara"), ("Processo", "processo"), ("Rito", "rito"),
-    ("Distribuída em", "distribuida_em"), ("Empresa(s)", "empresas"), ("CNPJ", "cnpj"), ("Porte", "porte_legivel"),
+    ("Ajuizado em", "ajuizado_planilha"),  # 0.7.51: só a data real do ajuizamento (antes saía a da publicação)
+    ("Empresa(s)", "empresas"), ("CNPJ", "cnpj"), ("Porte", "porte_legivel"),
     ("Capital social", "capital_social"), ("CNAE", "atividade"), ("Setor", "setor"), ("Cidade/UF", "cidade_uf"),
     ("Telefone", "telefone"), ("E-mail", "email"), ("Endereço", "endereco"), ("CEP", "cep"), ("Outros contatos", "outros_contatos"), ("Sócios/administradores", "socios"), ("Provável jurídico próprio", "gigante"),
     ("Valor da causa", "valor_causa"), ("Origem do valor", "valor_fonte"), ("Link DJEN", "link_djen"), ("Consulta PJe", "link_pje"),
+    # 0.7.51 (desenho das datas e fontes): datas e andamento, no fim, para não mudar o lugar das colunas de sempre
+    ("Fonte do ajuizamento", "ajuizado_fonte_legivel"), ("Processo novo ou antigo", "novo_legivel"), ("1ª publicação no Diário", "pub1"),
+    ("Última publicação no Diário", "pubN"), ("Encontrado pelo RADAR em", "primeira_vez"), ("Andamento", "andamento_legivel"),
+    ("Classe (CNJ)", "classe_cnj"), ("Assuntos (CNJ)", "assuntos_cnj"),
 ]
+FONTE_AJ_LEGIVEL = {"cnj": "CNJ", "diario": "Diário (lista de distribuição)", "digitado": "Digitado ou área logada", "aproximada": ""}
+ANDAMENTO_LEGIVEL = {"": "Sem acordo nem sentença", "acordo": "Com acordo", "sentenca": "Com sentença", "transito": "Trânsito em julgado",
+                     "arquivado": "Arquivado"}
 
 
 def linha_csv(item):
@@ -837,6 +907,13 @@ def linha_csv(item):
         "frente_legivel": FRENTE_LEGIVEL.get(item.get("frente"), ""),
         "endereco": endereco(e), "cep": e.get("cep", ""),
         "outros_contatos": [f"{c['canal']}: {c['valor']} ({c['fonte']}, {c['data']})" for c in item.get("contatos") or []],
+        "ajuizado_planilha": item.get("ajuizado") if item.get("ajuizado_fonte") in ("cnj", "diario", "digitado") else "",
+        "ajuizado_fonte_legivel": FONTE_AJ_LEGIVEL.get(item.get("ajuizado_fonte") or "", ""),
+        "novo_legivel": {True: "Novo", False: "Antigo"}.get(item.get("novo"), ""),
+        "pub1": min([x for x in ((item.get("cnj") or {}).get("pub1"), (item.get("diario_hist") or {}).get("pub1")) if x] or [""]),
+        "pubN": max([x for x in ((item.get("cnj") or {}).get("pubN"), (item.get("diario_hist") or {}).get("pubN")) if x] or [""]),
+        "andamento_legivel": ANDAMENTO_LEGIVEL.get((item.get("cnj") or {}).get("andamento") or "", "") if (item.get("cnj") or {}).get("ajuizado") else "",
+        "classe_cnj": (item.get("cnj") or {}).get("classe") or "", "assuntos_cnj": list((item.get("cnj") or {}).get("assuntos") or []),
     }
 
 
@@ -850,3 +927,155 @@ def endereco(e):
     partes = [rua + (f" {e['complemento']}" if e.get("complemento") else ""), e.get("bairro", ""),
               "/".join(x for x in (e.get("municipio", ""), e.get("uf", "")) if x)]
     return " - ".join(x for x in partes if x)
+
+
+# ---------- 0.7.51: completar cada processo com as fontes públicas (desenho documentacao/DESENHO-DATAS-E-FONTES-0751.md) ----------
+ESPERA_CNJ = (30 * 60, 2 * 3600, 6 * 3600, 24 * 3600)  # novas tentativas: 30 min, 2 h, 6 h, 24 h
+AGUARDANDO_DIAS = 15  # o CNJ atrasa: até 15 dias depois de o RADAR ver o processo, não achar no CNJ não é falha
+HIST_MAX = 120  # pedidos ao histórico do Diário por leitura (1 por segundo)
+
+
+def _causa_fonte(e):
+    from . import rede
+    if isinstance(e, rede.BloqueadoForaDoBrasil):
+        return "o Diário só responde a pedidos de dentro do Brasil"
+    nome = e.__class__.__name__
+    if nome == "RespostaParcial":
+        return "o CNJ respondeu pela metade (ocupado)"
+    if isinstance(e, RuntimeError) and "chave" in str(e).lower():
+        return "chave pública do CNJ não lida"
+    if isinstance(e, rede.ErroHTTP):
+        return f"o servidor respondeu {getattr(e, 'codigo', '')}".strip()
+    return "sem resposta (rede ou servidor fora)"
+
+
+def completar_fontes(banco, agora=None, novos=(), aviso=print, parar=None, tempo_max=240, consultar=None, historico=None):
+    """Depois da leitura do Diário: para cada processo da Lista (últimos 12 meses), busca no CNJ (DataJud, em lotes de 40) a data de
+    ajuizamento, a classe, os assuntos e a jornada, e no Diário o histórico de publicações dos que entraram por sinal fraco. Grava o
+    estado de cada fonte (ok, aguardando, não encontrado, falhou) para o "Tentar de novo" e para a próxima leitura repetir o que faltou.
+    Nunca derruba a leitura. Devolve um resumo para o registro."""
+    from . import datajud
+    import sys as _sys
+    # nos testes automáticos, só as fontes simuladas rodam (nenhum pedido sai do computador); no programa, "unittest" nunca está carregado
+    sem_rede = "unittest" in _sys.modules and not os.environ.get("LEXSUITE_REDE_NOS_TESTES")
+    if sem_rede and consultar is None and historico is None:
+        return {}
+    agora = agora or dt.datetime.now()
+    t0, est = time.monotonic(), {"cnj_ok": 0, "cnj_aguardando": 0, "cnj_nao_encontrado": 0, "cnj_falhou": 0, "cnj_parou": "",
+                                  "hist_ok": 0, "hist_falhou": 0, "hist_parou": "", "fora_classe": 0}
+    pular_cnj, pular_hist = sem_rede and consultar is None, sem_rede and historico is None
+    consultar = consultar or datajud.consultar_lote
+    espera = lambda tent: (agora + dt.timedelta(seconds=ESPERA_CNJ[min(max(tent, 1), len(ESPERA_CNJ)) - 1])).isoformat(timespec="seconds")
+    amanha = (agora + dt.timedelta(days=1)).isoformat(timespec="seconds")
+    cedo = lambda: (parar and parar()) or time.monotonic() - t0 > tempo_max
+    # 1) CNJ
+    por_ind, cands = {}, ([] if pular_cnj else banco.candidatos_fonte("cnj", agora, novos))
+    for proc, prim, _d in cands:
+        ind = datajud.indice_do_numero(proc)
+        if ind:
+            por_ind.setdefault(ind, []).append((proc, prim))
+        else:  # revisão: ramo da Justiça que esta versão ainda não consulta; sai da fila (não ocupa o limite de cada leitura)
+            banco.marcar_fonte(proc, "cnj", "ok", agora, causa="não se aplica", commit=False)
+    falhas = 0
+    for ind, lista in por_ind.items():
+        for i in range(0, len(lista), datajud.LOTE):
+            if cedo() or falhas >= 3:
+                est["cnj_parou"] = est["cnj_parou"] or ("três falhas seguidas" if falhas >= 3 else "tempo esgotado ou leitura interrompida")
+                break
+            lote = lista[i:i + datajud.LOTE]
+            try:
+                resp = consultar(ind, [p for p, _ in lote])
+                falhas = 0
+            except Exception as e:  # noqa: BLE001 - CNJ fora, ocupado ou sem chave: fica "falhou" com a causa e tenta depois
+                falhas += 1
+                causa = _causa_fonte(e)
+                for p, _ in lote:
+                    banco.marcar_fonte(p, "cnj", "falhou", agora, proxima_em=espera, causa=causa, commit=False)
+                    est["cnj_falhou"] += 1
+                banco.con.commit()
+                continue
+            for p, prim in lote:
+                doc = resp.get(re.sub(r"\D", "", p))
+                if doc:
+                    res = datajud.resumo_processo(doc)
+                    banco.gravar_no_lead(p, "cnj", res, commit=False)
+                    banco.marcar_fonte(p, "cnj", "ok", agora, commit=False)
+                    est["cnj_ok"] += 1
+                    if datajud.classe_nao_e_nova(res.get("classe")):  # cumprimento de sentença não é ação nova (só se ninguém mexeu nele)
+                        n = banco.con.execute("UPDATE leads SET fora_criterio = 1 WHERE processo = ? AND coalesce(status, 'novo') = 'novo' "
+                                              "AND dados NOT LIKE '%\"manual\"%' AND processo NOT IN (SELECT processo FROM contatos)", (p,)).rowcount
+                        if n:
+                            est["fora_classe"] += 1
+                            banco.registrar_acao("RADAR", "fora_criterio", p, "", "classe: " + res.get("classe", "")[:60], 1)
+                    continue
+                try:
+                    idade = (agora.date() - dt.date.fromisoformat(str(prim)[:10])).days
+                except ValueError:
+                    idade = 0
+                estado = "aguardando" if idade <= AGUARDANDO_DIAS else "nao_encontrado"
+                prox = amanha if idade <= 60 else (agora + dt.timedelta(days=30)).isoformat(timespec="seconds")
+                banco.marcar_fonte(p, "cnj", estado, agora, proxima_em=prox, commit=False)
+                est["cnj_" + estado] += 1
+            banco.con.commit()
+    # 2) histórico do Diário pelo número, só para quem entrou por sinal fraco (audiência, notificação) e ainda não tem o ajuizamento
+    hist = historico or djen.historico_por_numero
+    feitos = 0
+    for proc, prim, d in ([] if pular_hist else banco.candidatos_fonte("diario_hist", agora, novos)):
+        if feitos >= HIST_MAX or cedo():
+            est["hist_parou"] = est["hist_parou"] or "limite desta leitura"
+            break
+        if sinal_guardado(d) == "lista de distribuição" or (d.get("cnj") or {}).get("ajuizado"):
+            banco.marcar_fonte(proc, "diario_hist", "ok", agora, causa="não precisa", commit=False)  # a data já é conhecida
+            continue
+        dig = re.sub(r"\D", "", proc)
+        ano = dig[9:13] if len(dig) == 20 else str(agora.year)
+        feitos += 1
+        try:
+            h = hist(proc, f"{ano}-01-01", agora.date().isoformat())
+        except Exception as e:  # noqa: BLE001
+            banco.marcar_fonte(proc, "diario_hist", "falhou", agora, proxima_em=espera, causa=_causa_fonte(e), commit=False)
+            est["hist_falhou"] += 1
+            from . import rede
+            if isinstance(e, rede.BloqueadoForaDoBrasil):
+                est["hist_parou"] = "fora do Brasil"
+                break
+            continue
+        banco.gravar_no_lead(proc, "diario_hist", dict(h, consultado_em=agora.date().isoformat()), commit=False)
+        banco.marcar_fonte(proc, "diario_hist", "ok", agora, commit=False)
+        est["hist_ok"] += 1
+    banco.con.commit()
+    if any(est[k] for k in ("cnj_ok", "cnj_falhou", "hist_ok", "hist_falhou")):
+        aviso(f"  Fontes públicas: CNJ {est['cnj_ok']} ok, {est['cnj_aguardando']} aguardando, {est['cnj_falhou']} sem resposta; "
+              f"histórico do Diário {est['hist_ok']} ok, {est['hist_falhou']} sem resposta.")
+    return est
+
+
+def data_de_referencia(lead):
+    """0.7.51 (decisão do dono): a data que diz se o processo é novo é o ajuizamento. Ordem: digitado ou da área logada; CNJ; lista
+    de distribuição do Diário (a publicação sai logo depois da distribuição). Sem nenhum deles, a 1ª publicação conhecida (aproximada).
+    Devolve (data AAAA-MM-DD, fonte: 'digitado' | 'cnj' | 'diario' | 'aproximada')."""
+    man = ((lead.get("manual") or {}).get("data_ajuizamento") or {}).get("valor") or lead.get("ajuizada_em") or ""
+    if re.match(r"\d{4}-\d{2}-\d{2}", str(man)):
+        return str(man)[:10], "digitado"
+    aj = (lead.get("cnj") or {}).get("ajuizado") or ""
+    if aj:
+        return aj[:10], "cnj"
+    hist = lead.get("diario_hist") or {}
+    if hist.get("distribuicao"):
+        return hist["distribuicao"][:10], "diario"
+    if sinal_guardado(lead) == "lista de distribuição" and lead.get("data_publicacao"):
+        return str(lead["data_publicacao"])[:10], "diario"
+    datas = [x for x in (hist.get("pub1"), (lead.get("cnj") or {}).get("pub1"), lead.get("data_publicacao")) if x]
+    return (min(datas)[:10], "aproximada") if datas else ("", "")
+
+
+def processo_novo(lead, hoje, limite_dias=30):
+    """True = ajuizado há até `limite_dias` (decisão do dono: 30, o escritório muda em Destaques e exclusões); False = antigo;
+    None = sem data nenhuma."""
+    ref, _f = data_de_referencia(lead)
+    if not ref:
+        return None
+    try:
+        return (hoje - dt.date.fromisoformat(ref)).days <= int(limite_dias or 30)
+    except ValueError:
+        return None

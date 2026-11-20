@@ -65,7 +65,7 @@ class Tela0740(unittest.TestCase):
 
     def test_riscar_redesenha_so_o_cartao(self):
         self.assertIn("redesenharCartao(g, tit, linhas, opc, kf);", HTML)
-        self.assertIn('ocp.hidden = false; document.body.classList.add("ocupado");', HTML)
+        self.assertIn('ocupadoLigar(t("carregando_lista"));', HTML)  # 0.7.51 (itens 1 e 19): o aviso de espera passa a ser a faixa sobre a Lista
 
     def test_empresas_e_tipo_de_publicacao(self):
         self.assertIn('var MULTI = ["sit", "frente", "trib", "data", "vara", "setor", "porte", "uf", "cidade", "sinal", "empresa"', HTML)  # 0.7.48: + "cidade"  # 0.7.46: + "area"

@@ -164,7 +164,8 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 20/Nov: **0.7.51 em preparação** (branch local `wip-0751`): ressalvas da Operação e Novidades até "Não mostrar novamente" feitas; período da leitura na faixa (item 22) em andamento. Desenho das datas e fontes em `documentacao/DESENHO-DATAS-E-FONTES-0751.md` esperando o "pode" (pergunta 52). Arquivos: `robo/lexsuite/{radar,preferencias,app,monitor}.py`, `robo/radar_modelo.html`, `paginas/manual.html`, testes.
+- 20/Nov: **0.7.51 pronta para publicar** (pedido à Operação abaixo). Nada em andamento; próxima: 0.7.52 (filtro de quantidade de
+  processos da empresa e "Ler um período" maior, com desenho da Arquitetura) e o que vier da resposta do Leandro.
 - 16/Nov: **0.7.50 publicada** (tag `v0.7.50`, pela Operação). Ressalvas da revisão anotadas para a 0.7.51 (abaixo, em Pedidos). Feito (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
   sem data). Feito: agrupamento (alcance no bloco, setinha, caixinha, sem CNPJ com triângulo e "CNPJ provável", copiar contato 90 dias
   com desfazer, "Excluir esta empresa"), filtros numa linha no notebook com rótulos curtos e barra compacta, "Aplicar" na barra de
@@ -185,6 +186,14 @@ Arquitetura (pedido no quadro).
   ressalvas 3 a 5 da Operação nos instaladores (vão com a publicação, porque o site serve o instalador na hora).
 
 ### Feito (mais recente primeiro)
+- 20/Nov: **0.7.51 pronta para publicar** (decisões 52 a 58): datas e fontes (processo novo pelo ajuizamento, 30 dias ajustáveis; CNJ
+  e histórico do Diário em cada leitura, fila `fontes`, "Tentar de novo"; jornada na ficha; filtros Idade e Andamento; ordem pelos
+  ajuizados; planilha "Ajuizado em"; cumprimento de sentença fora), período de cada leitura, Novidades até "Não mostrar novamente" e
+  página de histórico no site, itens do feedback do teste da 0.7.50 e ressalvas da Operação. Folha `documentacao/dod/0.7.51.md`;
+  `test_v0751.py` (33) e 617 testes OK; `rodar_tudo.sh`: unittest, fluxos (121), ver_na_lista, aviso_e_lupa OK e larguras OK depois de
+  corrigir o contraste do verde no modo escuro; revisor: 1 bloqueio (colunas CNPJ e Porte da planilha) e ressalvas, corrigidos.
+  RootifyONE: nada; ArchONE: integração nova de leitura com o DataJud, tabela `fontes`, rota `/completar`; EaglePlanONE: "Encerradas
+  pelo DataJud" parcialmente adiantado.
 - 15/Nov: **0.7.49 pronta para publicar** (decisões 43 a 48), código na `main` em `e987a68`. Folha `documentacao/dod/0.7.49.md`
   completa (13 pontos); `rodar_tudo.sh` TUDO OK (unittest, fluxos com o bloco 11, ver_na_lista, larguras, aviso_e_lupa); revisor:
   1 bloqueio (folha citava registro ainda não feito) e 5 ressalvas, todos corrigidos; dono: "a chave é o CNPJ" (homônimo de outro
@@ -648,6 +657,13 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
 
 ## Pedidos entre sessões
+
+- **Produto → Operação (20/Nov): 0.7.51 pronta para publicar**, quando o dono escrever "publica a versão 0.7.51". Revisar
+  `git diff 4d8bb51 <commit da 0.7.51 na main> -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.51.md` contra o diff.
+  Pacote com os mesmos arquivos (nenhum módulo novo: o código novo ficou em `datajud.py`, `djen.py`, `radar.py`, `banco.py`, `app.py`).
+  Site: página nova `versoes.html` e `index.html` citando o DataJud. Atenção: a primeira leitura depois de atualizar consulta o CNJ dos
+  processos dos últimos 12 meses (até 4 min a mais, em lotes, com nova tentativa); o histórico do Diário só funciona de dentro do Brasil.
+  Testes do dono: `documentacao/ESTADO-ATUAL-RADAR.md`, seção 9.
 
 - **Produto → Arquitetura (16/Nov, URGENTE para depois de quinta, 19/Nov; primeiro uso real da KR Law):** processo distribuído em
   maio aparecendo como "novo" (publicação da audiência inicial em novembro, TRT2). Anamnese e soluções em

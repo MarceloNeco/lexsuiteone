@@ -9,7 +9,7 @@ const externos = [];
   const b = await chromium.launch({ args: ['--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'] });
   const VERSAO = (require('fs').readFileSync(require('path').join(__dirname, '..', '..', 'lexsuite', '__init__.py'), 'utf8').match(/VERSAO = "([^"]+)"/) || [])[1] || '';
   const novoContexto = b.newContext.bind(b);  // 0.7.31: "Novidades da versão" já vista
-  b.newContext = async (o) => { const c = await novoContexto(o); await c.addInitScript((v) => { try { localStorage.setItem('lexsuite:novidades-vistas', v); } catch (e) {} }, VERSAO); return c; };
+  b.newContext = async (o) => { const c = await novoContexto(o); await c.addInitScript((v) => { try { localStorage.setItem('lexsuite:novidades-vistas', v); localStorage.setItem('lexsuite:novidades-ocultas', v); } catch (e) {} }, VERSAO); return c; };
   const novoCtx = async (vp, mobile, idioma, so127 = true) => {
     const ctx = await b.newContext({ viewport: vp, isMobile: mobile, hasTouch: mobile, serviceWorkers: 'block' });
     ctx.on('request', r => { const u = new URL(r.url()); if (!(u.hostname === '127.0.0.1' || u.protocol === 'file:' || u.protocol === 'data:' || u.protocol === 'blob:' || u.protocol === 'about:')) externos.push(r.url()); });

@@ -1,6 +1,6 @@
 # Estado atual do RADAR JUDICIAL (uma página; toda sessão lê antes de responder ao dono)
 
-Atualizado em 16/Nov/2026 pela Produto, com a 0.7.50 publicada (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
+Atualizado em 20/Nov/2026 pela Produto, com a 0.7.51 pronta para publicar (a 0.7.50 está no ar) (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
 que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" sai DAQUI, não da memória da conversa.
 
 ## 1. No ar
@@ -24,9 +24,12 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
-- **0.7.51 (sem pedido do dono ainda):** as 5 ressalvas da revisão da 0.7.50 (quadro, "Operação → Produto, 16/Nov"): exclusão
-  pelo CNPJ quando houver (homônimo de outro CNPJ fica, como manda "a chave é o CNPJ"), CNPJ provável sem juntar Ltda e S.A.,
-  duas palavras das Novidades, um termo do manual e o pré-filtro sem acento. Entram junto com o que o dono achar no teste da 0.7.50.
+- **0.7.51 pronta para publicar** (20/Nov; espera o "publica a versão 0.7.51" na conversa da Operação): o processo é novo pela
+  **data de ajuizamento** (CNJ ou Diário; 30 dias, ajustável), o antigo fica marcado "PROCESSO ANTIGO" (corrige o caso de maio da KR
+  Law); cada leitura consulta o CNJ e o histórico do Diário, com "Tentar de novo"; jornada do processo na ficha; filtros Idade e
+  Andamento; ordem pelos ajuizados; período de cada leitura na faixa e na Rotina; Novidades até "Não mostrar novamente" e histórico de
+  versões no site; número no formato CNJ e copiar; "Abrir no Gmail"; ressalvas da Operação. Testes do dono: seção 9.
+- **Próxima (0.7.52, se não couber agora):** filtro de quantidade de processos da empresa e "Ler um período" maior (desenho da Arquitetura).
 - **0.7.50 publicada** (16/Nov, os 33 itens de `FEEDBACK-DONO-2026-11-16-NOTEBOOK-E-AGRUPAMENTO.md` e as decisões de
   16/Nov): agrupamento recolhível, caixinha da empresa, alcance
   no bloco inteiro, aviso de empresa sem CNPJ com "CNPJ provável", copiar o contato (90 dias, com desfazer), "Excluir esta empresa";
@@ -41,6 +44,7 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 ## 4. O que só o dono pode fazer (lista única)
 1. Terminar o teste da 0.7.49 (seção 7) e, se quiser, o que faltou da 0.7.48 e da 0.7.47 (seções 6 e 5); o que falhar vira feedback na Produto.
 2. Testar a 0.7.50 no notebook, depois de "Atualizar agora" (seção 8, ~15 min); o que falhar vira feedback na Produto.
+2b. Escrever "publica a versão 0.7.51" na conversa da Operação e, depois, testar a 0.7.51 (seção 9, ~15 min).
 3. Quando quiser: teste de 5 min no PJe com advogado logado (`visita-kr-law/PROMPT-TESTE-GAP-PJE-2026-11-15.md`).
 4. Supabase (Central): TOTP, desligar signups, usuários da equipe; repositório `central-lexsuiteone`.
 5. RootifyONE: "aplicado" (recursos por licença) e os prompts pendentes de lá.
@@ -90,3 +94,17 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 7. Leitura do Diário: "Usar a consulta pública do CNJ quando o caderno falhar" com (?), sem a frase embaixo.
 8. Sobre este computador → Ver registro técnico: ícone de copiar e "Enviar ao suporte" (abre o e-mail com a licença LEX-••••-XXXX).
 9. AssistONE → tour: a página não rola durante o tour. Ajuda → Novidades da versão: a lista da 0.7.50.
+
+## 9. Testes da 0.7.51 (depois de publicada; num Windows, ~15 min; antes, "Atualizar agora" na faixa do alto)
+1. Abra o programa: a janela de Novidades aparece. Feche sem marcar e abra de novo: ela volta. Marque "Não mostrar novamente": não volta.
+2. "Ler o Diário agora": a leitura demora um pouco mais no fim (consulta ao CNJ). Depois, na Lista, o cartão diz "AJUIZADO dia" ou
+   "NO DIÁRIO dia" e "NOVO · há N dias" ou "PROCESSO ANTIGO · há N meses".
+3. Abra um processo: a "Jornada do processo" vem recolhida; clique e veja as duas colunas. O (?) ao lado de CNJ, DIÁRIO e RECEITA
+   diz de onde vem cada dado. Se aparecer "Tentar de novo", clique e espere alguns segundos.
+4. Mais filtros → "Idade do processo: Processos novos (até 30 dias)" e "Andamento". Ordenar por: o padrão é "Mais novos primeiro (ajuizados)".
+5. Configurações → Destaques e exclusões: "Dias para o processo ser novo" (30). Mude para 60, salve e veja o cartão mudar.
+6. "Alterar configuração" (a mira, com contorno azul): escolha o Período "Últimos 7 dias"; clique em "Ler o Diário agora" sem salvar:
+   aparece "Você não salvou as mudanças" e, se for longa, o aviso de quanto pode demorar.
+7. Configurações → Sobre este computador → Ver registro técnico: "Copiar o registro" embaixo, "Abrir no Gmail" e "Abrir no e-mail do Windows".
+8. Planilha: a coluna "Ajuizado em" e as colunas novas no fim (fonte do ajuizamento, novo ou antigo, publicações, andamento).
+

@@ -661,6 +661,9 @@ class Tratador(BaseHTTPRequestHandler):
                 "config": {"tribunais": tribunais.validar(r.get("tribunais")), "escritorio": cfg.get("escritorio", ""),
                            "valor_minimo": _finito(r.get("valor_minimo")), "dias_na_pagina": config.inteiro(r.get("dias_na_pagina", 1), 1, 1, 90),
                            "dias_para_tras": _dias_para_tras(r),
+                           "periodo_botao": r.get("periodo_botao") if r.get("periodo_botao") in radar.PERIODOS else "ultimo_util",
+                           "periodo_rotina": r.get("periodo_rotina") if r.get("periodo_rotina") in radar.PERIODOS else "ultimo_util",
+                           "ultima_leitura_ok": _ultima_ok(s), "primeira_leitura": radar.primeira_leitura(banco),
                            "teto_capital_gigante": _finito(r.get("teto_capital_gigante")),  # 0.7.27: Infinity/NaN não quebram o JSON
                            "pasta": comp.get("pasta", ""), "subpasta": comp.get("subpasta", "LexSuiteONE"), "pasta_base": base,
                            "pasta_ok": bool(base and os.path.isdir(base)),
@@ -858,6 +861,9 @@ class Tratador(BaseHTTPRequestHandler):
                         r[chave] = min(maximo, max(minimo, tipo(corpo[chave])))
                     except (TypeError, ValueError, OverflowError):
                         pass
+            for chave_ in ("periodo_botao", "periodo_rotina"):  # 0.7.51 (dono, itens 22 e 26): período de cada leitura
+                if corpo.get(chave_) in radar.PERIODOS:
+                    r[chave_] = corpo[chave_]
             if "resumir_meses" in corpo or "apagar_meses" in corpo:  # 0.7.48 (decisão 42): prazos da limpeza, com as regras
                 try:
                     res_ = int(corpo.get("resumir_meses", r.get("resumir_meses", 6)))
@@ -1272,6 +1278,33 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": True, "desfeitos": banco.desfazer_copia(ids_)})
             finally:
                 banco.con.close()
+        if caminho == "/completar":  # 0.7.51 (decisão do dono): "Tentar de novo" de uma fonte pública (CNJ, histórico do Diário)
+            procs_ = [str(x)[:40] for x in (corpo.get("processos") or []) if x][:200]
+            if not procs_:
+                return self._responder({"ok": False, "motivo": "Nenhum processo.", "motivo_en": "No case."})
+            banco = bd.Banco(s.caminho_db)
+            try:
+                banco.pedir_de_novo(procs_)
+            finally:
+                banco.con.close()
+            if s.estado.como_dict()["rodando"] or leitura_em_outro_processo(s.arquivo_andamento):
+                return self._responder({"ok": True, "na_leitura": True})  # a leitura em andamento pega o pedido
+            if not _TRAVA_FONTES.acquire(blocking=False):
+                return self._responder({"ok": True, "na_fila": True})
+
+            def _completar():
+                try:
+                    b_ = bd.Banco(s.caminho_db)
+                    try:
+                        radar.completar_fontes(b_, dt.datetime.now(), procs_, aviso=lambda *_: None, tempo_max=60)
+                    finally:
+                        b_.con.close()
+                except Exception:  # noqa: BLE001 - fica para a próxima leitura
+                    pass
+                finally:
+                    _TRAVA_FONTES.release()
+            threading.Thread(target=_completar, daemon=True).start()
+            return self._responder({"ok": True, "comecou": True})
         if caminho == "/regras/excluir-uma":  # 0.7.50 (decisão 49): "Excluir esta empresa" no cabeçalho do bloco
             area_ = corpo.get("area") if corpo.get("area") in preferencias.AREAS else "trabalhista"
             nome_, cnpj_ = str(corpo.get("nome") or "").strip()[:200], str(corpo.get("cnpj") or "").strip()[:20]
@@ -1435,6 +1468,9 @@ class Tratador(BaseHTTPRequestHandler):
         return self._responder({"erro": "não existe"}, status=404)
 
 
+_TRAVA_FONTES = threading.Lock()  # 0.7.51: um "Tentar de novo" por vez
+
+
 # Ramos oferecidos na tela: só a frente trabalhista por enquanto (os TJs e TRFs são de outras frentes).
 FRENTES = ("Trabalhista",)
 ARQUIVO_NA_TELA = 5000  # 0.7.16: quantas ações do Arquivo vão à tela de uma vez (a busca vai ao programa)
@@ -1515,6 +1551,14 @@ def _finito(v):
     except (TypeError, ValueError, OverflowError):
         return None
     return v if math.isfinite(f) and not isinstance(v, bool) else None
+
+
+def _ultima_ok(s):
+    """0.7.51: dia da última leitura que deu certo, para a faixa escrever "lê de DD/MM até hoje" ("Desde a última leitura")."""
+    try:
+        return str((s.ultima_do_banco() or {}).get("quando") or "")[:10]
+    except Exception:  # noqa: BLE001 - só texto da tela
+        return ""
 
 
 def _dias_para_tras(r):
