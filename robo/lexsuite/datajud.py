@@ -245,3 +245,113 @@ def estatisticas(docs, sigla, vara, inicio, fim, recentes=60):
                       for k, v in finais.most_common()],
         "recentes": linhas[:recentes],
     }
+
+
+# ---------- 0.7.51: datas e jornada do processo (desenho documentacao/DESENHO-DATAS-E-FONTES-0751.md) ----------
+# Só funções puras e a consulta em lote; quem decide quando consultar é a leitura (depois do "pode" do dono).
+# Do DataJud só entram códigos e nomes tabelados (classe, assuntos, órgão, movimentos); nunca partes nem texto livre.
+MARCOS = {  # Tabela Processual Unificada (TPU/CNJ): o que vira marco na jornada do processo
+    26: "distribuicao", 36: "redistribuicao", 12747: "aud_inicial", 12740: "aud_conciliacao", 12749: "aud_instrucao",
+    12751: "aud_julgamento", 12752: "aud_una", 970: "audiencia", 785: "tutela", 466: "acordo", 219: "procedente",
+    220: "improcedente", 221: "procedente_parte", 458: "extinto", 123: "remessa", 848: "transito", 11384: "liquidacao",
+    11385: "execucao", 196: "execucao_extinta", 246: "arquivado", 245: "arquivado_prov", 22: "baixa"}
+DISPONIBILIZACAO = 1061  # "disponibilização no DJE": vem em dobro no mesmo dia; conta-se o dia
+SITUACOES = {"designada": "marcada", "realizada": "realizada", "cancelada": "cancelada", "redesignada": "remarcada",
+             "nao-realizada": "nao_realizada", "não-realizada": "nao_realizada"}
+CAMPOS = ["numeroProcesso", "grau", "dataAjuizamento", "classe", "assuntos", "orgaoJulgador", "movimentos.codigo", "movimentos.nome",
+          "movimentos.dataHora", "movimentos.complementosTabelados", "dataHoraUltimaAtualizacao"]
+LOTE = 40
+
+
+class RespostaParcial(Exception):
+    """O DataJud respondeu sem todos os pedaços (shards), com tempo esgotado ou recusou por excesso: nada desse lote é "não encontrado"."""
+
+
+def classe_nao_e_nova(nome):
+    """Cumprimento de sentença (provisório ou não) nasce de outro processo: não é ação nova contra a empresa."""
+    c = re.sub(r"\s+", " ", str(nome or "")).strip().lower()
+    return c.startswith("cumprimento") or "execução provisória" in c or "execucao provisoria" in c
+
+
+def indice_do_numero(numero):
+    """'1000910-15.2026.5.02.0714' → 'trt2' (Justiça do Trabalho, J=5). Outros ramos ainda não: ''."""
+    n = re.sub(r"\D", "", str(numero or ""))
+    if len(n) != 20 or n[13] != "5":
+        return ""
+    return f"trt{int(n[14:16])}"
+
+
+def _iso(valor):
+    d = ler_data(valor)
+    return d.isoformat() if d else ""
+
+
+def andamento(codigos):
+    """'' (sem acordo nem sentença), 'acordo', 'sentenca', 'transito' ou 'arquivado', pelo que já aconteceu."""
+    c = set(codigos)
+    if c & {246, 22}:
+        return "arquivado"
+    if 848 in c:
+        return "transito"
+    if c & {219, 220, 221, 458}:
+        return "sentenca"
+    if 466 in c:
+        return "acordo"
+    return ""
+
+
+def resumo_processo(src, limite_marcos=60):
+    """Do documento do DataJud ao que o RADAR guarda (dados.cnj): ajuizamento, classe, assuntos, órgão, marcos
+    [[data, código, situação]], dias de publicação no Diário (1ª e última), andamento e até quando o CNJ está atualizado."""
+    mv = sorted([m for m in (src.get("movimentos") or []) if isinstance(m, dict)], key=lambda m: str(m.get("dataHora") or ""))
+    dias_pub = sorted({str(m.get("dataHora") or "")[:10] for m in mv if m.get("codigo") == DISPONIBILIZACAO and m.get("dataHora")})
+    marcos, vistos, aj = [], set(), _iso(src.get("dataAjuizamento"))
+    for m in mv:
+        cod = m.get("codigo")
+        if cod not in MARCOS or not m.get("dataHora"):
+            continue
+        comp = m.get("complementosTabelados") or []
+        if cod == 123 and any("outros motivos" in str(x.get("nome") or "").lower() for x in comp if isinstance(x, dict)):
+            continue  # remessa por "outros motivos" no começo (ex.: ao CEJUSC) não é recurso
+        sit = next((str(x.get("nome") or "").lower() for x in comp if isinstance(x, dict) and x.get("descricao") == "situacao_da_audiencia"), "")
+        k = (str(m["dataHora"])[:10], cod, SITUACOES.get(sit, ""))
+        if k in vistos:
+            continue
+        vistos.add(k)
+        marcos.append(list(k))
+    if not aj and marcos and marcos[0][1] == 26:
+        aj = marcos[0][0]
+    org = src.get("orgaoJulgador") or {}
+    return {"ajuizado": aj, "ajuizado_hora": str(src.get("dataAjuizamento") or "")[8:14] if str(src.get("dataAjuizamento") or "").isdigit() else "",
+            "classe": str((src.get("classe") or {}).get("nome") or "")[:120],
+            "assuntos": list(dict.fromkeys(str(a.get("nome") or "").strip() for a in (src.get("assuntos") or []) if isinstance(a, dict) and a.get("nome")))[:5],
+            "orgao": str(org.get("nome") or "")[:160], "marcos": marcos[-limite_marcos:],
+            "pub1": dias_pub[0] if dias_pub else "", "pubN": dias_pub[-1] if dias_pub else "", "dias_publicacao": len(dias_pub),
+            "andamento": andamento(m.get("codigo") for m in mv), "atualizado_em": _iso(src.get("dataHoraUltimaAtualizacao"))}
+
+
+def _melhor(docs):
+    """O mesmo número vem no 1º grau (G1) e no tribunal (G2): fica o G1 atualizado por último."""
+    g1 = [d for d in docs if str(d.get("grau") or "").upper() == "G1"] or docs
+    return max(g1, key=lambda d: str(d.get("dataHoraUltimaAtualizacao") or ""))
+
+
+def consultar_lote(indice, numeros, pedir=None):
+    """Um pedido ao DataJud com até 40 números (20 dígitos) do mesmo tribunal. Devolve {número: documento ou None}.
+    Levanta RespostaParcial quando a resposta não é confiável (o lote todo fica "falhou", nunca "não encontrado")."""
+    numeros = [re.sub(r"\D", "", str(n)) for n in numeros][:LOTE]
+    corpo = {"size": 200, "_source": CAMPOS, "query": {"terms": {"numeroProcesso": numeros}}}
+    if pedir is None:
+        def pedir(url, c):
+            return rede.pedir_json(url, c, {"Authorization": "APIKey " + chave_publica()}, tentativas=2, intervalo_minimo=1.0, tempo_limite=30)
+    r = pedir(URL_TRIBUNAL.format(sigla=indice), corpo)
+    if not isinstance(r, dict) or r.get("error") or r.get("timed_out") or ((r.get("_shards") or {}).get("failed") or 0) > 0:
+        raise RespostaParcial(str((r or {}).get("error") or "resposta parcial")[:200] if isinstance(r, dict) else "resposta inválida")
+    hits = [h.get("_source") or {} for h in ((r.get("hits") or {}).get("hits") or [])]
+    total = ((r.get("hits") or {}).get("total") or {})
+    if isinstance(total, dict) and int(total.get("value") or 0) > len(hits):
+        raise RespostaParcial("total maior que os documentos recebidos")
+    por = collections.defaultdict(list)
+    for h in hits:
+        por[re.sub(r"\D", "", str(h.get("numeroProcesso") or ""))].append(h)
+    return {n: (_melhor(por[n]) if por.get(n) else None) for n in numeros}

@@ -149,3 +149,62 @@ class Tela0751(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DataJudJornada(unittest.TestCase):
+    """0.7.51 (desenho das datas e fontes): resumo do documento do DataJud e consulta em lote, sem rede (respostas FICTÍCIAS no formato
+    real; nenhum dado de parte, que o DataJud nem traz)."""
+
+    def doc(self, numero="99900011120265020001", grau="G1", atualizado="2026-11-08T10:00:00Z"):
+        mv = [{"codigo": 26, "nome": "Distribuição", "dataHora": "2026-05-15T13:15:22.000Z", "complementosTabelados": [{"nome": "sorteio"}]},
+              {"codigo": 12749, "nome": "de Instrução", "dataHora": "2026-05-15T13:16:00.000Z",
+               "complementosTabelados": [{"descricao": "situacao_da_audiencia", "nome": "designada"}]},
+              {"codigo": 1061, "nome": "Disponibilização no DJE", "dataHora": "2026-05-20T03:00:00.000Z"},
+              {"codigo": 1061, "nome": "Disponibilização no DJE", "dataHora": "2026-05-20T05:00:00.000Z"},  # em dobro no mesmo dia
+              {"codigo": 123, "nome": "Remessa", "dataHora": "2026-05-16T01:00:00.000Z", "complementosTabelados": [{"nome": "outros motivos"}]},
+              {"codigo": 1061, "nome": "Disponibilização no DJE", "dataHora": "2026-09-08T03:00:00.000Z"},
+              {"codigo": 51, "nome": "Conclusão", "dataHora": "2026-09-09T03:00:00.000Z"}]
+        return {"numeroProcesso": numero, "grau": grau, "dataAjuizamento": "20260515131522", "classe": {"nome": "Ação Trabalhista - Rito Ordinário"},
+                "assuntos": [{"nome": "Horas Extras "}, {"nome": "Horas Extras"}], "orgaoJulgador": {"nome": "1ª Vara do Trabalho (fictícia)"},
+                "movimentos": mv, "dataHoraUltimaAtualizacao": atualizado}
+
+    def test_resumo_do_processo(self):
+        from lexsuite import datajud
+        r = datajud.resumo_processo(self.doc())
+        self.assertEqual(r["ajuizado"], "2026-05-15"); self.assertEqual(r["ajuizado_hora"], "131522")
+        self.assertEqual(r["assuntos"], ["Horas Extras"])
+        self.assertEqual(r["marcos"], [["2026-05-15", 26, ""], ["2026-05-15", 12749, "marcada"]])  # remessa por "outros motivos" fica fora
+        self.assertEqual((r["pub1"], r["pubN"], r["dias_publicacao"]), ("2026-05-20", "2026-09-08", 2))
+        self.assertEqual(r["andamento"], ""); self.assertEqual(r["atualizado_em"], "2026-11-08")
+        self.assertNotIn("partes", json.dumps(r))
+
+    def test_andamento_e_classe(self):
+        from lexsuite import datajud
+        self.assertEqual(datajud.andamento([26, 466]), "acordo")
+        self.assertEqual(datajud.andamento([26, 221, 848]), "transito")
+        self.assertEqual(datajud.andamento([26, 221, 848, 246]), "arquivado")
+        self.assertTrue(datajud.classe_nao_e_nova("Cumprimento Provisório de Sentença"))
+        self.assertFalse(datajud.classe_nao_e_nova("Ação Trabalhista - Rito Sumaríssimo"))
+        self.assertEqual(datajud.indice_do_numero("9990001-11.2026.5.17.0161"), "trt17")
+        self.assertEqual(datajud.indice_do_numero("9990001-11.2026.8.26.0100"), "")  # justiça estadual: ainda não
+
+    def test_lote_fica_com_o_primeiro_grau(self):
+        from lexsuite import datajud
+        pedidos = []
+
+        def pedir(url, corpo):
+            pedidos.append((url, corpo))
+            return {"timed_out": False, "_shards": {"failed": 0}, "hits": {"total": {"value": 2}, "hits": [
+                {"_source": self.doc(grau="G2", atualizado="2026-11-10T00:00:00Z")}, {"_source": self.doc()}]}}
+        r = datajud.consultar_lote("trt2", ["9990001-11.2026.5.02.0001", "9990002-22.2026.5.02.0001"], pedir=pedir)
+        self.assertEqual(r["99900011120265020001"]["grau"], "G1")
+        self.assertIsNone(r["99900022220265020001"])  # não encontrado (resposta completa)
+        self.assertTrue(pedidos[0][0].endswith("/api_publica_trt2/_search"))
+        self.assertEqual(pedidos[0][1]["query"], {"terms": {"numeroProcesso": ["99900011120265020001", "99900022220265020001"]}})
+
+    def test_resposta_parcial_ou_recusada_e_falha(self):
+        from lexsuite import datajud
+        for resp in ({"error": {"type": "es_rejected_execution_exception"}}, {"_shards": {"failed": 3}, "hits": {"hits": []}},
+                     {"timed_out": True, "hits": {"hits": []}}, {"_shards": {"failed": 0}, "hits": {"total": {"value": 1}, "hits": []}}):
+            with self.assertRaises(datajud.RespostaParcial):
+                datajud.consultar_lote("trt2", ["9990001-11.2026.5.02.0001"], pedir=lambda u, c, r_=resp: r_)
