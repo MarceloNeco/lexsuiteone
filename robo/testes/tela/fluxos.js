@@ -467,7 +467,7 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.evaluate(() => { const b_ = document.querySelector('#f-sit > button'); b_.click(); }); await espera(300);
     for (let k = 0; k < 2; k++) { await p.evaluate(() => { const x = [...document.querySelectorAll('#f-sit .multi-lista input')].find(y => !y.checked); if (x) x.click(); }); await espera(500); }  // a lista se redesenha a cada clique
     const rot = await p.evaluate(() => ({ trib: document.querySelector('#f-trib > button').textContent, sit: document.querySelector('#f-sit > button').textContent, dica: document.querySelector('#f-sit > button').title }));
-    confere(rot.trib === 'Tribunais' && /^Situação \(2\)$/.test(rot.sit) && /^Situações selecionadas: .+, .+/.test(rot.dica), 'Filtros: rótulo curto ("Tribunais", "Situação (2)") e a dica com os marcados (' + rot.dica + ')');
+    confere(rot.trib === 'Tribunais' && /^Situação \(2\)$/.test(rot.sit) && /^Situações selecionadas:\n.+ \(\d+\)\n.+ \(\d+\)/.test(rot.dica), 'Filtros: rótulo curto ("Tribunais", "Situação (2)") e a dica com os marcados, um por linha com a quantidade (0.7.51) (' + rot.dica + ')');
     await p.evaluate(() => document.getElementById('b-limpar-filtros').click()); await espera(500);
     await p.close();
   }

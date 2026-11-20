@@ -25,7 +25,8 @@ NOME_ANTIGO = "LexSuiteONE.xlsx"
 
 PADRAO = {"valor_minimo": 100000, "minimo_acoes": 1, "janela_dias": 30, "teto_capital_gigante": 50000000,
           "esconder_gigantes": False, "esconder_excluidas": True, "mostrar_socios": True,
-          "dias_arquivo": 90, "limite_linhas": 60000}
+          "dias_arquivo": 90, "limite_linhas": 60000,
+          "dias_processo_novo": 30}  # 0.7.51 (decisão do dono, 20/Nov): processo novo = ajuizado há até 30 dias; o escritório muda
 CHAVES = {
     "Valor mínimo da causa (R$)": "valor_minimo",
     "Mínimo de ações da mesma empresa": "minimo_acoes",
@@ -36,6 +37,7 @@ CHAVES = {
     "Mostrar sócios e administradores": "mostrar_socios",
     "Dias na aba Arquivo": "dias_arquivo",
     "Limite de linhas da planilha": "limite_linhas",
+    "Dias para o processo ser novo": "dias_processo_novo",
 }
 LINHAS_PREFERENCIAS = [
     ["Ajuste", "Valor", "Como usar"],
@@ -48,6 +50,7 @@ LINHAS_PREFERENCIAS = [
     ["Mostrar sócios e administradores", "sim", "sim ou não. São nomes de pessoas do cadastro público da Receita; se o escritório não precisa, desligue."],
     ["Dias na aba Arquivo", 90, "A aba Arquivo mostra os últimos N dias e todo processo trabalhado (Em análise, Em contato, Virou cliente). O resto continua no programa e na tela Arquivo."],
     ["Limite de linhas da planilha", 60000, "Acima de 80% o RADAR avisa; a 100% guarda uma cópia de segurança e enxuga a aba Arquivo sozinho. Mais linhas deixam o Excel lento."],
+    ["Dias para o processo ser novo", 30, "Processo ajuizado há até N dias é \"novo\"; os mais antigos ficam na lista marcados \"processo antigo\" (data do CNJ ou do Diário)."],
 ]
 LINHAS_EXCLUSOES = [
     ["Nome ou CNPJ", "Motivo"],
@@ -156,11 +159,11 @@ def versao_tupla(v):
 
 
 LIMITES = {"valor_minimo": (0, 1e12), "minimo_acoes": (1, 100), "janela_dias": (1, 365), "teto_capital_gigante": (0, 1e15),
-           "dias_arquivo": (7, 3650), "limite_linhas": (1000, 1000000)}
+           "dias_arquivo": (7, 3650), "limite_linhas": (1000, 1000000), "dias_processo_novo": (1, 365)}
 
 
 MAX_EXCLUSOES = 5000
-INTEIROS = ("minimo_acoes", "janela_dias", "dias_arquivo", "limite_linhas")
+INTEIROS = ("minimo_acoes", "janela_dias", "dias_arquivo", "limite_linhas", "dias_processo_novo")
 
 
 AREAS = tuple(NOMES_FRENTE)  # trabalhista, tributario, civel, empresarial

@@ -216,8 +216,8 @@ h1 { margin: 6px 0 0; font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 600; 
 .abas button { border: 0; background: transparent; padding: 6px 12px; font-size: .82rem; font-weight: 600; color: var(--tinta-3); }
 .abas button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
 .painel-acoes { display: flex; gap: 14px; }
-.per-rotina { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; align-items: center; margin: 10px 0; padding: 10px 12px; border: 1px solid var(--f-borda); border-left: 4px solid var(--barra); border-radius: 8px; background: var(--f-bg); }
-.per-rotina label { font-weight: 700; } .per-rotina select { justify-self: start; font: inherit; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--linha-2); background: var(--folha); color: var(--tinta); } .per-rotina .agenda-info { grid-column: 1 / -1; margin: 0; }
+.per-rotina { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; min-width: 0; margin: 10px 0; padding: 10px 12px; border: 1px solid var(--f-borda); border-left: 4px solid var(--barra); border-radius: 8px; background: var(--f-bg); }
+.per-rotina label { font-weight: 700; } .per-rotina select { max-width: 100%; min-width: 0; font: inherit; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--linha-2); background: var(--folha); color: var(--tinta); } .per-rotina .agenda-info { flex-basis: 100%; margin: 0; }
 .per-leitura { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-right: auto; } .per-leitura label { font-weight: 700; font-size: .9rem; }
 .per-leitura select { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--linha); background: var(--folha); color: var(--tinta); } .per-txt { color: var(--tinta-3); font-size: .86rem; }
 .gtrib { border-top: 1px solid var(--linha); padding: 10px 0 4px; }

@@ -325,3 +325,26 @@ def consulta_dia(sigla, data, varas=None, aviso=print, parar=None, pedir=None, p
     for p in pubs:
         p["fonte_leitura"] = "consulta"
     return pubs, info
+
+
+def historico_por_numero(numero, desde, ate, buscar=None, aviso=lambda *_: None):
+    """0.7.51 (desenho das datas e fontes): todas as publicações de um processo no DJEN, do ano do número até hoje. Guarda só datas e
+    tipos (o texto e os destinatários, onde aparecem pessoas, ficam só na memória e se descartam: Res. CNJ 121/2010 e regra do produto).
+    Devolve {pub1, pubN, dias, tipos, distribuicao} — distribuicao = 1ª publicação da lista de distribuição, quando houver."""
+    buscar = buscar or buscar_filtrado
+    pubs = buscar({"numeroProcesso": re.sub(r"\D", "", str(numero or ""))}, desde, ate, None, aviso, rotulo="histórico")
+    dias, tipos, dist = set(), set(), []
+    for p in pubs:
+        d = str(p.get("data") or "")[:10]
+        if not re.match(r"\d{4}-\d{2}-\d{2}$", d):
+            continue
+        dias.add(d)
+        tp = " ".join(str(p.get(k) or "") for k in ("tipo_documento", "tipo_comunicacao")).strip()
+        if tp:
+            tipos.add(tp[:60])
+        texto = cl.sem_acento(str(p.get("texto") or "")[:600]).lower()
+        if "distribui" in cl.sem_acento(tp).lower() or "processo distribuid" in texto or "lista de distribuic" in texto:
+            dist.append(d)
+    ds = sorted(dias)
+    return {"pub1": ds[0] if ds else "", "pubN": ds[-1] if ds else "", "dias": len(ds), "tipos": sorted(tipos)[:8],
+            "distribuicao": min(dist) if dist else ""}
