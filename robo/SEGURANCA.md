@@ -1,8 +1,9 @@
-# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.48)
+# Segurança do robô LexSuiteONE · RADAR JUDICIAL (v0.7.53)
 
 Resumo para quem audita. O robô roda no computador do escritório. Com a SolverONE ele troca só: a conferência da
 licença (código, versão e só quantidades por situação, dia, tribunal, frente e faixa de valor; nenhum nome, processo ou
-contato), o cadastro de quem usa (nome, e-mail, função e documento do
+contato), as amostras de formato das fontes lidas (0.7.53: o conteúdo inteiro trocado de forma irreversível, caractere a
+caractere, antes de sair; só a forma fica; ver "Amostras de formato"), o cadastro de quem usa (nome, e-mail, função e documento do
 escritório), o aceite dos termos (versão, data e fuso horário), avisos técnicos de erro (sem conteúdo de processos) e a
 procura de versão nova; ver "Rede". A relação de processos, as fichas, os contatos, as anotações e as estatísticas dos meses
 anteriores (totais e, só no computador, o número dos processos já contados) não saem do computador e da pasta do escritório.
@@ -23,7 +24,8 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
 - **Rede.** Só HTTPS para DJEN, PJe (consulta pública), BrasilAPI, Minha Receita e a conferência da licença na SolverONE
   (Supabase, função `lex-conta`: código de cliente, identificação da instalação, versão e, desde a 0.7.14, a tabela de
   totais por situação, dia, tribunal, frente e faixa de valor, sem nome, processo, CNPJ ou contato; a tela mostra a tabela
-  enviada); o cadastro de quem usa (nome, e-mail, função e documento do escritório: CNPJ, CPF ou passaporte) e o aceite
+  enviada; desde a 0.7.53, as ações `formato` e `amostra`, com a assinatura do formato e a amostra anonimizada, que a tela
+  também mostra; só vão quando a SolverONE liga o recurso `amostras` da licença); o cadastro de quem usa (nome, e-mail, função e documento do escritório: CNPJ, CPF ou passaporte) e o aceite
   dos termos de uso (versão e fuso horário); avisos
   técnicos de erro (etapa, versão, Windows e mensagem sem caminhos pessoais; desde a 0.7.47 também o nome do antivírus
   encontrado, se está ligado e o tipo de bloqueio, um de seis sinais, nada de pessoa); desde a 0.7.47, na conferência da licença,
@@ -61,3 +63,18 @@ anteriores (totais e, só no computador, o número dos processos já contados) n
 - **Revisão.** Testes automáticos (mais de 110) cobrem assinatura (vetores da RFC), pacote adulterado, caminho suspeito,
   planilha corrompida e pedidos sem o cabeçalho da página. Revisão de segurança e LGPD trimestral com a skill
   `seguranca-lgpd-gdpr`; Bandit e Gitleaks entram no GitHub Actions quando houver repositório.
+
+## Amostras de formato (0.7.53, decisões 59 a 62)
+
+- **O quê:** de cada fonte lida (caderno e consulta do Diário, Receita, DataJud, resposta colada da área logada), uma amostra com
+  todo o conteúdo trocado caractere a caractere por sorteio (`secrets`): letra por letra da mesma caixa, dígito por dígito, acento
+  por acento; ficam só os nomes dos campos, a pontuação, o tamanho e as palavras fixas do protocolo e os valores tabelados das fontes
+  (lista no código). O mapa da troca fica só na memória: não há como voltar ao original. Nunca sai CPF ou CNPJ com dígito
+  verificador válido; contato de sócio sai com o tamanho arredondado. Junto, a "assinatura" do formato (campos, tipos e presença,
+  sem conteúdo).
+- **Quando:** guardadas no computador (as 20 mais recentes de cada fonte) e enviadas à SolverONE só quando a licença tem o recurso
+  `amostras` ligado (lex-conta v21); até lá, ficam numa fila local com teto de 5 MB. Sem internet, nada aparece na tela e a fila
+  tenta de novo depois.
+- **Onde ver:** Configurações → Sobre este computador → "O que a SolverONE recebe" → "Ver as amostras de formato".
+- **Troca entre computadores:** fica só na pasta do escritório (`_RADAR (não mexer)`); nada disso vai à SolverONE.
+

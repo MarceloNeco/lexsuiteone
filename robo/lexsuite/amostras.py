@@ -13,7 +13,8 @@ O que é guardado e enviado (desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM
   "mudança de formato", registrada na Saúde do computador e enviada à SolverONE (RootifyONE).
 
 Sempre ligado, sem chave nas Configurações (decisão 60). Nada aparece na tela: sem internet ou com a SolverONE fora, os envios
-ficam numa fila no banco local e são tentados de novo mais tarde, em silêncio. Só biblioteca padrão; nada de IA."""
+ficam numa fila no banco local e são tentados de novo mais tarde, em silêncio. O envio só começa quando a SolverONE liga o
+recurso `amostras` da licença (lex-conta v21); antes disso a fila apenas guarda. Só biblioteca padrão; nada de IA."""
 
 import base64
 import collections
@@ -341,6 +342,10 @@ def enviar_pendentes(banco, cfg, versao, pedir=None, agora=None, maximo=20):
     criar_tabelas(con)
     c = (cfg or {}).get("conta") or {}
     if not c.get("codigo"):
+        return 0
+    # revisão da Operação: nada sai antes de a SolverONE estar pronta para receber (lex-conta v21) e ligar o recurso `amostras` da
+    # licença no RootifyONE; até lá a fila só guarda (com teto). Assim o envio começa junto com a nuvem, com o "pode" do dono.
+    if not ((c.get("recursos") or {}).get("amostras") is True):
         return 0
     agora_s, aceitos = agora.isoformat(timespec="seconds"), 0
     for id_, tipo, corpo, tent in con.execute("SELECT id, tipo, corpo, tentativas FROM envios WHERE proxima_em <= ? "

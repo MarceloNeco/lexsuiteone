@@ -710,15 +710,6 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": False, "motivo": "nao_encontrado"})
             return self._responder({"ok": True, "razao_social": d.get("razao_social", ""), "nome_fantasia": d.get("nome_fantasia", ""),
                                     "situacao": d.get("situacao", ""), "municipio": d.get("municipio", ""), "uf": d.get("uf", "")})
-        if u.path == "/troca/estado":  # 0.7.53 (decisão 64): o botão "Trazer do escritório (N)"; aproveita e manda o que este fez
-            from . import troca
-            try:
-                b_ = bd.Banco(s.caminho_db)
-                with _TRAVA_TROCA:
-                    troca.exportar(b_, s.config())
-                return self._responder(dict(troca.pendentes(b_, s.config()), ok=True))
-            except Exception:  # noqa: BLE001 - pasta fora do ar: o botão simplesmente não aparece
-                return self._responder({"ok": True, "n": 0, "de": [], "ate": ""})
         if u.path == "/historico":  # 0.7.13: as últimas tentativas de leitura, uma por tribunal
             try:
                 banco = bd.Banco(self.server.caminho_db)
@@ -1295,6 +1286,15 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": True, "desfeitos": banco.desfazer_copia(ids_)})
             finally:
                 banco.con.close()
+        if caminho == "/troca/estado":  # 0.7.53 (decisão 64): o botão "Trazer do escritório (N)"; aproveita e manda o que este fez
+            from . import troca  # revisão (L1): é POST com o cabeçalho X-LexSuite, porque grava na pasta
+            try:
+                b_ = bd.Banco(s.caminho_db)
+                with _TRAVA_TROCA:
+                    troca.exportar(b_, s.config())
+                return self._responder(dict(troca.pendentes(b_, s.config()), ok=True))
+            except Exception:  # noqa: BLE001 - pasta fora do ar: o botão simplesmente não aparece
+                return self._responder({"ok": True, "n": 0, "de": [], "ate": ""})
         if caminho == "/troca/juntar":  # 0.7.53 (decisão 64): "Trazer do escritório"
             from . import troca
             if s.estado.como_dict()["rodando"]:

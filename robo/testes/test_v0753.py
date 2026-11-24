@@ -96,14 +96,38 @@ class DoisComputadores(unittest.TestCase):
         for n in arquivos[:2]:
             shutil.move(os.path.join(base, n), os.path.join(escondido, n))
         troca.juntar(self.b, self.cb)
+        self.assertEqual(troca.vetor(self.b, self.cb)["aaaa1111aaaa1111"], 0)  # tem o 3, mas falta o 1: o vetor não pula
         for n in arquivos[:2]:
             shutil.move(os.path.join(escondido, n), os.path.join(base, n))
-        self.assertEqual(troca.pendentes(self.b, self.cb)["n"], 0)  # já passou do 3º: os atrasados não são vistos como novos
-        # por isso a junção usa o vetor só como limite de cada arquivo: B relê do começo numa base nova e chega ao mesmo estado
-        c = bd.Banco(os.path.join(tempfile.mkdtemp(), "c.db")); self.addCleanup(c.con.close)
-        cc = _cfg(self.pasta, "cccc3333cccc3333", "Ana")
-        troca.juntar(c, cc)
-        self.assertEqual(_estado(c), _estado(self.a))
+        # revisão da Operação (B1): os que chegaram depois NÃO são dados por lidos: entram na próxima junção
+        self.assertGreater(troca.pendentes(self.b, self.cb)["n"], 0)
+        troca.juntar(self.b, self.cb)
+        self.assertEqual(_estado(self.b), _estado(self.a))
+        self.assertEqual(troca.vetor(self.b, self.cb)["aaaa1111aaaa1111"], 3)
+
+    def test_revisao_arquivo_sincronizando_e_lido_quando_completa(self):
+        _lead(self.a, "0000001-11.2026.5.09.0001"); troca.exportar(self.a, self.ca)
+        base = os.path.join(self.pasta, "LexSuiteONE", troca.PASTA, "troca", "aaaa1111aaaa1111")
+        nome = os.path.join(base, os.listdir(base)[0])
+        with open(nome, "rb") as f:
+            inteiro = f.read()
+        with open(nome, "wb") as f:
+            f.write(inteiro[:len(inteiro) // 2])  # o Drive ainda está baixando
+        self.assertEqual(troca.juntar(self.b, self.cb), 0)
+        with open(nome, "wb") as f:
+            f.write(inteiro)  # terminou de sincronizar
+        self.assertEqual(troca.juntar(self.b, self.cb), 1)
+        self.assertEqual(_estado(self.b), _estado(self.a))
+
+    def test_revisao_banco_recriado_nao_sobrescreve_arquivo_ja_lido(self):
+        _lead(self.a, "0000001-11.2026.5.09.0001"); troca.exportar(self.a, self.ca)
+        troca.juntar(self.b, self.cb)
+        novo = bd.Banco(os.path.join(tempfile.mkdtemp(), "a2.db")); self.addCleanup(novo.con.close)  # reinstalado, mesma instalação
+        _lead(novo, "0000002-11.2026.5.09.0001"); troca.exportar(novo, self.ca)
+        base = os.path.join(self.pasta, "LexSuiteONE", troca.PASTA, "troca", "aaaa1111aaaa1111")
+        self.assertEqual(sorted(n[:8] for n in os.listdir(base)), ["00000001", "00000002"])  # o 1 ficou; o novo é o 2
+        troca.juntar(self.b, self.cb)
+        self.assertEqual(self.b.con.execute("SELECT count(*) FROM leads").fetchone()[0], 2)
 
     def test_planilha_nunca_volta_atras(self):
         _lead(self.a, "0000001-11.2026.5.09.0001")
@@ -149,8 +173,15 @@ class DoisComputadores(unittest.TestCase):
             json.dump(outra, f)
         self.assertEqual(troca.juntar(self.b, self.cb), 1)
         self.assertEqual([c["valor"] for c in self.b.contatos()], ["(41) 3333-2222"])
-        self.assertEqual(troca.pendentes(self.b, self.cb)["n"], 0)  # os ruins não voltam a cada vez
-        self.assertTrue(any("Troca" in e.get("fonte", "") for e in self.b.execucoes("saude", 10)))
+        self.assertTrue(any("outra licença" in e.get("detalhe", "") for e in self.b.execucoes("saude", 10)))  # de outra licença: na hora
+        # o que não abre pode estar sincronizando: continua sendo tentado; só é dado por ruim depois de 10 tentativas e 24 h
+        self.assertEqual(troca.pendentes(self.b, self.cb)["n"], 1)
+        for _ in range(troca.FALHA_TENTATIVAS):
+            troca.juntar(self.b, self.cb)
+        self.assertEqual(troca.pendentes(self.b, self.cb)["n"], 1)  # ainda dentro das 24 h
+        self.b.con.execute("UPDATE troca_falhas SET primeira_em = '2020-01-01T00:00:00'"); self.b.con.commit()
+        troca.juntar(self.b, self.cb)
+        self.assertEqual(troca.pendentes(self.b, self.cb)["n"], 0)
 
     def test_revisao_arquivo_corrompido_ou_estranho_nao_trava_a_gravacao(self):
         base = os.path.join(self.pasta, "LexSuiteONE", troca.PASTA, "troca", "dddd4444dddd4444"); os.makedirs(base)
@@ -161,7 +192,7 @@ class DoisComputadores(unittest.TestCase):
             json.dump([1, 2, 3], f)  # JSON válido que não é objeto
         _lead(self.b, "0000001-11.2026.5.09.0001")
         self.assertEqual(troca.juntar(self.b, self.cb), 0)
-        self.assertEqual(troca.pendentes(self.b, self.cb)["n"], 0)
+        self.assertEqual(troca.pendentes(self.b, self.cb)["n"], 1)  # o corrompido fica para tentar de novo; o JSON estranho sai na hora
         self.assertTrue(radar.gravar_planilha(self.cb, radar.montar_radar(self.cb, self.b, prefs=pf.padrao()), self.b, "0.7.53", self.pasta, lambda *_: None))
 
     def test_revisao_pasta_fora_do_ar_nao_derruba_a_leitura(self):
@@ -329,6 +360,10 @@ class AmostrasDeFormato(unittest.TestCase):
         b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db")); self.addCleanup(b.con.close)
         amostras.observar("receita:brasilapi", {"razao_social": "EMPRESA FICTICIA", "qsa": [{"nome_socio": "NOME FICTICIO"}]}); amostras.descarregar(b)
         cfg = {"conta": {"codigo": "LEX-AAAA-BBBB", "instalacao": "abc"}}
+        nada = []
+        self.assertEqual(amostras.enviar_pendentes(b, cfg, "0.7.53", pedir=lambda *a, **k: nada.append(1) or {"ok": True}), 0)
+        self.assertEqual(nada, [])  # revisão: sem o recurso `amostras` ligado pela SolverONE, nada sai
+        cfg["conta"]["recursos"] = {"amostras": True}
         def fora(*a, **k):
             raise OSError("sem internet")
         agora = dt.datetime(2026, 11, 24, 10)

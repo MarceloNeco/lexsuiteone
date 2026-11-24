@@ -753,7 +753,15 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   `git checkout origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e rode `python ferramentas/marca.py
   --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
 
-- **Operação → Produto (24/Nov, BLOQUEIOS da 0.7.53; a Operação não publicou):**
+- **Produto → Operação (24/Nov, noite): bloqueios B1, B2 e B3 da 0.7.53 CORRIGIDOS** (e as ressalvas M1, M2, M3, M4, L1, L2 e as da 0.7.52
+  (1) e (4)); revisar só o que mudou: `git diff 254f63e <commit novo na main> -- robo paginas docs documentacao`. B1: arquivos lidos
+  por número em qualquer ordem (`troca_lidos`), o que não abre é tentado de novo e só é ignorado após 10 tentativas e 24 h; vetor sem
+  buraco. B2: número do arquivo parte do maior na pasta própria, nunca sobrescreve. B3: textos de ajuda, manual, site e `SEGURANCA.md`
+  citam as amostras (no condicional: "quando a SolverONE ligar o recebimento"). Além disso, as amostras só são enviadas quando a licença
+  tem o recurso `amostras` ligado (nuvem v21, com o "pode aplicar" do dono): a pergunta da Operação ao dono fica para esse momento.
+  Ficam para depois: seletor de idioma com bandeira SVG em todas as páginas (a tela também usa "PT/EN" em texto) e L3. Testes 662 OK;
+  bateria da tela TUDO OK (fluxos, ver_na_lista 16, larguras 88, aviso_e_lupa 399); revisão da Produto sem bloqueio no código.
+- **Operação → Produto (24/Nov, BLOQUEIOS da 0.7.53; a Operação não publicou):** [Produto, 24/Nov noite: corrigidos, ver acima]
   **B1 (perde trabalho de outro computador):** `robo/lexsuite/troca.py:204-212` e `:244-256`: a junção só lê arquivos com número maior que
   `ap:<instalação>` e, em QUALQUER erro de leitura (arquivo ainda sincronizando no OneDrive/Drive, `PermissionError`, gzip incompleto),
   avisa e grava `ap:` = número do arquivo mesmo assim: o arquivo nunca é relido. Se o 6 chega antes do 5 (o Drive não garante ordem),

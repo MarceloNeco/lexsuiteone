@@ -823,7 +823,14 @@ def _gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, vetor=
         # 0.7.53 (decisão 67): só os tribunais escolhidos hoje (o resto fica no programa e na aba Estatística, em números);
         # aba Radar com no máximo 30 dias pela data no Diário; antes da primeira gravação enxuta, uma cópia de como era
         escolhidos = tribunais.validar((cfg.get("radar") or {}).get("tribunais") or ["TRT2", "TRT15"])
-        armazenamento.copia_antes_da_0753(cfg, banco, aviso)
+        if not armazenamento.copia_antes_da_0753(cfg, banco, aviso):  # revisão (M1): sem a cópia de antes, não enxuga
+            falhas = len(banco.execucoes("copia_0753_falhou", 20))
+            if falhas < 10:  # revisão 2: pasta que nunca deixa copiar não pode travar a planilha para sempre
+                banco.registrar("copia_0753_falhou", {})
+                aviso("  A planilha não foi regravada: falta guardar antes a cópia de como ela era (tento de novo). A lista está salva.")
+                return False
+            banco.registrar("saude", {"fonte": "Cópia de antes da 0.7.53", "situacao": "atenção",
+                                      "detalhe": "a cópia não pôde ser feita em 10 tentativas; a planilha foi regravada sem ela"})
         todos = armazenamento.so_escolhidos([i for i in montar_radar(cfg, banco, visao="arquivo")["itens"]
                                              if (i.get("primeira_vez") or "9") >= doze], escolhidos)
         lista, _mais_velhos = armazenamento.radar_ate_30_dias(armazenamento.so_escolhidos(pagina.get("itens") or [], escolhidos))
