@@ -1,6 +1,6 @@
 # Estado atual do RADAR JUDICIAL (uma página; toda sessão lê antes de responder ao dono)
 
-Atualizado em 24/Nov/2026 pela Produto, com a 0.7.52 pronta para publicar depois da revisão (a 0.7.51 está no ar) (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
+Atualizado em 24/Nov/2026 pela Produto, com a 0.7.53 pronta para publicar depois da revisão (a 0.7.52 também espera publicação; a 0.7.51 está no ar) (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
 que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" sai DAQUI, não da memória da conversa.
 
 ## 1. No ar
@@ -24,11 +24,13 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
+- **0.7.53** (24/Nov; decisões 59 a 67; espera o "publica a versão 0.7.53"): vários computadores na mesma pasta sem computador
+  mestre ("Trazer do escritório", "Visto por"), planilha só com os tribunais escolhidos e aba Estatística (resolve a planilha de 51 mil
+  linhas), amostras de formato anonimizadas com envio silencioso. Inclui a 0.7.52. Testes do dono: seção 11.
+- **Nuvem v21 das amostras** (Arquitetura): até ela existir, as amostras ficam na fila de cada computador e vão sozinhas depois.
 - **0.7.52** (24/Nov; espera o "publica a versão 0.7.52" na conversa da Operação): inglês sem sobras de português, "Court Journal",
   "Manual de uso / User guide", termos em inglês com seletor (sem aceite novo), limpeza da planilha com andamento, resultado e ✕,
   consulta ao CNJ mais curta, Novidades sucintas. Testes do dono: seção 10.
-- **Perguntas 59 a 67** (24/Nov): amostra anonimizada da área logada, vários computadores na mesma planilha, troca do que cada um
-  enriqueceu e o tamanho da planilha. Desenho: `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`. Nada é feito antes das respostas.
 - **0.7.51 publicada** (20/Nov, tag v0.7.51): o processo é novo pela
   **data de ajuizamento** (CNJ ou Diário; 30 dias, ajustável), o antigo fica marcado "PROCESSO ANTIGO" (corrige o caso de maio da KR
   Law); cada leitura consulta o CNJ e o histórico do Diário, com "Tentar de novo"; jornada do processo na ficha; filtros Idade e
@@ -50,7 +52,7 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 1. Terminar o teste da 0.7.49 (seção 7) e, se quiser, o que faltou da 0.7.48 e da 0.7.47 (seções 6 e 5); o que falhar vira feedback na Produto.
 2. Testar a 0.7.50 no notebook, depois de "Atualizar agora" (seção 8, ~15 min); o que falhar vira feedback na Produto.
 2b. Testar a 0.7.51 (seção 9). Escrever "publica a versão 0.7.52" na conversa da Operação e testar a 0.7.52 (seção 10, ~10 min).
-2c. Responder as perguntas 59 a 67 do quadro (amostra anonimizada, planilha em vários computadores, tamanho da planilha).
+2c. Publicar a 0.7.53 ("publica a versão 0.7.53" na Operação; ela já leva a 0.7.52) e testar com dois computadores (seção 11).
 3. Quando quiser: teste de 5 min no PJe com advogado logado (`visita-kr-law/PROMPT-TESTE-GAP-PJE-2026-11-15.md`).
 4. Supabase (Central): TOTP, desligar signups, usuários da equipe; repositório `central-lexsuiteone`.
 5. RootifyONE: "aplicado" (recursos por licença) e os prompts pendentes de lá.
@@ -123,4 +125,16 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
    armazenamento"; espere (pode levar alguns minutos) sem fechar o programa. No fim aparece ✓ com as linhas antes e depois (ou o motivo
    em vermelho, por exemplo planilha aberta no Excel). O ✕ fecha a faixa; ela só volta se o número mudar.
 5. Rodapé do Painel: duas linhas curtas, separadas por um traço fino.
+
+## 11. Testes da 0.7.53 (depois de publicada; ~20 min; dois computadores com a mesma pasta das planilhas)
+1. Atualize os dois computadores ("Atualizar agora"). Na primeira leitura, a planilha diminui: só os tribunais escolhidos, a aba
+   Estatística aparece e a antiga fica em "Cópias de segurança/antes da 0.7.53".
+2. No computador A, "Ler o Diário agora". No B, em até 2 minutos aparece "Trazer do escritório (N)" ao lado de "Ler o Diário agora";
+   clique: gira, mostra "Trazido" e some; os processos lidos por A aparecem no B.
+3. No B, mude um processo para "Em contato" e cole um contato da área logada. No A, "Trazer do escritório": a situação e o contato
+   chegam; a ficha mostra "Marcado por (nome do B)". Abra um processo novo no A: no B aparece "Visto por (nome do A)".
+4. Abra a planilha nos dois (só leitura) e confira as colunas "Visto por", "Situação marcada por" e, na aba Contatos, "Incluído por".
+5. Painel: um mês com asterisco mostra embaixo "Mês com dados parciais" quando algum tribunal escolhido não foi lido em todos os dias.
+6. Configurações → Sobre este computador → "O que a SolverONE recebe" → "Ver as amostras de formato": o conteúdo aparece trocado
+   (nomes e números sorteados).
 

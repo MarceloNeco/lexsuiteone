@@ -100,6 +100,8 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         "situacao": _bd.situacao_valida(lead.get("status")) or "novo", "motivo": lead.get("motivo") or "",
         "situacao_em": lead.get("status_em") or "", "frente": lead.get("frente") or "trabalhista",
         "resumido": bool(lead.get("resumido")), "primeira_vez": lead.get("primeira_vez") or "",
+        "status_por": lead.get("status_por") or "", "status_em": lead.get("status_em") or "",  # 0.7.53 (decisão 65)
+        "visto_por": lead.get("visto_por") or "", "visto_em": lead.get("visto_em") or "",
         "contato": _contato_resumo(emp, extras, bool(emp.get("cnpj")), a_conferir),
         "contatos": [{k: c[k] for k in ("canal", "valor", "fonte", "data", "confianca", "origem", "de_pessoa", "validacao")} for c in extras],
         "cnpj_a_conferir": a_conferir,
@@ -484,8 +486,17 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         raise
     registro["duracao"] = round(time.perf_counter() - inicio)
     banco.registrar("radar", registro)
+    try:  # 0.7.53 (decisões 59 a 62): amostras e assinaturas de formato do que foi lido; envio em silêncio, com fila
+        import sys as _sys
+        from . import amostras
+        amostras.descarregar(banco, aviso=aviso)
+        if not ("unittest" in _sys.modules and not os.environ.get("LEXSUITE_REDE_NOS_TESTES")):
+            amostras.enviar_pendentes(banco, cfg, _versao())
+    except Exception:  # nosec B110 - amostra nunca derruba a leitura
+        pass
     try:
         banco.atualizar_estatisticas()  # 0.7.14: totais diários que nunca se apagam
+        banco.atualizar_estatisticas_leves(setor_do_lead)  # 0.7.53 (decisão 67): situação e setor por mês, de todos os tribunais
     except Exception as e:  # noqa: BLE001 - estatística nunca derruba a leitura
         aviso(f"  Não consegui atualizar as estatísticas ({e.__class__.__name__}).")
     try:  # 0.7.48 (decisões 40 a 42): limpeza automática depois de cada leitura, sempre depois das estatísticas
@@ -757,6 +768,39 @@ def registrar_consulta(banco, consulta, novos, agora, origem):
 
 
 def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
+    """0.7.53 (decisões 63 a 65): antes de gravar, junta o que os outros computadores da mesma pasta fizeram, grava o que este
+    fez, e só grava a planilha com a trava curta da pasta e se ela não for voltar atrás (vetor da aba Sobre). Nada se perde: a
+    planilha é espelho do banco de cada computador e dos arquivos de troca."""
+    from . import troca
+    if not compartilhar.pasta_base(cfg):
+        return _gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso)
+    with troca.trava(cfg) as t:
+        if t is None:
+            aviso("  Outro computador está gravando a planilha agora; ela é regravada daqui a pouco. A lista está salva.")
+            return False
+        try:
+            if troca.juntar(banco, cfg, aviso):
+                pagina = montar_radar(cfg, banco, None, False, pagina.get("situacao"))
+            troca.exportar(banco, cfg)
+        except OSError as e:  # pasta fora do ar: a planilha deste computador continua valendo
+            aviso(f"  Troca com os outros computadores não feita agora ({e.__class__.__name__}).")
+        caminho = preferencias.caminho(compartilhar.pasta_base(cfg), "trabalhista")
+        atras = troca.atrasado(banco, cfg, compartilhar.ler_vetor(caminho))
+        if atras:
+            primeira = next((e.get("desde") for e in banco.execucoes("troca_espera", 1) if e.get("de") == atras), "")
+            if not primeira:
+                banco.registrar("troca_espera", {"de": atras, "desde": dt.datetime.now().isoformat(timespec="seconds")})
+            elif (dt.datetime.now() - dt.datetime.fromisoformat(primeira)).total_seconds() > troca.ESPERA_ATRASO_H * 3600:
+                banco.registrar("saude", {"fonte": "Troca entre computadores", "situacao": "atenção",
+                                          "detalhe": "planilha regravada sem os arquivos de outro computador (não chegaram em 2 h)"})
+                atras = []
+            if atras:
+                aviso("  A planilha já tem dados de outro computador que ainda não chegaram aqui; ela é regravada quando chegarem.")
+                return False
+        return _gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso, vetor=troca.vetor(banco, cfg))
+
+
+def _gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, vetor=None):
     """Grava as planilhas (0.7.16: uma por frente). Se uma estiver aberta no Excel (o Windows trava o arquivo), avisa com
     clareza: nada se perde, a lista está no computador e a planilha é regravada depois. Antes, confere o disco e o
     tamanho: a 80% do limite avisa; a 100% faz a cópia de segurança e enxuga a aba Arquivo sozinho. Devolve True se
@@ -776,8 +820,14 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
         chave = atualizar.chave_publica(pasta_base)
         impressao = assinatura.impressao(chave) if chave else ""
         doze = (dt.date.today() - dt.timedelta(days=366)).isoformat()
-        todos = [i for i in montar_radar(cfg, banco, visao="arquivo")["itens"] if (i.get("primeira_vez") or "9") >= doze]
-        lista = pagina.get("itens") or []
+        # 0.7.53 (decisão 67): só os tribunais escolhidos hoje (o resto fica no programa e na aba Estatística, em números);
+        # aba Radar com no máximo 30 dias pela data no Diário; antes da primeira gravação enxuta, uma cópia de como era
+        escolhidos = tribunais.validar((cfg.get("radar") or {}).get("tribunais") or ["TRT2", "TRT15"])
+        armazenamento.copia_antes_da_0753(cfg, banco, aviso)
+        todos = armazenamento.so_escolhidos([i for i in montar_radar(cfg, banco, visao="arquivo")["itens"]
+                                             if (i.get("primeira_vez") or "9") >= doze], escolhidos)
+        lista, _mais_velhos = armazenamento.radar_ate_30_dias(armazenamento.so_escolhidos(pagina.get("itens") or [], escolhidos))
+        estatistica = armazenamento.linhas_estatistica(banco)
         frentes = {armazenamento.frente_do(i) for i in lista + todos} | {f for f, _ in preferencias.planilhas_existentes(base)}
         ordem = [f for f in preferencias.NOMES_FRENTE if f in frentes] or ["trabalhista"]
         tudo_ok, limpou = True, False
@@ -808,7 +858,8 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
             processos = {i.get("processo") for i in radar_f + arquivo} if len(ordem) > 1 else None
             caminho = compartilhar.gravar_radar(cfg, pagina, banco, versao, COLUNAS_RADAR, linha_csv, impressao, pasta_base,
                                                 aviso, arquivo=arquivo, frente=frente, itens=radar_f, aviso_tamanho=texto,
-                                                processos=processos, criterios=prefs)
+                                                processos=processos, criterios=prefs,
+                                                estatistica=[estatistica[0]] + [l for l in estatistica[1:] if l[2] == armazenamento.FRENTE_LEGIVEL.get(frente, frente)], vetor=vetor)
             if not caminho:  # planilha em uso ou ilegível: gravar_radar já avisou e não regravou nada
                 tudo_ok = False
                 continue
@@ -839,6 +890,13 @@ def ja_conferidos_para_saude(tentativas):
 
 TRAVA_REGRAVAR = threading.RLock()  # revisão da 0.7.29: "Salvar regras", "Gravar a planilha agora", a regravação depois
 # da planilha aberta e a limpeza nunca se cruzam (uma leria as abas antes da outra gravar e desfaria a mudança)
+
+
+def setor_do_lead(lead):
+    """O mesmo setor que o cartão mostra (item_de_lead), a partir do lead guardado."""
+    emp = lead.get("empresa_receita") or {}
+    nomes = lead.get("empresas") or []
+    return cl.setor(nomes if not emp.get("atividade") else [emp.get("atividade", "")] + nomes)
 
 
 def regravar_planilha(cfg, banco, pasta_base, versao, aviso=print):
@@ -890,6 +948,8 @@ COLUNAS_RADAR = [
     ("Fonte do ajuizamento", "ajuizado_fonte_legivel"), ("Processo novo ou antigo", "novo_legivel"), ("1ª publicação no Diário", "pub1"),
     ("Última publicação no Diário", "pubN"), ("Encontrado pelo RADAR em", "primeira_vez"), ("Andamento", "andamento_legivel"),
     ("Classe (CNJ)", "classe_cnj"), ("Assuntos (CNJ)", "assuntos_cnj"),
+    # 0.7.53 (decisão 65): quem viu e quem marcou a situação, de qualquer computador do escritório
+    ("Visto por", "visto_por"), ("Situação marcada por", "status_por"),
 ]
 FONTE_AJ_LEGIVEL = {"cnj": "CNJ", "diario": "Diário (lista de distribuição)", "digitado": "Digitado ou área logada", "aproximada": ""}
 ANDAMENTO_LEGIVEL = {"": "Sem acordo nem sentença", "acordo": "Com acordo", "sentenca": "Com sentença", "transito": "Trânsito em julgado",

@@ -51,7 +51,52 @@ def selecionar_arquivo(itens, dias, corte_data="", hoje=None):
     desde = (hoje - dt.timedelta(days=max(1, int(dias or 90)))).isoformat()
     if corte_data and corte_data > desde:
         desde = corte_data
-    return [i for i in itens if i.get("situacao") in TRABALHADOS or (i.get("primeira_vez") or "") >= desde]
+    # 0.7.53 (decisão 67): pela data do processo no Diário (antes, pela data em que o RADAR leu: os 24 TRTs lidos uma vez ficavam inteiros)
+    return [i for i in itens if i.get("situacao") in TRABALHADOS or _data_diario(i) >= desde]
+
+
+def _data_diario(item):
+    return str(item.get("diario_em") or item.get("primeira_vez") or "")[:10]
+
+
+RADAR_DIAS_PLANILHA = 30  # 0.7.53 (decisão 67): a aba Radar da planilha tem no máximo 30 dias, pela data no Diário
+
+
+def so_escolhidos(itens, escolhidos):
+    """0.7.53 (decisão 67): a planilha fica só com os tribunais escolhidos hoje; trabalhados de qualquer tribunal ficam (são do
+    escritório). O resto continua no programa (tela Arquivo) e entra na aba Estatística, só em números."""
+    esc = {str(t).upper() for t in escolhidos or []}
+    return [i for i in itens if (i.get("tribunal") or "").upper() in esc or i.get("situacao") in TRABALHADOS]
+
+
+def radar_ate_30_dias(itens, hoje=None):
+    """Aba Radar: só os últimos RADAR_DIAS_PLANILHA dias pela data no Diário; o mais velho vai para a aba Arquivo."""
+    hoje = hoje or dt.date.today()
+    desde = (hoje - dt.timedelta(days=RADAR_DIAS_PLANILHA)).isoformat()
+    return [i for i in itens if _data_diario(i) >= desde], [i for i in itens if _data_diario(i) < desde]
+
+
+def copia_antes_da_0753(cfg, banco, aviso=print):
+    """Uma vez só: guarda as planilhas como eram antes da primeira gravação enxuta (decisão 67), em
+    "Cópias de segurança/antes da 0.7.53/". Nada é apagado. Devolve True se já existia ou se copiou."""
+    from . import compartilhar
+    if any(True for _ in banco.execucoes("copia_0753", 1)):
+        return True
+    base = compartilhar.pasta_base(cfg)
+    if not base:
+        return False
+    destino = os.path.join(base, "Cópias de segurança", "antes da 0.7.53")
+    try:
+        os.makedirs(destino, exist_ok=True)
+        for _frente, caminho in preferencias.planilhas_existentes(base):
+            alvo = os.path.join(destino, os.path.basename(caminho))
+            if os.path.exists(caminho) and not os.path.exists(alvo):
+                shutil.copy2(caminho, alvo)
+    except OSError as e:  # planilha aberta ou pasta sem permissão: tenta na próxima gravação
+        aviso(f"  Cópia das planilhas de antes da 0.7.53 não feita agora ({e.__class__.__name__}); tento na próxima gravação.")
+        return False
+    banco.registrar("copia_0753", {"pasta": "Cópias de segurança/antes da 0.7.53"})
+    return True
 
 
 def caber(radar, arquivo, limite):
@@ -333,3 +378,46 @@ def situacao(cfg, banco, pasta_robo):
             "copias": {"n": len(lista_copias), "bytes": sum(c["bytes"] for c in lista_copias), "guardadas": COPIAS_GUARDADAS,
                        "pasta": pasta_copias(base), "lista": lista_copias[:COPIAS_GUARDADAS]},
             "disco": d, "nivel": nivel, "mensagens": [m for m in mensagens if m]}
+
+
+# --- 0.7.53 (decisão 67): aba Estatística da planilha ----------------------------------------------------------------
+
+SITUACAO_LEGIVEL = {"novo": "Novo", "visto": "Visto", "em_analise": "Em análise", "em_contato": "Em contato",
+                    "virou_cliente": "Virou cliente", "descartado": "Descartado", "arquivado": "Arquivado"}
+FAIXA_LEGIVEL = {"sem": "sem valor", "ate10k": "até R$ 10 mil", "10k-50k": "R$ 10 mil a 50 mil", "50k-100k": "R$ 50 mil a 100 mil",
+                 "100k-300k": "R$ 100 mil a 300 mil", "300k-500k": "R$ 300 mil a 500 mil", "500k-1mi": "R$ 500 mil a 1 milhão",
+                 "1mi+": "acima de R$ 1 milhão"}
+DIMENSAO_LEGIVEL = {"total": "Total", "porte": "Porte", "faixa": "Faixa de valor", "situacao": "Situação", "setor": "Setor"}
+
+
+def linhas_estatistica(banco, hoje=None):
+    """Linhas da aba Estatística (formato longo, fácil de filtrar): por mês e tribunal, o total de processos novos, o porte e a
+    faixa de valor (de `estatisticas_diarias`, que nunca se apaga), a situação e o setor (de `estatisticas_leves`), e os dias
+    com dados; por dia, só o total dos últimos 31 dias. Todos os tribunais lidos, não só os escolhidos."""
+    hoje = hoje or dt.date.today()
+    cab = ["Período", "Tribunal", "Área", "Dimensão", "Valor", "Processos", "Dias com dados"]
+    por_mes, dias_mes, por_dia = {}, {}, {}
+    desde_dia = (hoje - dt.timedelta(days=31)).isoformat()
+    for e in banco.estatisticas():
+        d, trib, frente, n = str(e.get("data") or "")[:10], e.get("tribunal") or "", e.get("frente") or "", int(e.get("novas") or 0)
+        if len(d) != 10 or not trib:
+            continue
+        mes = d[:7]
+        dias_mes.setdefault((mes, trib, frente), set()).add(d)
+        for dim, val in (("total", ""), ("porte", e.get("porte") or "sem porte (sem CNPJ)"), ("faixa", FAIXA_LEGIVEL.get(e.get("faixa_valor") or "sem", e.get("faixa_valor")))):
+            k = (mes, trib, frente, dim, val)
+            por_mes[k] = por_mes.get(k, 0) + n
+        if d >= desde_dia:
+            por_dia[(d, trib, frente)] = por_dia.get((d, trib, frente), 0) + n
+    for e in banco.estatisticas_leves():
+        k = (e["mes"], e["tribunal"], e["frente"], e["dimensao"],
+             SITUACAO_LEGIVEL.get(e["valor"], e["valor"]) if e["dimensao"] == "situacao" else (e["valor"] or "sem setor"))
+        por_mes[k] = por_mes.get(k, 0) + int(e["n"] or 0)
+    linhas = [cab]
+    for (mes, trib, frente, dim, val), n in sorted(por_mes.items(), key=lambda x: (x[0][0], x[0][1], x[0][3] != "total", x[0][3], -x[1])):
+        linhas.append([mes, trib, FRENTE_LEGIVEL.get(frente, frente), DIMENSAO_LEGIVEL.get(dim, dim), val, n,
+                       len(dias_mes.get((mes, trib, frente), ())) if dim == "total" else ""])
+    for (d, trib, frente), n in sorted(por_dia.items()):
+        linhas.append([d, trib, FRENTE_LEGIVEL.get(frente, frente), "Total do dia", "", n, ""])
+    return linhas
+

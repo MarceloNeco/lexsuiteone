@@ -516,6 +516,12 @@ def inicio_do_texto(texto, n=3):
 
 
 def ler_resposta(texto, empresas_por_processo, hoje=None):
+    from . import amostras  # 0.7.53 (decisões 59 a 62): formato da resposta da área logada, anonimizado antes de sair
+    amostras.observar("area_logada", texto, tipo="texto")
+    return _ler_resposta(texto, empresas_por_processo, hoje)
+
+
+def _ler_resposta(texto, empresas_por_processo, hoje=None):
     """0.7.46: lê TODOS os blocos v1 (lotes em qualquer ordem), linha a linha, sem IA. Mesmo resultado de colar_v1 e mais:
     `lotes` [{lote, de, aceitas, recusadas, repetidas, extras}], `linhas` (cada linha válida: processo, dado, resultado, fonte,
     valor normalizado), `achou` (algum bloco) e `inicio` (3 primeiras linhas, quando não achou). Linha igual em dois lotes

@@ -83,6 +83,9 @@ def buscar_filtrado(filtros, data_inicio, data_fim, diagnostico=None, aviso=prin
                       encoding="utf-8") as f:
                 json.dump(resp, f, ensure_ascii=False, indent=1)
         itens = resp.get("items") or resp.get("itens") or resp.get("content") or []
+        if isinstance(resp, dict):  # 0.7.53: formato da consulta pública (uma página basta)
+            from . import amostras
+            amostras.observar("djen_consulta", dict(resp, items=itens[:200]) if itens else resp)
         if total is None:
             total = resp.get("count") or resp.get("total") or len(itens)
             aviso(f"  DJEN {rotulo or filtros} {data_inicio}..{data_fim}: {total} publicações")
@@ -134,7 +137,9 @@ def baixar_caderno(sigla, data, diagnostico=None, aviso=print, meta=None):
         return None
     bruto = rede.pedir_bytes(meta["url"], tempo_limite=600)
     itens = []
+    nomes_zip = []
     with zipfile.ZipFile(io.BytesIO(bruto)) as z:
+        nomes_zip = z.namelist()[:20]
         # Arquivo baixado é entrada não confiável: limita o tamanho descompactado (zip bomb) e ignora o que não é JSON.
         if sum(i.file_size for i in z.infolist()) > rede.LIMITE_DOWNLOAD:
             raise ValueError(f"caderno {sigla} {data} grande demais ao descompactar")
@@ -147,6 +152,8 @@ def baixar_caderno(sigla, data, diagnostico=None, aviso=print, meta=None):
         with open(os.path.join(diagnostico, f"caderno_{sigla}_{data}_amostra.json"), "w", encoding="utf-8") as f:
             json.dump({"meta": meta, "amostra": itens[:20]}, f, ensure_ascii=False, indent=1)
     aviso(f"  Caderno {sigla} {_dc(data)}: {len(itens)} publicações")
+    from . import amostras  # 0.7.53 (decisões 59 a 62): formato do caderno (anonimizado no fim da leitura)
+    amostras.observar("djen_caderno:" + str(sigla).upper(), {"items": itens[:200], "arquivos": [n.rsplit(".", 1)[-1] for n in nomes_zip]})
     return [normalizar(i) for i in itens]
 
 

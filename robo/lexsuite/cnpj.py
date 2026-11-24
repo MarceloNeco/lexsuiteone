@@ -46,6 +46,8 @@ def consultar(cnpj, banco=None, validade_dias=30, rapido=False):
         except (RuntimeError, OSError):
             sem_rede += 1
             continue
+        from . import amostras  # 0.7.53: formato da Receita (a amostra troca nome, sócios e contatos antes de sair)
+        amostras.observar("receita:" + ("brasilapi" if "brasilapi" in fonte else "minhareceita"), d)
         resumo = {
             "cnpj": cnpj,
             "razao_social": d.get("razao_social") or "",

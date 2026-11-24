@@ -26,7 +26,7 @@ Se o Windows perguntar, clique em "Executar" (ou "Mais informações" e "Executa
 
 Onde roda: no computador do escritório, nos dias e horários escolhidos. Se o computador estiver desligado na hora, a leitura acontece quando ele ligar e recupera os dias que faltaram.
 
-Segurança e dados: o {{marca.curto}} não pede senha, não contorna captcha e só instala atualizações assinadas. Processos, fichas e planilhas ficam no computador e na pasta do escritório; à SolverONE vão só a conferência da licença, o cadastro de quem usa, o aceite dos termos e totais sem nomes nem números de processo (detalhes nos termos).
+Segurança e dados: o {{marca.curto}} não pede senha, não contorna captcha e só instala atualizações assinadas. Processos, fichas e planilhas ficam no computador e na pasta do escritório; à SolverONE vão só a conferência da licença, o cadastro de quem usa, o aceite dos termos, totais sem nomes nem números de processo e amostras de formato com todo o conteúdo trocado (detalhes nos termos).
 
 Dúvidas? Escreva para {{contato}}.
 Este e-mail saiu de um endereço automático e NÃO recebe respostas.

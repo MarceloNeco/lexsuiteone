@@ -167,7 +167,17 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
   processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
 
-## 0.7.52 (24/Nov; teste da 0.7.51 em inglês) — pronta para publicar depois da revisão
+## 0.7.53 (24/Nov; decisões 59 a 67) — pronta para publicar depois da revisão
+
+- Feito: troca entre computadores sem mestre, "Trazer do escritório", "Visto por", planilha só com os escolhidos e aba Estatística,
+  amostras de formato com fila silenciosa. Testes de acesso simultâneo (dois processos ao mesmo tempo). Folha `documentacao/dod/0.7.53.md`.
+- Falta, fora da Produto: nuvem v21 (`lex-conta` com `formato` e `amostra`, tabelas e recurso `amostras`; Arquitetura, com o "pode
+  aplicar" do dono); tela "Formatos das fontes" no RootifyONE; contagem do pacote no CLAUDE.md e no `docs/PUBLICAR.md` (dois módulos
+  novos). Teste do dono no Windows com dois computadores (pasta de rede e Google Drive).
+- Backlog: "Visto" por pessoa (opção do escritório); aproveitar a leitura de outro computador para não baixar de novo o mesmo caderno;
+  junção mensal dos arquivos de troca antigos.
+
+## 0.7.52 (24/Nov; teste da 0.7.51 em inglês) — pronta para publicar
 
 - Feito: inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em inglês com seletor, limpeza da planilha visível
   (andamento, resultado, ✕), ressalvas 1 a 5 da Operação sobre a 0.7.51, Novidades sucintas. Folha `documentacao/dod/0.7.52.md`.

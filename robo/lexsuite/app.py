@@ -632,12 +632,18 @@ class Tratador(BaseHTTPRequestHandler):
             hs = _hist.situacao(banco)
             hs.update({"por_mes": _hist.por_mes(banco, tribunais.validar(r.get("tribunais"))),
                        "por_semana": _hist.por_dia_da_semana(banco, tribunais.validar(r.get("tribunais"))),
+                       "outros_tribunais": _hist.outros_tribunais(banco, tribunais.validar(r.get("tribunais"))),
                        "rodando": dict(s.hist) if s.hist.get("rodando") else {}})
             pagina["historico"] = hs
             crit = banco.execucoes("criterio", 1)
             pagina["criterio"] = crit[0] if crit else {}
             ultimo = banco.execucoes("retorno", 1)
             pagina["retorno"] = ultimo[0] if ultimo else {}
+            try:  # 0.7.53 (decisão 60): a última amostra de formato de cada fonte, exatamente como vai à SolverONE
+                from . import amostras as _am
+                pagina["amostras"] = _am.previa(banco)
+            except Exception:  # noqa: BLE001
+                pagina["amostras"] = {}
             # 0.7.36 (dono): a faixa do Painel avisa quando a última leitura falhou; uma leitura grava uma linha por tribunal com a
             # mesma hora, então olha todas as linhas dessa hora e mostra a que falhou (revisão)
             tent = banco.execucoes("tentativa", 300)  # revisão: cabe uma leitura de todos os tribunais
@@ -704,6 +710,15 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": False, "motivo": "nao_encontrado"})
             return self._responder({"ok": True, "razao_social": d.get("razao_social", ""), "nome_fantasia": d.get("nome_fantasia", ""),
                                     "situacao": d.get("situacao", ""), "municipio": d.get("municipio", ""), "uf": d.get("uf", "")})
+        if u.path == "/troca/estado":  # 0.7.53 (decisão 64): o botão "Trazer do escritório (N)"; aproveita e manda o que este fez
+            from . import troca
+            try:
+                b_ = bd.Banco(s.caminho_db)
+                with _TRAVA_TROCA:
+                    troca.exportar(b_, s.config())
+                return self._responder(dict(troca.pendentes(b_, s.config()), ok=True))
+            except Exception:  # noqa: BLE001 - pasta fora do ar: o botão simplesmente não aparece
+                return self._responder({"ok": True, "n": 0, "de": [], "ate": ""})
         if u.path == "/historico":  # 0.7.13: as últimas tentativas de leitura, uma por tribunal
             try:
                 banco = bd.Banco(self.server.caminho_db)
@@ -1033,8 +1048,10 @@ class Tratador(BaseHTTPRequestHandler):
             return self._responder({"ok": True})
         if caminho == "/situacao":  # 0.7.14: muda a situação de um ou muitos processos (lote); devolve o "antes" para desfazer
             try:
+                from . import troca as _tr
                 r = bd.Banco(s.caminho_db).mudar_situacao(corpo.get("processos") or [], corpo.get("situacao"),
-                                                          perfil=s.config()["usuario"].get("email", ""), motivo=str(corpo.get("motivo") or ""))
+                                                          perfil=s.config()["usuario"].get("email", ""), motivo=str(corpo.get("motivo") or ""),
+                                                          por=_tr.quem(s.config()))
             except ValueError as e:
                 return self._responder({"ok": False, "motivo": str(e)}, status=400)
             s.planilha_depois()
@@ -1278,6 +1295,19 @@ class Tratador(BaseHTTPRequestHandler):
                 return self._responder({"ok": True, "desfeitos": banco.desfazer_copia(ids_)})
             finally:
                 banco.con.close()
+        if caminho == "/troca/juntar":  # 0.7.53 (decisão 64): "Trazer do escritório"
+            from . import troca
+            if s.estado.como_dict()["rodando"]:
+                return self._responder({"ok": False, "motivo": "Espere a leitura terminar. / Wait for the reading to finish."})
+            try:
+                b_ = bd.Banco(s.caminho_db)
+                with _TRAVA_TROCA:
+                    n = troca.juntar(b_, s.config())
+                if n:
+                    s.planilha_depois()
+                return self._responder({"ok": True, "n": n})
+            except Exception as e:  # noqa: BLE001 - pasta fora do ar
+                return self._responder({"ok": False, "motivo": f"A pasta do escritório não respondeu ({e.__class__.__name__}). / The office folder did not answer."})
         if caminho == "/completar":  # 0.7.51 (decisão do dono): "Tentar de novo" de uma fonte pública (CNJ, histórico do Diário)
             procs_ = [str(x)[:40] for x in (corpo.get("processos") or []) if x][:200]
             if not procs_:
@@ -1384,7 +1414,7 @@ class Tratador(BaseHTTPRequestHandler):
             if ct.e_resposta_v1(texto):  # 0.7.46: o leitor novo (vários blocos, lotes, relatório)
                 return self._responder(ler_resposta_area(s, texto, str(corpo.get("arquivo") or "")[:120]))
             aceitas, recusadas = ct.colar(texto, empresas)
-            novas = sum(1 for c in aceitas if banco.guardar_contato(c))
+            novas = sum(1 for c in aceitas if banco.guardar_contato(_autoria(s, c)))
             banco.registrar_colagem(s.config()["usuario"].get("email", ""), str(corpo.get("arquivo") or "")[:120], novas, len(recusadas),
                                     "; ".join(f"linha {r['linha']}: {r['motivo']}" for r in recusadas)[:2000])
             s.planilha_depois()
@@ -1469,6 +1499,7 @@ class Tratador(BaseHTTPRequestHandler):
 
 
 _TRAVA_FONTES = threading.Lock()  # 0.7.51: um "Tentar de novo" por vez
+_TRAVA_TROCA = threading.Lock()  # 0.7.53: uma junção ou exportação da troca por vez neste computador
 
 
 # Ramos oferecidos na tela: só a frente trabalhista por enquanto (os TJs e TRFs são de outras frentes).
@@ -2258,6 +2289,32 @@ def _norm_contato(canal, v):
     return re.sub(r"[^a-z0-9@]", "", cl.sem_acento(v).lower())
 
 
+def _autoria(s, c):
+    """0.7.53 (decisão 65): quem trouxe o contato (nome e computador), para a planilha e os outros computadores."""
+    from . import troca
+    return dict(c, incluido_por=c.get("incluido_por") or troca.quem(s.config()), computador=c.get("computador") or troca.computador())
+
+
+def _amostras_em_fundo(s, banco=None):
+    """0.7.53 (decisões 59 e 60): grava as amostras observadas e tenta mandar a fila, numa thread, em silêncio."""
+    from . import amostras
+    try:
+        amostras.descarregar(banco or bd.Banco(s.caminho_db))
+    except Exception:  # nosec B110 - nunca atrapalha a tela
+        pass
+
+    import sys as _sys
+    if "unittest" in _sys.modules and not os.environ.get("LEXSUITE_REDE_NOS_TESTES"):
+        return  # nos testes automáticos nada sai do computador
+
+    def _enviar():
+        try:
+            amostras.enviar_pendentes(bd.Banco(s.caminho_db), s.config(), VERSAO)
+        except Exception:  # nosec B110 - fica na fila
+            pass
+    threading.Thread(target=_enviar, daemon=True).start()
+
+
 def ler_resposta_area(s, texto, nome_arq=""):
     """0.7.46: lê a resposta (todos os blocos v1), aplica no banco sem apagar nada e devolve o relatório do passo 4."""
     from . import contatos as ct
@@ -2267,11 +2324,12 @@ def ler_resposta_area(s, texto, nome_arq=""):
     leads = {l["processo"]: l for l in banco.todos_leads()}
     empresas = {p: (l.get("empresa_receita") or {}).get("razao_social") or (l.get("empresas") or [""])[0] for p, l in leads.items()}
     r = ct.ler_resposta(texto, empresas)
+    _amostras_em_fundo(s, banco)  # 0.7.53: guarda a amostra anonimizada e manda o que estiver na fila, sem atrasar a resposta
     if not r["achou"]:
         aceitas, recusadas = ct.colar(texto, empresas)  # o formato antigo de contatos (8 colunas) continua valendo
         if not aceitas and not recusadas:
             return {"ok": False, "nao_achou": True, "inicio": r["inicio"]}
-        novas = sum(1 for c in aceitas if banco.guardar_contato(c, perfil))
+        novas = sum(1 for c in aceitas if banco.guardar_contato(_autoria(s, c), perfil))
         s.planilha_depois()
         return {"ok": True, "aceitas": novas, "repetidas": len(aceitas) - novas, "recusadas": recusadas[:200], "formato": "antigo"}
     pend = banco.area_pedido()
@@ -2296,7 +2354,7 @@ def ler_resposta_area(s, texto, nome_arq=""):
         if any(_norm_contato(c["canal"], v) == novo for v, _ in existentes):
             anota(c["processo"], "igual", {"dado": c["canal"], "antes": c["valor"], "depois": c["valor"], "fonte": c["fonte"]})
             continue
-        banco.guardar_contato(dict(c, arquivo=nome_arq), perfil)  # contato nunca é apagado nem trocado: o novo entra junto
+        banco.guardar_contato(_autoria(s, dict(c, arquivo=nome_arq)), perfil)  # contato nunca é apagado nem trocado: o novo entra junto
         if existentes:
             anota(c["processo"], "alterado", {"dado": c["canal"], "antes": f"{existentes[0][0]} ({existentes[0][1]})", "depois": f"{c['valor']} ({c['fonte']})", "fonte": c["fonte"]})
         else:
@@ -2394,6 +2452,15 @@ def servir(pasta, porta=None, abrir=True, aviso=print, espera=False):
             conferir_arquivos(servidor, db_existia, tinha_saida)  # 0.7.47
         except Exception:  # noqa: BLE001
             pass
+        try:  # 0.7.53 (decisão 64): ao abrir, junta o que os outros computadores da pasta fizeram e manda o que este fez
+            from . import troca
+            b_ = bd.Banco(servidor.caminho_db)
+            if troca.juntar(b_, servidor.config()):
+                servidor.planilha_depois()
+            troca.exportar(b_, servidor.config())
+        except Exception:  # noqa: BLE001 - pasta fora do ar: tenta de novo pelo botão ou na próxima leitura
+            pass
+        _amostras_em_fundo(servidor)  # 0.7.53: o que ficou na fila das amostras de formato vai em silêncio
     threading.Thread(target=migrar, daemon=True, name="migrar-agenda").start()
     threading.Thread(target=vigiar_tela, args=(servidor, aviso), daemon=True, name="vigiar-tela").start()
     threading.Thread(target=vigiar_cnj, args=(servidor,), daemon=True, name="vigiar-cnj").start()  # 0.7.44 (dono)

@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.52 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.53 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,12 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.53 (24/Nov, decisões 59 a 67):** vários computadores na mesma pasta sem computador "mestre" (cada um grava o que fez
+  em `_RADAR (não mexer)/troca/<instalação>/`, junta o dos outros ao abrir, antes de gravar a planilha e no botão "Trazer do
+  escritório (N)"; trava curta e vetor na aba Sobre para a planilha nunca voltar atrás); "Visto por" e autoria das situações e dos
+  contatos; planilha só com os tribunais escolhidos (Radar até 30 dias, Arquivo pela data no Diário) e aba Estatística de todos os
+  tribunais lidos, com asterisco de mês parcial no Painel; amostras e assinaturas de formato de todas as fontes, anonimizadas, com
+  fila de envio silenciosa (sempre ligada). Módulos novos `amostras.py` e `troca.py`.
 - **0.7.52 (24/Nov, teste da 0.7.51 em inglês):** inglês sem sobras de português (avisos do alto, mensagens da leitura,
   setor, porte, tipos de publicação), "Court Journal" no lugar de "gazette", "Manual de uso" / "User guide", termos e condições em
   inglês com seletor PT/EN (o português vale; texto igual, sem aceite novo), limpeza da planilha com andamento, resultado (linhas antes

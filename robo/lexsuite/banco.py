@@ -95,6 +95,8 @@ class Banco:
             CREATE TABLE IF NOT EXISTS estatisticas_diarias (data TEXT, tribunal TEXT, vara TEXT, frente TEXT,
                 porte TEXT, faixa_valor TEXT, novas INTEGER DEFAULT 0, encerradas INTEGER DEFAULT 0, atualizado_em TEXT,
                 PRIMARY KEY (data, tribunal, vara, frente, porte, faixa_valor));
+            CREATE TABLE IF NOT EXISTS estatisticas_leves (mes TEXT, tribunal TEXT, frente TEXT, dimensao TEXT, valor TEXT,
+                n INTEGER DEFAULT 0, atualizado_em TEXT, PRIMARY KEY (mes, tribunal, frente, dimensao, valor));
             CREATE TABLE IF NOT EXISTS historico (tribunal TEXT, data TEXT, situacao TEXT, novas INTEGER DEFAULT 0,
                 quando TEXT, PRIMARY KEY (tribunal, data));
             CREATE TABLE IF NOT EXISTS historico_processos (processo TEXT PRIMARY KEY);
@@ -116,9 +118,15 @@ class Banco:
         colunas = {r[1] for r in self.con.execute("PRAGMA table_info(leads)")}
         for nome, tipo in (("frente", "TEXT DEFAULT ''"), ("motivo", "TEXT DEFAULT ''"), ("status_em", "TEXT DEFAULT ''"),
                            ("bruto_limpo", "INTEGER DEFAULT 0"), ("data", "TEXT DEFAULT ''"), ("porte", "TEXT DEFAULT ''"),
-                           ("faixa_valor", "TEXT DEFAULT ''"), ("fora_criterio", "INTEGER DEFAULT 0")):
+                           ("faixa_valor", "TEXT DEFAULT ''"), ("fora_criterio", "INTEGER DEFAULT 0"),
+                           # 0.7.53 (decisão 65): quem marcou a situação e quem viu (nome e computador), para "Visto por"
+                           ("status_por", "TEXT DEFAULT ''"), ("visto_por", "TEXT DEFAULT ''"), ("visto_em", "TEXT DEFAULT ''")):
             if nome not in colunas:
                 self.con.execute(f"ALTER TABLE leads ADD COLUMN {nome} {tipo}")  # nosec B608 - nomes fixos acima
+        col_c = {r[1] for r in self.con.execute("PRAGMA table_info(contatos)")}
+        for nome in ("incluido_por", "computador"):  # 0.7.53: quem trouxe cada contato (também de outro computador)
+            if nome not in col_c:
+                self.con.execute(f"ALTER TABLE contatos ADD COLUMN {nome} TEXT DEFAULT ''")  # nosec B608 - nomes fixos
         # Situações antigas (Novo, Visto, Em contato, Descartado) passam para as chaves novas, uma vez (versão do esquema).
         if (self.con.execute("PRAGMA user_version").fetchone() or [0])[0] < 714:
             for antigo, novo in _SITUACAO_ANTIGA.items():
@@ -296,7 +304,7 @@ class Banco:
 
     # --- Situação do processo (0.7.13) ---
 
-    def mudar_situacao(self, processos, situacao, perfil="", motivo=""):
+    def mudar_situacao(self, processos, situacao, perfil="", motivo="", por=""):
         """Muda a situação de um ou muitos processos. Devolve {quantos, antes: {processo: situação}} (para desfazer).
         Registra quem, quando (UTC e fuso), o quê e quantos na tabela `acoes`."""
         situacao = situacao_valida(situacao)
@@ -310,8 +318,11 @@ class Banco:
             for proc, st in self.con.execute(f"SELECT processo, status FROM leads WHERE processo IN ({marcas})", parte):  # nosec B608
                 antes[proc] = st or "novo"
         quando, fuso = agora_utc_e_fuso()
-        self.con.executemany("UPDATE leads SET status = ?, motivo = ?, status_em = ? WHERE processo = ?",
-                             [(situacao, (motivo or "")[:80] if situacao in ("descartado", "arquivado") else "", quando, p) for p in antes])
+        por = str(por or "")[:120]
+        self.con.executemany("UPDATE leads SET status = ?, motivo = ?, status_em = ?, status_por = ? WHERE processo = ?",
+                             [(situacao, (motivo or "")[:80] if situacao in ("descartado", "arquivado") else "", quando, por, p) for p in antes])
+        if situacao == "visto" and por:  # 0.7.53 (decisão 65): "Visto por" vale para o escritório
+            self.con.executemany("UPDATE leads SET visto_por = ?, visto_em = ? WHERE processo = ?", [(por, quando, p) for p in antes])
         self.registrar_acao(perfil, "situacao", ",".join(list(antes)[:50]), json.dumps(_contar(antes.values())), situacao, len(antes))
         self.con.commit()
         return {"quantos": len(antes), "antes": antes}
@@ -505,10 +516,11 @@ class Banco:
         """Um canal de contato da empresa processada (com fonte e data). Devolve True se entrou (False se já existia)."""
         cur = self.con.execute(
             "INSERT OR IGNORE INTO contatos (processo, empresa, canal, valor, de_pessoa, fonte, data, confianca, origem, "
-            "observacao, arquivo, criado_em) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            "observacao, arquivo, criado_em, incluido_por, computador) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (c["processo"], c.get("empresa", "")[:200], c["canal"], c["valor"][:300], 1 if c.get("de_pessoa") else 0,
              c.get("fonte", "")[:80], c.get("data", "")[:10], c.get("confianca", "media"), c.get("origem", "digitado"),
-             c.get("observacao", "")[:300], c.get("arquivo", "")[:120], agora_utc_e_fuso()[0]))
+             c.get("observacao", "")[:300], c.get("arquivo", "")[:120], c.get("criado_em") or agora_utc_e_fuso()[0],
+             str(c.get("incluido_por") or "")[:120], str(c.get("computador") or "")[:60]))
         self.con.commit()
         return cur.rowcount == 1
 
@@ -557,7 +569,7 @@ class Banco:
 
     def contatos(self, processo=None):
         cols = ("id", "processo", "empresa", "canal", "valor", "de_pessoa", "fonte", "data", "confianca", "origem",
-                "observacao", "arquivo", "validacao", "validado_por", "validado_em", "criado_em")
+                "observacao", "arquivo", "validacao", "validado_por", "validado_em", "criado_em", "incluido_por", "computador")
         sql, args = "SELECT " + ",".join(cols) + " FROM contatos", ()  # nosec B608 - colunas fixas acima
         if processo:
             sql, args = sql + " WHERE processo = ?", (processo,)
@@ -585,6 +597,33 @@ class Banco:
                              [l + (quando,) for l in linhas])
         self.con.commit()
         return len(linhas)
+
+    def atualizar_estatisticas_leves(self, setor_de):
+        """0.7.53 (decisão 67): situação e setor por mês e tribunal, de TODOS os tribunais lidos, guardados para sempre (como
+        `estatisticas_diarias`). Os meses que ainda têm processos no programa são refeitos; os outros ficam como estavam.
+        `setor_de(lead)` devolve o setor (a regra fica em classificar). Devolve quantas linhas gravou."""
+        quando = dt.datetime.now().isoformat(timespec="seconds")
+        cont = {}
+        for d in self.todos_leads():
+            if d.get("fora_criterio"):
+                continue
+            mes, trib = str(d.get("data_publicacao") or "")[:7], (d.get("tribunal") or "").upper()
+            if len(mes) != 7 or not trib:
+                continue
+            frente = d.get("frente") or "trabalhista"
+            for dim, val in (("situacao", situacao_valida(d.get("status")) or "novo"), ("setor", setor_de(d) or "")):
+                k = (mes, trib, frente, dim, val)
+                cont[k] = cont.get(k, 0) + 1
+        for mes, trib in sorted({(k[0], k[1]) for k in cont}):
+            self.con.execute("DELETE FROM estatisticas_leves WHERE mes = ? AND tribunal = ?", (mes, trib))
+        self.con.executemany("INSERT OR REPLACE INTO estatisticas_leves VALUES (?,?,?,?,?,?,?)", [k + (n, quando) for k, n in cont.items()])
+        self.con.commit()
+        return len(cont)
+
+    def estatisticas_leves(self):
+        cols = ("mes", "tribunal", "frente", "dimensao", "valor", "n")
+        return [dict(zip(cols, r)) for r in self.con.execute(
+            "SELECT mes, tribunal, frente, dimensao, valor, n FROM estatisticas_leves ORDER BY mes, tribunal, dimensao, valor")]
 
     def estatisticas(self, desde=None):
         cols = ("data", "tribunal", "vara", "frente", "porte", "faixa_valor", "novas", "encerradas")
@@ -700,7 +739,7 @@ class Banco:
                 parte = lista[i:i + 500]
                 saida += self._leads_sql(" AND processo IN (" + ",".join("?" * len(parte)) + ")", tuple(parte))
             return saida
-        sql, args = "SELECT dados, status, primeira_vez, motivo, frente, bruto_limpo, status_em FROM leads WHERE coalesce(fora_criterio, 0) = 0", ()
+        sql, args = self._SQL_LEADS, ()
         if vara:
             sql, args = sql + " AND vara = ?", args + (vara,)
         if desde:
@@ -711,14 +750,16 @@ class Banco:
                                " ELSE substr(primeira_vez, 1, 10) END) >= ?"), args + (desde_diario,)
         return self._leads_sql(sql[len(self._SQL_LEADS):], args)
 
-    _SQL_LEADS = "SELECT dados, status, primeira_vez, motivo, frente, bruto_limpo, status_em FROM leads WHERE coalesce(fora_criterio, 0) = 0"
+    _SQL_LEADS = ("SELECT dados, status, primeira_vez, motivo, frente, bruto_limpo, status_em, status_por, visto_por, visto_em "
+                  "FROM leads WHERE coalesce(fora_criterio, 0) = 0")
 
     def _leads_sql(self, filtro, args):
         saida = []
-        for dados, status, quando, motivo, frente, limpo, status_em in self.con.execute(self._SQL_LEADS + filtro + " ORDER BY primeira_vez DESC", args):  # nosec B608 - filtro montado só com "?"
+        for dados, status, quando, motivo, frente, limpo, status_em, st_por, v_por, v_em in self.con.execute(self._SQL_LEADS + filtro + " ORDER BY primeira_vez DESC", args):  # nosec B608 - filtro montado só com "?"
             lead = json.loads(dados)
             lead["status"], lead["primeira_vez"] = situacao_valida(status) or "novo", quando
             lead["motivo"], lead["frente"], lead["resumido"], lead["status_em"] = motivo or "", frente or "", bool(limpo), status_em or ""
+            lead["status_por"], lead["visto_por"], lead["visto_em"] = st_por or "", v_por or "", v_em or ""  # 0.7.53 (decisão 65)
             saida.append(lead)
         return saida
 
