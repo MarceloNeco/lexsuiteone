@@ -165,6 +165,10 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 24/Nov: **0.7.53 em código** ("pode codar a 0.7.53" do dono; desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`, revisão 2):
+  planilha só com os tribunais escolhidos e aba Estatística; amostras de formato com fila silenciosa; troca entre computadores sem
+  mestre, "Trazer do escritório", "Visto por"; testes de acesso simultâneo. Arquivos: `robo/lexsuite/{radar,armazenamento,compartilhar,
+  banco,preferencias,djen,cnpj,datajud,contatos,app}.py`, módulos novos `amostras.py` e `troca.py`, `robo/radar_modelo.html`, manual.
 - 24/Nov: **0.7.52** (teste do dono na 0.7.51 em inglês): inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em
   inglês com seletor (`paginas/aceite.html`, português igual à 1.0, sem aceite novo), limpeza da planilha visível (andamento, resultado,
   ✕), ressalvas 1 a 5 da Operação sobre a 0.7.51, Novidades sucintas. Folha `documentacao/dod/0.7.52.md`. **Pronta para publicar**
