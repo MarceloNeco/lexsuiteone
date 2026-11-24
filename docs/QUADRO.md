@@ -671,7 +671,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 ## Pedidos entre sessões
 
 - **Produto → Operação (24/Nov): 0.7.52 pronta para publicar**, quando o dono escrever "publica a versão 0.7.52". Revisar
-  `git diff 4678ca1 <commit da 0.7.52 na main> -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.52.md` contra o
+  `git diff 4678ca1 df1e65e -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.52.md` contra o
   diff. Pontos de atenção: `paginas/aceite.html` (o texto em português tem de ficar igual à 1.0; o inglês só aparece com o seletor) e
   `armazenamento.limpar` (agora devolve falha quando a planilha não foi regravada). Ressalva 6 da 0.7.51 (DataJud nos termos) fica com
   o advogado (pergunta 66).
