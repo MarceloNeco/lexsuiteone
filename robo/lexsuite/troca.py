@@ -73,6 +73,11 @@ def pasta(cfg):
 
 def _tabela(con):
     con.execute("CREATE TABLE IF NOT EXISTS troca (chave TEXT PRIMARY KEY, valor TEXT)")
+    # revisão da Operação (B1): cada arquivo lido fica marcado por número (a ordem de chegada não importa); erro de leitura não
+    # marca: o arquivo é tentado de novo (pode estar sincronizando) e só é dado por ruim depois de várias tentativas num dia
+    con.execute("CREATE TABLE IF NOT EXISTS troca_lidos (instalacao TEXT, seq INTEGER, ignorado INTEGER DEFAULT 0, PRIMARY KEY (instalacao, seq))")
+    con.execute("CREATE TABLE IF NOT EXISTS troca_falhas (instalacao TEXT, seq INTEGER, tentativas INTEGER DEFAULT 0, primeira_em TEXT, "
+                "PRIMARY KEY (instalacao, seq))")
 
 
 def _ler(con, chave, padrao=""):
@@ -144,9 +149,14 @@ def _exportar(banco, cfg, agora=None):
                                                               "confianca", "origem", "observacao", "criado_em", "incluido_por", "computador")}})
     itens = [i for i in itens if _limpo(i)]
     if itens:
-        seq = int(_ler(con, "seq", "0")) + 1
         destino = os.path.join(raiz, "troca", inst)
         os.makedirs(destino, exist_ok=True)
+        # revisão da Operação (B2): banco recriado ou restaurado não volta a numerar do 1: parte do maior número que já existe na
+        # pasta deste computador, e nunca grava por cima de um arquivo que os outros já possam ter lido
+        na_pasta = [int(m.group(1)) for m in (_NOME.match(n) for n in os.listdir(destino)) if m]
+        seq = max([int(_ler(con, "seq", "0"))] + na_pasta) + 1
+        while any(n.startswith(f"{seq:08d}-") for n in os.listdir(destino)):
+            seq += 1
         _leia_me(raiz)
         corpo = {"formato": FORMATO, "instalacao": inst, "licenca": _licenca(cfg), "seq": seq, "quem": quem(cfg),
                  "criado_em": agora, "itens": itens}
@@ -154,6 +164,9 @@ def _exportar(banco, cfg, agora=None):
         tmp = nome + ".parcial"
         with gzip.open(tmp, "wt", encoding="utf-8") as f:
             json.dump(corpo, f, ensure_ascii=False)
+        if os.path.exists(nome):  # nunca por cima (não deveria acontecer: o número acima já é livre)
+            os.remove(tmp)
+            raise FileExistsError(nome)
         os.replace(tmp, nome)  # nasce inteiro: quem lê nunca vê arquivo pela metade
         _gravar(con, "seq", seq)
     _gravar(con, "wm_lead", max_lead); _gravar(con, "wm_contato", max_cont); _gravar(con, "wm_acao", max_acao)
@@ -204,10 +217,15 @@ def _arquivos_novos(cfg, banco):
     for inst in sorted(os.listdir(base)):
         if inst == eu or not re.fullmatch(r"[0-9a-f]{6,40}", inst):
             continue
-        feito = int(_ler(banco.con, "ap:" + inst, "0"))
-        for nome in sorted(os.listdir(os.path.join(base, inst))):
+        _tabela(banco.con)
+        lidos = {r[0] for r in banco.con.execute("SELECT seq FROM troca_lidos WHERE instalacao = ?", (inst,))}
+        try:
+            nomes = sorted(os.listdir(os.path.join(base, inst)))
+        except OSError:
+            continue
+        for nome in nomes:
             m = _NOME.match(nome)
-            if m and int(m.group(1)) > feito:
+            if m and int(m.group(1)) not in lidos:
                 saida.append((inst, int(m.group(1)), int(m.group(2)), os.path.join(base, inst, nome)))
     return saida
 
@@ -235,30 +253,57 @@ def juntar(banco, cfg, aviso=None):
     for inst, seq, _n, caminho in _arquivos_novos(cfg, banco):
         try:
             if os.path.getsize(caminho) > MAX_ARQUIVO:
-                raise ValueError("grande demais")
+                raise _Definitivo("grande demais")
             with gzip.open(caminho, "rt", encoding="utf-8") as f:
                 corpo = json.load(f)
             if not isinstance(corpo, dict) or corpo.get("formato") != FORMATO or corpo.get("instalacao") != inst \
                     or (lic and corpo.get("licenca") != lic):
-                raise ValueError("de outra licença ou formato desconhecido")
+                raise _Definitivo("de outra licença ou formato desconhecido")
             for item in corpo.get("itens") or []:
                 if isinstance(item, dict) and _limpo(item):
                     try:
                         mudou += _aplicar(banco, item, apagados, str(corpo.get("quem") or ""))
                     except Exception:  # noqa: BLE001 - item estranho não para a junção dos outros
                         continue
-        except Exception as e:  # noqa: BLE001 - revisão: arquivo corrompido (zlib), JSON que não é objeto… é ignorado e o ponteiro anda
-            if aviso:
-                aviso(f"  Arquivo de outro computador ignorado ({os.path.basename(caminho)}: {e.__class__.__name__}).")
-            banco.registrar("saude", {"fonte": "Troca entre computadores", "situacao": "atenção",
-                                      "detalhe": f"arquivo ignorado: {os.path.basename(caminho)} ({e.__class__.__name__})"})
-        _gravar(banco.con, "ap:" + inst, seq)
+        except _Definitivo as e:  # de outra licença ou formato desconhecido: não adianta tentar de novo
+            _ignorar(banco, inst, seq, caminho, str(e), aviso)
+            continue
+        except Exception as e:  # noqa: BLE001 - pode estar sincronizando (incompleto, em uso): tenta de novo depois
+            con = banco.con
+            con.execute("INSERT INTO troca_falhas VALUES (?,?,1,?) ON CONFLICT(instalacao, seq) DO UPDATE SET tentativas = tentativas + 1",
+                        (inst, seq, dt.datetime.now().isoformat(timespec="seconds")))
+            t, desde = con.execute("SELECT tentativas, primeira_em FROM troca_falhas WHERE instalacao = ? AND seq = ?", (inst, seq)).fetchone()
+            velho = (dt.datetime.now() - dt.datetime.fromisoformat(desde)).total_seconds() > FALHA_DESISTE_H * 3600
+            if t >= FALHA_TENTATIVAS and velho:
+                _ignorar(banco, inst, seq, caminho, e.__class__.__name__, aviso)
+            con.commit()
+            continue
+        banco.con.execute("INSERT OR IGNORE INTO troca_lidos (instalacao, seq) VALUES (?,?)", (inst, seq))
+        banco.con.execute("DELETE FROM troca_falhas WHERE instalacao = ? AND seq = ?", (inst, seq))
         banco.con.commit()
     mudou += _aplicar_pendentes(banco, apagados)
     if mudou:
         banco.registrar_acao(quem(cfg), "troca", "", "", f"{mudou} itens de outros computadores", mudou)
         banco.con.commit()
     return mudou
+
+
+class _Definitivo(ValueError):
+    """Arquivo que nunca vai servir aqui (outra licença, formato desconhecido, grande demais)."""
+
+
+FALHA_TENTATIVAS = 10   # arquivo que não abre: tenta de novo nas próximas junções...
+FALHA_DESISTE_H = 24    # ...e só é dado por ruim depois de 10 tentativas E 24 horas (tempo de sobra para a sincronização)
+
+
+def _ignorar(banco, inst, seq, caminho, motivo, aviso=None):
+    if aviso:
+        aviso(f"  Arquivo de outro computador ignorado ({os.path.basename(caminho)}: {motivo}).")
+    banco.registrar("saude", {"fonte": "Troca entre computadores", "situacao": "atenção",
+                              "detalhe": f"arquivo ignorado: {os.path.basename(caminho)} ({motivo})"[:200]})
+    banco.con.execute("INSERT OR IGNORE INTO troca_lidos (instalacao, seq, ignorado) VALUES (?,?,1)", (inst, seq))
+    banco.con.execute("DELETE FROM troca_falhas WHERE instalacao = ? AND seq = ?", (inst, seq))
+    banco.con.commit()
 
 
 def _aplicar_pendentes(banco, apagados):
@@ -388,12 +433,26 @@ def trava(cfg, agora=None):
                     os.remove(caminho)
 
 
+def _meus_numeros(cfg):
+    raiz = pasta(cfg)
+    try:
+        return [int(m.group(1)) for m in (_NOME.match(n) for n in os.listdir(os.path.join(raiz, "troca", instalacao(cfg)))) if m]
+    except OSError:
+        return []
+
+
 def vetor(banco, cfg):
     """O que esta planilha vai conter de cada computador: {instalação: seq}."""
     _tabela(banco.con)
-    v = {instalacao(cfg): int(_ler(banco.con, "seq", "0"))}
-    for chave, valor in banco.con.execute("SELECT chave, valor FROM troca WHERE chave LIKE 'ap:%'"):
-        v[chave[3:]] = int(valor or 0)
+    v = {instalacao(cfg): max([int(_ler(banco.con, "seq", "0"))] + _meus_numeros(cfg))}  # revisão: banco recriado não fica "atrasado"
+    por = {}
+    for inst, seq in banco.con.execute("SELECT instalacao, seq FROM troca_lidos"):
+        por.setdefault(inst, set()).add(seq)
+    for inst, seqs in por.items():  # até onde está tudo lido, sem buraco (arquivo que ainda não chegou não conta)
+        n = 0
+        while n + 1 in seqs:
+            n += 1
+        v[inst] = n
     return v
 
 

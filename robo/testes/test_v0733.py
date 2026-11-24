@@ -246,7 +246,8 @@ class Revisao0733(unittest.TestCase):
         b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db")); recados = []
         with mock.patch.object(shutil, "copyfile", side_effect=OSError("disco cheio")):
             self.assertFalse(radar.gravar_planilha(self.cfg, radar.montar_radar(self.cfg, b, prefs=pf.padrao()), b, "0.7.33", self.pasta, recados.append))
-        self.assertIn("antes da 0.7.33", " ".join(recados))
+        # 0.7.53: a cópia "antes da 0.7.53" vem primeiro e falha com o mesmo disco cheio; nos dois casos a planilha não é regravada
+        self.assertRegex(" ".join(recados), r"antes da 0\.7\.(33|53)")
         self.assertIn("Exclusões", [a["nome"] for a in planilha.ler_xlsx(pf.caminho(self.base, "trabalhista"))["abas"]])
 
     def test_migracao_adiada_sem_pasta_ou_com_planilha_ilegivel(self):

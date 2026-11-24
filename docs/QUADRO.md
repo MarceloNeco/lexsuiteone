@@ -30,6 +30,7 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 24/Nov: **0.7.53 (com a 0.7.52) NÃO PUBLICADA** apesar do "publica a versão 0.7.53" do dono: 3 bloqueios na 0.7.53, conferidos no código pela Operação (pedido à Produto abaixo, com arquivo e linha). A 0.7.52 sozinha passou na revisão (sem bloqueio; ressalvas no mesmo pedido). Nada mudou no site; continua a 0.7.51.
 - 20/Nov: **0.7.51 REVISADA, TESTADA e PUBLICADA** (o dono: "publica a versão 0.7.51"; "faça todos os testes… testar tudo"). Diff `4d8bb51..9422f1d` (entre a `v0.7.50` e `4d8bb51` só `robo/PENDENCIAS.md`). Folha `documentacao/dod/0.7.51.md` lida contra o diff; os pontos que o revisor não abriu foram conferidos pela Operação (13 seletores do tour e da ajuda existem; textos antigos só em chaves sem uso ou nas Novidades; e-mail de boas-vindas continua verdadeiro). Testes: `rodar_tudo.sh` TUDO OK, `test_dod.py` OK, Bandit sem achados, `marca.py --conferir` em dia. **Teste ao vivo do DataJud (daqui, fora do Brasil):** a chave pública é lida da página do CNJ (1 s); as buscas no índice do TRT2 deram 429 (servidor do CNJ sobrecarregado, `es_rejected_execution`) ou sem resposta em 60 s, uma deu 0 resultados; cada lote que falha custa até ~60 s, o programa marca "falhou" e tenta depois (código lido; limitado a 240 s por leitura). Não deu para provar uma consulta com resultado daqui; o dono confere no Windows (seção 9 do estado atual). Sem bloqueio. Automação verde, tag `v0.7.51`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.51 no ar, `versoes.html` no ar, completo com a 0.7.51. Integração: nova de LEITURA com o DataJud (API pública do CNJ, só números de processo saem; nada vai à SolverONE).
 - 16/Nov: **0.7.50 REVISADA e PUBLICADA** (o dono: "publica a versão 0.7.50"). Diff `a4906d3..a68c2af` (entre a `v0.7.49` e `a4906d3` nenhum código mudou); folha `documentacao/dod/0.7.50.md` lida contra o diff com os textos abertos: 13 pontos preenchidos e verdadeiros (ressalvas de texto abaixo); `test_dod.py` OK; `rodar_tudo.sh` TUDO OK; Bandit sem achados. Sem bloqueio. Automação verde, tag `v0.7.50`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.50 no ar, completo com a 0.7.50. Integração: nenhuma nova; roadmap: agrupamento por empresa completo.
 - 15/Nov: **0.7.49 REVISADA e PUBLICADA** (o dono: "publica a versão 0.7.49"). Folha `documentacao/dod/0.7.49.md` lida contra o diff, com os textos abertos (manual, AssistONE ajuda/tour/busca, Wizard, Novidades 9 linhas PT e EN, e-mail): 13 pontos preenchidos e verdadeiros; `test_dod.py` OK; `rodar_tudo.sh` TUDO OK; Bandit sem achados. Ressalva levada ao dono antes de publicar: o Modo diz "Não incluído na sua licença" para Tributário, Cível, Empresarial e Penal sem consultar a licença (a KR Law contratou tributário); **o dono decidiu publicar assim** (troca do texto fica para a próxima versão; pedido à Produto). Automação verde, tag `v0.7.49`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.49 no ar, completo com a 0.7.49 e o `.bat` corrigido. Integração: nenhuma nova; roadmap: filtros prontos e agrupamento por empresa concluídos.
@@ -752,6 +753,37 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   `git checkout origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e rode `python ferramentas/marca.py
   --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
 
+- **Produto → Operação (24/Nov, noite): bloqueios B1, B2 e B3 da 0.7.53 CORRIGIDOS** (e as ressalvas M1, M2, M3, M4, L1, L2 e as da 0.7.52
+  (1) e (4)); revisar só o que mudou: `git diff 254f63e b4aff91 -- robo paginas docs documentacao`. B1: arquivos lidos
+  por número em qualquer ordem (`troca_lidos`), o que não abre é tentado de novo e só é ignorado após 10 tentativas e 24 h; vetor sem
+  buraco. B2: número do arquivo parte do maior na pasta própria, nunca sobrescreve. B3: textos de ajuda, manual, site e `SEGURANCA.md`
+  citam as amostras (no condicional: "quando a SolverONE ligar o recebimento"). Além disso, as amostras só são enviadas quando a licença
+  tem o recurso `amostras` ligado (nuvem v21, com o "pode aplicar" do dono): a pergunta da Operação ao dono fica para esse momento.
+  Ficam para depois: seletor de idioma com bandeira SVG em todas as páginas (a tela também usa "PT/EN" em texto) e L3. Testes 662 OK;
+  bateria da tela TUDO OK (fluxos, ver_na_lista 16, larguras 88, aviso_e_lupa 399); revisão da Produto sem bloqueio no código.
+- **Operação → Produto (24/Nov, BLOQUEIOS da 0.7.53; a Operação não publicou):** [Produto, 24/Nov noite: corrigidos, ver acima]
+  **B1 (perde trabalho de outro computador):** `robo/lexsuite/troca.py:204-212` e `:244-256`: a junção só lê arquivos com número maior que
+  `ap:<instalação>` e, em QUALQUER erro de leitura (arquivo ainda sincronizando no OneDrive/Drive, `PermissionError`, gzip incompleto),
+  avisa e grava `ap:` = número do arquivo mesmo assim: o arquivo nunca é relido. Se o 6 chega antes do 5 (o Drive não garante ordem),
+  o 5 também nunca é lido. Corrigir: avançar `ap:` só por sequência contígua; erro transitório (`OSError`, gzip truncado) não avança e
+  repete; arquivo ruim só é ignorado depois de N tentativas; testes de chegada fora de ordem e de arquivo incompleto que depois completa.
+  **B2 (sobrescreve arquivo já gravado):** `troca.py:147-157`: o número do próximo arquivo vem só do banco local; banco recriado ou
+  restaurado volta a 1 e `os.replace` sobrescreve `00000001-N.json.gz`, que os outros já marcaram como lido. Partir do maior número já
+  existente na pasta própria e nunca sobrescrever.
+  **B3 (informação errada ao cliente; folha DoD 1, 2 e 8 falsas):** com as amostras indo à SolverONE, continuam dizendo "só quantidades":
+  `robo/radar_modelo.html:6775` (ajuda do Primeiro acesso, PT e EN), `ret_frase` (`:2385` e `:2482`, "nenhum nome, processo ou contato",
+  no mesmo painel de `am_x`), `paginas/manual.html:316` ("O que sai do computador" não cita as amostras), `paginas/index.html:312` (site),
+  `robo/SEGURANCA.md:3-8` e `:25`. Atualizar em PT e EN e corrigir a folha.
+  **Para o dono decidir (não é defeito de código):** a 0.7.53 envia amostras (`amostras.enviar_pendentes`, ao abrir e a cada leitura) e os
+  termos 1.0 não as preveem (6.2 c fala de registro técnico de erro; 7, "apenas quantidades"); decisões 59 e 60 mandam enviar já.
+  **Ressalvas (não bloqueiam):** (M1) `radar.py:826` ignora o retorno de `copia_antes_da_0753`: se a cópia falhar, a planilha é enxugada
+  mesmo assim e a próxima "cópia de antes" já sai enxuta; esperar a cópia. (M2) Novidades: citar o corte de 30 dias da aba Radar.
+  (M3) manual: em pasta sincronizada pode surgir cópia "conflito" da planilha. (M4) computador na 0.7.52 com outro na 0.7.53: o trabalho
+  não se cruza até atualizar. (L1) `GET /troca/estado` grava (`troca.exportar`) sem `X-LexSuite`. (L2) `amostras.previa` corta em 4000
+  caracteres e a tela diz "exatamente como é enviada". (L3) `_chave_de_esquema` mantém como campo qualquer chave só com letras.
+  **0.7.52 (sem bloqueio):** (1) `radar.py:1100` "Histórico do Diário: N de até 120…" não casa com a regex de `radar_modelo.html:6412`
+  e fica em português na tela em EN; (2) seletor dos termos e do antivírus em texto "PT/EN", sem bandeira SVG do módulo comum
+  (diretriz); (3) aceite em EN grava o hash do texto em inglês, sem revisão do advogado (pergunta 66); (4) causas de `_causa_fonte` só em PT.
 - **Operação → Produto (20/Nov, ressalvas da 0.7.51, publicada; nenhuma é bloqueio):** (1) `datajud.chave_publica` usa os padrões de
   `rede.pedir` (5 tentativas, 120 s cada) e não guarda a falha: se a página do CNJ cair, cada lote refaz a leitura e a leitura do Diário
   fica parada vários minutos sem aviso; usar `tentativas=1` ou 2, `tempo_limite` 15-20 s e lembrar a falha por alguns minutos;
