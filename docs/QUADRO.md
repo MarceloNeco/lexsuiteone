@@ -167,8 +167,8 @@ Arquitetura (pedido no quadro).
 ### Fazendo agora
 - 24/Nov: **0.7.52** (teste do dono na 0.7.51 em inglês): inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em
   inglês com seletor (`paginas/aceite.html`, português igual à 1.0, sem aceite novo), limpeza da planilha visível (andamento, resultado,
-  ✕), ressalvas 1 a 5 da Operação sobre a 0.7.51, Novidades sucintas. Folha `documentacao/dod/0.7.52.md`. Em revisão; depois, "pronta
-  para publicar". Perguntas 59 a 67 (desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`) esperam o dono.
+  ✕), ressalvas 1 a 5 da Operação sobre a 0.7.51, Novidades sucintas. Folha `documentacao/dod/0.7.52.md`. **Pronta para publicar**
+  (pedido à Operação abaixo). Perguntas 59 a 67 (desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`) esperam o dono.
 - 20/Nov: **0.7.51 publicada** (tag v0.7.51, pela Operação). Filtro de quantidade de processos da empresa e "Ler um período" maior
   continuam para depois (pedem desenho).
 - 16/Nov: **0.7.50 publicada** (tag `v0.7.50`, pela Operação). Ressalvas da revisão anotadas para a 0.7.51 (abaixo, em Pedidos). Feito (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
@@ -191,6 +191,13 @@ Arquitetura (pedido no quadro).
   ressalvas 3 a 5 da Operação nos instaladores (vão com a publicação, porque o site serve o instalador na hora).
 
 ### Feito (mais recente primeiro)
+- 24/Nov: **0.7.52 pronta para publicar** (teste do dono na 0.7.51 em inglês): inglês sem sobras (faixas, mensagens da leitura,
+  setor, porte, tipos de publicação), "Court Journal", "Manual de uso / User guide", termos em inglês com seletor (português igual
+  à 1.0, sem aceite novo), limpeza da planilha visível (andamento, resultado, ✕ lembrado), ressalvas 1 a 5 da Operação, Novidades
+  sucintas e janela nova, rodapé do Painel enxuto, e-mail de boas-vindas ("Manual de uso"). `test_v0752.py` (19). Bateria:
+  unittest 636 OK, `fluxos` TUDO OK, `ver_na_lista` OK (16), `larguras` OK (88), `aviso_e_lupa` TUDO OK (399; a 1ª rodada achou a
+  busca por "Manual" em inglês, que virou "User guide", e o teste foi ajustado). Revisor: sem bloqueio; ressalvas ("gazette" nos
+  modelos do monitor e do painel, folha mais precisa) corrigidas.
 - 20/Nov: **0.7.51 pronta para publicar** (decisões 52 a 58): datas e fontes (processo novo pelo ajuizamento, 30 dias ajustáveis; CNJ
   e histórico do Diário em cada leitura, fila `fontes`, "Tentar de novo"; jornada na ficha; filtros Idade e Andamento; ordem pelos
   ajuizados; planilha "Ajuizado em"; cumprimento de sentença fora), período de cada leitura, Novidades até "Não mostrar novamente" e
@@ -663,6 +670,11 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Operação (24/Nov): 0.7.52 pronta para publicar**, quando o dono escrever "publica a versão 0.7.52". Revisar
+  `git diff 4678ca1 df1e65e -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.52.md` contra o
+  diff. Pontos de atenção: `paginas/aceite.html` (o texto em português tem de ficar igual à 1.0; o inglês só aparece com o seletor) e
+  `armazenamento.limpar` (agora devolve falha quando a planilha não foi regravada). Ressalva 6 da 0.7.51 (DataJud nos termos) fica com
+  o advogado (pergunta 66).
 - **Produto → Operação (20/Nov): 0.7.51 pronta para publicar**, quando o dono escrever "publica a versão 0.7.51". Revisar
   `git diff 4d8bb51 9422f1d -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.51.md` contra o diff.
   Pacote com os mesmos arquivos (nenhum módulo novo: o código novo ficou em `datajud.py`, `djen.py`, `radar.py`, `banco.py`, `app.py`).
