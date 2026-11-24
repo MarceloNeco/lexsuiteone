@@ -36,7 +36,8 @@ def _js_entre(inicio, fim):
 class InglesSemSobras(unittest.TestCase):
     def test_gazette_saiu_de_tudo(self):
         sem_novidades = HTML.replace("\u201cgazette\u201d", "")  # a linha das Novidades que conta a troca
-        for nome, txt in (("tela", sem_novidades), ("site", _ler("paginas", "index.html")), ("antivírus", _ler("paginas", "antivirus.html"))):
+        for nome, txt in (("tela", sem_novidades), ("site", _ler("paginas", "index.html")), ("antivírus", _ler("paginas", "antivirus.html")),
+                          ("monitor", _ler("robo", "monitor_modelo.html")), ("painel", _ler("robo", "painel_modelo.html"))):
             self.assertNotRegex(txt, re.compile(r"\bgazettes?\b", re.I), nome)
         for mod in ("monitor", "causas", "radar", "historico", "app"):
             self.assertNotRegex(_ler("robo", "lexsuite", mod + ".py"), re.compile(r"\bgazettes?\b", re.I), mod)

@@ -80,7 +80,7 @@ const externos = [];
         await p4.click('#b-busca'); await p4.waitForTimeout(300); const L = await lista();
         console.log('  [app] lupa vazia:', L.length, 'itens');
         ok(L.length === 0 && await p4.locator('#bg-res .bg-nada').isVisible(), 'app: lupa vazia mostra só a dica');
-        const exp = idioma === 'pt' ? ['Painel', 'Lista', 'Arquivo', 'Histórico', 'planilha', 'Configurações', 'Perfil', 'área logada', 'Termos', 'Manual', 'Sair'] : ['Dashboard', 'List', 'Archive', 'History', 'spreadsheet', 'Settings', 'Profile', 'logged-in area', 'Terms', 'Manual', 'Exit'];
+        const exp = idioma === 'pt' ? ['Painel', 'Lista', 'Arquivo', 'Histórico', 'planilha', 'Configurações', 'Perfil', 'área logada', 'Termos', 'Manual', 'Sair'] : ['Dashboard', 'List', 'Archive', 'History', 'spreadsheet', 'Settings', 'Profile', 'logged-in area', 'Terms', 'User guide', 'Exit']  // 0.7.52 (dono): "Manual" em inglês virou "User guide";
         for (const e of exp) { await p4.fill('#bg-q', e); await p4.waitForTimeout(200); const Le = await lista(); ok(Le.some(x => x.toLowerCase().includes(e.toLowerCase())), `app: "${e}" acha algo com "${e}"`); }
         await p4.fill('#bg-q', 'abri'); await p4.waitForTimeout(200); const La = await lista();
         ok(!La.some(x => /fabric/i.test(x)), 'app: "abri" não acha "Fabricadora" (começo de palavra)');
