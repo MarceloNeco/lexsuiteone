@@ -30,6 +30,7 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 20/Nov: **0.7.51 REVISADA, TESTADA e PUBLICADA** (o dono: "publica a versão 0.7.51"; "faça todos os testes… testar tudo"). Diff `4d8bb51..9422f1d` (entre a `v0.7.50` e `4d8bb51` só `robo/PENDENCIAS.md`). Folha `documentacao/dod/0.7.51.md` lida contra o diff; os pontos que o revisor não abriu foram conferidos pela Operação (13 seletores do tour e da ajuda existem; textos antigos só em chaves sem uso ou nas Novidades; e-mail de boas-vindas continua verdadeiro). Testes: `rodar_tudo.sh` TUDO OK, `test_dod.py` OK, Bandit sem achados, `marca.py --conferir` em dia. **Teste ao vivo do DataJud (daqui, fora do Brasil):** a chave pública é lida da página do CNJ (1 s); as buscas no índice do TRT2 deram 429 (servidor do CNJ sobrecarregado, `es_rejected_execution`) ou sem resposta em 60 s, uma deu 0 resultados; cada lote que falha custa até ~60 s, o programa marca "falhou" e tenta depois (código lido; limitado a 240 s por leitura). Não deu para provar uma consulta com resultado daqui; o dono confere no Windows (seção 9 do estado atual). Sem bloqueio. Automação verde, tag `v0.7.51`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.51 no ar, `versoes.html` no ar, completo com a 0.7.51. Integração: nova de LEITURA com o DataJud (API pública do CNJ, só números de processo saem; nada vai à SolverONE).
 - 16/Nov: **0.7.50 REVISADA e PUBLICADA** (o dono: "publica a versão 0.7.50"). Diff `a4906d3..a68c2af` (entre a `v0.7.49` e `a4906d3` nenhum código mudou); folha `documentacao/dod/0.7.50.md` lida contra o diff com os textos abertos: 13 pontos preenchidos e verdadeiros (ressalvas de texto abaixo); `test_dod.py` OK; `rodar_tudo.sh` TUDO OK; Bandit sem achados. Sem bloqueio. Automação verde, tag `v0.7.50`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.50 no ar, completo com a 0.7.50. Integração: nenhuma nova; roadmap: agrupamento por empresa completo.
 - 15/Nov: **0.7.49 REVISADA e PUBLICADA** (o dono: "publica a versão 0.7.49"). Folha `documentacao/dod/0.7.49.md` lida contra o diff, com os textos abertos (manual, AssistONE ajuda/tour/busca, Wizard, Novidades 9 linhas PT e EN, e-mail): 13 pontos preenchidos e verdadeiros; `test_dod.py` OK; `rodar_tudo.sh` TUDO OK; Bandit sem achados. Ressalva levada ao dono antes de publicar: o Modo diz "Não incluído na sua licença" para Tributário, Cível, Empresarial e Penal sem consultar a licença (a KR Law contratou tributário); **o dono decidiu publicar assim** (troca do texto fica para a próxima versão; pedido à Produto). Automação verde, tag `v0.7.49`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.49 no ar, completo com a 0.7.49 e o `.bat` corrigido. Integração: nenhuma nova; roadmap: filtros prontos e agrupamento por empresa concluídos.
 - 15/Nov: **Regra nova registrada (decisão do dono):** na revisão de toda versão, e de tudo o que o cliente vê fora de versão (instaladores, e-mail), a Operação lê `documentacao/dod/<versão>.md` (13 pontos) contra o que mudou, abre os textos citados e não publica com ponto falso, vago ou em branco. `test_dod.py` OK. Os instaladores corrigidos (`0f1414e`) já tinham ido ao ar em `ba38b72` com o "pode publicar os instaladores corrigidos da 0.7.48"; a folha `0.7.48.md` não os cita (pedido à Produto).
@@ -164,7 +165,12 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 20/Nov: **0.7.51 em preparação** (branch local `wip-0751`): ressalvas da Operação e Novidades até "Não mostrar novamente" feitas; período da leitura na faixa (item 22) em andamento. Desenho das datas e fontes em `documentacao/DESENHO-DATAS-E-FONTES-0751.md` esperando o "pode" (pergunta 52). Arquivos: `robo/lexsuite/{radar,preferencias,app,monitor}.py`, `robo/radar_modelo.html`, `paginas/manual.html`, testes.
+- 24/Nov: **0.7.52** (teste do dono na 0.7.51 em inglês): inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em
+  inglês com seletor (`paginas/aceite.html`, português igual à 1.0, sem aceite novo), limpeza da planilha visível (andamento, resultado,
+  ✕), ressalvas 1 a 5 da Operação sobre a 0.7.51, Novidades sucintas. Folha `documentacao/dod/0.7.52.md`. Em revisão; depois, "pronta
+  para publicar". Perguntas 59 a 67 (desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`) esperam o dono.
+- 20/Nov: **0.7.51 publicada** (tag v0.7.51, pela Operação). Filtro de quantidade de processos da empresa e "Ler um período" maior
+  continuam para depois (pedem desenho).
 - 16/Nov: **0.7.50 publicada** (tag `v0.7.50`, pela Operação). Ressalvas da revisão anotadas para a 0.7.51 (abaixo, em Pedidos). Feito (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
   sem data). Feito: agrupamento (alcance no bloco, setinha, caixinha, sem CNPJ com triângulo e "CNPJ provável", copiar contato 90 dias
   com desfazer, "Excluir esta empresa"), filtros numa linha no notebook com rótulos curtos e barra compacta, "Aplicar" na barra de
@@ -185,6 +191,14 @@ Arquitetura (pedido no quadro).
   ressalvas 3 a 5 da Operação nos instaladores (vão com a publicação, porque o site serve o instalador na hora).
 
 ### Feito (mais recente primeiro)
+- 20/Nov: **0.7.51 pronta para publicar** (decisões 52 a 58): datas e fontes (processo novo pelo ajuizamento, 30 dias ajustáveis; CNJ
+  e histórico do Diário em cada leitura, fila `fontes`, "Tentar de novo"; jornada na ficha; filtros Idade e Andamento; ordem pelos
+  ajuizados; planilha "Ajuizado em"; cumprimento de sentença fora), período de cada leitura, Novidades até "Não mostrar novamente" e
+  página de histórico no site, itens do feedback do teste da 0.7.50 e ressalvas da Operação. Folha `documentacao/dod/0.7.51.md`;
+  `test_v0751.py` (33) e 617 testes OK; `rodar_tudo.sh`: unittest, fluxos (121), ver_na_lista, aviso_e_lupa OK e larguras OK depois de
+  corrigir o contraste do verde no modo escuro; revisor: 1 bloqueio (colunas CNPJ e Porte da planilha) e ressalvas, corrigidos.
+  RootifyONE: nada; ArchONE: integração nova de leitura com o DataJud, tabela `fontes`, rota `/completar`; EaglePlanONE: "Encerradas
+  pelo DataJud" parcialmente adiantado.
 - 15/Nov: **0.7.49 pronta para publicar** (decisões 43 a 48), código na `main` em `e987a68`. Folha `documentacao/dod/0.7.49.md`
   completa (13 pontos); `rodar_tudo.sh` TUDO OK (unittest, fluxos com o bloco 11, ver_na_lista, larguras, aviso_e_lupa); revisor:
   1 bloqueio (folha citava registro ainda não feito) e 5 ressalvas, todos corrigidos; dono: "a chave é o CNPJ" (homônimo de outro
@@ -649,6 +663,13 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Operação (20/Nov): 0.7.51 pronta para publicar**, quando o dono escrever "publica a versão 0.7.51". Revisar
+  `git diff 4d8bb51 9422f1d -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.51.md` contra o diff.
+  Pacote com os mesmos arquivos (nenhum módulo novo: o código novo ficou em `datajud.py`, `djen.py`, `radar.py`, `banco.py`, `app.py`).
+  Site: página nova `versoes.html` e `index.html` citando o DataJud. Atenção: a primeira leitura depois de atualizar consulta o CNJ dos
+  processos dos últimos 12 meses (até 4 min a mais, em lotes, com nova tentativa); o histórico do Diário só funciona de dentro do Brasil.
+  Testes do dono: `documentacao/ESTADO-ATUAL-RADAR.md`, seção 9.
+
 - **Produto → Arquitetura (16/Nov, URGENTE para depois de quinta, 19/Nov; primeiro uso real da KR Law):** processo distribuído em
   maio aparecendo como "novo" (publicação da audiência inicial em novembro, TRT2). Anamnese e soluções em
   `documentacao/FEEDBACK-KRLAW-2026-11-16-PRIMEIRO-USO.md`; protótipo em `documentacao/prototipos/datas-do-processo/prototipo.html`.
@@ -699,6 +720,14 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   `git checkout origin/claude/lexsuiteone-judicial-product-22f871 -- instalador docs/downloads` e rode `python ferramentas/marca.py
   --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
 
+- **Operação → Produto (20/Nov, ressalvas da 0.7.51, publicada; nenhuma é bloqueio):** (1) `datajud.chave_publica` usa os padrões de
+  `rede.pedir` (5 tentativas, 120 s cada) e não guarda a falha: se a página do CNJ cair, cada lote refaz a leitura e a leitura do Diário
+  fica parada vários minutos sem aviso; usar `tentativas=1` ou 2, `tempo_limite` 15-20 s e lembrar a falha por alguns minutos;
+  (2) `completar_fontes` só avisa no fim: mostrar "Consultando o CNJ: n de m…" a cada lote (a primeira leitura depois de atualizar leva
+  até 4 min a mais); (3) ao vivo, daqui, o DataJud do TRT2 respondeu 429/sem resposta várias vezes seguidas: cada lote falho custa ~60 s
+  (2 tentativas de 30 s); considerar `tentativas=1` no lote e parar no primeiro 429; (4) `compartilhar.py:185` ainda escreve
+  "Distribuída em" na planilha recém-criada (regravada na 1ª leitura); (5) conferir se fechar as Novidades com Esc ou clique fora
+  respeita "Não mostrar novamente"; (6) termos: citar o DataJud no próximo texto (já em `PENDENCIAS.md`, com o advogado).
 - **Operação → Produto (16/Nov, ressalvas da revisão da 0.7.50, publicada; nenhuma é bloqueio):** [Produto, 16/Nov: **anotadas para a 0.7.51**, junto com o feedback do teste do dono; (1) segue "a chave é o CNPJ" (decisão de 16/Nov)] (1) "Excluir esta empresa"
   (`app.py` `/regras/excluir-uma` + `preferencias.py:518-519`): com CNPJ, a exclusão ainda casa pelo nome exato e tira também homônimo
   de outro CNPJ (comportamento da 0.7.36); gravar só pelo CNPJ quando houver, ou dizer na confirmação; (2) "CNPJ provável"
@@ -1043,6 +1072,15 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 56 | Produto (item 29) | Registro técnico: botões "Abrir no Gmail" e "Abrir no e-mail do Windows" agora, ou envio direto pelo programa (com a Arquitetura, depois)? | Os dois botões agora | respondida (20/Nov): os dois botões já nesta versão |
 | 57 | Produto (itens 13 e 20) | Filtro "quantidade de processos da empresa" e "Ler um período" maior que 7 dias: ficam para a 0.7.52 (pedem desenho)? | Sim, 0.7.52 | respondida (20/Nov): ficam para depois, mas entram nesta versão se for possível |
 | 58 | Produto (pesquisa `documentacao/PESQUISA-NOVIDADES-E-HISTORICO-2026-11-20.md`) | Novidades: manter no menu, nome "Novidades da versão" e histórico numa página do site? | Sim aos três | respondida (20/Nov): sim aos três (menu, nome "Novidades da versão" e página de histórico no site) |
+| 59 | Produto (pedido do dono, 24/Nov; desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`) | Amostra anonimizada da resposta da área logada (mesmo formato e tamanho, conteúdo trocado): guardar já na 0.7.53 (aba oculta e botão "Copiar a amostra para o suporte") e só mandar sozinha à SolverONE depois do advogado (0.7.54)? Hoje os termos (3.4 e 6.1) prometem que a SolverONE não recebe contatos | Sim | aberta |
+| 60 | Produto (mesmo desenho) | O envio automático das amostras vem ligado ou desligado? | Perguntar ao escritório uma vez, na primeira resposta colada (Sim/Não), com interruptor em Configurações | aberta |
+| 61 | Produto (mesmo desenho) | Arredondar o tamanho só do contato do sócio na amostra, para proteger melhor? | Sim; o resto mantém o tamanho exato | aberta |
+| 62 | Produto (mesmo desenho) | Guardar as últimas 20 amostras no computador e a SolverONE apagar as recebidas depois de 90 dias? | Sim | aberta |
+| 63 | Produto (mesmo desenho) | Vários computadores: avisar "Fulano está com a planilha aberta; peça para fechar" e esperar sozinho (trava própria na pasta). Em Google Drive/OneDrive o nome de quem abriu não chega; nessas pastas, um computador só grava a planilha e os outros mandam o que fizeram? | Sim, o assistente sugere | aberta |
+| 64 | Produto (mesmo desenho) | Compartilhar o enriquecimento (situação, contatos, valor da área logada) por um arquivo de cada computador numa subpasta "_RADAR (não mexer)", em vez de uma aba na planilha? Com uma aba só, quem grava por último apaga o trabalho do outro | Sim; a planilha continua mostrando tudo junto | aberta |
+| 65 | Produto (mesmo desenho) | "Visto" fica de cada pessoa (cada um vê o que ele mesmo abriu); as outras situações são do escritório e vale a mais recente? | Sim | aberta |
+| 66 | Produto (mesmo desenho) | Pode levar ao advogado o texto dos termos 1.2 (amostras) e conferir junto a tradução em inglês dos termos (0.7.52)? | Sim, antes da 0.7.54 | aberta |
+| 67 | Produto (teste do dono, 24/Nov: "limpei e o aviso continua") | A planilha não diminui com a limpeza porque a aba Arquivo guarda os últimos 30 dias de TODOS os tribunais já lidos (não só os escolhidos agora) e a aba Radar segue o período da tela (até 90 dias). Com os 24 TRTs lidos uma vez, passa de 48 mil linhas. A planilha passa a ter só os tribunais escolhidos hoje (os outros continuam no programa, tela Arquivo) e a aba Radar no máximo 30 dias? | Sim às duas; muda só a planilha, nada sai do programa | aberta |
 
 ## Decisões do dono registradas aqui
 

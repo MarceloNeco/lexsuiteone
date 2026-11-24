@@ -27,6 +27,7 @@ DISCO_BAIXO_GB, DISCO_BAIXO_PCT, DISCO_CRITICO_GB = 5, 10, 1
 _NOME_COPIA = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}h\d{2}m\d{2}( - (antes de limpar|limpeza automática|feita à mão|exportação|teste|antes de salvar regras))?$")
 
 FRENTE_LEGIVEL = {"trabalhista": "Trabalhista", "tributario": "Tributário", "civel": "Cível", "empresarial": "Empresarial"}
+FRENTE_EN = {"trabalhista": "Labour", "tributario": "Tax", "civel": "Civil", "empresarial": "Corporate"}  # 0.7.52: avisos em inglês inteiros
 
 
 def frente_do(item):
@@ -78,11 +79,12 @@ def aviso_tamanho(frente, linhas, limite):
     pct, nivel = nivel_planilha(linhas, limite)
     if nivel == "ok":
         return ""
-    nome = FRENTE_LEGIVEL.get(frente, frente)
+    nome, nome_en = FRENTE_LEGIVEL.get(frente, frente), FRENTE_EN.get(frente, frente)
     n1, n2 = f"{linhas:,}".replace(",", "."), f"{int(limite):,}".replace(",", ".")
     return (f"PLANILHA {nome.upper()} GRANDE: {n1} de {n2} linhas ({pct}%). Recomendamos \"Limpar a planilha "
-            f"(com cópia)\" no programa: antes, o RADAR guarda uma cópia completa. / Spreadsheet is getting large: use "
-            f"\"Clean up (with backup)\".")
+            f"(com cópia)\" no programa: antes, o RADAR guarda uma cópia completa. / {nome_en.upper()} SPREADSHEET IS LARGE: "
+            f"{linhas:,} of {int(limite):,} rows ({pct}%). We recommend \"Clean up the spreadsheet (with backup)\" in the program: "
+            f"RADAR first keeps a full backup.")
 
 
 def limpeza_recente(banco, horas=24):
@@ -261,9 +263,42 @@ def limpar(cfg, banco, pasta_robo, versao, aviso=print, automatico=False, hoje=N
     corte_data = (hoje - dt.timedelta(days=DIAS_DEPOIS_DE_LIMPAR)).isoformat()
     banco.registrar("limpeza_planilha", {"corte": corte_data, "automatica": bool(automatico), "copia": onde if ok else "",
                                          "frentes": list(preferencias.NOMES_FRENTE)})
-    if not automatico:  # na automática, quem chamou já está gravando a planilha
-        radar.regravar_planilha(cfg, banco, pasta_robo, versao, aviso)
-    return True, "Planilha limpa. Cópia completa em: " + onde
+    if automatico:  # na automática, quem chamou já está gravando a planilha
+        return True, "Planilha limpa. Cópia completa em: " + onde
+    antes = _linhas_por_frente(banco)
+    if not radar.regravar_planilha(cfg, banco, pasta_robo, versao, aviso):
+        # 0.7.52 (dono, 24/Nov): antes dizia "limpa" mesmo sem conseguir regravar (planilha aberta no Excel)
+        return False, ("A cópia de segurança foi feita, mas a planilha não foi regravada: ela está aberta no Excel (ou a pasta não "
+                       "deixa gravar). Feche a planilha e clique de novo. / The backup was saved, but the spreadsheet was not "
+                       "rewritten: it is open in Excel (or the folder is read-only). Close it and click again.")
+    return True, resumo_limpeza(antes, _linhas_por_frente(banco))
+
+
+def _linhas_por_frente(banco):
+    """Última gravação de cada planilha: {frente: {"linhas", "limite", "radar"}} (0.7.52: para dizer o antes e o depois)."""
+    ult = {}
+    for e in banco.execucoes("planilha", 50):
+        ult.setdefault(e.get("frente"), {"linhas": int(e.get("linhas") or 0), "limite": int(e.get("limite") or 60000),
+                                          "radar": e.get("radar")})
+    return ult
+
+
+def resumo_limpeza(antes, depois):
+    """Mensagem PT / EN do fim da limpeza: linhas antes e depois e, se continuar grande, por quê (a aba Radar é a Lista)."""
+    pt, en = ["Planilha limpa; a cópia completa está em Cópias de segurança."], ["Spreadsheet cleaned up; the full backup is in the Backups folder."]
+    for frente, d in sorted(depois.items(), key=lambda x: str(x[0])):
+        a = (antes.get(frente) or {}).get("linhas", d["linhas"])
+        nome, nome_en = FRENTE_LEGIVEL.get(frente, frente), FRENTE_EN.get(frente, frente)
+        pt.append(f"{nome}: " + f"{a:,} → {d['linhas']:,}".replace(",", ".") + " linhas.")
+        en.append(f"{nome_en}: {a:,} → {d['linhas']:,} rows.")
+        if nivel_planilha(d["linhas"], d["limite"])[1] != "ok" and d.get("radar") is not None:
+            r = int(d["radar"])
+            rp = f"{r:,}".replace(",", ".")
+            pt.append(f"Continua grande porque a aba Radar tem {rp} processos da Lista (a limpeza enxuga só a aba Arquivo). "
+                      "Para diminuir, arquive na Lista o que não interessa ou leia menos tribunais.")
+            en.append(f"It is still large because the Radar sheet has {r:,} cases from the List (the cleanup only trims the "
+                      "Archive sheet). To reduce it, archive what does not matter in the List or read fewer courts.")
+    return " ".join(pt) + " / " + " ".join(en)
 
 
 # --- Retrato para a Configuração -----------------------------------------------------------------------------------

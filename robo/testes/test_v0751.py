@@ -320,8 +320,27 @@ class Versao0751(unittest.TestCase):
         i = HTML.index('"0.7.51": {'); bloco = HTML[i:HTML.index('"0.7.50": {')]
         pt = re.findall(r'"([^"]+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
         en = re.findall(r'"([^"]+)"', bloco[bloco.index("en: ["):])
-        self.assertEqual(len(pt), len(en)); self.assertGreaterEqual(len(pt), 15)
+        self.assertEqual(len(pt), len(en)); self.assertGreaterEqual(len(pt), 6)  # 0.7.52 (dono): sucintas, itens parecidos juntos
         for linha in pt:  # diretriz do dono: formal, curta, sem frase de efeito
             self.assertNotRegex(linha, r"\b(agora|já lê|com um botão só|caixinha)\b")
         for linha in en:
             self.assertNotRegex(linha, r"\bnow\b")
+
+
+class Revisao0751(unittest.TestCase):
+    def test_planilha_mantem_cnpj_e_porte(self):  # revisão da 0.7.51 (bloqueio): o comentário tinha engolido as duas colunas
+        titulos = [t for t, _ in radar.COLUNAS_RADAR]
+        for t in ("CNPJ", "Porte", "Empresa(s)", "Ajuizado em", "Capital social"):
+            self.assertIn(t, titulos, t)
+        self.assertEqual(titulos.index("CNPJ"), titulos.index("Empresa(s)") + 1)
+
+    def test_ramo_sem_consulta_sai_da_fila(self):
+        b = bd.Banco(os.path.join(tempfile.mkdtemp(), "t.db")); self.addCleanup(b.con.close)
+        b.guardar_lead({"processo": "9990001-11.2026.8.26.0100", "tribunal": "TJSP", "vara": "1ª Vara (fictícia)", "empresas": ["X"], "data_publicacao": "2026-11-19"}, "2026-11-19")
+        radar.completar_fontes(b, dt.datetime(2026, 11, 20, 9), consultar=lambda *a: {}, historico=lambda *a: {})
+        self.assertEqual(b.fontes_de(["9990001-11.2026.8.26.0100"])["9990001-11.2026.8.26.0100"]["cnj"]["causa"], "não se aplica")
+        self.assertEqual(b.candidatos_fonte("cnj", dt.datetime(2026, 11, 20, 9)), [])
+
+    def test_exportar_da_tela_diz_ajuizado(self):
+        self.assertIn('"No Diário de", "Ajuizado em", "Empresa"', HTML)
+        self.assertNotIn('"Distribuída em", "Empresa"', HTML)

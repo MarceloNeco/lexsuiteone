@@ -182,7 +182,7 @@ def criar_se_faltar(cfg, versao="", pasta_robo="", aviso=print):
     caminho = os.path.join(base, NOME_RADAR)
     if os.path.exists(caminho):
         return caminho
-    cabecalho = ["Hora", "Tribunal", "Vara", "Processo", "Rito", "Distribuída em", "Empresa(s)", "CNPJ"]
+    cabecalho = ["Hora", "Tribunal", "Vara", "Processo", "Rito", "Ajuizado em", "Empresa(s)", "CNPJ"]
     planilha.escrever_xlsx(caminho, [{"nome": "Radar", "linhas": [cabecalho], "larguras": [8, 9, 34, 26, 12, 12, 40, 18]}]
                            + preferencias.abas_padrao()
                            + [{"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo), versao, "", ""), "oculta": True, "larguras": [30, 80]}],

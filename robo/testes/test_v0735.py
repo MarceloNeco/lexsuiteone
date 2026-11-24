@@ -49,7 +49,7 @@ class Tela0735(unittest.TestCase):
 
     def test_janelas_largas_e_textos(self):
         self.assertIn('$("janela").classList.add("larga")', self.h)
-        self.assertIn('j.classList.remove("larga")', self.h)
+        self.assertIn('j.classList.remove("larga"', self.h)  # 0.7.52: tira também "nov"
         for k in ("lic_conferir", "lic_conferida_ok", "abrir_pasta_win", "ver_mensagens"):
             self.assertEqual(len(re.findall(r"\b%s: \"" % k, self.h)), 2, k)
         self.assertNotIn("A tela ficou fechada ou escondida", self.h)

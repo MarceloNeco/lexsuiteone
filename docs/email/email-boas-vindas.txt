@@ -20,7 +20,7 @@ Como instalar
 1. Clique com o botão direito no arquivo baixado, escolha "Extrair tudo" e, na pasta extraída, dê dois cliques em INSTALAR.bat. Se o Windows pedir confirmação, clique em "Mais informações" e "Executar assim mesmo". Na primeira janela, cole o código de cliente deste e-mail (botão direito do mouse) e aperte Enter.
 2. Siga o passo a passo na tela: seu nome e e-mail, a pasta das planilhas (uma por área, por exemplo, Trabalhista) e os tribunais.
 3. Confira as Configurações (ícone ⚙): a Rotina de leitura (dias e horários) e os seus Destaques e exclusões (valor mínimo e empresas que ficam de fora), por área.
-4. Depois, abra pelo atalho {{marca.nome}} na área de trabalho. Para sair, menu ☰ → Sair. O manual está no link "Manual", no alto da tela.
+4. Depois, abra pelo atalho {{marca.nome}} na área de trabalho. Para sair, menu ☰ → Sair. O manual está no link "Manual de uso", no alto da tela.
 
 Se o Windows perguntar, clique em "Executar" (ou "Mais informações" e "Executar assim mesmo"). O instalador mostra o antivírus que encontrou e, se ele bloquear, diz o passo a passo daquele antivírus; o mesmo passo a passo e o texto para a TI estão em https://judicial.solverone.com.br/antivirus.html.
 

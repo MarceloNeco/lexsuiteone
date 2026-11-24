@@ -1,7 +1,7 @@
 {
- "versao": "0.7.50",
- "arquivo": "LexSuiteONE-RADAR-atualizacao-0.7.50.zip",
- "sha256": "30d389b0f43aac6b8992925e63f73c1239a1c4bb22739c0399b876488f790c61",
- "assinatura": "2d1add337c4c6697f11549fe09d8711db67bb348653fb9402931b75a182975f8afe0929e05023b0fe730d3cc05125a7e6d62698a26766fcd2736bc4aad0c7800",
- "notas": "Versão 0.7.50 publicada pela automação"
+ "versao": "0.7.51",
+ "arquivo": "LexSuiteONE-RADAR-atualizacao-0.7.51.zip",
+ "sha256": "e5270327392c9b5c430aced124e9b6524f7b3d1f2aa52baaf6937aca52fb511b",
+ "assinatura": "62bafdf14e5762187a78333b3079d0f9f2319568b06da4eea9c724a66761b8e643d56ccf018953a7632eedb3f51072b738fc0d17482f0f851a76f197eeafbd0d",
+ "notas": "Versão 0.7.51 publicada pela automação"
 }

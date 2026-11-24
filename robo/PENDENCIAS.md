@@ -167,7 +167,15 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
   processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
 
-## 0.7.51 (20/Nov; decisões 52 a 58) — pronta para publicar
+## 0.7.52 (24/Nov; teste da 0.7.51 em inglês) — pronta para publicar depois da revisão
+
+- Feito: inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em inglês com seletor, limpeza da planilha visível
+  (andamento, resultado, ✕), ressalvas 1 a 5 da Operação sobre a 0.7.51, Novidades sucintas. Folha `documentacao/dod/0.7.52.md`.
+- Fica para depois: ressalva 6 (citar o DataJud nos termos, com o advogado, junto com a revisão do inglês, pergunta 66); o manual
+  continua só em português (traduzir quando o dono pedir); perguntas 59 a 67 (amostra anonimizada, planilha em rede, troca entre
+  computadores e o tamanho da planilha), desenho em `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`.
+
+## 0.7.51 (20/Nov; decisões 52 a 58) — publicada (tag v0.7.51)
 
 - Feito: datas e fontes (`documentacao/DESENHO-DATAS-E-FONTES-0751.md`), ressalvas da Operação, Novidades até "Não mostrar novamente",
   histórico de versões no site e os itens do feedback do teste da 0.7.50 (`documentacao/FEEDBACK-DONO-2026-11-16-TESTE-0750.md`) que

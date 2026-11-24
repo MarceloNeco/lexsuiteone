@@ -458,7 +458,7 @@ class Servidor(ThreadingHTTPServer):
                          "en": f"{_publicacoes_en(e.get('lidas', 0))}; {_processos_en(e.get('novas', 0))} against companies."}
                 if e.get("nada_novo"):  # 0.7.36 (dono): leitura sem nada novo não parece falha (revisão 2: só quando a leitura marcou)
                     achou.update({"pt": "Nada novo: os Diários já publicados tinham sido lidos. O Diário de hoje entra na próxima leitura, quando estiver liberado.",
-                                  "en": "Nothing new: the gazettes already published had been read. Today's gazette comes in the next reading, once released."})
+                                  "en": "Nothing new: the Court Journals already published had been read. Today's Court Journal comes in the next reading, once released."})
                 break
         self._ultima_cache = (marca_, achou)
         return achou
@@ -2080,7 +2080,7 @@ TEXTOS_SINAL = {
         "A leitura automática não foi criada neste computador. {quem} pode ter impedido. Cadastre a exceção da pasta {pasta} e, "
         "depois, em Configurações → Leitura do Diário, clique em Salvar. Enquanto isso, o programa lê sozinho com a tela aberta.",
         "The automatic reading was not created on this computer. {quem_en} may have blocked it. Add the exception for the folder "
-        "{pasta} and then, in Settings → Gazette reading, click Save. Meanwhile, the program reads by itself while the screen is open."),
+        "{pasta} and then, in Settings → Court Journal reading, click Save. Meanwhile, the program reads by itself while the screen is open."),
     "tarefa_nunca": ("tarefa_falhou",
         "A leitura automática das {h} não rodou, embora a tarefa exista. {quem} pode estar impedindo. Cadastre a exceção da pasta "
         "{pasta}. Enquanto isso, o programa lê sozinho com a tela aberta.",
