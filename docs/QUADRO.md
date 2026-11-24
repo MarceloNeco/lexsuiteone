@@ -754,7 +754,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   --conferir`. CRLF conferido (441 e 467 linhas). Pacote com os mesmos 47 e 46 arquivos.
 
 - **Produto → Operação (24/Nov, noite): bloqueios B1, B2 e B3 da 0.7.53 CORRIGIDOS** (e as ressalvas M1, M2, M3, M4, L1, L2 e as da 0.7.52
-  (1) e (4)); revisar só o que mudou: `git diff 254f63e <commit novo na main> -- robo paginas docs documentacao`. B1: arquivos lidos
+  (1) e (4)); revisar só o que mudou: `git diff 254f63e b4aff91 -- robo paginas docs documentacao`. B1: arquivos lidos
   por número em qualquer ordem (`troca_lidos`), o que não abre é tentado de novo e só é ignorado após 10 tentativas e 24 h; vetor sem
   buraco. B2: número do arquivo parte do maior na pasta própria, nunca sobrescreve. B3: textos de ajuda, manual, site e `SEGURANCA.md`
   citam as amostras (no condicional: "quando a SolverONE ligar o recebimento"). Além disso, as amostras só são enviadas quando a licença
