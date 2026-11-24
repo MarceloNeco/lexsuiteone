@@ -152,6 +152,43 @@ class DoisComputadores(unittest.TestCase):
         self.assertEqual(troca.pendentes(self.b, self.cb)["n"], 0)  # os ruins não voltam a cada vez
         self.assertTrue(any("Troca" in e.get("fonte", "") for e in self.b.execucoes("saude", 10)))
 
+    def test_revisao_arquivo_corrompido_ou_estranho_nao_trava_a_gravacao(self):
+        base = os.path.join(self.pasta, "LexSuiteONE", troca.PASTA, "troca", "dddd4444dddd4444"); os.makedirs(base)
+        bom = gzip.compress(json.dumps({"formato": 1, "instalacao": "dddd4444dddd4444", "itens": []}).encode())
+        with open(os.path.join(base, "00000001-1.json.gz"), "wb") as f:
+            f.write(bom[:12] + b"\x00" * 20 + bom[32:])  # gzip com bytes trocados no meio (zlib.error)
+        with gzip.open(os.path.join(base, "00000002-1.json.gz"), "wt", encoding="utf-8") as f:
+            json.dump([1, 2, 3], f)  # JSON válido que não é objeto
+        _lead(self.b, "0000001-11.2026.5.09.0001")
+        self.assertEqual(troca.juntar(self.b, self.cb), 0)
+        self.assertEqual(troca.pendentes(self.b, self.cb)["n"], 0)
+        self.assertTrue(radar.gravar_planilha(self.cb, radar.montar_radar(self.cb, self.b, prefs=pf.padrao()), self.b, "0.7.53", self.pasta, lambda *_: None))
+
+    def test_revisao_pasta_fora_do_ar_nao_derruba_a_leitura(self):
+        from unittest import mock
+        with mock.patch.object(troca.os, "makedirs", side_effect=PermissionError("pasta de rede fora")):
+            with troca.trava(self.ca) as t:
+                self.assertEqual(t, "sem pasta")
+
+    def test_revisao_situacao_marcada_aqui_sai_mesmo_com_relogio_atrasado(self):
+        _lead(self.a, "0000001-11.2026.5.09.0001"); _lead(self.b, "0000001-11.2026.5.09.0001")
+        # o outro computador está com o relógio adiantado: a situação dele chega "do futuro"
+        self.a.con.execute("UPDATE leads SET status = 'descartado', status_em = '2099-01-01T00:00:00+00:00'"); self.a.con.commit()
+        self.a.con.execute("INSERT INTO troca_sujos (processo) VALUES ('0000001-11.2026.5.09.0001')"); self.a.con.commit()
+        troca.exportar(self.a, self.ca); troca.juntar(self.b, self.cb)
+        self.b.mudar_situacao(["0000001-11.2026.5.09.0001"], "virou_cliente", por="João")  # marcado aqui, com o relógio certo
+        self.assertGreater(troca.exportar(self.b, self.cb), 0)  # sai, mesmo mais "velho" que o que veio de fora
+        self.assertEqual(troca.exportar(self.b, self.cb), 0)  # e não sai de novo
+
+    def test_revisao_mudanca_que_chega_antes_do_processo_espera_por_ele(self):
+        _lead(self.a, "0000001-11.2026.5.09.0001", dias=60)  # fora dos 30 dias: o processo não vai na troca
+        self.a.mudar_situacao(["0000001-11.2026.5.09.0001"], "em_analise", por="Maria")
+        troca.exportar(self.a, self.ca)
+        troca.juntar(self.b, self.cb)
+        _lead(self.b, "0000001-11.2026.5.09.0001", dias=60)  # o B lê o mesmo processo depois
+        troca.juntar(self.b, self.cb)
+        self.assertEqual(self.b.con.execute("SELECT status FROM leads").fetchone()[0], "em_analise")
+
     def test_processo_apagado_pela_limpeza_nao_volta(self):
         _lead(self.a, "0000001-11.2026.5.09.0001"); troca.exportar(self.a, self.ca)
         self.b.con.execute("INSERT INTO processos_apagados VALUES ('0000001-11.2026.5.09.0001', '2026-11-01', '2026-01-01')"); self.b.con.commit()

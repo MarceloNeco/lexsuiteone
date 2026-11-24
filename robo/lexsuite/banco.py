@@ -97,6 +97,9 @@ class Banco:
                 PRIMARY KEY (data, tribunal, vara, frente, porte, faixa_valor));
             CREATE TABLE IF NOT EXISTS estatisticas_leves (mes TEXT, tribunal TEXT, frente TEXT, dimensao TEXT, valor TEXT,
                 n INTEGER DEFAULT 0, atualizado_em TEXT, PRIMARY KEY (mes, tribunal, frente, dimensao, valor));
+            -- 0.7.53 (revisão): situações mudadas NESTE computador, para a troca exportar sem depender de relógio
+            CREATE TABLE IF NOT EXISTS troca_sujos (id INTEGER PRIMARY KEY AUTOINCREMENT, processo TEXT);
+            CREATE TABLE IF NOT EXISTS troca_pendentes (processo TEXT, item TEXT, origem TEXT);
             CREATE TABLE IF NOT EXISTS historico (tribunal TEXT, data TEXT, situacao TEXT, novas INTEGER DEFAULT 0,
                 quando TEXT, PRIMARY KEY (tribunal, data));
             CREATE TABLE IF NOT EXISTS historico_processos (processo TEXT PRIMARY KEY);
@@ -323,6 +326,7 @@ class Banco:
                              [(situacao, (motivo or "")[:80] if situacao in ("descartado", "arquivado") else "", quando, por, p) for p in antes])
         if situacao == "visto" and por:  # 0.7.53 (decisão 65): "Visto por" vale para o escritório
             self.con.executemany("UPDATE leads SET visto_por = ?, visto_em = ? WHERE processo = ?", [(por, quando, p) for p in antes])
+        self.con.executemany("INSERT INTO troca_sujos (processo) VALUES (?)", [(p,) for p in antes])  # 0.7.53: vai para os outros
         self.registrar_acao(perfil, "situacao", ",".join(list(antes)[:50]), json.dumps(_contar(antes.values())), situacao, len(antes))
         self.con.commit()
         return {"quantos": len(antes), "antes": antes}
@@ -333,6 +337,7 @@ class Banco:
         pares = [(situacao_valida(st) or "novo", quando, str(p)) for p, st in (antes or {}).items()][:20000]
         self.con.executemany("UPDATE leads SET status = ?, status_em = ?, motivo = CASE WHEN ? IN ('descartado','arquivado') THEN motivo ELSE '' END "
                              "WHERE processo = ?", [(st, q, st, p) for st, q, p in pares])
+        self.con.executemany("INSERT INTO troca_sujos (processo) VALUES (?)", [(p,) for _st, _q, p in pares])  # 0.7.53
         self.registrar_acao(perfil, "desfazer", "", "", json.dumps(_contar(st for st, _, _ in pares)), len(pares))
         self.con.commit()
         return len(pares)

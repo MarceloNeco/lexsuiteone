@@ -165,10 +165,8 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 24/Nov: **0.7.53 em código** ("pode codar a 0.7.53" do dono; desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`, revisão 2):
-  planilha só com os tribunais escolhidos e aba Estatística; amostras de formato com fila silenciosa; troca entre computadores sem
-  mestre, "Trazer do escritório", "Visto por"; testes de acesso simultâneo. Arquivos: `robo/lexsuite/{radar,armazenamento,compartilhar,
-  banco,preferencias,djen,cnpj,datajud,contatos,app}.py`, módulos novos `amostras.py` e `troca.py`, `robo/radar_modelo.html`, manual.
+- 24/Nov: **0.7.53 pronta para publicar** (leva junto a 0.7.52; pedido à Operação abaixo). Pedidos à Arquitetura: nuvem v21 das
+  amostras e contagem do pacote (dois módulos novos). Próximo: teste do dono com dois computadores (ESTADO-ATUAL, seção 11).
 - 24/Nov: **0.7.52** (teste do dono na 0.7.51 em inglês): inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em
   inglês com seletor (`paginas/aceite.html`, português igual à 1.0, sem aceite novo), limpeza da planilha visível (andamento, resultado,
   ✕), ressalvas 1 a 5 da Operação sobre a 0.7.51, Novidades sucintas. Folha `documentacao/dod/0.7.52.md`. **Pronta para publicar**
@@ -195,6 +193,14 @@ Arquitetura (pedido no quadro).
   ressalvas 3 a 5 da Operação nos instaladores (vão com a publicação, porque o site serve o instalador na hora).
 
 ### Feito (mais recente primeiro)
+- 24/Nov: **0.7.53 pronta para publicar** (decisões 59 a 67; desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`, rev. 2):
+  vários computadores na mesma pasta sem mestre (`troca.py`: arquivos por computador, junção, trava curta, vetor na aba Sobre;
+  "Trazer do escritório (N)"; "Visto por" e autoria), planilha só com os tribunais escolhidos (Radar até 30 dias, Arquivo pela data no
+  Diário) e aba Estatística de todos, asterisco de mês parcial; amostras de formato anonimizadas com fila silenciosa (`amostras.py`).
+  `test_v0753.py` (24, com dois processos gravando ao mesmo tempo; rodada à parte com três computadores × 25 rodadas: tudo igual nos
+  três). Bateria: unittest 660 OK, `fluxos` TUDO OK, `ver_na_lista` OK (16), `larguras` OK (88), `aviso_e_lupa` TUDO OK (399).
+  Revisor: 2 bloqueios (arquivo de troca corrompido e pasta fora do ar) e ressalvas, corrigidos com testes; termos: decisão do dono
+  de não mudar agora, com a leitura da 6.2 (c) e o texto alternativo para o advogado (pergunta 66). Folha `documentacao/dod/0.7.53.md`.
 - 24/Nov: **0.7.52 pronta para publicar** (teste do dono na 0.7.51 em inglês): inglês sem sobras (faixas, mensagens da leitura,
   setor, porte, tipos de publicação), "Court Journal", "Manual de uso / User guide", termos em inglês com seletor (português igual
   à 1.0, sem aceite novo), limpeza da planilha visível (andamento, resultado, ✕ lembrado), ressalvas 1 a 5 da Operação, Novidades
@@ -674,6 +680,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Operação (24/Nov): 0.7.53 pronta para publicar** (inclui a 0.7.52), quando o dono escrever "publica a versão
+  0.7.53". Revisar `git diff 34e79fd 254f63e -- robo paginas docs ferramentas` e a folha
+  `documentacao/dod/0.7.53.md`. Atenção: módulos novos `troca.py` e `amostras.py` (o pacote ganha dois arquivos); primeira gravação
+  enxuta copia a planilha para "Cópias de segurança/antes da 0.7.53"; nos testes de Windows, conferir a pasta `_RADAR (não mexer)`.
+- **Produto → Arquitetura (24/Nov): contagem do pacote** — a 0.7.53 tem `lexsuite/troca.py` e `lexsuite/amostras.py`: atualizar a
+  contagem de arquivos no CLAUDE.md ("Como entregar") e no `docs/PUBLICAR.md`.
 - **Produto → Arquitetura (24/Nov): nuvem v21 das amostras de formato** (decisões 59 a 62 do dono): `lex-conta` v21 com as ações
   `formato` e `amostra`, tabelas `lex_formatos`, `lex_amostras` (90 dias) e `lex_formato_mudancas`, recurso `amostras` ligado por
   padrão. Desenho: `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`, A.4 e A.7. A 0.7.53 guarda tudo numa fila silenciosa e não

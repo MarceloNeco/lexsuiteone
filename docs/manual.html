@@ -261,6 +261,8 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
     <li>Nada se perde: a situação mais recente vale; "Visto" nunca passa por cima de "Em contato" ou de outra situação trabalhada; os contatos se somam; o valor da causa fica com a fonte mais forte.</li>
     <li>A ficha mostra <b>"Visto por"</b> e <b>"Marcado por"</b> (nome e computador); a planilha tem as colunas "Visto por" e "Situação marcada por", e a aba Contatos diz quem incluiu cada contato.</li>
     <li>Só um computador grava a planilha por vez (segundos). Se outro estiver gravando, ou se a planilha já tiver dados que ainda não chegaram a este computador pela sincronização, ele espera e grava depois: a planilha nunca volta para uma versão mais velha.</li>
+    <li>Voltar um processo para "Novo" ou "Visto" (inclusive pelo Desfazer) vale só neste computador quando outro já o marcou como trabalhado (Em análise, Em contato…): a situação trabalhada continua valendo para o escritório.</li>
+    <li>Arquivo da pasta que estiver danificado ou for de outra licença é ignorado (fica anotado na aba Saúde da planilha) e não atrapalha a gravação.</li>
     <li>Destaques, exclusões e "Excluir esta empresa" continuam de cada pessoa e não vão para os outros.</li>
     <li>Use a mesma versão do RADAR em todos os computadores (o botão "Atualizar agora" aparece em cada um).</li>
   </ul>

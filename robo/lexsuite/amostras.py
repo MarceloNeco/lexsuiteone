@@ -112,6 +112,11 @@ def trocar_texto(texto, mapa=None):
     return _sem_documento_valido("".join(p if i % 2 else _trocar_palavra(p, mapa) for i, p in enumerate(partes)))
 
 
+def _chave_de_esquema(k):
+    """Chave de JSON que é nome de campo (fica): letras ASCII, dígito só no fim, sublinhado, até 40; o resto é tratado como dado."""
+    return bool(re.fullmatch(r"[A-Za-z_][A-Za-z_]{0,37}\d{0,2}", str(k)))
+
+
 def _arredondar(s):
     n = len(s)
     alvo = ((n + SOCIO_MULTIPLO - 1) // SOCIO_MULTIPLO) * SOCIO_MULTIPLO
@@ -123,7 +128,7 @@ def trocar_json(obj, mapa=None, chave=""):
     if isinstance(obj, dict):
         saida = {}
         for k, v in obj.items():
-            k2 = k if not re.search(r"\d", str(k)) else trocar_texto(k, mapa)  # chave que parece dado também é trocada
+            k2 = k if _chave_de_esquema(k) else trocar_texto(k, mapa)  # chave que parece dado (número, nome, espaço) também é trocada
             saida[k2] = trocar_json(v, mapa, str(k))
         return saida
     if isinstance(obj, list):
@@ -133,6 +138,7 @@ def trocar_json(obj, mapa=None, chave=""):
     if isinstance(obj, (int, float)):
         s = str(obj)
         t = "".join(secrets.choice(_DIG) if c.isdigit() else c for c in s)
+        t = _sem_documento_valido(t)  # revisão: número de 11 ou 14 dígitos nunca vira CPF ou CNPJ válido
         try:
             return type(obj)(t) if t.strip("-.") else obj
         except ValueError:
@@ -177,7 +183,7 @@ def assinatura_json(obj):
         if isinstance(v, dict):
             total[caminho] += 1
             for k, x in v.items():
-                chave = "#" if re.search(r"\d", str(k)) else str(k)
+                chave = str(k) if _chave_de_esquema(k) else "#"
                 cont[(caminho + "." + chave if caminho else chave, _tipo(x))] += 1
                 anda(x, caminho + "." + chave if caminho else chave)
         elif isinstance(v, list):
@@ -276,7 +282,7 @@ def descarregar(banco, agora=None, aviso=None):
             try:
                 assin = assinatura_area(dados) if tipo == "texto" else assinatura_json(dados)
                 h = hash_de(assin)
-                ja = con.execute("SELECT 1 FROM formatos WHERE fonte = ? AND hash = ?", (fonte, h)).fetchone()
+                ja, mud = con.execute("SELECT 1 FROM formatos WHERE fonte = ? AND hash = ?", (fonte, h)).fetchone(), None
                 ant = con.execute("SELECT hash, assinatura FROM formatos WHERE fonte = ? ORDER BY ultima_vez DESC LIMIT 1", (fonte,)).fetchone()
                 if ja:
                     con.execute("UPDATE formatos SET ultima_vez = ?, vezes = vezes + 1 WHERE fonte = ? AND hash = ?", (quando, fonte, h))
@@ -289,7 +295,7 @@ def descarregar(banco, agora=None, aviso=None):
                         banco.registrar("saude", {"fonte": "Formato de " + fonte, "situacao": "atenção",
                                                   "detalhe": ("mudou: " + ", ".join(dif["novos"][:3] + ["-" + x for x in dif["sumiram"][:3]]))[:200]})
                     _enfileirar(con, "formato", {"fonte": fonte, "hash": h, "assinatura": assin[:400],
-                                                 "mudanca": mudancas[-1] if mudancas and mudancas[-1]["hash_depois"] == h else None}, quando)
+                                                 "mudanca": mud if ant else None}, quando)
                 conteudo = _amostra_texto(tipo, dados)
                 con.execute("INSERT INTO amostras (fonte, quando, hash, conteudo) VALUES (?,?,?,?)", (fonte, quando, h, conteudo))
                 con.execute("DELETE FROM amostras WHERE fonte = ? AND id NOT IN (SELECT id FROM amostras WHERE fonte = ? "

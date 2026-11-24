@@ -23,6 +23,8 @@ import json
 import os
 import platform
 import re
+import threading
+import time
 
 PASTA = "_RADAR (não mexer)"
 FORMATO = 1
@@ -34,6 +36,8 @@ LEIA_ME = ("Esta pasta é do RADAR JUDICIAL. Cada computador do escritório grav
            "para os outros juntarem. Não apague nem edite: os dados também ficam em cada computador, mas a troca entre eles para.\n")
 _CPF = re.compile(r"\b\d{3}\.\d{3}\.\d{3}-\d{2}\b|\bcpf\b", re.I)
 _PROIBIDO = ("reclamante", "testemunha", "preposto", "advogado da parte", "advogada da parte")
+_TRAVA_EXPORTAR = threading.Lock()  # revisão: tela e leitura nunca exportam ao mesmo tempo (o mesmo número de arquivo)
+MAX_PENDENTES = 20000
 
 
 def _agora_utc():
@@ -91,6 +95,11 @@ def _limpo(valor):
 
 def exportar(banco, cfg, agora=None):
     """Grava um arquivo novo com o que mudou aqui desde a última vez (nada, se nada mudou). Devolve quantos itens foram."""
+    with _TRAVA_EXPORTAR:
+        return _exportar(banco, cfg, agora)
+
+
+def _exportar(banco, cfg, agora=None):
     from . import banco as _bd, tribunais
     raiz = pasta(cfg)
     if not raiz:
@@ -99,7 +108,7 @@ def exportar(banco, cfg, agora=None):
     _tabela(con)
     agora = agora or _agora_utc()
     wm_lead, wm_cont = int(_ler(con, "wm_lead", "0")), int(_ler(con, "wm_contato", "0"))
-    wm_st, wm_acao = _ler(con, "wm_status", ""), int(_ler(con, "wm_acao", "0"))
+    wm_acao = int(_ler(con, "wm_acao", "0"))
     escolhidos = {t.upper() for t in tribunais.validar(((cfg or {}).get("radar") or {}).get("tribunais") or ["TRT2", "TRT15"])}
     desde = (dt.date.today() - dt.timedelta(days=DIAS_LIDOS)).isoformat()
     itens, max_lead, max_cont, max_acao = [], wm_lead, wm_cont, wm_acao
@@ -113,11 +122,13 @@ def exportar(banco, cfg, agora=None):
         if d.get("empresa_receita"):
             resumo["empresa_receita"] = {k: v for k, v in d["empresa_receita"].items() if k in _bd._RESUMO_RECEITA and k != "socios"}
         itens.append({"t": "lead", "p": proc, "d": resumo})
-    for proc, st, mot, em, por, vpor, vem in con.execute(
-            "SELECT processo, status, motivo, status_em, status_por, visto_por, visto_em FROM leads WHERE status_em > ? "
-            "AND coalesce(status_em, '') <> ''", (wm_st,)):
-        itens.append({"t": "sit", "p": proc, "s": st, "m": mot or "", "q": em, "por": por or "", "vp": vpor or "", "vq": vem or ""})
-    max_st = con.execute("SELECT max(status_em) FROM leads").fetchone()[0] or wm_st
+    # revisão: as situações mudadas AQUI ficam numa fila (troca_sujos), sem depender do relógio nem do que veio de fora
+    sujos = con.execute("SELECT id, processo FROM troca_sujos ORDER BY id").fetchall()
+    max_sujo = sujos[-1][0] if sujos else 0
+    for proc in sorted({p for _i, p in sujos}):
+        r = con.execute("SELECT status, motivo, status_em, status_por, visto_por, visto_em FROM leads WHERE processo = ?", (proc,)).fetchone()
+        if r:
+            itens.append({"t": "sit", "p": proc, "s": r[0], "m": r[1] or "", "q": r[2] or "", "por": r[3] or "", "vp": r[4] or "", "vq": r[5] or ""})
     for rowid, alvo, acao in con.execute("SELECT rowid, alvo, acao FROM acoes WHERE rowid > ? AND acao LIKE 'completar:%' ORDER BY rowid", (wm_acao,)):
         max_acao = max(max_acao, rowid)
         campo = acao.split(":", 1)[1]
@@ -145,8 +156,8 @@ def exportar(banco, cfg, agora=None):
             json.dump(corpo, f, ensure_ascii=False)
         os.replace(tmp, nome)  # nasce inteiro: quem lê nunca vê arquivo pela metade
         _gravar(con, "seq", seq)
-    _gravar(con, "wm_lead", max_lead); _gravar(con, "wm_contato", max_cont)
-    _gravar(con, "wm_status", max_st); _gravar(con, "wm_acao", max_acao)
+    _gravar(con, "wm_lead", max_lead); _gravar(con, "wm_contato", max_cont); _gravar(con, "wm_acao", max_acao)
+    con.execute("DELETE FROM troca_sujos WHERE id <= ?", (max_sujo,))
     con.commit()
     _estado(cfg, banco)
     return len(itens)
@@ -227,22 +238,41 @@ def juntar(banco, cfg, aviso=None):
                 raise ValueError("grande demais")
             with gzip.open(caminho, "rt", encoding="utf-8") as f:
                 corpo = json.load(f)
-            if corpo.get("formato") != FORMATO or corpo.get("instalacao") != inst or (lic and corpo.get("licenca") != lic):
+            if not isinstance(corpo, dict) or corpo.get("formato") != FORMATO or corpo.get("instalacao") != inst \
+                    or (lic and corpo.get("licenca") != lic):
                 raise ValueError("de outra licença ou formato desconhecido")
             for item in corpo.get("itens") or []:
                 if isinstance(item, dict) and _limpo(item):
-                    mudou += _aplicar(banco, item, apagados, corpo.get("quem") or "")
-        except (OSError, ValueError, EOFError, gzip.BadGzipFile) as e:
+                    try:
+                        mudou += _aplicar(banco, item, apagados, str(corpo.get("quem") or ""))
+                    except Exception:  # noqa: BLE001 - item estranho não para a junção dos outros
+                        continue
+        except Exception as e:  # noqa: BLE001 - revisão: arquivo corrompido (zlib), JSON que não é objeto… é ignorado e o ponteiro anda
             if aviso:
                 aviso(f"  Arquivo de outro computador ignorado ({os.path.basename(caminho)}: {e.__class__.__name__}).")
             banco.registrar("saude", {"fonte": "Troca entre computadores", "situacao": "atenção",
                                       "detalhe": f"arquivo ignorado: {os.path.basename(caminho)} ({e.__class__.__name__})"})
         _gravar(banco.con, "ap:" + inst, seq)
         banco.con.commit()
+    mudou += _aplicar_pendentes(banco, apagados)
     if mudou:
         banco.registrar_acao(quem(cfg), "troca", "", "", f"{mudou} itens de outros computadores", mudou)
         banco.con.commit()
     return mudou
+
+
+def _aplicar_pendentes(banco, apagados):
+    """Itens que chegaram antes do processo (situação, valor ou contato de um processo que este computador ainda não tinha)."""
+    con, n = banco.con, 0
+    for rowid, proc, item, origem in con.execute("SELECT rowid, processo, item, origem FROM troca_pendentes WHERE processo IN "
+                                                 "(SELECT processo FROM leads)").fetchall():
+        try:
+            n += _aplicar(banco, json.loads(item), apagados, origem or "")
+        except Exception:  # noqa: BLE001
+            pass
+        con.execute("DELETE FROM troca_pendentes WHERE rowid = ?", (rowid,))
+    con.commit()
+    return n
 
 
 def _tem_tabela(con, nome):
@@ -263,8 +293,10 @@ def _aplicar(banco, item, apagados, origem):
             return 0
         banco.guardar_lead(d, str(d.get("data_publicacao") or "")[:10] or None)
         return 1
-    if not existe:
-        return 0  # processo que este computador ainda não tem: fica no arquivo e entra quando ele chegar (seq não volta)
+    if not existe:  # processo que este computador ainda não tem: guarda o item e aplica quando o processo chegar
+        if con.execute("SELECT count(*) FROM troca_pendentes").fetchone()[0] < MAX_PENDENTES:
+            con.execute("INSERT INTO troca_pendentes VALUES (?,?,?)", (proc, json.dumps(item, ensure_ascii=False), origem[:120]))
+        return 0
     if t == "sit":
         st, em = _bd.situacao_valida(item.get("s")) or "novo", str(item.get("q") or "")
         atual, atual_em = existe[0] or "novo", existe[1] or ""
@@ -309,10 +341,14 @@ def trava(cfg, agora=None):
     if not raiz:
         yield "sem pasta"
         return
-    os.makedirs(raiz, exist_ok=True)
     caminho, meu = os.path.join(raiz, "gravando.trava"), {"instalacao": instalacao(cfg), "quem": quem(cfg),
                                                            "quando": (agora or dt.datetime.now(dt.timezone.utc)).timestamp()}
     pegou = False
+    try:
+        os.makedirs(raiz, exist_ok=True)
+    except OSError:  # revisão: pasta de rede ou Drive fora do ar: segue sem trava (a gravação avisa como antes)
+        yield "sem pasta"
+        return
     for _ in range(2):
         try:
             fd = os.open(caminho, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
@@ -331,6 +367,16 @@ def trava(cfg, agora=None):
                     os.remove(caminho)  # vencida: o outro caiu no meio
                 continue
             break
+        except OSError:  # sem permissão ou pasta caiu agora: segue sem trava
+            yield "sem pasta"
+            return
+    if pegou:  # revisão: dois tomando a mesma trava vencida ao mesmo tempo; confere depois de um instante se ainda é a nossa
+        time.sleep(0.05)
+        try:
+            with open(caminho, encoding="utf-8") as f:
+                pegou = json.load(f).get("quando") == meu["quando"]
+        except (OSError, ValueError):
+            pegou = False
     try:
         yield caminho if pegou else None
     finally:
