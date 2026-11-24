@@ -320,7 +320,7 @@ class Versao0751(unittest.TestCase):
         i = HTML.index('"0.7.51": {'); bloco = HTML[i:HTML.index('"0.7.50": {')]
         pt = re.findall(r'"([^"]+)"', bloco[bloco.index("pt: ["):bloco.index("en: [")])
         en = re.findall(r'"([^"]+)"', bloco[bloco.index("en: ["):])
-        self.assertEqual(len(pt), len(en)); self.assertGreaterEqual(len(pt), 15)
+        self.assertEqual(len(pt), len(en)); self.assertGreaterEqual(len(pt), 6)  # 0.7.52 (dono): sucintas, itens parecidos juntos
         for linha in pt:  # diretriz do dono: formal, curta, sem frase de efeito
             self.assertNotRegex(linha, r"\b(agora|já lê|com um botão só|caixinha)\b")
         for linha in en:

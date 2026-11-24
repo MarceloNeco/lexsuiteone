@@ -18,6 +18,7 @@ import datetime as dt
 import os
 import re
 import statistics
+import time
 
 from . import rede
 
@@ -46,6 +47,8 @@ JUIZO_100_DIGITAL = 14736
 GRATUIDADE = 787
 
 _chave = [None]
+_chave_falhou = [0.0]  # 0.7.52: quando a página da chave falhou (relógio monotônico); 0 = nunca
+CHAVE_ESPERA = 600  # segundos sem tentar de novo depois de falhar
 
 
 def chave_publica():
@@ -53,10 +56,19 @@ def chave_publica():
         return os.environ["DATAJUD_APIKEY"].strip()
     if _chave[0]:
         return _chave[0]
-    html = rede.pedir(WIKI_CHAVE, cabecalhos={"Accept": "text/html"})
+    # 0.7.52 (ressalva 1 da Operação): a página do CNJ fora não pode prender a leitura por minutos (antes: 5 tentativas de 120 s).
+    # Duas tentativas curtas; se falhar, não tenta de novo por 10 minutos (a fila das fontes tenta depois).
+    if _chave_falhou[0] and time.monotonic() - _chave_falhou[0] < CHAVE_ESPERA:
+        raise RuntimeError("Chave pública do DataJud não lida há pouco; tento de novo mais tarde.")
+    try:
+        html = rede.pedir(WIKI_CHAVE, cabecalhos={"Accept": "text/html"}, tentativas=2, tempo_limite=20)
+    except Exception:
+        _chave_falhou[0] = time.monotonic()
+        raise
     texto = re.sub(r"<[^>]+>", " ", html)
     achou = re.search(r"APIKey\s+([A-Za-z0-9+/]{30,}={0,2})", texto)
     if not achou:
+        _chave_falhou[0] = time.monotonic()
         raise RuntimeError(
             "Não achei a chave pública do DataJud na página do CNJ. Abra "
             f"{WIKI_CHAVE}, copie a chave e rode de novo com a variável DATAJUD_APIKEY.")
@@ -343,7 +355,8 @@ def consultar_lote(indice, numeros, pedir=None):
     corpo = {"size": 200, "_source": CAMPOS, "query": {"terms": {"numeroProcesso": numeros}}}
     if pedir is None:
         def pedir(url, c):
-            return rede.pedir_json(url, c, {"Authorization": "APIKey " + chave_publica()}, tentativas=2, intervalo_minimo=1.0, tempo_limite=30)
+            # 0.7.52 (ressalva 3 da Operação): uma tentativa por lote; o 429 para o CNJ nesta leitura (radar.completar_fontes)
+            return rede.pedir_json(url, c, {"Authorization": "APIKey " + chave_publica()}, tentativas=1, intervalo_minimo=1.0, tempo_limite=30)
     r = pedir(URL_TRIBUNAL.format(sigla=indice), corpo)
     if not isinstance(r, dict) or r.get("error") or r.get("timed_out") or ((r.get("_shards") or {}).get("failed") or 0) > 0:
         raise RespostaParcial(str((r or {}).get("error") or "resposta parcial")[:200] if isinstance(r, dict) else "resposta inválida")

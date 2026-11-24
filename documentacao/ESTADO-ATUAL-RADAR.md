@@ -1,6 +1,6 @@
 # Estado atual do RADAR JUDICIAL (uma página; toda sessão lê antes de responder ao dono)
 
-Atualizado em 20/Nov/2026 pela Produto, com a 0.7.51 pronta para publicar (a 0.7.50 está no ar) (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
+Atualizado em 24/Nov/2026 pela Produto, com a 0.7.52 pronta para publicar depois da revisão (a 0.7.51 está no ar) (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
 que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" sai DAQUI, não da memória da conversa.
 
 ## 1. No ar
@@ -24,7 +24,12 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
-- **0.7.51 pronta para publicar** (20/Nov; espera o "publica a versão 0.7.51" na conversa da Operação): o processo é novo pela
+- **0.7.52** (24/Nov; espera o "publica a versão 0.7.52" na conversa da Operação): inglês sem sobras de português, "Court Journal",
+  "Manual de uso / User guide", termos em inglês com seletor (sem aceite novo), limpeza da planilha com andamento, resultado e ✕,
+  consulta ao CNJ mais curta, Novidades sucintas. Testes do dono: seção 10.
+- **Perguntas 59 a 67** (24/Nov): amostra anonimizada da área logada, vários computadores na mesma planilha, troca do que cada um
+  enriqueceu e o tamanho da planilha. Desenho: `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`. Nada é feito antes das respostas.
+- **0.7.51 publicada** (20/Nov, tag v0.7.51): o processo é novo pela
   **data de ajuizamento** (CNJ ou Diário; 30 dias, ajustável), o antigo fica marcado "PROCESSO ANTIGO" (corrige o caso de maio da KR
   Law); cada leitura consulta o CNJ e o histórico do Diário, com "Tentar de novo"; jornada do processo na ficha; filtros Idade e
   Andamento; ordem pelos ajuizados; período de cada leitura na faixa e na Rotina; Novidades até "Não mostrar novamente" e histórico de
@@ -44,7 +49,8 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 ## 4. O que só o dono pode fazer (lista única)
 1. Terminar o teste da 0.7.49 (seção 7) e, se quiser, o que faltou da 0.7.48 e da 0.7.47 (seções 6 e 5); o que falhar vira feedback na Produto.
 2. Testar a 0.7.50 no notebook, depois de "Atualizar agora" (seção 8, ~15 min); o que falhar vira feedback na Produto.
-2b. Escrever "publica a versão 0.7.51" na conversa da Operação e, depois, testar a 0.7.51 (seção 9, ~15 min).
+2b. Testar a 0.7.51 (seção 9). Escrever "publica a versão 0.7.52" na conversa da Operação e testar a 0.7.52 (seção 10, ~10 min).
+2c. Responder as perguntas 59 a 67 do quadro (amostra anonimizada, planilha em vários computadores, tamanho da planilha).
 3. Quando quiser: teste de 5 min no PJe com advogado logado (`visita-kr-law/PROMPT-TESTE-GAP-PJE-2026-11-15.md`).
 4. Supabase (Central): TOTP, desligar signups, usuários da equipe; repositório `central-lexsuiteone`.
 5. RootifyONE: "aplicado" (recursos por licença) e os prompts pendentes de lá.
@@ -107,4 +113,14 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
    aparece "Você não salvou as mudanças" e, se for longa, o aviso de quanto pode demorar.
 7. Configurações → Sobre este computador → Ver registro técnico: "Copiar o registro" embaixo, "Abrir no Gmail" e "Abrir no e-mail do Windows".
 8. Planilha: a coluna "Ajuizado em" e as colunas novas no fim (fonte do ajuizamento, novo ou antigo, publicações, andamento).
+
+## 10. Testes da 0.7.52 (depois de publicada; ~10 min; antes, "Atualizar agora")
+1. Escolha EN no alto: as faixas do alto, a barra da leitura ("Court Journal …"), Configurações, setores, porte e tipos de publicação
+   do Painel ficam em inglês. O link do alto diz "User guide" (em PT, "Manual de uso").
+2. Janela de Novidades: curta, com ✓ em latão e "Não mostrar novamente" embaixo.
+3. Configurações → Termos e condições → "Ler os termos": a página abre no idioma da tela; PT/EN no alto troca o texto.
+4. Com a faixa "PLANILHA … GRANDE": "Limpar a planilha (com cópia)" → confirmar. O botão apaga e um ícone gira ao lado de "Ver
+   armazenamento"; espere (pode levar alguns minutos) sem fechar o programa. No fim aparece ✓ com as linhas antes e depois (ou o motivo
+   em vermelho, por exemplo planilha aberta no Excel). O ✕ fecha a faixa; ela só volta se o número mudar.
+5. Rodapé do Painel: duas linhas curtas, separadas por um traço fino.
 

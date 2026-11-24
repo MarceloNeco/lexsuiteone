@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.51 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.52 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,11 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.52 (24/Nov, teste da 0.7.51 em inglês):** inglês sem sobras de português (avisos do alto, mensagens da leitura,
+  setor, porte, tipos de publicação), "Court Journal" no lugar de "gazette", "Manual de uso" / "User guide", termos e condições em
+  inglês com seletor PT/EN (o português vale; texto igual, sem aceite novo), limpeza da planilha com andamento, resultado (linhas antes
+  e depois) e ✕ no aviso do alto, sem dizer "limpa" se não regravou; consulta ao CNJ mais curta (chave em 2 tentativas, uma por lote,
+  para no 429, andamento por lote); Novidades sucintas e janela mais limpa; rodapé do Painel enxuto.
 - **0.7.51 (20/Nov, primeiro uso real da KR Law e feedback do teste da 0.7.50):** o processo é novo pela **data de ajuizamento**
   (CNJ/DataJud, lista de distribuição do Diário ou digitada), não pela publicação que o RADAR achou; "novo" = até 30 dias (ajustável em
   Destaques e exclusões, "Dias para o processo ser novo"); o antigo fica na Lista marcado "PROCESSO ANTIGO". Cada leitura completa os

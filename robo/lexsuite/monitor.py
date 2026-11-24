@@ -383,7 +383,7 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
         except Exception as e:  # um tribunal com problema não derruba os outros
             if e.__class__.__name__ == "Interrompida":  # 0.7.15: parada pedida; registra e sobe (não é erro do tribunal)
                 tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": "-", "causa": "interrompida",
-                                   "fez": "interrompida a pedido; os Diários desta leitura são baixados de novo na próxima", "fez_en": "stopped on request; this reading's gazettes are downloaded again next time",
+                                   "fez": "interrompida a pedido; os Diários desta leitura são baixados de novo na próxima", "fez_en": "stopped on request; this reading's Court Journals are downloaded again next time",
                                    "duracao": round(time.perf_counter() - inicio, 1), "leu_ate": "", "detalhe": ""})
                 raise
             erro = e
@@ -413,10 +413,10 @@ def coletar_caderno(tribunais, dias, banco, diagnostico=None, aviso=print, hoje=
         fez_en = (f"stopped on this court; read up to {ate_en}" if ate else "could not read this court; went on with the others") if erro is not None else (
             (f"skipped today (only after 3 a.m.); read up to {ate_en}" if ate else "skipped today (only after 3 a.m.)") if causa == "ainda_nao_liberado_3h"
             else (f"read up to {ate_en}; the CNJ did not deliver " + ", ".join(config.data_curta(x, False, en=True) for x in sorted(falhou)) + " (read automatically next time)" if falhou
-                  else (f"read up to {ate_en}" if ate else "no new gazette")))
+                  else (f"read up to {ate_en}" if ate else "no new Court Journal")))
         if n_consulta:  # 0.7.48
             fez += f"; leu pela consulta pública ({n_consulta} comunicações; o caderno confere depois)"
-            fez_en += f"; read through the public search ({n_consulta} notices; the gazette checks later)"
+            fez_en += f"; read through the public search ({n_consulta} notices; the Court Journal checks later)"
         org_, tec_ = (getattr(erro, "origem", ""), getattr(erro, "tecnico", "")) if erro is not None else (
             diagnosticar(erro_cnj) if (erro_cnj is not None and falhou) else ("", ""))
         tentativas.append({"tribunal": sigla, "dias_pedidos": ", ".join(sorted(set(pedidas))), "http": http, "causa": causa,

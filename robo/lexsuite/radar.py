@@ -515,7 +515,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
     pubs_pt = "1 publicação lida" if len(pubs) == 1 else f"{len(pubs)} publicações lidas"
     pubs_en = "1 notice read" if len(pubs) == 1 else f"{len(pubs)} notices read"
     situacao = {"pt": f"{pubs_pt}; {proc_pt} contra empresas; {com_cnpj} com CNPJ no Diário{parcial_pt}.",
-                "en": f"{pubs_en}; {proc_en} against companies; {com_cnpj} with a tax ID in the gazette{parcial_en}.",
+                "en": f"{pubs_en}; {proc_en} against companies; {com_cnpj} with a tax ID in the Court Journal{parcial_en}.",
                 "quando": agora.isoformat(timespec="minutes"), "tribunais": escolhidos, "lidas": len(pubs), "novas": len(novos), "com_cnpj": com_cnpj}
     if tentativas and not pubs and not interrompida and all(t["causa"] in ("ok", "ainda_nao_liberado_3h", "nao_publicado") for t in tentativas):
         # 0.7.36 (dono): "0 publicações lidas" parecia falha; quando nada é novo, a tela diz por quê
@@ -524,8 +524,8 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         # revisão da Operação: sem prometer horário (o DJEN libera o Diário de hoje em horários diferentes); a próxima leitura pega
         situacao["pt"] = (f"Nada novo: os cadernos até {ate_br} já tinham sido lidos." if ate_br else "Nada novo: os Diários já publicados tinham sido lidos.") + \
             " O Diário de hoje entra na próxima leitura, quando estiver liberado."
-        situacao["en"] = (f"Nothing new: the issues up to {ate_en} had already been read." if ate_en else "Nothing new: the gazettes already published had been read.") + \
-            " Today's gazette comes in the next reading, once released."
+        situacao["en"] = (f"Nothing new: the issues up to {ate_en} had already been read." if ate_en else "Nothing new: the Court Journals already published had been read.") + \
+            " Today's Court Journal comes in the next reading, once released."
         situacao["nada_novo"] = True
     from . import causas
     for t in tentativas:  # avisos que não são erro (Diário de hoje só às 3h) e tribunais que falharam
@@ -549,7 +549,7 @@ def executar(cfg, banco, aviso=print, pasta_base=None, dias=None, sem_cnpj=False
         c_ = info_consulta["consulta"]
         n_c = int(c_.get("novos") or 0)
         situacao["pt"] = ("Pela consulta pública (caderno do CNJ fora): " + ("1 processo novo" if n_c == 1 else f"{n_c} processos novos") + ". ") + situacao["pt"]
-        situacao["en"] = ("Through the public search (CNJ gazette down): " + ("1 new case" if n_c == 1 else f"{n_c} new cases") + ". ") + situacao["en"]
+        situacao["en"] = ("Through the public search (CNJ Court Journal down): " + ("1 new case" if n_c == 1 else f"{n_c} new cases") + ". ") + situacao["en"]
         situacao.pop("nada_novo", None)
     aviso("  " + situacao["pt"])
     if pasta_base:
@@ -816,7 +816,7 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
                 tamanho = os.path.getsize(caminho)
             except OSError:
                 tamanho = 0
-            banco.registrar("planilha", {"frente": frente, "linhas": linhas, "limite": limite, "bytes": tamanho,
+            banco.registrar("planilha", {"frente": frente, "linhas": linhas, "limite": limite, "bytes": tamanho, "radar": len(radar_f),
                                          "nome": os.path.basename(caminho)})
         return tudo_ok
     except PermissionError:
@@ -944,6 +944,8 @@ def _causa_fonte(e):
         return "o CNJ respondeu pela metade (ocupado)"
     if isinstance(e, RuntimeError) and "chave" in str(e).lower():
         return "chave pública do CNJ não lida"
+    if isinstance(e, rede.ErroHTTP) and getattr(e, "codigo", 0) == 429:
+        return "o CNJ pediu para esperar (muitos pedidos)"
     if isinstance(e, rede.ErroHTTP):
         return f"o servidor respondeu {getattr(e, 'codigo', '')}".strip()
     return "sem resposta (rede ou servidor fora)"
@@ -976,18 +978,25 @@ def completar_fontes(banco, agora=None, novos=(), aviso=print, parar=None, tempo
             por_ind.setdefault(ind, []).append((proc, prim))
         else:  # revisão: ramo da Justiça que esta versão ainda não consulta; sai da fila (não ocupa o limite de cada leitura)
             banco.marcar_fonte(proc, "cnj", "ok", agora, causa="não se aplica", commit=False)
-    falhas = 0
+    falhas, total_cnj, feitos_cnj = 0, sum(len(v) for v in por_ind.values()), 0
+    from . import rede as _rede
     for ind, lista in por_ind.items():
         for i in range(0, len(lista), datajud.LOTE):
             if cedo() or falhas >= 3:
                 est["cnj_parou"] = est["cnj_parou"] or ("três falhas seguidas" if falhas >= 3 else "tempo esgotado ou leitura interrompida")
                 break
             lote = lista[i:i + datajud.LOTE]
+            feitos_cnj += len(lote)
+            aviso(f"  Consultando o CNJ: {feitos_cnj} de {total_cnj}…")  # 0.7.52 (ressalva 2 da Operação): andamento por lote
             try:
                 resp = consultar(ind, [p for p, _ in lote])
                 falhas = 0
             except Exception as e:  # noqa: BLE001 - CNJ fora, ocupado ou sem chave: fica "falhou" com a causa e tenta depois
                 falhas += 1
+                # 0.7.52 (ressalvas 1 e 3 da Operação): CNJ pedindo para esperar (429) ou sem a chave pública: para o CNJ
+                # nesta leitura no primeiro aviso, em vez de insistir mais duas vezes; a fila tenta de novo mais tarde
+                if (isinstance(e, _rede.ErroHTTP) and e.codigo == 429) or (isinstance(e, RuntimeError) and "chave" in str(e).lower()):
+                    falhas = 3
                 causa = _causa_fonte(e)
                 for p, _ in lote:
                     banco.marcar_fonte(p, "cnj", "falhou", agora, proxima_em=espera, causa=causa, commit=False)
@@ -1027,6 +1036,8 @@ def completar_fontes(banco, agora=None, novos=(), aviso=print, parar=None, tempo
         if sinal_guardado(d) == "lista de distribuição" or (d.get("cnj") or {}).get("ajuizado"):
             banco.marcar_fonte(proc, "diario_hist", "ok", agora, causa="não precisa", commit=False)  # a data já é conhecida
             continue
+        if feitos % 10 == 0:
+            aviso(f"  Histórico do Diário: {feitos + 1} de até {HIST_MAX}…")
         dig = re.sub(r"\D", "", proc)
         ano = dig[9:13] if len(dig) == 20 else str(agora.year)
         feitos += 1

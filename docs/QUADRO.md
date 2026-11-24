@@ -165,8 +165,12 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 20/Nov: **0.7.51 pronta para publicar** (pedido à Operação abaixo). Nada em andamento; próxima: 0.7.52 (filtro de quantidade de
-  processos da empresa e "Ler um período" maior, com desenho da Arquitetura) e o que vier da resposta do Leandro.
+- 24/Nov: **0.7.52** (teste do dono na 0.7.51 em inglês): inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em
+  inglês com seletor (`paginas/aceite.html`, português igual à 1.0, sem aceite novo), limpeza da planilha visível (andamento, resultado,
+  ✕), ressalvas 1 a 5 da Operação sobre a 0.7.51, Novidades sucintas. Folha `documentacao/dod/0.7.52.md`. **Pronta para publicar**
+  (pedido à Operação abaixo). Perguntas 59 a 67 (desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`) esperam o dono.
+- 20/Nov: **0.7.51 publicada** (tag v0.7.51, pela Operação). Filtro de quantidade de processos da empresa e "Ler um período" maior
+  continuam para depois (pedem desenho).
 - 16/Nov: **0.7.50 publicada** (tag `v0.7.50`, pela Operação). Ressalvas da revisão anotadas para a 0.7.51 (abaixo, em Pedidos). Feito (feedback da 0.7.49, itens 1 a 31 e 33; 13 fica como está, decisão 50; 32 é do celular,
   sem data). Feito: agrupamento (alcance no bloco, setinha, caixinha, sem CNPJ com triângulo e "CNPJ provável", copiar contato 90 dias
   com desfazer, "Excluir esta empresa"), filtros numa linha no notebook com rótulos curtos e barra compacta, "Aplicar" na barra de
@@ -187,6 +191,13 @@ Arquitetura (pedido no quadro).
   ressalvas 3 a 5 da Operação nos instaladores (vão com a publicação, porque o site serve o instalador na hora).
 
 ### Feito (mais recente primeiro)
+- 24/Nov: **0.7.52 pronta para publicar** (teste do dono na 0.7.51 em inglês): inglês sem sobras (faixas, mensagens da leitura,
+  setor, porte, tipos de publicação), "Court Journal", "Manual de uso / User guide", termos em inglês com seletor (português igual
+  à 1.0, sem aceite novo), limpeza da planilha visível (andamento, resultado, ✕ lembrado), ressalvas 1 a 5 da Operação, Novidades
+  sucintas e janela nova, rodapé do Painel enxuto, e-mail de boas-vindas ("Manual de uso"). `test_v0752.py` (19). Bateria:
+  unittest 636 OK, `fluxos` TUDO OK, `ver_na_lista` OK (16), `larguras` OK (88), `aviso_e_lupa` TUDO OK (399; a 1ª rodada achou a
+  busca por "Manual" em inglês, que virou "User guide", e o teste foi ajustado). Revisor: sem bloqueio; ressalvas ("gazette" nos
+  modelos do monitor e do painel, folha mais precisa) corrigidas.
 - 20/Nov: **0.7.51 pronta para publicar** (decisões 52 a 58): datas e fontes (processo novo pelo ajuizamento, 30 dias ajustáveis; CNJ
   e histórico do Diário em cada leitura, fila `fontes`, "Tentar de novo"; jornada na ficha; filtros Idade e Andamento; ordem pelos
   ajuizados; planilha "Ajuizado em"; cumprimento de sentença fora), período de cada leitura, Novidades até "Não mostrar novamente" e
@@ -659,6 +670,11 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Operação (24/Nov): 0.7.52 pronta para publicar**, quando o dono escrever "publica a versão 0.7.52". Revisar
+  `git diff 4678ca1 <commit da 0.7.52 na main> -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.52.md` contra o
+  diff. Pontos de atenção: `paginas/aceite.html` (o texto em português tem de ficar igual à 1.0; o inglês só aparece com o seletor) e
+  `armazenamento.limpar` (agora devolve falha quando a planilha não foi regravada). Ressalva 6 da 0.7.51 (DataJud nos termos) fica com
+  o advogado (pergunta 66).
 - **Produto → Operação (20/Nov): 0.7.51 pronta para publicar**, quando o dono escrever "publica a versão 0.7.51". Revisar
   `git diff 4d8bb51 9422f1d -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.51.md` contra o diff.
   Pacote com os mesmos arquivos (nenhum módulo novo: o código novo ficou em `datajud.py`, `djen.py`, `radar.py`, `banco.py`, `app.py`).
@@ -1068,6 +1084,15 @@ leva ao dono, registra a resposta em "Decisões" e marca aqui "respondida".
 | 56 | Produto (item 29) | Registro técnico: botões "Abrir no Gmail" e "Abrir no e-mail do Windows" agora, ou envio direto pelo programa (com a Arquitetura, depois)? | Os dois botões agora | respondida (20/Nov): os dois botões já nesta versão |
 | 57 | Produto (itens 13 e 20) | Filtro "quantidade de processos da empresa" e "Ler um período" maior que 7 dias: ficam para a 0.7.52 (pedem desenho)? | Sim, 0.7.52 | respondida (20/Nov): ficam para depois, mas entram nesta versão se for possível |
 | 58 | Produto (pesquisa `documentacao/PESQUISA-NOVIDADES-E-HISTORICO-2026-11-20.md`) | Novidades: manter no menu, nome "Novidades da versão" e histórico numa página do site? | Sim aos três | respondida (20/Nov): sim aos três (menu, nome "Novidades da versão" e página de histórico no site) |
+| 59 | Produto (pedido do dono, 24/Nov; desenho `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`) | Amostra anonimizada da resposta da área logada (mesmo formato e tamanho, conteúdo trocado): guardar já na 0.7.53 (aba oculta e botão "Copiar a amostra para o suporte") e só mandar sozinha à SolverONE depois do advogado (0.7.54)? Hoje os termos (3.4 e 6.1) prometem que a SolverONE não recebe contatos | Sim | aberta |
+| 60 | Produto (mesmo desenho) | O envio automático das amostras vem ligado ou desligado? | Perguntar ao escritório uma vez, na primeira resposta colada (Sim/Não), com interruptor em Configurações | aberta |
+| 61 | Produto (mesmo desenho) | Arredondar o tamanho só do contato do sócio na amostra, para proteger melhor? | Sim; o resto mantém o tamanho exato | aberta |
+| 62 | Produto (mesmo desenho) | Guardar as últimas 20 amostras no computador e a SolverONE apagar as recebidas depois de 90 dias? | Sim | aberta |
+| 63 | Produto (mesmo desenho) | Vários computadores: avisar "Fulano está com a planilha aberta; peça para fechar" e esperar sozinho (trava própria na pasta). Em Google Drive/OneDrive o nome de quem abriu não chega; nessas pastas, um computador só grava a planilha e os outros mandam o que fizeram? | Sim, o assistente sugere | aberta |
+| 64 | Produto (mesmo desenho) | Compartilhar o enriquecimento (situação, contatos, valor da área logada) por um arquivo de cada computador numa subpasta "_RADAR (não mexer)", em vez de uma aba na planilha? Com uma aba só, quem grava por último apaga o trabalho do outro | Sim; a planilha continua mostrando tudo junto | aberta |
+| 65 | Produto (mesmo desenho) | "Visto" fica de cada pessoa (cada um vê o que ele mesmo abriu); as outras situações são do escritório e vale a mais recente? | Sim | aberta |
+| 66 | Produto (mesmo desenho) | Pode levar ao advogado o texto dos termos 1.2 (amostras) e conferir junto a tradução em inglês dos termos (0.7.52)? | Sim, antes da 0.7.54 | aberta |
+| 67 | Produto (teste do dono, 24/Nov: "limpei e o aviso continua") | A planilha não diminui com a limpeza porque a aba Arquivo guarda os últimos 30 dias de TODOS os tribunais já lidos (não só os escolhidos agora) e a aba Radar segue o período da tela (até 90 dias). Com os 24 TRTs lidos uma vez, passa de 48 mil linhas. A planilha passa a ter só os tribunais escolhidos hoje (os outros continuam no programa, tela Arquivo) e a aba Radar no máximo 30 dias? | Sim às duas; muda só a planilha, nada sai do programa | aberta |
 
 ## Decisões do dono registradas aqui
 

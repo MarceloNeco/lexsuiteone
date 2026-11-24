@@ -59,22 +59,22 @@ def classificar(erro):
 MENSAGENS = {
     "ainda_nao_liberado_3h": {
         "pt": "O Diário de hoje só fica disponível a partir das 3h da manhã. Li até o último dia já publicado; nada a fazer.",
-        "en": "Today's gazette is only available from 3 a.m. I read up to the last published day; nothing to do."},
+        "en": "Today's Court Journal is only available from 3 a.m. I read up to the last published day; nothing to do."},
     "nao_publicado": {
         "pt": "O tribunal ainda não publicou o Diário desse dia.",
-        "en": "The court has not published the gazette for that day yet."},
+        "en": "The court has not published the Court Journal for that day yet."},
     "governo_fora": {
         "pt": "O site do CNJ (Diário de Justiça Eletrônico) não respondeu ou está em manutenção. Não é problema do seu computador. Os Diários que faltaram são lidos sozinhos na próxima leitura.",
-        "en": "The CNJ site (Electronic Justice Gazette) did not respond or is under maintenance. It is not a problem with your computer. The missing gazettes are read automatically in the next reading."},
+        "en": "The CNJ site (Electronic Court Journal) did not respond or is under maintenance. It is not a problem with your computer. The missing Court Journals are read automatically in the next reading."},
     "bloqueio_fora_do_brasil": {
         "pt": "O Diário só responde a pedidos feitos do Brasil. Use o programa num computador no Brasil (sem VPN de fora).",
-        "en": "The gazette only answers requests made from Brazil. Use the program on a computer in Brazil (no foreign VPN)."},
+        "en": "The Court Journal only answers requests made from Brazil. Use the program on a computer in Brazil (no foreign VPN)."},
     "sem_internet": {
         "pt": "Este computador está sem internet (ou a rede bloqueou o acesso). Confira a conexão e tente de novo.",
         "en": "This computer has no internet (or the network blocked access). Check the connection and try again."},
     "interrompida": {
         "pt": "Leitura interrompida a pedido. Os processos já gravados ficam; o resto é lido na próxima leitura (os Diários desta leitura são baixados de novo).",
-        "en": "Reading stopped on request. Lawsuits already saved stay; the rest is read in the next reading (this reading's gazettes are downloaded again)."},
+        "en": "Reading stopped on request. Lawsuits already saved stay; the rest is read in the next reading (this reading's Court Journals are downloaded again)."},
     "erro_do_programa": {
         "pt": "O programa encontrou um problema e parou esta leitura. A SolverONE já foi avisada. Tente de novo; se repetir, fale com judicial@solverone.com.br.",
         "en": "The program hit a problem and stopped this reading. SolverONE has been notified. Try again; if it repeats, write to judicial@solverone.com.br."},
@@ -93,7 +93,7 @@ MENSAGENS_ORIGEM = {
         "en": "The CNJ network (edge) could not reach the CNJ server. The failure is general, not on this computer."},
     "caderno_fora": {
         "pt": "O serviço de caderno do CNJ está fora; a consulta do CNJ funciona. Sua internet está normal. Não é problema deste computador.",
-        "en": "The CNJ gazette service is down; the CNJ search works. Your internet is working. It is not a problem with this computer."},
+        "en": "The CNJ Court Journal service is down; the CNJ search works. Your internet is working. It is not a problem with this computer."},
     "sem_internet_local": {
         "pt": "Este computador está sem internet ou com a rede bloqueada.",
         "en": "This computer has no internet or its network is blocked."},

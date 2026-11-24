@@ -44,8 +44,9 @@ class Tela0737(unittest.TestCase):
     def test_andamento_sem_a_frase_do_caminho(self):
         if not shutil.which("node"):
             self.skipTest("sem node")
-        linha = next(x for x in HTML.splitlines() if "ultima = String(ultima" in x)
-        js = ("var ultima;\nfunction limpa(x) { ultima = x;\n" + linha + "\nreturn ultima; }\n"
+        # 0.7.52: a mensagem passa antes pelo idioma (msgIdioma); aqui ela fica como veio
+        linha = next(x for x in HTML.splitlines() if "ultima = msgIdioma(String(ultima" in x)
+        js = ("var ultima;\nfunction msgIdioma(x) { return x; }\nfunction limpa(x) { ultima = x;\n" + linha + "\nreturn ultima; }\n"
               "var casos = [['Gravando em C:\\\\Users\\\\Fulano\\\\OneDrive - Escritorio\\\\x.xlsx', ''],"
               "['Lidas 30 publicações. Gravando em C:\\\\a b\\\\c.xlsx', 'Lidas 30 publicações.'],"
               "['Planilha: \\\\\\\\servidor\\\\pasta\\\\x.xlsx', ''],"
