@@ -670,6 +670,10 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
+- **Produto → Arquitetura (24/Nov): nuvem v21 das amostras de formato** (decisões 59 a 62 do dono): `lex-conta` v21 com as ações
+  `formato` e `amostra`, tabelas `lex_formatos`, `lex_amostras` (90 dias) e `lex_formato_mudancas`, recurso `amostras` ligado por
+  padrão. Desenho: `documentacao/DESENHO-AMOSTRA-E-PLANILHA-EM-REDE.md`, A.4 e A.7. A 0.7.53 guarda tudo numa fila silenciosa e não
+  depende da v21 para sair. SQL datado com o desfazer; avisar o dono antes de aplicar (dado vindo do cliente, mesmo anonimizado).
 - **Produto → Operação (24/Nov): 0.7.52 pronta para publicar**, quando o dono escrever "publica a versão 0.7.52". Revisar
   `git diff 4678ca1 df1e65e -- robo paginas docs ferramentas` e ler a folha `documentacao/dod/0.7.52.md` contra o
   diff. Pontos de atenção: `paginas/aceite.html` (o texto em português tem de ficar igual à 1.0; o inglês só aparece com o seletor) e
