@@ -681,7 +681,7 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 ## Pedidos entre sessões
 
 - **Produto → Operação (24/Nov): 0.7.53 pronta para publicar** (inclui a 0.7.52), quando o dono escrever "publica a versão
-  0.7.53". Revisar `git diff 34e79fd <commit da 0.7.53 na main> -- robo paginas docs ferramentas` e a folha
+  0.7.53". Revisar `git diff 34e79fd 254f63e -- robo paginas docs ferramentas` e a folha
   `documentacao/dod/0.7.53.md`. Atenção: módulos novos `troca.py` e `amostras.py` (o pacote ganha dois arquivos); primeira gravação
   enxuta copia a planilha para "Cópias de segurança/antes da 0.7.53"; nos testes de Windows, conferir a pasta `_RADAR (não mexer)`.
 - **Produto → Arquitetura (24/Nov): contagem do pacote** — a 0.7.53 tem `lexsuite/troca.py` e `lexsuite/amostras.py`: atualizar a
