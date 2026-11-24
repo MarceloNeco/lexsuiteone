@@ -188,7 +188,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   <p><b>Sem o Excel:</b> a planilha é um arquivo <code>.xlsx</code> comum e abre no <b>Google Planilhas</b> (no Drive, dois cliques no arquivo) e no Excel online. No Google Planilhas, abra o próprio arquivo para consultar (ele aparece com a marca ".XLSX" ao lado do nome) e <b>não</b> use "Salvar como Planilhas Google": isso cria uma cópia que o RADAR não lê. Para mudar os destaques e as exclusões, use o programa: Configurações → <b>Destaques e exclusões</b>.</p>
   <p><b>A pasta é do escritório.</b> O funcionamento normal não exige compartilhá-la com a SolverONE. Se o escritório quiser ajuda do suporte, pode compartilhá-la por um tempo e retirar o acesso depois; é opcional (termos, seção 6.1). Mudar a pasta em Configurações não move as planilhas que já existem: o RADAR cria as novas na pasta escolhida na próxima leitura, e as antigas ficam onde estão.</p>
   <h3>Planilha grande, cópias de segurança e espaço no computador</h3>
-  <p>A planilha é a vitrine; o arquivo completo fica no programa, neste computador (tela Arquivo, com busca em tudo). A aba <b>Arquivo</b> da planilha mostra os últimos 90 dias e todo processo trabalhado (Em análise, Em contato, Virou cliente), de qualquer idade. Cada planilha tem um limite de linhas (60 mil, fixo, porque a planilha é do escritório), porque acima disso o Excel fica lento:</p>
+  <p>A planilha é a vitrine; o arquivo completo fica no programa, neste computador (tela Arquivo, com busca em tudo). Desde a 0.7.53, a planilha tem só os <b>tribunais escolhidos hoje</b> (os outros já lidos continuam no programa e aparecem em números na aba <b>Estatística</b>). A aba <b>Radar</b> tem os processos da Lista dos últimos 30 dias, pela data no Diário; a aba <b>Arquivo</b>, os últimos 90 dias (também pela data no Diário) e todo processo trabalhado (Em análise, Em contato, Virou cliente), de qualquer idade. Antes da primeira gravação na 0.7.53, a planilha antiga fica guardada em <code>Cópias de segurança/antes da 0.7.53</code>. Cada planilha tem um limite de linhas (60 mil, fixo, porque a planilha é do escritório), porque acima disso o Excel fica lento:</p>
   <ul>
     <li><b>A partir de 80%:</b> aviso no alto da tela, na primeira linha da planilha e no registro, com o botão <b>"Limpar a planilha (com cópia)"</b>.</li>
     <li><b>Limpar com cópia:</b> antes, o RADAR grava as planilhas e o Arquivo inteiro em CSV (abre no Excel) na pasta <code>Cópias de segurança</code>, numa subpasta com a data e a hora; depois, a aba Arquivo fica com os últimos 30 dias e os trabalhados. Ficam as 6 cópias mais recentes. Sem cópia (pouco espaço), a limpeza não é feita. As cópias ficam na mesma pasta das planilhas: se a pasta for compartilhada, quem tem acesso a ela também vê as cópias.</li>
@@ -208,8 +208,9 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   <div class="tabela"><table>
     <tr><th>Aba</th><th>Quem escreve</th><th>Para quê</th></tr>
     <tr><td>Radar</td><td>o RADAR, a cada leitura</td><td>a lista em aberto, com a situação, o endereço e os contatos</td></tr>
-    <tr><td>Arquivo</td><td>o RADAR</td><td>o que não está na aba Radar: os últimos 90 dias e todo processo trabalhado, inclusive o arquivado; o resto fica no programa e nas cópias de segurança</td></tr>
-    <tr><td>Contatos</td><td>o RADAR</td><td>cada contato encontrado, com a fonte e a data</td></tr>
+    <tr><td>Arquivo</td><td>o RADAR</td><td>o que não está na aba Radar: os últimos 90 dias pela data no Diário e todo processo trabalhado, inclusive o arquivado; o resto fica no programa e nas cópias de segurança</td></tr>
+    <tr><td>Contatos</td><td>o RADAR</td><td>cada contato encontrado, com a fonte, a data e quem o incluiu (nome e computador)</td></tr>
+    <tr><td>Estatística</td><td>o RADAR</td><td>os números dos gráficos do Painel, de todos os tribunais já lidos, por mês (total, situação, setor, porte, faixa de valor e dias com dados) e por dia nos últimos 31 dias; nenhum processo, empresa ou pessoa</td></tr>
     <tr><td>Como usar</td><td>o RADAR</td><td>o passo a passo da planilha, em português e inglês</td></tr>
     <tr><td>Histórico de leituras</td><td>o RADAR</td><td>cada tentativa de leitura, com o que o site respondeu e o que o programa fez</td></tr>
     <tr><td>Critérios desta leitura</td><td>o RADAR, a cada gravação</td><td>com que critérios a pessoa que gravou por último olhou a lista (área, valor mínimo, jurídico próprio, quantas excluídas); só para consulta, o programa não lê esta aba</td></tr>
@@ -251,6 +252,21 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
   <p><b>Novidades da versão:</b> depois de atualizar, a janela com o que mudou aparece toda vez que o programa abre, até você marcar <b>"Não mostrar novamente"</b> (a versão seguinte volta a aparecer). Para rever, menu ☰ → Ajuda → <b>Novidades da versão</b>.</p>
 </section>
 
+<section id="varios-computadores">
+  <h2>Vários computadores na mesma pasta</h2>
+  <p>Desde a 0.7.53, os computadores do escritório que usam a mesma pasta das planilhas (pasta de rede ou Google Drive) compartilham o trabalho, sem um computador "principal":</p>
+  <ul>
+    <li>Cada computador grava o que fez (processos lidos, situação, quem viu, valores e contatos trazidos) em arquivos próprios, na pasta <code>_RADAR (não mexer)</code>, ao lado das planilhas. Não apague nem edite essa pasta.</li>
+    <li>Ao abrir o programa, ele junta sozinho o que os outros fizeram. Com o programa aberto, quando outro computador trouxer novidades, aparece <b>"Trazer do escritório (N)"</b> ao lado de "Ler o Diário agora" (o ponteiro em cima mostra de quem e até quando); o clique junta em segundos e o botão some.</li>
+    <li>Nada se perde: a situação mais recente vale; "Visto" nunca passa por cima de "Em contato" ou de outra situação trabalhada; os contatos se somam; o valor da causa fica com a fonte mais forte.</li>
+    <li>A ficha mostra <b>"Visto por"</b> e <b>"Marcado por"</b> (nome e computador); a planilha tem as colunas "Visto por" e "Situação marcada por", e a aba Contatos diz quem incluiu cada contato.</li>
+    <li>Só um computador grava a planilha por vez (segundos). Se outro estiver gravando, ou se a planilha já tiver dados que ainda não chegaram a este computador pela sincronização, ele espera e grava depois: a planilha nunca volta para uma versão mais velha.</li>
+    <li>Voltar um processo para "Novo" ou "Visto" (inclusive pelo Desfazer) vale só neste computador quando outro já o marcou como trabalhado (Em análise, Em contato…): a situação trabalhada continua valendo para o escritório.</li>
+    <li>Arquivo da pasta que estiver danificado ou for de outra licença é ignorado (fica anotado na aba Saúde da planilha) e não atrapalha a gravação.</li>
+    <li>Destaques, exclusões e "Excluir esta empresa" continuam de cada pessoa e não vão para os outros.</li>
+    <li>Use a mesma versão do RADAR em todos os computadores (o botão "Atualizar agora" aparece em cada um).</li>
+  </ul>
+</section>
 <section id="termos">
   <h2>Termos e aceite</h2>
   <ul>
@@ -297,7 +313,7 @@ code { background: var(--latao-fundo); color: var(--latao-texto); padding: 1px 6
 <section id="seguranca">
   <h2>Segurança e privacidade</h2>
   <div class="caixa"><ul>
-    <li><b>Tudo roda no computador do escritório.</b> A lista, as fichas das empresas, os contatos e as anotações ficam neste computador e na planilha do escritório; a SolverONE não recebe nenhum deles. A tela só responde a este computador e recusa pedidos vindos de qualquer site.</li>
+    <li><b>Tudo roda no computador do escritório.</b> A lista, as fichas das empresas, os contatos e as anotações ficam neste computador e na planilha do escritório; a SolverONE não recebe nenhum deles. Vão só quantidades por situação e, para o programa se ajustar quando uma fonte muda o formato da resposta, uma <b>amostra de formato</b> de cada fonte com todo o conteúdo trocado (letras, números e nomes sorteados; nenhum processo, empresa ou pessoa de verdade). As duas aparecem, exatamente como vão, em Configurações → Sobre este computador → "O que a SolverONE recebe". A tela só responde a este computador e recusa pedidos vindos de qualquer site.</li>
     <li><b>O que sai do computador:</b> pedidos de leitura ao Diário (do CNJ) e ao cadastro público da Receita, sempre por conexão segura; as planilhas e as cópias de segurança, que ficam no computador ou no Google Drive do próprio escritório e não são compartilhadas com a SolverONE; e, a cada leitura, a conferência da licença com a SolverONE, que leva o código de cliente, a versão do programa e <b>só quantidades</b> de processos por situação (por exemplo, quantos viraram cliente), por dia, tribunal, frente e faixa de valor. Nenhum nome, número de processo, CNPJ ou contato vai junto. A tabela exata enviada aparece em Configurações, em "O que a SolverONE recebe".</li>
     <li><b>Nenhuma senha.</b> O RADAR não pede, não guarda e não usa senha, certificado digital ou chave de nenhum sistema. Captcha nunca é contornado.</li>
     <li><b>Dados de pessoas (termos, seção 4).</b> O RADAR organiza dados da empresa processada e, quando constam em cadastro público ou são incluídos pelo escritório, dos sócios, administradores e do empresário individual (inclusive o MEI), com a fonte e a data. Não organiza dados do autor da ação nem de testemunhas. Esses dados ficam com o escritório, que é o controlador (LGPD) e decide o uso, no exercício da advocacia.</li>

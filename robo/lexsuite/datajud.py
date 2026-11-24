@@ -353,6 +353,7 @@ def consultar_lote(indice, numeros, pedir=None):
     Levanta RespostaParcial quando a resposta não é confiável (o lote todo fica "falhou", nunca "não encontrado")."""
     numeros = [re.sub(r"\D", "", str(n)) for n in numeros][:LOTE]
     corpo = {"size": 200, "_source": CAMPOS, "query": {"terms": {"numeroProcesso": numeros}}}
+    real = pedir is None
     if pedir is None:
         def pedir(url, c):
             # 0.7.52 (ressalva 3 da Operação): uma tentativa por lote; o 429 para o CNJ nesta leitura (radar.completar_fontes)
@@ -361,6 +362,9 @@ def consultar_lote(indice, numeros, pedir=None):
     if not isinstance(r, dict) or r.get("error") or r.get("timed_out") or ((r.get("_shards") or {}).get("failed") or 0) > 0:
         raise RespostaParcial(str((r or {}).get("error") or "resposta parcial")[:200] if isinstance(r, dict) else "resposta inválida")
     hits = [h.get("_source") or {} for h in ((r.get("hits") or {}).get("hits") or [])]
+    if real:  # 0.7.53: formato do DataJud (só a resposta real; nos testes o `pedir` é injetado)
+        from . import amostras
+        amostras.observar("datajud:" + str(indice).lower(), {"hits": {"total": r.get("hits", {}).get("total"), "hits": (r.get("hits") or {}).get("hits", [])[:3]}})
     total = ((r.get("hits") or {}).get("total") or {})
     if isinstance(total, dict) and int(total.get("value") or 0) > len(hits):
         raise RespostaParcial("total maior que os documentos recebidos")

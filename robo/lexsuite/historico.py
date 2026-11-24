@@ -197,7 +197,7 @@ def tentar_de_novo_os_erros(banco):
 def por_mes(banco, tribunais=None):
     """Totais por mês (todas as fontes: leitura normal e meses anteriores), para o gráfico de sazonalidade."""
     tribs = [t.upper() for t in tribunais or []]
-    saida, por_trib = {}, {}
+    saida, por_trib, dias = {}, {}, {}
     for e in banco.estatisticas():
         if tribs and (e["tribunal"] or "").upper() not in tribs:
             continue
@@ -206,7 +206,36 @@ def por_mes(banco, tribunais=None):
         tr = (e["tribunal"] or "").upper() or "—"  # revisão 2: sem tribunal também entra, para a pilha somar a barra
         if tr:  # 0.7.36 (dono): barras empilhadas por tribunal (o único atributo que as estatísticas mensais guardam sempre)
             por_trib.setdefault(mes, {})[tr] = por_trib.setdefault(mes, {}).get(tr, 0) + int(e["novas"] or 0)
-    return [{"mes": m, "novas": n, "por_tribunal": por_trib.get(m, {})} for m, n in sorted(saida.items())]
+            dias.setdefault(mes, {}).setdefault(tr, set()).add(e["data"][:10])
+    # 0.7.53 (decisão 67): quantos dias de cada tribunal têm dados no mês e quantos dias úteis o mês teve (até hoje), para o
+    # Painel marcar o mês parcial com asterisco
+    return [{"mes": m, "novas": n, "por_tribunal": por_trib.get(m, {}), "dias_uteis": dias_uteis_do_mes(m),
+             "dias_por_tribunal": {t_: len(v) for t_, v in dias.get(m, {}).items()}} for m, n in sorted(saida.items())]
+
+
+def dias_uteis_do_mes(mes, hoje=None):
+    """Segunda a sexta do mês 'AAAA-MM' até hoje (feriados não descontados: o asterisco usa 80 %, com folga)."""
+    hoje = hoje or dt.date.today()
+    try:
+        d = dt.date.fromisoformat(mes + "-01")
+    except ValueError:
+        return 0
+    n = 0
+    while d.strftime("%Y-%m") == mes and d <= hoje:
+        n += d.weekday() < 5
+        d += dt.timedelta(days=1)
+    return n
+
+
+def outros_tribunais(banco, escolhidos):
+    """0.7.53: tribunais com estatística guardada que não estão escolhidos hoje, com o último dia lido ({tribunal: data})."""
+    esc = {t.upper() for t in escolhidos or []}
+    saida = {}
+    for e in banco.estatisticas():
+        tr = (e["tribunal"] or "").upper()
+        if tr and tr not in esc and e["data"][:10] > saida.get(tr, ""):
+            saida[tr] = e["data"][:10]
+    return saida
 
 
 def por_dia_da_semana(banco, tribunais=None):

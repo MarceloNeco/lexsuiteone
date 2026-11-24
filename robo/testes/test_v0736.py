@@ -269,7 +269,8 @@ class SazonalPorTribunal(unittest.TestCase):
                 return [{"data": "2026-10-01", "tribunal": "TRT2", "novas": 3}, {"data": "2026-10-02", "tribunal": "TRT15", "novas": 2},
                         {"data": "2026-11-01", "tribunal": "TRT2", "novas": 1}]
         m = historico.por_mes(B())
-        self.assertEqual(m[0], {"mes": "2026-10", "novas": 5, "por_tribunal": {"TRT2": 3, "TRT15": 2}})
+        self.assertEqual({k: m[0][k] for k in ("mes", "novas", "por_tribunal")}, {"mes": "2026-10", "novas": 5, "por_tribunal": {"TRT2": 3, "TRT15": 2}})
+        self.assertEqual(m[0]["dias_por_tribunal"], {"TRT2": 1, "TRT15": 1})  # 0.7.53: dias com dados, para o asterisco do mês parcial
 
 
 class Lupa0736(unittest.TestCase):

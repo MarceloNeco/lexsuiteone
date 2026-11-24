@@ -117,7 +117,33 @@ def _sobre(cfg, versao, chave_impressao, ultima):
             ["Python", platform.python_version()], ["Pasta do robô", cfg.get("_pasta_robo", "")],
             ["Tribunais", ", ".join((cfg.get("radar") or {}).get("tribunais") or [])],
             ["Última rodada", ultima], ["Chave de atualização (impressão)", chave_impressao or "sem chave: atualização desligada"],
-            ["Suporte", preferencias.SUPORTE]]
+            ["Suporte", preferencias.SUPORTE]] + (
+            # 0.7.53 (decisão 63): quem gravou e o que de cada computador esta planilha já contém (impede voltar atrás)
+            [["Gravada por", cfg.get("_quem", "")], [VETOR_ROTULO, json.dumps(cfg["_vetor"], sort_keys=True)]] if cfg.get("_vetor") else [])
+
+
+VETOR_ROTULO = "Computadores juntados (troca)"
+
+
+def _quem(cfg):
+    from . import troca
+    return troca.quem(cfg)
+
+
+def ler_vetor(caminho):
+    """O vetor gravado na aba Sobre ({instalação: seq}); {} se a planilha não existe, é antiga ou não pôde ser lida."""
+    if not caminho or not os.path.exists(caminho):
+        return {}
+    try:
+        for aba in planilha.ler_xlsx(caminho, so_abas=["Sobre"])["abas"]:
+            if aba["nome"] == "Sobre":
+                for linha in aba["linhas"]:
+                    if len(linha) > 1 and linha[0] == VETOR_ROTULO:
+                        v = json.loads(linha[1] or "{}")
+                        return {str(k): int(x) for k, x in v.items()} if isinstance(v, dict) else {}
+    except Exception:  # noqa: BLE001 - planilha em uso ou antiga: sem vetor
+        return {}
+    return {}
 
 
 def _abas_editaveis(caminho, aviso=print):
@@ -208,7 +234,7 @@ def _destacar(linhas, chaves, minimo):
 
 
 def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao="", pasta_robo="", aviso=print, arquivo=None,
-                 frente="trabalhista", itens=None, aviso_tamanho="", processos=None, criterios=None):
+                 frente="trabalhista", itens=None, aviso_tamanho="", processos=None, criterios=None, estatistica=None, vetor=None):
     """Regrava a planilha da frente (0.7.16: uma por frente): aba Radar (a lista), Arquivo, Contatos, Critérios desta
     leitura (0.7.33), a aba Controle oculta preservada e as abas Histórico, Saúde e Sobre. Também copia a página HTML.
     `itens`: as linhas da aba Radar (padrão: as da página). `processos`: só os contatos desses processos.
@@ -263,23 +289,31 @@ def gravar_radar(cfg, pagina, banco, versao, colunas, linha_csv, chave_impressao
                      "aviso": "Arquivo: o que não está na aba Radar, dos últimos dias, e todo processo trabalhado (Em análise, Em contato, "
                               "Virou cliente), inclusive arquivados. O resto continua no " + produto + " (tela Arquivo) e nas cópias de segurança. Só para consulta.",
                      "larguras": larguras})
-    contatos = [["Processo", "Empresa", "Canal", "Contato", "De pessoa (sócio)", "Fonte", "Data", "Confiança", "Origem", "Validação", "Observação"]]
+    contatos = [["Processo", "Empresa", "Canal", "Contato", "De pessoa (sócio)", "Fonte", "Data", "Confiança", "Origem", "Validação", "Observação",
+                 "Incluído por", "Computador"]]  # 0.7.53 (decisão 65): quem trouxe cada contato
     for c in (banco.contatos() if hasattr(banco, "contatos") else []):
         if processos is not None and c["processo"] not in processos:
             continue
         contatos.append([c["processo"], c["empresa"], c["canal"], c["valor"], "sim" if c["de_pessoa"] else "", c["fonte"], c["data"],
-                         c["confianca"], c["origem"], c["validacao"], c["observacao"]])
+                         c["confianca"], c["origem"], c["validacao"], c["observacao"], c.get("incluido_por", ""), c.get("computador", "")])
     abas.append({"nome": "Contatos", "linhas": contatos, "visual": True, "filtro": True,
                  "aviso": "Contatos encontrados (Receita, área logada ou digitados), sempre com a fonte e a data. Os da Receita também estão na aba Radar.",
-                 "larguras": [26, 34, 11, 34, 10, 20, 11, 10, 12, 12, 40]})
+                 "larguras": [26, 34, 11, 34, 10, 20, 11, 10, 12, 12, 40, 26, 16]})
     if criterios is not None:  # 0.7.33: com que critérios esta pessoa gravou (só leitura; o programa não lê esta aba)
         abas.append({"nome": "Critérios desta leitura", "linhas": preferencias.linhas_criterios(criterios, (cfg.get("usuario") or {}).get("nome", "")),
                      "visual": True, "larguras": [52, 40]})
+    if estatistica and len(estatistica) > 1:  # 0.7.53 (decisão 67): números leves de TODOS os tribunais lidos, que não se perdem
+        abas.append({"nome": "Estatística", "linhas": estatistica, "visual": True, "filtro": True,
+                     "aviso": "Estatística: os números que alimentam os gráficos do Painel, de todos os tribunais já lidos neste computador, "
+                              "por mês (e por dia, nos últimos 31 dias). Só números: nenhum processo, empresa ou pessoa. \"Dias com dados\" "
+                              "mostra quantos dias de cada tribunal foram lidos no mês.",
+                     "larguras": [12, 10, 13, 12, 34, 11, 14]})
     planilha.escrever_xlsx(caminho, abas + [dict(a, visual=True) for a in editaveis] + [
         {"nome": NOME_COMO_USAR, "linhas": como_usar(produto), "visual": True, "larguras": [24, 70, 70]},
         {"nome": NOME_HISTORICO, "linhas": log, "visual": True, "filtro": True, "larguras": [24, 16, 10, 22, 10, 26, 40, 10, 8, 60]},
         {"nome": "Saúde", "linhas": saude, "oculta": True, "larguras": [20, 18, 10, 80]},
-        {"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo), versao, chave_impressao, ultima), "oculta": True, "larguras": [30, 80]},
+        {"nome": "Sobre", "linhas": _sobre(dict(cfg, _pasta_robo=pasta_robo, _vetor=vetor, _quem=_quem(cfg)), versao, chave_impressao, ultima),
+         "oculta": True, "larguras": [30, 80]},
     ], so_leitura_recomendado=True, marcar=True)
     html = os.path.join(pasta_robo, "saida", "radar", "radar.html") if pasta_robo else ""
     if html and os.path.exists(html):
