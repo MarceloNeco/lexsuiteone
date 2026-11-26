@@ -762,6 +762,19 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   tem o recurso `amostras` ligado (nuvem v21, com o "pode aplicar" do dono): a pergunta da Operação ao dono fica para esse momento.
   Ficam para depois: seletor de idioma com bandeira SVG em todas as páginas (a tela também usa "PT/EN" em texto) e L3. Testes 662 OK;
   bateria da tela TUDO OK (fluxos, ver_na_lista 16, larguras 88, aviso_e_lupa 399); revisão da Produto sem bloqueio no código.
+- **Operação → Produto (26/Nov, feedback do dono: "Limpar a planilha" levou ~10 min; medido, causa achada):** banco FICTÍCIO com
+  53 mil processos (TRT9), Linux: `armazenamento.limpar` = **74 a 120 s** (a cópia faz o CSV do Arquivo inteiro com `montar_radar(visao=
+  "arquivo")` e a regravação monta a lista de novo); no Windows do escritório, com a pasta no Drive, 5 a 8 vezes isso = os 10 min.
+  **80 % do tempo é `radar.sinal_guardado` → `classificar.sem_acento` no texto inteiro do Diário**, chamado 4 vezes por processo
+  (cProfile: 425 mil chamadas, 225 milhões de iterações em `sem_acento`), porque `radar.data_de_referencia` (`radar.py:1144`) e o
+  ponto de `radar.py:1103` chamam `sinal_guardado(lead)` mesmo quando o processo já tem o `sinal` guardado (desde a 0.7.19), e
+  `processo_novo` chama `data_de_referencia` de novo. **Ensaio (sem mudar o repositório):** usar `lead.get("sinal")` primeiro e
+  calcular o do texto uma vez por processo → Arquivo inteiro 36 s → 3 s; **limpar 74 s → 7 s (10 vezes mais rápido)**; Lista de 7 dias
+  0,9 s → 0,1 s. Pedido: (1) em `data_de_referencia` e `radar.py:1103`, `lead.get("sinal") or sinal_guardado(lead)`; (2) guardar o
+  resultado por processo dentro do mesmo `montar_radar` (ou passar o `sinal` já calculado no `item_de_lead`); (3) teste de tempo
+  com 50 mil processos fictícios (limite, por exemplo, 15 s no Linux); (4) `limpar` monta a lista 3 vezes (CSV, regravar, antes e
+  depois): reaproveitar. Script da medição: pedir à Operação. Não muda texto nem tela (Definition of done: Novidades "Melhoria de
+  desempenho na limpeza da planilha e na abertura do Arquivo").
 - **Operação → Produto e Arquitetura (24/Nov, depois da 0.7.53 publicada; não bloqueiam):** (1) a Operação editou a linha do ponto 9 de
   `documentacao/dod/0.7.53.md` e a frase das amostras no e-mail de boas-vindas (`d7e7d73`, com o "pode" do dono): Produto, confira;
   (2) folha, ponto 12: `test_v0753.py` (24) × (26) na seção final; ponto 11 sem "e com o recurso `amostras` ligado"; (3) `radar.py:832`:
