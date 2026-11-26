@@ -14,6 +14,7 @@ import os
 import re
 import threading
 import time
+import unicodedata
 
 from . import classificar as cl
 from . import cnpj as receita
@@ -42,26 +43,34 @@ def sinal_guardado(lead):
     guardado, na hora de mostrar (o banco não muda). Sem texto que mostre o sinal: '' (a tela mostra "Sem sinal registrado")."""
     from . import classificar as cl
     tipo = cl.sem_acento(str(lead.get("tipo") or "")).lower()
-    texto = str(lead.get("texto_curto") or "")
     # revisão da 0.7.35: na lista de distribuição o DJEN guarda o tipo do documento ("Notificação"); o aviso está no texto
-    # ("Processo distribuído"), como em banco._reclassificar_0718. 0.7.54: busca direta, com e sem acento, sem converter o texto
-    # inteiro (era a maior parte do tempo da Lista, do Arquivo e da limpeza)
-    if "distribui" in tipo or _DISTRIBUIDO.search(texto):
+    # ("Processo distribuído"), como em banco._reclassificar_0718. 0.7.54: o mesmo teste da 0.7.53 (sem acento, minúsculas,
+    # espaço literal), mas com a normalização feita em C (o `sem_acento` letra a letra no texto inteiro era a maior parte do tempo)
+    texto = _sem_acento_rapido(str(lead.get("texto_curto") or ""))
+    if "distribui" in tipo or "processo distribuid" in texto or "lista de distribuic" in texto:
         return "lista de distribuição"
-    return cl.sinal_inicio(texto)
+    return cl.sinal_inicio(lead.get("texto_curto") or "")
 
 
-_DISTRIBUIDO = re.compile(r"processo\s+distribu[ií]d|lista\s+de\s+distribui[çc]", re.I)
+# as marcas que se combinam com as letras latinas (as mesmas que o `classificar.sem_acento` tira de um texto em português)
+_MARCAS = re.compile("[\u0300-\u036f\u1ab0-\u1aff\u1dc0-\u1dff\u20d0-\u20ff\ufe20-\ufe2f]")
 
-def sinal_de(lead):
-    """0.7.54 (Operação, 26/Nov): o sinal guardado na leitura (desde a 0.7.19) e, só se faltar, o do texto, calculado uma vez por
-    processo (antes, `sem_acento` no texto inteiro do Diário rodava 4 vezes por processo: limpar a planilha levava minutos)."""
-    s = lead.get("sinal")
-    if s:
-        return s
+
+def _sem_acento_rapido(s):
+    return _MARCAS.sub("", unicodedata.normalize("NFD", s)).lower()
+
+
+def sinal_texto(lead):
+    """0.7.54: o sinal pelo texto (`sinal_guardado`), calculado uma vez por processo. É o que vale para a data de ajuizamento e
+    para as fontes, como na 0.7.53 (revisão da Operação: usar o `sinal` gravado na leitura mudaria processos já gravados)."""
     if "_sinal_calc" not in lead:
         lead["_sinal_calc"] = sinal_guardado(lead)
     return lead["_sinal_calc"]
+
+
+def sinal_de(lead):
+    """0.7.54: o que a tela mostra como sinal: o gravado na leitura (desde a 0.7.19) ou, sem ele, o do texto (como na 0.7.53)."""
+    return lead.get("sinal") or sinal_texto(lead)
 
 
 def link_pje(tribunal):
@@ -1148,7 +1157,7 @@ def completar_fontes(banco, agora=None, novos=(), aviso=print, parar=None, tempo
         if feitos >= HIST_MAX or cedo():
             est["hist_parou"] = est["hist_parou"] or "limite desta leitura"
             break
-        if sinal_de(d) == "lista de distribuição" or (d.get("cnj") or {}).get("ajuizado"):
+        if sinal_texto(d) == "lista de distribuição" or (d.get("cnj") or {}).get("ajuizado"):
             banco.marcar_fonte(proc, "diario_hist", "ok", agora, causa="não precisa", commit=False)  # a data já é conhecida
             continue
         if feitos % 10 == 0:
@@ -1189,7 +1198,7 @@ def data_de_referencia(lead):
     hist = lead.get("diario_hist") or {}
     if hist.get("distribuicao"):
         return hist["distribuicao"][:10], "diario"
-    if sinal_de(lead) == "lista de distribuição" and lead.get("data_publicacao"):
+    if sinal_texto(lead) == "lista de distribuição" and lead.get("data_publicacao"):
         return str(lead["data_publicacao"])[:10], "diario"
     datas = [x for x in (hist.get("pub1"), (lead.get("cnj") or {}).get("pub1"), lead.get("data_publicacao")) if x]
     return (min(datas)[:10], "aproximada") if datas else ("", "")
