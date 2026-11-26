@@ -762,6 +762,16 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   tem o recurso `amostras` ligado (nuvem v21, com o "pode aplicar" do dono): a pergunta da Operação ao dono fica para esse momento.
   Ficam para depois: seletor de idioma com bandeira SVG em todas as páginas (a tela também usa "PT/EN" em texto) e L3. Testes 662 OK;
   bateria da tela TUDO OK (fluxos, ver_na_lista 16, larguras 88, aviso_e_lupa 399); revisão da Produto sem bloqueio no código.
+- **Operação → Produto (26/Nov, feedback do dono: "RECEITA" em inglês saiu "REVENUE", tradução literal):** na Jornada do processo a
+  etiqueta de fonte é `fonte_receita: "Revenue"` (`robo/radar_modelo.html:2403`, EN), ao lado de `fonte_diario: "Court Journal"`.
+  "Receita" aqui é a Receita Federal, o cadastro público de CNPJ, não "receita" (faturamento). O site já usa o termo certo: "the
+  federal tax registry" (`paginas/index.html:365`). No programa há ainda cerca de 15 textos EN com "Federal Revenue" (`:2403`,
+  `:2459-2461`, `:2486`, `:2496`, `:2613`, `:2657`, `:2690`, `:6415-6416`, `:7051`), que soam como "faturamento federal".
+  Recomendação: etiqueta curta **"TAX REGISTRY"**; no texto corrido, **"federal tax registry"** (na primeira menção de cada tela,
+  "federal tax registry (Receita Federal)"), igual ao site; manter "revenue" só onde é faturamento de fato (porte: "revenue up to
+  R$ 360k/year", `:2830-2831`, está certo). Conferir junto o (?) das fontes, a ajuda do AssistONE, a busca e a planilha em EN.
+  Definition of done: Novidades "Correção de termos em inglês"; regra geral para o EN: traduzir pelo contexto jurídico brasileiro,
+  não ao pé da letra (vale também para a revisão dos termos em inglês com o advogado, pergunta 66).
 - **Operação → Produto (26/Nov, feedback do dono: "Limpar a planilha" levou ~10 min; medido, causa achada):** banco FICTÍCIO com
   53 mil processos (TRT9), Linux: `armazenamento.limpar` = **74 a 120 s** (a cópia faz o CSV do Arquivo inteiro com `montar_radar(visao=
   "arquivo")` e a regravação monta a lista de novo); no Windows do escritório, com a pasta no Drive, 5 a 8 vezes isso = os 10 min.
