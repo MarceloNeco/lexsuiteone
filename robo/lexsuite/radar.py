@@ -57,7 +57,13 @@ _MARCAS = re.compile("[\u0300-\u036f\u1ab0-\u1aff\u1dc0-\u1dff\u20d0-\u20ff\ufe2
 
 
 def _sem_acento_rapido(s):
-    return _MARCAS.sub("", unicodedata.normalize("NFD", s)).lower()
+    """Igual a `classificar.sem_acento(s).lower()`: abaixo de U+0370 as únicas marcas (Mn) são U+0300–036F, tiradas em C; texto
+    com letra de outra escrita (raro no Diário) vai pela regra letra a letra, para dar sempre o mesmo resultado da 0.7.53."""
+    d = unicodedata.normalize("NFD", s)
+    if not d or max(d) < "\u0370":
+        return _MARCAS.sub("", d).lower()
+    from . import classificar as cl
+    return cl.sem_acento(s).lower()
 
 
 def sinal_texto(lead):
