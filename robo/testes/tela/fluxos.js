@@ -555,6 +555,12 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await espera(1500);
     const t30b = await totalLista(p2), per2 = await p2.evaluate(() => document.getElementById('periodo').value);
     confere(per2 === '30' && t30b === t30 && t30 > 0 && t30 <= t90, 'Período: os 30 dias filtrados na tela são os mesmos que o programa daria (memória ' + t30 + ' × programa ' + t30b + '; 90 dias: ' + t90 + ')');
+    // ordem nova: "Mais antigos primeiro (ajuizados)" logo abaixo de "Mais novos primeiro (ajuizados)", sem erro na página
+    const ops = await p2.evaluate(() => [...document.querySelectorAll('#ordem option')].map(o => o.value).slice(0, 2).join(','));
+    await p2.evaluate(() => { const s = document.getElementById('ordem'); s.value = 'ajuizado_asc'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(600);
+    const nAsc = await totalLista(p2);
+    confere(ops === 'ajuizado,ajuizado_asc' && nAsc === t30b && p2._erros.length === 0, 'Ordenar: "Mais antigos primeiro (ajuizados)" logo abaixo do padrão, mesma quantidade e sem erro (' + ops + '; ' + nAsc + ') ' + p2._erros.join(' | '));
+    await p2.evaluate(() => { const s = document.getElementById('ordem'); s.value = 'ajuizado'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(300);
     await p2.evaluate(() => { const s = document.getElementById('periodo'); s.value = '90'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(2500);  // volta aos 90 dias do servidor fictício (os roteiros seguintes contam com eles)
     await p2.close();
   }
