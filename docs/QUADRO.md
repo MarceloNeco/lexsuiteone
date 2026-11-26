@@ -168,13 +168,14 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 26/Nov: **0.7.54 pronta para publicar** (`fc118fa`; feedback do dono de 26/Nov, os cinco pedidos "Operação → Produto (26/Nov, …)"
-  atendidos): sinal guardado e calculado uma vez, limpeza com o Arquivo montado uma vez (50 mil fictícios: limpeza ~8 s, Arquivo ~4 s,
-  Lista 15 dias ~0,6 s); período menor tirado da memória (`inicios`); agrupar sem apagar a memória ao abrir processo e troca só dos
-  blocos que mudaram; "Mais antigos primeiro (ajuizados)" (sem data de ajuizamento no fim, regra da planilha); inglês "federal tax
-  registry (Receita Federal)" e selo "TAX REGISTRY". Folha `documentacao/dod/0.7.54.md`; `test_v0754.py` (11) e `fluxos.js` bloco 13
-  (falha com a tela da 0.7.53, passa com a 0.7.54); unittest 673 OK; `rodar_tudo.sh` TUDO OK; revisor: 1 bloqueio (ordem nova) corrigido.
-  Banco: nenhuma tabela nem índice novo. Pedido à Operação abaixo.
+- 26/Nov: **0.7.54 pronta para publicar de novo** (`7d722d2`, sobre `fc118fa`), com o BLOQUEIO da Operação corrigido: data de ajuizamento,
+  novo/antigo, ordem e fontes voltam a sair do sinal pelo TEXTO, como na 0.7.53 (`radar.sinal_texto`); o `sinal` gravado vale só para
+  o sinal mostrado, como antes. Teste `ComoNa0753` (720 combinações com e sem `sinal`, NFD, dois espaços; os dois casos do revisor;
+  normalização igual à da 0.7.53 caractere a caractere) falha com a regra da `fc118fa` e passa agora. Junto: "Federal Revenue" fora
+  das Novidades da 0.7.43, Novidade EN por substantivo, "Depois por" com as duas datas de ajuizamento, desarquivar limpa a memória dos
+  períodos, resposta atrasada dos anteriores da empresa descartada. Tempo mantido (50 mil fictícios: limpeza ~9 s, Lista 15 dias
+  ~0,8 s nesta máquina). Folha `documentacao/dod/0.7.54.md` (pontos 1, 6, 10 e 12); unittest 678 OK; `rodar_tudo.sh` TUDO OK; revisor
+  aprovado, sem bloqueio. Banco: nenhuma tabela nem índice novo.
 - 24/Nov: **0.7.53 pronta para publicar** (leva junto a 0.7.52; pedido à Operação abaixo). Pedidos à Arquitetura: nuvem v21 das
   amostras e contagem do pacote (dois módulos novos). Próximo: teste do dono com dois computadores (ESTADO-ATUAL, seção 11).
 - 24/Nov: **0.7.52** (teste do dono na 0.7.51 em inglês): inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em
@@ -690,7 +691,9 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 
 ## Pedidos entre sessões
 
-- **Produto → Operação (26/Nov): 0.7.54 pronta para publicar**, quando o dono escrever "publica a versão 0.7.54". Revisar
+- **Produto → Operação (26/Nov, depois do bloqueio): 0.7.54 corrigida e pronta para publicar** (`7d722d2`): o pedido "BLOQUEIO da 0.7.54"
+  abaixo foi atendido inteiro (itens 1 a 4). Revisar `git diff fc118fa 7d722d2 -- robo paginas docs` e, inteira, `git diff 0bf9869 7d722d2`.
+- (anterior) **Produto → Operação (26/Nov): 0.7.54 pronta para publicar**, quando o dono escrever "publica a versão 0.7.54". Revisar
   `git diff 0bf9869 fc118fa -- robo paginas docs` e a folha `documentacao/dod/0.7.54.md`. Responde aos cinco pedidos de 26/Nov
   (desempenho, período, agrupar, inglês, mais antigos). Nenhum módulo novo (o pacote continua com a mesma contagem). Testes do dono
   no Windows: seção 12 de `documentacao/ESTADO-ATUAL-RADAR.md` (medir o tempo de "Limpar a planilha"). Ressalva aceita: "Visto por" e
