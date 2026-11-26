@@ -30,6 +30,7 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 26/Nov: **0.7.54 NÃO PUBLICADA** apesar do "publica a versão 0.7.54" do dono: 1 bloqueio (pedido à Produto abaixo). O ganho de tempo foi conferido pela Operação no código da 0.7.54 com 53 mil processos fictícios: limpar 74 s → 4 s, Arquivo 36 s → 3,6 s, Lista 0,9 s → 0,1 s. Nada mudou no site; continua a 0.7.53.
 - 24/Nov: **0.7.53 PUBLICADA, com a 0.7.52 dentro** (o dono: "publica a versão 0.7.53", segunda vez). Correções `b4aff91` revisadas com provas em dados fictícios: arquivo escondido ou truncado não avança o ponteiro e chega quando volta inteiro; banco recriado grava `00000004` sem sobrescrever; com o recurso `amostras` ausente, `{}` ou `False` nenhum envio (pedido falso: 0 POSTs); textos de ajuda, manual, site e `SEGURANCA.md` citam as amostras "quando a SolverONE ligar". Ponto 9 da folha e a frase do e-mail de boas-vindas corrigidos pela Operação com o "pode" do dono (`d7e7d73`). `rodar_tudo.sh` TUDO OK; `test_dod`/`test_v0753` OK; Bandit limpo. Automação verde, tag `v0.7.53`; pacote 49 e 48 (novos `lexsuite/troca.py` e `lexsuite/amostras.py`), assinatura conferida, `versao.json` e `instalar.txt` 0.7.53 no ar, completo com a 0.7.53. Integração: RADAR → `lex-conta` (ações `formato` e `amostra`) preparada, desligada até a Arquitetura ligar o recurso `amostras` (antes disso, o texto jurídico 1.2 com o advogado).
 - 24/Nov: **0.7.53 (com a 0.7.52) NÃO PUBLICADA** apesar do "publica a versão 0.7.53" do dono: 3 bloqueios na 0.7.53, conferidos no código pela Operação (pedido à Produto abaixo, com arquivo e linha). A 0.7.52 sozinha passou na revisão (sem bloqueio; ressalvas no mesmo pedido). Nada mudou no site; continua a 0.7.51.
 - 20/Nov: **0.7.51 REVISADA, TESTADA e PUBLICADA** (o dono: "publica a versão 0.7.51"; "faça todos os testes… testar tudo"). Diff `4d8bb51..9422f1d` (entre a `v0.7.50` e `4d8bb51` só `robo/PENDENCIAS.md`). Folha `documentacao/dod/0.7.51.md` lida contra o diff; os pontos que o revisor não abriu foram conferidos pela Operação (13 seletores do tour e da ajuda existem; textos antigos só em chaves sem uso ou nas Novidades; e-mail de boas-vindas continua verdadeiro). Testes: `rodar_tudo.sh` TUDO OK, `test_dod.py` OK, Bandit sem achados, `marca.py --conferir` em dia. **Teste ao vivo do DataJud (daqui, fora do Brasil):** a chave pública é lida da página do CNJ (1 s); as buscas no índice do TRT2 deram 429 (servidor do CNJ sobrecarregado, `es_rejected_execution`) ou sem resposta em 60 s, uma deu 0 resultados; cada lote que falha custa até ~60 s, o programa marca "falhou" e tenta depois (código lido; limitado a 240 s por leitura). Não deu para provar uma consulta com resultado daqui; o dono confere no Windows (seção 9 do estado atual). Sem bloqueio. Automação verde, tag `v0.7.51`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.51 no ar, `versoes.html` no ar, completo com a 0.7.51. Integração: nova de LEITURA com o DataJud (API pública do CNJ, só números de processo saem; nada vai à SolverONE).
@@ -775,6 +776,21 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   tem o recurso `amostras` ligado (nuvem v21, com o "pode aplicar" do dono): a pergunta da Operação ao dono fica para esse momento.
   Ficam para depois: seletor de idioma com bandeira SVG em todas as páginas (a tela também usa "PT/EN" em texto) e L3. Testes 662 OK;
   bateria da tela TUDO OK (fluxos, ver_na_lista 16, larguras 88, aviso_e_lupa 399); revisão da Produto sem bloqueio no código.
+- **Operação → Produto (26/Nov, BLOQUEIO da 0.7.54; a Operação não publicou):** `radar.sinal_de` (`radar.py:56-64`, usado em `:1151`
+  `data_de_referencia` e `:1192` `completar_fontes`) passou a usar o `sinal` GUARDADO antes do calculado pelo texto (foi sugestão da
+  Operação, mas muda o resultado). Revisor comparou `0bf9869` × `fc118fa` com dados fictícios: (a) `sinal` guardado "lista de
+  distribuição" e texto sem a frase: data de ajuizamento ia para 02/11 "aproximada", agora 10/11 "diario"; (b) `sinal` guardado
+  "citação inicial" (ou "notifique-se a reclamada") com "Processo distribuído" no texto: antes 10/11 "diario", agora 02/11 "aproximada".
+  Muda a data de ajuizamento, "novo/antigo" e a ordem de processos já gravados, e a folha (ponto 10) diz que nada muda: ponto falso.
+  Correção (mantém o ganho, porque a busca do texto já ficou rápida com o `_DISTRIBUIDO`): em `data_de_referencia` e `completar_fontes`,
+  usar só o cálculo pelo texto (guardado em `_sinal_calc`); `item["sinal"]` continua `lead.get("sinal") or calculado`; teste que compara
+  a data de referência de processos com e sem `sinal` contra o resultado da 0.7.53. Se preferirem a regra nova (o `sinal` da leitura é
+  mais fiel), é decisão do dono e a folha tem de dizer. Junto: (2) `_DISTRIBUIDO` (`radar.py:51-52`) não equivale ao antigo: texto em
+  NFD ("distribuído" com acento combinado) deixa de casar e "PROCESSO  DISTRIBUIDO" (2 espaços) passa a casar: normalizar NFC e usar
+  espaço literal; (3) "Federal Revenue" ainda nas Novidades EN da 0.7.43 (`radar_modelo.html:7118`, `paginas/versoes.html`); (4) baixos:
+  "Depois por" sem "ajuizado"/"ajuizado_asc"; processo desarquivado pelo Arquivo some da Lista por até 5 min (memória dos períodos);
+  resposta atrasada de `/empresas/processos` pode gravar situação velha no `cacheEmp` (guardar só se `geracaoCache` não mudou);
+  Novidade EN "Faster List…" começa por adjetivo.
 - **Operação → Produto (26/Nov, feedback do dono: "Agrupar por empresa" com comportamento estranho, prints no chat do dono):** em
   inglês, "Group by company" + "Up to 50 from the last 6 months": cada empresa fica em "fetching earlier cases…"; ao expandir, o
   conteúdo some e volta; clicar num processo mais para baixo faz o bloco sumir e "contrair" tudo. **Causas lidas no código** (não
