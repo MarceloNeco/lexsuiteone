@@ -68,7 +68,7 @@ var casos = [
  ["  Caderno TRT9 23/NOV: já conferido (versão 1)", "  Court Journal TRT9 23/NOV: already checked (version 1)"],
  ["  Baixando o caderno TRT2 21/OUT (pode levar alguns minutos)...", "  Downloading Court Journal TRT2 21/OCT (may take a few minutes)..."],
  ["  Consultando o CNJ: 40 de 120…", "  Checking the CNJ: 40 of 120…"],
- ["  Receita: 10 de 40", "  Federal Revenue: 10 of 40"],
+ ["  Receita: 10 de 40", "  Federal tax registry: 10 of 40"],
  ["Espere a leitura terminar. / Wait for the reading to finish.", "Wait for the reading to finish."],
  ["Empresa Ficticia Ltda", "Empresa Ficticia Ltda"]];
 casos.forEach(function (c) { var r = msgIdioma(c[0]); if (r !== c[1]) { console.log("ERRO " + JSON.stringify([c[0], r])); process.exit(1); } });

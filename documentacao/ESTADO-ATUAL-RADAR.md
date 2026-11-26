@@ -1,11 +1,12 @@
 # Estado atual do RADAR JUDICIAL (uma página; toda sessão lê antes de responder ao dono)
 
-Atualizado em 24/Nov/2026 pela Produto, com a 0.7.53 pronta para publicar depois da revisão (a 0.7.52 também espera publicação; a 0.7.51 está no ar) (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
+Atualizado em 26/Nov/2026 pela Produto, com a 0.7.54 pronta para publicar depois da revisão (a 0.7.53, com a 0.7.52, está no ar) (criada pela Arquitetura). **Quem mantém: a Produto**, a cada entrega ou decisão nova, e sempre
 que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" sai DAQUI, não da memória da conversa.
 
 ## 1. No ar
-- Programa **0.7.50**, publicada em 16/Nov (tag `v0.7.50`): agrupamento recolhível com caixinha da empresa, CNPJ provável,
-  copiar contato e "Excluir esta empresa"; filtros numa linha no notebook; Rotina de limpeza; "Enviar ao suporte"; tour sem rolar.
+- Programa **0.7.53**, publicada em 24/Nov com a 0.7.52 (tag `v0.7.53`): vários computadores na mesma pasta ("Trazer do
+  escritório", "Visto por"), planilha só com os tribunais escolhidos e aba Estatística, amostras de formato; inglês completo.
+- Antes: 0.7.51 (datas do CNJ, jornada) e 0.7.50 (agrupamento recolhível, CNPJ provável, copiar contato, Rotina de limpeza).
   A 0.7.49 (15/Nov): Modo no alto, 3 filtros salvos de fábrica, Tribunal na 1ª linha, Agrupar por empresa. A 0.7.48 (consulta pública, limpeza automática, cidade, área logada) também está no ar; os instaladores
   corrigidos da 0.7.48 estão no site (`ba38b72`).
 - Nuvem: lex-conta v20 (recursos por licença, estado do CNJ, antivírus no registro, opção de e-mail), lex-saude v3 (observador em São
@@ -24,7 +25,10 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 - Filtro de cidade: Lista e Painel, não na planilha. Tarefa agendada sempre por `C:\LexSuiteONE\tarefa.xml`.
 
 ## 3. Planejado
-- **0.7.53** (24/Nov; decisões 59 a 67; espera o "publica a versão 0.7.53"): vários computadores na mesma pasta sem computador
+- **0.7.54** (26/Nov; feedback do dono com a 0.7.53 no escritório; espera o "publica a versão 0.7.54"): Lista, Arquivo e limpeza da
+  planilha mais rápidos; trocar para um período menor sem carregar de novo; agrupar por empresa sem perder o bloco ao abrir um
+  processo; "Mais antigos primeiro (ajuizados)"; inglês pelo sentido jurídico ("federal tax registry"). Testes do dono: seção 12.
+- **0.7.53** (24/Nov; decisões 59 a 67; publicada em 24/Nov): vários computadores na mesma pasta sem computador
   mestre ("Trazer do escritório", "Visto por"), planilha só com os tribunais escolhidos e aba Estatística (resolve a planilha de 51 mil
   linhas), amostras de formato anonimizadas com envio silencioso. Inclui a 0.7.52. Testes do dono: seção 11.
 - **Nuvem v21 das amostras** (Arquitetura): até ela existir, as amostras ficam na fila de cada computador e vão sozinhas depois.
@@ -51,8 +55,9 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 ## 4. O que só o dono pode fazer (lista única)
 1. Terminar o teste da 0.7.49 (seção 7) e, se quiser, o que faltou da 0.7.48 e da 0.7.47 (seções 6 e 5); o que falhar vira feedback na Produto.
 2. Testar a 0.7.50 no notebook, depois de "Atualizar agora" (seção 8, ~15 min); o que falhar vira feedback na Produto.
-2b. Testar a 0.7.51 (seção 9). Escrever "publica a versão 0.7.52" na conversa da Operação e testar a 0.7.52 (seção 10, ~10 min).
-2c. Publicar a 0.7.53 ("publica a versão 0.7.53" na Operação; ela já leva a 0.7.52) e testar com dois computadores (seção 11).
+2b. Testar a 0.7.51 (seção 9) e a 0.7.52 (seção 10, ~10 min); as duas já estão no ar.
+2c. Testar a 0.7.53 com dois computadores (seção 11).
+2d. Publicar a 0.7.54 ("publica a versão 0.7.54" na Operação) e testar (seção 12, ~10 min).
 3. Quando quiser: teste de 5 min no PJe com advogado logado (`visita-kr-law/PROMPT-TESTE-GAP-PJE-2026-11-15.md`).
 4. Supabase (Central): TOTP, desligar signups, usuários da equipe; repositório `central-lexsuiteone`.
 5. RootifyONE: "aplicado" (recursos por licença) e os prompts pendentes de lá.
@@ -138,3 +143,11 @@ que o dono pedir "o que falta". A resposta ao dono sobre "o que tem para fazer" 
 6. Configurações → Sobre este computador → "O que a SolverONE recebe" → "Ver as amostras de formato": o conteúdo aparece trocado
    (nomes e números sorteados).
 
+## 12. Testes da 0.7.54 (depois de publicada; ~10 min; no Windows do escritório)
+1. Menu ☰ → Configurações → Armazenamento → "Limpar a planilha": marque o tempo até o ✓ (com 53 mil processos levava mais de um
+   minuto; agora deve levar bem menos).
+2. Lista em "No Diário: 15 dias"; depois troque para 7 dias: a lista muda na hora, sem "Carregando 7 dias de processos".
+3. "Agrupar por empresa" → "Expandir todas"; espere sumir o "buscando"; role até uma empresa de baixo e clique num processo: a ficha
+   abre, o bloco continua aberto e no mesmo lugar.
+4. Troque para EN e abra uma ficha: a fonte aparece como "TAX REGISTRY" e os textos dizem "federal tax registry (Receita Federal)".
+5. "Ordenar por" → "Mais antigos primeiro (ajuizados)": os ajuizados há mais tempo vêm primeiro; os sem data, no fim.
