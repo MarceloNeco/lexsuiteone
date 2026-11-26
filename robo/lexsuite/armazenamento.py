@@ -300,6 +300,12 @@ def limpar(cfg, banco, pasta_robo, versao, aviso=print, automatico=False, hoje=N
     e os processos trabalhados. Nada sai do programa. Devolve (ok, mensagem)."""
     from . import radar
     hoje = hoje or dt.date.today()
+    with radar.reaproveitar_arquivo():  # 0.7.54: o Arquivo é montado uma vez (antes, 3 vezes)
+        return _limpar(cfg, banco, pasta_robo, versao, aviso, automatico, hoje)
+
+
+def _limpar(cfg, banco, pasta_robo, versao, aviso, automatico, hoje):
+    from . import radar
     ok, onde = copia_seguranca(cfg, banco, "limpeza automática" if automatico else "antes de limpar", aviso)
     if not ok:  # 0.7.17 (revisão da Arquitetura): sem cópia bem-sucedida, não enxuga
         if automatico:

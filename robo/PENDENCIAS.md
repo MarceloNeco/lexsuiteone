@@ -167,7 +167,16 @@ O nome é uma configuração, não texto fixo: o dono decide (com maiúsculas e 
 - Varredura pela área logada (PJe e Astrea) dos processos recentes sem contato ou valor no Diário, com o RADAR escolhendo os
   processos e montando os lotes: `documentacao/PLANO-VARREDURA-AREA-LOGADA-SEM-DATA.md` (Arquitetura, 15/Nov). Não entra na 0.7.48.
 
-## 0.7.53 (24/Nov; decisões 59 a 67) — pronta para publicar depois da revisão
+## 0.7.54 (26/Nov; feedback do dono com a 0.7.53 no escritório) — pronta para publicar depois da revisão
+
+- Feito: desempenho (sinal uma vez por processo, limpeza com o Arquivo montado uma vez; 50 mil fictícios: Lista 15 dias ~0,6 s,
+  Arquivo ~4 s, limpeza ~8 s nesta máquina, contra ~74 s antes na medição da Operação); período menor tirado da memória; agrupar
+  por empresa sem apagar a memória ao abrir processo, troca só dos blocos que mudaram; "Mais antigos primeiro (ajuizados)"; inglês
+  pelo sentido jurídico. Folha `documentacao/dod/0.7.54.md`.
+- Falta, se ainda lento no Windows: índice por CNPJ/nome da empresa no banco (passa pela Arquitetura antes). Teste do dono: seção 12
+  de `documentacao/ESTADO-ATUAL-RADAR.md`.
+
+## 0.7.53 (24/Nov; decisões 59 a 67) — publicada em 24/Nov (tag v0.7.53)
 
 - Feito: troca entre computadores sem mestre, "Trazer do escritório", "Visto por", planilha só com os escolhidos e aba Estatística,
   amostras de formato com fila silenciosa. Testes de acesso simultâneo (dois processos ao mesmo tempo). Folha `documentacao/dod/0.7.53.md`.
