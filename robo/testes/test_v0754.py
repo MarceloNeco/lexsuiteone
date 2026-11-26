@@ -167,6 +167,11 @@ class InglesContextual(unittest.TestCase):
         self.assertIn('ord_ajuizado_asc: "Mais antigos primeiro (ajuizados)"', self.html)
         self.assertIn('ord_ajuizado_asc: "Oldest first (filed)"', self.html)
         self.assertTrue(re.search(r'\["ajuizado", t\("ord_ajuizado"\)\], \["ajuizado_asc"', self.html), "logo abaixo de Mais novos")
+        # revisão: "sem data de ajuizamento" é o mesmo que na planilha (só CNJ, Diário ou digitado contam); vão para o fim
+        self.assertIn('if (o === "ajuizado_asc") return function (a, b) { var x_ = ajuizadoReal(a), y_ = ajuizadoReal(b); if (!x_ !== !y_) return x_ ? -1 : 1;', self.html)
+        self.assertIn('["cnj", "diario", "digitado"].indexOf(i.ajuizado_fonte) >= 0', self.html)
+        with open(os.path.join(_ROBO_, "lexsuite", "radar.py"), encoding="utf-8") as f:
+            self.assertIn('item.get("ajuizado_fonte") in ("cnj", "diario", "digitado")', f.read())
 
 
 if __name__ == "__main__":
