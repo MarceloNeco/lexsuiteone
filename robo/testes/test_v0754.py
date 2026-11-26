@@ -10,6 +10,7 @@ import re
 import sys
 import tempfile
 import time
+import unicodedata
 import unittest
 from unittest import mock
 
@@ -92,7 +93,7 @@ class SinalUmaVez(unittest.TestCase):
         with mock.patch.object(radar, "sinal_guardado", side_effect=orig) as m:
             d = radar.montar_radar(self.cfg, self.b, visao="arquivo")
         self.assertEqual(len(d["itens"]), 300)
-        self.assertLessEqual(m.call_count, 150, "só os processos sem o sinal guardado; e uma vez cada")
+        self.assertLessEqual(m.call_count, 300, "uma vez por processo (antes eram quatro)")
         self.assertTrue(all(i.get("sinal") for i in d["itens"]))
 
     def test_mesmo_resultado_que_antes(self):
@@ -117,6 +118,81 @@ class SinalUmaVez(unittest.TestCase):
         self.assertTrue(r[0], r)
         arq = [c for c in m.call_args_list if c.kwargs.get("visao") == "arquivo"]
         self.assertLessEqual(len(arq), 1, "a limpeza reaproveita a mesma lista do Arquivo")
+
+
+def _sinal_guardado_0753(lead):
+    """Cópia fiel da regra da 0.7.53 (radar.sinal_guardado em 0bf9869), para comparar o resultado."""
+    from lexsuite import classificar as cl
+    tipo = cl.sem_acento(str(lead.get("tipo") or "")).lower()
+    texto = cl.sem_acento(str(lead.get("texto_curto") or "")).lower()
+    if "distribui" in tipo or "processo distribuid" in texto or "lista de distribuic" in texto:
+        return "lista de distribuição"
+    return cl.sinal_inicio(lead.get("texto_curto") or "")
+
+
+class ComoNa0753(unittest.TestCase):
+    """Revisão da Operação (26/Nov, bloqueio): a 0.7.54 não pode mudar a data de ajuizamento, o novo/antigo nem a ordem de
+    processos já gravados. O `sinal` gravado na leitura só muda o que a tela mostra como sinal (igual à 0.7.53)."""
+
+    TEXTOS = ["", "Notificação FICTÍCIA da audiência inicial.", "Processo distribuído por sorteio (fictício).",
+              unicodedata.normalize("NFD", "Processo distribuído por sorteio (fictício)."), "PROCESSO  DISTRIBUIDO (fictício)",
+              "PROCESSO DISTRIBUÍDO", "Lista de Distribuição FICTÍCIA", "lista de distribuicao", "Cite-se a reclamada (fictícia).",
+              "Notifique-se a reclamada para a audiência.", "processo\ndistribuido", "Processo redistribuído por dependência"]
+    SINAIS = [None, "lista de distribuição", "citação inicial", "notifique-se a reclamada", "audiência inicial"]
+    TIPOS = ["Intimação", "Notificação", "Lista de distribuição", "Edital"]
+
+    def _leads(self):
+        k = 0
+        for tx in self.TEXTOS:
+            for si in self.SINAIS:
+                for tp in self.TIPOS:
+                    for cnj in (None, {"ajuizado": "2026-10-01"}, {"pub1": "2026-09-15"}):
+                        k += 1
+                        lead = {"processo": f"{k:07d}-11.2026.5.09.0001", "texto_curto": tx, "tipo": tp,
+                                "data_publicacao": "2026-11-10", "diario_hist": {"pub1": "2026-11-02"} if k % 2 else {}}
+                        if si:
+                            lead["sinal"] = si
+                        if cnj:
+                            lead["cnj"] = cnj
+                        yield lead
+
+    def test_sinal_pelo_texto_igual_ao_da_0753(self):
+        for lead in self._leads():
+            self.assertEqual(radar.sinal_guardado(dict(lead)), _sinal_guardado_0753(lead), repr(lead["texto_curto"]))
+
+    def test_sem_acento_rapido_igual_ao_da_0753_em_todo_caractere(self):
+        from lexsuite import classificar as cl
+        for i in list(range(0, 0x3400)) + list(range(0xF900, 0x10000)) + [0x1D167, 0x1E000, 0x1F600]:
+            if 0xD800 <= i <= 0xDFFF:
+                continue
+            x = "a" + chr(i) + "b"
+            self.assertEqual(radar._sem_acento_rapido(x), cl.sem_acento(x).lower(), hex(i))
+
+    def test_data_de_referencia_igual_a_da_0753_com_e_sem_sinal_gravado(self):
+        n = 0
+        for lead in self._leads():
+            agora = radar.data_de_referencia(dict(lead))
+            with mock.patch.object(radar, "sinal_guardado", side_effect=_sinal_guardado_0753):
+                antes = radar.data_de_referencia(dict(lead))
+            sem_sinal = radar.data_de_referencia({k: v for k, v in lead.items() if k != "sinal"})
+            self.assertEqual(agora, antes, lead)
+            self.assertEqual(agora, sem_sinal, "o sinal gravado não muda a data: " + repr(lead))
+            n += 1
+        self.assertGreater(n, 500)
+
+    def test_casos_do_revisor(self):
+        # (a) sinal gravado "lista de distribuição", texto sem a frase: continua "aproximada" pela 1ª publicação
+        a = {"sinal": "lista de distribuição", "texto_curto": "Notificação da audiência inicial.", "tipo": "Notificação",
+             "data_publicacao": "2026-11-10", "diario_hist": {"pub1": "2026-11-02"}}
+        self.assertEqual(radar.data_de_referencia(a), ("2026-11-02", "aproximada"))
+        # (b) sinal gravado "citação inicial" com "Processo distribuído" no texto: continua a data do Diário
+        b = {"sinal": "citação inicial", "texto_curto": "Processo distribuído por sorteio.", "tipo": "Intimação",
+             "data_publicacao": "2026-11-10", "diario_hist": {"pub1": "2026-11-02"}}
+        self.assertEqual(radar.data_de_referencia(b), ("2026-11-10", "diario"))
+
+    def test_sinal_na_tela_igual_ao_da_0753(self):
+        for lead in self._leads():
+            self.assertEqual(radar.sinal_de(dict(lead)), lead.get("sinal") or _sinal_guardado_0753(lead))
 
 
 class InicioDoPeriodoNaTela(unittest.TestCase):
@@ -158,8 +234,9 @@ class InglesContextual(unittest.TestCase):
 
     def test_receita_federal(self):
         self.assertIn('fonte_receita: "Tax registry"', self.html)
-        historico = "the name written the same as at the Federal Revenue.\","  # Novidades de versões antigas: registro, não se reescreve
-        self.assertNotIn("Federal Revenue", self.html.replace(historico, ""))
+        self.assertNotIn("Federal Revenue", self.html)  # revisão da Operação: também nas Novidades das versões antigas
+        with open(os.path.join(os.path.dirname(_ROBO_), "paginas", "versoes.html"), encoding="utf-8") as f:
+            self.assertNotIn("Federal Revenue", f.read())
         self.assertGreaterEqual(self.html.count("federal tax registry (Receita Federal)"), 10)
         self.assertIn("revenue up to R$ 360k/year", self.html)  # o porte (faturamento) fica como está
 

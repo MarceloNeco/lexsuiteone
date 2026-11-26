@@ -64,7 +64,7 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 ## A tela
 
 - **0.7.54 (26/Nov, feedback do dono com a 0.7.53 no escritório):** Lista, Arquivo e limpeza da planilha mais rápidos com dezenas de
-  milhares de processos (o sinal guardado vale; o calculado sai uma vez por processo; a limpeza monta o Arquivo uma vez só); trocar
+  milhares de processos (o sinal pelo texto, com a mesma regra da 0.7.53, sai uma vez por processo e com a normalização feita em C; a limpeza monta o Arquivo uma vez só); trocar
   para um período menor filtra na tela o maior que já veio; agrupar por empresa guarda os processos anteriores ao abrir um processo
   e troca só os blocos que mudaram, sem perder a rolagem; "Mais antigos primeiro (ajuizados)" em "Ordenar por"; inglês pelo sentido
   jurídico ("federal tax registry (Receita Federal)", selo "TAX REGISTRY").
