@@ -762,6 +762,16 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   tem o recurso `amostras` ligado (nuvem v21, com o "pode aplicar" do dono): a pergunta da Operação ao dono fica para esse momento.
   Ficam para depois: seletor de idioma com bandeira SVG em todas as páginas (a tela também usa "PT/EN" em texto) e L3. Testes 662 OK;
   bateria da tela TUDO OK (fluxos, ver_na_lista 16, larguras 88, aviso_e_lupa 399); revisão da Produto sem bloqueio no código.
+- **Operação → Produto (26/Nov, pedido do dono: "Ordenar por" com os MAIS ANTIGOS primeiro):** para o advogado ver, dentro de um
+  período recente do Diário (ex.: "últimos 7 dias"), os processos ajuizados há mais tempo. Hoje (`robo/radar_modelo.html:6319`) as opções
+  são ajuizado, valor, recentes, porte, empresa, vara, situação e hora; a ordem está em `visiveis_()` (`:4293`) e em `comparador()` (`:4304`,
+  usado pelo "Depois por"). Proposta: opção nova `ajuizado_asc` logo abaixo de "Mais novos primeiro (ajuizados)": PT **"Mais antigos
+  primeiro (ajuizados)"**, EN **"Oldest first (filed)"**; `diaAj(a).localeCompare(diaAj(b))`, com os SEM data de ajuizamento no fim (string
+  vazia iria para o começo), desempate pelo maior valor; o mesmo no `comparador`. Talvez também "Menos recentes primeiro (no Diário)"
+  (`diaDe` ascendente), se o dono quiser. Conferir: filtros salvos e "Depois por" guardam e reabrem a ordem nova; CSV ("Baixar a lista")
+  sai na ordem da tela; com "Agrupar por empresa" a ordem fica apagada (como hoje). Definition of done: texto do (?) `ord_ajuda` PT/EN
+  ("…data de ajuizamento, da mais nova ou da mais antiga…"), manual ("Ordenar por"), AssistONE (ajuda da Lista e busca: "mais antigos",
+  "oldest"), Novidades ("Opção de ordenar pelos processos ajuizados há mais tempo"), folha DoD da versão.
 - **Operação → Produto (26/Nov, feedback do dono: Lista lenta nos filtros, "Carregando 7 dias de processos" depois de 15 dias;
   medido):** banco FICTÍCIO de 53 mil processos (TRT9), Linux: `montar_radar` da Lista = 0,9 s (7 dias), 1,7 s (15), 3,2 s (30), e
   6,7 s com o cProfile ligado; **90 % é a mesma causa da limpeza lenta** (`sinal_guardado` → `sem_acento` no texto inteiro do Diário,
