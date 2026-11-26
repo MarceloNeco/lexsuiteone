@@ -167,6 +167,9 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 26/Nov: **0.7.54 em código** (feedback do dono de 26/Nov, pedidos "Operação → Produto (26/Nov, …)"): desempenho (sinal guardado),
+  troca de período sem novo pedido, agrupar por empresa sem perder blocos, inglês contextual ("tax registry"), ordenar pelos mais
+  antigos. Arquivos: `robo/lexsuite/{radar,armazenamento}.py`, `robo/radar_modelo.html`, testes, manual.
 - 24/Nov: **0.7.53 pronta para publicar** (leva junto a 0.7.52; pedido à Operação abaixo). Pedidos à Arquitetura: nuvem v21 das
   amostras e contagem do pacote (dois módulos novos). Próximo: teste do dono com dois computadores (ESTADO-ATUAL, seção 11).
 - 24/Nov: **0.7.52** (teste do dono na 0.7.51 em inglês): inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em
