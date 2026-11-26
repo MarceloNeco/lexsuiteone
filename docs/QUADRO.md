@@ -762,6 +762,20 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   tem o recurso `amostras` ligado (nuvem v21, com o "pode aplicar" do dono): a pergunta da Operação ao dono fica para esse momento.
   Ficam para depois: seletor de idioma com bandeira SVG em todas as páginas (a tela também usa "PT/EN" em texto) e L3. Testes 662 OK;
   bateria da tela TUDO OK (fluxos, ver_na_lista 16, larguras 88, aviso_e_lupa 399); revisão da Produto sem bloqueio no código.
+- **Operação → Produto (26/Nov, feedback do dono: "Agrupar por empresa" com comportamento estranho, prints no chat do dono):** em
+  inglês, "Group by company" + "Up to 50 from the last 6 months": cada empresa fica em "fetching earlier cases…"; ao expandir, o
+  conteúdo some e volta; clicar num processo mais para baixo faz o bloco sumir e "contrair" tudo. **Causas lidas no código** (não
+  reproduzido na tela; vale um bloco novo no `fluxos.js`): (1) `post()` (`robo/radar_modelo.html:3009`) zera `cacheEmp` em QUALQUER
+  gravação: abrir a ficha (marca "Visto"), mudar a situação e até trocar o período (`/config` `dias_na_pagina`); os blocos perdem os
+  processos anteriores (ficam só com os do período, parece que "contraiu"), voltam a "buscando os anteriores…" e o programa busca de
+  novo TODAS as empresas; (2) quando a busca volta, `desenhar()` (`:6273`) refaz a lista inteira: o conteúdo pisca e a rolagem pula;
+  (3) no programa, `radar.processos_das_empresas` (`radar.py:593`, rota `/empresas/processos`) varre o banco inteiro com `dados LIKE ?`
+  (um OR por pista de cada empresa) e monta cada processo com `item_de_lead`, que tem a mesma lentidão do `sinal` (pedido da limpeza).
+  Proposta: (a) gravação de situação/visto/valor atualiza o processo dentro do `cacheEmp` em vez de apagá-lo; apagar só a empresa
+  afetada e só quando a gravação muda quem pertence à empresa (CNPJ provável, excluir, copiar contato); nunca no `dias_na_pagina`;
+  (b) ao chegar a busca, redesenhar só os blocos que mudaram (ou guardar e restaurar a rolagem e o `gruposAbertos`); (c) corrigir o
+  `sinal` (resolve boa parte do tempo da busca); depois, se ainda lento, índice por CNPJ/nome da empresa no banco (passa pela
+  Arquitetura). Novidades: "Correção do agrupamento por empresa ao abrir processos" e "Melhoria de desempenho".
 - **Operação → Produto (26/Nov, pedido do dono: "Ordenar por" com os MAIS ANTIGOS primeiro):** para o advogado ver, dentro de um
   período recente do Diário (ex.: "últimos 7 dias"), os processos ajuizados há mais tempo. Hoje (`robo/radar_modelo.html:6319`) as opções
   são ajuizado, valor, recentes, porte, empresa, vara, situação e hora; a ordem está em `visiveis_()` (`:4293`) e em `comparador()` (`:4304`,
