@@ -160,6 +160,14 @@ class ComoNa0753(unittest.TestCase):
         for lead in self._leads():
             self.assertEqual(radar.sinal_guardado(dict(lead)), _sinal_guardado_0753(lead), repr(lead["texto_curto"]))
 
+    def test_sem_acento_rapido_igual_ao_da_0753_em_todo_caractere(self):
+        from lexsuite import classificar as cl
+        for i in list(range(0, 0x3400)) + list(range(0xF900, 0x10000)) + [0x1D167, 0x1E000, 0x1F600]:
+            if 0xD800 <= i <= 0xDFFF:
+                continue
+            x = "a" + chr(i) + "b"
+            self.assertEqual(radar._sem_acento_rapido(x), cl.sem_acento(x).lower(), hex(i))
+
     def test_data_de_referencia_igual_a_da_0753_com_e_sem_sinal_gravado(self):
         n = 0
         for lead in self._leads():
