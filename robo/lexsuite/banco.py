@@ -300,7 +300,7 @@ class Banco:
         self.con.execute(
             "INSERT OR IGNORE INTO leads (processo, primeira_vez, tribunal, vara, dados, status, frente, data, porte, faixa_valor) "
             "VALUES (?,?,?,?,?,?,?,?,?,?)",
-            (lead["processo"], quando, lead.get("tribunal"), lead.get("vara"), json.dumps(lead, ensure_ascii=False), "novo",
+            (lead["processo"], quando, lead.get("tribunal"), lead.get("vara"), json.dumps({k: v for k, v in lead.items() if not str(k).startswith("_")}, ensure_ascii=False), "novo",
              frentes.frente(lead), (lead.get("data_publicacao") or quando)[:10], emp.get("porte") or "",
              faixa_valor(lead.get("valor_causa"))))
         self.con.commit()
@@ -764,7 +764,8 @@ class Banco:
             lead = json.loads(dados)
             lead["status"], lead["primeira_vez"] = situacao_valida(status) or "novo", quando
             lead["motivo"], lead["frente"], lead["resumido"], lead["status_em"] = motivo or "", frente or "", bool(limpo), status_em or ""
-            lead["status_por"], lead["visto_por"], lead["visto_em"] = st_por or "", v_por or "", v_em or ""  # 0.7.53 (decisão 65)
+            # 0.7.53 (decisão 65); 0.7.54: "visto_por_em" (o "visto_em" do lead é a hora em que o RADAR leu, e não pode ser trocado)
+            lead["status_por"], lead["visto_por"], lead["visto_por_em"] = st_por or "", v_por or "", v_em or ""
             saida.append(lead)
         return saida
 

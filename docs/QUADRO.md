@@ -30,6 +30,7 @@ Cloudflare, Resend, publicação de versões.
 - (nenhum)
 
 ### Feito (mais recente primeiro)
+- 24/Nov: **0.7.53 PUBLICADA, com a 0.7.52 dentro** (o dono: "publica a versão 0.7.53", segunda vez). Correções `b4aff91` revisadas com provas em dados fictícios: arquivo escondido ou truncado não avança o ponteiro e chega quando volta inteiro; banco recriado grava `00000004` sem sobrescrever; com o recurso `amostras` ausente, `{}` ou `False` nenhum envio (pedido falso: 0 POSTs); textos de ajuda, manual, site e `SEGURANCA.md` citam as amostras "quando a SolverONE ligar". Ponto 9 da folha e a frase do e-mail de boas-vindas corrigidos pela Operação com o "pode" do dono (`d7e7d73`). `rodar_tudo.sh` TUDO OK; `test_dod`/`test_v0753` OK; Bandit limpo. Automação verde, tag `v0.7.53`; pacote 49 e 48 (novos `lexsuite/troca.py` e `lexsuite/amostras.py`), assinatura conferida, `versao.json` e `instalar.txt` 0.7.53 no ar, completo com a 0.7.53. Integração: RADAR → `lex-conta` (ações `formato` e `amostra`) preparada, desligada até a Arquitetura ligar o recurso `amostras` (antes disso, o texto jurídico 1.2 com o advogado).
 - 24/Nov: **0.7.53 (com a 0.7.52) NÃO PUBLICADA** apesar do "publica a versão 0.7.53" do dono: 3 bloqueios na 0.7.53, conferidos no código pela Operação (pedido à Produto abaixo, com arquivo e linha). A 0.7.52 sozinha passou na revisão (sem bloqueio; ressalvas no mesmo pedido). Nada mudou no site; continua a 0.7.51.
 - 20/Nov: **0.7.51 REVISADA, TESTADA e PUBLICADA** (o dono: "publica a versão 0.7.51"; "faça todos os testes… testar tudo"). Diff `4d8bb51..9422f1d` (entre a `v0.7.50` e `4d8bb51` só `robo/PENDENCIAS.md`). Folha `documentacao/dod/0.7.51.md` lida contra o diff; os pontos que o revisor não abriu foram conferidos pela Operação (13 seletores do tour e da ajuda existem; textos antigos só em chaves sem uso ou nas Novidades; e-mail de boas-vindas continua verdadeiro). Testes: `rodar_tudo.sh` TUDO OK, `test_dod.py` OK, Bandit sem achados, `marca.py --conferir` em dia. **Teste ao vivo do DataJud (daqui, fora do Brasil):** a chave pública é lida da página do CNJ (1 s); as buscas no índice do TRT2 deram 429 (servidor do CNJ sobrecarregado, `es_rejected_execution`) ou sem resposta em 60 s, uma deu 0 resultados; cada lote que falha custa até ~60 s, o programa marca "falhou" e tenta depois (código lido; limitado a 240 s por leitura). Não deu para provar uma consulta com resultado daqui; o dono confere no Windows (seção 9 do estado atual). Sem bloqueio. Automação verde, tag `v0.7.51`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.51 no ar, `versoes.html` no ar, completo com a 0.7.51. Integração: nova de LEITURA com o DataJud (API pública do CNJ, só números de processo saem; nada vai à SolverONE).
 - 16/Nov: **0.7.50 REVISADA e PUBLICADA** (o dono: "publica a versão 0.7.50"). Diff `a4906d3..a68c2af` (entre a `v0.7.49` e `a4906d3` nenhum código mudou); folha `documentacao/dod/0.7.50.md` lida contra o diff com os textos abertos: 13 pontos preenchidos e verdadeiros (ressalvas de texto abaixo); `test_dod.py` OK; `rodar_tudo.sh` TUDO OK; Bandit sem achados. Sem bloqueio. Automação verde, tag `v0.7.50`; pacote 47 e 46, assinatura conferida, `versao.json` e `instalar.txt` 0.7.50 no ar, completo com a 0.7.50. Integração: nenhuma nova; roadmap: agrupamento por empresa completo.
@@ -166,6 +167,9 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
+- 26/Nov: **0.7.54 em código** (feedback do dono de 26/Nov, pedidos "Operação → Produto (26/Nov, …)"): desempenho (sinal guardado),
+  troca de período sem novo pedido, agrupar por empresa sem perder blocos, inglês contextual ("tax registry"), ordenar pelos mais
+  antigos. Arquivos: `robo/lexsuite/{radar,armazenamento}.py`, `robo/radar_modelo.html`, testes, manual.
 - 24/Nov: **0.7.53 pronta para publicar** (leva junto a 0.7.52; pedido à Operação abaixo). Pedidos à Arquitetura: nuvem v21 das
   amostras e contagem do pacote (dois módulos novos). Próximo: teste do dono com dois computadores (ESTADO-ATUAL, seção 11).
 - 24/Nov: **0.7.52** (teste do dono na 0.7.51 em inglês): inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em
@@ -761,6 +765,72 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   tem o recurso `amostras` ligado (nuvem v21, com o "pode aplicar" do dono): a pergunta da Operação ao dono fica para esse momento.
   Ficam para depois: seletor de idioma com bandeira SVG em todas as páginas (a tela também usa "PT/EN" em texto) e L3. Testes 662 OK;
   bateria da tela TUDO OK (fluxos, ver_na_lista 16, larguras 88, aviso_e_lupa 399); revisão da Produto sem bloqueio no código.
+- **Operação → Produto (26/Nov, feedback do dono: "Agrupar por empresa" com comportamento estranho, prints no chat do dono):** em
+  inglês, "Group by company" + "Up to 50 from the last 6 months": cada empresa fica em "fetching earlier cases…"; ao expandir, o
+  conteúdo some e volta; clicar num processo mais para baixo faz o bloco sumir e "contrair" tudo. **Causas lidas no código** (não
+  reproduzido na tela; vale um bloco novo no `fluxos.js`): (1) `post()` (`robo/radar_modelo.html:3009`) zera `cacheEmp` em QUALQUER
+  gravação: abrir a ficha (marca "Visto"), mudar a situação e até trocar o período (`/config` `dias_na_pagina`); os blocos perdem os
+  processos anteriores (ficam só com os do período, parece que "contraiu"), voltam a "buscando os anteriores…" e o programa busca de
+  novo TODAS as empresas; (2) quando a busca volta, `desenhar()` (`:6273`) refaz a lista inteira: o conteúdo pisca e a rolagem pula;
+  (3) no programa, `radar.processos_das_empresas` (`radar.py:593`, rota `/empresas/processos`) varre o banco inteiro com `dados LIKE ?`
+  (um OR por pista de cada empresa) e monta cada processo com `item_de_lead`, que tem a mesma lentidão do `sinal` (pedido da limpeza).
+  Proposta: (a) gravação de situação/visto/valor atualiza o processo dentro do `cacheEmp` em vez de apagá-lo; apagar só a empresa
+  afetada e só quando a gravação muda quem pertence à empresa (CNPJ provável, excluir, copiar contato); nunca no `dias_na_pagina`;
+  (b) ao chegar a busca, redesenhar só os blocos que mudaram (ou guardar e restaurar a rolagem e o `gruposAbertos`); (c) corrigir o
+  `sinal` (resolve boa parte do tempo da busca); depois, se ainda lento, índice por CNPJ/nome da empresa no banco (passa pela
+  Arquitetura). Novidades: "Correção do agrupamento por empresa ao abrir processos" e "Melhoria de desempenho".
+- **Operação → Produto (26/Nov, pedido do dono: "Ordenar por" com os MAIS ANTIGOS primeiro):** para o advogado ver, dentro de um
+  período recente do Diário (ex.: "últimos 7 dias"), os processos ajuizados há mais tempo. Hoje (`robo/radar_modelo.html:6319`) as opções
+  são ajuizado, valor, recentes, porte, empresa, vara, situação e hora; a ordem está em `visiveis_()` (`:4293`) e em `comparador()` (`:4304`,
+  usado pelo "Depois por"). Proposta: opção nova `ajuizado_asc` logo abaixo de "Mais novos primeiro (ajuizados)": PT **"Mais antigos
+  primeiro (ajuizados)"**, EN **"Oldest first (filed)"**; `diaAj(a).localeCompare(diaAj(b))`, com os SEM data de ajuizamento no fim (string
+  vazia iria para o começo), desempate pelo maior valor; o mesmo no `comparador`. Talvez também "Menos recentes primeiro (no Diário)"
+  (`diaDe` ascendente), se o dono quiser. Conferir: filtros salvos e "Depois por" guardam e reabrem a ordem nova; CSV ("Baixar a lista")
+  sai na ordem da tela; com "Agrupar por empresa" a ordem fica apagada (como hoje). Definition of done: texto do (?) `ord_ajuda` PT/EN
+  ("…data de ajuizamento, da mais nova ou da mais antiga…"), manual ("Ordenar por"), AssistONE (ajuda da Lista e busca: "mais antigos",
+  "oldest"), Novidades ("Opção de ordenar pelos processos ajuizados há mais tempo"), folha DoD da versão.
+- **Operação → Produto (26/Nov, feedback do dono: Lista lenta nos filtros, "Carregando 7 dias de processos" depois de 15 dias;
+  medido):** banco FICTÍCIO de 53 mil processos (TRT9), Linux: `montar_radar` da Lista = 0,9 s (7 dias), 1,7 s (15), 3,2 s (30), e
+  6,7 s com o cProfile ligado; **90 % é a mesma causa da limpeza lenta** (`sinal_guardado` → `sem_acento` no texto inteiro do Diário,
+  14 milhões de iterações para 2.389 processos). Com o ensaio da correção (pedido acima: usar o `sinal` guardado): **15 dias 0,17 s,
+  7 dias 0,11 s**. O resto da rota `/dados` (`totais_por_dia`, `armazenamento.situacao`, `espaco`, histórico) soma menos de 0,1 s.
+  No Windows do escritório, 5 a 8 vezes isso. **Segundo ponto, na tela** (`robo/radar_modelo.html:2931-2946`, `trocarPeriodo` e
+  `carregar`): o cache guarda cada período só pela chave exata (`cacheDados[d]`) e por 5 min; de 15 para 7 dias pede tudo de novo,
+  embora os 7 dias estejam dentro dos 15. Proposta (sem banco novo, sem pré-cálculo): (1) corrigir o `sinal` (resolve quase tudo);
+  (2) na troca de período, usar o maior período já na memória e filtrar no navegador pela data no Diário (só pedir ao programa
+  quando o novo período for maior); (3) se ainda precisar, guardar no programa o `item_de_lead` por processo e apagar a entrada
+  quando o processo muda (gravação, junção da troca, limpeza): mais risco de mostrar dado velho, deixar para depois da medição
+  com a correção (1). Mudança só de código e tela, sem banco: não precisa da Arquitetura. Novidades: "Melhoria de desempenho da
+  Lista e do Painel".
+- **Operação → Produto (26/Nov, feedback do dono: "RECEITA" em inglês saiu "REVENUE", tradução literal):** na Jornada do processo a
+  etiqueta de fonte é `fonte_receita: "Revenue"` (`robo/radar_modelo.html:2403`, EN), ao lado de `fonte_diario: "Court Journal"`.
+  "Receita" aqui é a Receita Federal, o cadastro público de CNPJ, não "receita" (faturamento). O site já usa o termo certo: "the
+  federal tax registry" (`paginas/index.html:365`). No programa há ainda cerca de 15 textos EN com "Federal Revenue" (`:2403`,
+  `:2459-2461`, `:2486`, `:2496`, `:2613`, `:2657`, `:2690`, `:6415-6416`, `:7051`), que soam como "faturamento federal".
+  Recomendação: etiqueta curta **"TAX REGISTRY"**; no texto corrido, **"federal tax registry"** (na primeira menção de cada tela,
+  "federal tax registry (Receita Federal)"), igual ao site; manter "revenue" só onde é faturamento de fato (porte: "revenue up to
+  R$ 360k/year", `:2830-2831`, está certo). Conferir junto o (?) das fontes, a ajuda do AssistONE, a busca e a planilha em EN.
+  Definition of done: Novidades "Correção de termos em inglês"; regra geral para o EN: traduzir pelo contexto jurídico brasileiro,
+  não ao pé da letra (vale também para a revisão dos termos em inglês com o advogado, pergunta 66).
+- **Operação → Produto (26/Nov, feedback do dono: "Limpar a planilha" levou ~10 min; medido, causa achada):** banco FICTÍCIO com
+  53 mil processos (TRT9), Linux: `armazenamento.limpar` = **74 a 120 s** (a cópia faz o CSV do Arquivo inteiro com `montar_radar(visao=
+  "arquivo")` e a regravação monta a lista de novo); no Windows do escritório, com a pasta no Drive, 5 a 8 vezes isso = os 10 min.
+  **80 % do tempo é `radar.sinal_guardado` → `classificar.sem_acento` no texto inteiro do Diário**, chamado 4 vezes por processo
+  (cProfile: 425 mil chamadas, 225 milhões de iterações em `sem_acento`), porque `radar.data_de_referencia` (`radar.py:1144`) e o
+  ponto de `radar.py:1103` chamam `sinal_guardado(lead)` mesmo quando o processo já tem o `sinal` guardado (desde a 0.7.19), e
+  `processo_novo` chama `data_de_referencia` de novo. **Ensaio (sem mudar o repositório):** usar `lead.get("sinal")` primeiro e
+  calcular o do texto uma vez por processo → Arquivo inteiro 36 s → 3 s; **limpar 74 s → 7 s (10 vezes mais rápido)**; Lista de 7 dias
+  0,9 s → 0,1 s. Pedido: (1) em `data_de_referencia` e `radar.py:1103`, `lead.get("sinal") or sinal_guardado(lead)`; (2) guardar o
+  resultado por processo dentro do mesmo `montar_radar` (ou passar o `sinal` já calculado no `item_de_lead`); (3) teste de tempo
+  com 50 mil processos fictícios (limite, por exemplo, 15 s no Linux); (4) `limpar` monta a lista 3 vezes (CSV, regravar, antes e
+  depois): reaproveitar. Script da medição: pedir à Operação. Não muda texto nem tela (Definition of done: Novidades "Melhoria de
+  desempenho na limpeza da planilha e na abertura do Arquivo").
+- **Operação → Produto e Arquitetura (24/Nov, depois da 0.7.53 publicada; não bloqueiam):** (1) a Operação editou a linha do ponto 9 de
+  `documentacao/dod/0.7.53.md` e a frase das amostras no e-mail de boas-vindas (`d7e7d73`, com o "pode" do dono): Produto, confira;
+  (2) folha, ponto 12: `test_v0753.py` (24) × (26) na seção final; ponto 11 sem "e com o recurso `amostras` ligado"; (3) `radar.py:832`:
+  depois de 10 falhas da cópia "antes da 0.7.53", registrar o aviso na Saúde uma vez só; (4) Arquitetura: só ligar o recurso `amostras`
+  depois de os termos 1.2 resolverem o "apenas quantidades" (termos 1.0, 3.4, 6.2 c e 7); (5) CLAUDE.md "Como entregar": o pacote passou a
+  49 e 48 arquivos.
 - **Operação → Produto (24/Nov, BLOQUEIOS da 0.7.53; a Operação não publicou):** [Produto, 24/Nov noite: corrigidos, ver acima]
   **B1 (perde trabalho de outro computador):** `robo/lexsuite/troca.py:204-212` e `:244-256`: a junção só lê arquivos com número maior que
   `ap:<instalação>` e, em QUALQUER erro de leitura (arquivo ainda sincronizando no OneDrive/Drive, `PermissionError`, gzip incompleto),

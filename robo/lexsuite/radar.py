@@ -42,12 +42,27 @@ def sinal_guardado(lead):
     guardado, na hora de mostrar (o banco não muda). Sem texto que mostre o sinal: '' (a tela mostra "Sem sinal registrado")."""
     from . import classificar as cl
     tipo = cl.sem_acento(str(lead.get("tipo") or "")).lower()
-    texto = cl.sem_acento(str(lead.get("texto_curto") or "")).lower()
+    texto = str(lead.get("texto_curto") or "")
     # revisão da 0.7.35: na lista de distribuição o DJEN guarda o tipo do documento ("Notificação"); o aviso está no texto
-    # ("Processo distribuído"), como em banco._reclassificar_0718
-    if "distribui" in tipo or "processo distribuid" in texto or "lista de distribuic" in texto:
+    # ("Processo distribuído"), como em banco._reclassificar_0718. 0.7.54: busca direta, com e sem acento, sem converter o texto
+    # inteiro (era a maior parte do tempo da Lista, do Arquivo e da limpeza)
+    if "distribui" in tipo or _DISTRIBUIDO.search(texto):
         return "lista de distribuição"
-    return cl.sinal_inicio(lead.get("texto_curto") or "")
+    return cl.sinal_inicio(texto)
+
+
+_DISTRIBUIDO = re.compile(r"processo\s+distribu[ií]d|lista\s+de\s+distribui[çc]", re.I)
+
+def sinal_de(lead):
+    """0.7.54 (Operação, 26/Nov): o sinal guardado na leitura (desde a 0.7.19) e, só se faltar, o do texto, calculado uma vez por
+    processo (antes, `sem_acento` no texto inteiro do Diário rodava 4 vezes por processo: limpar a planilha levava minutos)."""
+    s = lead.get("sinal")
+    if s:
+        return s
+    if "_sinal_calc" not in lead:
+        lead["_sinal_calc"] = sinal_guardado(lead)
+    return lead["_sinal_calc"]
+
 
 def link_pje(tribunal):
     return tribunais.link_pje(tribunal)
@@ -101,7 +116,7 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         "situacao_em": lead.get("status_em") or "", "frente": lead.get("frente") or "trabalhista",
         "resumido": bool(lead.get("resumido")), "primeira_vez": lead.get("primeira_vez") or "",
         "status_por": lead.get("status_por") or "", "status_em": lead.get("status_em") or "",  # 0.7.53 (decisão 65)
-        "visto_por": lead.get("visto_por") or "", "visto_em": lead.get("visto_em") or "",
+        "visto_por": lead.get("visto_por") or "", "visto_por_em": lead.get("visto_por_em") or "",
         "contato": _contato_resumo(emp, extras, bool(emp.get("cnpj")), a_conferir),
         "contatos": [{k: c[k] for k in ("canal", "valor", "fonte", "data", "confianca", "origem", "de_pessoa", "validacao")} for c in extras],
         "cnpj_a_conferir": a_conferir,
@@ -113,7 +128,7 @@ def item_de_lead(lead, cfg_radar, contatos=None):
         "fonte_leitura": lead.get("fonte_leitura") or "caderno", "caderno_pendente": bool(lead.get("caderno_pendente")),
         "tribunal": lead.get("tribunal"),
         "vara": lead.get("vara"),
-        "sinal": lead.get("sinal") or sinal_guardado(lead),  # 0.7.19: como a ação nova foi reconhecida (gráfico para calibrar a regra com o escritório)
+        "sinal": sinal_de(lead),  # 0.7.19: como a ação nova foi reconhecida (gráfico para calibrar a regra com o escritório)
         "processo": lead.get("processo"),
         "classe": (lead.get("classe") or "").upper(),  # 0.7.16: o Diário às vezes traz "AçãO ... ORDINáRIO"
         "rito": lead.get("rito"),
@@ -202,7 +217,37 @@ def itens_de(cfg, banco, processos):
     return saida
 
 
+_REUSO = threading.local()  # 0.7.54: a limpeza monta o Arquivo inteiro uma vez só (cópia em CSV e regravação da planilha)
+
+
+class reaproveitar_arquivo:
+    """Dentro do `with`, montar_radar(visao="arquivo") com os mesmos cfg e prefs devolve o que já montou."""
+    def __enter__(self):
+        self.antes = getattr(_REUSO, "cache", None)  # pode estar dentro de outro (limpeza automática durante a gravação)
+        if self.antes is None:
+            _REUSO.cache = {}
+        return self
+
+    def __exit__(self, *_):
+        _REUSO.cache = self.antes
+
+
+def esquecer_arquivo():
+    if getattr(_REUSO, "cache", None) is not None:
+        _REUSO.cache = {}
+
+
 def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None, prefs=None, visao="lista"):
+    cache = getattr(_REUSO, "cache", None)
+    if visao == "arquivo" and cache is not None and agora is None and prefs is None:
+        chave = (id(banco), json.dumps(cfg.get("radar") or {}, sort_keys=True, default=str), json.dumps(cfg.get("compartilhar") or {}, sort_keys=True, default=str))
+        if chave not in cache:
+            cache[chave] = _montar_radar(cfg, banco, agora, exemplo, situacao, dias, prefs, visao)
+        return cache[chave]
+    return _montar_radar(cfg, banco, agora, exemplo, situacao, dias, prefs, visao)
+
+
+def _montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None, prefs=None, visao="lista"):
     """Os dados da página: as ações guardadas nos últimos `dias` dias, dos tribunais escolhidos no config,
     com as preferências do escritório aplicadas (exclusões e mínimo de ações marcam, não apagam).
     0.7.14: visao="lista" esconde as arquivadas; visao="arquivo" traz tudo o que o RADAR já leu, de qualquer tribunal."""
@@ -269,6 +314,7 @@ def montar_radar(cfg, banco, agora=None, exemplo=False, situacao=None, dias=None
     dia = max([i["distribuida_em"][:10] for i in itens if i["distribuida_em"]] or [agora.date().isoformat()])
     return {
         "dia": dia, "gerado_em": agora.strftime("%Y-%m-%d %H:%M"), "exemplo": bool(exemplo), "dias": dias, "desde": str(desde)[:10],  # 0.7.50: início do período (anterior × fora dos filtros)
+        "inicios": {str(n): inicio_periodo(agora.date(), n) for n in (1, 3, 7, 15, 30, 60, 90) if n <= dias},  # 0.7.54: a tela corta um período menor sem perguntar de novo
         "escritorio": cfg.get("escritorio", ""), "tribunais": escolhidos, "visao": visao,
         "valor_minimo": float(p_trab.get("valor_minimo") or 0),  # 0.7.33: 0 = sem mínimo
         "valor_minimo_area": {a: float(prefs_de(a).get("valor_minimo") or 0) for a in sorted(set(grupos) | {"trabalhista"})},
@@ -780,6 +826,7 @@ def gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print):
             return False
         try:
             if troca.juntar(banco, cfg, aviso):
+                esquecer_arquivo()  # chegou dado de outro computador: o Arquivo guardado na limpeza ficou velho
                 pagina = montar_radar(cfg, banco, None, False, pagina.get("situacao"))
             troca.exportar(banco, cfg)
         except OSError as e:  # pasta fora do ar: a planilha deste computador continua valendo
@@ -829,8 +876,9 @@ def _gravar_planilha(cfg, pagina, banco, versao, pasta_base, aviso=print, vetor=
                 banco.registrar("copia_0753_falhou", {})
                 aviso("  A planilha não foi regravada: falta guardar antes a cópia de como ela era (tento de novo). A lista está salva.")
                 return False
-            banco.registrar("saude", {"fonte": "Cópia de antes da 0.7.53", "situacao": "atenção",
-                                      "detalhe": "a cópia não pôde ser feita em 10 tentativas; a planilha foi regravada sem ela"})
+            if not any(e.get("fonte") == "Cópia de antes da 0.7.53" for e in banco.execucoes("saude", 50)):  # 0.7.54: o aviso uma vez só
+                banco.registrar("saude", {"fonte": "Cópia de antes da 0.7.53", "situacao": "atenção",
+                                          "detalhe": "a cópia não pôde ser feita em 10 tentativas; a planilha foi regravada sem ela"})
         todos = armazenamento.so_escolhidos([i for i in montar_radar(cfg, banco, visao="arquivo")["itens"]
                                              if (i.get("primeira_vez") or "9") >= doze], escolhidos)
         lista, _mais_velhos = armazenamento.radar_ate_30_dias(armazenamento.so_escolhidos(pagina.get("itens") or [], escolhidos))
@@ -1100,7 +1148,7 @@ def completar_fontes(banco, agora=None, novos=(), aviso=print, parar=None, tempo
         if feitos >= HIST_MAX or cedo():
             est["hist_parou"] = est["hist_parou"] or "limite desta leitura"
             break
-        if sinal_guardado(d) == "lista de distribuição" or (d.get("cnj") or {}).get("ajuizado"):
+        if sinal_de(d) == "lista de distribuição" or (d.get("cnj") or {}).get("ajuizado"):
             banco.marcar_fonte(proc, "diario_hist", "ok", agora, causa="não precisa", commit=False)  # a data já é conhecida
             continue
         if feitos % 10 == 0:
@@ -1141,7 +1189,7 @@ def data_de_referencia(lead):
     hist = lead.get("diario_hist") or {}
     if hist.get("distribuicao"):
         return hist["distribuicao"][:10], "diario"
-    if sinal_guardado(lead) == "lista de distribuição" and lead.get("data_publicacao"):
+    if sinal_de(lead) == "lista de distribuição" and lead.get("data_publicacao"):
         return str(lead["data_publicacao"])[:10], "diario"
     datas = [x for x in (hist.get("pub1"), (lead.get("cnj") or {}).get("pub1"), lead.get("data_publicacao")) if x]
     return (min(datas)[:10], "aproximada") if datas else ("", "")

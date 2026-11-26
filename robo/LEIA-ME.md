@@ -1,4 +1,4 @@
-# LexSuiteONE · RADAR JUDICIAL — robô v0.7.53 (frente trabalhista)
+# LexSuiteONE · RADAR JUDICIAL — robô v0.7.54 (frente trabalhista)
 
 Uma lista por dia: os processos novos contra empresas nos tribunais que você escolher (os 24 TRTs por padrão; também os
 TJs, os TRFs, STJ e TST), uma por linha, com a ficha da empresa e do processo. Tudo roda no seu computador, sem
@@ -63,6 +63,11 @@ são de cada pessoa, neste computador, por área (0.7.33): Configurações → D
 
 ## A tela
 
+- **0.7.54 (26/Nov, feedback do dono com a 0.7.53 no escritório):** Lista, Arquivo e limpeza da planilha mais rápidos com dezenas de
+  milhares de processos (o sinal guardado vale; o calculado sai uma vez por processo; a limpeza monta o Arquivo uma vez só); trocar
+  para um período menor filtra na tela o maior que já veio; agrupar por empresa guarda os processos anteriores ao abrir um processo
+  e troca só os blocos que mudaram, sem perder a rolagem; "Mais antigos primeiro (ajuizados)" em "Ordenar por"; inglês pelo sentido
+  jurídico ("federal tax registry (Receita Federal)", selo "TAX REGISTRY").
 - **0.7.53 (24/Nov, decisões 59 a 67):** vários computadores na mesma pasta sem computador "mestre" (cada um grava o que fez
   em `_RADAR (não mexer)/troca/<instalação>/`, junta o dos outros ao abrir, antes de gravar a planilha e no botão "Trazer do
   escritório (N)"; trava curta e vetor na aba Sobre para a planilha nunca voltar atrás); "Visto por" e autoria das situações e dos

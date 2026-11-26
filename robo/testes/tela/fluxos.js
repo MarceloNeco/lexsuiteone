@@ -508,6 +508,57 @@ const totalLista = p => p.evaluate(() => { const m = document.getElementById('ma
     await p.close();
   }
 
+  // 13. 0.7.54 (dono, 26/Nov): agrupar por empresa, expandir, esperar os anteriores, clicar num processo de baixo: o bloco fica
+  // aberto e no mesmo lugar, sem buscar as empresas de novo; trocar para um período menor (os fictícios são de 02 a 06/Nov: 90 → 30
+  // dias) usa o que já está na memória
+  {
+    const p = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); localStorage.removeItem('lexsuite:filtro-atual'); localStorage.setItem('lexsuite:ultimo-mes', '0'); localStorage.setItem('lexsuite:agrupar', JSON.stringify({ a: 'empresa', l: 'hibrido' })); } catch (e) {} });
+    const pedidos = []; p.on('request', r => { const u = r.url(); if (/\/empresas\/processos|\/dados/.test(u)) pedidos.push(u.replace(/^.*\/\/[^/]+/, '')); });
+    await p.route('**/empresas/processos', async r => { await espera(1500); r.continue(); });  // os anteriores demoram, como com muitos processos
+    await p.waitForFunction(() => document.querySelectorAll('.grupo-emp').length > 2, null, { timeout: 20000 }).catch(() => {});
+    await p.waitForFunction(() => !document.querySelector('.ge-busc'), null, { timeout: 20000 }).catch(() => {}); await espera(500);
+    await p.evaluate(() => [...document.querySelectorAll('#selecionar-todos .sel-dir button')][0].click()); await espera(800);  // Expandir todas
+    await p.waitForFunction(() => !document.querySelector('.ge-busc'), null, { timeout: 20000 }).catch(() => {}); await espera(500);
+    const alvo = await p.evaluate(() => {
+      const bs = [...document.querySelectorAll('.grupo-emp')].filter(g => g.querySelectorAll('article.item').length);
+      const g = bs[Math.min(bs.length - 1, 3)]; if (!g) return null;
+      const its = [...g.querySelectorAll('article.item')], a = its[its.length - 1];
+      a.scrollIntoView({ block: 'center' });
+      return { k: g.getAttribute('data-k'), n: its.length, idx: its.length - 1 };
+    });
+    if (alvo) {
+      await espera(400);
+      const antes = await p.evaluate(k => { const g = [...document.querySelectorAll('.grupo-emp')].find(x => x.getAttribute('data-k') === k); return Math.round(g.getBoundingClientRect().top); }, alvo.k);
+      const n0 = pedidos.filter(u => /empresas/.test(u)).length;
+      await p.evaluate(a => { const g = [...document.querySelectorAll('.grupo-emp')].find(x => x.getAttribute('data-k') === a.k); g.querySelectorAll('article.item')[a.idx].querySelector('.cab').click(); }, alvo);
+      await espera(2500);
+      const depois = await p.evaluate(a => { const g = [...document.querySelectorAll('.grupo-emp')].find(x => x.getAttribute('data-k') === a.k); if (!g) return null; const it = g.querySelectorAll('article.item')[a.idx]; return { top: Math.round(g.getBoundingClientRect().top), aberto: g.querySelector('.ge-chevron').getAttribute('aria-expanded') === 'true', n: g.querySelectorAll('article.item').length, ficha: !!(it && it.querySelector('.cab').getAttribute('aria-expanded') === 'true') }; }, alvo);
+      const n1 = pedidos.filter(u => /empresas/.test(u)).length;
+      confere(depois && depois.aberto && depois.n === alvo.n && depois.ficha, 'Agrupar: abrir um processo de baixo deixa o bloco aberto, com os mesmos processos e a ficha aberta (' + JSON.stringify(depois) + ')');
+      confere(depois && Math.abs(depois.top - antes) <= 2, 'Agrupar: o bloco fica no mesmo lugar depois de abrir o processo (' + antes + ' → ' + (depois && depois.top) + ')');
+      confere(n1 === n0, 'Agrupar: abrir o processo não busca as empresas de novo (' + (n1 - n0) + ' pedidos)');
+    } else confere(false, 'Agrupar: não achei bloco com processos nos dados fictícios');
+    await p.unroute('**/empresas/processos');
+    // período: 90 dias e depois 30, sem pedir ao programa
+    await p.evaluate(() => { const a = document.getElementById('agrupar'); a.value = ''; a.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(600);
+    await p.evaluate(() => { const s = document.getElementById('periodo'); s.value = '90'; s.dispatchEvent(new Event('change', { bubbles: true })); });
+    await p.waitForFunction(() => !document.getElementById('estado').textContent || !/Carregando|Loading/.test(document.getElementById('estado').textContent), null, { timeout: 20000 }).catch(() => {}); await espera(1500);
+    const t90 = await totalLista(p), d0 = pedidos.filter(u => /\/dados/.test(u)).length;
+    await p.evaluate(() => { const s = document.getElementById('periodo'); s.value = '30'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(1200);
+    const d1 = pedidos.filter(u => /\/dados/.test(u)).length, t30 = await totalLista(p);
+    confere(d1 === d0, 'Período: de 90 para 30 dias não pede ao programa (' + (d1 - d0) + ' pedidos)');
+    confere(await p.evaluate(() => document.getElementById('periodo').value === '30'), 'Período: a tela fica em 30 dias');
+    confere(p._erros.length === 0, '0.7.54: nenhum erro na página ' + p._erros.join(' | '));
+    await p.close();
+    // a mesma tela aberta de novo (30 dias vindos do programa) mostra a mesma quantidade que o recorte na memória
+    const p2 = await abrirPagina(b, () => { try { localStorage.setItem('lexsuite:visao', 'lista'); localStorage.removeItem('lexsuite:filtro-atual'); localStorage.removeItem('lexsuite:agrupar'); localStorage.setItem('lexsuite:ultimo-mes', '0'); } catch (e) {} });
+    await espera(1500);
+    const t30b = await totalLista(p2), per2 = await p2.evaluate(() => document.getElementById('periodo').value);
+    confere(per2 === '30' && t30b === t30 && t30 > 0 && t30 <= t90, 'Período: os 30 dias filtrados na tela são os mesmos que o programa daria (memória ' + t30 + ' × programa ' + t30b + '; 90 dias: ' + t90 + ')');
+    await p2.evaluate(() => { const s = document.getElementById('periodo'); s.value = '90'; s.dispatchEvent(new Event('change', { bubbles: true })); }); await espera(2500);  // volta aos 90 dias do servidor fictício (os roteiros seguintes contam com eles)
+    await p2.close();
+  }
+
   await b.close();
   console.log(res.join('\n'));
   console.log(falhas ? `\n${falhas} FALHA(S)` : '\nTUDO OK');
