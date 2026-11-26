@@ -167,9 +167,13 @@ Código do robô em `robo/lexsuite/` para correções e telas; mudanças de regr
 Arquitetura (pedido no quadro).
 
 ### Fazendo agora
-- 26/Nov: **0.7.54 em código** (feedback do dono de 26/Nov, pedidos "Operação → Produto (26/Nov, …)"): desempenho (sinal guardado),
-  troca de período sem novo pedido, agrupar por empresa sem perder blocos, inglês contextual ("tax registry"), ordenar pelos mais
-  antigos. Arquivos: `robo/lexsuite/{radar,armazenamento}.py`, `robo/radar_modelo.html`, testes, manual.
+- 26/Nov: **0.7.54 pronta para publicar** (`fc118fa`; feedback do dono de 26/Nov, os cinco pedidos "Operação → Produto (26/Nov, …)"
+  atendidos): sinal guardado e calculado uma vez, limpeza com o Arquivo montado uma vez (50 mil fictícios: limpeza ~8 s, Arquivo ~4 s,
+  Lista 15 dias ~0,6 s); período menor tirado da memória (`inicios`); agrupar sem apagar a memória ao abrir processo e troca só dos
+  blocos que mudaram; "Mais antigos primeiro (ajuizados)" (sem data de ajuizamento no fim, regra da planilha); inglês "federal tax
+  registry (Receita Federal)" e selo "TAX REGISTRY". Folha `documentacao/dod/0.7.54.md`; `test_v0754.py` (11) e `fluxos.js` bloco 13
+  (falha com a tela da 0.7.53, passa com a 0.7.54); unittest 673 OK; `rodar_tudo.sh` TUDO OK; revisor: 1 bloqueio (ordem nova) corrigido.
+  Banco: nenhuma tabela nem índice novo. Pedido à Operação abaixo.
 - 24/Nov: **0.7.53 pronta para publicar** (leva junto a 0.7.52; pedido à Operação abaixo). Pedidos à Arquitetura: nuvem v21 das
   amostras e contagem do pacote (dois módulos novos). Próximo: teste do dono com dois computadores (ESTADO-ATUAL, seção 11).
 - 24/Nov: **0.7.52** (teste do dono na 0.7.51 em inglês): inglês sem sobras, "Court Journal", "Manual de uso / User guide", termos em
@@ -684,6 +688,12 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
 | Subagentes `.claude/agents/` | Carregam em conversa nova. Conversa já aberta usa agente equivalente com o mesmo modelo. | todas |
 
 ## Pedidos entre sessões
+
+- **Produto → Operação (26/Nov): 0.7.54 pronta para publicar**, quando o dono escrever "publica a versão 0.7.54". Revisar
+  `git diff 0bf9869 fc118fa -- robo paginas docs` e a folha `documentacao/dod/0.7.54.md`. Responde aos cinco pedidos de 26/Nov
+  (desempenho, período, agrupar, inglês, mais antigos). Nenhum módulo novo (o pacote continua com a mesma contagem). Testes do dono
+  no Windows: seção 12 de `documentacao/ESTADO-ATUAL-RADAR.md` (medir o tempo de "Limpar a planilha"). Ressalva aceita: "Visto por" e
+  "Marcado por" feitos em OUTRO computador chegam à tela na próxima carga (até 5 min), como antes.
 
 - **Produto → Operação (24/Nov): 0.7.53 pronta para publicar** (inclui a 0.7.52), quando o dono escrever "publica a versão
   0.7.53". Revisar `git diff 34e79fd 254f63e -- robo paginas docs ferramentas` e a folha
