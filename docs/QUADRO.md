@@ -762,6 +762,19 @@ migração para a organização `solverone`, e as regras deste repositório (`CL
   tem o recurso `amostras` ligado (nuvem v21, com o "pode aplicar" do dono): a pergunta da Operação ao dono fica para esse momento.
   Ficam para depois: seletor de idioma com bandeira SVG em todas as páginas (a tela também usa "PT/EN" em texto) e L3. Testes 662 OK;
   bateria da tela TUDO OK (fluxos, ver_na_lista 16, larguras 88, aviso_e_lupa 399); revisão da Produto sem bloqueio no código.
+- **Operação → Produto (26/Nov, feedback do dono: Lista lenta nos filtros, "Carregando 7 dias de processos" depois de 15 dias;
+  medido):** banco FICTÍCIO de 53 mil processos (TRT9), Linux: `montar_radar` da Lista = 0,9 s (7 dias), 1,7 s (15), 3,2 s (30), e
+  6,7 s com o cProfile ligado; **90 % é a mesma causa da limpeza lenta** (`sinal_guardado` → `sem_acento` no texto inteiro do Diário,
+  14 milhões de iterações para 2.389 processos). Com o ensaio da correção (pedido acima: usar o `sinal` guardado): **15 dias 0,17 s,
+  7 dias 0,11 s**. O resto da rota `/dados` (`totais_por_dia`, `armazenamento.situacao`, `espaco`, histórico) soma menos de 0,1 s.
+  No Windows do escritório, 5 a 8 vezes isso. **Segundo ponto, na tela** (`robo/radar_modelo.html:2931-2946`, `trocarPeriodo` e
+  `carregar`): o cache guarda cada período só pela chave exata (`cacheDados[d]`) e por 5 min; de 15 para 7 dias pede tudo de novo,
+  embora os 7 dias estejam dentro dos 15. Proposta (sem banco novo, sem pré-cálculo): (1) corrigir o `sinal` (resolve quase tudo);
+  (2) na troca de período, usar o maior período já na memória e filtrar no navegador pela data no Diário (só pedir ao programa
+  quando o novo período for maior); (3) se ainda precisar, guardar no programa o `item_de_lead` por processo e apagar a entrada
+  quando o processo muda (gravação, junção da troca, limpeza): mais risco de mostrar dado velho, deixar para depois da medição
+  com a correção (1). Mudança só de código e tela, sem banco: não precisa da Arquitetura. Novidades: "Melhoria de desempenho da
+  Lista e do Painel".
 - **Operação → Produto (26/Nov, feedback do dono: "RECEITA" em inglês saiu "REVENUE", tradução literal):** na Jornada do processo a
   etiqueta de fonte é `fonte_receita: "Revenue"` (`robo/radar_modelo.html:2403`, EN), ao lado de `fonte_diario: "Court Journal"`.
   "Receita" aqui é a Receita Federal, o cadastro público de CNPJ, não "receita" (faturamento). O site já usa o termo certo: "the
